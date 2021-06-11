@@ -166,7 +166,7 @@
 <translation id="6145820983052037069">Puoi passare da un profilo Chromium all'altro qui</translation>
 <translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />È tutto pronto per l'installazione di Chromium OS. Se procedi:
           <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Verranno cancellati i file, i dati e il tuo sistema operativo corrente.
+          <ph name="LIST_ITEM" />Verranno cancellati i file, i dati e il sistema operativo corrente.
           <ph name="LIST_ITEM" />Verrà installato Chromium OS.
           <ph name="LIST_ITEM" />Il dispositivo si spegnerà al termine dell'installazione.
           <ph name="END_LIST" />
@@ -241,7 +241,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Prima di iniziare, assicurati di avere una copia di backup aggiornata dei tuoi dati. L'installazione di Chromium OS comporterà la sovrascrittura di tutti i dati sul disco rigido.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google non è responsabile di alcuna perdita di dati e non garantisce il funzionamento di Chromium OS su modelli non certificati. Visita la pagina [TBD] per saperne di più sui modelli certificati.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Scopri di più sull'installazione di Chromium OS e sulla cancellazione dei dati: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Se vuoi procedere, fai clic su "Installa Chromium OS". Ti aiuteremo a eseguire l'installazione tramite un paio di semplici passaggi. Avrai un'altra possibilità di confermare le modifiche al computer prima che vengano applicate.<ph name="END_PARAGRAPH4" /></translation>
+          <ph name="BEGIN_PARAGRAPH4" />Se vuoi procedere, fai clic su "Installa Chromium OS". Ti aiuteremo a eseguire l'installazione in pochi semplici passaggi. Avrai un'altra possibilità di confermare le modifiche al computer prima che vengano applicate.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium non è il browser predefinito</translation>
 <translation id="7689606757190482937">Sincronizza e personalizza Chromium sui tuoi dispositivi</translation>
 <translation id="7729447699958282447">Impossibile sincronizzare i dati in Chromium perché la sincronizzazione non è disponibile per il tuo dominio.</translation>

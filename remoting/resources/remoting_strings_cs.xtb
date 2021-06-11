@@ -67,6 +67,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="4176825807642096119">Přístupový kód</translation>
 <translation id="4227991223508142681">Nástroj pro správu hostitele</translation>
 <translation id="4240294130679914010">Nástroj k odinstalaci hostitele funkce Chromoting</translation>
+<translation id="4257751272692708833">Nástroj k předávání adres URL pro klienta <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Přístupový kód je neplatný. Zkuste to prosím znovu.</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4405930547258349619">Základní knihovna</translation>
@@ -121,6 +122,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="6612717000975622067">Odeslat akci Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Sdílet</translation>
 <translation id="677755392401385740">Pro následujícího uživatele bylo zahájeno hostování: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Pomocná aplikace k otevírání adres URL v klientu <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Zobrazit či skrýt klávesnici</translation>
 <translation id="6963936880795878952">Připojení ke vzdálenému počítači jsou dočasně zablokována, protože došlo k několika pokusům o připojení s nesprávným kódem PIN. Zkuste to znovu později.</translation>
 <translation id="6965382102122355670">OK</translation>

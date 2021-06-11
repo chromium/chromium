@@ -308,6 +308,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}=1{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}other{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每隔 {NUM_DAYS} 日更新您所屬的群組。}}</translation>
 <translation id="2053553514270667976">郵遞區號</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議}other{# 個建議}}</translation>
+<translation id="2071156619270205202">這張卡片不能建立虛擬卡號。</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="20817612488360358">雖然系統 Proxy 設定已設為使用，不過也指定了明確的 Proxy 設定。</translation>
@@ -436,9 +437,11 @@
 <translation id="2521385132275182522">釘裝 (右下方)</translation>
 <translation id="2523886232349826891">只會儲存至此裝置</translation>
 <translation id="2524461107774643265">新增更多資料</translation>
+<translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
 <translation id="2536110899380797252">新增地址</translation>
 <translation id="2539524384386349900">偵測</translation>
+<translation id="2540701853218677861">裝置登入/登出記錄，包括時間戳記和嘗試失敗記錄</translation>
 <translation id="2541219929084442027">當您關閉所有無痕式分頁後，您在其中瀏覽的網頁都不會保留在瀏覽器記錄、Cookie 儲存庫或搜尋記錄中。不過，您下載的檔案或建立的書籤將會全部保留。</translation>
 <translation id="2544644783021658368">單一文件</translation>
 <translation id="254947805923345898">政策值無效。</translation>
@@ -629,6 +632,7 @@
 <translation id="3320021301628644560">新增帳單地址</translation>
 <translation id="3324983252691184275">棕紅色</translation>
 <translation id="3329013043687509092">飽和度</translation>
+<translation id="3333762389743153920">不符合虛擬卡片設定資格</translation>
 <translation id="3338095232262050444">安全</translation>
 <translation id="3355823806454867987">變更 Proxy 設定…</translation>
 <translation id="3360103848165129075">付款處理常式工作表</translation>
@@ -1136,6 +1140,7 @@
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">驗證信用卡</translation>
 <translation id="5135404736266831032">管理地址…</translation>
+<translation id="5138014172396933048">目前無法使用虛擬卡片，請洽詢你的銀行</translation>
 <translation id="5138227688689900538">顯示較少</translation>
 <translation id="514010763713772514">想加快日後的結帳速度嗎？</translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
@@ -1182,6 +1187,7 @@
 <translation id="5287240709317226393">顯示 Cookie</translation>
 <translation id="5287456746628258573">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼或信用卡號碼) 可能會外洩。</translation>
 <translation id="5288108484102287882">政策值驗證出現警告訊息</translation>
+<translation id="5288808348893593856">如果 Chrome 未另行通知，表示網站連線安全無虞。</translation>
 <translation id="5289384342738547352">多份文件處理</translation>
 <translation id="5299298092464848405">解析政策時發生錯誤</translation>
 <translation id="5300589172476337783">顯示</translation>
@@ -1544,9 +1550,11 @@
 <translation id="6685834062052613830">請登出並完成設定程序</translation>
 <translation id="6687335167692595844">要求的字型大小</translation>
 <translation id="6688743156324860098">更新…</translation>
+<translation id="6688775486821967877">目前無法使用虛擬卡片，請稍後再試</translation>
 <translation id="6689249931105087298">與黑點壓縮相對</translation>
 <translation id="6689271823431384964">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可在設定中變更此行為。持卡人姓名來自您的帳戶。</translation>
 <translation id="6698381487523150993">已建立：</translation>
+<translation id="6699188552522342100">這個網站的資訊正確嗎？</translation>
 <translation id="6702919718839027939">簡報</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
@@ -1673,6 +1681,7 @@
 <translation id="7219179957768738017">這個連線使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在處理</translation>
 <translation id="7221855153210829124">顯示通知</translation>
+<translation id="722454870747268814">新增無痕式分頁</translation>
 <translation id="7229659723041939809">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即檢查已儲存在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7238585580608191973">SHA-256 指紋</translation>
@@ -2050,6 +2059,7 @@
           <ph name="LIST_ITEM" />Cookie 和網站資料
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">使用 Touch ID 即可加快確認您的付款卡</translation>
+<translation id="8577348305244205642">虛擬卡片無法使用</translation>
 <translation id="858637041960032120">新增電話號碼</translation>
 <translation id="8589998999637048520">最佳品質</translation>
 <translation id="8600271352425265729">僅限這次</translation>

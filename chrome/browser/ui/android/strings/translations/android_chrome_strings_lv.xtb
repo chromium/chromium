@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Pārlūkā Chrome nevarēja verificēt jūsu informāciju</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Netiek saglabātas</translation>
-<translation id="1067922213147265141">Citi Google pakalpojumi</translation>
 <translation id="107147699690128016">Ja mainīsiet faila paplašinājumu, fails var tikt atvērts citā lietojumprogrammā un potenciāli apdraudēt jūsu ierīci.</translation>
 <translation id="1095761715416917775">Parūpējieties, lai vienmēr varētu piekļūt sinhronizētajiem datiem</translation>
 <translation id="1100066534610197918">Atvērt jaunu cilni grupā</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Vairs nerādīt</translation>
 <translation id="1680919990519905526">Veikals rīkā Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Izmēģināt tūlīt</translation>
-<translation id="1692118695553449118">Sinhronizācija ieslēgta</translation>
 <translation id="1697284962337958118">Pievienot:</translation>
 <translation id="1718835860248848330">Pēdējā stunda</translation>
 <translation id="1724977129262658800">Atbloķējiet, lai rediģētu paroli</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Paturēt datus</translation>
 <translation id="1974060860693918893">Papildu</translation>
 <translation id="1984417487208496350">Bez aizsardzības (nav ieteicams)</translation>
-<translation id="1984705450038014246">Jūsu Chrome datu sinhronizācija</translation>
 <translation id="1986685561493779662">Nosaukums jau pastāv</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> poga</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> vēlas savienot pārī</translation>
@@ -188,7 +185,6 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="2200113223741723867">Pārvaldīt lietojuma datu kopīgošanu</translation>
 <translation id="2227444325776770048">Turpināt kā: <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Jums</translation>
-<translation id="2234876718134438132">Sinhronizēšana un Google pakalp.</translation>
 <translation id="2239812875700136898">Pārvaldiet ziņas, izmantojot opciju pogu lapā Discover.</translation>
 <translation id="2259659629660284697">Paroļu eksportēšana…</translation>
 <translation id="2276696007612801991">Lai pārbaudītu paroles, pierakstieties Google kontā</translation>
@@ -364,7 +360,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3295530008794733555">Ietaupiet laiku. Samaziniet datu lietojumu.</translation>
 <translation id="3297344142967351106">Balss palīgs</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
-<translation id="3315103659806849044">Šobrīd jūs pielāgojat sinhronizēšanas un Google pakalpojuma iestatījumus. Lai pabeigtu sinhronizēšanas ieslēgšanu, pieskarieties pogai Apstiprināt, kas atrodas ekrāna apakšdaļā. Pārvietoties augšup</translation>
 <translation id="3334729583274622784">Vai mainīt faila paplašinājumu?</translation>
 <translation id="3341058695485821946">Uzziniet ietaupīto datu apjomu</translation>
 <translation id="3341262203274374114">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4298388696830689168">Saistītās vietnes</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Pamata</translation>
-<translation id="4314815835985389558">Sinhronizācijas pārvaldība</translation>
 <translation id="4320177379694898372">Nav interneta savienojuma.</translation>
 <translation id="4321739720395210191">Nevar atvērt kameru. Restartējiet ierīci un mēģiniet vēlreiz.</translation>
 <translation id="433213510553688132">Tiek reģistrēta sekošana...</translation>
@@ -631,9 +625,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="510275257476243843">Atlikusi 1 h</translation>
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
-<translation id="5127805178023152808">Sinhronizācija izslēgta</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
-<translation id="5136035049889637840">Iegādāties līdzīgus produktus <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Uzzināt, kā izmantot Google disku</translation>
 <translation id="5152843274749979095">Nav instalēta neviena atbalstīta lietotne</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
@@ -753,6 +745,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5854790677617711513">Vecāki par 30 dienām</translation>
 <translation id="5855546874025048181">Precizēt: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome nevar ieslēgt Bluetooth adapteri.</translation>
+<translation id="5860033963881614850">Izsl.</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5862731021271217234">Lai varētu piekļūt cilnēm no citām ierīcēm, ieslēdziet sinhronizāciju.</translation>
 <translation id="5864174910718532887">Detalizēta informācija: kārtota pēc vietnes nosaukuma</translation>
@@ -762,6 +755,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="587735546353481577">Lai sekotu kādai vietnei, atveriet attiecīgo vietni, atveriet Chrome izvēlni un pieskarieties vienumam Sekot.</translation>
 <translation id="5880748256563468367">Pāriet uz plūsmu</translation>
 <translation id="5884076754568147479">Lai palīdzētu jums paveikt uzdevumus, Google saņems to vietņu vietrāžus URL un saturu, kurās izmantojat Asistentu, kā arī informāciju, ko iesniedzat, izmantojot Asistentu.</translation>
+<translation id="5916664084637901428">Iesl.</translation>
 <translation id="5919204609460789179">Lai sāktu sinhronizēšanu, atjauniniet <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696">Saglabāts: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
@@ -812,7 +806,6 @@ Konfidencialitātes smilškastes izmēģinājuma versijas joprojām tiek izstrā
 <translation id="6192907950379606605">Iegūt attēlu aprakstus</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
-<translation id="6218096829563201111">Meklēt līdzīgus produktus <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Atbloķējiet, lai eksportētu paroles.</translation>
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
 

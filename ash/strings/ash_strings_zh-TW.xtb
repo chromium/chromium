@@ -109,7 +109,7 @@
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1804572139604454141">磁碟空間嚴重不足，因此已停止錄製</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
-<translation id="1812997170047690955">我的畫面內容有什麼資訊？</translation>
+<translation id="1812997170047690955">我的畫面上有哪些內容？</translation>
 <translation id="1823873187264960516">乙太網路：<ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">小幫手 (載入中…)</translation>
 <translation id="1838895407229022812">夜燈模式已關閉。</translation>
@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">醒目顯示滑鼠游標</translation>
 <translation id="3513798432020909783">這個帳戶是由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
+<translation id="3560866052109807830">標記繪製工具</translation>
 <translation id="3563775809269155755">啟用無線基地台</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">改回「<ph name="FROM_LOCALE" />」(需要重新啟動)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">「Ctrl + Alt + 向下鍵」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右鍵。</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4285498937028063278">取消固定</translation>
+<translation id="429402653707266969">切換工具列位置</translation>
 <translation id="4294319844246081198">早安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 則通知</translation>
 <translation id="4302592941791324970">無法使用</translation>

@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome でお客様の情報を確認できませんでした</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="10614374240317010">常に保存しない</translation>
-<translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="107147699690128016">ファイル拡張子を変更すると、ファイルが別のアプリケーションで開かれる可能性があり、場合によってはデバイスに損害が生じます。</translation>
 <translation id="1095761715416917775">同期データに常にアクセスできるようにしてください</translation>
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">次回から表示しない</translation>
 <translation id="1680919990519905526">Google レンズで画像を購入 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">今すぐ試す</translation>
-<translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1697284962337958118">追加先</translation>
 <translation id="1718835860248848330">1 時間以内</translation>
 <translation id="1724977129262658800">パスワードを編集するにはロックを解除してください</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">データを残す</translation>
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
-<translation id="1984705450038014246">Chrome データを同期</translation>
 <translation id="1986685561493779662">この名前はすでに存在しています</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> ボタン</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> がペア設定を要求しています</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">使用状況データの共有の管理</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> として続行</translation>
 <translation id="22320125457191592">おすすめ</translation>
-<translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2239812875700136898">Discover ボタンのオプションから記事を管理できます</translation>
 <translation id="2259659629660284697">パスワードをエクスポート…</translation>
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">高速ブラウジングで、データ使用量も抑えることができます。</translation>
 <translation id="3297344142967351106">音声アシスタント</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
-<translation id="3315103659806849044">[同期と Google サービス] の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="3341058695485821946">データ削減量を確認できます</translation>
 <translation id="3341262203274374114">フォローを解除できません。エラーが発生しました。</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">リンク済みのサイト</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">基本設定</translation>
-<translation id="4314815835985389558">同期の管理</translation>
 <translation id="4320177379694898372">インターネットに接続されていません</translation>
 <translation id="4321739720395210191">カメラを開けません。デバイスを再起動してもう一度お試しください。</translation>
 <translation id="433213510553688132">フォローしています...</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">残り 1 時間</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
-<translation id="5127805178023152808">同期は無効です</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
-<translation id="5136035049889637840">同じような商品を購入 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google ドライブの使い方を見る</translation>
 <translation id="5152843274749979095">サポートされているアプリがインストールされていません</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">30 日以上経過</translation>
 <translation id="5855546874025048181">絞り込み: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome から Bluetooth アダプタをオンにできません</translation>
+<translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5862731021271217234">他のデバイスと同じタブを使用するには、同期を有効にします</translation>
 <translation id="5864174910718532887">詳細: サイト名の順</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">サイトをフォローするには、サイトにアクセスして、Chrome メニューを開き、[フォロー] をタップします。</translation>
 <translation id="5880748256563468367">フィードに移動</translation>
 <translation id="5884076754568147479">タスクを完了するため、アシスタントを使用したサイトの URL とコンテンツ、およびアシスタントで送信した情報が Google に送られます。</translation>
+<translation id="5916664084637901428">オン</translation>
 <translation id="5919204609460789179">同期を開始するには <ph name="PRODUCT_NAME" /> を更新してください</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> 節約</translation>
 <translation id="5939518447894949180">リセット</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">画像の説明文を取得する</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>
-<translation id="6218096829563201111">同じような商品を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">ロックを解除してパスワードをエクスポート</translation>
 <translation id="6232535412751077445">「トラッキング拒否」を有効にすると、リクエストが閲覧トラフィックに含まれるようになります。ウェブサイトがリクエストに応答するかどうか、またリクエストがどのように解釈されるかによって、この影響は異なります。
 

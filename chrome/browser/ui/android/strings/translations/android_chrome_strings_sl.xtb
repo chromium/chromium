@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome ni mogel preveriti vaših podatkov</translation>
 <translation id="1049743911850919806">Anonimni način</translation>
 <translation id="10614374240317010">Nikoli shranjeno</translation>
-<translation id="1067922213147265141">Druge Googlove storitve</translation>
 <translation id="107147699690128016">Če spremenite pripono datoteke, se lahko datoteka odpre v drugem programu in je lahko morebitno škodljiva za vašo napravo.</translation>
 <translation id="1095761715416917775">Poskrbite, da boste ves čas lahko dostopali do podatkov sinhronizacije</translation>
 <translation id="1100066534610197918">Odpri nov zavihek v skupini</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Tega ne prikaži več</translation>
 <translation id="1680919990519905526">Kupi sliko z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Preizkus</translation>
-<translation id="1692118695553449118">Sinhroniziranje je vklopljeno</translation>
 <translation id="1697284962337958118">Dodajanje v</translation>
 <translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1724977129262658800">Odklenite, če želite urediti geslo.</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Ohrani podatke</translation>
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1984417487208496350">Brez zaščite (ni priporočljivo)</translation>
-<translation id="1984705450038014246">Sinhronizacija podatkov v Chromu</translation>
 <translation id="1986685561493779662">Ime že obstaja</translation>
 <translation id="1987739130650180037">Gumb <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> želi opraviti seznanitev</translation>
@@ -188,7 +185,6 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <translation id="2200113223741723867">Upravljanje deljenja podatkov o uporabi</translation>
 <translation id="2227444325776770048">Nadaljujte kot <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Za vas</translation>
-<translation id="2234876718134438132">Sinhroniz. in Googlove storitve</translation>
 <translation id="2239812875700136898">Nadzirajte članke v možnostih za gumb Odkrivanja</translation>
 <translation id="2259659629660284697">Izvozi gesla …</translation>
 <translation id="2276696007612801991">Če želite preveriti gesla, se prijavite v račun Google</translation>
@@ -364,7 +360,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3295530008794733555">Brskajte hitreje. Uporabite manj podatkov.</translation>
 <translation id="3297344142967351106">Glasovna pomoč</translation>
 <translation id="3303414029551471755">Ali želite prenesti vsebino?</translation>
-<translation id="3315103659806849044">Trenutno prilagajate nastavitve sinhronizacije in Googlovih storitev. Če želite dokončati vklop sinhronizacije, se dotaknite gumba za potrditev pri dnu zaslona. Pomik navzgor</translation>
 <translation id="3334729583274622784">Želite spremeniti pripono datoteke?</translation>
 <translation id="3341058695485821946">Oglejte si, koliko prenosa podatkov ste prihranili</translation>
 <translation id="3341262203274374114">Spremljanja ni mogoče preklicati. Prišlo je do napake.</translation>
@@ -502,7 +497,6 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="4298388696830689168">Povezana spletna mesta</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Osnove</translation>
-<translation id="4314815835985389558">Upravljanje sinhronizacije</translation>
 <translation id="4320177379694898372">Ni internetne povezave</translation>
 <translation id="4321739720395210191">Kamere ni mogoče odpreti. Znova zaženite napravo in poskusite znova.</translation>
 <translation id="433213510553688132">Spremljanje …</translation>
@@ -631,9 +625,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="510275257476243843">Še 1 h</translation>
 <translation id="5118713593561876160">Zanimanja</translation>
 <translation id="5123685120097942451">Anonimni zavihek</translation>
-<translation id="5127805178023152808">Sinhroniziranje je izklopljeno</translation>
 <translation id="5132942445612118989">Sinhronizirajte gesla, zgodovino in drugo v vseh napravah</translation>
-<translation id="5136035049889637840">Nakup podobnih izdelkov <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Naučite se uporabljati Google Drive</translation>
 <translation id="5152843274749979095">Nameščena ni nobena podprta aplikacija</translation>
 <translation id="5161254044473106830">Naslov je obvezen</translation>
@@ -753,6 +745,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5854790677617711513">Starejše od 30 dni</translation>
 <translation id="5855546874025048181">Spremeni: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ne more vklopiti vmesnika za Bluetooth</translation>
+<translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="5862731021271217234">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo</translation>
 <translation id="5864174910718532887">Podrobnosti: razvrščeno po imenu spletnega mesta</translation>
@@ -762,6 +755,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="587735546353481577">Če želite spremljati spletno mesto, odprite spletno mesto, nato odprite Chromov meni in se dotaknite možnosti za spremljanje.</translation>
 <translation id="5880748256563468367">Na vir</translation>
 <translation id="5884076754568147479">Zaradi zagotavljanja pomoči pri dokončanju opravil bo Google prejel URL-je in vsebino spletnih mest, na katerih uporabljate Pomočnika, ter podatke, ki jih pošljete prek Pomočnika.</translation>
+<translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5919204609460789179">Posodobite izdelek <ph name="PRODUCT_NAME" />, če želite začeti sinhronizacijo</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> prihranka pri količini prenesenih podatkov</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
@@ -812,7 +806,6 @@ Preizkusi peskovnika za zasebnost so še vedno v aktivnem razvoju in na voljo le
 <translation id="6192907950379606605">Prenesi opise slik</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Predogled te strani</translation>
-<translation id="6218096829563201111">Iskanje podobnih izdelkov <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Odklenite, če želite izvoziti gesla</translation>
 <translation id="6232535412751077445">Če omogočite možnost »Ne sledi«, bo zahteva vključena v vaš promet brskanja. Učinek je odvisen od odziva spletnega mesta na zahtevo in od tega, kako si zahtevo razlaga.
 

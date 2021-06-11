@@ -3402,13 +3402,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="547601067149622666">Não permitir anúncios em sites com anúncios invasivos</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
-<translation id="5483584677807837752">Quando a política está ativada, o recurso <ph name="PRODUCT_NAME" /> envia cabeçalhos de solicitação granulares fornecendo informações sobre o ambiente e o navegador do usuário.
-
-      Esse é um recurso complementar, mas os novos cabeçalhos podem corromper alguns sites que restringem os caracteres contidos em algumas solicitações.
-
-      Se esta política for ativada ou não for definida, o recurso <ph name="PRODUCT_NAME" /> será ativado. Se ela for desativada, o recurso ficará indisponível.
-
-      Esta política é uma solução para fins de adaptação a curto prazo e estará disponível pelo menos até a versão 93 do Chrome.</translation>
 <translation id="5494322570831642650">Especifica se o usuário pode abrir páginas no modo de navegação anônima no <ph name="PRODUCT_NAME" />.
 
       Se a política for definida como "Enabled" ou deixada sem definição, as páginas poderão ser abertas no modo de navegação anônima.
@@ -6039,11 +6032,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política não for definida ou se você inserir uma string vazia, o dispositivo usará o fuso horário ativo no momento, mas os usuários poderão mudá-lo.</translation>
 <translation id="8880294585549584028">Permitir acesso de gravação de arquivos e diretórios nestes sites</translation>
 <translation id="8882006618241293596">Bloquear o plug-in <ph name="FLASH_PLUGIN_NAME" /> nestes sites</translation>
-<translation id="8887158351295718009">Cookies configurados para domínios correspondentes a esses padrões serão revertidos para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado. A reversão para o comportamento legado faz com que os cookies que não especificam um atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> sejam tratados como <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />, remove o requisito para cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> executarem o atributo <ph name="ATTRIBUTE_SECURE_NAME" /> e pula a comparação do esquema ao avaliar se dois sites são o mesmo. Para ver uma descrição completa, consulte https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies (em inglês).
-
-          No caso de cookies em domínios não cobertos pelos padrões especificados neste documento ou para todos os cookies se essa política não for definida, o valor global padrão usado será o da política <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" />, se estiver definida, ou o da configuração pessoal do usuário.
-
-          Observe que os padrões que você lista aqui são tratados como domínios, não URLs. Assim, recomendamos que você não especifique um esquema ou porta.</translation>
 <translation id="8887709920496070892">O tempo, em milissegundos, sem entrada do usuário após o qual uma caixa de diálogo de alerta é exibida.</translation>
 <translation id="8890438048579188548">Ocultar avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Espaço livre em disco necessário para o <ph name="PLUGIN_VM_NAME" /></translation>

@@ -312,6 +312,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak dan.}=1{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak dan.}one{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dan.}two{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dneva.}few{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dni.}other{Če je ta kontrolnik vklopljen in stanje aktivno, Chrome določi, kateri veliki skupini oseb ali »kohorti« je vaša nedavna dejavnost brskanja najbolj podobna. Izdajatelji lahko izberejo oglase za skupino in vaša dejavnost brskanja je zasebna v napravi. Skupina se posodobi vsak {NUM_DAYS} dni.}}</translation>
 <translation id="2053553514270667976">Poštna številka</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 predlog}one{# predlog}two{# predloga}few{# predlogi}other{# predlogov}}</translation>
+<translation id="2071156619270205202">Ta kartica ni ustrezna za številko virtualne kartice.</translation>
 <translation id="2071692954027939183">Obvestila so bila samodejno blokirana, ker jih običajno ne dovolite.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="20817612488360358">Za uporabo so nastavljene sistemske nastavitve strežnika proxy, vendar je navedena tudi izrecna konfiguracija proxyja.</translation>
@@ -440,9 +441,11 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2521385132275182522">Spenjanje spodaj desno</translation>
 <translation id="2523886232349826891">Shranjena samo v tej napravi</translation>
 <translation id="2524461107774643265">Dodajanje več podatkov</translation>
+<translation id="2529899080962247600">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo prezrti.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{in še 1}one{in še #}two{in še #}few{in še #}other{in še #}}</translation>
 <translation id="2536110899380797252">Dodaj naslov</translation>
 <translation id="2539524384386349900">Zaznava</translation>
+<translation id="2540701853218677861">Zgodovina prijav/odjav naprave, vključno s časovnimi oznakami in neuspelimi poskusi</translation>
 <translation id="2541219929084442027">Strani, ki si jih ogledujete na anonimnih zavihkih, se ne bodo ohranile v zgodovini brskalnika, hrambi piškotkov ali zgodovini iskanja, ko boste zaprli vse anonimne zavihke. Datoteke, ki jih prenesete, ali zaznamki, ki jih ustvarite, se bodo ohranili.</translation>
 <translation id="2544644783021658368">Enojni dokument</translation>
 <translation id="254947805923345898">Vrednost pravilnika ni veljavna.</translation>
@@ -635,6 +638,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3320021301628644560">Dodajanje naslova za izstavitev računa</translation>
 <translation id="3324983252691184275">Škrlatna</translation>
 <translation id="3329013043687509092">Nasičenost</translation>
+<translation id="3333762389743153920">Ni ustrezna za virtualno kartico</translation>
 <translation id="3338095232262050444">Varno</translation>
 <translation id="3355823806454867987">Spremeni nastavitve proxyja ...</translation>
 <translation id="3360103848165129075">List rutine za obravnavo plačil</translation>
@@ -1148,6 +1152,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Preverjanje kartice</translation>
 <translation id="5135404736266831032">Upravljanje naslovov ...</translation>
+<translation id="5138014172396933048">Virtualna kartica trenutno ni na voljo. Obrnite se na banko.</translation>
 <translation id="5138227688689900538">Pokaži manj</translation>
 <translation id="514010763713772514">Naslednjič hitreje dokončajte nakup</translation>
 <translation id="5145883236150621069">Koda napake v odzivu pravilnika</translation>
@@ -1194,6 +1199,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5287240709317226393">Pokaži piškotke</translation>
 <translation id="5287456746628258573">To spletno mesto uporablja zastarelo varnostno konfiguracijo, zaradi česar so lahko vaši podatki ob pošiljanju temu spletnemu mestu izpostavljeni (npr. gesla ali številke kreditnih kartic).</translation>
 <translation id="5288108484102287882">Preverjanje vrednosti pravilnika je aktiviralo opozorila</translation>
+<translation id="5288808348893593856">Povezava spletnega mesta je varna, razen če Chrome ne sporoči drugače.</translation>
 <translation id="5289384342738547352">Obravnava več dokumentov</translation>
 <translation id="5299298092464848405">Napaka pri razčlenjevanju pravilnika</translation>
 <translation id="5300589172476337783">Pokaži</translation>
@@ -1556,9 +1562,11 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6685834062052613830">Odjavite se in dokončajte nastavitev</translation>
 <translation id="6687335167692595844">Zahtevana je velikost besedila</translation>
 <translation id="6688743156324860098">Posodobi …</translation>
+<translation id="6688775486821967877">Virtualna kartica trenutno ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="6689249931105087298">Relativno s stiskanjem črnih pik</translation>
 <translation id="6689271823431384964">Chrome ponuja shranjevanje kartic v račun za Google, ker ste prijavljeni. To lahko spremenite v nastavitvah. Ime imetnika računa je iz vašega računa.</translation>
 <translation id="6698381487523150993">Ustvarjeno:</translation>
+<translation id="6699188552522342100">Je to spletno mesto točno?</translation>
 <translation id="6702919718839027939">Predstavitev</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
 <translation id="6710594484020273272">&lt;Vnesite iskalno poizvedbo&gt;</translation>
@@ -1685,6 +1693,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7219179957768738017">Povezava uporablja <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Obdelovanje</translation>
 <translation id="7221855153210829124">Pokaži obvestila</translation>
+<translation id="722454870747268814">New Incognito Tab</translation>
 <translation id="7229659723041939809">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome priporoča, da takoj preverite shranjena gesla za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> in druga spletna mesta, na katerih uporabljate to geslo.</translation>
 <translation id="7233592378249864828">Tiskanje potrditvenega lista</translation>
 <translation id="7238585580608191973">Prstni odtis SHA-256</translation>
@@ -2062,6 +2071,7 @@ Dodatne podrobnosti:
           <ph name="LIST_ITEM" />piškotki in podatki spletnih mest.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Uporabite Touch ID za hitrejše potrjevanje kartic</translation>
+<translation id="8577348305244205642">Virtualna kartica ni na voljo</translation>
 <translation id="858637041960032120">Dodajte tel. št. </translation>
 <translation id="8589998999637048520">Najboljša kakovost</translation>
 <translation id="8600271352425265729">Samo tokrat</translation>

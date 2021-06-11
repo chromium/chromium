@@ -67,6 +67,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4176825807642096119">Código de acesso</translation>
 <translation id="4227991223508142681">Utilitário de provisionamento de host</translation>
 <translation id="4240294130679914010">Desinstalador do host do Chromoting</translation>
+<translation id="4257751272692708833">Encaminhador de URLs da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Código de acesso inválido. Tente novamente.</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
@@ -121,6 +122,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Compartilhar</translation>
 <translation id="677755392401385740">Host iniciado para o usuário <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplicativo para ajudar a abrir um URL no cliente da <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostrar/ocultar teclado</translation>
 <translation id="6963936880795878952">As conexões com o computador remoto estão temporariamente bloqueadas porque alguém estava tentando se conectar a ele com um PIN inválido. Tente novamente mais tarde.</translation>
 <translation id="6965382102122355670">OK</translation>

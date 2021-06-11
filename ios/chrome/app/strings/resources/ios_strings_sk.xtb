@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktívne pred <ph name="DAYS" /> dňami</translation>
 <translation id="2074131957428911366">Položky, ktoré chcete synchronizovať, môžete vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Späť</translation>
-<translation id="2086623437239112659">Vaše uložené prihlasovacie údaje môžu byť zastarané.</translation>
 <translation id="209018056901015185">Vyžiadať stránky pre počítač</translation>
 <translation id="2103075008456228677">Otvoriť history.google.com</translation>
 <translation id="2116625576999540962">Počet presunutých položiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -408,6 +407,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Zatvoriť kartu</translation>
 <translation id="5228579091201413441">Povoliť synchronizáciu</translation>
+<translation id="5232485538978018676">Prihlásenie spravovaným účtom</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5245322853195994030">Zrušiť synchronizáciu</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
@@ -724,6 +724,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8206354486702514201">Toto nastavenie je vynútené správcom.</translation>
 <translation id="8225985093977202398">Obrázky a súbory vo vyrovnávacej pamäti</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
+<translation id="8271720166617117963">Prijať a prihlásiť sa</translation>
 <translation id="8281781826761538115">Predvolené – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8283172974887967105">Nastaviť…</translation>

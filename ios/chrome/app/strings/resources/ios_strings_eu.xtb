@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktibo duela <ph name="DAYS" /> egun</translation>
 <translation id="2074131957428911366">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2079545284768500474">Desegin</translation>
-<translation id="2086623437239112659">Baliteke saioa hasteko gordeta daukazun informazioa zaharkituta egotea.</translation>
 <translation id="209018056901015185">Ordenagailuetarakoa</translation>
 <translation id="2103075008456228677">Ireki history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementu mugitu dira</translation>
@@ -408,6 +407,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Itxi fitxa</translation>
 <translation id="5228579091201413441">Gaitu sinkronizazioa</translation>
+<translation id="5232485538978018676">Hasi saioa kontu kudeatu batekin</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5245322853195994030">Utzi sinkronizazioa bertan behera</translation>
 <translation id="5271549068863921519">Gorde pasahitza</translation>
@@ -724,6 +724,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8206354486702514201">Administratzaileak betearazten du ezarpena.</translation>
 <translation id="8225985093977202398">Cachean gordetakoak</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
+<translation id="8271720166617117963">Onartu eta hasi saioa</translation>
 <translation id="8281781826761538115">Lehenetsia - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltatu</translation>
 <translation id="8283172974887967105">Ezarri…</translation>
@@ -766,6 +767,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8654802032646794042">Utzi</translation>
 <translation id="8668210798914567634">Irakurketa-zerrendan dago gordeta orri hau.</translation>
 <translation id="8680787084697685621">Kontuan saioa hasteko xehetasunak zaharkituta daude.</translation>
+<translation id="8691262314411702087">Aukeratu zer sinkronizatu behar den</translation>
 <translation id="8693663554456874301">{count,plural, =1{Itxi fitxa}other{Itxi fitxak}}</translation>
 <translation id="8706588385081740091">Pasahitzak</translation>
 <translation id="8717864919010420084">Kopiatu esteka</translation>

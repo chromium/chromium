@@ -312,6 +312,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke dag opgedateer.}=1{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke dag opgedateer.}other{Wanneer hierdie kontrole aan is en die status aktief is, bepaal Chrome met watter groot groep mense, of "kohort", jou onlangse blaai-aktiwiteit die meeste ooreenstem. Adverteerders kan advertensies vir die groep kies en jou blaai-aktiwiteit word privaat op jou toestel gehou. Jou groep word elke {NUM_DAYS} dae opgedateer.}}</translation>
 <translation id="2053553514270667976">Poskode</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 voorstel}other{# voorstelle}}</translation>
+<translation id="2071156619270205202">Hierdie kaart kwalifiseer nie vir virtuele kaartnommer nie.</translation>
 <translation id="2071692954027939183">Kennisgewings is outomaties geblokkeer omdat jy hulle gewoonlik nie toelaat nie</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="20817612488360358">Stelsel se instaanbedienerinstellings word gestel om gebruik te word, maar doelbewuste instaanbedieneropstelling word ook gespesifiseer.</translation>
@@ -440,9 +441,11 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2521385132275182522">Kram regs onder</translation>
 <translation id="2523886232349826891">Net op hierdie toestel gestoor</translation>
 <translation id="2524461107774643265">Voeg meer inligting by</translation>
+<translation id="2529899080962247600">Hierdie veld moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie. Alle verdere inskrywings sal geïgnoreer word.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Voeg adres by</translation>
 <translation id="2539524384386349900">Bespeur</translation>
+<translation id="2540701853218677861">Toestel se aanmeld-/afmeldgeskiedenis, insluitend tydstempels en mislukte pogings</translation>
 <translation id="2541219929084442027">Bladsye wat jy in Incognito-oortjies bekyk, sal nie in jou blaaier se geskiedenis, webkoekiestoor of soekgeskiedenis bly nadat jy al jou Incognito-oortjies toegemaak het nie. Enige lêers wat jy aflaai of boekmerke wat jy skep, sal gehou word.</translation>
 <translation id="2544644783021658368">Een dokument</translation>
 <translation id="254947805923345898">Beleidwaarde is nie geldig nie.</translation>
@@ -635,6 +638,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3320021301628644560">Voeg faktureringadres by</translation>
 <translation id="3324983252691184275">Karmosyn</translation>
 <translation id="3329013043687509092">Versadiging</translation>
+<translation id="3333762389743153920">Kwalifiseer nie vir virtuele kaart nie</translation>
 <translation id="3338095232262050444">Veilig</translation>
 <translation id="3355823806454867987">Verander instaanbedienerinstellings …</translation>
 <translation id="3360103848165129075">Betalinghanteerdersigblad</translation>
@@ -768,6 +772,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3754210790023674521">Verlaat prent-in-prent</translation>
 <translation id="3759461132968374835">Jy het geen omvalle wat onlangs aangemeld is nie. Omvalle wat plaasgevind het toe omvalverslaggewing gedeaktiveer is, sal nie hier verskyn nie.</translation>
 <translation id="3760561303380396507">Gebruik Windows Hello pleks van CVC?</translation>
+<translation id="3761171036307311438">Naam op kaart:</translation>
 <translation id="3761718714832595332">Verberg status</translation>
 <translation id="3765032636089507299">Die Veiligblaai-bladsy word nog gemaak.</translation>
 <translation id="3765588406864124894">Posbus 9</translation>
@@ -1147,6 +1152,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifieer jou kaart</translation>
 <translation id="5135404736266831032">Bestuur adresse …</translation>
+<translation id="5138014172396933048">Virtuele kaart is nie op die oomblik beskikbaar nie. Kontak asseblief jou bank</translation>
 <translation id="5138227688689900538">Wys minder</translation>
 <translation id="514010763713772514">Betaal volgende keer vinniger</translation>
 <translation id="5145883236150621069">Foutkode kom voor in die beleidantwoord</translation>
@@ -1193,6 +1199,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5287240709317226393">Wys webkoekies</translation>
 <translation id="5287456746628258573">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>
 <translation id="5288108484102287882">Bevestiging van beleidswaardes het waarskuwings veroorsaak</translation>
+<translation id="5288808348893593856">Die werf se verbinding is veilig tensy Chrome vir jou iets anders sê.</translation>
 <translation id="5289384342738547352">Hantering van veelvuldige dokumente</translation>
 <translation id="5299298092464848405">Kon nie beleid ontleed nie</translation>
 <translation id="5300589172476337783">Wys</translation>
@@ -1555,9 +1562,11 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6685834062052613830">Meld af en voltooi opstelling</translation>
 <translation id="6687335167692595844">Lettertipegrootte versoek</translation>
 <translation id="6688743156324860098">Dateer op …</translation>
+<translation id="6688775486821967877">Virtuele kaart is nie op die oomblik beskikbaar nie. Probeer asseblief later weer</translation>
 <translation id="6689249931105087298">Relatief met swartpuntsaampersing</translation>
 <translation id="6689271823431384964">Chrome bied aan om jou kaarte in jou Google-rekening te stoor omdat jy aangemeld is. Jy kan hierdie gedrag in instellings verander. Die kaarthouernaam kom van jou rekening af.</translation>
 <translation id="6698381487523150993">Geskep:</translation>
+<translation id="6699188552522342100">Is hierdie webwerf akkuraat?</translation>
 <translation id="6702919718839027939">Bied aan</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6710594484020273272">&lt;Tik soekterm in&gt;</translation>
@@ -1684,6 +1693,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7219179957768738017">Die verbinding gebruik <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Verwerk tans</translation>
 <translation id="7221855153210829124">Wys kennisgewings</translation>
+<translation id="722454870747268814">Nuwe incognito-oortjie</translation>
 <translation id="7229659723041939809">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome beveel aan dat jy jou gestoorde wagwoorde vir <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en ander werwe waar jy hierdie wagwoord gebruik, nou nagaan.</translation>
 <translation id="7233592378249864828">Drukbevestigingbladsy</translation>
 <translation id="7238585580608191973">SHA-256-vingerafdruk</translation>
@@ -2061,6 +2071,7 @@ Bykomende besonderhede:
           <ph name="LIST_ITEM" />Webkoekies en werfdata
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Gebruik Touch ID om kaarte vinniger te bevestig</translation>
+<translation id="8577348305244205642">Virtuele kaart is nie beskikbaar nie</translation>
 <translation id="858637041960032120">Voeg foonnommer by</translation>
 <translation id="8589998999637048520">Beste gehalte</translation>
 <translation id="8600271352425265729">Net hierdie keer</translation>

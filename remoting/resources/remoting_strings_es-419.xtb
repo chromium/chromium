@@ -67,6 +67,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="4176825807642096119">Código de acceso</translation>
 <translation id="4227991223508142681">Utilidad de aprovisionamiento de host</translation>
 <translation id="4240294130679914010">Desinstalador del host de Chromoting</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">El código de acceso no es válido. Vuelve a intentarlo.</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
@@ -121,6 +122,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Supr</translation>
 <translation id="6654753848497929428">Compartir</translation>
 <translation id="677755392401385740">Host iniciado para usuario: <ph name="HOST_USERNAME" /></translation>
+<translation id="6902524959760471898">Aplicación auxiliar para abrir una URL en el cliente <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostrar u ocultar teclado</translation>
 <translation id="6963936880795878952">Las conexiones con la computadora remota se bloquearon temporalmente porque alguien intentó conectarse a ella con un PIN no válido. Vuelve a intentarlo más tarde.</translation>
 <translation id="6965382102122355670">Aceptar</translation>

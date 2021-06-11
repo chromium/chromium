@@ -3310,13 +3310,6 @@
 <translation id="547601067149622666">煩わしい広告を含むサイトで広告の表示を許可しない</translation>
 <translation id="5480380613778757009">このポリシーを無効にするか未設定のままにした場合、管理対象のゲスト セッションで設定されたディスプレイ設定はすべてセッションの終了時にリセットされます。このポリシーを True に設定した場合、管理対象のゲスト セッションが終了した後もディスプレイ プロパティが保持されます。</translation>
 <translation id="5483065054530244863">ローカルの信頼済みアンカーが発行した SHA-1 署名証明書を許可する</translation>
-<translation id="5483584677807837752">有効な場合、<ph name="PRODUCT_NAME" /> 機能はユーザーのブラウザと環境に関する情報を提供する詳細なリクエスト ヘッダーを送信します。
-
-      これは追加の機能ですが、この新しいヘッダーは、リクエストに含める情報を制限している一部のウェブサイトでは正常に動作しない可能性があります。
-
-      このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> 機能は有効になります。このポリシーを無効に設定した場合、この機能は使用できません。
-
-      この企業向けのポリシーは一時的な適用を想定しており、少なくとも Chome 93 まで使用できます。</translation>
 <translation id="5494322570831642650"><ph name="PRODUCT_NAME" /> でユーザーがシークレット モードでページを開けるかどうかを指定します。「有効」を選択するかポリシーを未設定のままにした場合は、シークレット モードでページを開くことができます。「無効」を選択した場合、シークレット モードでページを開くことはできません。「強制」を選択した場合は、シークレット モードでのみページを開くことができます。「強制」は Android-on-Chrome では機能しません。注: iOS ではセッション中にポリシーが変更されると、変更後のポリシーは再起動するまで有効になりません。</translation>
 <translation id="5497565614013170656">プリンタ ID の照合に使用する正規表現です。</translation>
 <translation id="5499375345075963939">このポリシーは小売りモードでのみアクティブになります。
@@ -5856,11 +5849,6 @@
       このポリシーを設定しないか空の文字列を入力した場合、デバイスでは現在有効になっているタイムゾーンが使用されますが、ユーザーはこれを変更できます。</translation>
 <translation id="8880294585549584028">ファイルとディレクトリへの書き込みアクセスを許可するサイトを指定する</translation>
 <translation id="8882006618241293596">これらのサイトで <ph name="FLASH_PLUGIN_NAME" /> プラグインをブロックする</translation>
-<translation id="8887158351295718009">ここで指定したパターンに一致するドメインに設定されている Cookie を、以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻します。以前の動作に戻すと、<ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性のない Cookie は「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」が指定されたものとして扱われます。また、「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」の Cookie に「<ph name="ATTRIBUTE_SECURE_NAME" />」属性は必須ではなくなります。さらに、2 つのサイトが同一サイトかどうかを評価する際に、スキーム比較がスキップされます。詳細については https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies をご覧ください。
-
-          ここで指定したパターンに一致しないドメインの Cookie（またはこのポリシーが未設定の場合はすべての Cookie）には、グローバルなデフォルト値（<ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> ポリシーで値が設定されている場合はその値、設定されていない場合はユーザーの個人設定の値）が使用されます。
-
-          ここで指定するパターンは URL ではなくドメインとして扱われるため、スキームやポートは指定しないでください。</translation>
 <translation id="8887709920496070892">ユーザー入力が行われなくなってから警告ダイアログを表示するまでの時間（ミリ秒）</translation>
 <translation id="8890438048579188548"><ph name="CLOUD_PRINT_NAME" /> のサポート終了の警告を表示しない</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> に必要なディスクの空き容量</translation>

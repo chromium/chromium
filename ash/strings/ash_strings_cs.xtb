@@ -317,6 +317,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3510164367642747937">Zvýraznit ukazatel myši</translation>
 <translation id="3513798432020909783">Správce účtu: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Wi-Fi je vypnuta</translation>
+<translation id="3560866052109807830">Zvýrazňovací kreslicí nástroje</translation>
 <translation id="3563775809269155755">Aktivovat hotspot</translation>
 <translation id="3571734092741541777">Nastavit</translation>
 <translation id="3573179567135747900">Změnit zpět na jazyk <ph name="FROM_LOCALE" /> (vyžaduje restart)</translation>
@@ -411,6 +412,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
 <translation id="4285498937028063278">Odepnout</translation>
+<translation id="429402653707266969">Přepnout umístění lišty</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazat všechna oznámení (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Nedostupné</translation>

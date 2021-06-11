@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome ei voinut tarkistaa tietojasi</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Ei tallenneta</translation>
-<translation id="1067922213147265141">Muut Google-palvelut</translation>
 <translation id="107147699690128016">Jos vaihdat tiedostotunnisteen, tiedosto voi avautua eri sovelluksessa ja mahdollisesti vahingoittaa laitetta.</translation>
 <translation id="1095761715416917775">Varmista, että sinulla on aina pääsy synkronoituun dataasi</translation>
 <translation id="1100066534610197918">Avaa uusi välilehti ja ryhmä</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Älä näytä uudelleen</translation>
 <translation id="1680919990519905526">Osta kuvasta Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Kokeile nyt</translation>
-<translation id="1692118695553449118">Synkronointi on päällä</translation>
 <translation id="1697284962337958118">Lisää…</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1724977129262658800">Avaa lukitus muokataksesi salasanaasi</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Säilytä data</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
 <translation id="1984417487208496350">Ei suojausta (ei suositella)</translation>
-<translation id="1984705450038014246">Chrome-datan synkronointi</translation>
 <translation id="1986685561493779662">Nimi on jo käytössä</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-painike</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> haluaa muodostaa laiteparin</translation>
@@ -188,7 +185,6 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="2200113223741723867">Valitse käyttödatan jakamisasetukset</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Sinulle</translation>
-<translation id="2234876718134438132">Synkronointi ja Google-palvelut</translation>
 <translation id="2239812875700136898">Muuta juttujesi asetuksia Discover-asetuksissa</translation>
 <translation id="2259659629660284697">Vie salasanat…</translation>
 <translation id="2276696007612801991">Kirjaudu Google-tilillesi tarkistaaksesi salasanasi</translation>
@@ -364,7 +360,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3295530008794733555">Selaa nettiä nopeammin. Käytä vähemmän dataa.</translation>
 <translation id="3297344142967351106">Ääniapu</translation>
 <translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
-<translation id="3315103659806849044">Yksilöit parhaillaan synkronoinnin ja Google-palvelujen asetuksia. Viimeistele synkronoinnin käyttöönotto napauttamalla näytön alaosasta Vahvista-painiketta. Siirry ylös</translation>
 <translation id="3334729583274622784">Vaihdetaanko tiedostotunniste?</translation>
 <translation id="3341058695485821946">Katso paljonko dataa olet säästänyt</translation>
 <translation id="3341262203274374114">Ei voi seurata. Jotain meni pieleen.</translation>
@@ -502,7 +497,6 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4298388696830689168">Linkitetyt sivustot</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Perustiedot</translation>
-<translation id="4314815835985389558">Synkronointiasetusten muokkaus</translation>
 <translation id="4320177379694898372">Ei internetyhteyttä</translation>
 <translation id="4321739720395210191">Kameraa ei voi avata. Käynnistä laite uudelleen ja yritä sitten.</translation>
 <translation id="433213510553688132">Seurataan…</translation>
@@ -631,9 +625,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="510275257476243843">1 tunti jäljellä</translation>
 <translation id="5118713593561876160">Kiinnostuksen kohteet</translation>
 <translation id="5123685120097942451">Incognito-välilehti</translation>
-<translation id="5127805178023152808">Synkronointi on pois päältä</translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
-<translation id="5136035049889637840">Osta tällaisia tuotteita <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Ohjeet Google Driven käyttöön</translation>
 <translation id="5152843274749979095">Ei asennettuja tuettuja sovelluksia</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
@@ -753,6 +745,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
 <translation id="5855546874025048181">Tarkenna: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ei voi ottaa käyttöön Bluetooth-sovitinta.</translation>
+<translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5862731021271217234">Ota synkronointi käyttöön, niin voit käyttää välilehtiä muilta laitteiltasi</translation>
 <translation id="5864174910718532887">Lisätiedot: Lajiteltu sivuston nimen mukaan</translation>
@@ -762,6 +755,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="587735546353481577">Jos haluat seurata sivustoa, siirry sille, avaa Chrome-valikko ja valitse Seuraa.</translation>
 <translation id="5880748256563468367">Siirry fiidiin</translation>
 <translation id="5884076754568147479">Jotta tehtävien hoitaminen sujuisi helpommin, Google saa tiedot niiden sivustojen URL-osoitteista ja sisällöstä, joilla käytät Assistantia, sekä Assistantin kautta lähettämäsi tiedot</translation>
+<translation id="5916664084637901428">Päällä</translation>
 <translation id="5919204609460789179">Aloita synkronointi päivittämällä <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> säästetty</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox ‑kokeiluja kehitetään yhä aktiivisesti, ja ne ovat saatavil
 <translation id="6192907950379606605">Muodosta kuvaselitykset</translation>
 <translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Tätä sivua esikatsellaan</translation>
-<translation id="6218096829563201111">Hae samanlaisia tuotteita <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Avaa lukitus viedäksesi salasanoja.</translation>
 <translation id="6232535412751077445">Do Not Track -toiminnon käyttöönotto tarkoittaa sitä, että selausliikenteeseesi sisällytetään pyyntö. Sen vaikutus riippuu siitä, vastaako verkkosivusto pyyntöön ja miten pyyntöä tulkitaan.
 

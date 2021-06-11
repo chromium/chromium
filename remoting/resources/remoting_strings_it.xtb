@@ -67,6 +67,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4176825807642096119">Codice di accesso</translation>
 <translation id="4227991223508142681">Utilità di provisioning degli host</translation>
 <translation id="4240294130679914010">Programma di disinstallazione host Chromoting</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">Il codice di accesso non è valido. Riprova.</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4405930547258349619">Core Library</translation>
@@ -121,6 +122,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="6612717000975622067">Invia Ctrl-Alt-Canc</translation>
 <translation id="6654753848497929428">Condividi</translation>
 <translation id="677755392401385740">Host avviato per utente: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Helper per aprire un URL sul client <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostra/nascondi tastiera.</translation>
 <translation id="6963936880795878952">Le connessioni al computer remoto sono temporaneamente bloccate perché qualcuno stava cercando di collegarsi al computer con un PIN non valido. Riprova più tardi.</translation>
 <translation id="6965382102122355670">OK</translation>

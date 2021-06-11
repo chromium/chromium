@@ -308,6 +308,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{이 컨트롤이 사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome이 기기 사용자의 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '동질 집단'을 결정합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 매일 업데이트됩니다.}=1{이 컨트롤이 사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome이 기기 사용자의 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '동질 집단'을 결정합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 매일 업데이트됩니다.}other{이 컨트롤이 사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome이 기기 사용자의 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '동질 집단'을 결정합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 {NUM_DAYS}일마다 업데이트됩니다.}}</translation>
 <translation id="2053553514270667976">우편번호</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{제안 1개}other{제안 #개}}</translation>
+<translation id="2071156619270205202">이 카드로는 가상 카드 번호를 사용할 수 없습니다.</translation>
 <translation id="2071692954027939183">알림을 평소에 허용하지 않았기 때문에 알림이 자동으로 차단되었습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>
@@ -436,9 +437,11 @@
 <translation id="2521385132275182522">오른쪽 하단 스테이플</translation>
 <translation id="2523886232349826891">이 기기에만 저장됨</translation>
 <translation id="2524461107774643265">자세한 정보 추가</translation>
+<translation id="2529899080962247600">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 이후 항목은 모두 무시됩니다.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="2536110899380797252">주소 추가</translation>
 <translation id="2539524384386349900">감지</translation>
+<translation id="2540701853218677861">타임스탬프와 실패한 시도를 포함한 기기 로그인/로그아웃 기록</translation>
 <translation id="2541219929084442027">시크릿 탭을 모두 닫으면 시크릿 탭에서 보는 페이지는 브라우저의 방문 기록, 쿠키 저장소, 검색 기록 어디에도 남지 않습니다. 단, 다운로드한 파일이나 생성한 북마크는 유지됩니다.</translation>
 <translation id="2544644783021658368">단일 문서</translation>
 <translation id="254947805923345898">정책 값이 유효하지 않습니다.</translation>
@@ -629,6 +632,7 @@
 <translation id="3320021301628644560">청구지 주소 추가</translation>
 <translation id="3324983252691184275">진홍색</translation>
 <translation id="3329013043687509092">채도</translation>
+<translation id="3333762389743153920">가상 카드로 사용할 수 없음</translation>
 <translation id="3338095232262050444">보안 연결</translation>
 <translation id="3355823806454867987">프록시 설정 변경...</translation>
 <translation id="3360103848165129075">결제 핸들러 시트</translation>
@@ -1137,6 +1141,7 @@
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">카드 인증</translation>
 <translation id="5135404736266831032">주소 관리...</translation>
+<translation id="5138014172396933048">현재 가상 카드를 사용할 수 없습니다. 은행에 문의해 주세요.</translation>
 <translation id="5138227688689900538">간략히</translation>
 <translation id="514010763713772514">다음번에 더 빠르게 결제</translation>
 <translation id="5145883236150621069">정책 응답에 오류 코드가 포함되어 있음</translation>
@@ -1183,6 +1188,7 @@
 <translation id="5287240709317226393">쿠키 표시</translation>
 <translation id="5287456746628258573">이 사이트에서는 오래된 보안 구성을 사용하므로 정보(예: 비밀번호나 신용카드 번호)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
 <translation id="5288108484102287882">정책 값 유효성 검사 결과 경고가 발생했습니다.</translation>
+<translation id="5288808348893593856">Chrome에서 별도의 안내가 없는 한 이 사이트의 연결은 항상 안전하게 유지됩니다.</translation>
 <translation id="5289384342738547352">여러 문서 처리</translation>
 <translation id="5299298092464848405">정책을 파싱하는 중 오류 발생</translation>
 <translation id="5300589172476337783">표시</translation>
@@ -1545,9 +1551,11 @@
 <translation id="6685834062052613830">로그아웃 후 설정 완료</translation>
 <translation id="6687335167692595844">글꼴 크기 요청됨</translation>
 <translation id="6688743156324860098">업데이트…</translation>
+<translation id="6688775486821967877">현재 가상 카드를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6689249931105087298">상대적이며 흑점 보정 포함</translation>
 <translation id="6689271823431384964">Google 계정에 로그인되어 있기 때문에 Chrome에서 계정에 카드를 저장할지 묻는 메시지가 표시됩니다. 설정에서 이 동작을 변경할 수 있습니다. 카드 소지자 이름은 계정에서 가져온 것입니다.</translation>
 <translation id="6698381487523150993">생성됨:</translation>
+<translation id="6699188552522342100">웹사이트가 정확한가요?</translation>
 <translation id="6702919718839027939">발표</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6710594484020273272">&lt;검색어 입력&gt;</translation>
@@ -1674,6 +1682,7 @@
 <translation id="7219179957768738017"><ph name="SSL_VERSION" /> 연결입니다.</translation>
 <translation id="7220786058474068424">처리 중</translation>
 <translation id="7221855153210829124">알림 표시</translation>
+<translation id="722454870747268814">새 시크릿 탭</translation>
 <translation id="7229659723041939809">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> 등 동일한 비밀번호를 사용한 사이트에 저장된 비밀번호를 확인하는 것이 좋습니다.</translation>
 <translation id="7233592378249864828">인쇄 확인 시트</translation>
 <translation id="7238585580608191973">SHA-256 지문</translation>
@@ -2050,6 +2059,7 @@
           <ph name="LIST_ITEM" />쿠키 및 사이트 데이터
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Touch ID를 사용하여 빠르게 카드 확인</translation>
+<translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
 <translation id="858637041960032120">번호 추가</translation>
 <translation id="8589998999637048520">고품질 순</translation>
 <translation id="8600271352425265729">이번만 허용</translation>

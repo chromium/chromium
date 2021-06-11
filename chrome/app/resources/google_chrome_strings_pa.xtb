@@ -40,6 +40,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ <ph name="TARGET_DEVICE_NAME" /> 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਭੇਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1807517590912578995">ਕੀ ਵੱਖਰਾ Chrome ਪ੍ਰੋਫਾਈਲ ਬਣਾਉਣਾ ਹੈ?</translation>
+<translation id="1810203443153428607">Chrome OS ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਨਾਲ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਸਾਰਾ ਡਾਟਾ ਓਵਰਰਾਈਟ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="1812689907177901597">ਇਸਨੂੰ ਬੰਦ ਕਰਕੇ, ਤੁਸੀਂ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਬਿਨਾਂ Gmail ਵਰਗੀਆਂ Google ਸਾਈਟਾਂ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="1860536484129686729">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਵਾਸਤੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="1873233029667955273">Google Chrome ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਨਹੀਂ ਹੈ</translation>
@@ -60,6 +61,16 @@
 <translation id="2348335408836342058">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਵਾਸਤੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="234869673307233423">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="235650106824528204">ਇਸ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਦੇ ਦੌਰਾਨ ਤਿਆਰ ਕੀਤਾ ਕੋਈ ਵੀ Chrome ਡਾਟਾ (ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਰਚਨਾ) ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਹਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">ਹਾਰਡ ਡਰਾਈਵ ਮਿਟਾਓ ਅਤੇ Chrome OS ਨੂੰ ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />ਅਸੀਂ Chrome OS ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਤਿਆਰ ਹਾਂ! ਤੁਹਾਡੇ ਵੱਲੋਂ ਅੱਗੇ ਵੱਧ ਜਾਣ 'ਤੇ:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ਫ਼ਾਈਲਾਂ, ਡਾਟਾ ਅਤੇ ਤੁਹਾਡਾ ਮੋਜੂਦਾ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।
+          <ph name="LIST_ITEM" />Chrome OS ਸਥਾਪਤ ਕੀਤਾ ਜਾਵੇਗਾ।
+          <ph name="LIST_ITEM" />ਸਥਾਪਨਾ ਪੂਰੀ ਹੋਣ 'ਤੇ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />ਇੱਕ ਆਖਰੀ ਰਿਮਾਈਂਡਰ: ਸਥਾਪਨਾ ਤੁਹਾਡੀ ਹਾਰਡ ਡਰਾਈਵ ਦੇ ਪੂਰੇ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦੇਵੇਗੀ। ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ ਮਹੱਤਵਪੂਰਨ ਡਾਟਾ ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਹੈ।<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />ਇੱਕ ਵਾਰ ਸਥਾਪਨਾ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ, ਇਸ ਨੂੰ ਰੱਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome ਤੁਹਾਡਾ ਡਾਟਾ ਸਮਕਾਲੀਕਰਨ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਸਮਕਾਲੀਕਰਨ ਤੁਹਾਡੀ ਡੋਮੇਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2467438592969358367">Google Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ। ਇਹ ਕਰਨ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="2485422356828889247">ਅਣਸਥਾਪਤ ਕਰੋ</translation>
@@ -175,6 +186,10 @@
 
 Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾਸਲ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>
 <translation id="5434383153637353914">ਇਹ ਪੰਨਾ ਤੁਹਾਨੂੰ ਆਪਣੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ Google ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦਾ ਹੈ। ਇਹ ਖਾਤੇ Chrome ਬ੍ਰਾਊਜ਼ਰ ਅਤੇ 'Play ਸਟੋਰ' ਐਪਾਂ ਦੇ ਨਾਲ-ਨਾਲ Gmail, Drive ਅਤੇ YouTube ਵਰਗੀਆਂ ਸੇਵਾਵਾਂ ਵਿੱਚ ਵੀ ਉਪਲਬਧ ਹੋਣਗੇ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ਸਾਡੇ ਵੱਲੋਂ ਸ਼ੁਰੂਆਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਆਪਣੇ ਡਾਟੇ ਦਾ ਅੱਪ-ਟੂ-ਡੇਟ ਬੈਕਅੱਪ ਹੈ। Chrome OS ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਨਾਲ, ਤੁਹਾਡੀ ਹਾਰਡ ਡਰਾਈਵ ਦਾ ਸਾਰਾ ਡਾਟਾ ਓਵਰਰਾਈਟ ਹੋ ਜਾਵੇਗਾ।<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google ਡਾਟਾ ਦੇ ਕਿਸੇ ਵੀ ਤਰੀਕੇ ਦੇ ਨੁਕਸਾਨ ਦਾ ਜ਼ਿੰਮੇਵਾਰ ਨਹੀਂ ਹੋਵੇਗਾ, ਅਤੇ ਇਸ ਗੱਲ ਦੀ ਕੋਈ ਗਰੰਟੀ ਨਹੀਂ ਦਿੰਦਾ ਕਿ Chrome OS ਅਪ੍ਰਮਾਣਿਤ ਮਾਡਲਾਂ 'ਤੇ ਕੰਮ ਕਰੇਗਾ। ਕਿਰਪਾ ਕਰਕੇ ਪ੍ਰਮਾਣਿਤ ਮਾਡਲਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣਨ ਲਈ [TBD] 'ਤੇ ਜਾਓ।<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Chrome OS ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਅਤੇ ਡਾਟਾ ਮਿਟਾਉਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />ਜੇ ਤੁਸੀਂ ਅੱਗੇ ਵਧਣ ਲਈ ਤਿਆਰ ਹੋ, ਤਾਂ “Chrome OS ਨੂੰ ਸਥਾਪਤ ਕਰੋ” 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਅਸੀਂ ਸਿਰਫ਼ ਕੁਝ ਆਸਾਨ ਪੜਾਵਾਂ ਵਿੱਚ ਸਥਾਪਨਾ ਕਰਨ ਸੰਬੰਧੀ ਤੁਹਾਡਾ ਮਾਰਗ-ਦਰਸ਼ਨ ਕਰਾਂਗੇ। ਸਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੇ ਕੋਲ ਤਸਦੀਕ ਕਰਨ ਦਾ ਇੱਕ ਹੋਰ ਮੌਕਾ ਹੋਵੇਗਾ।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="556024056938947818">Google Chrome ਪਾਸਵਰਡ ਦਿਖਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -210,6 +225,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome ਅੱਪਡੇਟ ਹੋ ਰਿਹਾ ਹੈ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS ਸਿਸਟਮ</translation>
+<translation id="664235759707825982">Chrome OS ਸਥਾਪਤ ਕਰਨ ਲਈ ਤਿਆਰ</translation>
 <translation id="6676384891291319759">ਇੰਟਰਨੈਟ ਤੱਕ ਪਹੁੰਚੋ</translation>
 <translation id="6679975945624592337">Google Chrome ਨੂੰ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚੱਲਣ ਦਿਓ</translation>
 <translation id="6739177684496155661">ਕੀ ਨਵੇਂ Chrome ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
@@ -229,6 +245,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7155997830309522122">ਜੇ ਅਜਿਹਾ ਹੈ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ Chrome ਵਿੱਚ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦਾ ਸੰਪਾਦਨ ਕਰੋ ਤਾਂ ਜੋ ਇਹ ਤੁਹਾਡੇ ਨਵੇਂ ਪਾਸਵਰਡ ਨਾਲ ਮੇਲ ਖਾਵੇ।</translation>
 <translation id="7161904924553537242">Google Chrome ਵਿੱਚ ਸੁਆਗਤ ਹੈ</translation>
 <translation id="7242029209006116544">ਤੁਸੀਂ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਇਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਆਪਣੇ Google Chrome ਪ੍ਰੋਫਾਈਲ ਦਾ ਕੰਟਰੋਲ ਦੇ ਰਹੇ ਹੋ। ਤੁਹਾਡਾ Chrome ਡਾਟਾ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀਆਂ ਐਪਾਂ, ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ, ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ <ph name="USER_NAME" /> ਨਾਲ ਸਥਾਈ ਤੌਰ 'ਤੇ ਜੋੜੇ ਜਾਣਗੇ। ਤੁਸੀਂ ਇਸ ਡਾਟੇ ਨੂੰ Google ਖਾਤੇ ਡੈਸ਼ਬੋਰਡ ਰਾਹੀਂ ਮਿਟਾ ਸਕੋਗੇ, ਪਰ ਤੁਸੀਂ ਇਸ ਡਾਟੇ ਨੂੰ ਦੂਜੇ ਖਾਤੇ ਨਾਲ ਨਹੀਂ ਜੋੜ ਸਕੋਗੇ। ਤੁਸੀਂ ਆਪਣੇ ਮੌਜੂਦਾ Chrome ਡਾਟੇ ਨੂੰ ਵੱਖ ਰੱਖਣ ਲਈ ਵਿਕਲਪਿਕ ਤੌਰ 'ਤੇ ਇੱਕ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਬਣਾ ਸਕਦੇ ਹੋ। <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Chrome OS ਦੀ ਸਥਾਪਨਾ ਜਾਰੀ ਹੈ</translation>
 <translation id="7295052994004373688">ਇਸ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ Google Chrome UI ਦਿਖਾਉਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7296210096911315575">ਵਰਤੋਂ ਅਤੇ ਸੁਰੱਖਿਆ ਬਾਰੇ ਮਹੱਤਵਪੂਰਨ ਜਾਣਕਾਰੀ</translation>
 <translation id="7303916856901595720">ਕੀ ਖਾਤੇ ਨੂੰ ਨਵੇਂ Chrome ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਲਿਜਾਉਣਾ ਹੈ?</translation>

@@ -317,6 +317,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3510164367642747937">Istakni pokazivač miša</translation>
 <translation id="3513798432020909783">Računom upravlja <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Wi-Fi je isključen</translation>
+<translation id="3560866052109807830">Alati za crtanje oznaka</translation>
 <translation id="3563775809269155755">Omogućivanje žarišne točke</translation>
 <translation id="3571734092741541777">Postavi</translation>
 <translation id="3573179567135747900">Vratite na "<ph name="FROM_LOCALE" />" (zahtijeva ponovno pokretanje)</translation>
@@ -411,6 +412,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4274537685965975248">Promijenjen je tipkovni prečac Ctrl + Alt + strelica prema dolje. Da biste upotrijebili tipku za kraj, pritisnite <ph name="LAUNCHER_KEY_NAME" /> + strelica desno.</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
 <translation id="4285498937028063278">Otkvači</translation>
+<translation id="429402653707266969">Uključi/isključi lokaciju alatne trake</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Brisanje svih obavijesti (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Nedostupno</translation>

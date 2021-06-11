@@ -311,6 +311,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Bu boshqaruv elementi yoniq va faol boʻlsa, Chrome brauzerdagi oxirgi harakatlaringizga eng mos katta yoki “kogort” guruh odamlarni aniqlaydi. Reklama beruvchilar eʼlonlari uchun guruh tanlaganda qurilmadagi harakatlaringiz maxfiyligi saqlanib qoladi. Guruhingiz har kuni yangilanib turadi.}=1{Bu boshqaruv elementi yoniq va faol boʻlsa, Chrome brauzerdagi oxirgi harakatlaringizga eng mos katta yoki “kogort” guruh odamlarni aniqlaydi. Reklama beruvchilar eʼlonlari uchun guruh tanlaganda qurilmadagi harakatlaringiz maxfiyligi saqlanib qoladi. Guruhingiz har kuni yangilanib turadi.}other{Bu boshqaruv elementi yoniq va faol boʻlsa, Chrome brauzerdagi oxirgi harakatlaringizga eng mos katta yoki “kogort” guruh odamlarni aniqlaydi. Reklama beruvchilar eʼlonlari uchun guruh tanlaganda qurilmadagi harakatlaringiz maxfiyligi saqlanib qoladi. Guruhingiz har {NUM_DAYS} kunda yangilanib turadi.}}</translation>
 <translation id="2053553514270667976">Pochta indeksi</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ta tavsiya}other{# ta tavsiya}}</translation>
+<translation id="2071156619270205202">Koʻrsatilgan raqamdan virtual karta raqami sifatida foydalanib boʻlmaydi.</translation>
 <translation id="2071692954027939183">Odatda ruxsat bermasligingiz uchun bildirishnomalar avtomatik bloklanadi</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="20817612488360358">Tizim proksi-server sozlamalari yoniq, lekin uning sozlamalari aniq belgilangan.</translation>
@@ -439,9 +440,11 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2521385132275182522">Quyi oʻngdan steplerlash</translation>
 <translation id="2523886232349826891">Faqat shu qurilmada saqlanadi</translation>
 <translation id="2524461107774643265">Qo‘shimcha axborot qo‘shish</translation>
+<translation id="2529899080962247600">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Qolganlari inobatga olinmaydi.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{va yana 1 ta}other{va yana # ta}}</translation>
 <translation id="2536110899380797252">Manzil kiritish</translation>
 <translation id="2539524384386349900">Aniqlansin</translation>
+<translation id="2540701853218677861">Tarixga qurilmaga kirish/chiqish tarixi, shuningdek, vaqt belgilari va muvaffaqiyatsiz urinishlar kiradi</translation>
 <translation id="2541219929084442027">Inkognito rejimida ochilgan sahifalar brauzer yoki qidiruv tarixida saqlanmaydi. Barcha inkognito sahifalari yopilganda qurilmangizda cookie fayllar kabi izlar qolmaydi. Yuklab olingan fayllar va bukmarklaringiz saqlanib qoladi.</translation>
 <translation id="2544644783021658368">Bitta hujjat</translation>
 <translation id="254947805923345898">Parametr qiymati yaroqsiz.</translation>
@@ -632,6 +635,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3320021301628644560">To‘lov manzilini kiriting</translation>
 <translation id="3324983252691184275">Malina rang</translation>
 <translation id="3329013043687509092">To‘liqlik</translation>
+<translation id="3333762389743153920">Virtual karta uchun mos kelmaydi</translation>
 <translation id="3338095232262050444">Xavfsiz</translation>
 <translation id="3355823806454867987">Proksi-server sozlamalarini o‘zgartirish...</translation>
 <translation id="3360103848165129075">Toʻlovni qayta ishlash vositasi</translation>
@@ -763,6 +767,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3754210790023674521">Tasvir ustida tasvir rejimidan chiqish</translation>
 <translation id="3759461132968374835">Yaqinda yuz bergan ishdan chiqishlar haqidagi yozuvlar yo‘q. Ishdan chiqishlar jurnali o‘chiqligida yuz bergan ishdan chiqishlar bu yerda ko‘rsatilmaydi.</translation>
 <translation id="3760561303380396507">CVC oʻrniga Windows Hello ishlatilsinmi?</translation>
+<translation id="3761171036307311438">Karta egasining ismi:</translation>
 <translation id="3761718714832595332">Holatini yopish</translation>
 <translation id="3765032636089507299">Google saytlar xavfsizligini tekshirish tizimi sahifasi qayta ishlanmoqda.</translation>
 <translation id="3765588406864124894">Pochta qutisi 9</translation>
@@ -1142,6 +1147,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kartangizni tasdiqlang</translation>
 <translation id="5135404736266831032">Manzillar...</translation>
+<translation id="5138014172396933048">Hozirda virtual karta mavjud emas. Bankka murojaat qiling</translation>
 <translation id="5138227688689900538">Kamroq chiqsin</translation>
 <translation id="514010763713772514">Keyingi xaridni tezlashtirish</translation>
 <translation id="5145883236150621069">Siyosat javobida xato kodi bor</translation>
@@ -1188,6 +1194,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5287240709317226393">Cookie fayllarini ko‘rsatish</translation>
 <translation id="5287456746628258573">Bu sayt eskirgan xavfsizlik sozlamasidan foydalanadi. maʼlumotlaringiz (masalan, parol va kredit kartalari nomlari) shu saytga yuborilganda ular xavf ostida qolishi mumkin.</translation>
 <translation id="5288108484102287882">Parametr qiymatlari tekshiruvida ogohlantiruvlar aniqlandi</translation>
+<translation id="5288808348893593856">Saytga ulanish xavfsiz boʻlmasa, Chrome bu haqida xabar qiladi</translation>
 <translation id="5289384342738547352">Bir nechta hujjat qayta ishlanishi</translation>
 <translation id="5299298092464848405">Siyosatni analiz qilishda xatolik yuz berdi</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
@@ -1549,9 +1556,11 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6685834062052613830">Hisobdan chiqing va sozlash jarayonini nihoyasiga yetkazing</translation>
 <translation id="6687335167692595844">Shrift oʻlchami talab qilindi</translation>
 <translation id="6688743156324860098">Yangilash…</translation>
+<translation id="6688775486821967877">Hozirda virtual karta mavjud emas. Keyinroq qayta urining</translation>
 <translation id="6689249931105087298">Qora nuqta tejalishiga aloqador</translation>
 <translation id="6689271823431384964">Hisobingizga kirganingiz uchun Chrome kartalarni Google hisobingizga saqlashni taklif qilmoqda. Buni sozlamalar orqali oʻzgartirish mumkin. Karta egasining ismi hisobingizdan olinadi.</translation>
 <translation id="6698381487523150993">Yaratilgan sanasi:</translation>
+<translation id="6699188552522342100">Bu saytdagi axborot aniqmi?</translation>
 <translation id="6702919718839027939">Taqdimot</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6710594484020273272">&lt;Qidiruv so‘rovini kiriting&gt;</translation>
@@ -1678,6 +1687,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7219179957768738017">Bu ulanishda <ph name="SSL_VERSION" /> protokoli ishlatilmoqda.</translation>
 <translation id="7220786058474068424">Amalga oshirilmoqda</translation>
 <translation id="7221855153210829124">Bildirishnomalarni ko‘rsatish</translation>
+<translation id="722454870747268814">Yangi inkognito sahifa</translation>
 <translation id="7229659723041939809">Hozirgina shubhali saytda parol kiritdingiz. Chrome hoziroq <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> va boshqa saytlardagi shu parolingizni tekshirishni tavsiya qiladi.</translation>
 <translation id="7233592378249864828">Bosmani tasdiqlash varagʻi</translation>
 <translation id="7238585580608191973">SHA-256 barmoq izi</translation>
@@ -2055,6 +2065,7 @@ Batafsil axborot:
           <ph name="LIST_ITEM" />Cookie fayllari va sayt maʼlumotlari
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Kartalarni tezda tasdiqlash uchun Touch ID ishlating</translation>
+<translation id="8577348305244205642">Virtual karta mavjud emas</translation>
 <translation id="858637041960032120">Raqam qo‘shing</translation>
 <translation id="8589998999637048520">Eng sifatli</translation>
 <translation id="8600271352425265729">Faqat shu safar</translation>

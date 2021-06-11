@@ -311,6 +311,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wakati kidhibiti hiki kimewashwa na teknolojia hii inatumika, Chrome hubaini kikundi kikubwa cha watu, au “kundi”, ambalo shughuli zako za kuvinjari za hivi majuzi zinafanana nalo kwa ukaribu zaidi. Watangazaji wanaweza kuchagua matangazo kwa ajili ya kikundi hicho na shughuli zako za kuvinjari huwekwa kwa faragha kwenye kifaa chako. Kikundi chako husasishwa kila siku.}=1{Wakati kidhibiti hiki kimewashwa na teknolojia hii inatumika, Chrome hubaini kikundi kikubwa cha watu, au “kundi”, ambalo shughuli zako za kuvinjari za hivi majuzi zinafanana nalo kwa ukaribu zaidi. Watangazaji wanaweza kuchagua matangazo kwa ajili ya kikundi hicho na shughuli zako za kuvinjari huwekwa kwa faragha kwenye kifaa chako. Kikundi chako husasishwa kila siku.}other{Wakati kidhibiti hiki kimewashwa na teknolojia hii inatumika, Chrome hubaini kikundi kikubwa cha watu, au “kundi”, ambalo shughuli zako za kuvinjari za hivi majuzi zinafanana nalo kwa ukaribu zaidi. Watangazaji wanaweza kuchagua matangazo kwa ajili ya kikundi hicho na shughuli zako za kuvinjari huwekwa kwa faragha kwenye kifaa chako. Kikundi chako husasishwa kila baada ya siku {NUM_DAYS}.}}</translation>
 <translation id="2053553514270667976">Msimbo wa eneo</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Pendekezo 1}other{Mapendekezo #}}</translation>
+<translation id="2071156619270205202">Huwezi kupata nambari ya kadi pepe kwa kutumia kadi hii.</translation>
 <translation id="2071692954027939183">Arifa zimezuiwa kiotomatiki kwa sababu kwa kawaida huziruhusu</translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="20817612488360358">Mipangilio ya mfumo ya proksi imewekwa ili kutumiwa lakini usanidi dhahiri wa proksi pia umebainishwa.</translation>
@@ -439,9 +440,11 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2521385132275182522">Bana chini kulia</translation>
 <translation id="2523886232349826891">Imehifadhiwa kwenye kifaa hiki pekee</translation>
 <translation id="2524461107774643265">Ongeza Maelezo Zaidi</translation>
+<translation id="2529899080962247600">Hupaswi kuweka zaidi ya vipengee <ph name="MAX_ITEMS_LIMIT" /> katika sehemu hii. Vipengee vyote vya ziada vitapuuzwa.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{na lingine 1}other{na mengine #}}</translation>
 <translation id="2536110899380797252">Ongeza Anwani</translation>
 <translation id="2539524384386349900">Gundua</translation>
+<translation id="2540701853218677861">Historia ya kuingia katika akaunti au kuondoka katika akaunti kwenye kifaa, ikiwa ni pamoja na mihuri ya wakati na majaribio yasiyofanikiwa</translation>
 <translation id="2541219929084442027">Kurasa unazoziangalia katika vichupo fiche hazitaendelea kuwepo katika historia ya kivinjari, hifadhi ya vidakuzi au historia yako ya utafutaji ukishafunga vichupo vyako vyote fiche. Faili zozote unazopakua au alamisho unazoweka hazitafutwa.</translation>
 <translation id="2544644783021658368">Hati moja</translation>
 <translation id="254947805923345898">Thamani ya sera si sahihi.</translation>
@@ -634,6 +637,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3320021301628644560">Ongeza anwani ya kutuma bili</translation>
 <translation id="3324983252691184275">Nyekundu Iliyoiva</translation>
 <translation id="3329013043687509092">Kukolea</translation>
+<translation id="3333762389743153920">Haiwezi kutumika kama kadi pepe</translation>
 <translation id="3338095232262050444">Salama</translation>
 <translation id="3355823806454867987">Badilisha mipangilio ya seva mbadala...</translation>
 <translation id="3360103848165129075">Laha la kidhibiti cha malipo</translation>
@@ -767,6 +771,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3754210790023674521">Funga hali ya picha ndani ya picha</translation>
 <translation id="3759461132968374835">Huna uharibifu ulioripotiwa hivi karibuni. Uharibifu uliotokea wakati kuripoti kwa uharibifu kulipolemazwa hakutaonekana hapa.</translation>
 <translation id="3760561303380396507">Ungependa kutumia Windows Hello badala ya CVC?</translation>
+<translation id="3761171036307311438">Jina kwenye kadi:</translation>
 <translation id="3761718714832595332">Ficha hali</translation>
 <translation id="3765032636089507299">Ukurasa wa Kuvinjari Salama unaboreshwa.</translation>
 <translation id="3765588406864124894">Kikasha cha barua cha tisa</translation>
@@ -1146,6 +1151,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Thibitisha kadi yako</translation>
 <translation id="5135404736266831032">Dhibiti anwani...</translation>
+<translation id="5138014172396933048">Kadi pepe haipatikani kwa sasa, tafadhali wasiliana na benki yako</translation>
 <translation id="5138227688689900538">Onyesha chache</translation>
 <translation id="514010763713772514">Nunua kwa haraka zaidi wakati mwingine</translation>
 <translation id="5145883236150621069">Msimbo wa hitilafu uko katika jibu la sera</translation>
@@ -1192,6 +1198,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5287240709317226393">Onyesha vidakuzi</translation>
 <translation id="5287456746628258573">Tovuti hii inatumia mipangilio ya usalama iliyopitwa na wakati, hali ambayo inaweza kuonyesha taarifa zako (kwa mfano, manenosiri au nambari za kadi za mikopo) zikitumwa kwenye tovuti hii.</translation>
 <translation id="5288108484102287882">Imethibitisha thamani za sera na kutoa maonyo</translation>
+<translation id="5288808348893593856">Muunganisho wa tovuti ni salama isipokuwa Chrome ikikufahamisha vinginevyo.</translation>
 <translation id="5289384342738547352">Kushughulikia hati nyingi</translation>
 <translation id="5299298092464848405">Hitilafu wakati wa kuchanganua sera</translation>
 <translation id="5300589172476337783">Onyesha</translation>
@@ -1554,9 +1561,11 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6685834062052613830">Ondoka na ukamilishe kuweka mipangilio</translation>
 <translation id="6687335167692595844">Imeomba ukubwa wa fonti</translation>
 <translation id="6688743156324860098">Sasisha…</translation>
+<translation id="6688775486821967877">Kadi pepe haipatikani kwa sasa, tafadhali jaribu tena baadaye</translation>
 <translation id="6689249931105087298">Ya kiwango cha kati yenye sehemu nyeusi iliyobanwa</translation>
 <translation id="6689271823431384964">Chrome itakuhifadhia kadi zako katika Akaunti yako ya Google kwa sababu umeingia katika akaunti. Unaweza kubadilisha hali hii katika mipangilio. Jina la mwenye kadi linatoka kwenye akaunti yako.</translation>
 <translation id="6698381487523150993">Imeundwa</translation>
+<translation id="6699188552522342100">Je, tovuti hii ni sahihi?</translation>
 <translation id="6702919718839027939">Wasilisha</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="6710594484020273272">&lt;Andika neno unalotaka kutafuta&gt;</translation>
@@ -1683,6 +1692,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7219179957768738017">Muunganisho unatumia <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Malipo yanashughulikiwa</translation>
 <translation id="7221855153210829124">Kuonyesha arifa</translation>
+<translation id="722454870747268814">Kichupo Fiche Kipya</translation>
 <translation id="7229659723041939809">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chrome inapendekeza ukague manenosiri uliyohifadhi kwenye <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> na tovuti nyingine unakotumia nenosiri hili kwa sasa.</translation>
 <translation id="7233592378249864828">Laha la uthibitishaji wa kuchapisha</translation>
 <translation id="7238585580608191973">Alama ya kidole ya SHA-256</translation>
@@ -2056,6 +2066,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
           <ph name="LIST_ITEM" />Data ya tovuti na vidakuzi
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Tumia Touch ID kuthibitisha kadi kwa haraka zaidi</translation>
+<translation id="8577348305244205642">Kadi pepe haipatikani</translation>
 <translation id="858637041960032120">Ongeza simu
 </translation>
 <translation id="8589998999637048520">Ubora wa juu zaidi</translation>

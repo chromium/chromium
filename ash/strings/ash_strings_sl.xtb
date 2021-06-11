@@ -317,6 +317,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3510164367642747937">Označitev miškinega kazalca</translation>
 <translation id="3513798432020909783">Račun upravlja <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Povezava Wi-Fi je izklopljena.</translation>
+<translation id="3560866052109807830">Orodja za risanje oznak</translation>
 <translation id="3563775809269155755">Omogočanje dostopne točke</translation>
 <translation id="3571734092741541777">Nastavi</translation>
 <translation id="3573179567135747900">Spremeni nazaj v jezik »<ph name="FROM_LOCALE" />« (potreben vnovični zagon)</translation>
@@ -411,6 +412,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4274537685965975248">Bližnjica na tipkovnici ctrl + alt + puščica dol je spremenjena. Če želite uporabiti tipko End, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico desno.</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
 <translation id="4285498937028063278">Odpni</translation>
+<translation id="429402653707266969">Vklop/izklop mesta orodne vrstice</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Izbris vseh <ph name="COUNT" /> obvestil</translation>
 <translation id="4302592941791324970">Ni na voljo</translation>

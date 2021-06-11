@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktyvus prieš <ph name="DAYS" /> d.</translation>
 <translation id="2074131957428911366">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
-<translation id="2086623437239112659">Jūsų saugoma prisijungimo informacija gali būti pasenusi.</translation>
 <translation id="209018056901015185">Užkl. dėl svet. v. komp.</translation>
 <translation id="2103075008456228677">Atidaryti history.google.com</translation>
 <translation id="2116625576999540962">Perkelta elementų: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -408,6 +407,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5197255632782567636">Internetas</translation>
 <translation id="5210365745912300556">Uždaryti skirtuką</translation>
 <translation id="5228579091201413441">Įgalinti sinchronizavimą</translation>
+<translation id="5232485538978018676">Prisijunkite naudodami valdomą paskyrą</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5245322853195994030">Atšaukti sinchronizavimą</translation>
 <translation id="5271549068863921519">Išsaugoti slaptažodį</translation>
@@ -724,6 +724,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8206354486702514201">Šį nustatymą vykdo jūsų administratorius.</translation>
 <translation id="8225985093977202398">Talp. vaiz. ir fail.</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
+<translation id="8271720166617117963">Sutikti ir prisijungti</translation>
 <translation id="8281781826761538115">Numatytoji – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8283172974887967105">Nustatyti…</translation>

@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome nije uspio potvrditi vaše podatke</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="10614374240317010">Zaporke se nikad ne spremaju</translation>
-<translation id="1067922213147265141">Ostale Googleove usluge</translation>
 <translation id="107147699690128016">Ako promijenite datotečni nastavak, datoteka bi se mogla otvoriti u nekoj drugoj aplikaciji i mogla bi izložiti vaš uređaj opasnosti.</translation>
 <translation id="1095761715416917775">Pobrinite se da uvijek možete pristupiti sinkroniziranim podacima</translation>
 <translation id="1100066534610197918">Otvori novu karticu u grupi</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Ne prikazuj ponovo</translation>
 <translation id="1680919990519905526">Kupi pomoću Objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Isprobajte odmah</translation>
-<translation id="1692118695553449118">Sinkronizacija je uključena</translation>
 <translation id="1697284962337958118">Dodaj u</translation>
 <translation id="1718835860248848330">Zadnji sat</translation>
 <translation id="1724977129262658800">Otključajte da biste izmijenili zaporku</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
-<translation id="1984705450038014246">Sinkroniziraj podatke iz Chromea</translation>
 <translation id="1986685561493779662">Naziv već postoji</translation>
 <translation id="1987739130650180037">Gumb <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658">Web-lokacija <ph name="SITE" /> želi se upariti</translation>
@@ -188,7 +185,6 @@ Dodirnite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite preciz
 <translation id="2200113223741723867">Upravljajte dijeljenjem podataka o upotrebi</translation>
 <translation id="2227444325776770048">Nastavite kao <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Za vas</translation>
-<translation id="2234876718134438132">Sinkronizacija i Googleove usluge</translation>
 <translation id="2239812875700136898">Člancima možete upravljati pomoću gumba Opcije za Discover</translation>
 <translation id="2259659629660284697">Izvoz zaporki...</translation>
 <translation id="2276696007612801991">Prijavite se na svoj Google račun da biste provjerili zaporke</translation>
@@ -364,7 +360,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3295530008794733555">Pregledavajte brže. Smanjite podatkovni promet.</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li nastaviti s preuzimanjem sadržaja?</translation>
-<translation id="3315103659806849044">Trenutačno prilagođavate postavke sinkronizacije i Googleovih usluga. Da biste dovršili uključivanje sinkronizacije, dodirnite gumb Potvrdi pri dnu zaslona. Natrag</translation>
 <translation id="3334729583274622784">Promijeniti datotečni nastavak?</translation>
 <translation id="3341058695485821946">Pogledajte količinu ušteđenih podataka</translation>
 <translation id="3341262203274374114">Prestanak praćenja nije uspio. Došlo je do pogreške.</translation>
@@ -501,7 +496,6 @@ Privacy Sandbox još uvijek je u aktivnoj fazi razvoja te je dostupan u određen
 <translation id="4298388696830689168">Povezane web-lokacije</translation>
 <translation id="4303044213806199882">chrome_snimka_zaslona_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Osnove</translation>
-<translation id="4314815835985389558">Upravljanje sinkronizacijom</translation>
 <translation id="4320177379694898372">Nema internetske veze</translation>
 <translation id="4321739720395210191">Kamera se ne može otvoriti. Ponovno pokrenite uređaj i pokušajte opet.</translation>
 <translation id="433213510553688132">Praćenje...</translation>
@@ -630,9 +624,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="510275257476243843">Još 1 sat</translation>
 <translation id="5118713593561876160">Interesi</translation>
 <translation id="5123685120097942451">Anonimna kartica</translation>
-<translation id="5127805178023152808">Sinkronizacija je isključena</translation>
 <translation id="5132942445612118989">Sinkronizirajte svoje zaporke, povijest i drugo na svim uređajima</translation>
-<translation id="5136035049889637840">Kupi slične proizvode <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Saznajte kako se upotrebljava Google Drive</translation>
 <translation id="5152843274749979095">Nije instalirana nijedna podržana aplikacija</translation>
 <translation id="5161254044473106830">Naslov je obavezan</translation>
@@ -752,6 +744,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5854790677617711513">Starije od 30 dana</translation>
 <translation id="5855546874025048181">Suzi pretraživanje: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ne može uključiti Bluetooth adapter</translation>
+<translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5862731021271217234">Da bi se prikazale kartice s vaših ostalih uređaja, uključite sinkronizaciju</translation>
 <translation id="5864174910718532887">Pojedinosti: poredano po nazivu web-lokacije</translation>
@@ -761,6 +754,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="587735546353481577">Da biste pratili web-lokaciju, otvorite je, otvorite izbornik preglednika Chrome i dodirnite Prati.</translation>
 <translation id="5880748256563468367">Otvori feed</translation>
 <translation id="5884076754568147479">Da bi vam pomogao sa zadacima, Google će primati URL-ove i sadržaje web-lokacija na kojima upotrebljavate Asistenta, kao i informacije koje šaljete putem Asistenta</translation>
+<translation id="5916664084637901428">Uključi</translation>
 <translation id="5919204609460789179">Ažurirajte <ph name="PRODUCT_NAME" /> za pokretanje sinkronizacije</translation>
 <translation id="5937580074298050696">Spremljeno <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Ponovno postavi</translation>
@@ -811,7 +805,6 @@ Probe Privacy Sandboxa i dalje su u aktivnom razvoju i dostupne su u odabranim r
 <translation id="6192907950379606605">Primajte opise slike</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregledavanje ove stranice</translation>
-<translation id="6218096829563201111">Pretraži slične proizvode <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Otključajte da biste izvezli zaporke</translation>
 <translation id="6232535412751077445">Omogućivanje opcije "Nemoj pratiti" znači da će se u promet pregledavanja uključiti zahtjev. Učinak ovisi o tome odgovara li web-lokacija na taj zahtjev i kako se zahtjev tumači.
 

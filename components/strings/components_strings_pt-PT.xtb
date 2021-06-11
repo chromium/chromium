@@ -312,6 +312,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}=1{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}other{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
 <translation id="2053553514270667976">Código postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}other{# sugestões}}</translation>
+<translation id="2071156619270205202">Este cartão não é elegível para um número de cartão virtual.</translation>
 <translation id="2071692954027939183">As notificações foram automaticamente bloqueadas porque, geralmente, não as permite.</translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="20817612488360358">As definições de proxy do sistema estão definidas para serem utilizadas, mas também está especificada uma configuração de proxy explícita.</translation>
@@ -440,9 +441,11 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2521385132275182522">Agrafar parte inferior direita</translation>
 <translation id="2523886232349826891">Guardado apenas neste dispositivo.</translation>
 <translation id="2524461107774643265">Adicionar mais informações</translation>
+<translation id="2529899080962247600">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão ignoradas.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar endereço</translation>
 <translation id="2539524384386349900">Detetar</translation>
+<translation id="2540701853218677861">Histórico de início/fim de sessão do dispositivo, incluindo data/hora e tentativas falhadas</translation>
 <translation id="2541219929084442027">As páginas que visualizar em separadores de navegação anónima não são memorizadas no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisas depois de fechar todos os separadores de navegação anónima. Todos os ficheiros transferidos ou os marcadores criados são guardados.</translation>
 <translation id="2544644783021658368">Documento único</translation>
 <translation id="254947805923345898">O valor da política não é válido.</translation>
@@ -635,6 +638,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3320021301628644560">Adicionar endereço de faturação</translation>
 <translation id="3324983252691184275">Carmesim</translation>
 <translation id="3329013043687509092">Saturação</translation>
+<translation id="3333762389743153920">Não é elegível para um cartão virtual</translation>
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="3355823806454867987">Alterar definições de proxy...</translation>
 <translation id="3360103848165129075">Página do controlador do pagamento</translation>
@@ -1148,6 +1152,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Valide o cartão</translation>
 <translation id="5135404736266831032">Gerir endereços…</translation>
+<translation id="5138014172396933048">O cartão virtual não está disponível neste momento. Contacte o seu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="514010763713772514">Pague mais rapidamente da próxima vez</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
@@ -1194,6 +1199,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5287240709317226393">Mostrar cookies</translation>
 <translation id="5287456746628258573">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe ou números de cartões de crédito) quando são enviados para este site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou avisos.</translation>
+<translation id="5288808348893593856">A ligação do site é segura a menos que o Chrome indique o contrário.</translation>
 <translation id="5289384342738547352">Processamento de vários documentos</translation>
 <translation id="5299298092464848405">Erro ao analisar a política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1556,9 +1562,11 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6685834062052613830">Termine sessão e conclua a configuração</translation>
 <translation id="6687335167692595844">Tamanho do tipo de letra solicitado</translation>
 <translation id="6688743156324860098">Atualizar…</translation>
+<translation id="6688775486821967877">O cartão virtual não está disponível neste momento. Tente novamente mais tarde</translation>
 <translation id="6689249931105087298">Relativa com compressão do ponto preto</translation>
 <translation id="6689271823431384964">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6698381487523150993">Criado:</translation>
+<translation id="6699188552522342100">Este Website está correto?</translation>
 <translation id="6702919718839027939">Apresentar</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Introduzir termo de pesquisa&gt;</translation>
@@ -1685,6 +1693,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7219179957768738017">A ligação utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">A processar</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
+<translation id="722454870747268814">Novo separador de navegação anónima</translation>
 <translation id="7229659723041939809">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que utilize esta palavra-passe.</translation>
 <translation id="7233592378249864828">Imprimir folha de confirmação</translation>
 <translation id="7238585580608191973">Impressão digital SHA-256</translation>
@@ -2061,6 +2070,7 @@ Detalhes adicionais:
           <ph name="LIST_ITEM" />Cookies e dados de sites.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Utilizar o Touch ID para confirmar os cartões mais rapidamente</translation>
+<translation id="8577348305244205642">Cartão virtual não disponível</translation>
 <translation id="858637041960032120">Adic. n.º telef.
 </translation>
 <translation id="8589998999637048520">Qualidade óptima</translation>

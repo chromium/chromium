@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">မောက်စ်ကာဆာကို ထင်သာမြင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="3513798432020909783">အကောင့်ကို <ph name="MANAGER_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="3552189655002856821">Wi-Fi ပိတ်ထားသည်</translation>
+<translation id="3560866052109807830">မင်တံ ပုံဆွဲကိရိယာ</translation>
 <translation id="3563775809269155755">ဟော့စပေါ့ဖွင့်ခြင်း</translation>
 <translation id="3571734092741541777">စဖွင့်သတ်မှတ်ရန်</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" သို့ပြန်ပြောင်းရန် (ပြန်လည်အစပြုရန် လိုအပ်သည်)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">‘Ctrl + Alt + အောက်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘အဆုံးသတ်ရန်’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘ညာညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
+<translation id="429402653707266969">ကိရိယာဘားတည်နေရာ ပြောင်းရန်</translation>
 <translation id="4294319844246081198">မင်္ဂလာ နံနက်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">အကြောင်းကြားချက် <ph name="COUNT" /> ခုလုံးကို ထုတ်ပစ်ရန်</translation>
 <translation id="4302592941791324970">မရနိုင်ပါ</translation>

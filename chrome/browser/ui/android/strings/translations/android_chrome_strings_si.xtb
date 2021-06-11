@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome හට ඔබගේ තොරතුරු සත්‍යාපනය කළ නොහැකි විය</translation>
 <translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="10614374240317010">කිසිවිටෙක සුරැක නැත</translation>
-<translation id="1067922213147265141">වෙනත් Google සේවාවන්</translation>
 <translation id="107147699690128016">ඔබ ගොනු දිගුව වෙනස් කරන්නේ නම්, ගොනුව වෙනත් යෙදුමක විවෘත වීමටත් ඔබේ උපාංගයට හානියක් වීමටත් ඉඩ ඇත.</translation>
 <translation id="1095761715416917775">ඔබට සැම විට ඔබගේ සමමුහුර්ත දත්ත වෙත ප්‍රවේශ විය හැකි බව සහතික කර ගන්න</translation>
 <translation id="1100066534610197918">කණ්ඩායම තුළ නව පටිත්ත තුළ විවෘත කරන්න</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">නැවත නොපෙන්වන්න</translation>
 <translation id="1680919990519905526">Google Lens හා රූප මිලදී ගන්න<ph name="BEGIN_NEW" />න<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">දැන් උත්සාහ කරන්න</translation>
-<translation id="1692118695553449118">සමමුහුව ක්‍රියාත්මකයි</translation>
 <translation id="1697284962337958118">වෙත එක් කරන්න</translation>
 <translation id="1718835860248848330">පසුගිය පැය</translation>
 <translation id="1724977129262658800">ඔබගේ මුරපදය සංස්කරණය කිරීමට අගුලු හරින්න</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">දත්ත තබා ගන්න</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
 <translation id="1984417487208496350">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
-<translation id="1984705450038014246">ඔබේ Chrome දත්ත සමමුහුව</translation>
 <translation id="1986685561493779662">නම දැනටමත් පවතී</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> බොත්තම</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> හට යුගල වීමට අවශ්‍යය</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">භාවිත දත්ත බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
 <translation id="22320125457191592">ඔබ සඳහා</translation>
-<translation id="2234876718134438132">සමමුහුව සහ Google සේවා</translation>
 <translation id="2239812875700136898">Discover සඳහා විකල්ප බොත්තමෙන් ඔබේ කතා පාලන කරන්න</translation>
 <translation id="2259659629660284697">මුරපද නිර්යාත කරන්න…</translation>
 <translation id="2276696007612801991">ඔබගේ මුරපද පරීක්ෂා කිරීමට ඔබගේ Google ගිණුමට පුරන්න</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">වේගයෙන් බ්‍රවුස් කරන්න. දත්ත අඩුවෙන් භාවිතා කරන්න.</translation>
 <translation id="3297344142967351106">හඬ සහාය</translation>
 <translation id="3303414029551471755">අන්තර්ගතය බාගැනීම අරඹන්නද?</translation>
-<translation id="3315103659806849044">ඔබ දැනට ඔබේ සමමුහූර්ත සහ Google සේවා සැකසීම් අභිරුචි කරයි. සමමුහූර්තය ක්‍රියාත්මක කිරීම අවසන් කිරීමට, තිරයේ යට කොටස ළඟ ඇති තහවුරු කිරීමේ බොත්තමට තට්ටු කරන්න. ඉහළට සංචලන කරන්න</translation>
 <translation id="3334729583274622784">ගොනු දිගුව වෙනස් කරන්නේද?</translation>
 <translation id="3341058695485821946">ඔබ කොපමණ දත්ත සුරැක ඇතිදැයි බලන්න</translation>
 <translation id="3341262203274374114">අනුගමනය කිරීමෙන් ඉවත් වීමට නොහැකිය. යම් දෙයක් වැරදිණි.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">සබැඳි කළ වෙබ් අඩවි</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">මූලික</translation>
-<translation id="4314815835985389558">සමමුහුර්තය කළමනාකරණය</translation>
 <translation id="4320177379694898372">අන්තර්ජාල සබැඳුම නැත</translation>
 <translation id="4321739720395210191">ඔබේ කැමරාව විවෘත කළ නොහැක. ඔබේ උපාංගය යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
 <translation id="433213510553688132">අනුගමනය කරමින්...</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">පැය 1ක් ඉතිරියි</translation>
 <translation id="5118713593561876160">රුචිකත්ව</translation>
 <translation id="5123685120097942451">අප්‍රකට පටිත්ත</translation>
-<translation id="5127805178023152808">සමමුහුර්තකරණය අක්‍රියයි</translation>
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
-<translation id="5136035049889637840">සමාන නිෂ්පාදන සාප්පුයන්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google Drive භාවිතා කරන ආකාරය ඉගෙන ගන්න</translation>
 <translation id="5152843274749979095">සහාය දක්වන යෙදුම් ස්ථාපනය කර නැත</translation>
 <translation id="5161254044473106830">මාතෘකාව අවශ්‍යයි</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">දින 30කට වඩා පැරණි</translation>
 <translation id="5855546874025048181">පිරිපහදු කරන්න: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome හට බ්ලූටූත් ඇඩප්ටරය ක්‍රියාත්මක කිරීමට නොහැකිය</translation>
+<translation id="5860033963881614850">අක්‍රීය</translation>
 <translation id="5860491529813859533">ක්‍රියාත්මක කරන්න</translation>
 <translation id="5862731021271217234">ඔබගේ වෙනත් උපාංගවලින් ඔබගේ පටිති ලබා ගැනීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="5864174910718532887">විස්තර: අඩවි නාමය අනුව අනුපිළිවෙළට සකසා ඇත</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">අඩවියක් අනුගමනය කිරීමට, අඩවියට ගොස්, Chrome මෙනුව විවෘත කර, අනුගමනය කරන්න තට්ටු කරන්න.</translation>
 <translation id="5880748256563468367">සංග්‍රහය වෙත යන්න</translation>
 <translation id="5884076754568147479">ඔබට කාර්ය භාර සම්පූර්ණ කිරීමට උදවු කිරීමට, Google විසින් URL සහ ඔබේ සහකරු භාවිත කරන වෙබ් අඩවිවල අන්තර්ගතය මෙන්ම ඔබ සහකරු හරහා ඉදිරිපත් කරන තොරතුරු ලබා ගැනේ</translation>
+<translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5919204609460789179">සමමුහුර්ත වීම ආරම්භ කිරීමට <ph name="PRODUCT_NAME" /> යාවත්කාලීන කරන්න</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> සුරැකිණි</translation>
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">රූප විස්තර ලබා ගන්න</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> නොවේද?</translation>
 <translation id="6211386937064921208">මෙම පිටුව පෙරදසුන් කරමින්</translation>
-<translation id="6218096829563201111">සමාන නිෂ්පාදන සොයන්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">ඔබේ මුරපද නිර්යාත කිරීමට අගුළු හරින්න</translation>
 <translation id="6232535412751077445">"හඹා නොයන්න" සබල කිරීමෙන් අදහස් වන්නේ ඔබගේ බ්‍රවුස් කිරීමේ තදබදය සමගින් ඉල්ලීමක් අඩංගු වනු ඇති බවය. වෙබ් අඩවිය ඉල්ලීමට ප්‍රතිචාර දක්වනේද සහ ඉල්ලීම කෙසේ අර්ථ නිරූපණය කරන්නේද යන්න මත කිනම් හෝ ප්‍රතිඵලයක් රඳා පවතියි.
 

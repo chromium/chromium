@@ -311,6 +311,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kui see juhtelement on sisse lülitatud ja olek on aktiivne, määrab Chrome, millise suure grupi (ehk rühma) inimestega on teie hiljutine sirvimistegevus kõige sarnasem. Reklaamijad saavad grupi jaoks reklaame valida ja teie sirvimistegevus jääb teie seadmes privaatseks. Teie gruppi värskendatakse iga päev.}=1{Kui see juhtelement on sisse lülitatud ja olek on aktiivne, määrab Chrome, millise suure grupi (ehk rühma) inimestega on teie hiljutine sirvimistegevus kõige sarnasem. Reklaamijad saavad grupi jaoks reklaame valida ja teie sirvimistegevus jääb teie seadmes privaatseks. Teie gruppi värskendatakse iga päev.}other{Kui see juhtelement on sisse lülitatud ja olek on aktiivne, määrab Chrome, millise suure grupi (ehk rühma) inimestega on teie hiljutine sirvimistegevus kõige sarnasem. Reklaamijad saavad grupi jaoks reklaame valida ja teie sirvimistegevus jääb teie seadmes privaatseks. Teie gruppi värskendatakse iga {NUM_DAYS} päeva järel.}}</translation>
 <translation id="2053553514270667976">Postiindeks</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 soovitus}other{# soovitust}}</translation>
+<translation id="2071156619270205202">Seda kaarti ei saa virtuaalkaardi numbrina kasutada.</translation>
 <translation id="2071692954027939183">Märguanded blokeeriti automaatselt, kuna tavaliselt ei luba te neid kuvada</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="20817612488360358">Kasutamiseks on määratud süsteemi puhverserveri seaded, kuid määratud on ka konkreetne puhverserveri konfigureerimine.</translation>
@@ -439,9 +440,11 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2521385132275182522">Kirjaklamber paremal all</translation>
 <translation id="2523886232349826891">Salvestatakse ainult sellesse seadmesse</translation>
 <translation id="2524461107774643265">Lisateabe lisamine</translation>
+<translation id="2529899080962247600">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõiki järgnevaid kirjeid eiratakse.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ja veel 1}other{ja veel #}}</translation>
 <translation id="2536110899380797252">Lisa aadress</translation>
 <translation id="2539524384386349900">Tuvasta</translation>
+<translation id="2540701853218677861">Seadme sisse-/väljalogimiste ajalugu, sh ajatemplid ja ebaõnnestunud katsed</translation>
 <translation id="2541219929084442027">Inkognito vahelehtedel kuvatavaid lehti ei talletata pärast inkognito vahelehtede sulgemist brauseri ajalukku, küpsistefailide salve ega otsinguajalukku. Allalaaditavad failid ja järjehoidjatesse lisatud sisu säilitatakse.</translation>
 <translation id="2544644783021658368">Üks dokument</translation>
 <translation id="254947805923345898">Reegli väärtus on kehtetu.</translation>
@@ -634,6 +637,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3320021301628644560">Arveldusaadressi lisamine</translation>
 <translation id="3324983252691184275">Tulipunane</translation>
 <translation id="3329013043687509092">Küllastus</translation>
+<translation id="3333762389743153920">Ei saa virtuaalkaardina kasutada</translation>
 <translation id="3338095232262050444">Turvaline</translation>
 <translation id="3355823806454867987">Muuda puhverserveri seadeid ...</translation>
 <translation id="3360103848165129075">Maksetöötleja leht</translation>
@@ -1147,6 +1151,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kaardi kinnitamine</translation>
 <translation id="5135404736266831032">Halda aadresse …</translation>
+<translation id="5138014172396933048">Virtuaalkaart pole praegu saadaval. Võtke ühendust oma pangaga.</translation>
 <translation id="5138227688689900538">Kuva vähem</translation>
 <translation id="514010763713772514">Muutke kassas maksmine kiiremaks</translation>
 <translation id="5145883236150621069">Reegli vastuses sisaldus veakood</translation>
@@ -1193,6 +1198,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5287240709317226393">Kuva küpsised</translation>
 <translation id="5287456746628258573">See sait kasutab vananenud turvaseadistust, mis võib paljastada teie teabe (näiteks paroolid või krediitkaardinumbrid), kui see saadetakse sellele saidile.</translation>
 <translation id="5288108484102287882">Reegli väärtuste valideerimisel ilmnesid hoiatused</translation>
+<translation id="5288808348893593856">Teie ühendus saidiga on turvaline, kui Chrome teisiti ei teavita.</translation>
 <translation id="5289384342738547352">Mitme dokumendi käsitlemine</translation>
 <translation id="5299298092464848405">Reegli sõelumisel ilmnes viga</translation>
 <translation id="5300589172476337783">Kuva</translation>
@@ -1555,9 +1561,11 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6685834062052613830">Logige välja ja viige seadistus lõpule</translation>
 <translation id="6687335167692595844">Fondi taotletud suurus</translation>
 <translation id="6688743156324860098">Värskendage …</translation>
+<translation id="6688775486821967877">Virtuaalkaart pole praegu saadaval. Proovige hiljem uuesti.</translation>
 <translation id="6689249931105087298">Suhteline, musta punkti tihendamisega</translation>
 <translation id="6689271823431384964">Chrome pakub kaartide salvestamist teie Google'i kontole, kuna olete sisse logitud. Seda käitumist saab seadetes muuta. Kaardiomaniku nimi pärineb teie kontolt.</translation>
 <translation id="6698381487523150993">Loodud:</translation>
+<translation id="6699188552522342100">Kas see veebisait on õige?</translation>
 <translation id="6702919718839027939">Esitlemine</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6710594484020273272">&lt;Sisestage otsingutermin&gt;</translation>
@@ -1684,6 +1692,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7219179957768738017">Ühendus kasutab protokolli <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Töötlemine</translation>
 <translation id="7221855153210829124">märguandeid näidata</translation>
+<translation id="722454870747268814">Uus inkognito vaheleht</translation>
 <translation id="7229659723041939809">Sisestasite äsja oma parooli kahtlasele saidile. Chrome soovitab teil salvestatud paroole kontrollida saitide <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ja muude saitide puhul, kus praegu seda parooli kasutate.</translation>
 <translation id="7233592378249864828">Prindi kinnitusleht</translation>
 <translation id="7238585580608191973">SHA-256 sõrmejälg</translation>
@@ -2061,6 +2070,7 @@ Lisateave:
           <ph name="LIST_ITEM" />Küpsisefailid ja saidiandmed.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Kasutage kaartide kiiremaks kinnitamiseks Touch ID-d</translation>
+<translation id="8577348305244205642">Virtuaalkaart pole saadaval</translation>
 <translation id="858637041960032120">Lisage telefoninumber</translation>
 <translation id="8589998999637048520">Parim kvaliteet</translation>
 <translation id="8600271352425265729">Ainult see kord</translation>

@@ -65,6 +65,7 @@
 <translation id="4176825807642096119">Koda za dostop</translation>
 <translation id="4227991223508142681">Orodje za pripravljanje gostitelja</translation>
 <translation id="4240294130679914010">Odstranitveni program gostitelja za Oddaljeno povezovanje s Chromom</translation>
+<translation id="4257751272692708833">Aplikacija za posredovanje URL-jev storitve <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Koda za dostop je neveljavna. Poskusite znova.</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
 <translation id="4405930547258349619">Knjižnica jedra</translation>
@@ -109,6 +110,7 @@
 <translation id="6612717000975622067">Pošlji Ctrl + Alt + Del</translation>
 <translation id="6654753848497929428">Skupna raba</translation>
 <translation id="677755392401385740">Gostitelj zagnan za uporabnika: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Pomožna aplikacija za odpiranje URL-ja v odjemalcu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6939719207673461467">Pokaži/skrij tipkovnico.</translation>
 <translation id="6963936880795878952">Povezave z oddaljenim računalnikom so začasno onemogočene, ker je nekdo poskušal vzpostaviti povezavo z njim z neveljavno kodo PIN. Poskusite znova pozneje.</translation>
 <translation id="6965382102122355670">V redu</translation>

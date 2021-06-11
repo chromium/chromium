@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Хулганы курсорыг тодруулах</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />-н удирддаг бүртгэл</translation>
 <translation id="3552189655002856821">Wi-Fi унтраалттай байна</translation>
+<translation id="3560866052109807830">Тэмдэглэгээ зурах хэрэгсэл</translation>
 <translation id="3563775809269155755">Сүлжээний цэгийг идэвхжүүлэх</translation>
 <translation id="3571734092741541777">Тохиргоо хийх.</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"-руу буцааж өөрчил (системийг дахин эхлүүлэх хэрэгтэй)</translation>
@@ -412,6 +413,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. End товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Баруун сумыг дарна уу.</translation>
 <translation id="4279490309300973883">Толин тусгал үүсгэх</translation>
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
+<translation id="429402653707266969">Самбарын байршлыг асаах/унтраах</translation>
 <translation id="4294319844246081198">Өглөөний мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Бүх <ph name="COUNT" /> мэдэгдлийг устгах</translation>
 <translation id="4302592941791324970">Боломжгүй</translation>

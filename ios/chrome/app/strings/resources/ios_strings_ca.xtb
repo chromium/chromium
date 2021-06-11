@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="2074131957428911366">Sempre pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> per decidir què vols sincronitzar.</translation>
 <translation id="2079545284768500474">Desfés</translation>
-<translation id="2086623437239112659">És possible que la informació d'inici de sessió emmagatzemada no estigui actualitzada.</translation>
 <translation id="209018056901015185">Mostra com a ordinador</translation>
 <translation id="2103075008456228677">Obre history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elements desplaçats</translation>
@@ -408,6 +407,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5228579091201413441">Activa la sincronització</translation>
+<translation id="5232485538978018676">Inicia la sessió amb un compte gestionat</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5245322853195994030">Cancel·la la sincronització</translation>
 <translation id="5271549068863921519">Desa la contrasenya</translation>
@@ -724,6 +724,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="8225985093977202398">Fitxers i imatges a memòria cau</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
+<translation id="8271720166617117963">Accepta i inicia la sessió</translation>
 <translation id="8281781826761538115">Idioma predeterminat: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omet</translation>
 <translation id="8283172974887967105">Estableix…</translation>

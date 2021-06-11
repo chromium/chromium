@@ -67,6 +67,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="4176825807642096119">Access code</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>
 <translation id="4240294130679914010">Chromoting Host Uninstaller</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL forwarder</translation>
 <translation id="4277736576214464567">The access code is invalid. Please try again.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4405930547258349619">Core Library</translation>
@@ -121,6 +122,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="6612717000975622067">Send Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Share</translation>
 <translation id="677755392401385740">Host started for user: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Helper application to open a URL on the <ph name="PRODUCT_NAME" /> client</translation>
 <translation id="6939719207673461467">Show/hide keyboard.</translation>
 <translation id="6963936880795878952">Connections to the remote computer are temporarily blocked because somebody was trying to connect to it with an invalid PIN. Please try again later.</translation>
 <translation id="6965382102122355670">OK</translation>

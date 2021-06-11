@@ -312,6 +312,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti katru dienu.}=1{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti katru dienu.}zero{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti ik pēc {NUM_DAYS} dienām.}one{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti ik pēc {NUM_DAYS} dienām.}other{Ja šī vadīkla ir ieslēgta un statuss ir aktīvs, pārlūkā Chrome tiek noteikts, kurai lielai lietotāju grupai jeb kohortai jūsu nesenās pārlūkošanas darbības līdzinās visvairāk. Reklāmdevēji var atlasīt grupai atbilstošas reklāmas, bet jūsu pārlūkošanas darbības tiek privāti glabātas jūsu ierīcē. Jūsu grupas dati tiek atjaunināti ik pēc {NUM_DAYS} dienām.}}</translation>
 <translation id="2053553514270667976">Pasta indekss</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ieteikums}zero{# ieteikumi}one{# ieteikums}other{# ieteikumi}}</translation>
+<translation id="2071156619270205202">Šī karte neatbilst virtuālās kartes numuram.</translation>
 <translation id="2071692954027939183">Paziņojumi tika automātiski bloķēti, jo jūs tos parasti neatļaujat.</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="20817612488360358">Ir iestatīta datora starpniekserveru iestatījumu lietošana, bet ir norādīta arī atklāta starpniekservera konfigurācija.</translation>
@@ -440,9 +441,11 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2521385132275182522">Skavojums apakšējā labajā malā</translation>
 <translation id="2523886232349826891">Tiks saglabāta tikai šajā ierīcē</translation>
 <translation id="2524461107774643265">Papildu informācijas pievienošana</translation>
+<translation id="2529899080962247600">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks ignorēti.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{un vēl 1}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
 <translation id="2536110899380797252">Pievienot adresi</translation>
 <translation id="2539524384386349900">Noteikt</translation>
+<translation id="2540701853218677861">Ierīces pieteikšanās/atteikšanās vēsture, tostarp laikspiedoli un neizdevušies mēģinājumi</translation>
 <translation id="2541219929084442027">Lapas, ko skatāt inkognito cilnēs, nebūs redzamas pārlūka vēsturē, sīkfailu krātuvē vai meklēšanas vēsturē, kad aizvērsiet visas inkognito cilnes. Tomēr tiks saglabāti visi lejupielādētie faili un izveidotās grāmatzīmes.</translation>
 <translation id="2544644783021658368">Viens dokuments</translation>
 <translation id="254947805923345898">Politikas vērtība nav derīga.</translation>
@@ -633,6 +636,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3320021301628644560">Norēķinu adreses pievienošana</translation>
 <translation id="3324983252691184275">Tumši sarkana</translation>
 <translation id="3329013043687509092">Piesātinājums</translation>
+<translation id="3333762389743153920">Neatbilst virtuālajai kartei</translation>
 <translation id="3338095232262050444">Droši</translation>
 <translation id="3355823806454867987">Mainīt starpniekservera iestatījumus...</translation>
 <translation id="3360103848165129075">Maksājumu apstrādātāja lapa</translation>
@@ -1145,6 +1149,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kartes verificēšana</translation>
 <translation id="5135404736266831032">Pārvaldīt adreses...</translation>
+<translation id="5138014172396933048">Virtuālā karte pašlaik nav pieejama. Lūdzu, sazinieties ar savu banku.</translation>
 <translation id="5138227688689900538">Rādīt mazāk</translation>
 <translation id="514010763713772514">Nākamajā reizē izmantojiet ātrāku norēķinu iespēju</translation>
 <translation id="5145883236150621069">Politikas atbildē ir kļūdas kods.</translation>
@@ -1191,6 +1196,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5287240709317226393">Rādīt sīkfailus</translation>
 <translation id="5287456746628258573">Šajā vietnē tiek izmantota novecojusi drošības konfigurācija, tādēļ var tikt atklāta jūsu informācija (piemēram, paroles vai kredītkaršu numuri), kad tā tiek nosūtīta uz šo vietni.</translation>
 <translation id="5288108484102287882">Validējot politikas vērtības, tika konstatētas kļūdas</translation>
+<translation id="5288808348893593856">Vietnes savienojums ir drošs, ja vien pārlūkā Chrome nav norādīts citādi.</translation>
 <translation id="5289384342738547352">Vairāku dokumentu apstrāde</translation>
 <translation id="5299298092464848405">Parsējot politiku, radās kļūda.</translation>
 <translation id="5300589172476337783">Rādīt</translation>
@@ -1553,9 +1559,11 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6685834062052613830">Izrakstieties un pabeidziet iestatīšanu</translation>
 <translation id="6687335167692595844">Tika pieprasīts fonta lielums</translation>
 <translation id="6688743156324860098">Atjaunināt…</translation>
+<translation id="6688775486821967877">Virtuālā karte pašlaik nav pieejama. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6689249931105087298">Relatīva, ar melno punktu saspiešanu</translation>
 <translation id="6689271823431384964">Pārlūkprogrammā Chrome tiek piedāvāts saglabāt jūsu kartes Google kontā, jo esat pierakstījies. Varat mainīt šo darbību iestatījumos. Kartes īpašnieka vārds tiek iegūts no jūsu konta.</translation>
 <translation id="6698381487523150993">Izveidots:</translation>
+<translation id="6699188552522342100">Vai šīs vietnes informācija ir precīza?</translation>
 <translation id="6702919718839027939">Prezentācija</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6710594484020273272">&lt;Ierakstiet meklēšanas vienumu&gt;</translation>
@@ -1682,6 +1690,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7219179957768738017">Savienojums izmanto <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Notiek apstrāde</translation>
 <translation id="7221855153210829124">Rādīt paziņojumus</translation>
+<translation id="722454870747268814">Jauna inkognito cilne</translation>
 <translation id="7229659723041939809">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chrome ieteikums: tūlīt pārbaudiet saglabātās paroles vietnē <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, kā arī citas vietnes, kurās izmantojat šo paroli.</translation>
 <translation id="7233592378249864828">Drukāšanas apstiprinājuma lapa</translation>
 <translation id="7238585580608191973">SHA-256 pirkstu nospiedums</translation>
@@ -2059,6 +2068,7 @@ Papildu informācija:
           <ph name="LIST_ITEM" />sīkfaili un vietņu dati.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Izmantot Touch ID, lai apstiprinātu kartes ātrāk</translation>
+<translation id="8577348305244205642">Virtuālā karte nav pieejama</translation>
 <translation id="858637041960032120">Piev. tālr. nr.
 </translation>
 <translation id="8589998999637048520">Optimālā kvalitāte</translation>

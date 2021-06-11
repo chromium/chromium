@@ -67,6 +67,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="4176825807642096119">Pristupni kôd</translation>
 <translation id="4227991223508142681">Uslužni program host računara</translation>
 <translation id="4240294130679914010">Deinstalacija host računara za Chromoting</translation>
+<translation id="4257751272692708833">Aplikacija za prosljeđivanje URL-a za proizvod <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kôd za pristup je nevažeći. Pokušajte ponovo.</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
 <translation id="4405930547258349619">Osnovna biblioteka</translation>
@@ -121,6 +122,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="6612717000975622067">Pošalji Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Dijeli</translation>
 <translation id="677755392401385740">Host je pokrenut za korisnika: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Pomoćna aplikacija za otvaranje URL-a na klijentu proizvoda <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Prikaži/sakrij tastaturu.</translation>
 <translation id="6963936880795878952">Povezivanje s udaljenim računarom je trenutno blokirano jer se neko pokušao povezati na njega koristeći nevažeći PIN. Pokušajte ponovo kasnije.</translation>
 <translation id="6965382102122355670">Uredu</translation>

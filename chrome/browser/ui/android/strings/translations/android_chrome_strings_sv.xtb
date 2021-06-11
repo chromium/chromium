@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Det gick inte att verifiera uppgifterna</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Aldrig sparad</translation>
-<translation id="1067922213147265141">Andra Google-tjänster</translation>
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
 <translation id="1095761715416917775">Se till att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1100066534610197918">Öppna i en ny flik i en grupp</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Visa inte igen</translation>
 <translation id="1680919990519905526">Köp bild med Google Lens <ph name="BEGIN_NEW" />Nytt<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Testa nu</translation>
-<translation id="1692118695553449118">Synkronisering är på</translation>
 <translation id="1697284962337958118">Lägg till i</translation>
 <translation id="1718835860248848330">Senaste timmen</translation>
 <translation id="1724977129262658800">Lås upp om du vill redigera lösenordet</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Behåll data</translation>
 <translation id="1974060860693918893">Avancerat</translation>
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
-<translation id="1984705450038014246">Synkronisera data i Chrome</translation>
 <translation id="1986685561493779662">Namnet finns redan</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> – knapp för <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> vill kopplas</translation>
@@ -188,7 +185,6 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2200113223741723867">Hantera delning av data om användning</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">För dig</translation>
-<translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2239812875700136898">Du kan styra artiklarna med knappen Alternativ för Förslag</translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
@@ -364,7 +360,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3295530008794733555">Surfa snabbare. Förbruka mindre data.</translation>
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
-<translation id="3315103659806849044">Du anpassar nu dina inställningar för synkronisering och Google-tjänster. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
 <translation id="3341058695485821946">Se hur mycket data du har sparat</translation>
 <translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4298388696830689168">Länkade webbplatser</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Grunderna</translation>
-<translation id="4314815835985389558">Hantera synkronisering</translation>
 <translation id="4320177379694898372">Ingen internetanslutning</translation>
 <translation id="4321739720395210191">Det gick inte att öppna kameran. Starta om enheten och försök igen.</translation>
 <translation id="433213510553688132">Följer …</translation>
@@ -631,9 +625,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="510275257476243843">1 timme kvar</translation>
 <translation id="5118713593561876160">Intressen</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
-<translation id="5127805178023152808">Synkronisering är av</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
-<translation id="5136035049889637840">Köp liknande produkter <ph name="BEGIN_NEW" />Nytt<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Lär dig använda Google Drive</translation>
 <translation id="5152843274749979095">Inga appar som stöds finns installerade</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
@@ -753,6 +745,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5854790677617711513">Äldre än 30 dagar</translation>
 <translation id="5855546874025048181">Finjustera: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Det gick inte att aktivera Bluetooth-adaptern i Chrome</translation>
+<translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="5862731021271217234">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter</translation>
 <translation id="5864174910718532887">Mer information: Sorterad efter webbplatsnamn</translation>
@@ -762,6 +755,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="587735546353481577">Om du vill följa en webbplats besöker du den, öppnar Chrome-menyn och trycker på Följ.</translation>
 <translation id="5880748256563468367">Visa flödet</translation>
 <translation id="5884076754568147479">Innehållet på en webbplats där du använder Google Assistent, dess webbadress samt information som du skickar via assistenten överförs till Google så att du kan få uppgifterna utförda</translation>
+<translation id="5916664084637901428">På</translation>
 <translation id="5919204609460789179">Uppdatera <ph name="PRODUCT_NAME" /> för att starta synkronisering</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> har sparats</translation>
 <translation id="5939518447894949180">Återställ</translation>
@@ -812,7 +806,6 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="6192907950379606605">Få bildbeskrivningar</translation>
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
-<translation id="6218096829563201111">Sök på liknande produkter <ph name="BEGIN_NEW" />Nytt<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Lås upp om du vill exportera dina lösenord</translation>
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
 

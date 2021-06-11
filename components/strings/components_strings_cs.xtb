@@ -308,6 +308,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každý den aktualizuje.}=1{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každý den aktualizuje.}few{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každé {NUM_DAYS} dny aktualizuje.}many{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každých {NUM_DAYS} dne aktualizuje.}other{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každých {NUM_DAYS} dní aktualizuje.}}</translation>
 <translation id="2053553514270667976">PSČ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 návrh}few{# návrhy}many{# návrhu}other{# návrhů}}</translation>
+<translation id="2071156619270205202">Tato karta není pro číslo virtuální karty vhodná.</translation>
 <translation id="2071692954027939183">Oznámení byla automaticky zablokována, protože je obvykle nepovolujete</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="20817612488360358">Jako aktivní jsou nakonfigurována systémová nastavení proxy serveru, je však určena i explicitní konfigurace proxy serveru.</translation>
@@ -436,9 +437,11 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2521385132275182522">Sponka vpravo dole</translation>
 <translation id="2523886232349826891">Uloženo pouze do tohoto zařízení</translation>
 <translation id="2524461107774643265">Přidání dalších informací</translation>
+<translation id="2529899080962247600">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou ignorovány.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{a 1 další}few{a # další}many{a # další}other{a # dalších}}</translation>
 <translation id="2536110899380797252">Přidat adresu</translation>
 <translation id="2539524384386349900">Rozpoznat</translation>
+<translation id="2540701853218677861">Historie přihlášení a odhlášení na zařízení, včetně časových razítek a neúspěšných pokusů</translation>
 <translation id="2541219929084442027">Stránky, které otevřete na anonymních kartách, po zavření všech anonymních karet nezanechají žádné stopy v historii prohlížeče, v úložišti souborů cookie ani v historii vyhledávání. Zachovány však zůstanou všechny stažené soubory a vytvořené záložky.</translation>
 <translation id="2544644783021658368">Jeden dokument</translation>
 <translation id="254947805923345898">Hodnota zásady není platná.</translation>
@@ -626,6 +629,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3320021301628644560">Přidání fakturační adresy</translation>
 <translation id="3324983252691184275">Karmínová</translation>
 <translation id="3329013043687509092">Sytost</translation>
+<translation id="3333762389743153920">Není vhodné pro virtuální kartu</translation>
 <translation id="3338095232262050444">Zabezpečeno</translation>
 <translation id="3355823806454867987">Změna nastavení proxy...</translation>
 <translation id="3360103848165129075">List obslužného nástroje pro platby</translation>
@@ -1132,6 +1136,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Ověřte svou kartu</translation>
 <translation id="5135404736266831032">Spravovat adresy...</translation>
+<translation id="5138014172396933048">Virtuální karta v tuto chvíli není k dispozici. Kontaktujte svoji banku.</translation>
 <translation id="5138227688689900538">Zobrazit méně</translation>
 <translation id="514010763713772514">Příště dokončete nákup rychleji</translation>
 <translation id="5145883236150621069">Odpověď zásady obsahuje kód chyby</translation>
@@ -1178,6 +1183,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5287240709317226393">Zobrazit soubory cookie</translation>
 <translation id="5287456746628258573">Tento web používá zastaralou konfiguraci zabezpečení, která vaše informace odesílané na tento web (například hesla nebo čísla kreditních karet) vystavuje riziku odhalení.</translation>
 <translation id="5288108484102287882">Ověření hodnot zásad vygenerovalo upozornění</translation>
+<translation id="5288808348893593856">Pokud vás Chrome neinformuje o opaku, je připojení k webu bezpečné.</translation>
 <translation id="5289384342738547352">Zpracování více dokumentů</translation>
 <translation id="5299298092464848405">Při analýze zásady došlo k chybě</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
@@ -1539,9 +1545,11 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6685834062052613830">Odhlaste se a dokončete nastavení</translation>
 <translation id="6687335167692595844">Požadována velikost písma</translation>
 <translation id="6688743156324860098">Aktualizovat…</translation>
+<translation id="6688775486821967877">Virtuální karta aktuálně není k dispozici. Zkuste to znovu později</translation>
 <translation id="6689249931105087298">Relativní s kompresí černého bodu</translation>
 <translation id="6689271823431384964">Chrome vám nabízí uložení karet do účtu Google, protože jste přihlášeni. Toto chování můžete změnit v Nastavení. Jméno držitele karty pochází z vašeho účtu.</translation>
 <translation id="6698381487523150993">Vytvořil:</translation>
+<translation id="6699188552522342100">Je tento web přesný?</translation>
 <translation id="6702919718839027939">Prezentovat</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6710594484020273272">&lt;Zadejte vyhledávací dotaz&gt;</translation>
@@ -1668,6 +1676,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7219179957768738017">Připojení používá protokol <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Zpracovávání</translation>
 <translation id="7221855153210829124">Zobrazovat oznámení</translation>
+<translation id="722454870747268814">Nová anonymní karta</translation>
 <translation id="7229659723041939809">Právě jste své heslo zadali na klamavém webu. Chrome doporučuje zkontrolovat uložená hesla pro weby <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />a další weby, na nichž toto heslo používáte.</translation>
 <translation id="7233592378249864828">Tisknout potvrzující list</translation>
 <translation id="7238585580608191973">Digitální otisk SHA-256</translation>
@@ -2044,6 +2053,7 @@ Další podrobnosti:
           <ph name="LIST_ITEM" />soubory cookie a data webů.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Potvrzovat karty rychleji pomocí technologie Touch ID</translation>
+<translation id="8577348305244205642">Virtuální karta není k dispozici</translation>
 <translation id="858637041960032120">Přidat telefon
 </translation>
 <translation id="8589998999637048520">Nejlepší kvalita</translation>

@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
-<translation id="2086623437239112659">Maklumat log masuk anda yang disimpan mungkin sudah lapuk.</translation>
 <translation id="209018056901015185">Minta Tapak Desktop</translation>
 <translation id="2103075008456228677">Buka history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dialihkan</translation>
@@ -408,6 +407,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5228579091201413441">Dayakan penyegerakan</translation>
+<translation id="5232485538978018676">Log masuk dengan Akaun Terurus</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
 <translation id="5245322853195994030">Batalkan Penyegerakan</translation>
 <translation id="5271549068863921519">Simpan kata laluan</translation>
@@ -724,6 +724,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8206354486702514201">Tetapan ini dikuatkuasakan oleh pentadbir anda.</translation>
 <translation id="8225985093977202398">Imej dan Fail Dicache</translation>
 <translation id="8261506727792406068">Padam</translation>
+<translation id="8271720166617117963">Terima dan Log masuk</translation>
 <translation id="8281781826761538115">Lalai - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8283172974887967105">Tetapkan…</translation>

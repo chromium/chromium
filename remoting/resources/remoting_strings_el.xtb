@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">Κωδικός πρόσβασης</translation>
 <translation id="4227991223508142681">Βοηθητικό πρόγραμμα παροχής φιλοξενίας</translation>
 <translation id="4240294130679914010">Πρόγραμμα απεγκατάστασης κεντρικού υπολογιστή Chromoting</translation>
+<translation id="4257751272692708833">Εφαρμογή προώθησης URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Ο κωδικός πρόσβασης δεν είναι έγκυρος. Δοκιμάστε ξανά.</translation>
 <translation id="4281844954008187215">Όροι Παροχής Υπηρεσιών</translation>
 <translation id="4405930547258349619">Βασική βιβλιοθήκη</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">Αποστολή Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Κοινοποίηση</translation>
 <translation id="677755392401385740">Ο κεντρικός υπολογιστής ξεκίνησε για το χρήστη: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Βοηθητική εφαρμογή για άνοιγμα URL στον υπολογιστή πελάτη <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Εμφάνιση/απόκρυψη πληκτρολογίου.</translation>
 <translation id="6963936880795878952">Οι συνδέσεις στον απομακρυσμένο υπολογιστή έχουν αποκλειστεί προσωρινά, επειδή κάποιος επιχείρησε να συνδεθεί σε αυτόν με μη έγκυρο PIN. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="6965382102122355670">OK</translation>

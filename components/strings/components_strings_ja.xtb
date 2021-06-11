@@ -308,6 +308,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}=1{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}other{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは {NUM_DAYS} 日ごとに更新されます。}}</translation>
 <translation id="2053553514270667976">郵便番号</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 件の候補}other{# 件の候補}}</translation>
+<translation id="2071156619270205202">このカードでは仮想カード番号はご利用いただけません</translation>
 <translation id="2071692954027939183">普段は通知を許可されないようですので、通知を自動的にブロックしました</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>
@@ -436,9 +437,11 @@
 <translation id="2521385132275182522">ステープル（右下）</translation>
 <translation id="2523886232349826891">カードはこのデバイスのみに保存されます</translation>
 <translation id="2524461107774643265">その他の情報の追加</translation>
+<translation id="2529899080962247600">このフィールドで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。それ以降のエントリはすべて無視されます。</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{、他 1 件}other{、他 # 件}}</translation>
 <translation id="2536110899380797252">住所を追加</translation>
 <translation id="2539524384386349900">検出</translation>
+<translation id="2540701853218677861">デバイスのログインとログアウトの履歴（タイムスタンプと失敗した試行を含む）</translation>
 <translation id="2541219929084442027">シークレット タブで表示したページの記録は、シークレット タブをすべて閉じた後、ブラウザの履歴、Cookie の保存場所、検索履歴から削除されます。ただし、ダウンロードしたファイルや作成したブックマークは保存されます。</translation>
 <translation id="2544644783021658368">1 つのドキュメント</translation>
 <translation id="254947805923345898">ポリシーの値が無効です。</translation>
@@ -629,6 +632,7 @@
 <translation id="3320021301628644560">請求先住所を追加</translation>
 <translation id="3324983252691184275">クリムゾン</translation>
 <translation id="3329013043687509092">彩度</translation>
+<translation id="3333762389743153920">仮想カードは使用できません</translation>
 <translation id="3338095232262050444">保護された通信</translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
 <translation id="3360103848165129075">支払いハンドラのシート</translation>
@@ -1137,6 +1141,7 @@
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">カードの確認</translation>
 <translation id="5135404736266831032">住所を管理...</translation>
+<translation id="5138014172396933048">仮想カードは現在ご利用いただけません。銀行にお問い合わせください</translation>
 <translation id="5138227688689900538">一部を表示</translation>
 <translation id="514010763713772514">次回の確認が簡単になります</translation>
 <translation id="5145883236150621069">ポリシー応答内にエラー コードがあります</translation>
@@ -1183,6 +1188,7 @@
 <translation id="5287240709317226393">Cookie を表示</translation>
 <translation id="5287456746628258573">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワードやクレジット カード番号などの情報を送信すると流出する恐れがあります。</translation>
 <translation id="5288108484102287882">ポリシー値の検証で警告が返されました</translation>
+<translation id="5288808348893593856">サイトの接続は保護されます（保護されない場合は通知されます）</translation>
 <translation id="5289384342738547352">複数ドキュメントの処理</translation>
 <translation id="5299298092464848405">ポリシーの解析中にエラーが発生しました</translation>
 <translation id="5300589172476337783">表示</translation>
@@ -1545,9 +1551,11 @@
 <translation id="6685834062052613830">ログアウトして設定を完了してください</translation>
 <translation id="6687335167692595844">リクエストされたフォントサイズ</translation>
 <translation id="6688743156324860098">更新…</translation>
+<translation id="6688775486821967877">仮想カードは現在ご利用いただけません。しばらくしてからもう一度お試しください。</translation>
 <translation id="6689249931105087298">相対的（黒点の補正あり）</translation>
 <translation id="6689271823431384964">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。カード名義人はアカウントから取得されます。</translation>
 <translation id="6698381487523150993">作成:</translation>
+<translation id="6699188552522342100">ウェブサイトの情報は正確ですか？</translation>
 <translation id="6702919718839027939">プレゼンテーション</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6710594484020273272">&lt;検索キーワードを入力&gt;</translation>
@@ -1674,6 +1682,7 @@
 <translation id="7219179957768738017">この接続には <ph name="SSL_VERSION" /> を使用しています。</translation>
 <translation id="7220786058474068424">処理しています</translation>
 <translation id="7221855153210829124">通知の表示</translation>
+<translation id="722454870747268814">新しいシークレット タブ</translation>
 <translation id="7229659723041939809">偽のサイトでパスワードを入力しました。<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> のほか、このパスワードを使用しているサイトで、保存したパスワードを今すぐ確認することをおすすめします。</translation>
 <translation id="7233592378249864828">確認シートの印刷</translation>
 <translation id="7238585580608191973">SHA-256 指紋</translation>
@@ -2051,6 +2060,7 @@
           <ph name="LIST_ITEM" />Cookie とサイトデータ
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Touch ID を使用してカードをすばやく確認する</translation>
+<translation id="8577348305244205642">仮想カードを使用できません</translation>
 <translation id="858637041960032120">電話番号を追加
 </translation>
 <translation id="8589998999637048520">最高画質</translation>

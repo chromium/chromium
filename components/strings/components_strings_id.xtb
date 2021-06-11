@@ -308,6 +308,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap hari.}=1{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap hari.}other{Jika kontrol ini aktif dan statusnya masih berlaku, Chrome akan menentukan grup besar, atau "kohor", yang paling mirip dengan aktivitas penjelajahan terbaru Anda. Pengiklan dapat memilih iklan untuk grup tersebut dan aktivitas penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Grup Anda diperbarui setiap {NUM_DAYS} hari.}}</translation>
 <translation id="2053553514270667976">Kode pos</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 saran}other{# saran}}</translation>
+<translation id="2071156619270205202">Kartu ini tidak memenuhi syarat untuk nomor kartu virtual.</translation>
 <translation id="2071692954027939183">Notifikasi otomatis diblokir karena Anda biasanya tidak mengizinkannya</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="20817612488360358">Setelan proxy sistem disetel untuk digunakan namun konfigurasi proxy eksplisit juga ditentukan.</translation>
@@ -436,9 +437,11 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2521385132275182522">Jepretan di kanan bawah</translation>
 <translation id="2523886232349826891">Hanya disimpan di perangkat ini</translation>
 <translation id="2524461107774643265">Tambahkan Informasi Lainnya</translation>
+<translation id="2529899080962247600">Kolom ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dan 1 lainnya}other{dan # lainnya}}</translation>
 <translation id="2536110899380797252">Tambahkan Alamat</translation>
 <translation id="2539524384386349900">Deteksi</translation>
+<translation id="2540701853218677861">Histori login/logout perangkat, termasuk stempel waktu dan upaya yang gagal</translation>
 <translation id="2541219929084442027">Halaman yang Anda lihat di tab Samaran tidak akan disimpan di histori browser, penyimpanan cookie, atau histori penelusuran setelah Anda menutup semua tab Samaran. File apa pun yang didownload atau bookmark yang dibuat akan tetap disimpan.</translation>
 <translation id="2544644783021658368">Dokumen tunggal</translation>
 <translation id="254947805923345898">Nilai kebijakan tidak valid.</translation>
@@ -631,6 +634,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3320021301628644560">Tambahkan alamat penagihan</translation>
 <translation id="3324983252691184275">Merah Lembayung</translation>
 <translation id="3329013043687509092">Saturasi</translation>
+<translation id="3333762389743153920">Tidak memenuhi syarat untuk kartu virtual</translation>
 <translation id="3338095232262050444">Aman</translation>
 <translation id="3355823806454867987">Ubah setelan proxy...</translation>
 <translation id="3360103848165129075">Lembar handler pembayaran</translation>
@@ -1138,6 +1142,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifikasi kartu</translation>
 <translation id="5135404736266831032">Kelola alamat...</translation>
+<translation id="5138014172396933048">Kartu virtual saat ini tidak tersedia, hubungi bank Anda</translation>
 <translation id="5138227688689900538">Tampilkan lebih sedikit</translation>
 <translation id="514010763713772514">Check out lebih cepat lain kali</translation>
 <translation id="5145883236150621069">Ada kode kesalahan dalam tanggapan kebijakan</translation>
@@ -1184,6 +1189,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5287240709317226393">Tampilkan cookie</translation>
 <translation id="5287456746628258573">Situs ini menggunakan konfigurasi keamanan yang telah habis masa berlakunya, yang dapat mengekspos informasi Anda (misalnya, sandi atau nomor kartu kredit) saat dikirimkan ke situs ini.</translation>
 <translation id="5288108484102287882">Validasi nilai kebijakan telah memunculkan peringatan</translation>
+<translation id="5288808348893593856">Koneksi situs aman kecuali jika Chrome menyatakan sebaliknya.</translation>
 <translation id="5289384342738547352">Penanganan beberapa dokumen</translation>
 <translation id="5299298092464848405">Kebijakan kesalahan penguraian</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
@@ -1546,9 +1552,11 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6685834062052613830">Keluar dan selesaikan penyiapan</translation>
 <translation id="6687335167692595844">Ukuran font diminta</translation>
 <translation id="6688743156324860098">Perbarui…</translation>
+<translation id="6688775486821967877">Kartu virtual saat ini tidak tersedia, coba lagi nanti</translation>
 <translation id="6689249931105087298">Relatif dengan kompresi titik hitam</translation>
 <translation id="6689271823431384964">Chrome menawarkan untuk menyimpan informasi kartu ke Akun Google Anda karena Anda sedang login. Anda dapat mengubah perilaku ini di setelan. Nama pemegang kartu berasal dari akun Anda.</translation>
 <translation id="6698381487523150993">Dibuat:</translation>
+<translation id="6699188552522342100">Apakah situs ini akurat?</translation>
 <translation id="6702919718839027939">Presentasi</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6710594484020273272">&lt;Ketik istilah penelusuran&gt;</translation>
@@ -1675,6 +1683,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7219179957768738017">Koneksi menggunakan <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Dalam proses</translation>
 <translation id="7221855153210829124">Tampilkan notifikasi</translation>
+<translation id="722454870747268814">Tab Samaran Baru</translation>
 <translation id="7229659723041939809">Anda baru saja memasukkan sandi ke situs penipuan. Chrome merekomendasikan Anda memeriksa sandi yang disimpan untuk <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, dan situs lain tempat Anda menggunakan sandi ini sekarang.</translation>
 <translation id="7233592378249864828">Cetak lembar konfirmasi</translation>
 <translation id="7238585580608191973">SHA-256 Fingerprint</translation>
@@ -2048,6 +2057,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
           <ph name="LIST_ITEM" />Cookie dan data situs
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Gunakan Touch ID untuk mengonfirmasi kartu dengan lebih cepat</translation>
+<translation id="8577348305244205642">Kartu virtual tidak tersedia</translation>
 <translation id="858637041960032120">+ nomor telepon</translation>
 <translation id="8589998999637048520">Kualitas terbaik</translation>
 <translation id="8600271352425265729">Hanya kali ini</translation>

@@ -312,6 +312,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Ha ez a vezérlő be van kapcsolva, és az állapot aktív, a Chrome meghatározza, hogy az Ön legutóbbi böngészési tevékenysége melyik nagy társadalmi csoporthoz, azaz „kohorszhoz” hasonlít leginkább. A hirdetők kiválaszthatják a hirdetéseket a csoporthoz, ám a böngészési előzményeit privát módon tárolja a rendszer az eszközén. Csoportja minden nap frissül.}=1{Ha ez a vezérlő be van kapcsolva, és az állapot aktív, a Chrome meghatározza, hogy az Ön legutóbbi böngészési tevékenysége melyik nagy társadalmi csoporthoz, azaz „kohorszhoz” hasonlít leginkább. A hirdetők kiválaszthatják a hirdetéseket a csoporthoz, ám a böngészési előzményeit privát módon tárolja a rendszer az eszközén. Csoportja minden nap frissül.}other{Ha ez a vezérlő be van kapcsolva, és az állapot aktív, a Chrome meghatározza, hogy az Ön legutóbbi böngészési tevékenysége melyik nagy társadalmi csoporthoz, azaz „kohorszhoz” hasonlít leginkább. A hirdetők kiválaszthatják a hirdetéseket a csoporthoz, ám a böngészési előzményeit privát módon tárolja a rendszer az eszközén. Csoportja {NUM_DAYS} naponta frissül.}}</translation>
 <translation id="2053553514270667976">Irányítószám</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 javaslat}other{# javaslat}}</translation>
+<translation id="2071156619270205202">Ez a kártya nem használható virtuális kártyaszámmal.</translation>
 <translation id="2071692954027939183">A rendszer automatikusan letiltotta az értesítéseket, mert Ön általában nem engedélyezi őket.</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="20817612488360358">A rendszer proxybeállításai konfigurálva vannak a használathoz, de kifejezett proxykonfiguráció is meg van adva.</translation>
@@ -440,9 +441,11 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2521385132275182522">Kapocs jobbra lent</translation>
 <translation id="2523886232349826891">Csak erre az eszközre mentve</translation>
 <translation id="2524461107774643265">További adatok hozzáadása</translation>
+<translation id="2529899080962247600">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A további bejegyzéseket figyelmen kívül hagyja a rendszer.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{és 1 további}other{és # további}}</translation>
 <translation id="2536110899380797252">Cím hozzáadása</translation>
 <translation id="2539524384386349900">Felismerés</translation>
+<translation id="2540701853218677861">Az eszköz be- és kijelentkezési előzményei, időbélyegekkel és sikertelen kísérletekkel</translation>
 <translation id="2541219929084442027">Az inkognitó lapon megtekintett oldalak az összes inkognitó lap bezárását követően nem szerepelnek majd böngészési előzményei között, a cookie-k gyűjtőhelyén, illetve a keresési előzményekben. A letöltött fájlok és a könyvjelzők azonban megmaradnak.</translation>
 <translation id="2544644783021658368">Egyetlen dokumentum</translation>
 <translation id="254947805923345898">A házirend értéke nem érvényes.</translation>
@@ -631,6 +634,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3320021301628644560">Számlázási cím hozzáadása</translation>
 <translation id="3324983252691184275">Karmazsinvörös</translation>
 <translation id="3329013043687509092">Telítettség</translation>
+<translation id="3333762389743153920">Nem használható virtuális kártyával</translation>
 <translation id="3338095232262050444">Biztonságos</translation>
 <translation id="3355823806454867987">Proxybeállítások módosítása...</translation>
 <translation id="3360103848165129075">Fizetési információk munkalapja</translation>
@@ -1144,6 +1148,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kártya ellenőrzése</translation>
 <translation id="5135404736266831032">Címek kezelése…</translation>
+<translation id="5138014172396933048">A virtuális kártya jelenleg nem áll rendelkezésre, vegye fel a kapcsolatot a bankjával</translation>
 <translation id="5138227688689900538">Kevesebb megjelenítése</translation>
 <translation id="514010763713772514">Legközelebb gyorsabban fizethet</translation>
 <translation id="5145883236150621069">Az irányelv válasza hibakódot tartalmaz</translation>
@@ -1190,6 +1195,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5287240709317226393">Cookie-k megjelenítése</translation>
 <translation id="5287456746628258573">Ez a webhely elavult biztonsági konfigurációt használ, ezért előfordulhat, hogy mások látják az Ön adatait (például jelszavait vagy hitelkártyaszámait), amikor elküldi őket a webhelynek.</translation>
 <translation id="5288108484102287882">A házirendértékek ellenőrzése során figyelmeztetések merültek fel</translation>
+<translation id="5288808348893593856">A webhely kapcsolata biztonságos, hacsak a Chrome nem értesíti Önt ennek ellenkezőjéről.</translation>
 <translation id="5289384342738547352">Több dokumentum kezelése</translation>
 <translation id="5299298092464848405">Irányelv-előfeldolgozási hiba</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
@@ -1552,9 +1558,11 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6685834062052613830">Kijelentkezés és a beállítás befejezése</translation>
 <translation id="6687335167692595844">Kért betűméret</translation>
 <translation id="6688743156324860098">Frissítés…</translation>
+<translation id="6688775486821967877">A virtuális kártya jelenleg nem áll rendelkezésre, próbálja újra később</translation>
 <translation id="6689249931105087298">Relatív, feketepontos tömörítéssel</translation>
 <translation id="6689271823431384964">A Chrome felajánlja a kártyák mentését az Ön Google-fiókjába, mert be van jelentkezve. A beállítások között ezt bármikor módosíthatja. A kártyatulajdonos nevének forrása az Ön fiókja.</translation>
 <translation id="6698381487523150993">Létrehozva:</translation>
+<translation id="6699188552522342100">Pontosak a webhely információi?</translation>
 <translation id="6702919718839027939">Prezentáció</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="6710594484020273272">&lt;Írja be a keresési kifejezést&gt;</translation>
@@ -1681,6 +1689,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7219179957768738017">A kapcsolat a következőt használja: <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Feldolgozás alatt</translation>
 <translation id="7221855153210829124">Értesítéseket megjeleníteni</translation>
+<translation id="722454870747268814">Új inkognitó lap</translation>
 <translation id="7229659723041939809">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />).</translation>
 <translation id="7233592378249864828">Megerősítő lap nyomtatása</translation>
 <translation id="7238585580608191973">SHA-256 ujjlenyomat</translation>
@@ -2058,6 +2067,7 @@ További részletek:
           <ph name="LIST_ITEM" />Sütik és webhelyadatok
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">A Touch ID használata a kártyák gyorsabb ellenőrzése érdekében</translation>
+<translation id="8577348305244205642">A virtuális kártya nem áll rendelkezésre</translation>
 <translation id="858637041960032120">Szám hozzáadása
 </translation>
 <translation id="8589998999637048520">Legjobb minőség</translation>

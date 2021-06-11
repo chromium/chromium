@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> napja volt aktív</translation>
 <translation id="2074131957428911366">A <ph name="BEGIN_LINK" />beállítások<ph name="END_LINK" /> között bármikor módosíthatja a szinkronizálni kívánt elemeket.</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
-<translation id="2086623437239112659">A tárolt bejelentkezési adatai elavultak lehetnek.</translation>
 <translation id="209018056901015185">Asztali webhely kérése</translation>
 <translation id="2103075008456228677">A history.google.com megnyitása</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elem áthelyezve</translation>
@@ -408,6 +407,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Lap bezárása</translation>
 <translation id="5228579091201413441">Szinkronizálás bekapcsolása</translation>
+<translation id="5232485538978018676">Bejelentkezés felügyelt fiókkal</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5245322853195994030">Szinkronizálás megszakítása</translation>
 <translation id="5271549068863921519">Jelszó mentése</translation>
@@ -724,6 +724,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8206354486702514201">Ezt a beállítást rendszergazdája lépteti életbe.</translation>
 <translation id="8225985093977202398">A gyorsítótárban lévő képek és fájlok</translation>
 <translation id="8261506727792406068">Törlés</translation>
+<translation id="8271720166617117963">Elfogadás és bejelentkezés</translation>
 <translation id="8281781826761538115">Alapértelmezett – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8283172974887967105">Beállítás…</translation>

@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome axborotlaringizni tekshira olmadi</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Parollar saqlanmaydigan saytlar</translation>
-<translation id="1067922213147265141">Boshqa Google xizmatlari</translation>
 <translation id="107147699690128016">Agar fayl kengaytmasi oʻzgartirilsa, fayl boshqa ilovada ochilishi va qurilmaga zarar yetkazishi mumkin.</translation>
 <translation id="1095761715416917775">Sinxronlangan axborotlarni doim ocha olishingizni tekshiring</translation>
 <translation id="1100066534610197918">Guruhda yangi varaqda ochish</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Boshqa ko‘rsatilmasin</translation>
 <translation id="1680919990519905526">Google Lensda <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /> qidiruv</translation>
 <translation id="1682195225331129001">Sinash</translation>
-<translation id="1692118695553449118">Sinxronlash yoniq</translation>
 <translation id="1697284962337958118">Kiritish</translation>
 <translation id="1718835860248848330">Oxirgi bir soat</translation>
 <translation id="1724977129262658800">Parolni almashtirish uchun qurilma qulfini oching</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Maʼlumotlar joyida qolsin</translation>
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1984417487208496350">Himoyasiz (tavsiya etilmaydi)</translation>
-<translation id="1984705450038014246">Chrome axborotini sinxronlash</translation>
 <translation id="1986685561493779662">Bu nom band</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> qurilmangizga ulanmoqchi</translation>
@@ -188,7 +185,6 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="2200113223741723867">Foydalanish statistikasi yuborilishini boshqarish</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> sifatida davom etish</translation>
 <translation id="22320125457191592">Siz uchun</translation>
-<translation id="2234876718134438132">Sinxronizatsiya va Google xizmatlari</translation>
 <translation id="2239812875700136898">Parametrlar orqali Discover yangiliklarini boshqarish tugmasi</translation>
 <translation id="2259659629660284697">Parollarni eksport qilish…</translation>
 <translation id="2276696007612801991">Parollaringizni tekshirish uchun Google hisobingizga kiring</translation>
@@ -364,7 +360,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3295530008794733555">Tezroq kezing. Kamroq trafik sarflang.</translation>
 <translation id="3297344142967351106">Ovozli yordam</translation>
 <translation id="3303414029551471755">Yuklab olinsinmi?</translation>
-<translation id="3315103659806849044">Siz hozir Sync va Google xizmati sozlamalaridasiz. Sinxronizatsiyani yoqish uchun ekranning quyi qismidagi Tasdiqlash tugmasini bosing. Tepaga</translation>
 <translation id="3334729583274622784">Fayl kengaytmasi oʻzgartirilsinmi?</translation>
 <translation id="3341058695485821946">Qancha trafik tejalganini biling</translation>
 <translation id="3341262203274374114">Obuna bekor qilinmadi. Xatolik yuz berdi.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="4298388696830689168">Aloqador saytlar</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Asosiy</translation>
-<translation id="4314815835985389558">Sinxronizatsiyani boshqarish</translation>
 <translation id="4320177379694898372">Internet aloqasi yo‘q</translation>
 <translation id="4321739720395210191">Kamerangiz ochilmadi. Qurilmani qayta ishga tushirib, yana urining.</translation>
 <translation id="433213510553688132">Obuna rasmiylashtirilmoqda…</translation>
@@ -631,9 +625,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="510275257476243843">1 soat qoldi</translation>
 <translation id="5118713593561876160">Qiziqishlar</translation>
 <translation id="5123685120097942451">Inkognito varaq</translation>
-<translation id="5127805178023152808">Sinxronizatsiya o‘chiq</translation>
 <translation id="5132942445612118989">Parollar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
-<translation id="5136035049889637840">Shu kabi <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /> mahsulotlar</translation>
 <translation id="5139940364318403933">Google Drive xizmatidan foydalanish bo‘yicha qo‘llanma</translation>
 <translation id="5152843274749979095">Birorta ham qo‘llab-quvvatlanadigan ilova o‘rnatilmagan</translation>
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
@@ -753,6 +745,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5854790677617711513">30 kundan oldin saqlanganlar</translation>
 <translation id="5855546874025048181">Aniqlashtirish: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Bluetooth adapterini yoqib bo‘lmadi</translation>
+<translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5862731021271217234">Boshqa qurilmalardagi brauzer sahifalarini ko‘rish uchun sinxronizatsiyani yoqing</translation>
 <translation id="5864174910718532887">Tafsilot: Saytlar nomi asosida saralandi</translation>
@@ -762,6 +755,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="587735546353481577">Saytni kuzatish uchun uni oching va Chrome menyusi orqali kuzatish tugmasini bosing.</translation>
 <translation id="5880748256563468367">Tasmani ochish</translation>
 <translation id="5884076754568147479">Google internetda ishlashingizni osonlashtirish uchun Assistent orqali kirilgan saytlarning URL manzillari va kontentlarini, shuningdek, soʻrovlarni ham oladi</translation>
+<translation id="5916664084637901428">Yoniq</translation>
 <translation id="5919204609460789179">Sinxronizatsiyani boshlash uchun <ph name="PRODUCT_NAME" /> yangilanishi kerak</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> trafik tejaldi</translation>
 <translation id="5939518447894949180">Asliga qaytarish</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox hali ishlab chiqish jarayonida va faqatgina ayrim mamlakatlarda 
 <translation id="6192907950379606605">Rasm tavsiflari chiqsin</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> emasmi?</translation>
 <translation id="6211386937064921208">Bu sahifaga razm solyapsiz</translation>
-<translation id="6218096829563201111">Shu kabi <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /> mahsulotlar</translation>
 <translation id="6221633008163990886">Parollarni eksport qilish uchun qulfni oching.</translation>
 <translation id="6232535412751077445">Agar “Kuzatilmasin” parametri yoniq bo‘lsa, brauzer so‘rovlariga maxsus buyruq qo‘shiladi. Natijasi sayt so‘rovga javob berishi va so‘rov qanday ma’noda tushunilganligiga bog‘liq bo‘ladi.
 

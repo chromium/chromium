@@ -3397,13 +3397,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="547601067149622666">Ne pas autoriser les annonces sur les sites présentant des annonces intrusives</translation>
 <translation id="5480380613778757009">Si cette règle est désactivée ou qu'elle n'est pas configurée, tous les paramètres d'affichage définis dans la session Invité gérée sont réinitialisés à la fermeture de la session. Si cette règle est définie sur "True", les propriétés d'affichage sont conservées après la fermeture de la session Invité gérée.</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
-<translation id="5483584677807837752">Lorsqu'elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> envoie des en-têtes de requête précis qui fournissent des informations sur le navigateur et l'environnement de l'utilisateur.
-
-      Il s'agit d'une fonctionnalité complémentaire. Toutefois, les nouveaux en-têtes peuvent entraîner un dysfonctionnement de certains sites Web qui appliquent des restrictions en ce qui concerne les caractères que peuvent contenir les requêtes.
-
-      Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité <ph name="PRODUCT_NAME" /> est activée. Si cette règle est désactivée, la fonctionnalité n'est pas disponible.
-
-      Cette règle permet d'assurer la transition à court terme. Elle sera disponible au moins jusqu'à la version 93 de Chrome.</translation>
 <translation id="5494322570831642650">Permet de spécifier si l'utilisateur peut ouvrir ou non des pages en mode navigation privée dans <ph name="PRODUCT_NAME" />.
 
       Si la règle est activée ou n'est pas définie, l'utilisateur peut ouvrir des pages en mode navigation privée.
@@ -6043,11 +6036,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas configurée ou qu'aucune valeur n'est spécifiée, l'appareil utilise le fuseau horaire actuellement défini (les utilisateurs peuvent le modifier).</translation>
 <translation id="8880294585549584028">Autoriser l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
 <translation id="8882006618241293596">Bloquer le plug-in "<ph name="FLASH_PLUGIN_NAME" />" sur ces sites</translation>
-<translation id="8887158351295718009">Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies définis sur les domaines correspondant à ces formats. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. De plus, ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Enfin, les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour obtenir une description complète, consultez la page https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Pour les cookies sur des domaines autres que ceux représentés par les formats spécifiés ici, ou pour tous les cookies si cette règle n'est pas configurée, la valeur par défaut globale est utilisée à partir de la règle <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> si celle-ci est définie ou, à défaut, à partir de la configuration personnelle de l'utilisateur.
-
-          Notez que les formats que vous répertoriez ici sont traités comme des domaines et non des URL. Vous ne devez donc pas spécifier de schéma ni de port.</translation>
 <translation id="8887709920496070892">Délai d'inactivité, en millisecondes, au terme duquel un message d'avertissement s'affiche.</translation>
 <translation id="8890438048579188548">Masquer les avertissements liés à l'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Espace disque libre requis pour <ph name="PLUGIN_VM_NAME" /></translation>

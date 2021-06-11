@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
-<translation id="2086623437239112659">Es posible que la información de inicio de sesión almacenada esté obsoleta.</translation>
 <translation id="209018056901015185">Ver como ordenador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
@@ -408,6 +407,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
+<translation id="5232485538978018676">Iniciar sesión con una cuenta gestionada</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5245322853195994030">¿Quieres cancelar la sincronización?</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
@@ -724,6 +724,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8206354486702514201">El administrador aplica esta opción.</translation>
 <translation id="8225985093977202398">Archivos e imágenes en caché</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8271720166617117963">Aceptar e iniciar sesión</translation>
 <translation id="8281781826761538115">Predeterminada: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltar</translation>
 <translation id="8283172974887967105">Establecer…</translation>

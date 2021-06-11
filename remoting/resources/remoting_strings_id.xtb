@@ -67,6 +67,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4176825807642096119">Kode akses</translation>
 <translation id="4227991223508142681">Utilitas Penyediaan Host</translation>
 <translation id="4240294130679914010">Pencopot Pemasangan Host Chromoting</translation>
+<translation id="4257751272692708833">Penerus URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kode akses tidak valid. Harap coba lagi.</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
 <translation id="4405930547258349619">Pustaka Inti</translation>
@@ -121,6 +122,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="6612717000975622067">Kirim Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Bagikan</translation>
 <translation id="677755392401385740">Host dimulai untuk pengguna: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplikasi bantuan untuk membuka URL di klien <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Tunjukkan/sembunyikan keyboard.</translation>
 <translation id="6963936880795878952">Sambungan ke komputer jarak jauh diblokir untuk sementara karena seseorang mencoba untuk menyambungkannya dengan PIN yang tidak valid. Coba lagi nanti.</translation>
 <translation id="6965382102122355670">Oke</translation>

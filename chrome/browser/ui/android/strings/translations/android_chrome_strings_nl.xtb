@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome kan je gegevens niet verifiëren</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Nooit opgeslagen</translation>
-<translation id="1067922213147265141">Andere Google-services</translation>
 <translation id="107147699690128016">Als je de bestandsextensie wijzigt, wordt het bestand mogelijk in een andere app geopend. Daardoor kan het een gevaar vormen voor je apparaat.</translation>
 <translation id="1095761715416917775">Zorg dat je altijd toegang hebt tot je gesynchroniseerde gegevens</translation>
 <translation id="1100066534610197918">Open in nieuw tabblad in groep</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Niet opnieuw tonen</translation>
 <translation id="1680919990519905526">Kopen met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Nu proberen</translation>
-<translation id="1692118695553449118">Synchronisatie staat aan</translation>
 <translation id="1697284962337958118">Toevoegen aan</translation>
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1724977129262658800">Ontgrendel om je wachtwoord te bewerken</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Gegevens behouden</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
-<translation id="1984705450038014246">Je Chrome-gegevens synchroniseren</translation>
 <translation id="1986685561493779662">Naam bestaat al</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-knop</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> wil koppelen</translation>
@@ -188,7 +185,6 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2200113223741723867">Delen van gebruiksgegevens beheren</translation>
 <translation id="2227444325776770048">Doorgaan als <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Voor jou</translation>
-<translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2239812875700136898">Beheer je artikelen met de knop 'Opties voor Discover'</translation>
 <translation id="2259659629660284697">Wachtwoorden exporteren…</translation>
 <translation id="2276696007612801991">Log in met je Google-account om je wachtwoorden te checken</translation>
@@ -364,7 +360,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3295530008794733555">Surf sneller en verbruik minder data</translation>
 <translation id="3297344142967351106">Spraakassistent</translation>
 <translation id="3303414029551471755">Doorgaan met het downloaden van de content?</translation>
-<translation id="3315103659806849044">Je past op dit moment je instellingen voor synchronisatie en Google-services aan. Als je synchronisatie wilt aanzetten, tik je op Bevestigen onderaan het scherm. Omhoog navigeren</translation>
 <translation id="3334729583274622784">Bestandsextensie wijzigen?</translation>
 <translation id="3341058695485821946">Bekijk hoeveel data je hebt bespaard</translation>
 <translation id="3341262203274374114">Niet meer volgen is mislukt. Er is iets misgegaan.</translation>
@@ -494,7 +489,7 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4248098802131000011">Bescherm je wachtwoorden tegen gegevenslekken en andere beveiligingsproblemen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
-<translation id="4256782883801055595">Open-sourcelicenties</translation>
+<translation id="4256782883801055595">Opensource-licenties</translation>
 <translation id="4263656433980196874">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is op volledige hoogte geopend</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4290281343757112331">Later downloaden?</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4298388696830689168">Gekoppelde sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Basisinstellingen</translation>
-<translation id="4314815835985389558">Synchronisatie beheren</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
 <translation id="4321739720395210191">Kan de camera niet openen. Start het apparaat opnieuw op en probeer het nogmaals.</translation>
 <translation id="433213510553688132">Volgen…</translation>
@@ -631,9 +625,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="510275257476243843">1 uur resterend</translation>
 <translation id="5118713593561876160">Interesses</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
-<translation id="5127805178023152808">Synchronisatie staat uit</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
-<translation id="5136035049889637840">Vergelijkbare producten kopen <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Meer informatie over het gebruik van Google Drive</translation>
 <translation id="5152843274749979095">Geen ondersteunde apps geïnstalleerd</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
@@ -753,6 +745,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5854790677617711513">Ouder dan 30 dagen</translation>
 <translation id="5855546874025048181">Verfijnen: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome kan de Bluetooth-adapter niet aanzetten</translation>
+<translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5862731021271217234">Zet de synchronisatie aan om de tabbladen van je andere apparaten te bekijken</translation>
 <translation id="5864174910718532887">Details: gesorteerd op sitenaam</translation>
@@ -762,6 +755,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="587735546353481577">Als je een site wilt volgen, ga je naar de site, open je het Chrome-menu en tik je op Volgen.</translation>
 <translation id="5880748256563468367">Naar feed</translation>
 <translation id="5884076754568147479">Google kan je helpen taken sneller te voltooien en ontvangt daarom de URL's en content van sites waarop je de Assistent gebruikt en informatie die je via de Assistent indient</translation>
+<translation id="5916664084637901428">Aan</translation>
 <translation id="5919204609460789179">Update <ph name="PRODUCT_NAME" /> om de synchronisatie te starten</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> bespaard</translation>
 <translation id="5939518447894949180">Resetten</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in b
 <translation id="6192907950379606605">Afbeeldingsbeschrijvingen ophalen</translation>
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
-<translation id="6218096829563201111">Vergelijkbare producten zoeken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Ontgrendel het apparaat om je wachtwoorden te exporteren</translation>
 <translation id="6232535412751077445">Als je Niet bijhouden aanzet, wordt hiervoor een verzoek opgenomen in je browseverkeer. Het resultaat daarvan hangt af van of een website reageert op het verzoek en hoe het verzoek wordt geïnterpreteerd.
 

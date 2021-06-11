@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Ångra</translation>
-<translation id="2086623437239112659">Dina sparade inloggningsuppgifter kan vara inaktuella.</translation>
 <translation id="209018056901015185">Använd skrivbordsversion</translation>
 <translation id="2103075008456228677">Öppna history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> objekt flyttades</translation>
@@ -408,6 +407,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5228579091201413441">Aktivera synkronisering</translation>
+<translation id="5232485538978018676">Logga in med ett hanterat konto</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
 <translation id="5271549068863921519">Spara lösenord</translation>
@@ -724,6 +724,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8206354486702514201">Administratören har gjort den här inställningen obligatorisk.</translation>
 <translation id="8225985093977202398">Cachelagrade bilder och filer</translation>
 <translation id="8261506727792406068">Radera</translation>
+<translation id="8271720166617117963">Godkänn och logga in</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8283172974887967105">Ange …</translation>

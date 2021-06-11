@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Egérmutató kiemelése</translation>
 <translation id="3513798432020909783">A fiókot a(z) <ph name="MANAGER_EMAIL" /> kezeli</translation>
 <translation id="3552189655002856821">A Wi-Fi ki van kapcsolva</translation>
+<translation id="3560866052109807830">Jelölő- és rajzeszközök</translation>
 <translation id="3563775809269155755">Hotspot engedélyezése</translation>
 <translation id="3571734092741541777">Beállítás</translation>
 <translation id="3573179567135747900">Visszatérés ehhez: "<ph name="FROM_LOCALE" />" (újraindítás szükséges)</translation>
@@ -412,6 +413,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4274537685965975248">A Ctrl + Alt + Lefelé nyíl billentyűparancs módosult. Az End billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Jobbra nyíl.</translation>
 <translation id="4279490309300973883">Tükrözés</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
+<translation id="429402653707266969">Eszköztár helyének kapcsolója</translation>
 <translation id="4294319844246081198">Jó reggelt, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Az összes (<ph name="COUNT" />) értesítés törlése</translation>
 <translation id="4302592941791324970">Nem áll rendelkezésre</translation>

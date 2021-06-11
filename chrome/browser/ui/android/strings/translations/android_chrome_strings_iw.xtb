@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">‏Chrome לא הצליח לאמת את הפרטים שלך</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="10614374240317010">פריטים שאף פעם לא נשמרו</translation>
-<translation id="1067922213147265141">‏שירותי Google אחרים</translation>
 <translation id="107147699690128016">שינוי של סיומת הקובץ עשוי לגרום לכך שהקובץ ייפתח באפליקציה אחרת. מצב זה עלול לסכן את המכשיר.</translation>
 <translation id="1095761715416917775">כדאי לוודא שניתן לגשת לנתונים המסונכרנים בכל רגע</translation>
 <translation id="1100066534610197918">פתיחה בכרטיסייה חדשה בקבוצה</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">אין להציג שוב</translation>
 <translation id="1680919990519905526">‏קניית מוצר עם Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">אני רוצה לנסות</translation>
-<translation id="1692118695553449118">סנכרון מופעל</translation>
 <translation id="1697284962337958118">הוספה אל</translation>
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1724977129262658800">יש לבטל את הנעילה כדי לערוך את הסיסמה</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">שמירת הנתונים</translation>
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
-<translation id="1984705450038014246">‏סנכרון הנתונים מ-Chrome</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> לחצן <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> רוצה לבצע התאמה עם</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">ניהול השיתוף של נתוני השימוש במכשיר</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">הצעות בשבילך</translation>
-<translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2239812875700136898">‏בעזרת הלחצן 'אפשרויות של Discover' ניתן לקבוע אילו מאמרים יוצגו</translation>
 <translation id="2259659629660284697">ייצוא סיסמאות…</translation>
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">יותר מהירות. פחות נתונים.</translation>
 <translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
-<translation id="3315103659806849044">‏מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון ושירותי Google. כדי להשלים את הפעלת הסנכרון, יש להקיש על הלחצן 'אישור' קרוב לתחתית המסך. ניווט למעלה</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="3341058695485821946">בדיקת החיסכון בצריכת נתונים</translation>
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">אתרים מקושרים</translation>
 <translation id="4303044213806199882">‎chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" />‎</translation>
 <translation id="4307992518367153382">היסודות</translation>
-<translation id="4314815835985389558">ניהול הסנכרון</translation>
 <translation id="4320177379694898372">אין חיבור לאינטרנט</translation>
 <translation id="4321739720395210191">לא ניתן לפתוח את המצלמה. כדאי להפעיל מחדש את המכשיר ולנסות שוב.</translation>
 <translation id="433213510553688132">יתבצע מעקב…</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">נותרה שעה אחת</translation>
 <translation id="5118713593561876160">תחומי עניין</translation>
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
-<translation id="5127805178023152808">סנכרון כבוי</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
-<translation id="5136035049889637840">קניית מוצרים דומים <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">‏איך משתמשים ב-Google Drive</translation>
 <translation id="5152843274749979095">לא מותקנות אפליקציות נתמכות</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">לפני יותר מ-30 ימים</translation>
 <translation id="5855546874025048181">צמצום: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">‏לא ניתן להפעיל ב-Chrome את מתאם Bluetooth</translation>
+<translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="5862731021271217234">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון</translation>
 <translation id="5864174910718532887">פרטים: ממוינות לפי שם האתר</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">‏כדי לעקוב אחר אתר כלשהו, עוברים אליו, פותחים את תפריט Chrome ומקישים על 'מעקב'.</translation>
 <translation id="5880748256563468367">לכניסה אל הפיד</translation>
 <translation id="5884076754568147479">‏כדי לעזור לך להשלים משימות, Google תקבל את כתובות ה-URL והתוכן של האתרים שבהם נעשה שימוש ב-Assistant, וכן את המידע שנשלח דרך Assistant</translation>
+<translation id="5916664084637901428">פועל</translation>
 <translation id="5919204609460789179">יש לעדכן את <ph name="PRODUCT_NAME" /> כדי להתחיל סנכרון</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> נחסכו</translation>
 <translation id="5939518447894949180">איפוס</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">ליצירת תיאורי תמונות</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
-<translation id="6218096829563201111">חיפוש מוצרים דומים <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">יש לבטל את הנעילה כדי לייצא סיסמאות</translation>
 <translation id="6232535412751077445">‏אם תופעל התכונה 'לא לעקוב (DNT), בקשה זו תיכלל בתנועת הגלישה שלך. השפעת הבקשה תלויה באופן הפעולה של כל אתר – אם הוא מגיב לבקשה או לא, וכיצד הוא מפרש אותה.
 

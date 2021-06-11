@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
 <translation id="3513798432020909783">계정 관리자: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Wi-Fi가 사용 중지됨</translation>
+<translation id="3560866052109807830">마커 그리기 도구</translation>
 <translation id="3563775809269155755">핫스팟 사용</translation>
 <translation id="3571734092741541777">설정</translation>
 <translation id="3573179567135747900">'<ph name="FROM_LOCALE" />'(으)로 다시 변경(다시 시작해야 함)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4285498937028063278">고정 해제</translation>
+<translation id="429402653707266969">툴바 위치 전환</translation>
 <translation id="4294319844246081198">좋은 아침이에요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="4296136865091727875">알림 <ph name="COUNT" />개 모두 지우기</translation>
 <translation id="4302592941791324970">사용할 수 없음</translation>

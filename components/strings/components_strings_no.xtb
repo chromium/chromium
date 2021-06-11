@@ -312,6 +312,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen din oppdateres hver dag.}=1{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen din oppdateres hver dag.}other{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen oppdateres hver {NUM_DAYS}. dag.}}</translation>
 <translation id="2053553514270667976">Postnummer</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}other{# forslag}}</translation>
+<translation id="2071156619270205202">Dette kortet er ikke kvalifisert for virtuelt kortnummer.</translation>
 <translation id="2071692954027939183">Varsler ble blokkert automatisk fordi du vanligvis ikke tillater dem</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="20817612488360358">Innstillinger for systemmellomtjener er stilt inn på å brukes, men en uttrykkelig mellomtjenerkonfigurasjon er også angitt.</translation>
@@ -440,9 +441,11 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2521385132275182522">Stift nede til høyre</translation>
 <translation id="2523886232349826891">Kun lagret på denne enheten</translation>
 <translation id="2524461107774643265">Legg til mer informasjon</translation>
+<translation id="2529899080962247600">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Eventuelle oppføringer som overskrider dette, ignoreres.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
 <translation id="2536110899380797252">Legg til adresse</translation>
 <translation id="2539524384386349900">Oppdag</translation>
+<translation id="2540701853218677861">logg over pålogging og avlogging på enheten, inkludert tidsstempler og mislykkede forsøk</translation>
 <translation id="2541219929084442027">Sider du åpner i inkognitofaner, blir ikke værende i nettleserloggen, lageret for informasjonskapsler eller søkeloggen etter at du har lukket alle inkognitofanene. Filer du laster ned eller bokmerker du oppretter, blir lagret.</translation>
 <translation id="2544644783021658368">Enkeltdokument</translation>
 <translation id="254947805923345898">Regelverdien er ikke gyldig.</translation>
@@ -635,6 +638,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3320021301628644560">Legg til faktureringsadresse</translation>
 <translation id="3324983252691184275">Karmosinrød</translation>
 <translation id="3329013043687509092">Metning</translation>
+<translation id="3333762389743153920">Ikke kvalifisert for virtuelt kort</translation>
 <translation id="3338095232262050444">Sikker</translation>
 <translation id="3355823806454867987">Endre innstillinger for proxy-tjener</translation>
 <translation id="3360103848165129075">Ark for betalingsbehandling</translation>
@@ -1148,6 +1152,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Bekreft kortet ditt</translation>
 <translation id="5135404736266831032">Adminstrer adresser…</translation>
+<translation id="5138014172396933048">Virtuelt kort er ikke tilgjengelig akkurat nå – kontakt banken</translation>
 <translation id="5138227688689900538">Vis færre</translation>
 <translation id="514010763713772514">Betal raskere neste gang</translation>
 <translation id="5145883236150621069">Feilkode i responsen for enhetsinnstillinger</translation>
@@ -1194,6 +1199,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5287240709317226393">Vis informasjonskapsler</translation>
 <translation id="5287456746628258573">Dette nettstedet bruker en utdatert sikkerhetskonfigurasjon, som betyr at informasjonen din (for eksempel passord eller kredittkortnumre) kan bli avslørt når den sendes til dette nettstedet.</translation>
 <translation id="5288108484102287882">Det har oppstått advarsler under validering av regelverdier</translation>
+<translation id="5288808348893593856">Tilkoblingen til nettstedet er sikker om ikke Chrome forteller deg noe annet.</translation>
 <translation id="5289384342738547352">Håndtering av flere dokumenter</translation>
 <translation id="5299298092464848405">Feil under analysen av enhetsinnstillingene</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -1556,9 +1562,11 @@ brukere av denne nettleseren.</translation>
 <translation id="6685834062052613830">Logg av og fullfør konfigurasjonen</translation>
 <translation id="6687335167692595844">Forespurt skriftstørrelse</translation>
 <translation id="6688743156324860098">Oppdater …</translation>
+<translation id="6688775486821967877">Virtuelt kort er ikke tilgjengelig akkurat nå – prøv igjen senere</translation>
 <translation id="6689249931105087298">Relativ med svartpunktkomprimering</translation>
 <translation id="6689271823431384964">Chrome tilbyr å lagre kort i Google-kontoen din fordi du er logget på. Du kan endre dette i innstillingene. Kortinnehaverens navn kommer fra kontoen din.</translation>
 <translation id="6698381487523150993">Opprettet:</translation>
+<translation id="6699188552522342100">Er informasjonen på dette nettstedet riktig?</translation>
 <translation id="6702919718839027939">Presenter</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6710594484020273272">&lt;Skriv inn en søketerm&gt;</translation>
@@ -1685,6 +1693,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7219179957768738017">Tilkoblingen bruker <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vis varsler</translation>
+<translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7229659723041939809">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="7233592378249864828">Skriv ut bekreftelsesark</translation>
 <translation id="7238585580608191973">SHA-256-fingeravtrykk</translation>
@@ -2061,6 +2070,7 @@ Mer informasjon:
           <ph name="LIST_ITEM" />informasjonskapsler og nettstedsdata
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Bruk Touch ID til å bekrefte kort raskere</translation>
+<translation id="8577348305244205642">Virtuelt kort er ikke tilgjengelig</translation>
 <translation id="858637041960032120">Legg til telefonnummer</translation>
 <translation id="8589998999637048520">Beste kvalitet</translation>
 <translation id="8600271352425265729">Bare denne gangen</translation>

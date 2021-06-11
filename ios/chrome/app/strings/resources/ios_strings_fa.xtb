@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">آخرین فعالیت: <ph name="DAYS" /> روز قبل</translation>
 <translation id="2074131957428911366">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
-<translation id="2086623437239112659">ممکن است اطلاعات ورود به سیستم ذخیره‌شده قدیمی باشد.</translation>
 <translation id="209018056901015185">درخواست سایت دسک‌تاپ</translation>
 <translation id="2103075008456228677">‏باز کردن history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> مورد منتقل شدند</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">اینترنت</translation>
 <translation id="5210365745912300556">بستن برگه</translation>
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
+<translation id="5232485538978018676">ورود به سیستم با «حساب مدیریت‌شده»</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="5245322853195994030">لغو همگام‌سازی</translation>
 <translation id="5271549068863921519">ذخیره گذرواژه</translation>
@@ -724,6 +724,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8206354486702514201">این تنظیم توسط سرپرست شما اجباری شده است.</translation>
 <translation id="8225985093977202398">تصاویر و فایل‌های قرار گرفته در حافظه پنهان</translation>
 <translation id="8261506727792406068">حذف</translation>
+<translation id="8271720166617117963">پذیرفتن و ورود به سیستم</translation>
 <translation id="8281781826761538115">پیش‌فرض - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">رد شدن</translation>
 <translation id="8283172974887967105">تنظیم…</translation>

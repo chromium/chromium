@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> dagen geleden actief</translation>
 <translation id="2074131957428911366">Je kunt altijd in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> bepalen wat je wilt synchroniseren.</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
-<translation id="2086623437239112659">Je opgeslagen inloggegevens zijn misschien verouderd.</translation>
 <translation id="209018056901015185">Desktopsite opvragen</translation>
 <translation id="2103075008456228677">history.google.com openen</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items verplaatst</translation>
@@ -408,6 +407,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Tabblad sluiten</translation>
 <translation id="5228579091201413441">Synchronisatie aanzetten</translation>
+<translation id="5232485538978018676">Inloggen met een beheerd account</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5245322853195994030">Synchronisatie annuleren</translation>
 <translation id="5271549068863921519">Wachtwoord opslaan</translation>
@@ -724,6 +724,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8206354486702514201">Deze instelling wordt door je beheerder afgedwongen.</translation>
 <translation id="8225985093977202398">Afbeeldingen en bestanden in chachegeheugen</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
+<translation id="8271720166617117963">Akkoord en inloggen</translation>
 <translation id="8281781826761538115">Standaard - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8283172974887967105">Instellen…</translation>
@@ -748,7 +749,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="850600235656508448">Openen in incognitomodus</translation>
 <translation id="8510057420705599706">Hiermee word je uitgelogd en wordt de synchronisatie stopgezet. Je bookmarks, geschiedenis, wachtwoorden en andere Chrome-gegevens blijven op dit apparaat staan.</translation>
-<translation id="8517375800490286174">Open-sourcelicenties</translation>
+<translation id="8517375800490286174">Opensource-licenties</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-tabbladen <ph name="FIRST_VISIBLE_TAB" /> tot <ph name="LAST_VISIBLE_TAB" /> van <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nieuw</translation>
 <translation id="8532105204136943229">Vervaljaar</translation>

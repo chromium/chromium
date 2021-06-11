@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Sie können in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was Sie synchronisieren möchten.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
-<translation id="2086623437239112659">Ihre gespeicherten Anmeldeinformationen sind möglicherweise verwaltet.</translation>
 <translation id="209018056901015185">Desktop-Version</translation>
 <translation id="2103075008456228677">history.google.com öffnen</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> Lesezeichen verschoben</translation>
@@ -408,6 +407,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Schließen</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
+<translation id="5232485538978018676">Mit verwaltetem Konto anmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5245322853195994030">Synchronisierung abbrechen</translation>
 <translation id="5271549068863921519">Passwort speichern</translation>
@@ -724,6 +724,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8206354486702514201">Diese Einstellung wird von Ihrem Administrator erzwungen.</translation>
 <translation id="8225985093977202398">Bilder &amp; Dateien im Cache</translation>
 <translation id="8261506727792406068">Löschen</translation>
+<translation id="8271720166617117963">Akzeptieren und anmelden</translation>
 <translation id="8281781826761538115">Standard: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8283172974887967105">Festlegen…</translation>

@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">Մուտքի կոդ</translation>
 <translation id="4227991223508142681">Խնամորդի տրամադրման գործիք</translation>
 <translation id="4240294130679914010">Chromoting-ի խնամորդի ապատեղադրիչ</translation>
+<translation id="4257751272692708833">URL-ների վերահասցեավորման <ph name="PRODUCT_NAME" />ի հավելված</translation>
 <translation id="4277736576214464567">Մուտքի կոդը սխալ է: Նորից փորձեք:</translation>
 <translation id="4281844954008187215">Օգտագործման պայմաններ</translation>
 <translation id="4405930547258349619">Միջուկի գրադարան</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">Ուղարկել Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Թույլատրել</translation>
 <translation id="677755392401385740">Գործարկվել է խնամորդ հետևյալ օգտատիրոջ համար՝ <ph name="HOST_USERNAME" />:</translation>
+<translation id="6902524959760471898">Օգնական-հավելված՝ <ph name="PRODUCT_NAME" /> սպասառուի մեջ URL-ներ բացելու համար</translation>
 <translation id="6939719207673461467">Ցուցադրել/թաքցնել ստեղնաշարը:</translation>
 <translation id="6963936880795878952">Հեռակա համակարգչի հետ կապակցումները ժամանակավորապես արգելափակված են, քանի որ ինչ-որ մեկը փորձել է կապակցվել սխալ PIN կոդով: Փորձեք ավելի ուշ:</translation>
 <translation id="6965382102122355670">Եղավ</translation>

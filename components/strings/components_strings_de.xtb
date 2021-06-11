@@ -308,6 +308,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ Ihre aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und Ihre Browseraktivitäten werden sicher auf Ihrem Gerät gespeichert. Ihre Gruppe wird täglich aktualisiert.}=1{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ Ihre aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und Ihre Browseraktivitäten werden sicher auf Ihrem Gerät gespeichert. Ihre Gruppe wird täglich aktualisiert.}other{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ Ihre aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und Ihre Browseraktivitäten werden sicher auf Ihrem Gerät gespeichert. Ihre Gruppe wird alle {NUM_DAYS} Tage aktualisiert.}}</translation>
 <translation id="2053553514270667976">Postleitzahl</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
+<translation id="2071156619270205202">Für diese Karte ist keine virtuelle Kartennummer verfügbar.</translation>
 <translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da Sie sie normalerweise nicht zulassen</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="20817612488360358">Die System-Proxy-Einstellungen sind zur Verwendung angegeben, gleichzeitig wurde aber auch eine explizite Proxy-Konfiguration festgelegt.</translation>
@@ -436,9 +437,11 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2521385132275182522">Heftklammer unten rechts</translation>
 <translation id="2523886232349826891">Nur auf diesem Gerät gespeichert</translation>
 <translation id="2524461107774643265">Weitere Informationen hinzufügen</translation>
+<translation id="2529899080962247600">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren Einträge werden ignoriert.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{und 1 weitere}other{und # weitere}}</translation>
 <translation id="2536110899380797252">Adresse hinzufügen</translation>
 <translation id="2539524384386349900">Erkennen</translation>
+<translation id="2540701853218677861">An- und Abmeldeverlauf des Geräts, einschließlich Zeitstempel und Fehlversuchen</translation>
 <translation id="2541219929084442027">Seiten, die Sie sich auf Inkognitotabs ansehen, werden nach dem Schließen aller Inkognitotabs nicht in Ihrem Browserverlauf, Cookiespeicher oder Suchverlauf gespeichert. Ihre Lesezeichen und heruntergeladenen Dateien bleiben erhalten.</translation>
 <translation id="2544644783021658368">Einzelnes Dokument</translation>
 <translation id="254947805923345898">Der Richtlinienwert ist ungültig.</translation>
@@ -629,6 +632,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3320021301628644560">Rechnungsadresse hinzufügen</translation>
 <translation id="3324983252691184275">Purpur</translation>
 <translation id="3329013043687509092">Sättigung</translation>
+<translation id="3333762389743153920">Virtuelle Karte wird nicht unterstützt</translation>
 <translation id="3338095232262050444">Sicher</translation>
 <translation id="3355823806454867987">Proxy-Einstellungen ändern...</translation>
 <translation id="3360103848165129075">Dokument zur Zahlungsabwicklung</translation>
@@ -1135,6 +1139,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Karte bestätigen</translation>
 <translation id="5135404736266831032">Adressen verwalten…</translation>
+<translation id="5138014172396933048">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte kontaktieren Sie Ihre Bank</translation>
 <translation id="5138227688689900538">Weniger anzeigen</translation>
 <translation id="514010763713772514">Das nächste Mal schneller bezahlen</translation>
 <translation id="5145883236150621069">Fehlercode in der Richtlinienantwort</translation>
@@ -1181,6 +1186,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5287240709317226393">Cookies anzeigen</translation>
 <translation id="5287456746628258573">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter oder Kreditkartennummern, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>
 <translation id="5288108484102287882">Die Validierung der Richtlinienwerte hat Warnungen ergeben</translation>
+<translation id="5288808348893593856">Websiteverbindungen sind sicher, solange Chrome Sie nicht auf eine unsichere Verbindung hinweist.</translation>
 <translation id="5289384342738547352">Handhabung mehrerer Dokumente</translation>
 <translation id="5299298092464848405">Fehler beim Parsen der Richtlinie</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
@@ -1543,9 +1549,11 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6685834062052613830">Abmelden und Einrichtung abschließen</translation>
 <translation id="6687335167692595844">Gewünschte Schriftgröße</translation>
 <translation id="6688743156324860098">Aktualisieren…</translation>
+<translation id="6688775486821967877">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte versuchen Sie es später noch einmal</translation>
 <translation id="6689249931105087298">Relativ mit Schwarzpunktkompensation</translation>
 <translation id="6689271823431384964">Chrome bietet Ihnen die Möglichkeit, die Karten in Ihrem Google-Konto zu speichern, weil Sie angemeldet sind. Sie können dies in den Einstellungen ändern. Der Name des Karteninhabers stammt aus Ihrem Konto.</translation>
 <translation id="6698381487523150993">Erstellt:</translation>
+<translation id="6699188552522342100">Ist diese Website fehlerfrei?</translation>
 <translation id="6702919718839027939">Präsentieren</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6710594484020273272">&lt;Suchbegriff eingeben&gt;</translation>
@@ -1672,6 +1680,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7219179957768738017">Die Verbindung verwendet <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Verarbeitung läuft</translation>
 <translation id="7221855153210829124">Benachrichtigungen anzeigen</translation>
+<translation id="722454870747268814">Neuer Inkognito-Tab</translation>
 <translation id="7229659723041939809">Sie haben Ihr Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, Ihre gespeicherten Passwörter für <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> und alle anderen Websites, auf denen Sie dieses Passwort verwenden, zu prüfen.</translation>
 <translation id="7233592378249864828">Bestätigungsblatt drucken</translation>
 <translation id="7238585580608191973">SHA-256-Fingerabdruck</translation>
@@ -2049,6 +2058,7 @@ Weitere Details:
           <ph name="LIST_ITEM" />Cookies und Websitedaten
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Touch ID verwenden, um Karten schneller zu bestätigen</translation>
+<translation id="8577348305244205642">Virtuelle Karte nicht verfügbar</translation>
 <translation id="858637041960032120">Weitere Nummer
 </translation>
 <translation id="8589998999637048520">Beste Qualität</translation>

@@ -317,6 +317,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
+<translation id="3560866052109807830">Outils de dessin Marqueur</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
 <translation id="3571734092741541777">Configurer</translation>
 <translation id="3573179567135747900">Revenir à "<ph name="FROM_LOCALE" />" (redémarrage requis)</translation>
@@ -411,6 +412,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4285498937028063278">Retirer</translation>
+<translation id="429402653707266969">Activer/Désactiver la position de la barre d'outils</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Effacer les <ph name="COUNT" /> notifications</translation>
 <translation id="4302592941791324970">Non disponible</translation>

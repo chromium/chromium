@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">突顯滑鼠遊標</translation>
 <translation id="3513798432020909783">帳戶由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
+<translation id="3560866052109807830">標記繪製工具</translation>
 <translation id="3563775809269155755">啟用熱點</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">改回「<ph name="FROM_LOCALE" />」(需要重新啟動)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">「Ctrl + Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右箭咀。</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4285498937028063278">取消固定</translation>
+<translation id="429402653707266969">切換工具列位置</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，早晨：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 個通知</translation>
 <translation id="4302592941791324970">無法使用</translation>

@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
-<translation id="2086623437239112659">Suas informações de login armazenadas podem estar desatualizadas.</translation>
 <translation id="209018056901015185">Versão para computador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
@@ -408,6 +407,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Fechar guia</translation>
 <translation id="5228579091201413441">Ativar sincronização</translation>
+<translation id="5232485538978018676">Fazer login com uma conta gerenciada</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
@@ -724,6 +724,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8206354486702514201">Esta configuração é aplicada por seu administrador.</translation>
 <translation id="8225985093977202398">Imagens e arquivos armazenados em cache</translation>
 <translation id="8261506727792406068">Excluir</translation>
+<translation id="8271720166617117963">Aceitar e fazer login</translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8283172974887967105">Definir…</translation>

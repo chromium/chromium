@@ -3393,13 +3393,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="547601067149622666">Arayan giren reklamların yer aldığı sitelerde reklamlara izin verme</translation>
 <translation id="5480380613778757009">Bu politika, devre dışı bırakılır veya ayarlanmazsa Yönetilen misafir oturumunda ayarlanan tüm görüntü ayarları, oturum biter bitmez sıfırlanır. Bu politika, Doğru değerine ayarlanırsa yönetilen misafir oturumundan çıkıldıktan sonra görüntü özellikleri tutulur.</translation>
 <translation id="5483065054530244863">Yerel güven bağlantıları tarafından yayınlanan SHA-1 imzalı sertifikalara izin ver</translation>
-<translation id="5483584677807837752">Bu politika etkinleştirildiğinde <ph name="PRODUCT_NAME" /> özelliği, kullanıcının tarayıcısı ve ortamı hakkında ayrıntılı bilgiler içeren istek başlıkları gönderir.
-
-      Bu ek bir özelliktir. Fakat yeni başlıklar, isteklerde karakter kısıtlaması bulunduğu takdirde bazı web sitelerinin çalışmasını bozabilir.
-
-      Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> özelliği etkin kılınır. Politika devre dışı bırakılırsa bu özellik kullanılamaz.
-
-      Bu kurumsal politika, kısa süreli uyum süreci için geçerlidir ve en azından Chrome 93'e kadar kullanılabilecektir.</translation>
 <translation id="5494322570831642650">Kullanıcının <ph name="PRODUCT_NAME" /> içinde Gizli modda sayfa açıp açamayacağını belirtir.
 
       "Etkin" değeri seçilirse veya politika ayarlanmadan bırakılırsa sayfalar Gizli modda açılabilir.
@@ -6006,11 +5999,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Ayarlanmazsa veya boş bir bir dize girerseniz cihaz o anda etkin olan saat dilimini kullanır ama kullanıcılar saat dilimini değiştirebilirler.</translation>
 <translation id="8880294585549584028">Bu sitelerde dosya ve dizinlere yazma erişimine izin ver</translation>
 <translation id="8882006618241293596">Bu sitelerde <ph name="FLASH_PLUGIN_NAME" /> eklentisini engelle</translation>
-<translation id="8887158351295718009">Bu kalıplara uyan alan adları için ayarlanan çerezler eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri döner. Eski davranışa geri dönmek, <ph name="ATTRIBUTE_SAMESITE_NAME" /> özelliği belirtmeyen çerezlerin "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" gibi değerlendirilmesine neden olur, "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" çerezlerinin "<ph name="ATTRIBUTE_SECURE_NAME" />" özelliğini taşıma şartını ortadan kaldırır ve iki sitenin aynı URL'yi paylaşması durumunda, değerlendirirken şema karşılaştırmasını atlar. Tam açıklama için https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies adresine bakın.
-
-          Burada belirtilen kalıpların dışında kalan alan adlarındaki çerezler ya da bu politika ayarlanmazsa tüm çerezler için <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> politikası ayarlandıysa buradaki değer, aksi takdirde kullanıcının kişisel yapılandırması genel varsayılan değer olarak kullanılır.
-
-          Burada listelediğiniz kalıpların URL değil alan adı olarak değerlendirildiğini, bu yüzden bir şema veya bağlantı noktası belirtmemeniz gerektiğini unutmayın.</translation>
 <translation id="8887709920496070892">Kullanıcı ne kadar süre giriş yapmazsa bir uyarı iletişim kutusu görüntüleneceği (milisaniye olarak)</translation>
 <translation id="8890438048579188548"><ph name="CLOUD_PRINT_NAME" /> ürününün kullanımdan kaldırma uyarılarını gizler</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> için gereken boş disk alanı</translation>

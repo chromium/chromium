@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">액세스 코드</translation>
 <translation id="4227991223508142681">호스트 프로비저닝 유틸리티</translation>
 <translation id="4240294130679914010">Chromoting 호스트 제거 프로그램</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">액세스 코드가 잘못되었습니다. 다시 시도해 주세요.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4405930547258349619">핵심 라이브러리</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">Ctrl-Alt-Del 전송</translation>
 <translation id="6654753848497929428">공유</translation>
 <translation id="677755392401385740">사용자(<ph name="HOST_USERNAME" />)의 호스트가 시작되었습니다.</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> 클라이언트에서 URL를 열기 위한 도우미 애플리케이션</translation>
 <translation id="6939719207673461467">키보드 표시/숨기기</translation>
 <translation id="6963936880795878952">누군가 잘못된 PIN으로 연결을 시도하여 원격 컴퓨터 연결이 일시적으로 차단되었습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6965382102122355670">확인</translation>

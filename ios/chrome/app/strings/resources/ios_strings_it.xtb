@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Attivo <ph name="DAYS" /> giorni fa</translation>
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annulla</translation>
-<translation id="2086623437239112659">I dati di accesso memorizzati potrebbero essere obsoleti.</translation>
 <translation id="209018056901015185">Richiedi sito desktop</translation>
 <translation id="2103075008456228677">Apri la pagina history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementi spostati</translation>
@@ -408,6 +407,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Chiudi scheda</translation>
 <translation id="5228579091201413441">Abilita sincronizzazione</translation>
+<translation id="5232485538978018676">Accesso con account gestito</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5245322853195994030">Annulla sincronizzazione</translation>
 <translation id="5271549068863921519">Salva password</translation>
@@ -724,6 +724,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8206354486702514201">Questa impostazione è stata applicata dall'amministratore.</translation>
 <translation id="8225985093977202398">Immagini e file memorizzati nella cache</translation>
 <translation id="8261506727792406068">Elimina</translation>
+<translation id="8271720166617117963">Accetta e accedi</translation>
 <translation id="8281781826761538115">Predefinita - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8283172974887967105">Imposta…</translation>

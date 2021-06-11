@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chromu sa nepodarilo vaše informácie overiť</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Nikdy neukladať</translation>
-<translation id="1067922213147265141">Ďalšie služby Googlu</translation>
 <translation id="107147699690128016">Ak zmeníte príponu súboru, súbor sa môže otvoriť v inej aplikácii a potenciálne ohroziť vaše zariadenie.</translation>
 <translation id="1095761715416917775">Zaistite, aby ste mali neustály prístup k svojim údajom synchronizácie</translation>
 <translation id="1100066534610197918">Otvoriť v skupine na novej karte</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Nabudúce nezobrazovať</translation>
 <translation id="1680919990519905526">Obr. obch. v Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Vyskúšať</translation>
-<translation id="1692118695553449118">Synchronizácia je zapnutá</translation>
 <translation id="1697284962337958118">Pridať do</translation>
 <translation id="1718835860248848330">Posledná hodina</translation>
 <translation id="1724977129262658800">Ak chcete upraviť heslo, odomknite</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
 <translation id="1984417487208496350">Bez ochrany (neodporúča sa)</translation>
-<translation id="1984705450038014246">Synchronizovať údaje Chromu</translation>
 <translation id="1986685561493779662">Názov už existuje</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> tlačidlo <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> žiada o spárovanie</translation>
@@ -188,7 +185,6 @@ Vyhľadávanie spustíte klepnutím na ľubovoľné slovo. Spresníte ho pridrž
 <translation id="2200113223741723867">Správa zdieľania údajov o používaní</translation>
 <translation id="2227444325776770048">Pokračovať ako <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Pre vás</translation>
-<translation id="2234876718134438132">Synchronizácia a služby Googlu</translation>
 <translation id="2239812875700136898">Ovládajte svoje príbehy po stlačení tlačidla Možnosti kanála Objaviť</translation>
 <translation id="2259659629660284697">Exportovať heslá…</translation>
 <translation id="2276696007612801991">Ak si chcete skontrolovať heslá, prihláste sa do svojho účtu Google</translation>
@@ -364,7 +360,6 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3295530008794733555">Prehliadajte rýchlejšie. Využívajte menej dát.</translation>
 <translation id="3297344142967351106">Hlasová pomoc</translation>
 <translation id="3303414029551471755">Pokračovať a stiahnuť obsah?</translation>
-<translation id="3315103659806849044">Momentálne prispôsobujete nastavenia synchronizácie a služieb Googlu. Ak chcete dokončiť zapnutie synchronizácie, klepnite na tlačidlo Potvrdiť v dolnej časti obrazovky. Prejsť hore</translation>
 <translation id="3334729583274622784">Chcete zmeniť príponu súboru?</translation>
 <translation id="3341058695485821946">Zistite, koľko dát ste ušetrili</translation>
 <translation id="3341262203274374114">Nedá sa prestať sledovať. Vyskytol sa problém.</translation>
@@ -502,7 +497,6 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="4298388696830689168">Prepojené weby</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Základy</translation>
-<translation id="4314815835985389558">Správa synchronizácie</translation>
 <translation id="4320177379694898372">Žiadne internetové pripojenie</translation>
 <translation id="4321739720395210191">Vaša kamera sa nedá otvoriť. Reštartujte zariadenie a skúste to znova.</translation>
 <translation id="433213510553688132">Sledované…</translation>
@@ -631,9 +625,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="510275257476243843">Zostáva: 1 h</translation>
 <translation id="5118713593561876160">Záujmy</translation>
 <translation id="5123685120097942451">Karta inkognito</translation>
-<translation id="5127805178023152808">Synchronizácia je vypnutá</translation>
 <translation id="5132942445612118989">Synchronizujte svoje heslá, históriu a ďalší obsah vo všetkých zariadeniach</translation>
-<translation id="5136035049889637840">Kúpiť podobné výrobky <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Ako používať Disk Google</translation>
 <translation id="5152843274749979095">Nie sú nainštalované žiadne podporované aplikácie</translation>
 <translation id="5161254044473106830">Musíte zadať názov</translation>
@@ -753,6 +745,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5854790677617711513">Staršie ako 30 dní</translation>
 <translation id="5855546874025048181">Spresniť: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome nedokáže zapnúť adaptér Bluetooth</translation>
+<translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
 <translation id="5862731021271217234">Ak chcete získať karty zo svojich ostatných zariadení, zapnite synchronizáciu</translation>
 <translation id="5864174910718532887">Podrobnosti: zoradené podľa názvu webu</translation>
@@ -762,6 +755,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="587735546353481577">Ak chcete sledovať určitý web, prejdite naň, otvorte Ponuku Chrome a klepnite na Sledovať.</translation>
 <translation id="5880748256563468367">Prejsť na feed</translation>
 <translation id="5884076754568147479">Google bude dostávať webové adresy a obsah webov, kde používate Asistenta, ako aj informácie, ktoré prostredníctvom neho odošlete, aby vám mohol pomáhať s dokončovaním úloh</translation>
+<translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5919204609460789179">Ak chcete spustiť synchronizáciu, aktualizujte aplikáciu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696">Ušetrené: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Resetovať</translation>
@@ -812,7 +806,6 @@ Skúšobné obdobia technológií Privacy Sandbox sú stále v aktívnom vývoj
 <translation id="6192907950379606605">Získať popisy obrázkov</translation>
 <translation id="6210748933810148297">Nie som <ph name="EMAIL" /></translation>
 <translation id="6211386937064921208">Je zobrazená ukážka tejto stránky</translation>
-<translation id="6218096829563201111">Hľadať podobné výrobky <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Heslá budete môcť exportovať po odomknutí</translation>
 <translation id="6232535412751077445">Ak povolíte možnosť Nesledovať, k odosielaným dátam prehliadania sa pridá žiadosť. Akýkoľvek účinok závisí od toho, či bude web na žiadosť reagovať, a tiež od interpretácie žiadosti.
 

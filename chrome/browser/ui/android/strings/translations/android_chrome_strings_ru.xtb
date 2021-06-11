@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Браузеру Chrome не удалось проверить ваши данные.</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="10614374240317010">Сайты, пароли для которых не сохраняются</translation>
-<translation id="1067922213147265141">Другие сервисы Google</translation>
 <translation id="107147699690128016">Если вы сделаете это, файл может открыться в другом приложении и нанести вред устройству.</translation>
 <translation id="1095761715416917775">Не теряйте доступ к синхронизированным данным</translation>
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Больше не показывать</translation>
 <translation id="1680919990519905526">Искать снимок в Покупках с помощью Google Объектива<ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Попробовать</translation>
-<translation id="1692118695553449118">Синхронизация включена</translation>
 <translation id="1697284962337958118">Куда добавить</translation>
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1724977129262658800">Чтобы изменить пароль, разблокируйте устройство</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Не удалять данные</translation>
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
-<translation id="1984705450038014246">Синхронизировать данные Chrome</translation>
 <translation id="1986685561493779662">Это имя уже используется.</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658">Сайт <ph name="SITE" /> запрашивает подключение</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">Управление передачей данных об использовании</translation>
 <translation id="2227444325776770048">Продолжить как <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Для вас</translation>
-<translation id="2234876718134438132">Синхронизация сервисов Google</translation>
 <translation id="2239812875700136898">Управляйте контентом с помощью кнопки "Параметры рекомендаций".</translation>
 <translation id="2259659629660284697">Экспорт паролей…</translation>
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">Быстрый просмотр сайтов и экономия трафика</translation>
 <translation id="3297344142967351106">Голосовой помощник</translation>
 <translation id="3303414029551471755">Скачать?</translation>
-<translation id="3315103659806849044">Сейчас вы находитесь на странице настроек сервисов Google и синхронизации. Чтобы включить синхронизацию, нажмите кнопку "Подтвердить" в нижней части экрана. Перейти вверх</translation>
 <translation id="3334729583274622784">Изменить расширение имени файла?</translation>
 <translation id="3341058695485821946">Узнайте, сколько трафика вы сэкономили.</translation>
 <translation id="3341262203274374114">Не удалось отменить подписку. Что-то пошло не так.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">Связанные сайты</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Основные</translation>
-<translation id="4314815835985389558">Настройки синхронизации</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
 <translation id="4321739720395210191">Не удается открыть камеру. Перезапустите устройство и повторите попытку.</translation>
 <translation id="433213510553688132">Подписка…</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">Остался 1 час</translation>
 <translation id="5118713593561876160">Интересы</translation>
 <translation id="5123685120097942451">Вкладка инкогнито</translation>
-<translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
-<translation id="5136035049889637840">Искать похожие товары в Покупках<ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Открыть справочную статью</translation>
 <translation id="5152843274749979095">Нет поддерживаемых приложений</translation>
 <translation id="5161254044473106830">Введите название</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">Сохраненные более 30 дней назад</translation>
 <translation id="5855546874025048181">Уточнить: "<ph name="REFINE_TEXT" />"</translation>
 <translation id="5858741533101922242">Не удалось включить адаптер Bluetooth</translation>
+<translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5860491529813859533">Включить</translation>
 <translation id="5862731021271217234">Чтобы получить доступ к вкладкам на всех устройствах, включите синхронизацию.</translation>
 <translation id="5864174910718532887">Сортировка по названию сайта</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">Чтобы подписаться на сайт, откройте его, перейдите в меню Google Chrome и нажмите "Подписаться".</translation>
 <translation id="5880748256563468367">Перейти к ленте</translation>
 <translation id="5884076754568147479">Выполнять действия в Chrome с помощью Ассистента: отправлять в Google контент и URL сайтов, а также информацию, сообщаемую Ассистенту</translation>
+<translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5919204609460789179">Обновите <ph name="PRODUCT_NAME" />, чтобы начать синхронизацию</translation>
 <translation id="5937580074298050696">Сохранено: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Сбросить</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">Описывать изображения</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
-<translation id="6218096829563201111">Искать похожие товары<ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Чтобы экспортировать пароли, разблокируйте экран</translation>
 <translation id="6232535412751077445">Если вы запретите отслеживание, в запросы браузера будет включена специальная команда. Сайты могут интерпретировать ее и отвечать на нее по-разному.
 

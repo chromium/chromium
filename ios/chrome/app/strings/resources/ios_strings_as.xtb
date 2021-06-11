@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" />দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="2074131957428911366">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" />-লৈ গৈ যেতিয়াই মন যায় তেতিয়াই সলনি কৰিব পাৰে।</translation>
 <translation id="2079545284768500474">আনডু কৰক</translation>
-<translation id="2086623437239112659">আপুনি ষ্ট'ৰ কৰি থোৱা ছাইন ইন কৰাৰ তথ্যখিনিৰ ম্যাদ উকলিব পাৰে।</translation>
 <translation id="209018056901015185">ডেস্কটপ ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="2103075008456228677">history.google.com খোলক</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টা বস্তু স্থানান্তৰ কৰা হ’ল</translation>
@@ -805,6 +804,7 @@
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>
 <translation id="9152539721251340337">এটা কিউআৰ ক’ড সৃষ্টি কৰক</translation>
 <translation id="9157836665414082580">ডায়ল'গ লুকুৱাওক</translation>
+<translation id="9183059292653643328">আপোনাৰ প্ৰতিষ্ঠানে এই ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
 <translation id="9188680907066685419">পৰিচালিত একাউণ্টৰ পৰা ছাইন আউট হওক</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> দিন আগতে</translation>
 <translation id="9203116392574189331">হেণ্ডঅফ</translation>

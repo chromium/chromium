@@ -240,10 +240,10 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
       setelan Chromium OS<ph name="LINK_END" /> Anda</translation>
 <translation id="761356813943268536">Chromium menggunakan kamera dan mikrofon Anda.</translation>
 <translation id="7617377681829253106">Chromium menjadi lebih baik</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Sebelum dimulai, pastikan Anda telah memiliki cadangan terbaru data Anda. Menginstal Chromium OS akan menimpa semua data di hard drive.<ph name="END_PARAGRAPH1" />
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Sebelum memulai, pastikan Anda telah memiliki cadangan terbaru data Anda. Menginstal Chromium OS akan menimpa semua data di hard drive.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google tidak bertanggung jawab atas hilangnya data, dan tidak menjamin bahwa Chromium OS akan berfungsi di model yang tidak besertifikasi. Buka [TBD] untuk mempelajari model besertifikasi lebih lanjut.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Pelajari lebih lanjut cara menginstal Chromium OS dan penghapusan data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Jika Anda siap melanjutkan, klik “Instal Chromium OS” dan kami akan memandu Anda melalui proses penginstalan dalam beberapa langkah mudah. Anda masih memiliki kesempatan lain untuk mengonfirmasi sebelum kami membuat perubahan pada komputer Anda.<ph name="END_PARAGRAPH4" /></translation>
+          <ph name="BEGIN_PARAGRAPH4" />Jika Anda siap melanjutkan, klik “Instal Chromium OS” dan kami akan memandu Anda menjalankan proses penginstalan dalam beberapa langkah mudah. Anda masih memiliki kesempatan untuk mengonfirmasi sebelum kami membuat perubahan pada komputer Anda.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium bukan browser default</translation>
 <translation id="7689606757190482937">Menyinkronkan dan mempersonalisasi Chromium di perangkat Anda</translation>
 <translation id="7729447699958282447">Chromium tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>

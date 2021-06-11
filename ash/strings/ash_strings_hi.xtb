@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">माउस कर्सर को हाइलाइट करें</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> खाता संभालते हैं</translation>
 <translation id="3552189655002856821">वाई-फ़ाई बंद है</translation>
+<translation id="3560866052109807830">मार्कर ड्रॉइंग टूल</translation>
 <translation id="3563775809269155755">हॉटस्पॉट चालू करें</translation>
 <translation id="3571734092741541777">सेट करें</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" में फिर से बदलें (फिर से आरंभ करने की आवश्यकता है)</translation>
@@ -412,6 +413,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. End बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + राइट ऐरो दबाएं.</translation>
 <translation id="4279490309300973883">स्क्रीन शेयर करने की सुविधा चालू है</translation>
 <translation id="4285498937028063278">टैब बड़ी करें</translation>
+<translation id="429402653707266969">टूलबार की जगह को टॉगल करें</translation>
 <translation id="4294319844246081198">गुड मॉर्निंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सभी <ph name="COUNT" /> सूचनाएं हटाएं</translation>
 <translation id="4302592941791324970">उपलब्ध नहीं है</translation>

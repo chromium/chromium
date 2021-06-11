@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">ປິດ Wi-Fi ແລ້ວ</translation>
+<translation id="3560866052109807830">ເຄື່ອງມືການແຕ້ມປາກກາ</translation>
 <translation id="3563775809269155755">ເປີດການນຳໃຊ້ຮັອດສະປອດ</translation>
 <translation id="3571734092741541777">ຕັ້ງຄ່າ</translation>
 <translation id="3573179567135747900">ປ່ຽນ​​ກັບ​ຄືນ​ໄປຫາ "<ph name="FROM_LOCALE" />" (ຕ້ອງການໃຫ້ປິດເປີດຄືນໃໝ່)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">ຄີລັດ Ctrl + Alt + ລູກສອນລົງຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ End, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຂວາ.</translation>
 <translation id="4279490309300973883">ການສ່ອງ</translation>
 <translation id="4285498937028063278">ຖອນໝຸດ</translation>
+<translation id="429402653707266969">ສະຫຼັບສະຖານທີ່ແຖບ​ເຄື່ອງ​ມື</translation>
 <translation id="4294319844246081198">ສະບາຍດີຕອນເຊົ້າ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ <ph name="COUNT" /> ລາຍການ</translation>
 <translation id="4302592941791324970">ບໍ່ສາມາດໃຊ້ໄດ້</translation>

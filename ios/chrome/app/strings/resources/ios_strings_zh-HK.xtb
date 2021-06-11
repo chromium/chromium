@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
-<translation id="2086623437239112659">您已儲存的登入資料可能已過期。</translation>
 <translation id="209018056901015185">切換為電腦版網站</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">互聯網</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
+<translation id="5232485538978018676">使用受管理的帳戶登入</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5245322853195994030">取消同步處理</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
@@ -722,6 +722,7 @@
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
 <translation id="8225985093977202398">快取圖片和檔案</translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8271720166617117963">接受並登入</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8283172974887967105">設定…</translation>

@@ -308,6 +308,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest codziennie aktualizowana.}=1{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest codziennie aktualizowana.}few{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dni.}many{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dni.}other{Gdy ta opcja jest włączona i ma stan aktywny, Chrome znajduje dużą grupę osób (kohortę), której aktywność związana z przeglądaniem jest najbardziej podobna do Twojej. Reklamodawcy mogą wybierać reklamy dla grupy, a Twoja aktywność związana z przeglądaniem pozostaje prywatna i jest przechowywana tylko na Twoim urządzeniu. Grupa, do której należysz, jest aktualizowana co {NUM_DAYS} dnia.}}</translation>
 <translation id="2053553514270667976">Kod pocztowy</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 podpowiedź}few{# podpowiedzi}many{# podpowiedzi}other{# podpowiedzi}}</translation>
+<translation id="2071156619270205202">Ta karta nie kwalifikuje się do nadania numeru karty wirtualnej.</translation>
 <translation id="2071692954027939183">Powiadomienia zostały automatycznie zablokowane, bo zazwyczaj na nie nie zezwalasz</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="20817612488360358">Skonfigurowano używanie systemowych ustawień proxy, ale podano też jawną konfigurację proxy.</translation>
@@ -436,9 +437,11 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2521385132275182522">Zszywka w prawym dolnym rogu</translation>
 <translation id="2523886232349826891">Zapisana tylko na tym urządzeniu</translation>
 <translation id="2524461107774643265">Dodaj więcej informacji</translation>
+<translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
 <translation id="2536110899380797252">Dodaj adres</translation>
 <translation id="2539524384386349900">Wykrywaj</translation>
+<translation id="2540701853218677861">Historia logowania się na urządzeniu i wylogowywania się z niego, w tym sygnatury czasowe i próby nieudane</translation>
 <translation id="2541219929084442027">Po zamknięciu wszystkich kart incognito wyświetlane na nich strony nie pozostawią żadnych śladów w historii przeglądarki, magazynie plików cookie ani historii wyszukiwania. Pobrane pliki i utworzone zakładki zostaną jednak zachowane.</translation>
 <translation id="2544644783021658368">Pojedynczy dokument</translation>
 <translation id="254947805923345898">Wartość zasady jest nieprawidłowa.</translation>
@@ -631,6 +634,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3320021301628644560">Dodaj adres rozliczeniowy</translation>
 <translation id="3324983252691184275">Karmazynowy</translation>
 <translation id="3329013043687509092">Nasycenie</translation>
+<translation id="3333762389743153920">Nie spełnia wymagań dotyczących karty wirtualnej</translation>
 <translation id="3338095232262050444">Bezpieczna</translation>
 <translation id="3355823806454867987">Zmień ustawienia serwera proxy...</translation>
 <translation id="3360103848165129075">Arkusz modułu do obsługi płatności</translation>
@@ -1139,6 +1143,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Zweryfikuj kartę</translation>
 <translation id="5135404736266831032">Zarządzaj adresami…</translation>
+<translation id="5138014172396933048">Karta wirtualna nie jest teraz dostępna. Skontaktuj się z bankiem.</translation>
 <translation id="5138227688689900538">Pokaż mniej</translation>
 <translation id="514010763713772514">Płać szybciej w przyszłości</translation>
 <translation id="5145883236150621069">W odebranej polityce znajduje się kod błędu</translation>
@@ -1185,6 +1190,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5287240709317226393">Pokaż pliki cookie</translation>
 <translation id="5287456746628258573">Ta strona używa nieaktualnej konfiguracji zabezpieczeń, co oznacza, że Twoje dane (np. hasła i numery kart kredytowych) mogą być zagrożone podczas przesyłania na tę stronę.</translation>
 <translation id="5288108484102287882">Weryfikacja wartości zasad zakończyła się z ostrzeżeniami</translation>
+<translation id="5288808348893593856">Połączenie z witryną jest bezpieczne, chyba że Chrome poinformuje Cię, że jest inaczej.</translation>
 <translation id="5289384342738547352">Obsługa wielu dokumentów</translation>
 <translation id="5299298092464848405">Podczas przetwarzania zasady wystąpił błąd</translation>
 <translation id="5300589172476337783">Pokaż</translation>
@@ -1547,9 +1553,11 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6685834062052613830">Wyloguj się i dokończ konfigurację</translation>
 <translation id="6687335167692595844">Zażądano rozmiaru czcionki</translation>
 <translation id="6688743156324860098">Zmień…</translation>
+<translation id="6688775486821967877">Karta wirtualna jest teraz niedostępna. Spróbuj ponownie później.</translation>
 <translation id="6689249931105087298">Względna z kompresją punktu czerni</translation>
 <translation id="6689271823431384964">Chrome proponuje zalogowanym użytkownikom zapisywanie kart na koncie Google. Możesz to zmienić w ustawieniach. Imię i nazwisko posiadacza karty pochodzi z Twojego konta.</translation>
 <translation id="6698381487523150993">Utworzono:</translation>
+<translation id="6699188552522342100">Czy ta witryna jest prawidłowa?</translation>
 <translation id="6702919718839027939">Tryb prezentacji</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6710594484020273272">&lt;Wpisz wyszukiwane słowa&gt;</translation>
@@ -1676,6 +1684,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="7219179957768738017">Połączenie z szyfrowaniem <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Przetwarzanie</translation>
 <translation id="7221855153210829124">Pokazywanie powiadomień</translation>
+<translation id="722454870747268814">Nowa karta incognito</translation>
 <translation id="7229659723041939809">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by sprawdzić zapisane hasła do witryn <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /> oraz do innych stron, na których używasz tego hasła.</translation>
 <translation id="7233592378249864828">Drukuj arkusz potwierdzenia</translation>
 <translation id="7238585580608191973">Odcisk cyfrowy SHA-256</translation>
@@ -2053,6 +2062,7 @@ Dodatkowe informacje:
           <ph name="LIST_ITEM" />pliki cookie i dane witryn.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Używaj Touch ID, by szybciej potwierdzać karty</translation>
+<translation id="8577348305244205642">Karta wirtualna jest niedostępna</translation>
 <translation id="858637041960032120">Dodaj numer telefonu</translation>
 <translation id="8589998999637048520">Najlepsza jakość</translation>
 <translation id="8600271352425265729">Tylko tym razem</translation>

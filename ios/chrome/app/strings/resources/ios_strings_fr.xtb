@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
-<translation id="2086623437239112659">Les infos de connexion enregistrées sont peut-être obsolètes.</translation>
 <translation id="209018056901015185">Voir version ordinateur</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés.</translation>
@@ -408,6 +407,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
+<translation id="5232485538978018676">Se connecter avec un compte géré</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
@@ -725,6 +725,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8206354486702514201">Ce paramètre est appliqué par votre administrateur.</translation>
 <translation id="8225985093977202398">Img/fich. en cache</translation>
 <translation id="8261506727792406068">Supprimer</translation>
+<translation id="8271720166617117963">Accepter et se connecter</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8283172974887967105">Définir…</translation>

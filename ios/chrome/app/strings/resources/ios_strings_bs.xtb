@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Vrati</translation>
-<translation id="2086623437239112659">Moguće je da su vaše pohranjene informacije za prijavu zastarjele.</translation>
 <translation id="209018056901015185">Zatraži verziju web lokacije za računar</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premještenih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -408,6 +407,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Zatvorite karticu.</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>
+<translation id="5232485538978018676">Prijavite se pomoću upravljanog računa</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5245322853195994030">Otkaži sinhronizaciju</translation>
 <translation id="5271549068863921519">Spremi zaporku</translation>
@@ -724,6 +724,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8206354486702514201">Ovu postavku je nametnuo vaš administrator.</translation>
 <translation id="8225985093977202398">Slike i fajlovi u keš memoriji</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8271720166617117963">Prihvati i prijavi me</translation>
 <translation id="8281781826761538115">Zadano – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8283172974887967105">Postavi…</translation>

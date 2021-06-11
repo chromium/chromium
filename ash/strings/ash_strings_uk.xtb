@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Підсвічувати курсор миші</translation>
 <translation id="3513798432020909783">Обліковим записом керує <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Wi-Fi вимкнено</translation>
+<translation id="3560866052109807830">Інструменти малювання маркером</translation>
 <translation id="3563775809269155755">Увімкнути точку доступу</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
 <translation id="3573179567135747900">Повернутися до мови "<ph name="FROM_LOCALE" />" (потрібно перезавантажитися)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">Комбінацію клавіш Ctrl + Alt + стрілка вниз змінено. Щоб скористатися клавішею End, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вправо.</translation>
 <translation id="4279490309300973883">Дзеркальне відображення</translation>
 <translation id="4285498937028063278">Відкріпити</translation>
+<translation id="429402653707266969">Змінити розташування панелі інструментів</translation>
 <translation id="4294319844246081198">Доброго ранку, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Видаліть усі сповіщення (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Недоступно</translation>

@@ -309,6 +309,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Bu denetim açık ve durum etkin olduğunda Chrome, son tarama etkinliklerinizin en çok benzediği geniş kullanıcı grubu veya "kohort"u belirler. Reklamverenler grup için reklam seçebilirler ve tarama etkinliğiniz cihazınızda gizli tutulur. Grubunuz her gün güncellenir.}=1{Bu denetim açık ve durum etkin olduğunda Chrome, son tarama etkinliklerinizin en çok benzediği geniş kullanıcı grubu veya "kohort"u belirler. Reklamverenler grup için reklam seçebilirler ve tarama etkinliğiniz cihazınızda gizli tutulur. Grubunuz her gün güncellenir.}other{Bu denetim açık ve durum etkin olduğunda Chrome, son tarama etkinliklerinizin en çok benzediği geniş kullanıcı grubu veya "kohort"u belirler. Reklamverenler grup için reklam seçebilirler ve tarama etkinliğiniz cihazınızda gizli tutulur. Grubunuz {NUM_DAYS} günde bir güncellenir.}}</translation>
 <translation id="2053553514270667976">Posta kodu</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 öneri}other{# öneri}}</translation>
+<translation id="2071156619270205202">Bu kart, sanal kart numarası için uygun değil.</translation>
 <translation id="2071692954027939183">Genelde izin vermediğiniz için bildirimler otomatik olarak engellendi</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="20817612488360358">Sistem proxy ayarları kullanılmak üzere ayarlandı, ancak açık bir proxy yapılandırması da belirtildi.</translation>
@@ -437,9 +438,11 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2521385132275182522">Sağ altta tel zımba</translation>
 <translation id="2523886232349826891">Yalnızca bu cihazda kaydedildi</translation>
 <translation id="2524461107774643265">Daha Fazla Bilgi Ekleyin</translation>
+<translation id="2529899080962247600">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Bundan sonraki tüm girişler yok sayılacak.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ve 1 tane daha}other{ve # tane daha}}</translation>
 <translation id="2536110899380797252">Adres Ekle</translation>
 <translation id="2539524384386349900">Algıla</translation>
+<translation id="2540701853218677861">Zaman damgaları ve başarısız denemeler de dahil olmak üzere cihaz giriş/çıkış geçmişi</translation>
 <translation id="2541219929084442027">Gizli sekmelerde görüntülediğiniz sayfalar, açık olan tüm gizli sekmeler kapatıldıktan sonra tarayıcınızın geçmişinden, çerez deposundan veya arama geçmişinden silinecektir. İndirdiğiniz dosyalar veya oluşturduğunuz yer işaretleri kalacaktır.</translation>
 <translation id="2544644783021658368">Tek doküman</translation>
 <translation id="254947805923345898">Politika değeri geçerli değil.</translation>
@@ -630,6 +633,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3320021301628644560">Fatura adresi ekle</translation>
 <translation id="3324983252691184275">Kızıl</translation>
 <translation id="3329013043687509092">Doygunluk</translation>
+<translation id="3333762389743153920">Sanal kart için uygun değil</translation>
 <translation id="3338095232262050444">Güvenli</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
 <translation id="3360103848165129075">Ödeme işleyici sayfası</translation>
@@ -1139,6 +1143,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kartınızı doğrulayın</translation>
 <translation id="5135404736266831032">Adresleri yönet...</translation>
+<translation id="5138014172396933048">Sanal kart şu anda kullanılamıyor. Lütfen bankanızla iletişim kurun</translation>
 <translation id="5138227688689900538">Daha az göster</translation>
 <translation id="514010763713772514">Gelecek sefer daha hızlı ödeme yapın</translation>
 <translation id="5145883236150621069">Politika yanıtında hata kodu var</translation>
@@ -1185,6 +1190,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5287240709317226393">Çerezleri göster</translation>
 <translation id="5287456746628258573">Bu site, eski bir güvenlik yapılandırması kullanıyor. Bu siteye gönderildiğinde bilgileriniz (ör. şifreler veya kredi kartı numaraları) gösterilebilir.</translation>
 <translation id="5288108484102287882">Politika değerlerini doğrulama işlemi uyarılarla sonuçlandı</translation>
+<translation id="5288808348893593856">Chrome tarafından aksi belirtilmediği sürece sitenin bağlantısı güvenlidir.</translation>
 <translation id="5289384342738547352">Birden çok doküman işleme</translation>
 <translation id="5299298092464848405">Politika ayrıştırma hatası</translation>
 <translation id="5300589172476337783">Göster</translation>
@@ -1547,9 +1553,11 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6685834062052613830">Çıkış yapın ve kurulumu tamamlayın</translation>
 <translation id="6687335167692595844">Yazı tipi boyutu istendi</translation>
 <translation id="6688743156324860098">Güncelle…</translation>
+<translation id="6688775486821967877">Sanal kart şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin</translation>
 <translation id="6689249931105087298">Siyah nokta sıkıştırma ile göreli</translation>
 <translation id="6689271823431384964">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz. Kart sahibinin adı hesabınızdan gelir.</translation>
 <translation id="6698381487523150993">Oluşturma tarihi:</translation>
+<translation id="6699188552522342100">Bu web sitesindeki bilgiler doğru mu?</translation>
 <translation id="6702919718839027939">Sunum</translation>
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6710594484020273272">&lt;Arama terimini yazın&gt;</translation>
@@ -1676,6 +1684,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7219179957768738017">Bağlantı <ph name="SSL_VERSION" /> kullanıyor.</translation>
 <translation id="7220786058474068424">İşleme koyuluyor</translation>
 <translation id="7221855153210829124">Bildirimleri gösterme</translation>
+<translation id="722454870747268814">Yeni Gizli Sekme</translation>
 <translation id="7229659723041939809">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ve bu şifreyi kullandığınız diğer sitelerdeki kayıtlı şifrelerinizi hemen kontrol etmenizi öneriyor.</translation>
 <translation id="7233592378249864828">Yazdırma onay sayfası</translation>
 <translation id="7238585580608191973">SHA-256 Parmak İzi</translation>
@@ -2053,6 +2062,7 @@ Ek ayrıntılar:
           <ph name="LIST_ITEM" />Çerezler ve site verileri
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Kartları daha hızlı onaylamak için Touch ID'yi kullanın</translation>
+<translation id="8577348305244205642">Sanal kart kullanılamıyor</translation>
 <translation id="858637041960032120">Telefon no ekle
 </translation>
 <translation id="8589998999637048520">En iyi kalite</translation>

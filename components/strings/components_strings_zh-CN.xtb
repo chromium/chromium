@@ -308,6 +308,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每天 1 次的频率更新您所属的群组。}=1{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每天 1 次的频率更新您所属的群组。}other{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每 {NUM_DAYS} 天 1 次的频率更新您所属的群组。}}</translation>
 <translation id="2053553514270667976">邮编</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 条建议}other{# 条建议}}</translation>
+<translation id="2071156619270205202">这张卡的卡号无法用作虚拟卡号。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="20817612488360358">已设置为使用系统代理设置，但同时指定了一个明确的代理配置。</translation>
@@ -436,9 +437,11 @@
 <translation id="2521385132275182522">钉装（右下角）</translation>
 <translation id="2523886232349826891">仅会保存在此设备上</translation>
 <translation id="2524461107774643265">添加更多信息</translation>
+<translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{以及另外 1 个网域}other{以及另外 # 个网域}}</translation>
 <translation id="2536110899380797252">添加地址</translation>
 <translation id="2539524384386349900">检测</translation>
+<translation id="2540701853218677861">设备登录/退出事件记录，包括时间戳和失败的尝试</translation>
 <translation id="2541219929084442027">在您关闭所有无痕式标签页后，您在这些标签页中浏览的网页不会在浏览器历史记录、Cookie 存储区或搜索记录中留下任何痕迹。不过，您下载的所有文件或创建的书签均会保留下来。</translation>
 <translation id="2544644783021658368">单一文档</translation>
 <translation id="254947805923345898">政策值无效。</translation>
@@ -627,6 +630,7 @@
 <translation id="3320021301628644560">添加账单邮寄地址</translation>
 <translation id="3324983252691184275">深红色</translation>
 <translation id="3329013043687509092">饱和度</translation>
+<translation id="3333762389743153920">无法用作虚拟卡</translation>
 <translation id="3338095232262050444">安全</translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="3360103848165129075">付款处理程序工作表</translation>
@@ -1133,6 +1137,7 @@
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">验证您的银行卡</translation>
 <translation id="5135404736266831032">管理地址…</translation>
+<translation id="5138014172396933048">暂时无法使用虚拟卡，请联系您的发卡行</translation>
 <translation id="5138227688689900538">收起</translation>
 <translation id="514010763713772514">下次更快捷地结帐</translation>
 <translation id="5145883236150621069">策略响应中存在错误代码</translation>
@@ -1179,6 +1184,7 @@
 <translation id="5287240709317226393">显示 Cookie</translation>
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
+<translation id="5288808348893593856">您与此类网站之间的连接是安全的，除非 Chrome 另行通知。</translation>
 <translation id="5289384342738547352">多文档处理</translation>
 <translation id="5299298092464848405">解析策略时出错</translation>
 <translation id="5300589172476337783">显示</translation>
@@ -1540,9 +1546,11 @@
 <translation id="6685834062052613830">请退出并完成设置</translation>
 <translation id="6687335167692595844">请求的字号</translation>
 <translation id="6688743156324860098">更新…</translation>
+<translation id="6688775486821967877">暂时无法使用虚拟卡，请稍后再试</translation>
 <translation id="6689249931105087298">相对（使用黑点压缩）</translation>
 <translation id="6689271823431384964">Chrome 正在询问是否要将卡保存到您的 Google 帐号中，因为您已登录。您可在“设置”中更改此行为。持卡人姓名来自您的帐号。</translation>
 <translation id="6698381487523150993">创建时间：</translation>
+<translation id="6699188552522342100">此网站上的信息准确无误吗？</translation>
 <translation id="6702919718839027939">演示</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6710594484020273272">&lt;输入搜索字词&gt;</translation>
@@ -1669,6 +1677,7 @@
 <translation id="7219179957768738017">该连接使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在处理</translation>
 <translation id="7221855153210829124">显示通知</translation>
+<translation id="722454870747268814">打开新的无痕模式标签页</translation>
 <translation id="7229659723041939809">您刚刚在一个诈骗网站中输入了密码。Chrome 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及使用此密码的其他网站检查您保存的密码。</translation>
 <translation id="7233592378249864828">打印确认工作表</translation>
 <translation id="7238585580608191973">SHA-256 指纹</translation>
@@ -2046,6 +2055,7 @@
           <ph name="LIST_ITEM" />Cookie 和网站数据
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">使用 Touch ID 更快地确认银行卡</translation>
+<translation id="8577348305244205642">无法使用虚拟卡</translation>
 <translation id="858637041960032120">添加电话号码
 </translation>
 <translation id="8589998999637048520">最佳的质量</translation>

@@ -317,6 +317,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3510164367642747937">Ressalta el cursor del ratolí</translation>
 <translation id="3513798432020909783">Compte gestionat per <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">La Wi-Fi està desactivada</translation>
+<translation id="3560866052109807830">Eines de dibuix del marcador</translation>
 <translation id="3563775809269155755">Activa el punt d'accés Wi‑Fi</translation>
 <translation id="3571734092741541777">Configura</translation>
 <translation id="3573179567135747900">Torna a canviar a "<ph name="FROM_LOCALE" />" (requereix reiniciar)</translation>
@@ -411,6 +412,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
 <translation id="4285498937028063278">No fixis</translation>
+<translation id="429402653707266969">Commuta la ubicació de la barra d'eines</translation>
 <translation id="4294319844246081198">Bon dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Esborra les <ph name="COUNT" /> notificacions</translation>
 <translation id="4302592941791324970">No disponible</translation>

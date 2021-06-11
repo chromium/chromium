@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome не можа да потвърди информацията ви</translation>
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
-<translation id="1067922213147265141">Други услуги на Google</translation>
 <translation id="107147699690128016">Ако промените файловото разширение, файлът може да се отвори в друго приложение и потенциално да навреди на устройството ви.</translation>
 <translation id="1095761715416917775">Обезпечете си непрекъснат достъп до синхронизираните си данни</translation>
 <translation id="1100066534610197918">Отваряне в нов раздел в група</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Да не се показва отново</translation>
 <translation id="1680919990519905526">Пазар. с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Изпробване сега</translation>
-<translation id="1692118695553449118">Синхронизирането е включено</translation>
 <translation id="1697284962337958118">Добавяне към</translation>
 <translation id="1718835860248848330">Последния час</translation>
 <translation id="1724977129262658800">Отключете, за да редактирате паролата си</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Запазване на данните</translation>
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
-<translation id="1984705450038014246">Синхронизиране на данните ви в Chrome</translation>
 <translation id="1986685561493779662">Името вече съществува</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> бутон „<ph name="LINK_NAME" />“</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> иска да се сдвои</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">Управление на споделянето на данни за употребата</translation>
 <translation id="2227444325776770048">Продължаване като <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">За вас</translation>
-<translation id="2234876718134438132">Синхронизиране и услуги на Google</translation>
 <translation id="2239812875700136898">Контролирайте материалите от бутона „Опции за Discover“</translation>
 <translation id="2259659629660284697">Експортиране на паролите…</translation>
 <translation id="2276696007612801991">Влезте в профила си в Google, за да бъдат проверени паролите ви</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">Сърфирайте по-бързо. Използвайте по-малко данни.</translation>
 <translation id="3297344142967351106">Гласова помощ</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
-<translation id="3315103659806849044">Понастоящем персонализирате настройките си за синхронизиране и за услугите на Google. За да включите синхронизирането, докоснете бутона „Потвърждаване“ в долната част на екрана. Навигиране нагоре</translation>
 <translation id="3334729583274622784">Да се промени ли файловото разширение?</translation>
 <translation id="3341058695485821946">Вижте колко данни сте спестили</translation>
 <translation id="3341262203274374114">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4298388696830689168">Свързани сайтове</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Основни положения</translation>
-<translation id="4314815835985389558">Управление на синхронизирането</translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="4321739720395210191">Камерата не може да се отвори. Рестартирайте устройството си и опитайте отново.</translation>
 <translation id="433213510553688132">Започвате да следите...</translation>
@@ -631,9 +625,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="510275257476243843">Остава 1 час</translation>
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
-<translation id="5127805178023152808">Синхронизирането е изключено</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
-<translation id="5136035049889637840">Пазар. на под. продукти <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Научете как да използвате Google Диск</translation>
 <translation id="5152843274749979095">Никое от поддържаните приложения не е инсталирано</translation>
 <translation id="5161254044473106830">Изисква се заглавие</translation>
@@ -753,6 +745,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5854790677617711513">По-стари от 30 дни</translation>
 <translation id="5855546874025048181">Прецизиране: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome не може да включи адаптера за Bluetooth</translation>
+<translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5862731021271217234">Включете синхронизирането, за да получите разделите си от другите си устройства</translation>
 <translation id="5864174910718532887">Подробности: сортирани по име на сайта</translation>
@@ -762,6 +755,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5880748256563468367">Към емисията</translation>
 <translation id="5884076754568147479">За да ви помага да изпълнявате задачи, Google ще получава URL адресите и съдържанието на сайтовете, в които използвате Асистент, както и данните, които изпращате чрез услугата</translation>
+<translation id="5916664084637901428">Включено</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
 <translation id="5937580074298050696">Спестени: <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Нулиране</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6192907950379606605">Описания на изображенията</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Страницата се визуализира</translation>
-<translation id="6218096829563201111">Търсене на под. продукти <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Отключете, за да експортирате паролите си</translation>
 <translation id="6232535412751077445">Активирането на „Do Not Track“ означава, че с трафика ви на сърфиране ще се подава заявка. Ефектите зависят от това, дали уебсайтът ще отговори на нея и как ще я изтълкува.
 

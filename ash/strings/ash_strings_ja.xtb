@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
 <translation id="3552189655002856821">Wi-Fi はオフです</translation>
+<translation id="3560866052109807830">マーカー描画ツール</translation>
 <translation id="3563775809269155755">アクセス ポイントを有効にする</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3573179567135747900">「<ph name="FROM_LOCALE" />」に戻します（再起動が必要です）</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">キーボード ショートカット「Ctrl+Alt+下矢印」が変更されました。End キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+右矢印キーを押してください。</translation>
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4285498937028063278">固定を解除</translation>
+<translation id="429402653707266969">ツールバーの場所を切り替え</translation>
 <translation id="4294319844246081198">おはようございます、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> 件の通知をすべて消去</translation>
 <translation id="4302592941791324970">使用できません</translation>

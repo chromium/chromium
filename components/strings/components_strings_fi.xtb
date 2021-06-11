@@ -312,6 +312,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kun tämä asetus on päällä ja tila on aktiivinen, Chrome päättelee, minkä ihmisryhmän eli "kohortin" toimintaa viimeaikainen selaustoimintasi eniten muistuttaa. Mainostajat voivat valita ryhmälle mainoksia, ja selaustoimintasi pysyy yksityisenä laitteellasi. Ryhmäsi päivitetään päivittäin.}=1{Kun tämä asetus on päällä ja tila on aktiivinen, Chrome päättelee, minkä ihmisryhmän eli "kohortin" toimintaa viimeaikainen selaustoimintasi eniten muistuttaa. Mainostajat voivat valita ryhmälle mainoksia, ja selaustoimintasi pysyy yksityisenä laitteellasi. Ryhmäsi päivitetään päivittäin.}other{Kun tämä asetus on päällä ja tila on aktiivinen, Chrome päättelee, minkä ihmisryhmän eli "kohortin" toimintaa viimeaikainen selaustoimintasi eniten muistuttaa. Mainostajat voivat valita ryhmälle mainoksia, ja selaustoimintasi pysyy yksityisenä laitteellasi. Ryhmäsi päivitetään {NUM_DAYS} päivän välein.}}</translation>
 <translation id="2053553514270667976">Postinumero</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ehdotus}other{# ehdotusta}}</translation>
+<translation id="2071156619270205202">Tälle kortille ei ole saatavilla virtuaalista korttinumeroa.</translation>
 <translation id="2071692954027939183">Ilmoitukset on estetty automaattisesti, koska et yleensä salli niitä</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="20817612488360358">Järjestelmän välityspalvelinasetukset on määritetty käytettäviksi, mutta erilliset välityspalvelimen asetukset on myös määritetty.</translation>
@@ -440,9 +441,11 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2521385132275182522">Niitti oikeassa alareunassa</translation>
 <translation id="2523886232349826891">Tallennetaan vain tälle laitteelle</translation>
 <translation id="2524461107774643265">Lisää tietoja</translation>
+<translation id="2529899080962247600">Kentässä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> kohtaa. Tämän määrän ylittävät merkinnät ohitetaan.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ja 1 muu}other{ja # muuta}}</translation>
 <translation id="2536110899380797252">Lisää osoite</translation>
 <translation id="2539524384386349900">Tunnista</translation>
+<translation id="2540701853218677861">Laitteen aiemmat sisään- ja uloskirjautumiset, mukaan lukien aikaleimat ja epäonnistuneet yritykset</translation>
 <translation id="2541219929084442027">Incognito-välilehdillä avattujen sivujen tietoja ei säilytetä selaimen historiassa, evästeissä tai hakuhistoriassa, kun kaikki incognito-välilehdet suljetaan. Ladatut tiedostot ja luodut kirjanmerkit säilytetään.</translation>
 <translation id="2544644783021658368">Yksittäinen dokumentti</translation>
 <translation id="254947805923345898">Käytännön arvo ei kelpaa.</translation>
@@ -636,6 +639,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3320021301628644560">Lisää laskutusosoite</translation>
 <translation id="3324983252691184275">Karmiininpunainen</translation>
 <translation id="3329013043687509092">Värikylläisyys</translation>
+<translation id="3333762389743153920">Virtuaalista korttia ei saatavilla</translation>
 <translation id="3338095232262050444">Turvallinen</translation>
 <translation id="3355823806454867987">Muuta välityspalvelimen asetuksia...</translation>
 <translation id="3360103848165129075">Maksujenkäsittelytaulukko</translation>
@@ -1149,6 +1153,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Vahvista kortti</translation>
 <translation id="5135404736266831032">Hallinnoi osoitteita…</translation>
+<translation id="5138014172396933048">Virtuaalinen kortti ei ole juuri nyt käytettävissä, ota yhteyttä pankkiin</translation>
 <translation id="5138227688689900538">Näytä vähemmän</translation>
 <translation id="514010763713772514">Maksa nopeammin ensi kerralla</translation>
 <translation id="5145883236150621069">Käytäntövastaus sisältää virhekoodin</translation>
@@ -1195,6 +1200,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5287240709317226393">Näytä evästeet</translation>
 <translation id="5287456746628258573">Tämä sivusto käyttää vanhentunutta tietoturvamääritystä, joka voi paljastaa tietosi (esim. salasanat tai credit-korttien numerot), kun ne lähetetään sivustolle.</translation>
 <translation id="5288108484102287882">Käytäntöarvojen vahvistus aiheutti varoituksia</translation>
+<translation id="5288808348893593856">Sivuston yhteys on suojattu, ellei Chrome ilmoita toisin.</translation>
 <translation id="5289384342738547352">Useiden dokumenttien käsittely</translation>
 <translation id="5299298092464848405">Virhe jäsennettäessä käytäntöä</translation>
 <translation id="5300589172476337783">Näytä</translation>
@@ -1557,9 +1563,11 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6685834062052613830">Kirjaudu ulos ja suorita määritys loppuun.</translation>
 <translation id="6687335167692595844">Fonttikokoa pyydetty</translation>
 <translation id="6688743156324860098">Päivitä…</translation>
+<translation id="6688775486821967877">Virtuaalinen kortti ei ole juuri nyt käytettävissä, yritä myöhemmin uudelleen</translation>
 <translation id="6689249931105087298">Suhteellinen mustan pisteen pakkauksella</translation>
 <translation id="6689271823431384964">Chrome tarjoaa korttien tallentamista Google-tilillesi, koska olet kirjautuneena sisään. Voit muuttaa tätä koska tahansa asetuksista. Kortinhaltijan nimi on peräisin tililtäsi.</translation>
 <translation id="6698381487523150993">Luomispvm:</translation>
+<translation id="6699188552522342100">Ovatko sivuston tiedot oikein?</translation>
 <translation id="6702919718839027939">Esitystila</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6710594484020273272">&lt;Anna hakukysely&gt;</translation>
@@ -1686,6 +1694,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7219179957768738017">Yhteys käyttää protokollaa <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Käsitellään.</translation>
 <translation id="7221855153210829124">Näytä ilmoitukset</translation>
+<translation id="722454870747268814">Uusi incognito-välilehti</translation>
 <translation id="7229659723041939809">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome suosittelee tarkistamaan näihin tallentamasi salasanat: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ja muut sivustot, joilla salasana on käytössä tällä hetkellä.</translation>
 <translation id="7233592378249864828">Tulosta vahvistussivu</translation>
 <translation id="7238585580608191973">SHA-256-tunnistetiedosto</translation>
@@ -2063,6 +2072,7 @@ Lisätietoja:
           <ph name="LIST_ITEM" />Evästeet ja sivustodata
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Vahvista kortteja nopeammin Touch ID:llä</translation>
+<translation id="8577348305244205642">Virtuaalinen kortti ei käytettävissä</translation>
 <translation id="858637041960032120">Lisää puh.nro
 </translation>
 <translation id="8589998999637048520">Paras laatu</translation>

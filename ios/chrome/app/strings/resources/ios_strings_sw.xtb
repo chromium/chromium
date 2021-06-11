@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Ilitumika Siku <ph name="DAYS" /> Zilizopita</translation>
 <translation id="2074131957428911366">Unaweza kuchagua utakachosawazisha wakati wowote katika <ph name="BEGIN_LINK" />mipangilio<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Tendua</translation>
-<translation id="2086623437239112659">Huenda maelezo yako ya kuingia katika akaunti yaliyohifadhiwa yamepitwa na wakati.</translation>
 <translation id="209018056901015185">Omba Tovuti ya Eneo-kazi</translation>
 <translation id="2103075008456228677">Fungua history.google.com</translation>
 <translation id="2116625576999540962">Vipengee <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> vimesogezwa</translation>
@@ -408,6 +407,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5197255632782567636">Wavuti</translation>
 <translation id="5210365745912300556">Funga kichupo</translation>
 <translation id="5228579091201413441">Washa usawazishaji</translation>
+<translation id="5232485538978018676">Ingia Ukitumia Akaunti Inayosimamiwa</translation>
 <translation id="5234764350956374838">Ondoa</translation>
 <translation id="5245322853195994030">Ungependa kughairi usawazishaji</translation>
 <translation id="5271549068863921519">Hifadhi nenosiri</translation>
@@ -724,6 +724,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8206354486702514201">Mpangilio huu umetekelezwa na msimamizi wako.</translation>
 <translation id="8225985093977202398">Picha na Faili Zilizowekwa katika Akiba</translation>
 <translation id="8261506727792406068">Futa</translation>
+<translation id="8271720166617117963">Kubali na Uingie katika akaunti</translation>
 <translation id="8281781826761538115">Chaguomsingi - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ruka</translation>
 <translation id="8283172974887967105">Weka…</translation>
@@ -766,6 +767,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8654802032646794042">Ghairi</translation>
 <translation id="8668210798914567634">Ukurasa huu umehifadhiwa katika Orodha yako ya Kusoma.</translation>
 <translation id="8680787084697685621">Maelezo ya kuingia kwenye akaunti yamechina.</translation>
+<translation id="8691262314411702087">Chagua Unachotaka Kusawazisha</translation>
 <translation id="8693663554456874301">{count,plural, =1{Funga Kichupo}other{Funga Vichupo}}</translation>
 <translation id="8706588385081740091">Manenosiri</translation>
 <translation id="8717864919010420084">Nakili Kiungo</translation>

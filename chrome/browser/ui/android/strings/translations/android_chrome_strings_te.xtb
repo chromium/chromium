@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome మీ సమాచారాన్ని వెరిఫై చేయలేకపోయింది</translation>
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
 <translation id="10614374240317010">ఎప్పటికి సేవ్ చెయ్యబడవు</translation>
-<translation id="1067922213147265141">ఇతర Google సర్వీసులు</translation>
 <translation id="107147699690128016">మీరు ఫైల్ ఎక్స్‌టెన్షన్‌ను మార్చితే, ఫైల్ వేరే అప్లికేషన్‌లో తెరవబడవచ్చు. అది మీ పరికరానికి హానికరంగా పరిణమించే అవకాశం ఉంటుంది.</translation>
 <translation id="1095761715416917775">మీ సింక్ డేటాను మీరు ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోండి</translation>
 <translation id="1100066534610197918">సమూహంలో కొత్త ట్యాబ్‌లో తెరువు</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">మళ్లీ చూపవద్దు</translation>
 <translation id="1680919990519905526">Google Lensతో కొనడానికి ఫోటో <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">ఇప్పుడే ట్రై చేయండి</translation>
-<translation id="1692118695553449118">సమకాలీకరణ ఆన్‌లో ఉంది</translation>
 <translation id="1697284962337958118">దీనికి జోడించు</translation>
 <translation id="1718835860248848330">చివరి గంట</translation>
 <translation id="1724977129262658800">మీ పాస్‌వర్డ్‌ను ఎడిట్ చేయడానికి అన్‌లాక్ చేయండి</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">డేటాను అలాగే ఉంచు</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
-<translation id="1984705450038014246">మీ Chrome డేటాను సింక్ చేయండి</translation>
 <translation id="1986685561493779662">పేరు ఇప్పటికే ఉంది</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> బటన్</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> దీనితో జత చేయాలనుకుంటోంది</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">డేటా వినియోగ షేరింగ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />గా కొనసాగించు</translation>
 <translation id="22320125457191592">మీ కోసం</translation>
-<translation id="2234876718134438132">సింక్, Google సర్వీసులు</translation>
 <translation id="2239812875700136898">Discover కోసం ఆప్షన్‌లు' అనే బటన్ ద్వారా మీకు కనపడే కథనాలను నియంత్రించండి</translation>
 <translation id="2259659629660284697">పాస్‌వర్డ్‌లను ఎగుమతి చేయండి…</translation>
 <translation id="2276696007612801991">మీ పాస్‌వర్డ్‌లను చెక్ చేయడానికి Google ఖాతాకు సైన్ ఇన్ చేయండి</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">మరింత వేగంగా బ్రౌజ్ చేయండి. తక్కువ డేటాని ఉపయోగించండి.</translation>
 <translation id="3297344142967351106">వాయిస్ సహాయం</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
-<translation id="3315103659806849044">మీరు ప్రస్తుతం మీ సింక్, Google సేవా సెట్టింగ్‌లను అనుకూలీకరిస్తున్నారు. సింక్‌ను ఆన్ చేయడం పూర్తి చేయడానికి, స్క్రీన్ దిగువ భాగం సమీపంలోని నిర్ధారించు బటన్‌ను నొక్కండి. పైకి నావిగేట్ చేయి</translation>
 <translation id="3334729583274622784">ఫైల్ ఎక్స్‌టెన్షన్‌ను మార్చాలా?</translation>
 <translation id="3341058695485821946">మీరు ఎంత డేటాను సేవ్ చేసారో చూడండి</translation>
 <translation id="3341262203274374114">అనుసరణను రద్దు చేయడం సాధ్యపడదు. ఏదో తప్పు జరిగింది.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
-<translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
 <translation id="4320177379694898372">ఇంటర్నెట్ కనెక్షన్ లేదు</translation>
 <translation id="4321739720395210191">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. మీ పరికరాన్ని పునఃప్రారంభించి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="433213510553688132">ఫాలో చేస్తున్నారు...</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">1 గంట మిగిలి ఉంది</translation>
 <translation id="5118713593561876160">ఆసక్తులు</translation>
 <translation id="5123685120097942451">అజ్ఞాత ట్యాబ్</translation>
-<translation id="5127805178023152808">సమకాలీకరణ ఆఫ్‌లో ఉంది</translation>
 <translation id="5132942445612118989">అన్ని పరికరాల్లో మీ పాస్‌వర్డ్‌లు, చరిత్ర, మరిన్నింటిని సింక్ చేయండి</translation>
-<translation id="5136035049889637840">ఇలాంటి ప్రోడక్ట్‌ కొను <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google డిస్క్‌ని ఎలా ఉపయోగించాలో తెలుసుకోండి</translation>
 <translation id="5152843274749979095">మద్దతు గల యాప్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">30 రోజుల కన్నా పాతవి</translation>
 <translation id="5855546874025048181">మెరుగుపరచండి: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome బ్లూటూత్ అడాప్టర్‌ను ఆన్ చేయలేకపోయింది</translation>
+<translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
 <translation id="5862731021271217234">మీ ఇతర పరికరాలలో ఉన్న మీ అన్ని ట్యాబ్‌లను పొందాలనుకుంటే, సమకాలీకరణ ఎంపికను ఆన్ చేయాలి</translation>
 <translation id="5864174910718532887">వివరాలు: సైట్ పేరుతో క్రమీకరించబడ్డాయి</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">సైట్‌ను ఫాలో చేయడానికి, సైట్‌కు వెళ్లి, Chrome మెనూను తెరిచి, 'ఫాలో చేయండి'ని ట్యాప్ చేయండి.</translation>
 <translation id="5880748256563468367">ఫీడ్‌కు వెళ్ళండి</translation>
 <translation id="5884076754568147479">టాస్క్‌లు పూర్తి చేయడంలో మీకు సహాయపడటానికి, మీరు అసిస్టెంట్‌ను ఉపయోగించే సైట్‌ల URLలు అలాగే వాటిలోని కంటెంట్‌ను, వీటితో పాటు మీరు అసిస్టెంట్ ద్వారా సమర్పించే సమాచారాన్ని Google పొందుతుంది</translation>
+<translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5919204609460789179">సింక్‌ను ప్రారంభించడానికి <ph name="PRODUCT_NAME" />ని అప్‌డేట్ చేయండి</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> సేవ్ చేయబడింది</translation>
 <translation id="5939518447894949180">రీసెట్ చేయి</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">ఇమేజ్ వివరణలను పొందండి</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> కాదా?</translation>
 <translation id="6211386937064921208">ఈ పేజీని ప్రివ్యూ చేస్తోంది</translation>
-<translation id="6218096829563201111">ఇలాంటి ప్రోడక్ట్ వెతుకు<ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">మీ పాస్‌వర్డ్‌లను ఎగుమతి చేయడానికి అన్‌లాక్ చేయండి</translation>
 <translation id="6232535412751077445">“ట్రాక్ చేయవద్దు”ను ప్రారంభించడం వ‌ల్ల‌ మీ బ్రౌజింగ్ ట్రాఫిక్‌తో పాటు ఒక అభ్యర్థన చేర్చబడుతుంది. ఆ అభ్యర్థనకు వెబ్‌సైట్ ప్రతిస్పందించిందా లేదా మరియు అభ్యర్థన ఎలా ప‌రిగ‌ణించ‌బ‌డింది అనే వాటిపై ఏ ప్రభావం అయినా ఆధారపడి ఉంటుంది. 
 

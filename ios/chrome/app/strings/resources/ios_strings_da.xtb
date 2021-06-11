@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dage siden</translation>
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
-<translation id="2086623437239112659">Dine gemte loginoplysninger kan være forældede.</translation>
 <translation id="209018056901015185">Vis computerversion</translation>
 <translation id="2103075008456228677">Åbn history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev flyttet</translation>
@@ -408,6 +407,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
+<translation id="5232485538978018676">Log ind med Managerkonto</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5245322853195994030">Annuller synkronisering</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
@@ -724,6 +724,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8206354486702514201">Denne indstilling håndhæves af din administrator.</translation>
 <translation id="8225985093977202398">Billeder og filer, der er gemt i cache</translation>
 <translation id="8261506727792406068">Slet</translation>
+<translation id="8271720166617117963">Acceptér og log ind</translation>
 <translation id="8281781826761538115">Standardsprog – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Spring over</translation>
 <translation id="8283172974887967105">Angiv…</translation>

@@ -317,6 +317,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
+<translation id="3560866052109807830">Marker drawing tools</translation>
 <translation id="3563775809269155755">Enable hotspot</translation>
 <translation id="3571734092741541777">Set up</translation>
 <translation id="3573179567135747900">Change back to "<ph name="FROM_LOCALE" />" (requires restart)</translation>
@@ -411,6 +412,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4274537685965975248">The Ctrl + Alt + down arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + right arrow.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Unpin</translation>
+<translation id="429402653707266969">Toggle toolbar location</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clear all <ph name="COUNT" /> notifications</translation>
 <translation id="4302592941791324970">Not available</translation>

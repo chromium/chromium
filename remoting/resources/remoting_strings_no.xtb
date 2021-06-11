@@ -67,6 +67,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="4176825807642096119">Tilgangskode</translation>
 <translation id="4227991223508142681">Verktøy for vertsidentitetshåndtering</translation>
 <translation id="4240294130679914010">Avinstalleringsprogram for Chromoting-vert</translation>
+<translation id="4257751272692708833">Program for viderekobling av nettadresser fra <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Tilgangskoden er ugyldig. Prøv på nytt.</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4405930547258349619">Core-bibliotek</translation>
@@ -121,6 +122,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="6612717000975622067">Send Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Del</translation>
 <translation id="677755392401385740">Vert startet for brukeren: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Hjelpeprogram for å åpne en nettadresse på <ph name="PRODUCT_NAME" />-klienten</translation>
 <translation id="6939719207673461467">Vis/skjul tastaturet.</translation>
 <translation id="6963936880795878952">Tilkoblinger til den eksterne datamaskinen er midlertidig blokkert fordi noen prøvde å koble seg til med en ugyldig PIN-kode. Prøv på nytt senere.</translation>
 <translation id="6965382102122355670">OK</translation>

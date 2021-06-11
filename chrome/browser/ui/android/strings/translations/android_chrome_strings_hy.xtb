@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome-ին չհաջողվեց հաստատել ձեր տեղեկությունները</translation>
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
 <translation id="10614374240317010">Կայքեր, որոնց համար գաղտնաբառերը երբեք չեն պահվում</translation>
-<translation id="1067922213147265141">Google-ի այլ ծառայություններ</translation>
 <translation id="107147699690128016">Եթե փոխեք ընդլայնումը, ֆայլը կարող է բացվել այլ հավելվածով և վնասել ձեր սարքը:</translation>
 <translation id="1095761715416917775">Համոզվեք, որ ձեր համաժամացված տվյալները միշտ հասանելի են ձեզ</translation>
 <translation id="1100066534610197918">Բացել նոր խմբի նոր ներդիրում</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Այլևս ցույց չտալ</translation>
 <translation id="1680919990519905526">Գնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Փորձել</translation>
-<translation id="1692118695553449118">Համաժամացումը միացված է</translation>
 <translation id="1697284962337958118">Ավելացնել</translation>
 <translation id="1718835860248848330">Վերջին 1 ժամվա</translation>
 <translation id="1724977129262658800">Ապակողպեք էկրանը՝ ձեր գաղտնաբառը փոխելու համար</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Պահպանել տվյալները</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
-<translation id="1984705450038014246">Համաժամացնել Chrome-ի տվյալները</translation>
 <translation id="1986685561493779662">Անունն արդեն գոյություն ունի</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" />-ն ուզում է զուգակցվել</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">Կառավարել օգտագործման տվյալների տրամադրումը</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Ձեզ համար</translation>
-<translation id="2234876718134438132">Համաժամացում և Google-ի ծառայություններ</translation>
 <translation id="2239812875700136898">Կառավարեք ձեր պատմությունները «Discover-ի ընտրանքներ» կոճակի օգնությամբ</translation>
 <translation id="2259659629660284697">Գաղտնաբառերի արտահանում…</translation>
 <translation id="2276696007612801991">Մտեք Google հաշիվ՝ ձեր գաղտնաբառերը ստուգելու համար</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">Որոնեք ավելի արագ: Օգտագործեք ավելի քիչ թրաֆիկ:</translation>
 <translation id="3297344142967351106">Ձայնային հուշումներ</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
-<translation id="3315103659806849044">Դուք ներկայումս անհատականացնում եք համաժամացման և Google-ի ծառայությունների կարգավորումները: Անհատականացումն ավարտելու և համաժամացումը միացնելու համար հպեք «Հաստատել» կոճակին էկրանի ներքևի հատվածում: Անցնել վերև</translation>
 <translation id="3334729583274622784">Փոխե՞լ ֆայլի ընդլայնումը</translation>
 <translation id="3341058695485821946">Դիտեք պահված տվյալների ծավալը</translation>
 <translation id="3341262203274374114">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4298388696830689168">Կապված կայքեր</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Հիմնական</translation>
-<translation id="4314815835985389558">Համաժամացման կառավարում</translation>
 <translation id="4320177379694898372">Համացանցի կապակցում չկա</translation>
 <translation id="4321739720395210191">Չհաջողվեց բացել տեսախցիկը։ Վերագործարկեք սարքը և նորից փորձեք։</translation>
 <translation id="433213510553688132">Բաժանորդագրում…</translation>
@@ -631,9 +625,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="510275257476243843">Մնացել է 1 ժամ</translation>
 <translation id="5118713593561876160">Հետաքրքրություններ</translation>
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
-<translation id="5127805178023152808">Համաժամացումն անջատված է</translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
-<translation id="5136035049889637840">Գնել նման ապրանքներ <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Իմացեք, թե ինչպես օգտագործել Google Drive-ը</translation>
 <translation id="5152843274749979095">Աջակցվող հավելվածներ չեն տեղադրվել</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
@@ -753,6 +745,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5854790677617711513">30 օր և ավելի</translation>
 <translation id="5855546874025048181">Ճշտել՝ <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Չհաջողվեց միացնել Bluetooth ադապտերը</translation>
+<translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5860491529813859533">Միացնել</translation>
 <translation id="5862731021271217234">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը</translation>
 <translation id="5864174910718532887">Տեղեկություններ․ տեսակավորված է ըստ կայքի անվան</translation>
@@ -762,6 +755,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
 <translation id="5880748256563468367">Անցնել ֆիդին</translation>
 <translation id="5884076754568147479">Ձեր աշխատանքը հեշտացնելու համար Google-ը կստանա կայքերի հասցեներն ու բովանդակությունը, որոնցում օգտվում եք Օգնականից, ինչպես նաև տվյալները, որոնք ուղարկում եք Օգնականի միջոցով։</translation>
+<translation id="5916664084637901428">Միացնել</translation>
 <translation id="5919204609460789179">Թարմացրեք <ph name="PRODUCT_NAME" />-ը՝ համաժամացումը սկսելու համար</translation>
 <translation id="5937580074298050696">Խնայվել է <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Վերակայել</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6192907950379606605">Ստանալ նկարագրություններ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> հաշիվը ձե՞րը չէ</translation>
 <translation id="6211386937064921208">Էջի նախադիտում</translation>
-<translation id="6218096829563201111">Որոնել նման ապրանքներ <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Գաղտնաբառերն արտահանելու համար ապակողպեք էկրանը</translation>
 <translation id="6232535412751077445">Եթե միացնեք «Չհետևել» գործառույթը, ձեր դիտարկման հոսքում կներառվի նաև հարցում: Արդյունքները կախված են նրանից, թե կպատասխանի արդյոք վեբկայքը հարցմանը և թե ինչպես այն կմեկնաբանվի:
 

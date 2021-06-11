@@ -312,6 +312,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour tous les jours.}=1{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour tous les jours.}one{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour {NUM_DAYS} fois par jour.}other{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour tous les {NUM_DAYS} jours.}}</translation>
 <translation id="2053553514270667976">Code postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}one{# suggestion}other{# suggestions}}</translation>
+<translation id="2071156619270205202">Cette carte n'est pas éligible pour le numéro de carte virtuelle.</translation>
 <translation id="2071692954027939183">Notifications bloquées automatiquement, car vous les refusez d'habitude</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="20817612488360358">Les paramètres de proxy du système sont configurés pour être utilisés, mais une configuration de proxy explicite est également spécifiée.</translation>
@@ -440,9 +441,11 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2523886232349826891">Enregistrée sur cet appareil uniquement</translation>
 <translation id="2524461107774643265">Ajouter des informations</translation>
+<translation id="2529899080962247600">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Les entrées supplémentaires seront ignorées.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
 <translation id="2536110899380797252">Ajouter une adresse</translation>
 <translation id="2539524384386349900">Détecter</translation>
+<translation id="2540701853218677861">Historique de connexion/déconnexion de l'appareil, y compris les horodatages et les tentatives infructueuses</translation>
 <translation id="2541219929084442027">Les pages consultées dans les onglets de navigation privée ne sont pas enregistrées dans l'historique de votre navigateur, dans les cookies ni dans l'historique des recherches une fois que vous avez fermé tous les onglets de navigation privée. Les fichiers téléchargés et les favoris ajoutés sont conservés.</translation>
 <translation id="2544644783021658368">Document unique</translation>
 <translation id="254947805923345898">La valeur de la règle n'est pas valide.</translation>
@@ -633,6 +636,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3320021301628644560">Ajouter une adresse de facturation</translation>
 <translation id="3324983252691184275">Pourpre</translation>
 <translation id="3329013043687509092">Saturation</translation>
+<translation id="3333762389743153920">Non éligible pour la carte virtuelle</translation>
 <translation id="3338095232262050444">Sécurisé</translation>
 <translation id="3355823806454867987">Modifier les paramètres du proxy...</translation>
 <translation id="3360103848165129075">Feuille du gestionnaire de paiement</translation>
@@ -1146,6 +1150,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Valider votre carte</translation>
 <translation id="5135404736266831032">Gérer les adresses…</translation>
+<translation id="5138014172396933048">La carte virtuelle n'est pas disponible pour le moment. Veuillez contacter votre banque.</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
 <translation id="514010763713772514">Gagnez du temps lors de votre prochain achat</translation>
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la règle.</translation>
@@ -1192,6 +1197,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5287240709317226393">Afficher les cookies</translation>
 <translation id="5287456746628258573">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe ou vos numéros de carte de crédit, lorsqu'elles lui sont transmises.</translation>
 <translation id="5288108484102287882">La validation des valeurs de règle a renvoyé des avertissements</translation>
+<translation id="5288808348893593856">La connexion du site est sécurisée, à moins que Chrome ne vous indique le contraire.</translation>
 <translation id="5289384342738547352">Gestion de documents multiples</translation>
 <translation id="5299298092464848405">Erreur d'analyse de la règle.</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -1554,9 +1560,11 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6685834062052613830">Déconnectez-vous et complétez la configuration.</translation>
 <translation id="6687335167692595844">Taille de police demandée</translation>
 <translation id="6688743156324860098">Modifier…</translation>
+<translation id="6688775486821967877">La carte virtuelle n'est pas disponible pour le moment. Veuillez réessayer plus tard.</translation>
 <translation id="6689249931105087298">Valeur relative avec compression des points noirs</translation>
 <translation id="6689271823431384964">Chrome propose d'enregistrer vos cartes dans votre compte Google, car vous êtes connecté. Vous pouvez modifier ce comportement dans les paramètres. Le nom du titulaire de la carte provient de votre compte.</translation>
 <translation id="6698381487523150993">Créé :</translation>
+<translation id="6699188552522342100">Ce site Web est-il correct ?</translation>
 <translation id="6702919718839027939">Présenter</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6710594484020273272">&lt;Saisissez le terme de recherche&gt;</translation>
@@ -1683,6 +1691,8 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7219179957768738017">La connexion utilise <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Traitement en cours</translation>
 <translation id="7221855153210829124">Afficher les notifications</translation>
+<translation id="722454870747268814">Nouvel onglet de navigation privée 
+</translation>
 <translation id="7229659723041939809">Vous venez de saisir votre mot de passe sur un site trompeur. Chrome vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" />, ainsi que les autres sites pour lesquels vous utilisez ce mot de passe actuellement.</translation>
 <translation id="7233592378249864828">Imprimer la feuille de confirmation</translation>
 <translation id="7238585580608191973">Empreinte SHA-256</translation>
@@ -2060,6 +2070,7 @@ Informations supplémentaires :
           <ph name="LIST_ITEM" />Les cookies et données de site
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Utiliser Touch ID pour confirmer les cartes plus rapidement</translation>
+<translation id="8577348305244205642">Carte virtuelle non disponible</translation>
 <translation id="858637041960032120">Saisir num tél</translation>
 <translation id="8589998999637048520">Qualité optimale</translation>
 <translation id="8600271352425265729">Uniquement cette fois-ci</translation>

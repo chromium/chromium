@@ -3423,13 +3423,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="547601067149622666">Jangan izinkan iklan di situs yang menayangkan iklan mengganggu</translation>
 <translation id="5480380613778757009">Jika kebijakan ini dinonaktifkan atau tidak disetel, semua setelan tampilan yang disetel di Sesi tamu terkelola akan direset segera setelah sesi selesai. Jika kebijakan ini disetel ke Benar (True), properti tampilan akan tetap tersimpan setelah keluar dari sesi tamu terkelola.</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
-<translation id="5483584677807837752">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan mengirimkan header permintaan terperinci yang memberikan informasi tentang browser dan lingkungan pengguna.
-
-      Ini adalah fitur tambahan, tetapi header baru dapat menyebabkan error di situs yang membatasi karakter yang mungkin ada di dalam permintaan.
-
-      Jika kebijakan ini diaktifkan atau tidak disetel, fitur <ph name="PRODUCT_NAME" /> akan diaktifkan. Jika kebijakan dinonaktifkan, fitur tidak akan tersedia.
-
-      Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan tersedia setidaknya sampai Chrome 93.</translation>
 <translation id="5494322570831642650">Menentukan apakah pengguna dapat membuka halaman dalam mode Samaran di <ph name="PRODUCT_NAME" />.
 
       Jika 'Enabled' dipilih atau kebijakan tidak disetel, halaman dapat dibuka dalam mode Samaran.
@@ -6064,11 +6057,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika tidak ditetapkan atau jika Anda memasukkan string kosong, perangkat akan menggunakan zona waktu aktif saat ini, tetapi pengguna dapat mengubahnya.</translation>
 <translation id="8880294585549584028">Izinkan akses tulis ke file dan direktori di situs ini</translation>
 <translation id="8882006618241293596">Blokir plugin <ph name="FLASH_PLUGIN_NAME" /> di situs ini</translation>
-<translation id="8887158351295718009">Cookie yang disetel untuk domain yang sesuai dengan pola ini akan kembali ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama. Pengembalian ke perilaku lama akan menyebabkan cookie yang tidak menentukan atribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> dianggap sebagai "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", menghapus persyaratan bagi cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" untuk membawa atribut "<ph name="ATTRIBUTE_SECURE_NAME" />", dan melewati perbandingan skema saat evaluasi jika dua situs adalah situs yang sama. Lihat penjelasan lengkapnya di https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Untuk cookie pada domain yang tidak tercakup oleh pola yang ditentukan di sini, atau untuk semua cookie ketika kebijakan ini tidak disetel, nilai default global akan digunakan dari kebijakan <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> jika disetel, atau konfigurasi pribadi pengguna yang digunakan jika tidak disetel.
-
-          Perlu diingat bahwa pola yang Anda cantumkan di sini dianggap sebagai domain, bukan URL, jadi Anda tidak perlu menentukan skema atau port.</translation>
 <translation id="8887709920496070892">Durasi waktu tanpa input pengguna sebelum dialog peringatan ditampilkan, dalam milidetik.</translation>
 <translation id="8890438048579188548">Sembunyikan peringatan <ph name="CLOUD_PRINT_NAME" /> tidak digunakan lagi</translation>
 <translation id="8892286064305622118">Perlu ruang disk kosong untuk <ph name="PLUGIN_VM_NAME" /></translation>
@@ -6236,7 +6224,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="9087434639296483430">Melaporkan peristiwa login/logout pengguna di perangkat terdaftar termasuk login yang gagal.
 
       Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
-      Jika disetel ke benar (true), peristiwa login/logout perangkat akan dilaporkan.</translation>
+      Jika disetel ke benar (true), peristiwa login/logout di perangkat akan dilaporkan.</translation>
 <translation id="9088191250434406767">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan menelusuri dengan kameranya menggunakan <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melihat tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran saat penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /> didukung.</translation>
 <translation id="9088433379343318874">Izinkan penyedia konten pengguna yang dilindungi</translation>
 <translation id="9088444059179765143">Mengonfigurasi metode deteksi zona waktu otomatis</translation>

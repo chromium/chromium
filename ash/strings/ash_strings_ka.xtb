@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">მაუსის კურსორის გამოყოფა</translation>
 <translation id="3513798432020909783">ანგარიშს მართავს <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Wi-Fi გამორთულია</translation>
+<translation id="3560866052109807830">მარკერით სახატავი ხელსაწყოები</translation>
 <translation id="3563775809269155755">ჩართეთ უსადენო ქსელი</translation>
 <translation id="3571734092741541777">დაყენება</translation>
 <translation id="3573179567135747900">„<ph name="FROM_LOCALE" />“-ში დაბრუნება (საჭიროებს გადატვირთვას)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">კლავიატურის მალსახმობი „Ctrl + Alt + ქვემოთ მიმართული ისარი“ შეიცვალა. End კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + მარჯვნივ მიმართულ ისარს.</translation>
 <translation id="4279490309300973883">არეკვლა</translation>
 <translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
+<translation id="429402653707266969">ხელსაწყოთა ზოლის მდებარეობის გადართვა</translation>
 <translation id="4294319844246081198">დილა მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875"><ph name="COUNT" />-ვე შეტყობინების გასუფთავება</translation>
 <translation id="4302592941791324970">მიუწვდომელი</translation>

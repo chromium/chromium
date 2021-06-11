@@ -67,6 +67,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="4176825807642096119">Pääsukood</translation>
 <translation id="4227991223508142681">Hosti ettevalmistamise utiliit</translation>
 <translation id="4240294130679914010">Chromootimise hosti desinstaller</translation>
+<translation id="4257751272692708833">Teenuse <ph name="PRODUCT_NAME" /> URL-i suunaja</translation>
 <translation id="4277736576214464567">Pääsukood on kehtetu. Proovige uuesti.</translation>
 <translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="4405930547258349619">Põhikogu</translation>
@@ -121,6 +122,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="6612717000975622067">Saada klahvikombinatsioon Ctrl + Alt + Del</translation>
 <translation id="6654753848497929428">Jaga</translation>
 <translation id="677755392401385740">Kasutajale käivitati host: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Abirakendus URL-i avamiseks teenuse <ph name="PRODUCT_NAME" /> kliendis</translation>
 <translation id="6939719207673461467">Kuva/peida klaviatuur.</translation>
 <translation id="6963936880795878952">Ühendused kaugarvutiga on ajutiselt blokeeritud, sest keegi püüdis luua ühendust vale PIN-koodiga. Proovige hiljem uuesti.</translation>
 <translation id="6965382102122355670">OK</translation>

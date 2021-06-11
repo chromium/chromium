@@ -67,6 +67,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="4176825807642096119">Pristupni kôd</translation>
 <translation id="4227991223508142681">Uslužni program za pružanje usluge hosta</translation>
 <translation id="4240294130679914010">Program za deinstaliranje usluge Chromoting</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">Pristupni je kôd nevažeći. Pokušajte ponovo.</translation>
 <translation id="4281844954008187215">Uvjeti upotrebe usluge</translation>
 <translation id="4405930547258349619">Središnja biblioteka</translation>
@@ -121,6 +122,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="6612717000975622067">Pošalji Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Dijeli</translation>
 <translation id="677755392401385740">Host je pokrenut za korisnika: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Pomoćna aplikacija za otvaranje URL-a na klijentu proizvoda <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Prikaži/sakrij tipkovnicu.</translation>
 <translation id="6963936880795878952">Veze s udaljenim računalom privremeno su blokirane jer se pokušao spojiti korisnik s nevažećim PIN-om. Pokušajte ponovo kasnije.</translation>
 <translation id="6965382102122355670">U redu</translation>

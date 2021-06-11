@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Angre</translation>
-<translation id="2086623437239112659">Den lagrede påloggingsinformasjonen din er kanskje utdatert.</translation>
 <translation id="209018056901015185">Bruk skrivebordsversjon</translation>
 <translation id="2103075008456228677">Åpne history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementer er flyttet</translation>
@@ -408,6 +407,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5210365745912300556">Lukk fanen</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>
+<translation id="5232485538978018676">Logg på med administrert konto</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
@@ -724,6 +724,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8206354486702514201">Denne innstillingen håndheves av administratoren din.</translation>
 <translation id="8225985093977202398">Bufrede bilder og filer</translation>
 <translation id="8261506727792406068">Slett</translation>
+<translation id="8271720166617117963">Godta og logg på</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hopp over</translation>
 <translation id="8283172974887967105">Angi…</translation>

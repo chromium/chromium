@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">Код доступу</translation>
 <translation id="4227991223508142681">Інструмент надання хосту</translation>
 <translation id="4240294130679914010">Видалення хосту Віддаленого доступу ОС Chrome</translation>
+<translation id="4257751272692708833">Додаток <ph name="PRODUCT_NAME" /> для переадресації URL-адрес</translation>
 <translation id="4277736576214464567">Недійсний код доступу. Повторіть спробу.</translation>
 <translation id="4281844954008187215">Умови використання</translation>
 <translation id="4405930547258349619">Коренева бібліотека</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">Надіслати команду Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Надати доступ</translation>
 <translation id="677755392401385740">Запущено хост для користувача <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Допоміжний додаток, щоб відкривати URL-адреси в клієнті <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Показати/сховати клавіатуру.</translation>
 <translation id="6963936880795878952">З’єднання з віддаленим комп’ютером тимчасово заблоковано, оскільки хтось намагався під’єднатися до нього, використовуючи недійсний PIN-код. Повторіть спробу пізніше.</translation>
 <translation id="6965382102122355670">OK</translation>

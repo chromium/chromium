@@ -67,6 +67,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4176825807642096119">Erişim kodu</translation>
 <translation id="4227991223508142681">Ana Makine Temel Hazırlık Yardımcı Programı</translation>
 <translation id="4240294130679914010">Chromoting Ana Makine Yüklemesini Kaldırma Programı</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Yönlendirici</translation>
 <translation id="4277736576214464567">Erişim kodu geçersiz. Lütfen tekrar deneyin.</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
 <translation id="4405930547258349619">Çekirdek Kitaplığı</translation>
@@ -121,6 +122,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="6612717000975622067">Ctrl-Alt-Del Gönder</translation>
 <translation id="6654753848497929428">Paylaş</translation>
 <translation id="677755392401385740">Ana makine bu kullanıcı için başlatıldı: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> istemcisinde URL açmak için yardımcı uygulama</translation>
 <translation id="6939719207673461467">Klavyeyi göster/gizle</translation>
 <translation id="6963936880795878952">Bir kullanıcı geçersiz PIN ile bağlanmaya çalıştığından uzak bilgisayara yapılan bağlantılar geçici olarak engellenmiştir. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="6965382102122355670">Tamam</translation>

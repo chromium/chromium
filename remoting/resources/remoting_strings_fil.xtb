@@ -67,6 +67,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="4176825807642096119">Access code</translation>
 <translation id="4227991223508142681">Host na Provisioning Utility</translation>
 <translation id="4240294130679914010">Uninstaller ng Chromoting Host</translation>
+<translation id="4257751272692708833">Forwarder ng URL ng <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Di-wasto ang access code. Pakisubukang muli.</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4405930547258349619">Pangunahing Library</translation>
@@ -121,6 +122,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="6612717000975622067">Magpadala ng Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Ibahagi</translation>
 <translation id="677755392401385740">Sinimulan ang host para sa user: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Pantulong na application para magbukas ng URL sa client na <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Ipakita/itago ang keyboard.</translation>
 <translation id="6963936880795878952">Pansamantalang naka-block ang mga koneksyon sa malayuang computer dahil may sumubok na kumonekta rito gamit ang di-wastong PIN. Pakisubukang muli sa ibang pagkakataon.</translation>
 <translation id="6965382102122355670">OK</translation>

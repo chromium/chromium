@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome에서 정보를 확인할 수 없습니다.</translation>
 <translation id="1049743911850919806">시크릿</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
-<translation id="1067922213147265141">다른 Google 서비스</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
 <translation id="1680919990519905526">Google 렌즈로 이미지의 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">사용해 보기</translation>
-<translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1697284962337958118">추가할 위치</translation>
 <translation id="1718835860248848330">지난 1시간</translation>
 <translation id="1724977129262658800">비밀번호를 수정하려면 잠금 해제하세요</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
-<translation id="1984705450038014246">Chrome 데이터 동기화</translation>
 <translation id="1986685561493779662">이미 사용 중인 이름입니다.</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> 버튼</translation>
 <translation id="1993768208584545658"><ph name="SITE" />에서 페어링하려고 함</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">사용 데이터 공유 관리</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />(으)로 계속</translation>
 <translation id="22320125457191592">추천</translation>
-<translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2239812875700136898">디스커버 버튼 옵션으로 새 탭 페이지에 표시될 뉴스를 관리하세요</translation>
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">데이터를 절약하면서 웹을 더 빠르게 탐색하세요</translation>
 <translation id="3297344142967351106">음성 지원</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
-<translation id="3315103659806849044">현재 동기화 및 Google 서비스 설정을 맞춤설정 중입니다. 동기화 켜기를 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="3341058695485821946">저장한 데이터의 양을 확인해보세요.</translation>
 <translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">연결된 사이트</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">기본설정</translation>
-<translation id="4314815835985389558">동기화 관리</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
 <translation id="4321739720395210191">카메라를 열 수 없습니다. 기기를 다시 시작한 후 시도해 보세요.</translation>
 <translation id="433213510553688132">팔로우 중...</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">1시간 남음</translation>
 <translation id="5118713593561876160">관심분야</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
-<translation id="5127805178023152808">동기화 사용 안함</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
-<translation id="5136035049889637840">비슷한 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google Drive 사용 방법 알아보기</translation>
 <translation id="5152843274749979095">지원되는 앱이 설치되어 있지 않음</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">30일 이상 전</translation>
 <translation id="5855546874025048181">상세검색: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome에서 블루투스 어댑터를 사용 설정할 수 없습니다.</translation>
+<translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5862731021271217234">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="5864174910718532887">세부정보: 사이트 이름별로 정렬</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
 <translation id="5880748256563468367">피드로 이동</translation>
 <translation id="5884076754568147479">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠가 Google에 전송됩니다.</translation>
+<translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> 저장됨</translation>
 <translation id="5939518447894949180">초기화</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">이미지 설명 보기</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
-<translation id="6218096829563201111">비슷한 상품 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">비밀번호를 내보내려면 잠금 해제하세요</translation>
 <translation id="6232535412751077445">‘추적 안함’을 사용하도록 설정하면 요청이 사용자의 인터넷 사용 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지 여부와 요청이 해석되는 방법에 따라 결과가 결정됩니다.
 

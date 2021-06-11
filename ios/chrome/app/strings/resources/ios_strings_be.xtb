@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Апошнія дзеянні: <ph name="DAYS" /> сут таму</translation>
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
-<translation id="2086623437239112659">Уліковыя даныя могуць быць устарэлымі.</translation>
 <translation id="209018056901015185">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="2103075008456228677">Адкрыць history.google.com</translation>
 <translation id="2116625576999540962">Перамешчана элементаў: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">Інтэрнэт</translation>
 <translation id="5210365745912300556">Закрыць укладку</translation>
 <translation id="5228579091201413441">Уключыць сінхранізацыю</translation>
+<translation id="5232485538978018676">Уваход праз уліковы запіс пад кіраваннем</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
 <translation id="5245322853195994030">Скасаваць сінхранізацыю</translation>
 <translation id="5271549068863921519">Захаваць пароль</translation>
@@ -724,6 +724,7 @@
 <translation id="8206354486702514201">Гэтай наладай кіруе адміністратар.</translation>
 <translation id="8225985093977202398">Відарысы і файлы ў кэшы</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
+<translation id="8271720166617117963">Прыняць і ўвайсці</translation>
 <translation id="8281781826761538115">Стандартная мова: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8283172974887967105">Так…</translation>
@@ -766,6 +767,7 @@
 <translation id="8654802032646794042">Скасаваць</translation>
 <translation id="8668210798914567634">Гэта старонка была захавана ў спіс чытання.</translation>
 <translation id="8680787084697685621">Даныя ўліковага запісу для ўваходу састарэлі.</translation>
+<translation id="8691262314411702087">Выбраць, што сінхранізаваць</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыць укладку}one{Закрыць укладкі}few{Закрыць укладкі}many{Закрыць укладкі}other{Закрыць укладкі}}</translation>
 <translation id="8706588385081740091">Паролі</translation>
 <translation id="8717864919010420084">Скапіраваць спасылку</translation>

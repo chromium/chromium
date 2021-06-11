@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">„Chrome“ nepavyko patvirtinti jūsų informacijos</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Niekada neišsaugota</translation>
-<translation id="1067922213147265141">Kitos „Google“ paslaugos</translation>
 <translation id="107147699690128016">Jei pakeisite failo plėtinį, failas gali būti atidaromas naudojant kitą programą ir galimai pakenkti įrenginiui.</translation>
 <translation id="1095761715416917775">Galimybė visada pasiekti sinchronizuotus duomenis</translation>
 <translation id="1100066534610197918">Atidar. naujame grup. skirtuke</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Daugiau neberodyti</translation>
 <translation id="1680919990519905526">Pirkti „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Išbandyti dabar</translation>
-<translation id="1692118695553449118">Sinchronizavimas įjungtas</translation>
 <translation id="1697284962337958118">Pridėti prie</translation>
 <translation id="1718835860248848330">Paskutinė valanda</translation>
 <translation id="1724977129262658800">Atrakinkite, kad galėtumėte redaguoti slaptažodį</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Palikti duomenis</translation>
 <translation id="1974060860693918893">Išplėstiniai</translation>
 <translation id="1984417487208496350">Apsaugos nėra (nerekomenduojama)</translation>
-<translation id="1984705450038014246">„Chrome“ duomenų sinchronizavimas</translation>
 <translation id="1986685561493779662">Toks pavadinimas jau yra</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> mygtukas</translation>
 <translation id="1993768208584545658">Svetainė <ph name="SITE" /> nori būti susieta su</translation>
@@ -188,7 +185,6 @@ Norėdami ieškoti, palieskite bet kurį žodį. Jei norite patikslinti paiešk�
 <translation id="2200113223741723867">Tvarkyti naudojimo duomenų bendrinimą</translation>
 <translation id="2227444325776770048">Tęsti kaip <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Jums</translation>
-<translation id="2234876718134438132">Sinchron. ir „Google“ paslaugos</translation>
 <translation id="2239812875700136898">Valdykite pasakojimus naudodami mygtuką „Discover“ parinktys“</translation>
 <translation id="2259659629660284697">Eksportuoti slaptažodžius…</translation>
 <translation id="2276696007612801991">Prisijunkite prie „Google“ paskyros, kad patikrintumėte slaptažodžius</translation>
@@ -364,7 +360,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3295530008794733555">Naršykite greičiau. Naudokite mažiau duomenų.</translation>
 <translation id="3297344142967351106">Pagalba balsu</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
-<translation id="3315103659806849044">Šiuo metu tinkinate savo sinchronizavimo ir „Google“ paslaugų nustatymus. Jei norite užbaigti sinchronizavimo įjungimo procesą, palieskite mygtuką „Patvirtinti“ netoli ekrano apačios. Eiti į viršų</translation>
 <translation id="3334729583274622784">Pakeisti failo plėtinį?</translation>
 <translation id="3341058695485821946">Žr., kiek duomenų sutaupėte</translation>
 <translation id="3341262203274374114">Negalima nebestebėti. Kažkas ne taip.</translation>
@@ -502,7 +497,6 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="4298388696830689168">Susietos svetainės</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Pagrindai</translation>
-<translation id="4314815835985389558">Sinchronizavimo tvarkymas</translation>
 <translation id="4320177379694898372">Nėra interneto ryšio</translation>
 <translation id="4321739720395210191">Kameros atidaryti nepavyko. Paleiskite įrenginį iš naujo ir bandykite dar kartą.</translation>
 <translation id="433213510553688132">Stebima...</translation>
@@ -631,9 +625,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="510275257476243843">Liko 1 val.</translation>
 <translation id="5118713593561876160">Pomėgiai</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
-<translation id="5127805178023152808">Sinchronizavimas išjungtas</translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
-<translation id="5136035049889637840">Pirkti panašių produktų <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Sužinokite, kaip naudoti „Google Drive“</translation>
 <translation id="5152843274749979095">Neįdiegta jokių palaikomų programų</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
@@ -753,6 +745,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5854790677617711513">Senesni nei 30 dienų</translation>
 <translation id="5855546874025048181">Patikslinti: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">„Chrome“ nepavyksta įjungti „Bluetooth“ adapterio</translation>
+<translation id="5860033963881614850">Išjungta</translation>
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5862731021271217234">Jei norite pasiekti skirtukus iš kitų įrenginių, įjunkite sinchronizavimą</translation>
 <translation id="5864174910718532887">Išsami informacija: surūšiuota pagal svetainės pavadinimą</translation>
@@ -762,6 +755,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="587735546353481577">Jei norite stebėti svetainę, eikite į svetainę, atidarykite „Chrome“ meniu ir palieskite „Stebėti“.</translation>
 <translation id="5880748256563468367">Eiti į sklaidos kanalą</translation>
 <translation id="5884076754568147479">Kad padėtų atlikti užduotis, „Google“ gaus svetainių, kuriose naudojate Padėjėją, URL ir turinį bei informaciją, kurią pateikiate naudodami Padėjėją.</translation>
+<translation id="5916664084637901428">Įjungta</translation>
 <translation id="5919204609460789179">Atnaujinkite „<ph name="PRODUCT_NAME" />“, kad galėtumėte pradėti sinchronizuoti</translation>
 <translation id="5937580074298050696">Išsaugota <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
@@ -812,7 +806,6 @@ Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyv
 <translation id="6192907950379606605">Gauti vaizdų aprašus</translation>
 <translation id="6210748933810148297">Ne <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>
-<translation id="6218096829563201111">Ieškoti panašių produktų <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Atrakinkite, kad galėtumėte eksportuoti slaptažodžius</translation>
 <translation id="6232535412751077445">Įgalinus funkciją „Nestebėti“, užklausa bus įtraukta į naršymo srautą. Poveikis priklauso nuo to, ar svetainė atsako į užklausą ir kaip užklausa interpretuojama.
 

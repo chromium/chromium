@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">קוד גישה</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>
 <translation id="4240294130679914010">‏הסרת ההתקנה של מארח Chromoting מתבצעת</translation>
+<translation id="4257751272692708833">‏כתובת URL להעברה אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">קוד הגישה אינו חוקי. יש לנסות שוב.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4405930547258349619">ספריית ליבה</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">‏שליחת Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">שיתוף</translation>
 <translation id="677755392401385740">המארח הופעל עבור המשתמש: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">‏אפליקציה לעזרה בפתיחת כתובת URL בלקוח של <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">הצגה/הסתרה של המקלדת.</translation>
 <translation id="6963936880795878952">החיבורים למחשב המרוחק חסומים באופן זמני משום שמישהו ניסה להתחבר אליו עם קוד אימות לא חוקי. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="6965382102122355670">אישור</translation>

@@ -3396,13 +3396,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="547601067149622666">Non consentire gli annunci su siti con annunci invasivi</translation>
 <translation id="5480380613778757009">Se questo criterio viene disattivato o se non viene configurato, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questo criterio viene impostato su Vero, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
-<translation id="5483584677807837752">Se il criterio viene attivato, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
-
-      Si tratta di una funzionalità aggiuntiva, ma le nuove intestazioni potrebbero causare interruzioni su alcuni siti web che limitano il numero di caratteri delle richieste.
-
-      Se il criterio viene attivato o non viene configurato, la funzionalità <ph name="PRODUCT_NAME" /> verrà attivata. Se il criterio viene disattivato, la funzionalità non sarà disponibile.
-
-      Questo criterio aziendale è finalizzato al periodo di transizione e sarà disponibile almeno fino alla versione 93 di Chrome.</translation>
 <translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
 
       Se viene selezionata l'opzione "Enabled" o se il criterio non viene impostato, è possibile aprire le pagine in modalità di navigazione in incognito.
@@ -3572,7 +3565,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="5697306356229823047">Segnala utenti dispositivo</translation>
 <translation id="5699770471852263667">Se il criterio viene impostato su Attivato, il visualizzatore di PDF interno viene disattivato in <ph name="PRODUCT_NAME" />, i file PDF vengono considerati come file scaricati e gli utenti possono aprire i PDF con l'applicazione predefinita.
 
-      Se il criterio viene impostato su Disattivato, i file PDF vengono aperti con il plug-in di PDF, se non viene disattivato dagli utenti.
+      Se il criterio viene impostato su Disattivato, i file PDF vengono aperti con il plug-in di PDF, a meno che disattivato dagli utenti.
 
       Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono scegliere se aprire o meno i file PDF esternamente.</translation>
 <translation id="570062449808736508">Se per questa norma viene impostata una stringa, WebView legge le limitazioni relative agli URL del fornitore di contenuti con il nome dell'autorità indicato.</translation>
@@ -6016,11 +6009,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Se il criterio non viene impostato o se inserisci una stringa vuota, sul dispositivo viene usato il fuso orario attualmente attivo, che però potrà essere cambiato dagli utenti.</translation>
 <translation id="8880294585549584028">Consenti l'accesso di scrittura di file e directory su questi siti</translation>
 <translation id="8882006618241293596">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /> su questi siti</translation>
-<translation id="8887158351295718009">Per i cookie impostati per i domini corrispondenti a questi pattern verrà ripristinato il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Per i cookie sui domini non previsti dai pattern specificati qui oppure per tutti i cookie se questo criterio non viene impostato, verrà utilizzato il valore predefinito globale del criterio <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" />, se è impostato, oppure verrà utilizzata la configurazione personale dell'utente.
-
-          Tieni presente che i pattern elencati qui vengono considerati come domini, non URL, quindi non dovresti specificare uno schema o una porta.</translation>
 <translation id="8887709920496070892">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene mostrata una finestra di dialogo di avviso.</translation>
 <translation id="8890438048579188548">Nascondi avvisi di ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Spazio libero su disco necessario per <ph name="PLUGIN_VM_NAME" /></translation>
@@ -6184,8 +6172,8 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="9084985621503260744">Specifica se l'attività video incide sulla gestione dell'alimentazione</translation>
 <translation id="9087434639296483430">Consente di segnalare eventi di accesso/uscita degli utenti su dispositivi registrati, inclusi gli accessi non riusciti.
 
-      Se il criterio viene impostato su falso o se non viene configurato, le informazioni non vengono segnalate.
-      Se viene impostato su vero, gli eventi di accesso/uscita del dispositivo vengono segnalati.</translation>
+      Se il criterio viene impostato su Falso o se non viene configurato, le informazioni non vengono segnalate.
+      Se viene impostato su Vero, gli eventi di accesso/uscita del dispositivo vengono segnalati.</translation>
 <translation id="9088191250434406767">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono effettuare ricerche con le proprie fotocamere usando <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Se viene impostato su Disattivato, gli utenti non possono vedere il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca quando la ricerca tramite fotocamera con <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
 <translation id="9088433379343318874">Abilita il provider di contenuti dell'utente supervisionato</translation>
 <translation id="9088444059179765143">Configura il metodo di rilevamento automatico del fuso orario</translation>

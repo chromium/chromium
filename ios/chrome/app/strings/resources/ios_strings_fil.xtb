@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktibo <ph name="DAYS" /> (na) Araw ang Nakalipas</translation>
 <translation id="2074131957428911366">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">I-undo</translation>
-<translation id="2086623437239112659">Posibleng hindi updated ang iyong naka-store na impormasyon sa pag-sign in.</translation>
 <translation id="209018056901015185">Hilingin ang Site sa Desktop</translation>
 <translation id="2103075008456228677">Buksan ang history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> (na) item ang inilipat</translation>
@@ -408,6 +407,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Isara ang tab</translation>
 <translation id="5228579091201413441">I-enable ang pag-sync</translation>
+<translation id="5232485538978018676">Mag-sign in sa Pinapamahalaang Account</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5245322853195994030">Kanselahin ang Pag-sync</translation>
 <translation id="5271549068863921519">I-save ang password</translation>
@@ -724,6 +724,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8206354486702514201">Ipinapatupad ng iyong administrator ang setting na ito.</translation>
 <translation id="8225985093977202398">Mga Naka-cache na Larawan at File</translation>
 <translation id="8261506727792406068">I-delete</translation>
+<translation id="8271720166617117963">Tanggapin at Mag-sign in</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Laktawan</translation>
 <translation id="8283172974887967105">Itakda…</translation>

@@ -307,6 +307,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}=1{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}other{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke {NUM_DAYS} dagen geüpdatet.}}</translation>
 <translation id="2053553514270667976">Postcode</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestie}other{# suggesties}}</translation>
+<translation id="2071156619270205202">Deze kaart kan niet worden gebruikt als een virtueel kaartnummer.</translation>
 <translation id="2071692954027939183">Meldingen zijn automatisch geblokkeerd omdat je deze doorgaans niet toestaat</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="20817612488360358">De proxyinstellingen van het systeem moeten worden gebruikt, maar er is ook een expliciete proxyconfiguratie opgegeven.</translation>
@@ -435,9 +436,11 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2521385132275182522">Nietje rechtsonder</translation>
 <translation id="2523886232349826891">Alleen opgeslagen op dit apparaat</translation>
 <translation id="2524461107774643265">Meer informatie toevoegen</translation>
+<translation id="2529899080962247600">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Alle andere items worden genegeerd.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Adres toevoegen</translation>
 <translation id="2539524384386349900">Detecteren</translation>
+<translation id="2540701853218677861">In-/uitloggeschiedenis voor apparaat, inclusief tijdstempels en mislukte pogingen</translation>
 <translation id="2541219929084442027">De pagina's die je op incognitotabbladen bekijkt, worden niet bewaard in je browsergeschiedenis, cookie-opslag of zoekgeschiedenis nadat je al je incognitotabbladen hebt gesloten. Alle bestanden die je hebt gedownload of bookmarks die je hebt gemaakt, blijven behouden.</translation>
 <translation id="2544644783021658368">Eén document</translation>
 <translation id="254947805923345898">Beleidswaarde is ongeldig.</translation>
@@ -625,6 +628,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3320021301628644560">Factuuradres toevoegen</translation>
 <translation id="3324983252691184275">Karmozijnrood</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
+<translation id="3333762389743153920">Niet geschikt als virtuele kaart</translation>
 <translation id="3338095232262050444">Beveiligd</translation>
 <translation id="3355823806454867987">Proxyinstellingen wijzigen...</translation>
 <translation id="3360103848165129075">Blad voor betalingshandler</translation>
@@ -1134,6 +1138,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Je kaart verifiëren</translation>
 <translation id="5135404736266831032">Adressen beheren...</translation>
+<translation id="5138014172396933048">Virtuele kaart nu niet beschikbaar, neem contact op met je bank</translation>
 <translation id="5138227688689900538">Minder tonen</translation>
 <translation id="514010763713772514">Betaal de volgende keer sneller</translation>
 <translation id="5145883236150621069">Foutcode aanwezig in de beleidsreactie</translation>
@@ -1180,6 +1185,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5287240709317226393">Cookies tonen</translation>
 <translation id="5287456746628258573">Deze site gebruikt een verouderde beveiligingsconfiguratie, waardoor je gegevens (zoals wachtwoorden of creditcardnummers) openbaar kunnen worden gemaakt als ze naar deze site worden gestuurd.</translation>
 <translation id="5288108484102287882">Tijdens de validatie van de beleidswaarden zijn er waarschuwingen geconstateerd</translation>
+<translation id="5288808348893593856">De verbinding met de site is beveiligd, tenzij Chrome iets anders aangeeft.</translation>
 <translation id="5289384342738547352">Verwerking van meerdere documenten</translation>
 <translation id="5299298092464848405">Fout bij het parseren van het beleid</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -1541,9 +1547,11 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6685834062052613830">Uitloggen en configuratie voltooien</translation>
 <translation id="6687335167692595844">Lettergrootte aangevraagd</translation>
 <translation id="6688743156324860098">Updaten…</translation>
+<translation id="6688775486821967877">Virtuele kaart nu niet beschikbaar, probeer het later opnieuw</translation>
 <translation id="6689249931105087298">Relatief met zwartpuntcompressie</translation>
 <translation id="6689271823431384964">Chrome biedt aan je kaarten in je Google-account op te slaan omdat je bent ingelogd. Je kunt dit wijzigen in de instellingen. De naam van de kaarthouder is afkomstig uit je account.</translation>
 <translation id="6698381487523150993">Gemaakt:</translation>
+<translation id="6699188552522342100">Is de informatie op deze website nauwkeurig?</translation>
 <translation id="6702919718839027939">Presenteren</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6710594484020273272">&lt;Typ een zoekterm&gt;</translation>
@@ -1670,6 +1678,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="7219179957768738017">De verbinding maakt gebruik van <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Verwerken</translation>
 <translation id="7221855153210829124">Meldingen tonen</translation>
+<translation id="722454870747268814">Nieuw incognitotabblad</translation>
 <translation id="7229659723041939809">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan je opgeslagen wachtwoorden voor <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en andere sites waarop je dit wachtwoord gebruikt, nu te checken.</translation>
 <translation id="7233592378249864828">Bevestigingsblad afdrukken</translation>
 <translation id="7238585580608191973">SHA-256-vingerafdruk</translation>
@@ -2045,6 +2054,7 @@ Aanvullende informatie:
           <ph name="LIST_ITEM" />Cookies en sitegegevens
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Gebruik Touch ID om kaarten sneller te bevestigen</translation>
+<translation id="8577348305244205642">Virtuele kaart niet beschikbaar</translation>
 <translation id="858637041960032120">Telnr. toevoegen</translation>
 <translation id="8589998999637048520">Beste kwaliteit</translation>
 <translation id="8600271352425265729">Alleen deze keer</translation>

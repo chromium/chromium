@@ -312,6 +312,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaki dan.}=1{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaki dan.}one{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaki {NUM_DAYS} dan.}few{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaka {NUM_DAYS} dana.}other{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svakih {NUM_DAYS} dana.}}</translation>
 <translation id="2053553514270667976">ZIP kôd</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
+<translation id="2071156619270205202">Ova kartica ne ispunjava kriterije za broj virtualne kartice.</translation>
 <translation id="2071692954027939183">Obavijesti su automatski blokirane jer ih obično ne dopuštate</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="20817612488360358">Postavljena je upotreba sistemskih postavki proxy poslužitelja, ali također je određena izričita konfiguracija proxy poslužitelja.</translation>
@@ -440,9 +441,11 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2521385132275182522">Spajanje pri dnu desno</translation>
 <translation id="2523886232349826891">Sprema se samo na ovom uređaju</translation>
 <translation id="2524461107774643265">Dodajte još podataka</translation>
+<translation id="2529899080962247600">Broj unosa u ovom polju ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />. Svi će se daljnji unosi zanemariti.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još jedan sudionik}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2536110899380797252">Dodaj adresu</translation>
 <translation id="2539524384386349900">Otkrij</translation>
+<translation id="2540701853218677861">Povijest prijave/odjave na uređaju, uključujući vremenske oznake i neuspjele pokušaje</translation>
 <translation id="2541219929084442027">Stranice koje pregledavate na anonimnim karticama ne zadržavaju se u povijesti preglednika, pohrani kolačića ni povijesti pretraživanja nakon što zatvorite sve anonimne kartice, ali će se zadržati sve datoteke koje preuzmete ili oznake koje izradite.</translation>
 <translation id="2544644783021658368">Jedan dokument</translation>
 <translation id="254947805923345898">Vrijednost pravila nije važeća.</translation>
@@ -635,6 +638,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3320021301628644560">Dodajte adresu za naplatu</translation>
 <translation id="3324983252691184275">Grimizna</translation>
 <translation id="3329013043687509092">Zasićenje</translation>
+<translation id="3333762389743153920">Ne ispunjava kriterije virtualne kartice</translation>
 <translation id="3338095232262050444">Sigurno</translation>
 <translation id="3355823806454867987">Promijeni proxy postavke...</translation>
 <translation id="3360103848165129075">List rukovatelja plaćanjima</translation>
@@ -1148,6 +1152,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Potvrdite svoju karticu</translation>
 <translation id="5135404736266831032">Upravljajte adresama...</translation>
+<translation id="5138014172396933048">Virtualna kartica trenutačno nije dostupna, kontaktirajte banku</translation>
 <translation id="5138227688689900538">Pokaži manje</translation>
 <translation id="514010763713772514">Sljedeći put brže provjerite</translation>
 <translation id="5145883236150621069">Odgovor na pravilo sadrži kôd pogreške</translation>
@@ -1194,6 +1199,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5287240709317226393">Pokaži kolačiće</translation>
 <translation id="5287456746628258573">Ta web-lokacija upotrebljava zastarjelu sigurnosnu konfiguraciju, pa bi vaši podaci (na primjer zaporke ili brojevi kreditnih kartica) mogli biti otkriveni kad se šalju na nju.</translation>
 <translation id="5288108484102287882">Potvrđivanje vrijednosti pravila rezultiralo je upozorenjima</translation>
+<translation id="5288808348893593856">Veza web-lokacije je sigurna, osim ako Chrome kaže da nije.</translation>
 <translation id="5289384342738547352">Obrada više dokumenata</translation>
 <translation id="5299298092464848405">Pogreška u pravilu analize</translation>
 <translation id="5300589172476337783">Prikaži</translation>
@@ -1556,9 +1562,11 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6685834062052613830">Odjavite se i dovršite postavljanje</translation>
 <translation id="6687335167692595844">Zatražena je veličina fonta</translation>
 <translation id="6688743156324860098">Ažurirajte…</translation>
+<translation id="6688775486821967877">Virtualna kartica trenutačno nije dostupna, pokušajte ponovo kasnije</translation>
 <translation id="6689249931105087298">Relativno s kompresijom crne točke</translation>
 <translation id="6689271823431384964">Chrome vam nudi spremanje vaših kartica na vaš Google račun jer ste prijavljeni. To ponašanje možete promijeniti u postavkama. Ime nositelja kartice preuzeto je s vašeg računa.</translation>
 <translation id="6698381487523150993">Autor/ica:</translation>
+<translation id="6699188552522342100">Je li ta web-lokacija točna?</translation>
 <translation id="6702919718839027939">Prezentacija</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6710594484020273272">&lt;Upišite pojam za pretraživanje&gt;</translation>
@@ -1685,6 +1693,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7219179957768738017">Veza upotrebljava <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Obrada</translation>
 <translation id="7221855153210829124">Prikazati obavijesti</translation>
+<translation id="722454870747268814">Nova anonimna kartica</translation>
 <translation id="7229659723041939809">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Chrome preporučuje da odmah provjerite spremljene zaporke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge web-lokacije na kojima koristite tu zaporku.</translation>
 <translation id="7233592378249864828">List potvrde ispisa</translation>
 <translation id="7238585580608191973">SHA-256 otisak prsta</translation>
@@ -2062,6 +2071,7 @@ Dodatne pojedinosti:
           <ph name="LIST_ITEM" />Podaci o kolačićima i web-lokaciji
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Upotrijebite značajku Touch ID za brže potvrđivanje kartica</translation>
+<translation id="8577348305244205642">Virtualna kartica nije dostupna</translation>
 <translation id="858637041960032120">Dodaj tel. broj
 </translation>
 <translation id="8589998999637048520">Najbolja kvaliteta</translation>

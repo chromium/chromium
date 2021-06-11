@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
-<translation id="2086623437239112659">יכול להיות שהפרטים שנשמרו לכניסה לחשבון לא עדכניים.</translation>
 <translation id="209018056901015185">טעינת גרסת האתר למחשב</translation>
 <translation id="2103075008456228677">‏פתיחת history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים הועברו</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">אינטרנט</translation>
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
 <translation id="5228579091201413441">הפעלת סנכרון</translation>
+<translation id="5232485538978018676">כניסה באמצעות חשבון מנוהל</translation>
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5245322853195994030">ביטול הסנכרון</translation>
 <translation id="5271549068863921519">שמירת סיסמה</translation>
@@ -724,6 +724,7 @@
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8225985093977202398">תמונות וקבצים במטמון</translation>
 <translation id="8261506727792406068">מחיקה</translation>
+<translation id="8271720166617117963">אישור וכניסה</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8283172974887967105">להגדרה…</translation>

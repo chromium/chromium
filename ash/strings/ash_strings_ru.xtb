@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Выделять указатель мыши</translation>
 <translation id="3513798432020909783">Администратор аккаунта: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Нет подключения к Wi-Fi</translation>
+<translation id="3560866052109807830">Инструменты рисования маркером</translation>
 <translation id="3563775809269155755">Включить точку доступа</translation>
 <translation id="3571734092741541777">Настроить</translation>
 <translation id="3573179567135747900">Вернуться к языку: "<ph name="FROM_LOCALE" />" (потребуется перезагрузка)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">Функция сочетания клавиш Ctrl + Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши End, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо.</translation>
 <translation id="4279490309300973883">Отражение</translation>
 <translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
+<translation id="429402653707266969">Изменить местоположение панели инструментов</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
 <translation id="4302592941791324970">Недоступно</translation>

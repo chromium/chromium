@@ -67,6 +67,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="4176825807642096119">Prístupový kód</translation>
 <translation id="4227991223508142681">Pomôcka na poskytovanie hostiteľských služieb</translation>
 <translation id="4240294130679914010">Nástroj na odinštalovanie hostiteľa funkcie Chromoting</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">Prístupový kód je neplatný. Skúste to znova.</translation>
 <translation id="4281844954008187215">Zmluvné podmienky</translation>
 <translation id="4405930547258349619">Základná knižnica</translation>
@@ -121,6 +122,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="6612717000975622067">Odoslať akciu Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Zdieľať</translation>
 <translation id="677755392401385740">Hostiteľ bol spustený pre používateľa: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Pomocná aplikácia na otvorenie webovej adresy v klientovi <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Zobraziť/skryť klávesnicu</translation>
 <translation id="6963936880795878952">Pripojenia k vzdialenému počítaču sú dočasne zablokované, pretože sa k nemu niekto snažil pripojiť pomocou neplatného kódu PIN. Skúste to neskôr.</translation>
 <translation id="6965382102122355670">OK</translation>

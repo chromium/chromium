@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="2074131957428911366">Та синк хийх зүйлээ хүссэн үедээ <ph name="BEGIN_LINK" />тохиргооноос<ph name="END_LINK" /> сонгож болно.</translation>
 <translation id="2079545284768500474">Буцаах</translation>
-<translation id="2086623437239112659">Таны хадгалсан нэвтрэх мэдээлэл хуучирсан байж болзошгүй.</translation>
 <translation id="209018056901015185">Дэлгэцийн сайтын хүсэлт</translation>
 <translation id="2103075008456228677">History.google.com-г нээх</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> зүйлүүдийг зөөсөн байна</translation>
@@ -407,6 +406,7 @@
 <translation id="5197255632782567636">Интернэт</translation>
 <translation id="5210365745912300556">Цонхыг хаа</translation>
 <translation id="5228579091201413441">Синхроныг идэвхжүүлэх</translation>
+<translation id="5232485538978018676">Тохиргоо хийгдсэн бүртгэлээр нэвтрэх</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5245322853195994030">Синкийг цуцлах</translation>
 <translation id="5271549068863921519">Нууц үгийг хадгал</translation>
@@ -723,6 +723,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8206354486702514201">Энэ тохиргоог таны админаас идэвхжүүлсэн байна.</translation>
 <translation id="8225985093977202398">Нөөцөлсөн зураг болон файлууд</translation>
 <translation id="8261506727792406068">Устгах</translation>
+<translation id="8271720166617117963">Зөвшөөрөөд, нэвтрэх</translation>
 <translation id="8281781826761538115">Өгөгдмөл - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8283172974887967105">Тохируулах…</translation>
@@ -765,6 +766,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8654802032646794042">Цуцлах</translation>
 <translation id="8668210798914567634">Энэ хуудсыг таны Унших жагсаалтад aль хэдийн хадгалсан.</translation>
 <translation id="8680787084697685621">Дансны нэвтрэх мэдээлэл хуучирсан байна.</translation>
+<translation id="8691262314411702087">Синк хийх зүйлээ сонгох</translation>
 <translation id="8693663554456874301">{count,plural, =1{Табыг хаах}other{Табуудыг хаах}}</translation>
 <translation id="8706588385081740091">Нууц үгнүүд</translation>
 <translation id="8717864919010420084">Холбоосыг хуулах</translation>

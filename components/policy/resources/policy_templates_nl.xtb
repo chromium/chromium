@@ -2295,7 +2295,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 
           Als dit beleid niet is ingesteld, staan de plaktoetsen in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="3932553013632130433">
-      Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie. Vanaf Chrome 91 (25-05-2021) vereist Chrome cross-origin-isolatie bij gebruik van SharedArrayBuffers vanwege redenen met betrekking tot webcompatibiliteit. Je kunt meer informatie bekijken op:
+      Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie. Vanaf Chrome 91 (25-05-2021) vereist Chrome cross-origin-isolatie bij gebruik van SharedArrayBuffers vanwege redenen met webcompatibiliteit. Je kunt meer informatie bekijken op:
       https://developer.chrome.com/blog/enabling-shared-array-buffer/.
       Als je dit beleid instelt op True, kunnen sites SharedArrayBuffer gebruiken zonder beperkingen.
       Als je dit beleid instelt op False of niet instelt, kunnen sites SharedArrayBuffers alleen gebruiken als ze cross-origin geïsoleerd zijn.</translation>
@@ -3379,13 +3379,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 <translation id="547601067149622666">Geen advertenties toestaan op sites met opdringerige advertenties</translation>
 <translation id="5480380613778757009">Als je dit beleid uitzet of niet instelt, worden alle weergave-instellingen die zijn ingesteld in de beheerde gastsessie, gereset zodra de sessie wordt beëindigd. Als je dit beleid instelt op True, worden de weergave-eigenschappen bewaard nadat de beheerde gastsessie is beëindigd.</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
-<translation id="5483584677807837752">Als je dit beleid hebt toegepast, stuurt de <ph name="PRODUCT_NAME" />-functie gedetailleerde verzoekheaders met informatie over de browser en omgeving van de gebruiker.
-
-      Dit is een aanvullende functie, maar de nieuwe headers kunnen de juiste weergave verhinderen van sommige websites die de tekens in deze verzoeken beperken.
-
-      Als je dit beleid toepast of niet instelt, wordt de <ph name="PRODUCT_NAME" />-functie uitgezet. Als je het beleid niet hebt toegepast, is de functie ook niet beschikbaar.
-
-      Dit bedrijfsbeleid is voor kortdurende aanpassing en is ten minste beschikbaar tot Chrome 93.</translation>
 <translation id="5494322570831642650">Specificeert of de gebruiker pagina's mag openen in de incognitomodus in <ph name="PRODUCT_NAME" />.
 
       Als dit beleid wordt toegepast of niet is ingesteld, kunnen pagina's worden geopend in de incognitomodus.
@@ -5991,11 +5984,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als je het beleid niet instelt of een lege tekenreeks opgeeft, gebruikt het apparaat de momenteel actieve tijdzone. Gebruikers kunnen de tijdzone wijzigen.</translation>
 <translation id="8880294585549584028">Schrijftoegang tot bestanden en directory's voor deze sites toestaan</translation>
 <translation id="8882006618241293596">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren op deze sites</translation>
-<translation id="8887158351295718009">Cookies die zijn ingesteld voor domeinen die met deze patronen overeenkomen, worden teruggezet naar het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" />. Als je het verouderde gedrag terugzet, worden cookies waarin geen <ph name="ATTRIBUTE_SAMESITE_NAME" />-kenmerk is opgegeven, als '<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />' behandeld en wordt de vereiste weggenomen dat cookies van '<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />' het kenmerk '<ph name="ATTRIBUTE_SECURE_NAME" />' bevatten. De schemavergelijking wordt overgeslagen tijdens de controle of twee sites dezelfde site zijn. Zie https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies voor een volledige beschrijving.
-
-          Voor cookies op domeinen die niet overeenkomen met de hier genoemde patronen, of voor alle cookies als dit beleid niet is ingesteld, wordt de algemene standaardinstelling gebruikt op basis van het <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" />-beleid (als dit is ingesteld), of anders op basis van de persoonlijke configuratie van de gebruiker.
-
-          Houd er rekening mee dat de patronen die je hier opgeeft, worden behandeld als domeinen (en niet als URL's). Geef daarom geen schema of poort op.</translation>
 <translation id="8887709920496070892">De tijdsduur zonder gebruikersinvoer waarna een waarschuwingsdialoogvenster wordt getoond (in milliseconden)</translation>
 <translation id="8890438048579188548">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> verbergen</translation>
 <translation id="8892286064305622118">Vrije schijfruimte vereist voor <ph name="PLUGIN_VM_NAME" /></translation>

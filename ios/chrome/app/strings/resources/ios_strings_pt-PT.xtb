@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Ativo há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Pode escolher o que pretende sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anular</translation>
-<translation id="2086623437239112659">As suas informações de início de sessão armazenadas podem estar desatualizadas.</translation>
 <translation id="209018056901015185">Pedir site para computador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
@@ -408,6 +407,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
+<translation id="5232485538978018676">Inicie sessão com uma conta gerida</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
 <translation id="5271549068863921519">Guardar palavra-passe</translation>
@@ -724,6 +724,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8206354486702514201">Esta definição é aplicada pelo gestor.</translation>
 <translation id="8225985093977202398">Imagens e ficheiros em cache</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8271720166617117963">Aceitar e iniciar sessão</translation>
 <translation id="8281781826761538115">Predefinição – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ignorar</translation>
 <translation id="8283172974887967105">Definir…</translation>

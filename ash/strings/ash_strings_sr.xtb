@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Истакни курсор миша</translation>
 <translation id="3513798432020909783">Налогом управља <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">WiFi је искључен</translation>
+<translation id="3560866052109807830">Алатке за цртање маркера</translation>
 <translation id="3563775809269155755">Омогући хотспот</translation>
 <translation id="3571734092741541777">Подеси</translation>
 <translation id="3573179567135747900">Врати на „<ph name="FROM_LOCALE" />“ (потребно је поновно покретање)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">Тастерска пречица Ctrl + Alt + стрелица надоле је промењена. Да бисте користили тастер End, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица надесно</translation>
 <translation id="4279490309300973883">Пресликавање</translation>
 <translation id="4285498937028063278">Откачи</translation>
+<translation id="429402653707266969">Укључи/искључи локацију</translation>
 <translation id="4294319844246081198">Добро јутро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Обришите сва обавештења (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Није доступно</translation>

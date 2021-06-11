@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> управува со сметката</translation>
 <translation id="3552189655002856821">Wi-Fi е исклучено</translation>
+<translation id="3560866052109807830">Алатки за цртање со маркер</translation>
 <translation id="3563775809269155755">Овозможи точка на пристап</translation>
 <translation id="3571734092741541777">Постави</translation>
 <translation id="3573179567135747900">Врати назад на „<ph name="FROM_LOCALE" />“ (потребно е рестартирање)</translation>
@@ -412,6 +413,7 @@
 <translation id="4274537685965975248">Кратенката од тастатура Ctrl + Alt + Стрелка надолу се промени. За да го користите копчето End, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надесно.</translation>
 <translation id="4279490309300973883">Отсликување</translation>
 <translation id="4285498937028063278">Откачи</translation>
+<translation id="429402653707266969">Вклучи/исклучи локација на алатникот</translation>
 <translation id="4294319844246081198">Добро утро <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Избриши ги сите <ph name="COUNT" /> известувања</translation>
 <translation id="4302592941791324970">Не е достапно</translation>

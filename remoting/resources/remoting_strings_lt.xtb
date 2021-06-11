@@ -67,6 +67,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="4176825807642096119">Prieigos kodas</translation>
 <translation id="4227991223508142681">Prieglobos aprūpinimo paslaugų programa</translation>
 <translation id="4240294130679914010">„Chrome“ nuotolinio ryšio prieglobos pašalinimo priemonė</translation>
+<translation id="4257751272692708833">„<ph name="PRODUCT_NAME" />“ URL peradresavimo priemonė</translation>
 <translation id="4277736576214464567">Netinkamas prieigos kodas. Bandykite dar kartą.</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
 <translation id="4405930547258349619">Pagrindinė biblioteka</translation>
@@ -121,6 +122,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="6612717000975622067">Siųsti „Ctrl“ + „Alt“ + „Del“</translation>
 <translation id="6654753848497929428">Bendrinti</translation>
 <translation id="677755392401385740">Pradėta naudotojo priegloba: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Pagalbinė programa, kurią naudojant URL atidaromas „<ph name="PRODUCT_NAME" />“ kliente</translation>
 <translation id="6939719207673461467">Rodyti / slėpti klaviatūrą.</translation>
 <translation id="6963936880795878952">Ryšiai su nuotoliniu kompiuteriu laikinai blokuojami, nes kažkas bandė prisijungti prie jo naudodamas netinkamą PIN kodą. Vėliau bandykite dar kartą.</translation>
 <translation id="6965382102122355670">Gerai</translation>

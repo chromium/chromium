@@ -4,6 +4,7 @@
 <translation id="1000498691615767391">Selecciona una carpeta para abrir</translation>
 <translation id="1047956942837015229">Eliminando <ph name="COUNT" /> elementos...</translation>
 <translation id="1049926623896334335">Documento de Word</translation>
+<translation id="1056775291175587022">No hay redes</translation>
 <translation id="1060368002126861100">Para abrir archivos con <ph name="APP_NAME" />, primero debes moverlos a la carpeta de archivos de Windows.</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1119069657431255176">Archivo tar comprimido en Bzip2</translation>
@@ -19,25 +20,35 @@
 <translation id="1150565364351027703">Gafas de sol</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalán</translation>
+<translation id="1168100932582989117">Servidores de nombres de Google</translation>
 <translation id="1172970565351728681">Tiempo restante aproximado: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
+<translation id="1173916544412572294">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, detalles</translation>
 <translation id="117624967391683467">Copiando <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1190144681599273207">Para recuperar este archivo se utilizarán aproximadamente <ph name="FILE_SIZE" /> de datos móviles.</translation>
 <translation id="1201402288615127009">Siguiente</translation>
+<translation id="1209796539517632982">Servidores de nombres automáticos</translation>
 <translation id="1210831758834677569">Laosiano</translation>
 <translation id="1243314992276662751">Subir</translation>
 <translation id="1249250836236328755">Género</translation>
+<translation id="1254593899333212300">Conexión directa a Internet</translation>
+<translation id="1272293450992660632">Los códigos PIN no coinciden.</translation>
+<translation id="1280820357415527819">Buscando redes móviles</translation>
+<translation id="1291603679744561561">SIM bloqueada</translation>
 <translation id="1293556467332435079">Archivos</translation>
 <translation id="1297922636971898492">Google Drive no está disponible en estos momentos. La subida se reiniciará automáticamente cuando vuelva a estar disponible.</translation>
 <translation id="1307931752636661898">No se pueden ver archivos de Linux</translation>
+<translation id="1313405956111467313">Configuración de proxy automática</translation>
 <translation id="1351692861129622852">Importando <ph name="FILE_COUNT" /> archivos...</translation>
+<translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">No se puede utilizar el archivo o el directorio.</translation>
 <translation id="1363028406613469049">Pista</translation>
 <translation id="1378727793141957596">Te damos la bienvenida a Google Drive</translation>
 <translation id="1379911846207762492">Puedes hacer que tus archivos estén disponibles sin conexión para acceder a ellos cuando no tengas Internet.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1395262318152388157">Control deslizante</translation>
+<translation id="1399511500114202393">Sin certificado de usuario</translation>
 <translation id="1404323374378969387">Noruego</translation>
 <translation id="1433628812591023318">Para soltar archivos en Parallels Desktop, primero se tienen que mover a Archivos de Windows.</translation>
 <translation id="1435838927755162558">Compartir carpeta con Parallels Desktop</translation>
@@ -47,6 +58,7 @@
 <translation id="148466539719134488">Suizo</translation>
 <translation id="1497522201463361063">No se puede cambiar el nombre del archivo "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Inglés (EE. UU.) con teclado Dvorak</translation>
+<translation id="1515909359182093592"><ph name="INPUT_LABEL" /> (host)</translation>
 <translation id="1538729222189715449">Abriendo archivos de Linux...</translation>
 <translation id="1547964879613821194">Inglés canadiense</translation>
 <translation id="1556189134700913550">Aplicar a todo</translation>
@@ -57,14 +69,18 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="162175252992296058">Portugués con teclado de EE. UU. internacional</translation>
+<translation id="1629521517399325891">El certificado de usuario no está disponible para la autenticación de redes.</translation>
 <translation id="1641780993263690097">Chino (pinyin)</translation>
 <translation id="1646019627374511909">Haciendo que <ph name="NUMBER_OF_ITEMS" /> archivos estén disponibles sin conexión</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661867754829461514">Falta el PIN.</translation>
+<translation id="166439687370499867">No se permite cambiar la configuración de las redes compartidas</translation>
 <translation id="1665611772925418501">No se ha podido modificar el archivo.</translation>
 <translation id="1673103856845176271">No se ha podido acceder al archivo por razones de seguridad.</translation>
 <translation id="169515659049020177">Mayús</translation>
 <translation id="1722487484194605434">Se están comprimiendo <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
+<translation id="1722687688096767818">Añadiendo perfil...</translation>
+<translation id="1726100011689679555">Servidores de nombres</translation>
 <translation id="1729953886957086472">Alemán (Alemania)</translation>
 <translation id="1730235522912993863">Chino (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementos copiados.</translation>
@@ -86,6 +102,7 @@
 <translation id="1844692022597038441">Este archivo no está disponible sin conexión.</translation>
 <translation id="1853795129690976061">Esta carpeta se comparte con Linux</translation>
 <translation id="1864756863218646478">No se ha podido encontrar el archivo.</translation>
+<translation id="1884013283844450420">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
 <translation id="1920670151694390848">Malayalam (transliteración)</translation>
 <translation id="1920798810075583923">Sandía</translation>
 <translation id="1924372192547904021">Se ha formateado <ph name="DRIVE_NAME" /></translation>
@@ -107,8 +124,12 @@
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2084108471225856927">Configuración del dispositivo</translation>
 <translation id="2085470240340828803">Ya existe un archivo "<ph name="FILENAME" />". ¿Qué quieres hacer?</translation>
+<translation id="2088690981887365033">Red VPN</translation>
+<translation id="2122305276694332719">Conectarse automáticamente a una red oculta permite que otros usuarios vean tu dispositivo y parte de tu configuración de red, por lo que no es recomendable.</translation>
 <translation id="2125607626296734455">Jemer</translation>
+<translation id="2139545522194199494">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, conectar</translation>
 <translation id="2142680004883808240">Ruso con teclado fonético YaZHert</translation>
+<translation id="2143778271340628265">Configuración de proxy manual</translation>
 <translation id="2163152940313951844">Carácter no válido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugués con teclado de EE. UU. internacional (PC)</translation>
 <translation id="2198315389084035571">Chino simplificado</translation>
@@ -118,27 +139,38 @@
 <translation id="2225536596944493418">¿Seguro que quieres eliminar estos <ph name="NUMBER_OF_ITEMS" /> elementos?</translation>
 <translation id="2230062665678605299">No se puede crear la carpeta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2251368349685848079">Restaurar de la papelera</translation>
+<translation id="2282155092769082568">URL de configuración automática:</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">Se están abriendo <ph name="NUMBER_OF_FILES" /> archivos.</translation>
+<translation id="2303282178633578561">Bloquear tarjeta SIM</translation>
 <translation id="2303301624314357662">Abriendo el archivo <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Se ha expulsado <ph name="VOLUME_NAME" />.</translation>
+<translation id="2307462900900812319">Configurar red</translation>
 <translation id="2325650632570794183">No se admite este tipo de archivo. Accede a Chrome Web Store para buscar una aplicación que pueda abrir este tipo de archivo.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
 <translation id="2352947182261340447">No hay suficiente espacio disponible en el almacenamiento local</translation>
+<translation id="23721837607121582">Descargar perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Cambiar a vista de lista</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> carpetas compartidas con Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> archivos seleccionados</translation>
+<translation id="2387458720915042159">Tipo de conexión con proxy</translation>
 <translation id="2389832672041313158">Birmano (Myanmar/Birmania)</translation>
+<translation id="2392369802118427583">Activar</translation>
 <translation id="240770291734945588">Almacenamiento disponible: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">Tamaño total de los archivos</translation>
 <translation id="2428749644083375155">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos en <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2464079411014186876">Helado</translation>
+<translation id="2464089476039395325">Proxy HTTP</translation>
+<translation id="2467267713099745100">Red <ph name="NETWORK_TYPE" />, desactivada</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2470939964922472929">Se ha escrito un PIN incorrecto demasiadas veces. Para establecer un nuevo PIN, escribe el código PUK de 8 dígitos proporcionado por tu operador.</translation>
 <translation id="2500392669976258912">Guyaratí (fonético)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2517472476991765520">Escanear</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementos eliminados</translation>
+<translation id="2534460670861217804">Proxy HTTP seguro</translation>
 <translation id="2541377937973966830">El contenido de esta carpeta es de solo lectura. No se admiten algunas acciones.</translation>
 <translation id="2542049655219295786">Tabla de Google</translation>
 <translation id="2544853746127077729">Certificado de autenticación rechazado por la red</translation>
@@ -151,6 +183,7 @@
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2620090360073999360">No se puede acceder a Google Drive en este momento.</translation>
+<translation id="2621713457727696555">Segura</translation>
 <translation id="2638942478653899953">No se ha podido acceder a Google Drive. <ph name="BEGIN_LINK" />Cierra la sesión<ph name="END_LINK" /> y vuelve a iniciarla.</translation>
 <translation id="2649120831653069427">Pez arcoíris</translation>
 <translation id="2663066752008346276">Birmano (Myanmar/Birmania) con teclado Myansan</translation>
@@ -158,12 +191,15 @@
 <translation id="2672394958563893062">Se ha producido un error. Haz clic para reiniciar la reproducción desde el principio.</translation>
 <translation id="2676946222714718093">Reproduciendo en</translation>
 <translation id="2718540689505416944">Instalar aplicación con Linux</translation>
+<translation id="2719020180254996569">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalles</translation>
 <translation id="2724954091494693138">Turco con teclado F</translation>
 <translation id="2732839045120506979">Vietnamita (VNI)</translation>
 <translation id="2735623501230989521">Permite que Parallels Desktop acceda a los archivos de la carpeta <ph name="FOLDER_NAME" />.</translation>
 <translation id="2771816809568414714">Queso</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Error al instalar la aplicación de Linux</translation>
+<translation id="2803375539583399270">Introducir PIN</translation>
+<translation id="2820957248982571256">Buscando...</translation>
 <translation id="2830077785865012357">Chino (zhuyin)</translation>
 <translation id="2843806747483486897">Cambiar acción predeterminada...</translation>
 <translation id="2850124913210091882">Copia de seguridad</translation>
@@ -186,6 +222,7 @@
 <translation id="2994320653639462337">Restaurando <ph name="COUNT" /> elementos...</translation>
 <translation id="2994669386200004489">No se ha podido crear la copia de seguridad de <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Francés (Canadá)</translation>
+<translation id="3003189754374775221">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="3003633581067744647">Cambiar a vista de miniaturas</translation>
 <translation id="3029114385395636667">Habilita Documentos de Google sin conexión para que Documentos, Hojas de cálculo y Presentaciones de Google estén disponibles sin conexión.</translation>
 <translation id="303198083543495566">Geografía</translation>
@@ -194,8 +231,12 @@
 <translation id="3067790092342515856">Archivos de Windows</translation>
 <translation id="3078461028045006476">Compartir con <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
+<translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3113153474486991170">No se ha podido abrir <ph name="PATH" /> desde esta ubicación. Cópialo en Mis archivos para abrirlo.</translation>
+<translation id="3113592018909187986">Te queda 1 intento. No podrás usar esta red hasta que establezcas un nuevo PIN.</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3138624403379688522">PIN no válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
+<translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (respaldado por hardware)</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3197563288998582412">Reino Unido (Dvorak)</translation>
 <translation id="3202131003361292969">Ruta</translation>
@@ -206,12 +247,15 @@
 <translation id="3245321423178950146">Artista desconocido</translation>
 <translation id="3248185426436836442">Pendiente</translation>
 <translation id="3252266817569339921">Francés</translation>
+<translation id="3253225298092156258">No disponible</translation>
 <translation id="3254434849914415189">Elegir la aplicación predeterminada para los archivos <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Árabe</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3272909651715601089">No se ha podido abrir <ph name="PATH" /></translation>
 <translation id="3280431534455935878">Preparando</translation>
 <translation id="3280987981688031357">Disco de vinilo</translation>
+<translation id="3290356915286466215">No segura</translation>
+<translation id="3291218047831493686">Debes conectarte a esta red para cambiar el ajuste de bloqueo de la SIM</translation>
 <translation id="3295357220137379386">Dispositivo ocupado</translation>
 <translation id="3296763833017966289">Georgiano</translation>
 <translation id="3307875152560779385">Ucraniano</translation>
@@ -220,7 +264,10 @@
 <translation id="3353984535370177728">Seleccionar una carpeta para subirla</translation>
 <translation id="3356580349448036450">Completo</translation>
 <translation id="3358452157379365236">Guitarra</translation>
+<translation id="3368922792935385530">Conectado</translation>
 <translation id="3382143449143186018">Nepalí con teclado InScript</translation>
+<translation id="338691029516748599">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, conectar</translation>
+<translation id="3408072735282270043">Activar <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Alemán (Alemania) con teclado Neo 2</translation>
 <translation id="3414856743105198592">Si formateas las unidades extraíbles, se borrarán todos los datos. ¿Quieres continuar?</translation>
 <translation id="3437801641691368414">Hora de creación</translation>
@@ -232,6 +279,7 @@
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errores.</translation>
+<translation id="3509680540198371098">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Aviso: Estos archivos son temporales y es posible que se eliminen automáticamente para liberar espacio en el disco.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -240,17 +288,21 @@
 <translation id="3556731189587832921">Inglés (EE. UU.) con teclado internacional (PC)</translation>
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3592251141500063301">No se ha podido habilitar el acceso sin conexión a <ph name="FILE_NAME" /></translation>
+<translation id="3601151620448429694"><ph name="NETWORK_NAME" />: <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Francés canadiense</translation>
 <translation id="3606220979431771195">Turco-F</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3620292326130836921">Se ha realizado la copia de seguridad de todos los archivos</translation>
+<translation id="3634507049637220048">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionada por el administrador, detalles</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementos movidos.</translation>
 <translation id="3645531960514756307">No fijar carpeta</translation>
 <translation id="3685122418104378273">La sincronización con Google Drive está inhabilitada de forma predeterminada en redes de datos móviles.</translation>
 <translation id="3689865792480713551">Cancelar <ph name="ACTIVITY_DESCRIPTION" />.</translation>
+<translation id="3690128548376345212">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, no activada, <ph name="CONNECTION_STATUS" />, intensidad de la señal del <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3691184985318546178">Cingalés</translation>
 <translation id="3726463242007121105">No se puede abrir este dispositivo porque no se admite su sistema de archivos.</translation>
+<translation id="3727148787322499904">Si cambias esta opción, todas las redes compartidas se verán afectadas</translation>
 <translation id="3741243925913727067">Realiza una copia de seguridad en Google Drive de los vídeos y de las fotos de tu dispositivo multimedia.</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
 <translation id="3780536599611287598">No tienes permiso para mover los archivos a "<ph name="FOLDER_NAME" />".</translation>
@@ -262,6 +314,9 @@
 <translation id="3809272675881623365">Conejo</translation>
 <translation id="3810973564298564668">Gestionar</translation>
 <translation id="3811494700605067549">1 archivo seleccionado</translation>
+<translation id="3817579325494460411">No proporcionada</translation>
+<translation id="3819448694985509187">PIN incorrecto. Te queda 1 intento.</translation>
+<translation id="3822559385185038546">Tu administrador obliga a usar este proxy</translation>
 <translation id="3830674330436234648">No se puede reproducir</translation>
 <translation id="383652340667548381">Serbio</translation>
 <translation id="385051799172605136">Volver</translation>
@@ -269,16 +324,21 @@
 <translation id="386548886866354912">Comprimir con <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descripción</translation>
 <translation id="3899991606604168269">Francés (Canadá) con teclado multilingüe</translation>
+<translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
+<translation id="3906232975181435906">Instalando perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Reproducir en</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3952872973865944257">Telugu (fonético)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Reproductor de audio</translation>
+<translation id="3971140002794351170">Descargar perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglés (Reino Unido)</translation>
 <translation id="3975895378829046965">Bengalí (fonético)</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4017788180641807848">Inglés (EE. UU.) con teclado Workman</translation>
+<translation id="4040753847560036377">PUK incorrecto</translation>
+<translation id="4057991113334098539">Activando...</translation>
 <translation id="4092890906744441904">Irlandés</translation>
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="4158739975813877944">Abrir lista de reproducción</translation>
@@ -291,9 +351,11 @@
 <translation id="421017592316736757">Tienes que conectarte a Internet para acceder a este archivo.</translation>
 <translation id="4212740939091998969">Ya existe la carpeta "<ph name="FOLDER_NAME" />". Elige otro nombre.</translation>
 <translation id="4215448920900139318">Creando copia de seguridad de <ph name="FILE_COUNT" /></translation>
+<translation id="4218274196133425560">Quitar excepción para <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentación de Google</translation>
 <translation id="4290535918735525311">1 carpeta compartida con Linux</translation>
 <translation id="4299729908419173967">brasileño</translation>
+<translation id="4302605047395093221">Cualquiera que use este dispositivo deberá escribir el PIN para conectarse a esta red móvil.</translation>
 <translation id="4309915981827077375">Información general</translation>
 <translation id="432252891123397018">Rumano con teclado estándar</translation>
 <translation id="4325128273762811722">Esloveno</translation>
@@ -303,11 +365,16 @@
 <translation id="4348495354623233847">Kurdo sorani con teclado basado en el árabe</translation>
 <translation id="4363958938297989186">Ruso con teclado fonético</translation>
 <translation id="4364327530094270451">Melón</translation>
+<translation id="4378551569595875038">Conectando...</translation>
+<translation id="4380245540200674032">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, detalles</translation>
 <translation id="4387004326333427325">Certificado de autenticación rechazado de forma remota</translation>
 <translation id="4394214039309501350">Enlace externo</translation>
 <translation id="4418686080762064601">Crear una combinación de teclas para tus archivos</translation>
 <translation id="4425149324548788773">Mi unidad</translation>
+<translation id="4439427728133035643">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4442424173763614572">Error al buscar DNS</translation>
+<translation id="4462159676511157176">Servidores de nombres personalizados</translation>
+<translation id="4465725236958772856">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestionada por el administrador, conectar</translation>
 <translation id="4470564870223067757">Hangul de doble alternancia</translation>
 <translation id="4477002475007461989">Rumano</translation>
 <translation id="4477219268485577442">Búlgaro fonético</translation>
@@ -316,6 +383,7 @@
 <translation id="4522570452068850558">Detalles</translation>
 <translation id="4527800702232535228">Esta carpeta se comparte con Parallels Desktop</translation>
 <translation id="4552678318981539154">Comprar más almacenamiento</translation>
+<translation id="4552759165874948005">Red <ph name="NETWORK_TYPE" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559318885353833501"><ph name="FILE_NAME" /> eliminado</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Archivo <ph name="FILE_TYPE" /></translation>
@@ -324,6 +392,7 @@
 <translation id="4594543368593301662">Mostrando resultados de <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artista</translation>
+<translation id="4642769377300286600">Instalando perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Checo con teclado Qwerty</translation>
 <translation id="4656293982926141856">Este ordenador</translation>
 <translation id="4669606053856530811">Los miembros de "<ph name="SOURCE_NAME" />" dejarán de tener acceso a menos que estos elementos se compartan con ellos.</translation>
@@ -335,6 +404,7 @@
 <translation id="4706042980341760088">Tamil con teclado de máquina de escribir</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Abriendo <ph name="PATH" /></translation>
+<translation id="4720185134442950733">Red de datos móviles</translation>
 <translation id="4724850507808590449">Se ha realizado una copia de seguridad de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">El dispositivo de transmisión no admite este vídeo.</translation>
@@ -359,7 +429,9 @@
 <translation id="4880214202172289027">Control deslizante de volumen</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4900532980794411603">Compartir con Parallels Desktop</translation>
+<translation id="4902546322522096650">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4905417359854579806">Ya puedes crear la copia de seguridad de <ph name="FILE_COUNT" /></translation>
+<translation id="4906580650526544301">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, detalles</translation>
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Balón de fútbol</translation>
 <translation id="4961158930123534723">1 carpeta compartida con Parallels Desktop</translation>
@@ -391,6 +463,7 @@
 <translation id="5144820558584035333">Hangul de triple alternancia (390)</translation>
 <translation id="5145331109270917438">Fecha de modificación</translation>
 <translation id="515594325917491223">Ajedrez</translation>
+<translation id="5158983316805876233">Utilizar el mismo proxy para todos los protocolos</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />¡No desconectes todavía el dispositivo!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Si desconectas el dispositivo mientras se utiliza, puedes perder tus datos. Espera hasta que finalice la operación y, a continuación, desconecta el dispositivo con la aplicación Archivos.</translation>
@@ -415,6 +488,7 @@
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">¿Seguro que quieres vaciar la papelera?</translation>
+<translation id="5305688511332277257">No hay certificados instalados</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
 <translation id="5323213332664049067">español (Latinoamérica)</translation>
@@ -425,11 +499,15 @@
 <translation id="5358764674931277">Velocidad de fotogramas</translation>
 <translation id="5368191757080475556">Compartir carpeta con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
+<translation id="5411472733320185105">No utilizar la configuración de proxy para estos hosts y dominios:</translation>
 <translation id="541890217011173530">Kurdo sorani con teclado basado en el inglés</translation>
+<translation id="5422221874247253874">Punto de acceso</translation>
 <translation id="5428105026674456456">Español</translation>
 <translation id="5438282218546237410">No hay ningún resultado para <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">La contraseña no es válida</translation>
+<translation id="5463231940765244860">Introducir</translation>
 <translation id="5469868506864199649">Italiano</translation>
+<translation id="5473333559083690127">Volver a introducir el nuevo PIN</translation>
 <translation id="5489067830765222292">Letón</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5500122897333236901">Islandés</translation>
@@ -445,31 +523,37 @@
 <translation id="5625294776298156701">Tamil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Si mueves este elemento, se compartirá con todos los usuarios que puedan ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escuchar</translation>
+<translation id="5669691691057771421">Introducir el nuevo PIN</translation>
 <translation id="5678784840044122290">La aplicación de Linux estará disponible en tu terminal y también es posible que se te muestre un icono en el menú de aplicaciones.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />No se puede desconectar de un archivo o disco virtual<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Cierra todos los archivos del archivo o disco virtual e inténtalo de nuevo.</translation>
 <translation id="5691596662111998220">¡Vaya! <ph name="FILE_NAME" /> ya no existe.</translation>
+<translation id="5698411045597658393"><ph name="NETWORK_NAME" />, desbloquear</translation>
 <translation id="5700087501958648444">Información del audio</translation>
 <translation id="5724172041621205163">Tailandés con teclado Pattachote</translation>
 <translation id="5731409020711461763">1 foto nueva</translation>
 <translation id="5752453871435543420">Copia de seguridad en la nube de Chrome OS</translation>
 <translation id="5756666464756035725">QWERTY húngaro</translation>
 <translation id="5763377084591234761">Alemán (Suiza)</translation>
+<translation id="5769519078756170258">Host o dominio que quieres excluir</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Borrar y formatear</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5788127256798019331">Archivos de Play</translation>
 <translation id="5790193330357274855">Kazajo</translation>
 <translation id="5804245609861364054">Canarés (transliteración)</translation>
+<translation id="5814126672212206791">Tipo de conexión</translation>
 <translation id="5817397429773072584">Chino tradicional</translation>
 <translation id="5818003990515275822">Coreano</translation>
 <translation id="5819442873484330149">Hangul de triple alternancia (final)</translation>
+<translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5833610766403489739">Este archivo se ha perdido. Comprueba la opción de ubicación de descargas e inténtalo de nuevo.</translation>
 <translation id="5838451609423551646">Se ha cancelado la selección de todos los elementos.</translation>
 <translation id="5838825566232597749">Internacional estilo Workman (EE. UU.)</translation>
 <translation id="5851063901794976166">No hay contenido...</translation>
 <translation id="5864471791310927901">Error de búsqueda de DHCP</translation>
+<translation id="5896749729057314184">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, no activada, intensidad de la señal del <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="5911887972742538906">No se ha podido instalar la aplicación de Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">No se ha podido copiar debido a un error inesperado: <ph name="ERROR_MESSAGE" /></translation>
@@ -479,9 +563,12 @@
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opciones de orden</translation>
 <translation id="6007237601604674381">Se ha producido un error al mover el archivo (<ph name="ERROR_MESSAGE" />).</translation>
+<translation id="6011074160056912900">Red Ethernet</translation>
 <translation id="60357267506638014">Checo (QWERTY)</translation>
+<translation id="603895874132768835">No podrás usar esta red hasta que establezcas un nuevo PIN.</translation>
 <translation id="604001903249547235">Copia de seguridad en la nube</translation>
 <translation id="6040143037577758943">Cerrar</translation>
+<translation id="6055907707645252013">Red <ph name="NETWORK_TYPE" />, no conectado</translation>
 <translation id="6074825444536523002">Formulario de Google</translation>
 <translation id="6079871810119356840">Húngaro con teclado Qwerty</translation>
 <translation id="6096979789310008754">Se ha borrado el texto de búsqueda y se muestran todos los archivos y carpetas.</translation>
@@ -489,12 +576,14 @@
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6133173853026656527">Moviendo <ph name="FILE_NAME" />...</translation>
 <translation id="613750717151263950">Japonés con teclado de EE. UU.</translation>
+<translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ninguna red</translation>
 <translation id="6146563240635539929">Vídeos</translation>
 <translation id="6150853954427645995">Para guardar este archivo y poder usarlo sin conexión, vuelve a conectarte a Internet, haz clic con el botón derecho en el archivo y selecciona la opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Mariposas</translation>
 <translation id="6170470584681422115">Bocadillo</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6189412234224385711">Abrir con <ph name="EXTENSION_NAME" /></translation>
+<translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="6199801702437275229">Esperando información sobre el espacio...</translation>
 <translation id="6205710420833115353">Algunas operaciones están tardando más de lo esperado. ¿Quieres cancelarlas?</translation>
 <translation id="6220423280121890987">Panyabí</translation>
@@ -503,10 +592,14 @@
 <translation id="6227235786875481728">Este archivo no se puede reproducir.</translation>
 <translation id="6241349547798190358">Neerlandés (Bélgica)</translation>
 <translation id="6248400709929739064">Habilitar subtítulos</translation>
+<translation id="6267547857941397424">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="6269630227984243955">Malayo</translation>
 <translation id="6287852322318138013">Seleccionar una aplicación para abrir este archivo</translation>
+<translation id="6296410173147755564">PUK no válido</translation>
 <translation id="6312403991423642364">Error desconocido de red</translation>
+<translation id="6317608858038767920">Servidor de nombres personalizado: <ph name="INPUT_INDEX" /></translation>
 <translation id="6321303798550928047">Mano saludando</translation>
+<translation id="6327785803543103246">Detección automática de proxy web</translation>
 <translation id="6339145975392024142">EE. UU. (PC)</translation>
 <translation id="6346310558342052870">Acceso restringido</translation>
 <translation id="6356685157277930264">Ventana de comentarios de archivos</translation>
@@ -519,7 +612,10 @@
 <translation id="642282551015776456">Este nombre no se puede utilizar como nombre de archivo de carpeta.</translation>
 <translation id="6423031066725912715">Vietnamita con teclado TCVN</translation>
 <translation id="6485131920355264772">No se ha podido obtener información sobre el espacio.</translation>
+<translation id="6495925982925244349">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, detalles</translation>
+<translation id="6499681088828539489">No permitir servidores proxy en redes compartidas</translation>
 <translation id="6509122719576673235">Noruego</translation>
+<translation id="6528513914570774834">Permitir que otros usuarios de este dispositivo usen esta red</translation>
 <translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Reciente</translation>
 <translation id="6558280019477628686">Se ha producido un error. Es posible que no se hayan eliminado algunos elementos.</translation>
@@ -528,6 +624,7 @@
 <translation id="6594855146910089723">Esta carpeta se comparte con Linux y Parallels Desktop</translation>
 <translation id="6607272825297743757">Información del archivo</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> carpetas compartidas con Parallels Desktop</translation>
+<translation id="6629518321609546825">Escribe al menos 4 números</translation>
 <translation id="6629841649550503054">Se ha realizado la copia de seguridad de todos los archivos en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6650726141019353908">Mariposa rosa</translation>
@@ -536,6 +633,7 @@
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6732801395666424405">No se han cargado los certificados</translation>
+<translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -547,6 +645,7 @@
 <translation id="6825883775269213504">Ruso</translation>
 <translation id="6827236167376090743">Este vídeo seguirá reproduciéndose sin parar.</translation>
 <translation id="6847101934483209767">Se ha quitado <ph name="ENTRY_NAME" /> de la selección.</translation>
+<translation id="6856459657722366306">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="6861394552169064235">Persa</translation>
 <translation id="6862635236584086457">Se realiza una copia de seguridad online de forma automática de todos los archivos guardados en esta carpeta.</translation>
 <translation id="6864328437977279120">Sánscrito</translation>
@@ -564,8 +663,10 @@
 <translation id="6935521024859866267">Boca abajo</translation>
 <translation id="6943836128787782965">Error al obtener HTTP</translation>
 <translation id="6949408524333579394">Serbio (transliteración)</translation>
+<translation id="6960565108681981554">No activada. Ponte en contacto con tu operador.</translation>
 <translation id="696203921837389374">Habilitar sincronización a través de redes de datos móviles</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6965648386495488594">Puerto</translation>
 <translation id="6970230597523682626">Búlgaro</translation>
 <translation id="6973630695168034713">Carpetas</translation>
 <translation id="6976795442547527108">León</translation>
@@ -579,7 +680,9 @@
 <translation id="7031639531908619281">Turco</translation>
 <translation id="7037472120706603960">Tamil (transliteración)</translation>
 <translation id="7040138676081995583">Abrir con...</translation>
+<translation id="7048024426273850086">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="7075931588889865715">Tailandés con teclado TIS 820‑2531</translation>
+<translation id="708278670402572152">Desconectar para habilitar la búsqueda</translation>
 <translation id="7086590977277044826">Tamil con teclado InScript</translation>
 <translation id="7103992300314999525">Macedonio</translation>
 <translation id="7106346894903675391">Comprar más almacenamiento...</translation>
@@ -593,6 +696,8 @@
 <translation id="7191454237977785534">Guardar archivo como</translation>
 <translation id="7229570126336867161">Es necesario el estándar EVDO.</translation>
 <translation id="7238097264433196391">Nombre de la unidad</translation>
+<translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalles</translation>
+<translation id="7246947237293279874">Proxy de FTP</translation>
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7256405249507348194">Error no reconocido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servicios disponibles</translation>
@@ -609,12 +714,14 @@
 <translation id="7417453074306512035">Teclado etíope</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
+<translation id="7469894403370665791">Conectarse automáticamente a esta red</translation>
 <translation id="7486315294984620427">Para soltar archivos en Parallels Desktop, primero tienen que estar copiados en Archivos de Windows.</translation>
 <translation id="7489215562877293245">Archivos encontrados: <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     Ya puedes crear una copia de seguridad en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="7495372004724182530">Malayalam (fonético)</translation>
 <translation id="7505167922889582512">Mostrar archivos ocultos</translation>
+<translation id="7514365320538308">Descargar</translation>
 <translation id="751507702149411736">Bielorruso</translation>
 <translation id="7532029025027028521">Persa (transliteración)</translation>
 <translation id="7544830582642184299">Permite que las aplicaciones de Linux accedan a tus archivos de Google Drive. Los cambios se sincronizarán con tus otros dispositivos.</translation>
@@ -643,6 +750,7 @@
 <translation id="7711920809702896782">Información de la imagen</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7730494089396812859">Muestra detalles de la copia de seguridad en la nube</translation>
+<translation id="7732111077498238432">La red está controlada por políticas</translation>
 <translation id="7748626145866214022">Hay más opciones disponibles en la barra de acciones. Pulsa Alt + A para seleccionarla.</translation>
 <translation id="7760449188139285140">Chino (Wubi)</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -662,9 +770,12 @@
     <ph name="LINE_BREAK2" />
     Prueba a seleccionar menos fotos.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
+<translation id="7831491651892296503">No se ha podido configurar la red</translation>
 <translation id="7839804798877833423">Para recuperar estos archivos se utilizarán aproximadamente <ph name="FILE_SIZE" /> de datos móviles.</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
+<translation id="7847617962681804761">Se requiere un PIN para usar los datos móviles.</translation>
 <translation id="7853966320808728790">BÉPO francés</translation>
+<translation id="7857117644404132472">Añadir excepción</translation>
 <translation id="7868774406711971383">Polaco</translation>
 <translation id="7874321682039004450">Filipino</translation>
 <translation id="7881969471599061635">Inhabilitar subtítulos</translation>
@@ -680,17 +791,21 @@
 <translation id="7973962044839454485">Se ha producido un error en la autenticación de PPP porque la contraseña o el nombre de usuario son incorrectos</translation>
 <translation id="7980421588063892270">Inglés (EE. UU.) con teclado Colemak</translation>
 <translation id="79907182588096956">Este archivo se ha diseñado para ordenadores Windows. No es compatible con tu dispositivo, que tiene Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS.</translation>
+<translation id="8000066093800657092">Ninguna red</translation>
 <translation id="8008366997883261463">Terrier Jack Russell</translation>
 <translation id="8028993641010258682">Tamaño</translation>
 <translation id="803771048473350947">Archivo</translation>
 <translation id="8038111231936746805">(acción predeterminada)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumano</translation>
+<translation id="8049184478152619004">Escribe el código PUK</translation>
 <translation id="8079530767338315840">Repetir</translation>
+<translation id="8087576439476816834">Descargar, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartido conmigo</translation>
 <translation id="8116072619078571545">Agua helada</translation>
 <translation id="8128733386027980860">Inglés (Reino Unido) con teclado Dvorak</translation>
 <translation id="8137331602592933310">El archivo "<ph name="FILENAME" />" se ha compartido contigo. No puedes eliminarlo porque no es tuyo.</translation>
+<translation id="813913629614996137">Inicializando…</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154842056504218462">Se han seleccionado todos los elementos.</translation>
 <translation id="8157684860301034423">No se ha podido recuperar la información de la aplicación.</translation>
@@ -716,11 +831,17 @@
 <translation id="8342318071240498787">Ya existe un archivo o un directorio con el mismo nombre.</translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8372852072747894550">Griego</translation>
+<translation id="8386903983509584791">Búsqueda completada</translation>
 <translation id="8395901698320285466">Dimensiones</translation>
+<translation id="8408068190360279472">Red <ph name="NETWORK_TYPE" />, conectando</translation>
+<translation id="8425213833346101688">Cambiar</translation>
+<translation id="8431909052837336408">Cambiar PIN de la tarjeta SIM</translation>
 <translation id="8437209419043462667">EE. UU.</translation>
+<translation id="8452135315243592079">Falta la tarjeta SIM</translation>
 <translation id="8456681095658380701">El nombre no es válido</translation>
 <translation id="8459404855768962328">Si copias este elemento, se compartirá con todos los usuarios que puedan ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Haz clic con el botón derecho en un archivo y selecciona Fijar en la estantería para poder acceder con rapidez a los archivos de la estantería.</translation>
+<translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
 <translation id="8466234950814670489">Archivo tar</translation>
 <translation id="8475647382427415476">Google Drive no ha podido sincronizar <ph name="FILENAME" /> en este momento. Este servicio volverá a intentarlo más tarde.</translation>
@@ -731,7 +852,9 @@
 <translation id="8521441079177373948">Reino Unido</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="853494022971700746">Francés (Francia)</translation>
+<translation id="8540608333167683902">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="8545476925160229291">Inglés (EE. UU.)</translation>
+<translation id="854655314928502177">URL de detección automática de proxy web:</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letón</translation>
 <translation id="8560515948038859357">Cantonés</translation>
@@ -743,6 +866,9 @@
 <translation id="8600173386174225982">La lista de archivos ha cambiado a la vista de miniaturas.</translation>
 <translation id="8601932370724196034">Archivo de imagen de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
+<translation id="863903787380594467">PIN incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
+<translation id="8639391553632924850"><ph name="INPUT_LABEL" /> (puerto)</translation>
+<translation id="8656768832129462377">No comprobar</translation>
 <translation id="8688591111840995413">Contraseña incorrecta</translation>
 <translation id="8698464937041809063">Dibujo de Google</translation>
 <translation id="8712637175834984815">Entendido</translation>
@@ -750,7 +876,10 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Se ha seleccionado <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
+<translation id="8743164338060742337">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, conectar</translation>
 <translation id="8750438273876807512">Mantén pulsado un archivo, toca <ph name="ICON" /> y selecciona Fijar en la estantería para poder acceder con rapidez a los archivos de la estantería.</translation>
+<translation id="8787254343425541995">Permitir servidores proxy en redes compartidas</translation>
+<translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8802459921616481935">Mover a la papelera</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Error al comprimir; el elemento ya existe: "<ph name="FILE_NAME" />"</translation>
@@ -759,19 +888,24 @@
 <translation id="8857149712089373752">Nepalí con teclado fonético</translation>
 <translation id="8860454412039442620">Hoja de cálculo de Excel</translation>
 <translation id="8866284467018526531">Árabe (transliteración)</translation>
+<translation id="8874184842967597500">No conectado</translation>
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8903931173357132290">Graduado</translation>
 <translation id="8919081441417203123">Danés</translation>
 <translation id="8965697826696209160">No hay suficiente espacio.</translation>
 <translation id="8970501467542182729">Este archivo se ha diseñado para ordenadores Macintosh. No es compatible con tu dispositivo, que tiene Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS.</translation>
 <translation id="8997962250644902079">Chino tradicional (pinyin)</translation>
+<translation id="9003940392834790328">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, detalles</translation>
 <translation id="9017798300203431059">Ruso fonético</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9035012421917565900">Estos elementos no se pueden volver a mover a "<ph name="DESTINATION_NAME" />", por lo que no podrás deshacer esta acción.</translation>
+<translation id="9035689366572880647">Escribe el PIN actual</translation>
 <translation id="9038620279323455325">Ya existe el archivo "<ph name="FILE_NAME" />". Elige otro nombre.</translation>
 <translation id="9046895021617826162">Error de conexión</translation>
+<translation id="9065512565307033593">Si no la verificas, se inhabilitará el acceso a la red.</translation>
 <translation id="908378762078012445">Ruso con teclado fonético AATSEEL</translation>
 <translation id="9099674669267916096">Número de páginas</translation>
+<translation id="9100610230175265781">La frase de contraseña es obligatoria</translation>
 <translation id="9110990317705400362">No dejamos de buscar formas de ofrecerte una navegación más segura. Anteriormente, cualquier sitio web podía solicitarte que añadieras una extensión al navegador. En las últimas versiones de Google Chrome, debes indicarle explícitamente a Chrome que quieres instalar esas extensiones añadiéndolas a través de la página Extensiones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="912419004897138677">Códec</translation>
@@ -781,6 +915,8 @@
 <translation id="9133055936679483811">Error al comprimir (<ph name="ERROR_MESSAGE" />)</translation>
 <translation id="9134524245363717059">Este archivo está diseñado para un ordenador que utilice software de Macintosh. No es compatible con tu dispositivo, que utiliza Chrome OS. Puedes buscar una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="9144340019284012223">Catalán</translation>
+<translation id="914873105831852105">PIN no válido. Te queda 1 intento.</translation>
+<translation id="9153934054460603056">Guardar la identidad y la contraseña</translation>
 <translation id="9172592259078059678">Guyaratí (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EE. UU.) con teclado internacional</translation>
 <translation id="9174050671906956834">Los elementos de la papelera se eliminan definitivamente después de 30 días.</translation>
@@ -788,11 +924,13 @@
 <translation id="9213073329713032541">Se ha iniciado la instalación correctamente.</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="938470336146445890">Instala un certificado de usuario.</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947144732524271678">Se ha seleccionado un intervalo de <ph name="ENTRY_COUNT" /> elementos desde <ph name="FROM_ENTRY_NAME" /> hasta <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="988685240266037636">Ya existe el archivo "<ph name="FILE_NAME" />". ¿Quieres sustituirlo?</translation>
+<translation id="992401651319295351">Te quedan <ph name="RETRIES" /> intentos. No podrás usar esta red hasta que establezcas un nuevo PIN.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>
 </translationbundle>

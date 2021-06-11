@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">ນຳໃຊ້ເມື່ອ <ph name="DAYS" /> ກ່ອນ</translation>
 <translation id="2074131957428911366">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
-<translation id="2086623437239112659">ຂໍ້ມູນການເຂົ້າສູ່ລະບົບທີ່ທ່ານບັນທຶກໄວ້ອາດເກົ່າແລ້ວ.</translation>
 <translation id="209018056901015185">ຂໍ​ເວັບ​ໄຊ​ທ໌​ເດັ​ສ​ທັອບ</translation>
 <translation id="2103075008456228677">ເປີດ history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ລາຍ​ການ​ຖືກ​ຍ້າຍ​ໄປ​ແລ້ວ</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">ອິນ​ເຕີ​ເນັດ</translation>
 <translation id="5210365745912300556">ປິດແຖບ</translation>
 <translation id="5228579091201413441">ເປີດໃຊ້ງານຊິງຄ໌</translation>
+<translation id="5232485538978018676">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ມີການຈັດການ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
 <translation id="5245322853195994030">ຍົກເລີກການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="5271549068863921519">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
@@ -724,6 +724,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8206354486702514201">ການຕັ້ງຄ່ານີ້ຖືກບັງຄັບໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ.</translation>
 <translation id="8225985093977202398">ຮູບ ແລະ ໄຟລ໌ທີ່ຖືກແຄດຊ໌</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
+<translation id="8271720166617117963">ຍອມຮັບ ແລະ ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8281781826761538115">ຄ່າເລີ່ມຕົ້ນ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ຂ້າມ</translation>
 <translation id="8283172974887967105">ຕັ້ງ…</translation>
@@ -766,6 +767,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8654802032646794042">ຍົກເລີກ</translation>
 <translation id="8668210798914567634">ໜ້ານີ້ໄດ້ຖືກບັນທຶກໃສ່ລາຍການທີ່ຈະອ່ານຂອງທ່ານແລ້ວ.</translation>
 <translation id="8680787084697685621">ລາຍ​ລະ​ອຽດ​ການລົງຊື່ເຂົ້າໃຊ້ບັນຊີລ້າສະໄໝແລ້ວ.</translation>
+<translation id="8691262314411702087">ເລືອກວ່າຈະຊິ້ງຂໍ້ມູນຫຍັງ</translation>
 <translation id="8693663554456874301">{count,plural, =1{ປິດແຖບ}other{ປິດແຖບ}}</translation>
 <translation id="8706588385081740091">ລະຫັດຜ່ານ</translation>
 <translation id="8717864919010420084">ສຳເນົາລິ້ງ</translation>

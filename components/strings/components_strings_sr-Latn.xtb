@@ -312,6 +312,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira svakog dana.}=1{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira svakog dana.}one{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dan.}few{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dana.}other{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dana.}}</translation>
 <translation id="2053553514270667976">Poštanski broj</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 predlog}one{# predlog}few{# predloga}other{# predloga}}</translation>
+<translation id="2071156619270205202">Ova kartica ne ispunjava uslove za broj virtuelne kartice.</translation>
 <translation id="2071692954027939183">Obaveštenja su automatski blokirana jer ih obično ne dozvoljavate</translation>
 <translation id="2079545284768500474">Opozovi</translation>
 <translation id="20817612488360358">Podešeno je da se koriste sistemska podešavanja proksija, ali je navedena eksplicitna konfiguracija proksija.</translation>
@@ -440,9 +441,11 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2521385132275182522">Spajanje u donjem desnom uglu</translation>
 <translation id="2523886232349826891">Sačuvano je samo na ovom uređaju</translation>
 <translation id="2524461107774643265">Dodajte još informacija</translation>
+<translation id="2529899080962247600">Ovo polje ne sme da ima više od <ph name="MAX_ITEMS_LIMIT" /> unosa. Svi budući unosi će se zanemariti.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2536110899380797252">Dodaj adresu</translation>
 <translation id="2539524384386349900">Otkrij</translation>
+<translation id="2540701853218677861">Istorija prijavljivanja/odjavljivanja na uređaju, uključujući vremenske oznake i neuspele pokušaje</translation>
 <translation id="2541219929084442027">Stranice koje pregledate na karticama bez arhiviranja se neće zadržavati u istoriji pregledača, skladištu kolačića ili istoriji pretrage kada zatvorite sve kartice bez arhiviranja. Sačuvaćemo sve preuzete fajlove ili napravljene obeleživače.</translation>
 <translation id="2544644783021658368">Jedan dokument</translation>
 <translation id="254947805923345898">Vrednost smernica nije važeća.</translation>
@@ -635,6 +638,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3320021301628644560">Dodajte adresu za obračun</translation>
 <translation id="3324983252691184275">Jarkocrvena</translation>
 <translation id="3329013043687509092">Zasićenost boja</translation>
+<translation id="3333762389743153920">Ne ispunjava uslove za virtuelnu karticu</translation>
 <translation id="3338095232262050444">Bezbedan</translation>
 <translation id="3355823806454867987">Promeni podešavanja proksija...</translation>
 <translation id="3360103848165129075">Stranica obrađivača plaćanja</translation>
@@ -1148,6 +1152,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifikujte karticu</translation>
 <translation id="5135404736266831032">Upravljajte adresama...</translation>
+<translation id="5138014172396933048">Virtuelna kartica trenutno nije dostupna. Obratite se banci.</translation>
 <translation id="5138227688689900538">Prikaži manje</translation>
 <translation id="514010763713772514">Sledeći put proverite brže</translation>
 <translation id="5145883236150621069">Kôd greške je prisutan u odgovoru na smernice</translation>
@@ -1194,6 +1199,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5287240709317226393">Prikaži kolačiće</translation>
 <translation id="5287456746628258573">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju, koja može da otkrije vaše informacije (na primer, lozinke ili brojeve kreditnih kartica) kada se šalju na njega.</translation>
 <translation id="5288108484102287882">Validacija vrednosti smernica je aktivirala upozorenja</translation>
+<translation id="5288808348893593856">Veza sajta je bezbedna ako vam Chrome ne kaže drugačije.</translation>
 <translation id="5289384342738547352">Obrada više dokumenata</translation>
 <translation id="5299298092464848405">Greška pri raščlanjivanju smernica</translation>
 <translation id="5300589172476337783">Prikaži</translation>
@@ -1555,9 +1561,11 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6685834062052613830">Odjavite se i dovršite podešavanje</translation>
 <translation id="6687335167692595844">Zatražena je veličina fonta</translation>
 <translation id="6688743156324860098">Ažurirajte…</translation>
+<translation id="6688775486821967877">Virtuelna kartica trenutno nije dostupna. Probajte ponovo kasnije.</translation>
 <translation id="6689249931105087298">Relativno sa kompresijom crnih tačaka</translation>
 <translation id="6689271823431384964">Chrome vam nudi čuvanje kartica na Google nalogu zato što ste prijavljeni. To možete da promenite u podešavanjima. Ime vlasnika kartice smo uzeli sa naloga.</translation>
 <translation id="6698381487523150993">Napravljeno:</translation>
+<translation id="6699188552522342100">Da li je veb-sajt tačan?</translation>
 <translation id="6702919718839027939">Prezentacija</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6710594484020273272">&lt;Unesite termin za pretragu&gt;</translation>
@@ -1684,6 +1692,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7219179957768738017">Veza koristi <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Obrada</translation>
 <translation id="7221855153210829124">prikazuje obaveštenja</translation>
+<translation id="722454870747268814">Nova kartica bez arhiviranja</translation>
 <translation id="7229659723041939809">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="7233592378249864828">List potvrde štampanja</translation>
 <translation id="7238585580608191973">SHA-256 Fingerprint</translation>
@@ -2061,6 +2070,7 @@ Dodatni detalji:
           <ph name="LIST_ITEM" />Kolačići i podaci o sajtovima
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Koristite Touch ID za bržu potvrdu kartica</translation>
+<translation id="8577348305244205642">Virtuelna kartica nije dostupna</translation>
 <translation id="858637041960032120">Dodaj tel. broj
 </translation>
 <translation id="8589998999637048520">Najbolji kvalitet</translation>

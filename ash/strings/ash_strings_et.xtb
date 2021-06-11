@@ -317,6 +317,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
 <translation id="3513798432020909783">Kontohaldur: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
+<translation id="3560866052109807830">Markeriga joonistamise tööriistad</translation>
 <translation id="3563775809269155755">Kuumkoha lubamine</translation>
 <translation id="3571734092741541777">Seadista</translation>
 <translation id="3573179567135747900">Muuda tagasi seadele <ph name="FROM_LOCALE" /> (nõuab taaskäivitust)</translation>
@@ -412,6 +413,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4274537685965975248">Klaviatuuri otseteed Ctrl + Alt + allanool on muudetud. Lõpuklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + paremnoolt.</translation>
 <translation id="4279490309300973883">Peegeldamine</translation>
 <translation id="4285498937028063278">Vabasta</translation>
+<translation id="429402653707266969">Tööriistariba asukoha vahetamine</translation>
 <translation id="4294319844246081198">Tere hommikust, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Kustuta kõik <ph name="COUNT" /> märguannet</translation>
 <translation id="4302592941791324970">Pole saadaval</translation>

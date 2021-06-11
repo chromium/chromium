@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
-<translation id="2086623437239112659">Vistuðu innskráningarupplýsingarnar þínar gætu verið úreltar.</translation>
 <translation id="209018056901015185">Biðja um tölvuvefsvæði</translation>
 <translation id="2103075008456228677">Opna history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> atriði færð</translation>
@@ -408,6 +407,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Loka flipa</translation>
 <translation id="5228579091201413441">Kveikja á samstillingu</translation>
+<translation id="5232485538978018676">Skráðu þig inn með stýrðum reikningi</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5245322853195994030">Hætta við samstillingu</translation>
 <translation id="5271549068863921519">Vista aðgangsorð</translation>
@@ -724,6 +724,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8206354486702514201">Stjórnandi valdi þessa stillingu.</translation>
 <translation id="8225985093977202398">Myndir/skrár í skyndiminni</translation>
 <translation id="8261506727792406068">Eyða</translation>
+<translation id="8271720166617117963">Samþykkja og skrá inn</translation>
 <translation id="8281781826761538115">Sjálfgefið – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8283172974887967105">Stilla…</translation>
@@ -766,6 +767,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8654802032646794042">Hætta við</translation>
 <translation id="8668210798914567634">Síðan var vistuð á leslistann þinn.</translation>
 <translation id="8680787084697685621">Innskráningarupplýsingar reikningsins eru úreltar.</translation>
+<translation id="8691262314411702087">Veldu hvað á að samstilla</translation>
 <translation id="8693663554456874301">{count,plural, =1{Loka flipa}one{Loka flipum}other{Loka flipum}}</translation>
 <translation id="8706588385081740091">Aðgangsorð</translation>
 <translation id="8717864919010420084">Afrita tengil</translation>

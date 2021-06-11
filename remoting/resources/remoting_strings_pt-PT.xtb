@@ -67,6 +67,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="4176825807642096119">Código de acesso</translation>
 <translation id="4227991223508142681">Utilitário de administração de anfitriões</translation>
 <translation id="4240294130679914010">Desinstalador do Anfitrião do Chromoting</translation>
+<translation id="4257751272692708833">Encaminhamento de URL do <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">O código de acesso é inválido. Tente novamente.</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4405930547258349619">Biblioteca Principal</translation>
@@ -121,6 +122,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Partilhar</translation>
 <translation id="677755392401385740">O anfitrião começou para o utilizador: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplicação de ajuda para abrir um URL no cliente do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostrar/ocultar teclado.</translation>
 <translation id="6963936880795878952">As ligações ao computador remoto estão temporariamente bloqueadas porque alguém tentou estabelecer ligação com um PIN inválido. Tente novamente mais tarde.</translation>
 <translation id="6965382102122355670">OK</translation>

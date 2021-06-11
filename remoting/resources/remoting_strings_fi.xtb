@@ -67,6 +67,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="4176825807642096119">Käyttökoodi</translation>
 <translation id="4227991223508142681">Isäntien hallintatyökalu</translation>
 <translation id="4240294130679914010">Chromoting-isännän asennuksen poisto</translation>
+<translation id="4257751272692708833">URL-osoitteen välittäjä: <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Käyttökoodi on virheellinen. Yritä uudelleen.</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="4405930547258349619">Ydinkirjasto</translation>
@@ -121,6 +122,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="6612717000975622067">Lähetä Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Jaa</translation>
 <translation id="677755392401385740">Käyttäjän <ph name="HOST_USERNAME" /> isäntä käynnistettiin.</translation>
+<translation id="6902524959760471898">Apusovellus URL-osoitteen avaamiseen asiakassovelluksessa: <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Näytä/piilota näppäimistö</translation>
 <translation id="6963936880795878952">Yhteydet etätietokoneeseen on väliaikaisesti estetty, sillä siihen yritettiin muodostaa yhteys virheellisellä PIN-koodilla. Yritä myöhemmin uudelleen.</translation>
 <translation id="6965382102122355670">OK</translation>

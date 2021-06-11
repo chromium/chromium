@@ -3368,13 +3368,6 @@
 <translation id="547601067149622666">禁止含侵入式廣告的網站顯示廣告</translation>
 <translation id="5480380613778757009">如果停用或不設定這項政策，當受管理訪客工作階段結束後，系統就會立即重設在此期間配置的所有顯示設定。如果將這項政策設為 True，系統就會在受管理的訪客工作階段結束後保留顯示屬性。</translation>
 <translation id="5483065054530244863">允許本機信任錨點核發的 SHA-1 簽署憑證</translation>
-<translation id="5483584677807837752">如果設為啟用，<ph name="PRODUCT_NAME" /> 功能會傳送詳細的要求標頭，提供有關使用者瀏覽器和環境的資訊。
-
-      這是附加功能，但因為有些網站會限制要求中可包含的字元，新標頭可能會導致這類網站無法正常運作。
-
-      如果啟用或不設定這項政策，系統會啟用 <ph name="PRODUCT_NAME" /> 功能。如果停用這項政策，這項功能將無法使用。
-
-      這項企業政策只是暫時性措施，至少在 Chrome 93 版前都可供使用。</translation>
 <translation id="5494322570831642650">指定使用者是否可在 <ph name="PRODUCT_NAME" /> 中以無痕模式開啟網頁。
 
       如果將這項政策設為「Enabled」或不予設定，使用者能夠以無痕模式開啟網頁。
@@ -5959,11 +5952,6 @@
       如果未設定或輸入空白字串，裝置會使用目前採用的時區，但使用者可以變更這項設定。</translation>
 <translation id="8880294585549584028">允許這些網站對檔案和目錄的寫入權限</translation>
 <translation id="8882006618241293596">禁止在這些網站上執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
-<translation id="8887158351295718009">針對符合這些模式的網域所設定的 Cookie 會還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站是否相同時，略過網址架構的比較。如需完整說明，請參閱 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
-
-          如果網域上的 Cookie 不符合此處指定的模式，系統會根據 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> 政策 (如有設定) 或使用者的個人設定，對 Cookie 套用全域預設值。如果不設定這項政策，系統也會為所有 Cookie 採用這種做法。
-
-          請注意，系統會將你在這裡列出的模式視為網域而非網址，因此你不應指定網址架構或連接埠。</translation>
 <translation id="8887709920496070892">顯示警告對話方塊前的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會顯示警告對話方塊</translation>
 <translation id="8890438048579188548">隱藏 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 需要的可用磁碟空間</translation>

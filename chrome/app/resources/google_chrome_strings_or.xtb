@@ -40,6 +40,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ଆପଣ ଆପଣଙ୍କ <ph name="TARGET_DEVICE_NAME" />ରେ Chromeରେ ସାଇନ୍ ଇନ୍ କରିଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ ଏବଂ ତା'ପରେ ପୁଣି ପଠାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1807517590912578995">Chrome ପ୍ରୋଫାଇଲକୁ ଅଲଗା କରିବେ?</translation>
+<translation id="1810203443153428607">Chrome OS ଇନଷ୍ଟଲ୍ କଲେ ଆପଣଙ୍କ ଡିଭାଇସରେ ଥିବା ସମସ୍ତ ଡାଟାକୁ ଓଭରରାଇଟ୍ କରାଯିବ।</translation>
 <translation id="1812689907177901597">ଏହାକୁ ବନ୍ଦ କରିବା ଦ୍ଵାରା, ଆପଣ Chromeରେ ସାଇନ୍-ଇନ୍ ନକରି Gmail ଭଳି Google ସାଇଟ୍‍ଗୁଡ଼ିକରେ ସାଇନ୍-ଇନ୍ କରିପାରିବେ</translation>
 <translation id="1860536484129686729">ଏହି ସାଇଟ୍ ପାଇଁ Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="1873233029667955273">Google Chrome ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ନୁହେଁ</translation>
@@ -60,6 +61,16 @@
 <translation id="2348335408836342058">ଏହି ସାଇଟ୍ ପାଇଁ ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍ କରିବାକୁ Chrome ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="234869673307233423">Chrome ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="235650106824528204">ଏହି ପ୍ରୋଫାଇଲର ବ୍ୟବହାର ସମୟରେ ସୃଷ୍ଟି ହୋଇଥିବା ଯେ କୌଣସି Chrome ଡାଟା (ଯେପରି ବୁକମାର୍କ୍, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସର କ୍ରିଏସନ୍) ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା କାଢ଼ି ଦିଆଯାଇପାରିବ। <ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">ହାର୍ଡ ଡ୍ରାଇଭର ଡାଟା ଖାଲି କରି Chrome OS ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />ଆମେ Chrome OS ଇନଷ୍ଟଲ୍ କରିବାକୁ ପ୍ରସ୍ତୁତ! ଆପଣ ଆଗକୁ ବଢ଼ିବା ପରେ:
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ଫାଇଲ୍, ଡାଟା ଏବଂ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଅପରେଟିଂ ସିଷ୍ଟମକୁ ଖାଲି କରାଯିବ।
+          <ph name="LIST_ITEM" />Chrome OS ଇନଷ୍ଟଲ୍ କରାଯିବ।
+          <ph name="LIST_ITEM" />ଇନଷ୍ଟଲେସନ୍ ପ୍ରକ୍ରିୟା ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଆପଣଙ୍କ ଡିଭାଇସଟି ବନ୍ଦ ହୋଇଯିବ।
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />ଶେଷ ଥର ପାଇଁ ରିମାଇଣ୍ଡର୍: ଇନଷ୍ଟଲ୍ କଲେ ଆପଣଙ୍କ ହାର୍ଡ ଡ୍ରାଇଭର ସମସ୍ତ ଡାଟାକୁ ଖାଲି କରାଯିବ। ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇଛନ୍ତି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />ଥରେ ଇନଷ୍ଟଲେସନ୍ ଆରମ୍ଭ ହେଲେ ଏହାକୁ ବାତିଲ୍ କରାଯାଇପାରିବ ନାହିଁ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">ଆପଣଙ୍କର ଡୋମେନ୍ ପାଇଁ ସିଙ୍କ୍ ଉପଲବ୍ଧ ନଥିବାରୁ Google Chrome ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ୍ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2467438592969358367">Google Chrome ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡଗୁଡିକୁ ଏକ୍ସପୋର୍ଟ କରିବାକୁ ଚାହେଁ। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ନିଜର Windows ପାସ୍‌ୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="2485422356828889247">ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
@@ -175,6 +186,10 @@
 
 ଆପଣଙ୍କର ସେଟିଂସ୍‌ ପୁନରୁଦ୍ଧାର କରିବାକୁ Google Chrome ଅକ୍ଷମ ଅଟେ।</translation>
 <translation id="5434383153637353914">ଏହି ପୃଷ୍ଠା ଆପଣଙ୍କୁ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ ହୋଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବାକୁ ଅନୁମତି ଦେଇଥାଏ। ଏହି ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chrome ବ୍ରାଉଜର୍ ଓ Play Store ଆପଗୁଡ଼ିକ ସହ Gmail, Drive ଏବଂ YouTube ପରି ସେବାଗୁଡ଼ିକରେ ଉପଲବ୍ଧ ହେବ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ଆମେ ଆରମ୍ଭ କରିବା ପୂର୍ବରୁ, ଦୟାକରି ଆପଣଙ୍କ ପାଖରେ ଆପଣଙ୍କ ଡାଟାର ଏକ ଅପ୍-ଟୁ-ଡେଟ୍ ବ୍ୟାକଅପ୍ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ। Chrome OS ଇନଷ୍ଟଲ୍ କଲେ ଆପଣଙ୍କ ହାର୍ଡ ଡ୍ରାଇଭରେ ଥିବା ସମସ୍ତ ଡାଟାକୁ ଓଭରରାଇଟ୍ କରାଯିବ।<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google କୌଣସି ଡାଟା ନଷ୍ଟ ପାଇଁ ଦାୟୀ ନୁହେଁ ଏବଂ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ହୋଇନଥିବା ମଡେଲଗୁଡ଼ିକରେ Chrome OS କାମ କରିବ ବୋଲି Google କୌଣସି ଗ୍ୟାରେଣ୍ଟି ଦିଏ ନାହିଁ। ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ମଡେଲଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣିବା ପାଇଁ ଦୟାକରି [TBD]କୁ ଭିଜିଟ୍ କରନ୍ତୁ।<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />Chrome OS ଇନଷ୍ଟଲ୍ କରିବା ଏବଂ ଡାଟା ଲିଭାଇବା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ: [TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />ଯଦି ଆପଣ ଆଗକୁ ବଢ଼ିବାକୁ ପ୍ରସ୍ତୁତ ଅଛନ୍ତି, ତେବେ “Chrome OS ଇନଷ୍ଟଲ୍ କରନ୍ତୁ”ରେ କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ କେବଳ କିଛି ସହଜ ଷ୍ଟେପ୍ ମାଧ୍ୟମରେ ଇନଷ୍ଟଲେସନ୍ ପ୍ରକ୍ରିୟାରେ ଆମେ ଆପଣଙ୍କୁ ଗାଇଡ୍ କରିବୁ। ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରେ ଆମେ କୌଣସି ପରିବର୍ତ୍ତନ କରିବା ପୂର୍ବରୁ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ ଅନ୍ୟ ଏକ ସୁଯୋଗ ରହିବ।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="556024056938947818">Google Chrome ପାସ୍‌ୱାର୍ଡ ଦେଖାଇବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -209,6 +224,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome ଅପ୍‌ଡେଟ୍ ହେଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS ସିଷ୍ଟମ୍</translation>
+<translation id="664235759707825982">Chrome OS ଇନଷ୍ଟଲ୍ କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="6676384891291319759">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରବେଶ କରନ୍ତୁ</translation>
 <translation id="6679975945624592337">ପୃଷ୍ଠଭୂମିରେ Google Chromeକୁ ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="6739177684496155661">ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲରେ ଜାରି ରଖିବେ?</translation>
@@ -228,6 +244,7 @@
 <translation id="7155997830309522122">ଯଦି ଏପରି ହୋଇଥାଏ, ତେବେ ଦୟାକରି Chromeରେ ଆପଣଙ୍କ ସେଭ୍ କରାଯାଇଥିବା ପାସୱାର୍ଡକୁ ସମ୍ପାଦନ କରନ୍ତୁ ଯାହା ଫଳରେ ଏହା ଆପଣଙ୍କ ନୂଆ ପାସୱାର୍ଡ ସହ ମେଳ ହେବ।</translation>
 <translation id="7161904924553537242">Google Chrome କୁ ସ୍ଵାଗତଂ</translation>
 <translation id="7242029209006116544">ଆପଣ ଏକ ପରିଚାଳିତ ଆକାଉଣ୍ଟ ସାହାଯ୍ୟରେ ସାଇନ୍ ଇନ୍ କରୁଛନ୍ତି ଏବଂ ଆପଣଙ୍କର Google Chrome ପ୍ରୋଫାଇଲ୍ ଉପରେ ଏହାର ବ୍ୟବସ୍ଥାପକଙ୍କୁ ନିୟନ୍ତ୍ରଣ ଦେଉଛନ୍ତି। ଆପଣଙ୍କର Chrome ଡାଟା ଯେପରିକି, ଆପଣଙ୍କର ଆପ୍ସ, ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ଏବଂ ଅନ୍ୟାନ୍ୟ ସେଟିଂସ୍ ସ୍ଥାୟୀ ରୂପେ <ph name="USER_NAME" /> ସହ ଯୋଡ଼ି ହୋଇଯିବ। ଆପଣ ଏହି ଡାଟାକୁ Google ଆକାଉଣ୍ଟ ଡ୍ୟାସ୍‌ବୋର୍ଡ ମାଧ୍ୟମରେ ଡିଲିଟ୍ କରିପାରିବେ, କିନ୍ତୁ ଆପଣ ତାହାକୁ ଅନ୍ୟ ଆକାଉଣ୍ଟ ସହିତ ଯୋଡ଼ିପାରିବେ ନାହିଁ। ଆପଣଙ୍କର ବିଦ୍ୟମାନ Chrome ଡାଟାକୁ ଅଲଗା ରଖିବା ପାଇଁ ଇଚ୍ଛାଧୀନ ରୂପେ ଆପଣ ଏକ ନୂଆ ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିପାରିବେ। <ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">Chrome OS ଇନଷ୍ଟଲେସନ୍ ପ୍ରକ୍ରିୟା ପ୍ରଗତିରେ ଅଛି</translation>
 <translation id="7295052994004373688">Google Chrome UI ପ୍ରଦର୍ଶନ କରିବା ପାଇଁ ଏହି ଭାଷା ବ୍ୟବହାର କରାଯାଏ</translation>
 <translation id="7296210096911315575">ଗୁରୁତ୍ବପୂର୍ଣ୍ଣ ବ୍ୟବହାର ଏବଂ ସୁରକ୍ଷା ସୂଚନା</translation>
 <translation id="7303916856901595720">ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲକୁ ଆକାଉଣ୍ଟ ମୁଭ୍ କରିବେ କି?</translation>

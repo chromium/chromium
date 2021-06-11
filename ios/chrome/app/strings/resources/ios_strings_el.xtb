@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
-<translation id="2086623437239112659">Οι αποθηκευμένες πληροφορίες σύνδεσης ενδέχεται να μην είναι ενημερωμένες.</translation>
 <translation id="209018056901015185">Αίτηση ιστότ. για υπολογ.</translation>
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Κλείσιμο καρτέλας</translation>
 <translation id="5228579091201413441">Ενεργοποίηση συγχρονισμού</translation>
+<translation id="5232485538978018676">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="5245322853195994030">Ακύρωση συγχρονισμού</translation>
 <translation id="5271549068863921519">Αποθήκευση κωδικού πρόσβασης</translation>
@@ -725,6 +725,7 @@
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>
 <translation id="8225985093977202398">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
+<translation id="8271720166617117963">Αποδοχή και σύνδεση</translation>
 <translation id="8281781826761538115">Προεπιλογή - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>
 <translation id="8283172974887967105">Ορισμός…</translation>

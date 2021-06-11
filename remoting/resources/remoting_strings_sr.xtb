@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">Приступни кôд</translation>
 <translation id="4227991223508142681">Услужни програм за доделу хостова</translation>
 <translation id="4240294130679914010">Алатка за деинсталацију хоста за Chromoting</translation>
+<translation id="4257751272692708833">Апликација за прослеђивање <ph name="PRODUCT_NAME" /> URL-а</translation>
 <translation id="4277736576214464567">Приступни кôд је неважећи. Пробајте поново.</translation>
 <translation id="4281844954008187215">Услови коришћења услуге</translation>
 <translation id="4405930547258349619">Основна библиотека</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">Пошаљи Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Дели</translation>
 <translation id="677755392401385740">Хост је покренут за корисника: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Помоћна апликација за отварање URL-а преко <ph name="PRODUCT_NAME" /> клијента</translation>
 <translation id="6939719207673461467">Прикажи/сакриј тастатуру.</translation>
 <translation id="6963936880795878952">Повезивање са удаљеним рачунаром је привремено блокирано зато што је неко покушавао да се повеже са њим помоћу неважећег PIN-а. Пробајте поново касније.</translation>
 <translation id="6965382102122355670">Потврди</translation>

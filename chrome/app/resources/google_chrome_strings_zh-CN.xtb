@@ -35,6 +35,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chrome，然后再次尝试发送。</translation>
 <translation id="1807517590912578995">创建一份单独的 Chrome 个人资料？</translation>
+<translation id="1810203443153428607">安装 Chrome 操作系统会覆盖您的设备上的所有数据。</translation>
 <translation id="1812689907177901597">关闭此功能后，您无需登录 Chrome 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
@@ -55,6 +56,16 @@
 <translation id="2348335408836342058">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风</translation>
 <translation id="234869673307233423">Chrome 无法检查您的密码。请稍后重试。</translation>
 <translation id="235650106824528204">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chrome 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
+<translation id="2409866122341731384">清除硬盘数据并安装 Chrome 操作系统</translation>
+<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />我们已准备就绪，可以安装 Chrome 操作系统了！一旦您继续操作：
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />系统会清除文件、数据和您目前使用的操作系统。
+          <ph name="LIST_ITEM" />系统会安装 Chrome 操作系统。
+          <ph name="LIST_ITEM" />您的设备会在安装完毕后关机。
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />最后请注意：安装流程会清除您的整个硬盘中的数据。请确保您已妥善地备份了所有重要数据。<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />安装流程一旦开始就无法取消。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">由于您的网域停用了同步功能，Google Chrome无法同步您的数据。</translation>
 <translation id="2467438592969358367">Google Chrome 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="2485422356828889247">卸载</translation>
@@ -166,6 +177,10 @@
 <translation id="5394833366792865639">共享 Chrome 标签页</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="5434383153637353914">您可在此页面中管理您已登录的 Google 帐号。这样您就能在 Chrome 浏览器和 Play 商店应用以及 Gmail、Google 云端硬盘和 YouTube 等服务中使用这些帐号了。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />开始安装前，请确保您拥有最新的数据备份。安装 Chrome 操作系统会覆盖您的硬盘上的所有数据。<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google 不对任何数据损失承担责任，也不保证 Chrome 操作系统能在未经认证的型号上正常运行。如需详细了解经过认证的型号，请访问 [TBD]。<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />如需详细了解 Chrome 操作系统安装方法和数据清除情况，请访问：[TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />如果您已准备好继续操作，请点击“安装 Chrome 操作系统”，然后我们会引导您通过几个简单的步骤完成安装。在对您的计算机进行任何更改之前，我们会让您再次确认。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">安装 Chrome 操作系统</translation>
 <translation id="556024056938947818">Google Chrome 正尝试显示密码。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -201,6 +216,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
 <translation id="6566149418543181476">正在更新 Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome 操作系统</translation>
+<translation id="664235759707825982">一切就绪，可以安装 Chrome 操作系统了</translation>
 <translation id="6676384891291319759">访问互联网</translation>
 <translation id="6679975945624592337">让 Google Chrome 在后台运行</translation>
 <translation id="6739177684496155661">使用一份新的 Chrome 个人资料继续浏览？</translation>
@@ -220,6 +236,7 @@
 <translation id="7155997830309522122">如果是的话，请修改您在 Chrome 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="7161904924553537242">欢迎使用 Google Chrome</translation>
 <translation id="7242029209006116544">您目前登录的帐号是一个托管帐号，该帐号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。您可以选择创建新的个人资料来单独存储现有的 Chrome 数据。<ph name="LEARN_MORE" /></translation>
+<translation id="7275165473619697274">正在安装 Chrome 操作系统</translation>
 <translation id="7295052994004373688">使用此语言显示 Google Chrome 界面</translation>
 <translation id="7296210096911315575">重要用途和安全信息</translation>
 <translation id="7303916856901595720">将帐号移到一份新的 Chrome 个人资料名下？</translation>

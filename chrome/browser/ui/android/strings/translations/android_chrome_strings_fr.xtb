@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome n'a pas pu valider vos informations</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
-<translation id="1067922213147265141">Autres services Google</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, celui-ci pourrait s'ouvrir dans une application différente et potentiellement endommager votre appareil.</translation>
 <translation id="1095761715416917775">Veillez à toujours avoir accès à vos données synchronisées</translation>
 <translation id="1100066534610197918">Dans nouvel onglet dans groupe</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Ne plus afficher</translation>
 <translation id="1680919990519905526">Acheter avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Essayer</translation>
-<translation id="1692118695553449118">Synchronisation activée</translation>
 <translation id="1697284962337958118">Ajouter à</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1724977129262658800">Déverrouillez la session pour modifier votre mot de passe</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
-<translation id="1984705450038014246">Synchroniser vos données Chrome</translation>
 <translation id="1986685561493779662">Nom déjà attribué</translation>
 <translation id="1987739130650180037">Bouton <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> tente de s'associer</translation>
@@ -188,7 +185,6 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
 <translation id="2227444325776770048">Continuer en tant que <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Pour vous</translation>
-<translation id="2234876718134438132">Services Google/Synchronisation</translation>
 <translation id="2239812875700136898">Contrôlez vos articles à l'aide du bouton Options pour Discover</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
@@ -364,7 +360,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3295530008794733555">Naviguez plus rapidement en consommant moins de données</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
-<translation id="3315103659806849044">Vous personnalisez actuellement les paramètres relatifs aux services Google et à la synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier ?</translation>
 <translation id="3341058695485821946">Découvrez la quantité de données économisées</translation>
 <translation id="3341262203274374114">Impossible de vous désabonner en raison d'une erreur.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4298388696830689168">Sites associés</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
-<translation id="4314815835985389558">Gérer la synchronisation</translation>
 <translation id="4320177379694898372">Aucune connexion Internet.</translation>
 <translation id="4321739720395210191">Impossible d'ouvrir l'appareil photo. Redémarrez votre appareil et réessayez.</translation>
 <translation id="433213510553688132">Suivre…</translation>
@@ -631,9 +625,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="510275257476243843">1 heure restante</translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
-<translation id="5127805178023152808">La synchronisation est désactivée.</translation>
 <translation id="5132942445612118989">Synchroniser vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
-<translation id="5136035049889637840">Acheter produits similaires <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Découvrez comment utiliser Google Drive</translation>
 <translation id="5152843274749979095">Aucune application compatible n'est installée</translation>
 <translation id="5161254044473106830">Veuillez saisir un titre.</translation>
@@ -753,6 +745,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5855546874025048181">Affiner : <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Impossible d'activer l'adaptateur Bluetooth dans Chrome</translation>
+<translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862731021271217234">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils</translation>
 <translation id="5864174910718532887">Détails : tri effectué par nom de site</translation>
@@ -762,6 +755,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="587735546353481577">Pour suivre un site, accédez-y, ouvrez le menu Chrome et appuyez sur "Suivre".</translation>
 <translation id="5880748256563468367">Accéder au flux</translation>
 <translation id="5884076754568147479">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites sur lesquels vous utilisez l'Assistant, ainsi que les informations que vous envoyez via celui-ci</translation>
+<translation id="5916664084637901428">Activé</translation>
 <translation id="5919204609460789179">Mettre à jour <ph name="PRODUCT_NAME" /> pour lancer la synchronisation</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> économisé(s)</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
@@ -812,7 +806,6 @@ Les essais Privacy Sandbox sont encore en développement et ne sont disponibles
 <translation id="6192907950379606605">Obtenir descriptions images</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
-<translation id="6218096829563201111">Rechercher produits similaires <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Déverrouiller pour exporter vos mots de passe</translation>
 <translation id="6232535412751077445">Si vous interdisez le suivi, une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 

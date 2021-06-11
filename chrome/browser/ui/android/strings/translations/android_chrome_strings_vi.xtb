@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome không thể xác minh thông tin của bạn</translation>
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="10614374240317010">Không bao giờ lưu</translation>
-<translation id="1067922213147265141">Các dịch vụ khác của Google</translation>
 <translation id="107147699690128016">Nếu bạn thay đổi đuôi tệp, thì tệp có thể mở trong một ứng dụng khác và tiềm ẩn nguy cơ đối với thiết bị.</translation>
 <translation id="1095761715416917775">Đảm bảo bạn luôn có thể truy cập vào dữ liệu đồng bộ hóa</translation>
 <translation id="1100066534610197918">Mở trong thẻ mới trong nhóm</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Không hiện lại</translation>
 <translation id="1680919990519905526">Mua sắm với Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Thử ngay</translation>
-<translation id="1692118695553449118">Tính năng đồng bộ hóa đang bật</translation>
 <translation id="1697284962337958118">Thêm vào</translation>
 <translation id="1718835860248848330">Một giờ qua</translation>
 <translation id="1724977129262658800">Mở khóa để chỉnh sửa mật khẩu của bạn</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Giữ lại dữ liệu</translation>
 <translation id="1974060860693918893">Nâng cao</translation>
 <translation id="1984417487208496350">Không được bảo vệ (không khuyến nghị)</translation>
-<translation id="1984705450038014246">Đồng bộ hóa dữ liệu của bạn trên Chrome</translation>
 <translation id="1986685561493779662">Tên đã tồn tại</translation>
 <translation id="1987739130650180037">Nút <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> muốn ghép nối</translation>
@@ -188,7 +185,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2200113223741723867">Quản lý cách chia sẻ dữ liệu sử dụng</translation>
 <translation id="2227444325776770048">Tiếp tục bằng <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Dành cho bạn</translation>
-<translation id="2234876718134438132">Đồng bộ hóa và các dịch vụ của Google</translation>
 <translation id="2239812875700136898">Kiểm soát các tin bài của bạn bằng các Tùy chọn của nút Khám phá</translation>
 <translation id="2259659629660284697">Xuất mật khẩu...</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
@@ -364,7 +360,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3295530008794733555">Duyệt web nhanh hơn. Sử dụng ít dữ liệu hơn.</translation>
 <translation id="3297344142967351106">Trợ lý thoại</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
-<translation id="3315103659806849044">Bạn đang tùy chỉnh các tùy chọn cài đặt Đồng bộ hóa và dịch vụ của Google. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
 <translation id="3334729583274622784">Thay đổi đuôi tệp?</translation>
 <translation id="3341058695485821946">Xem lượng dữ liệu bạn đã tiết kiệm được</translation>
 <translation id="3341262203274374114">Không thể ngừng theo dõi. Đã xảy ra lỗi.</translation>
@@ -502,7 +497,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4298388696830689168">Các trang web liên kết</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Cơ bản</translation>
-<translation id="4314815835985389558">Quản lý dữ liệu đồng bộ hóa</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
 <translation id="4321739720395210191">Không thể mở máy ảnh. Hãy khởi động lại thiết bị rồi thử lại.</translation>
 <translation id="433213510553688132">Đang theo dõi...</translation>
@@ -631,9 +625,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="510275257476243843">Còn 1 giờ</translation>
 <translation id="5118713593561876160">Sở thích</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
-<translation id="5127805178023152808">Tính năng đồng bộ hóa đang tắt</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, lịch sử và các thông tin khác của bạn trên tất cả các thiết bị</translation>
-<translation id="5136035049889637840">Mua các sản phẩm tương tự <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Tìm hiểu cách sử dụng Google Drive</translation>
 <translation id="5152843274749979095">Chưa cài đặt ứng dụng được hỗ trợ nào</translation>
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
@@ -753,6 +745,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5854790677617711513">Đã tồn tại hơn 30 ngày</translation>
 <translation id="5855546874025048181">Tinh chỉnh: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome không thể bật bộ điều hợp Bluetooth</translation>
+<translation id="5860033963881614850">Tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
 <translation id="5862731021271217234">Để sử dụng các thẻ từ những thiết bị khác, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="5864174910718532887">Thông tin chi tiết: Sắp xếp theo tên trang web</translation>
@@ -762,6 +755,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="587735546353481577">Để theo dõi một trang web, hãy truy cập vào trang web đó, mở trình đơn Chrome rồi nhấn vào Theo dõi.</translation>
 <translation id="5880748256563468367">Chuyển đến nguồn cấp dữ liệu</translation>
 <translation id="5884076754568147479">Để giúp bạn hoàn thành những việc cần làm, Google sẽ nhận URL và nội dung của các trang web mà bạn sử dụng Trợ lý, cũng như thông tin bạn gửi qua Trợ lý</translation>
+<translation id="5916664084637901428">Bật</translation>
 <translation id="5919204609460789179">Cập nhật <ph name="PRODUCT_NAME" /> để bắt đầu đồng bộ hóa</translation>
 <translation id="5937580074298050696">Đã tiết kiệm <ph name="AMOUNT" /></translation>
 <translation id="5939518447894949180">Đặt lại</translation>
@@ -812,7 +806,6 @@ Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong gia
 <translation id="6192907950379606605">Tải nội dung mô tả hình ảnh</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Đang xem trước trang này</translation>
-<translation id="6218096829563201111">Tìm các sản phẩm tương tự <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Mở khóa để xuất mật khẩu của bạn</translation>
 <translation id="6232535412751077445">Bật tính năng “Không theo dõi” nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc trang web có phản hồi yêu cầu không và cách thức diễn giải yêu cầu.
 

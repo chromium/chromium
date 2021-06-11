@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Lalu</translation>
 <translation id="2074131957428911366">Anda dapat memilih konten apa yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja.</translation>
 <translation id="2079545284768500474">Urungkan</translation>
-<translation id="2086623437239112659">Info login tersimpan Anda mungkin sudah tidak berlaku.</translation>
 <translation id="209018056901015185">Ubah situs desktop</translation>
 <translation id="2103075008456228677">Buka history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dipindah</translation>
@@ -408,6 +407,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5228579091201413441">Aktifkan sinkronisasi</translation>
+<translation id="5232485538978018676">Login dengan Akun Terkelola</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5245322853195994030">Batalkan Sinkronisasi</translation>
 <translation id="5271549068863921519">Simpan sandi</translation>
@@ -724,6 +724,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8206354486702514201">Setelan ini diberlakukan oleh administrator Anda.</translation>
 <translation id="8225985093977202398">Gambar &amp; File dalam Cache</translation>
 <translation id="8261506727792406068">Hapus</translation>
+<translation id="8271720166617117963">Terima dan Login</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Lewati</translation>
 <translation id="8283172974887967105">Setel …</translation>

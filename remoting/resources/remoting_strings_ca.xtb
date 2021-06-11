@@ -67,6 +67,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="4176825807642096119">Codi d'accés</translation>
 <translation id="4227991223508142681">Utilitat de l'administració de l'amfitrió</translation>
 <translation id="4240294130679914010">Programa de desinstal·lació de Chromoting Host</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">El codi d'accés no és vàlid. Torneu-ho a provar.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
@@ -121,6 +122,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="6612717000975622067">Envia Ctrl-Alt-Supr</translation>
 <translation id="6654753848497929428">Comparteix</translation>
 <translation id="677755392401385740">L'amfitrió ha començat per a l'usuari: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplicació d'ajuda per obrir un URL al client <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostra o amaga el teclat</translation>
 <translation id="6963936880795878952">Les connexions amb l'ordinador remot s'han bloquejat temporalment perquè algú ha provat de connectar-s'hi amb un PIN no vàlid. Torna-ho a provar més tard.</translation>
 <translation id="6965382102122355670">D'acord</translation>

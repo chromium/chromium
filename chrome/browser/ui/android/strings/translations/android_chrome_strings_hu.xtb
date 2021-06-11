@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">A Chrome nem tudta ellenőrizni az Ön adatait</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="10614374240317010">Az alábbi oldalakról soha ne mentsen jelszavakat</translation>
-<translation id="1067922213147265141">Egyéb Google-szolgáltatások</translation>
 <translation id="107147699690128016">Ha módosítja a fájl kiterjesztését, előfordulhat, hogy a fájlt másik alkalmazás nyitja meg, ami veszélyt jelenthet az eszközre.</translation>
 <translation id="1095761715416917775">Gondoskodjon arról, hogy mindig hozzá tudjon férni a szinkronizált adataihoz</translation>
 <translation id="1100066534610197918">Megnyitás új lapon, csoportban</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Ne jelenjen meg többé</translation>
 <translation id="1680919990519905526">Képalapú Google Lens-vásárlás <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Kipróbálom</translation>
-<translation id="1692118695553449118">Szinkronizálás bekapcsolva</translation>
 <translation id="1697284962337958118">Hozzáadás</translation>
 <translation id="1718835860248848330">Az elmúlt órából</translation>
 <translation id="1724977129262658800">Oldja fel a képernyőzárat a jelszó szerkesztéséhez</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Adatok megőrzése</translation>
 <translation id="1974060860693918893">Speciális</translation>
 <translation id="1984417487208496350">Nincs védelem (nem javasolt)</translation>
-<translation id="1984705450038014246">Chrome-adatok szinkronizálása</translation>
 <translation id="1986685561493779662">Már van ilyen név</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> gomb</translation>
 <translation id="1993768208584545658">A(z) <ph name="SITE" /> párosítást szeretne végrehajtani</translation>
@@ -188,7 +185,6 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2200113223741723867">Használati adatok megosztásának kezelése</translation>
 <translation id="2227444325776770048">Folytatás mint <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Javasolt</translation>
-<translation id="2234876718134438132">Szinkronizálás és Google</translation>
 <translation id="2239812875700136898">Hírek kezelése „A Discover beállításai” gombbal</translation>
 <translation id="2259659629660284697">Jelszavak exportálása…</translation>
 <translation id="2276696007612801991">Jelszavai ellenőrzéséhez jelentkezzen be Google-fiókjába</translation>
@@ -364,7 +360,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3295530008794733555">Gyorsabb böngészés. Kevesebb adathasználat.</translation>
 <translation id="3297344142967351106">Hangalapú segítség</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
-<translation id="3315103659806849044">Jelenleg a Szinkronizálás és Google beállításait szabja személyre. A szinkronizálás bekapcsolásának véglegesítéséhez koppintson a képernyő alján található Megerősítés gombra. Fel</translation>
 <translation id="3334729583274622784">Módosítja a fájl kiterjesztését?</translation>
 <translation id="3341058695485821946">Megnézheti, mennyi adatot takarított meg</translation>
 <translation id="3341262203274374114">Nem sikerült felhagyni a követéssel. Hiba történt.</translation>
@@ -502,7 +497,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4298388696830689168">Összekapcsolt webhelyek</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Alapok</translation>
-<translation id="4314815835985389558">Szinkronizálás kezelése</translation>
 <translation id="4320177379694898372">Nincs internetkapcsolat</translation>
 <translation id="4321739720395210191">Nem lehet megnyitni a kamerát. Indítsa újra az eszközt, és próbálkozzon újra.</translation>
 <translation id="433213510553688132">Követés…</translation>
@@ -631,9 +625,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="510275257476243843">1 óra van hátra</translation>
 <translation id="5118713593561876160">Érdeklődési körök</translation>
 <translation id="5123685120097942451">Inkognitó lap</translation>
-<translation id="5127805178023152808">Szinkronizálás kikapcsolva</translation>
 <translation id="5132942445612118989">Jelszavak, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
-<translation id="5136035049889637840">Hasonló termékek vásárlása <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">További információ a Google Drive használatáról</translation>
 <translation id="5152843274749979095">Nincs telepítve támogatott alkalmazás</translation>
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
@@ -753,6 +745,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5854790677617711513">30 napnál régebbi</translation>
 <translation id="5855546874025048181">Pontosítás: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">A Chrome nem tudja bekapcsolni a Bluetooth-adaptert</translation>
+<translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5862731021271217234">Ha a többi eszközén lévő lapjait is szeretné elérni, kapcsolja be a szinkronizálást</translation>
 <translation id="5864174910718532887">Részletek: Webhelynév szerinti rendezés</translation>
@@ -762,6 +755,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="587735546353481577">Webhely követéséhez lépjen a kívánt webhelyhez, nyissa meg a Chrome menüjét, majd koppintson a Követés pontra.</translation>
 <translation id="5880748256563468367">Hírcsatorna megnyitása</translation>
 <translation id="5884076754568147479">Annak érdekében, hogy segíteni tudjon a feladatok elvégzésében, a Google megkapja azoknak a webhelyeknek az URL-jeit és tartalmait, amelyeken Ön használta Segédjét, valamint megkapja a Segéden keresztül elküldött információkat</translation>
+<translation id="5916664084637901428">Be</translation>
 <translation id="5919204609460789179">A szinkronizálás megkezdéséhez frissítse a következőt: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> megtakarított adatmennyiség</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
@@ -812,7 +806,6 @@ A Privacy Sandbox próbaverziói még mindig aktív fejlesztés alatt állnak, �
 <translation id="6192907950379606605">Képleírások lekérése</translation>
 <translation id="6210748933810148297">Nem <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Az oldal előnézete</translation>
-<translation id="6218096829563201111">Hasonló termékek keresése <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">A zárolás feloldásával exportálhatja a jelszavait</translation>
 <translation id="6232535412751077445">A „Nincs nyomon követés” engedélyezése azt jelenti, hogy a böngészési forgalommal együtt kérelmet is küld a rendszer. Ennek hatása attól függ, hogy a webhely reagál-e a kérelemre, és hogyan értelmezi azt.
 

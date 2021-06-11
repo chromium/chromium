@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome আপনার তথ্য যাচাই করতে পারেনি</translation>
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="10614374240317010">কখনও সংরক্ষিত হয়নি</translation>
-<translation id="1067922213147265141">Google-এর অন্যান্য পরিষেবা</translation>
 <translation id="107147699690128016">আপনি ফাইলের এক্সটেনশন পরিবর্তন করলে, সেটি অন্য অ্যাপ্লিকেশনে খুলতে পারে এবং আপনার ডিভাইসে সমস্যার সৃষ্টি করতে পারে।</translation>
 <translation id="1095761715416917775">আপনি সিঙ্ক করা ডেটা সবসময় ব্যবহার করছেন কিনা দেখে নিন</translation>
 <translation id="1100066534610197918">গ্রুপে একটি নতুন ট্যাব খুলুন</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">আর দেখতে চাই না</translation>
 <translation id="1680919990519905526">Google Lens-এ ছবি কিনুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">এখনই চেষ্টা করুন</translation>
-<translation id="1692118695553449118">সিঙ্ক চালু রয়েছে</translation>
 <translation id="1697284962337958118">এতে যোগ করুন</translation>
 <translation id="1718835860248848330">শেষ ঘণ্টা</translation>
 <translation id="1724977129262658800">আপনার পাসওয়ার্ড এডিট করতে আনলক করুন</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">ডেটা রাখুন</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
-<translation id="1984705450038014246">আপনার Chrome ডেটা সিঙ্ক করুন</translation>
 <translation id="1986685561493779662">নামটি আগে থেকেই আছে</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> বোতাম</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> এদের সঙ্গে যুক্ত হতে চাচ্ছে</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">ব্যবহারের ডেটা শেয়ার করার সেটিংস ম্যানেজ করুন</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="22320125457191592">আপনার জন্য</translation>
-<translation id="2234876718134438132">সিঙ্ক এবং Google পরিষেবাগুলি</translation>
 <translation id="2239812875700136898">'Discover-এর বিকল্প' বোতামে ক্লিক করে আপনার ফিডের কন্টেন্ট নিয়ন্ত্রণ করুন</translation>
 <translation id="2259659629660284697">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">চটপট ব্রাউজ করুন। আরও কম ডেটা ব্যবহার করুন।</translation>
 <translation id="3297344142967351106">ভয়েস সহায়তা</translation>
 <translation id="3303414029551471755">কন্টেন্ট ডাউনলোড করার জন্য এগোতে চান?</translation>
-<translation id="3315103659806849044">আপনি এখন আপনার সিঙ্ক এবং Google পরিষেবার সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা 'কনফার্ম করুন' বোতামে ট্যাপ করে সিঙ্ক চালু দিন। উপরে নেভিগেট করুন</translation>
 <translation id="3334729583274622784">ফাইলের এক্সটেনশন পরিবর্তন করতে চান?</translation>
 <translation id="3341058695485821946">দেখুন আপনি কত ডেটা সাশ্রয় করেছেন</translation>
 <translation id="3341262203274374114">ফলো করা থামানো যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
@@ -504,7 +499,6 @@
 <translation id="4298388696830689168">লিঙ্ক করা সাইট</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">বুনিয়াদি</translation>
-<translation id="4314815835985389558">সিঙ্ক ম্যানেজ করুন</translation>
 <translation id="4320177379694898372">কোনো ইন্টারনেট সংযোগ নেই</translation>
 <translation id="4321739720395210191">ক্যামেরা চালু করা যাচ্ছে না। ডিভাইস রিস্টার্ট করে আবার চেষ্টা করুন।</translation>
 <translation id="433213510553688132">অনুসরণ করা হচ্ছে...</translation>
@@ -633,9 +627,7 @@
 <translation id="510275257476243843">১ ঘণ্টা বাকি আছে</translation>
 <translation id="5118713593561876160">আগ্রহগুলি</translation>
 <translation id="5123685120097942451">ছদ্মবেশী ট্যাব</translation>
-<translation id="5127805178023152808">সিঙ্ক বন্ধ রয়েছে</translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
-<translation id="5136035049889637840">এইধরনের প্রোডাক্ট কিনুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google ড্রাইভ কীভাবে ব্যবহার করবেন জানুন</translation>
 <translation id="5152843274749979095">কোনো সমর্থিত অ্যাপ্লিকেশান ইনস্টল করা নেই</translation>
 <translation id="5161254044473106830">শিরোনাম প্রয়োজন</translation>
@@ -755,6 +747,7 @@
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
 <translation id="5855546874025048181">রিফাইন করুন: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ব্লুটুথ অ্যাডাপ্টার চালু করতে পারছে না</translation>
+<translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5862731021271217234">আপনার অন্যান্য ডিভাইস থেকে ট্যাবগুলি পেতে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="5864174910718532887">বিবরণ: সাইটের নাম অনুযায়ী সাজানো হয়েছে</translation>
@@ -764,6 +757,7 @@
 <translation id="587735546353481577">কোনও সাইট ফলো করতে, সাইটে যান, 'Chrome' মেনু খুলুন এবং 'ফলো করুন' বিকল্পে ট্যাপ করুন।</translation>
 <translation id="5880748256563468367">ফিডে যান</translation>
 <translation id="5884076754568147479">আপনাকে টাস্কগুলি সম্পূর্ণ করতে সাহায্য করার জন্য, যে যে সাইটে Assistant ব্যবহার করেন সেগুলির কন্টেন্ট ও ইউআরএল, তার সাথে Assistant-এর মাধ্যমে আপনার জমা দেওয়া যেকোনও তথ্য Google-কে পাঠানো হবে</translation>
+<translation id="5916664084637901428">চালু</translation>
 <translation id="5919204609460789179">সিঙ্ক শুরু করতে <ph name="PRODUCT_NAME" /> আপডেট করুন</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> সেভ করা হয়েছে</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
@@ -814,7 +808,6 @@
 <translation id="6192907950379606605">ছবির বিবরণ পান</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> না?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠা প্রিভিউ করছেন</translation>
-<translation id="6218096829563201111">এইধরনের প্রোডাক্ট খুঁজুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">আপনার পাসওয়ার্ড এক্সপোর্ট করতে আনলক করুন</translation>
 <translation id="6232535412751077445">"ট্র্যাক করবেন না" চালু করার অর্থ হল আপনার ব্রাউজিং ট্র্যাফিকের সাথে একটি অনুরোধ অন্তর্ভুক্ত হবে৷ অনুরোধটিতে কোনো ওয়েবসাইট প্রতিক্রিয়া করে কি না এবং অনুরোধটিকে কীভাবে ব্যাখ্যা করা হয় তার উপর যেকোনো প্রভাব নির্ভর করে৷
 

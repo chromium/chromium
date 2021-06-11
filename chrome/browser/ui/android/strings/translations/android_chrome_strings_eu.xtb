@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome-k ezin izan du egiaztatu zure informazioa</translation>
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="10614374240317010">Sekula gorde gabeak</translation>
-<translation id="1067922213147265141">Google-ren beste zerbitzu batzuk</translation>
 <translation id="107147699690128016">Fitxategi-luzapena aldatzen baduzu, baliteke fitxategia beste aplikazio batean irekitzea eta zure gailuan kalteak eragitea.</translation>
 <translation id="1095761715416917775">Izan beti sinkronizatutako datuetarako sarbidea</translation>
 <translation id="1100066534610197918">Ireki beste fitxa bat taldean</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Ez erakutsi berriro</translation>
 <translation id="1680919990519905526">Erosi irudiko produktuak Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Probatu</translation>
-<translation id="1692118695553449118">Sinkronizazioa aktibatuta dago</translation>
 <translation id="1697284962337958118">Gehitu hemen:</translation>
 <translation id="1718835860248848330">Azken ordukoak</translation>
 <translation id="1724977129262658800">Pasahitza editatzeko, desblokeatu gailua</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Mantendu datuak</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
-<translation id="1984705450038014246">Sinkronizatu Chrome-ko datuak</translation>
 <translation id="1986685561493779662">Dagoeneko erabiltzen da izen hori</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> botoia</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> webguneak parekatu egin nahi du</translation>
@@ -188,7 +185,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2200113223741723867">Kudeatu erabilera-datuak partekatzeko aukerak</translation>
 <translation id="2227444325776770048">Jarraitu <ph name="USER_FULL_NAME" /> gisa</translation>
 <translation id="22320125457191592">Zuretzat</translation>
-<translation id="2234876718134438132">Sinkronizazioa eta Google-ren zerbitzuak</translation>
 <translation id="2239812875700136898">Istorioak kontrolatzeko, sakatu "Discover-en aukerak" botoia</translation>
 <translation id="2259659629660284697">Esportatu pasahitzak…</translation>
 <translation id="2276696007612801991">Hasi saioa Google-ko kontuan pasahitzak egiaztatzeko</translation>
@@ -364,7 +360,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3295530008794733555">Arakatu bizkorrago. Erabili datu gutxiago.</translation>
 <translation id="3297344142967351106">Ahozko laguntza</translation>
 <translation id="3303414029551471755">Aurrera egin eta edukia deskargatu nahi duzu?</translation>
-<translation id="3315103659806849044">Sinkronizazioaren eta Google zerbitzuaren ezarpenak pertsonalizatzen ari zara. Sinkronizazioa aktibatzeko, sakatu pantailaren behealdean dagoen Berretsi botoia. Joan gora</translation>
 <translation id="3334729583274622784">Fitxategi-luzapena aldatu nahi duzu?</translation>
 <translation id="3341058695485821946">Ikusi zenbat datu aurreztu dituzun</translation>
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="4298388696830689168">Estekatutako webguneak</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Oinarrizko informazioa</translation>
-<translation id="4314815835985389558">Kudeatu sinkronizazioa</translation>
 <translation id="4320177379694898372">Ez zaude konektatuta Internetera</translation>
 <translation id="4321739720395210191">Ezin da ireki kamera. Berrabiarazi gailua eta saiatu berriro.</translation>
 <translation id="433213510553688132">Jarraitzen…</translation>
@@ -631,9 +625,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="510275257476243843">Ordubete gelditzen da</translation>
 <translation id="5118713593561876160">Interesak</translation>
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
-<translation id="5127805178023152808">Sinkronizazioa desaktibatuta dago</translation>
 <translation id="5132942445612118989">Sinkronizatu pasahitzak, historia eta beste gauza asko gailu guztietan</translation>
-<translation id="5136035049889637840">Erosi antzeko produktuak <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Lortu Google Drive erabiltzeari buruzko informazioa</translation>
 <translation id="5152843274749979095">Ez dago aplikazio bateragarririk instalatuta</translation>
 <translation id="5161254044473106830">Izena behar da</translation>
@@ -753,6 +745,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5854790677617711513">Duela 30 egunetik gorakoak</translation>
 <translation id="5855546874025048181">Mugatu honela: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome-k ezin du aktibatu Bluetooth egokigailua</translation>
+<translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
 <translation id="5862731021271217234">Beste gailuetako fitxak eskura izateko, aktibatu sinkronizazioa</translation>
 <translation id="5864174910718532887">Xehetasunak: webgunearen izenaren arabera ordenatuta</translation>
@@ -762,6 +755,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="587735546353481577">Webgune bati jarraitzeko, joan bertara, ireki Chrome-ko menua eta sakatu Jarraitu.</translation>
 <translation id="5880748256563468367">Joan jariora</translation>
 <translation id="5884076754568147479">Zereginak osatzen laguntzeko, Laguntzailea eginbidearen bidez erabiltzen dituzun webguneen URLak eta edukia jasoko ditu Google-k, baita Laguntzailea erabilita bidaltzen duzun informazioa ere</translation>
+<translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5919204609460789179">Sinkronizatzen hasteko, eguneratu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> aurreztu dira</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox-eko probaldiak garapen-prozesuan daude oraindik eta lurralde jak
 <translation id="6192907950379606605">Lortu irudi-deskribapenak</translation>
 <translation id="6210748933810148297">Ez al zara <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Orria aurreikusten</translation>
-<translation id="6218096829563201111">Bilatu antzeko produktuak <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Desblokeatu gailua pasahitzak esportatzeko</translation>
 <translation id="6232535412751077445">"Ez jarraitu" eginbidea gaitzen baduzu, arakatze-trafikoan gehituko da horretarako eskaera. Aukeraren eragina faktore hauen araberakoa da: webguneek eskaerari erantzuten dioten ala ez eta eskaera nola interpretatzen den.
 

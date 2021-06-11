@@ -312,6 +312,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{När den här inställningen är på och statusen är Aktiv fastställer Chrome vilken grupp, eller kohort, som du tillhör utifrån din senaste webbaktivitet. Annonsörer kan välja annonser för denna grupp och din webbhistorik förblir privat på enheten. Grupptillhörigheten uppdateras dagligen.}=1{När den här inställningen är på och statusen är Aktiv fastställer Chrome vilken grupp, eller kohort, som du tillhör utifrån din senaste webbaktivitet. Annonsörer kan välja annonser för denna grupp och din webbhistorik förblir privat på enheten. Grupptillhörigheten uppdateras dagligen.}other{När den här inställningen är på och statusen är Aktiv fastställer Chrome vilken grupp, eller kohort, som du tillhör utifrån din senaste webbaktivitet. Annonsörer kan välja annonser för denna grupp och din webbhistorik förblir privat på enheten. Grupptillhörigheten uppdateras med {NUM_DAYS} dagars mellanrum.}}</translation>
 <translation id="2053553514270667976">ZIP</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 förslag}other{# förslag}}</translation>
+<translation id="2071156619270205202">Detta kort uppfyller inte kraven för virtuella kortnummer.</translation>
 <translation id="2071692954027939183">Aviseringar blockerades automatiskt eftersom du vanligtvis inte tillåter dem</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="20817612488360358">Datorns proxyinställningar är inställda på att användas, men det finns också en explicit proxykonfiguration.</translation>
@@ -440,9 +441,11 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="2521385132275182522">Häfta nere till höger</translation>
 <translation id="2523886232349826891">Endast sparat på den här enheten</translation>
 <translation id="2524461107774643265">Lägg till mer information</translation>
+<translation id="2529899080962247600">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver det ignoreras.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{och 1 till}other{och # till}}</translation>
 <translation id="2536110899380797252">Lägg till adress</translation>
 <translation id="2539524384386349900">Identifiera</translation>
+<translation id="2540701853218677861">Inloggnings- och utloggningshistorik på enheten, bland annat tidsstämplar och misslyckade försök</translation>
 <translation id="2541219929084442027">Sidor som visas på flikar i inkognitoläget försvinner från webbhistoriken, från dina cookies och från sökhistoriken när alla inkognitoflikar har stängts. Alla filer som du laddar ned eller bokmärken som du skapar sparas.</translation>
 <translation id="2544644783021658368">Enkelt dokument</translation>
 <translation id="254947805923345898">Principens värde är inte giltigt.</translation>
@@ -635,6 +638,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3320021301628644560">Lägg till faktureringsadress</translation>
 <translation id="3324983252691184275">Karmosinröd</translation>
 <translation id="3329013043687509092">Mättnad</translation>
+<translation id="3333762389743153920">Uppfyller inte kraven för virtuella kort</translation>
 <translation id="3338095232262050444">Säker</translation>
 <translation id="3355823806454867987">Ändra proxyinställningar...</translation>
 <translation id="3360103848165129075">Arbetsblad för betalningshantering</translation>
@@ -1148,6 +1152,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifiera kortet</translation>
 <translation id="5135404736266831032">Hantera adresser …</translation>
+<translation id="5138014172396933048">Virtuella kort är inte tillgängliga just nu. Kontakta banken</translation>
 <translation id="5138227688689900538">Visa färre</translation>
 <translation id="514010763713772514">Betala snabbare nästa gång</translation>
 <translation id="5145883236150621069">Felkoden ingår i policysvaret</translation>
@@ -1194,6 +1199,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5287240709317226393">Visa cookies</translation>
 <translation id="5287456746628258573">Den här webbplatsens säkerhetskonfiguration är inaktuell. Det kan leda till att dina uppgifter (till exempel lösenord eller kreditkortsnummer) exponeras när de skickas till den här webbplatsen.</translation>
 <translation id="5288108484102287882">Valideringen av principvärdena har utlöst varningar</translation>
+<translation id="5288808348893593856">Webbplatsens anslutning är alltid säker så länge det inte visas en varning i Chrome.</translation>
 <translation id="5289384342738547352">Hantering av flera dokument</translation>
 <translation id="5299298092464848405">Det uppstod ett fel när policyn analyserades</translation>
 <translation id="5300589172476337783">Visa</translation>
@@ -1556,9 +1562,11 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6685834062052613830">Logga ut och slutför konfigureringen</translation>
 <translation id="6687335167692595844">Teckenstorlek begärd</translation>
 <translation id="6688743156324860098">Uppdatera …</translation>
+<translation id="6688775486821967877">Virtuella kort är inte tillgängliga just nu. Försök igen senare</translation>
 <translation id="6689249931105087298">Relativ med svartpunktskomprimering</translation>
 <translation id="6689271823431384964">Chrome ger möjlighet att spara dina kort i ditt Google-konto eftersom du är inloggad. Du kan ändra detta i inställningarna. Kortinnehavarens namn hämtas från ditt konto.</translation>
 <translation id="6698381487523150993">Skapad av:</translation>
+<translation id="6699188552522342100">Stämmer den här webbplatsen?</translation>
 <translation id="6702919718839027939">Presentera</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6710594484020273272">&lt;Ange sökterm&gt;</translation>
@@ -1685,6 +1693,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="7219179957768738017">För anslutningen används <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Bearbetning pågår</translation>
 <translation id="7221855153210829124">Visa aviseringar</translation>
+<translation id="722454870747268814">Ny inkognitoflik</translation>
 <translation id="7229659723041939809">Du angav just ditt lösenord på en bedräglig webbplats. Chrome rekommenderar att du kontrollerar dina sparade lösenord för <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> och andra webbplatser där du använder lösenordet nu.</translation>
 <translation id="7233592378249864828">Skriva ut bekräftelseark</translation>
 <translation id="7238585580608191973">SHA-256-fingeravtryck</translation>
@@ -2062,6 +2071,7 @@ Mer information:
           <ph name="LIST_ITEM" />Cookies och webbplatsdata
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Verifiera kreditkort snabbare med Touch ID</translation>
+<translation id="8577348305244205642">Virtuella kort är inte tillgängliga</translation>
 <translation id="858637041960032120">Ange telefonnr
 </translation>
 <translation id="8589998999637048520">Bästa kvalitet</translation>

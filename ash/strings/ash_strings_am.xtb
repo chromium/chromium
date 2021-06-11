@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">የመዳፊት ጠቋሚን አድምቅ</translation>
 <translation id="3513798432020909783">መለያው በ<ph name="MANAGER_EMAIL" /> ነው የሚቀናበረው</translation>
 <translation id="3552189655002856821">Wi-Fi ጠፍቷል</translation>
+<translation id="3560866052109807830">የምልክት ማድረጊያ መሳያ መሣሪያ</translation>
 <translation id="3563775809269155755">መገናኛ ነጥብን ያንቁ</translation>
 <translation id="3571734092741541777">አዋቅር</translation>
 <translation id="3573179567135747900">ወደ «<ph name="FROM_LOCALE" />» መልሰህ ቀይር (ዳግም ማስጀመር ይፈልጋል)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">የCtrl + Alt + የታች ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የመጨረሻውን ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የቀኝ ቀስት ይጫኑ።</translation>
 <translation id="4279490309300973883">በማንጸባረቅ ላይ</translation>
 <translation id="4285498937028063278">ይንቀሉ</translation>
+<translation id="429402653707266969">የመሣሪያ አሞሌ አካባቢን ቀያይር</translation>
 <translation id="4294319844246081198">ደህና አደሩ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="4296136865091727875">ሁሉንም <ph name="COUNT" /> ማሳወቂያዎች አጽዳ</translation>
 <translation id="4302592941791324970">አይገኝም</translation>

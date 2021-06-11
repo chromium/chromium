@@ -67,6 +67,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="4176825807642096119">Åtkomstkod</translation>
 <translation id="4227991223508142681">Verktyg för värdprovisionering</translation>
 <translation id="4240294130679914010">Chromoting Host Uninstaller</translation>
+<translation id="4257751272692708833">Vidarebefordringsprogram för webbadresser till <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Koden är ogiltig. Försök igen.</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4405930547258349619">Huvudbibliotek</translation>
@@ -121,6 +122,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="6612717000975622067">Skicka Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Dela</translation>
 <translation id="677755392401385740">Värd startad för användaren: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Hjälpprogram för att öppna en webbadress i <ph name="PRODUCT_NAME" />-klienten</translation>
 <translation id="6939719207673461467">Visa/dölj tangentbordet.</translation>
 <translation id="6963936880795878952">Anslutningar till fjärrdatorn är tillfälligt blockerade eftersom någon har försökt ansluta till fjärrdatorn med en ogiltig pinkod. Försök igen senare.</translation>
 <translation id="6965382102122355670">OK</translation>

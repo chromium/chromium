@@ -67,6 +67,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="4176825807642096119">Elérési kód</translation>
 <translation id="4227991223508142681">Gazdagép-ellátási segédprogram</translation>
 <translation id="4240294130679914010">Chromoting gazdagép eltávolítóprogramja</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL-továbbító</translation>
 <translation id="4277736576214464567">A hozzáférési kód érvénytelen. Kérjük, próbálja újra.</translation>
 <translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
 <translation id="4405930547258349619">Alapkönyvtár</translation>
@@ -121,6 +122,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="6612717000975622067">Ctrl-Alt-Del küldése</translation>
 <translation id="6654753848497929428">Megosztás</translation>
 <translation id="677755392401385740">Gazdagép elindítva a következő felhasználó számára: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Segédalkalmazás URL-ek <ph name="PRODUCT_NAME" />-kliensben való megnyitásához</translation>
 <translation id="6939719207673461467">Billentyűzet megjelenítése/elrejtése.</translation>
 <translation id="6963936880795878952">A távoli számítógéphez való csatlakozás ideiglenesen le van tiltva, mert valaki érvénytelen PIN-kóddal próbált csatlakozni hozzá. Kérjük, próbálja újra később.</translation>
 <translation id="6965382102122355670">OK</translation>

@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome, bilgilerinizi doğrulayamadı</translation>
 <translation id="1049743911850919806">Gizli mod</translation>
 <translation id="10614374240317010">Hiç kaydedilmeyecekler</translation>
-<translation id="1067922213147265141">Diğer Google hizmetleri</translation>
 <translation id="107147699690128016">Dosya uzantısını değiştirirseniz dosya farklı bir uygulamada açılabilir ve cihazınız için tehlikeli olabilir.</translation>
 <translation id="1095761715416917775">Senkronizasyon verilerinize her zaman erişebildiğinizden emin olun</translation>
 <translation id="1100066534610197918">Grupta yeni sekmede aç</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Bir daha gösterme</translation>
 <translation id="1680919990519905526">Google Lens ile görsel satın alın <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Şimdi deneyin</translation>
-<translation id="1692118695553449118">Senkronizasyon açık.</translation>
 <translation id="1697284962337958118">Ekle</translation>
 <translation id="1718835860248848330">Son bir saat</translation>
 <translation id="1724977129262658800">Şifrenizi düzenlemek için kilidi açın</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Verileri Koru</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
-<translation id="1984705450038014246">Chrome verilerimi senkronize et</translation>
 <translation id="1986685561493779662">Ad zaten var</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> düğmesi</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> eşlenmek istiyor</translation>
@@ -188,7 +185,6 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2200113223741723867">Kullanım verileri paylaşımını yönetin</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> olarak devam edin</translation>
 <translation id="22320125457191592">Size özel</translation>
-<translation id="2234876718134438132">Senkronizasyon ve Google hizmetleri</translation>
 <translation id="2239812875700136898">Haberlerinizi, Keşfet için Seçenekler düğmesinden kontrol edin</translation>
 <translation id="2259659629660284697">Şifreleri dışa aktar…</translation>
 <translation id="2276696007612801991">Şifrelerinizi kontrol etmek için Google hesabınızda oturum açın</translation>
@@ -364,7 +360,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3295530008794733555">Daha hızlı tarayın. Daha az veri kullanın.</translation>
 <translation id="3297344142967351106">Sesli yardım</translation>
 <translation id="3303414029551471755">İçeriği indirme işlemine başlansın mı?</translation>
-<translation id="3315103659806849044">Şu anda Senkronizasyon ve Google hizmet ayarlarınızı özelleştiriyorsunuz. Senkronizasyonu etkinleştirme işlemini tamamlamak için ekranın altına yakın bir yerde bulunan Onayla düğmesine dokunun. Yukarı git</translation>
 <translation id="3334729583274622784">Dosya uzantısı değiştirilsin mi?</translation>
 <translation id="3341058695485821946">Ne kadar veri tasarrufu sağladığınıza bakın</translation>
 <translation id="3341262203274374114">Takip bırakılamıyor. Bir sorun oldu.</translation>
@@ -502,7 +497,6 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="4298388696830689168">Bağlantılı siteler</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Temel Bilgiler</translation>
-<translation id="4314815835985389558">Senkronizasyonu yönetin</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yok</translation>
 <translation id="4321739720395210191">Kameranız açılamıyor. Cihazınızı yeniden başlatıp işlemi tekrar deneyin.</translation>
 <translation id="433213510553688132">Takip ediliyor...</translation>
@@ -631,9 +625,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="510275257476243843">1 saat kaldı</translation>
 <translation id="5118713593561876160">İlgi alanları</translation>
 <translation id="5123685120097942451">Gizli sekme</translation>
-<translation id="5127805178023152808">Senkronizasyon kapalı</translation>
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
-<translation id="5136035049889637840">Benzer ürünler satın alın <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google Drive'ın nasıl kullanılacağını öğrenin</translation>
 <translation id="5152843274749979095">Desteklenen yüklü uygulama yok</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
@@ -753,6 +745,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5854790677617711513">30 günden daha eski</translation>
 <translation id="5855546874025048181">Hassaslaştır: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome, Bluetooth adaptörünü açamıyor</translation>
+<translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5862731021271217234">Diğer cihazlarınızdaki sekmelerinize ulaşmak için senkronizasyonu etkinleştirin</translation>
 <translation id="5864174910718532887">Ayrıntılar: Site adına göre sıralı</translation>
@@ -762,6 +755,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="587735546353481577">Bir siteyi takip etmek için siteye gidin, Chrome menüsünü açıp Takip et'e dokunun.</translation>
 <translation id="5880748256563468367">Feed'e git</translation>
 <translation id="5884076754568147479">Google, görevleri tamamlamanıza yardımcı olmak için Asistan'ı kullandığınız sitelerin URL'lerinin ve içeriklerinin yanı sıra Asistan aracılığıyla gönderdiğiniz bilgileri alır</translation>
+<translation id="5916664084637901428">Açık</translation>
 <translation id="5919204609460789179">Senkronizasyonu başlatmak için <ph name="PRODUCT_NAME" /> adlı uygulamayı güncelleyin</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> tasarruf edildi</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6192907950379606605">Resim açıklaması al</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> değil misiniz?</translation>
 <translation id="6211386937064921208">Sayfanın önizlemesi gösteriliyor</translation>
-<translation id="6218096829563201111">Benzer ürünler arayın <ph name="BEGIN_NEW" />YENİ<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Şifrelerinizi dışa aktarmak için kilit açılamadı</translation>
 <translation id="6232535412751077445">"Do Not Track" seçeneği etkinleştirildiğinde, göz atma trafiğinize bir istek eklenir. Her türlü etki, bir web sitesinin isteğe cevap verip vermemesine ve isteğin nasıl yorumlandığına bağlıdır.
 

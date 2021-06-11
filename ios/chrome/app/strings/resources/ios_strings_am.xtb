@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">ገባሪ ከ<ph name="DAYS" /> ቀናት በፊት</translation>
 <translation id="2074131957428911366">በማንኛውም ጊዜ ምን እንደሚያሳምሩ በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
-<translation id="2086623437239112659">የተከማቸው የመግቢያ መረጃዎ ጊዜው ያለፈበት ሊሆን ይችላል።</translation>
 <translation id="209018056901015185">የዴስክቶፕ ጣቢያን ጠይቅ</translation>
 <translation id="2103075008456228677">history.google.comን ክፈት</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ንጥሎች ተንቀሳቅሰዋል</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">በይነመረብ</translation>
 <translation id="5210365745912300556">ትር ዝጋ</translation>
 <translation id="5228579091201413441">ማመሳሰልን አንቃ</translation>
+<translation id="5232485538978018676">በሚተዳደር መለያ ይግቡ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5245322853195994030">ስምረትን ሰርዝ</translation>
 <translation id="5271549068863921519">የይለፍ ቃሉን አስቀምጥ</translation>
@@ -724,6 +724,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8206354486702514201">ይህ ቅንብር በአስተዳዳሪዎ ነው በግዳጅ እንዲፈጸም የተደረገው።</translation>
 <translation id="8225985093977202398">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
+<translation id="8271720166617117963">ተቀበል እና በመለያ ግባ</translation>
 <translation id="8281781826761538115">ነባሪ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ዝለል</translation>
 <translation id="8283172974887967105">ያቀናብሩ…</translation>
@@ -766,6 +767,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8654802032646794042">ይቅር</translation>
 <translation id="8668210798914567634">ይህ ገጽ ወደ የእርስዎ ንባብ ዝርዝር ተቀምጧል።</translation>
 <translation id="8680787084697685621">የመለያ መግቢያ ዝርዝሮች ጊዜ ያለፈባቸው ናቸው።</translation>
+<translation id="8691262314411702087">ምን እንደሚመሳሰል ይምረጡ</translation>
 <translation id="8693663554456874301">{count,plural, =1{ትርን ዝጋ}one{ትሮችን ዝጋ}other{ትሮችን ዝጋ}}</translation>
 <translation id="8706588385081740091">የይለፍ ቃላት</translation>
 <translation id="8717864919010420084">አገናኝ ቅዳ</translation>

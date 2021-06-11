@@ -308,6 +308,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quan aquest control està activat i la prova està activa, Chrome determina en quin grup gran de persones, o cohort, hi ha una activitat de navegació recent més semblant a la teva. Els anunciants poden seleccionar anuncis per al grup i la teva activitat de navegació es manté privada al teu dispositiu. El teu grup s'actualitza cada dia.}=1{Quan aquest control està activat i la prova està activa, Chrome determina en quin grup gran de persones, o cohort, hi ha una activitat de navegació recent més semblant a la teva. Els anunciants poden seleccionar anuncis per al grup i la teva activitat de navegació es manté privada al teu dispositiu. El teu grup s'actualitza cada dia.}other{Quan aquest control està activat i la prova està activa, Chrome determina en quin grup gran de persones, o cohort, hi ha una activitat de navegació recent més semblant a la teva. Els anunciants poden seleccionar anuncis per al grup i la teva activitat de navegació es manté privada al teu dispositiu. El teu grup s'actualitza cada {NUM_DAYS} dies}}</translation>
 <translation id="2053553514270667976">Codi postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggeriment}other{# suggeriments}}</translation>
+<translation id="2071156619270205202">Aquesta targeta no és apta per a un número de targeta virtual.</translation>
 <translation id="2071692954027939183">Les notificacions s'han bloquejat automàticament perquè normalment no les permets</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="20817612488360358">S'ha definit la configuració del servidor intermediari del sistema perquè es pugui utilitzar, però també s'ha especificat una configuració del servidor intermediari explícita.</translation>
@@ -436,9 +437,11 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2521385132275182522">Grapat a la part inferior dreta</translation>
 <translation id="2523886232349826891">Només es desarà en aquest dispositiu</translation>
 <translation id="2524461107774643265">Afegeix més informació</translation>
+<translation id="2529899080962247600">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Totes les altres entrades s'ignoraran.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i 1 més}other{i # més}}</translation>
 <translation id="2536110899380797252">Afegeix una adreça</translation>
 <translation id="2539524384386349900">Detecta</translation>
+<translation id="2540701853218677861">Historial d'inici o tancament de la sessió del dispositiu, inclosos intents fallits i les marques de temps</translation>
 <translation id="2541219929084442027">Les pàgines que consultis en pestanyes d'incògnit no s'emmagatzemaran a l'historial del navegador, al magatzem de galetes ni a l'historial de cerques després d'haver tancat totes les pestanyes d'incògnit. Els fitxers que baixis i les adreces d'interès que creïs sí que es desaran.</translation>
 <translation id="2544644783021658368">Document únic</translation>
 <translation id="254947805923345898">El valor de la política no és vàlid.</translation>
@@ -629,6 +632,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3320021301628644560">Afegeix una adreça de facturació</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3329013043687509092">Saturació</translation>
+<translation id="3333762389743153920">No és apta per a una targeta virtual</translation>
 <translation id="3338095232262050444">Segur</translation>
 <translation id="3355823806454867987">Canvia la configuració del servidor intermediari...</translation>
 <translation id="3360103848165129075">Full del gestor de pagaments</translation>
@@ -1137,6 +1141,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifica la targeta</translation>
 <translation id="5135404736266831032">Gestiona les adreces...</translation>
+<translation id="5138014172396933048">La targeta virtual no està disponible en aquests moments. Contacta amb el teu banc.</translation>
 <translation id="5138227688689900538">Mostra'n menys</translation>
 <translation id="514010763713772514">Paga més ràpidament la propera vegada</translation>
 <translation id="5145883236150621069">Hi ha un codi d'error en la resposta a la política</translation>
@@ -1183,6 +1188,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5287240709317226393">Mostra les galetes</translation>
 <translation id="5287456746628258573">Aquest lloc web utilitza una configuració de seguretat obsoleta i, per tant, la informació que hi enviïs podria quedar exposada (per exemple, les contrasenyes o els números de les targetes de crèdit).</translation>
 <translation id="5288108484102287882">La validació dels valors de la política ha generat advertiments</translation>
+<translation id="5288808348893593856">La connexió del lloc web és segura tret que Chrome t'indiqui el contrari.</translation>
 <translation id="5289384342738547352">Gestió de diversos documents</translation>
 <translation id="5299298092464848405">S'ha produït un error en analitzar la política</translation>
 <translation id="5300589172476337783">Mostra</translation>
@@ -1545,9 +1551,11 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6685834062052613830">Tanqueu la sessió i completeu la configuració</translation>
 <translation id="6687335167692595844">Mida de la lletra sol·licitada</translation>
 <translation id="6688743156324860098">Actualitza…</translation>
+<translation id="6688775486821967877">La targeta virtual no està disponible en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="6689249931105087298">Relatiu amb compressió de punts negres</translation>
 <translation id="6689271823431384964">Chrome t'està oferint desar les targetes al Compte de Google perquè tens la sessió iniciada. Pots canviar aquest comportament a la configuració. El nom del titular de la targeta s'obté del teu compte.</translation>
 <translation id="6698381487523150993">Creat:</translation>
+<translation id="6699188552522342100">És precís aquest lloc web?</translation>
 <translation id="6702919718839027939">Presenta</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Escriviu el terme de cerca&gt;</translation>
@@ -1674,6 +1682,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7219179957768738017">La connexió utilitza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">S'està processant</translation>
 <translation id="7221855153210829124">Mostrar notificacions</translation>
+<translation id="722454870747268814">Pestanya d'incògnit nova</translation>
 <translation id="7229659723041939809">Acabes d'introduir la contrasenya en un lloc web enganyós. Chrome et recomana que comprovis les teves contrasenyes desades per a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i altres llocs web en què utilitzis aquesta contrasenya ara.</translation>
 <translation id="7233592378249864828">Imprimeix el full de confirmació</translation>
 <translation id="7238585580608191973">Empremta SHA-256</translation>
@@ -2051,6 +2060,7 @@ Detalls addicionals:
           <ph name="LIST_ITEM" />Galetes i dades de llocs web
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Fes servir Touch ID per confirmar les targetes més ràpidament</translation>
+<translation id="8577348305244205642">La targeta virtual no està disponible</translation>
 <translation id="858637041960032120">Afegeix un número de telèfon</translation>
 <translation id="8589998999637048520">Qualitat òptima</translation>
 <translation id="8600271352425265729">Només aquesta vegada</translation>

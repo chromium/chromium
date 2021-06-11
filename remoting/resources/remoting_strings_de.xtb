@@ -67,6 +67,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4176825807642096119">Zugriffscode</translation>
 <translation id="4227991223508142681">Host Provisioning-Dienstprogramm</translation>
 <translation id="4240294130679914010">Chromoting Host-Deinstallationsprogramm</translation>
+<translation id="4257751272692708833">URL-Weiterleiter: <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Der Zugriffscode ist ungültig. Bitte versuchen Sie es erneut.</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4405930547258349619">Zentrale Bibliothek</translation>
@@ -121,6 +122,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="6612717000975622067">Strg-Alt-Entf senden</translation>
 <translation id="6654753848497929428">Freigeben</translation>
 <translation id="677755392401385740">Host für folgenden Nutzer gestartet: <ph name="HOST_USERNAME" /></translation>
+<translation id="6902524959760471898">Hilfs-App für das Öffnen einer URL mit dem <ph name="PRODUCT_NAME" />-Client</translation>
 <translation id="6939719207673461467">Tastatur ein-/ausblenden</translation>
 <translation id="6963936880795878952">Verbindungen zum Remote-Computer sind vorübergehend blockiert, da jemand versucht hat, eine Verbindung mit einer ungültigen PIN herzustellen. Bitte versuchen Sie es später noch einmal.</translation>
 <translation id="6965382102122355670">Ok</translation>

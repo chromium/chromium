@@ -2319,7 +2319,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si no la estableces, inicialmente las teclas especiales estarán inhabilitadas en la pantalla de acceso, pero el usuario podrá habilitarlas en cualquier momento.</translation>
 <translation id="3932553013632130433">
       Especifica si puede utilizarse la política SharedArrayBuffers en un contexto que no está aislado
-      en orígenes cruzados. Chrome requerirá el aislamiento de origen cruzado cuando se utilice la política
+      de orígenes cruzados. Chrome requerirá el aislamiento de origen cruzado cuando se utilice la política
       SharedArrayBuffers a partir de Chrome 91 (25-05-2021) por motivos de compatibilidad con
       la Web. Encontrarás información adicional en el siguiente sitio:
       https://developer.chrome.com/blog/enabling-shared-array-buffer/.
@@ -3409,13 +3409,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="547601067149622666">No permitir anuncios en sitios con anuncios intrusivos</translation>
 <translation id="5480380613778757009">Si inhabilitas o no estableces esta política, apenas finalice la sesión, se restablecerán todas las opciones de configuración de pantalla que se hayan establecido en la sesión de invitado administrada. Si estableces esta política como verdadera, se conservarán las propiedades de pantalla después de salir de la sesión de invitado administrada.</translation>
 <translation id="5483065054530244863">Permitir los certificados firmados con SHA-1 y emitidos por los anclajes de confianza locales</translation>
-<translation id="5483584677807837752">Si habilitas la política, la función de <ph name="PRODUCT_NAME" /> enviará encabezados de solicitud detallados con información sobre el entorno y el navegador del usuario.
-
-      Esta es una función adicional, pero los nuevos encabezados pueden ocasionar fallos en algunos sitios web que restrinjan los caracteres que pueden contener las solicitudes.
-
-      Si habilitas esta política o no la estableces, se habilitará la función de <ph name="PRODUCT_NAME" />. Si la inhabilitas, la función no estará disponible.
-
-      Esta política es una solución alternativa orientada a la adaptación de las empresas a corto plazo y estará disponible al menos hasta la versión 93 de Chrome.</translation>
 <translation id="5494322570831642650">Especifica si el usuario puede abrir páginas en modo Incógnito en <ph name="PRODUCT_NAME" />.
 
       Si seleccionas "Enabled" (habilitada) o no estableces la política, se permitirá abrir páginas en modo Incógnito.
@@ -6067,11 +6060,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces o ingresas una string vacía, el dispositivo utilizará la zona horaria que esté activa actualmente, pero los usuarios podrán cambiarla.</translation>
 <translation id="8880294585549584028">Permite el acceso de escritura a archivos y directorios en estos sitios</translation>
 <translation id="8882006618241293596">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios</translation>
-<translation id="8887158351295718009">Se revertirá conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /> el comportamiento de las cookies establecidas para los dominios que coincidan con estos patrones. Si se revierte el comportamiento conforme al atributo heredado, las cookies que no tengan un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> especificado se tratarán según el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", las cookies con el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" ya no necesitarán el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />", y se omitirá la comparación de esquemas cuando se evalúa si dos sitios son el mismo sitio. Para obtener la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Para las cookies de dominios que no se incluyan en los patrones especificados aquí, o para todas las cookies si no se establece esta política, se usará el valor predeterminado global de la política <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" />, si se la establece, o de la configuración personal del usuario.
-
-          Ten en cuenta que los patrones que incluyas aquí se tratarán como dominios, no como URL, por lo que no debes especificar un esquema ni un puerto.</translation>
 <translation id="8887709920496070892">El período sin intervención del usuario después del cual se muestra un diálogo de advertencia (en milisegundos).</translation>
 <translation id="8890438048579188548">Oculta las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Espacio libre en disco que se requiere para <ph name="PLUGIN_VM_NAME" /></translation>

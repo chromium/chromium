@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
-<translation id="2086623437239112659">Uložené přihlašovací údaje mohou být zastaralé.</translation>
 <translation id="209018056901015185">Verze webu pro PC</translation>
 <translation id="2103075008456228677">Otevřít history.google.com</translation>
 <translation id="2116625576999540962">Počet přesunutých položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -408,6 +407,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
 <translation id="5228579091201413441">Aktivace synchronizace</translation>
+<translation id="5232485538978018676">Přihlášení pomocí spravovaného účtu</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5245322853195994030">Zrušit synchronizaci</translation>
 <translation id="5271549068863921519">Uložit heslo</translation>
@@ -724,6 +724,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8206354486702514201">Toto nastavení je vyžadováno administrátorem.</translation>
 <translation id="8225985093977202398">Obrázky a soubory v mezipaměti</translation>
 <translation id="8261506727792406068">Smazat</translation>
+<translation id="8271720166617117963">Přijmout a přihlásit se</translation>
 <translation id="8281781826761538115">Výchozí – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8283172974887967105">Nastavit…</translation>

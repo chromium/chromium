@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome n'a pas pu vérifier vos renseignements</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="10614374240317010">Jamais enregistré</translation>
-<translation id="1067922213147265141">Autres services Google</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, il peut s'ouvrir dans une application différente et poser un risque pour votre appareil.</translation>
 <translation id="1095761715416917775">Assurez-vous de toujours pouvoir accéder à vos données de synchronisation</translation>
 <translation id="1100066534610197918">Dans nouvel onglet dans groupe</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Ne plus afficher</translation>
 <translation id="1680919990519905526">Magasiner cette image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Essayer maintenant</translation>
-<translation id="1692118695553449118">La synchronisation est activée</translation>
 <translation id="1697284962337958118">Ajouter à</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1724977129262658800">Déverrouillez pour modifier votre mot de passe</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Garder les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
-<translation id="1984705450038014246">Synchroniser vos données Chrome</translation>
 <translation id="1986685561493779662">Ce nom existe déjà</translation>
 <translation id="1987739130650180037">Bouton <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> veut s'associer</translation>
@@ -188,7 +185,6 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
 <translation id="2227444325776770048">Continuer comme <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Pour vous</translation>
-<translation id="2234876718134438132">Synchronisation et services Google</translation>
 <translation id="2239812875700136898">Gérez vos histoires à l'aide du bouton Options pour Découvertes</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
@@ -364,7 +360,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3295530008794733555">Naviguez plus vite. Utilisez moins de données.</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Lancer le téléchargement du contenu?</translation>
-<translation id="3315103659806849044">Vous personnalisez actuellement les paramètres relatifs aux services Google et à la synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir au haut de la page</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier?</translation>
 <translation id="3341058695485821946">Affichez la quantité de données enregistrées</translation>
 <translation id="3341262203274374114">Le désabonnement a échoué. Un problème est survenu.</translation>
@@ -502,7 +497,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4298388696830689168">Sites associés</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
-<translation id="4314815835985389558">Gérer la synchronisation</translation>
 <translation id="4320177379694898372">Pas de connexion Internet</translation>
 <translation id="4321739720395210191">Impossible d'ouvrir votre appareil photo. Redémarrez votre appareil et réessayez.</translation>
 <translation id="433213510553688132">Suivi en cours…</translation>
@@ -631,9 +625,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="510275257476243843">Il reste 1 heure</translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
-<translation id="5127805178023152808">La synchronisation est désactivée</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
-<translation id="5136035049889637840">Parcourir prod. similaires <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Apprenez à utiliser Google Disque</translation>
 <translation id="5152843274749979095">Aucune application compatible n'est installée</translation>
 <translation id="5161254044473106830">Titre requis</translation>
@@ -753,6 +745,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5855546874025048181">Affiner : <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome n'est pas en mesure d'activer l'adaptateur Bluetooth</translation>
+<translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5862731021271217234">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation</translation>
 <translation id="5864174910718532887">Détails : triés par nom de site</translation>
@@ -762,6 +755,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="587735546353481577">Pour suivre un site, accédez à ce dernier, ouvrez le menu Chrome et touchez Suivre.</translation>
 <translation id="5880748256563468367">Accéder au flux</translation>
 <translation id="5884076754568147479">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant</translation>
+<translation id="5916664084637901428">Activé</translation>
 <translation id="5919204609460789179">Mettez à jour <ph name="PRODUCT_NAME" /> pour commencer la synchronisation</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> enregistré(s)</translation>
 <translation id="5939518447894949180">Recommencer</translation>
@@ -812,7 +806,6 @@ Les versions d'essai du bac à sable de confidentialité sont toujours en cours 
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
-<translation id="6218096829563201111">Rech. produits similaires <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Déverrouillez pour exporter vos mots de passe</translation>
 <translation id="6232535412751077445">Si vous activez la fonction « Ne pas faire le suivi », une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 

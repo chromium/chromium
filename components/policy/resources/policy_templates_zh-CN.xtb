@@ -2289,6 +2289,10 @@
           如果您设置了此政策，用户便无法更改或覆盖它。
 
           如果您未设置此政策，粘滞键在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
+<translation id="3932553013632130433">
+      用于指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中。出于网络兼容性方面的原因，从 Chrome 91 (2021-05-25) 开始，Chrome 会要求网站在使用 SharedArrayBuffers 时进行跨域隔离。如需了解更多详情，请访问 https://developer.chrome.com/blog/enabling-shared-array-buffer/。
+      如果此政策设为 True，网站将能够随意使用 SharedArrayBuffer，不受任何限制。
+      如果此政策设为 False 或未设置，则意味着只有在进行了跨域隔离的情况下，网站才能使用 SharedArrayBuffers。</translation>
 <translation id="3942041691320538491">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
 
       此设置还可关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。</translation>
@@ -3219,6 +3223,7 @@
           如果此政策设为 False，用户将无法向其设备投射内容。如果此政策设为 True，用户将能够投射内容。如果此政策未设置，用户将被禁止向已注册的 Chrome 操作系统设备投射内容，但可将内容投射到未注册的设备。</translation>
 <translation id="5323200200131319468">在登录屏幕上启用语音反馈</translation>
 <translation id="532848608876725157">启用 DNS-over-HTTPS，且允许改用不安全的查询</translation>
+<translation id="5328965694451556034">报告登录/退出</translation>
 <translation id="5329007337159326804">警告：大概从 75 版（将于 2019 年 6 月左右推出）开始，<ph name="PRODUCT_NAME" /> 中将会彻底移除用于指定最高 TLS 版本的政策。
 
       如果您不配置此政策，<ph name="PRODUCT_NAME" /> 便会使用默认的最高版本。
@@ -3366,13 +3371,6 @@
 <translation id="547601067149622666">不允许含侵扰性广告的网站展示广告</translation>
 <translation id="5480380613778757009">如果此政策已停用或未设置，系统将会在受管理访客会话完成后立即重置该会话中已设置的所有显示设置。如果此政策设为 True，系统将会在退出受管理访客会话后保留该会话的显示属性。</translation>
 <translation id="5483065054530244863">允许使用由本地信任锚颁发的 SHA-1 签名证书</translation>
-<translation id="5483584677807837752">启用后，<ph name="PRODUCT_NAME" /> 功能会发送精细的请求标头，在其中提供关于用户浏览器和环境的信息。
-
-      这是一项附加功能，但如果某些网站限制了请求中可包含的字符，新标头可能会导致这些网站无法正常响应。
-
-      如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 功能会处于启用状态。如果此政策已停用，该功能将不可用。
-
-      这项企业政策只是短期内（至少会持续到 Chrome 93）可用的适应性措施。</translation>
 <translation id="5494322570831642650">此政策旨在指定用户可否在 <ph name="PRODUCT_NAME" /> 中以无痕模式打开网页。
 
       如果您选择了“Enabled”或未设置此政策，用户将能够以无痕模式打开网页。
@@ -3540,6 +3538,11 @@
 
           此政策的值仅在 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策设为启用时才适用，在其他情况下一概不适用。</translation>
 <translation id="5697306356229823047">报告设备用户</translation>
+<translation id="5699770471852263667">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 中停用内部 PDF 查看器，将 PDF 文件视为下载项，并允许用户使用默认应用打开 PDF 文件。
+
+      如果此政策已停用，则意味着系统会使用 PDF 插件打开 PDF 文件，除非用户已关闭该插件。
+
+      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可选择是否要在外部打开 PDF。</translation>
 <translation id="570062449808736508">此政策设为非空字符串时，WebView 将读取具有指定机构名称的内容提供方的网址限制条件。</translation>
 <translation id="5708969689202733975">配置所允许的“快速解锁”模式</translation>
 <translation id="5715617256528927547">通过设置此政策，您可以指定群组政策对象 (GPO) 缓存期限（以小时为单位），即 GPO 在不必重新下载的情况下可被重复使用的时长上限。只要 GPO 的版本未变，系统便会重复使用已缓存的 GPO，而不是在每次提取政策时都重新下载 GPO。
@@ -5128,6 +5131,7 @@
 <translation id="7709470712369261710">不使用 Google 服务提供自动图片说明</translation>
 <translation id="7712109699186360774">每当有网站要使用摄像头和/或麦克风时都要询问</translation>
 <translation id="7713608076604149344">下载限制</translation>
+<translation id="7713845740295404764">报告登录/退出事件</translation>
 <translation id="7715711044277116530">演示模式下屏幕变暗延迟时间的调整幅度（百分比）</translation>
 <translation id="7716020145539921591">此政策已被弃用，请改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
@@ -5971,11 +5975,6 @@
       如果您不设置此政策，或者输入了空字符串，设备会使用当前有效的时区，但用户可以更改它。</translation>
 <translation id="8880294585549584028">允许在这些网站上向文件和目录写入内容</translation>
 <translation id="8882006618241293596">禁止这些网站运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
-<translation id="8887158351295718009">为与这些格式匹配的网域设置的 Cookie 将恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为。恢复为旧版行为会导致未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性的 Cookie 被当作“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 来处理，撤消“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 必须附带“<ph name="ATTRIBUTE_SECURE_NAME" />”属性的要求，并且在评估两个网站是否为同一个网站时会跳过协议比较。如需查看完整说明，请参阅 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
-
-          对于与此处所列格式不匹配的网域上的 Cookie 以及未设置此政策时的所有 Cookie：倘若已设置 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> 政策，系统便会采用该政策中的全局默认值；否则，就会采用用户个人配置中的全局默认值。
-
-          请注意，您在此处列出的格式会被系统视为网域（而非网址），因此您不应指定协议或端口。</translation>
 <translation id="8887709920496070892">系统应在设备闲置多久（以毫秒为单位）后显示警告对话框</translation>
 <translation id="8890438048579188548">隐藏 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间</translation>
@@ -6137,6 +6136,10 @@
       如果此政策已停用，已注册的设备将不会记录或报告活动时间。</translation>
 <translation id="9077227880520270584">设备本地帐号自动登录计时器</translation>
 <translation id="9084985621503260744">指定视频活动是否影响电源管理</translation>
+<translation id="9087434639296483430">旨在报告已注册的设备上发生的用户登录/退出事件（包括登录失败）。
+
+      如果此政策设为 false 或未设置，系统将不会报告这些信息。
+      如果此政策设为 true，系统便会报告这类设备上的登录/退出事件。</translation>
 <translation id="9088191250434406767">如果此政策未设置或已启用，用户便可借助 <ph name="GOOGLE_LENS_PRODUCT_NAME" />使用摄像头进行搜索。如果此政策已停用，那么即使可以使用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能，用户也不会在搜索框中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮。</translation>
 <translation id="9088433379343318874">启用受监管用户内容提供方</translation>
 <translation id="9088444059179765143">配置自动检测时区方法</translation>
@@ -6233,6 +6236,7 @@
 <translation id="9197740283131855199">系统在屏幕变暗后察觉到用户活动时，屏幕变暗延迟时间的调整幅度（百分比）</translation>
 <translation id="9200828125069750521">在使用 POST 的图片网址中所需的参数</translation>
 <translation id="9204863016826119209">已安装完毕且列在此政策中的 Android 应用可以使用企业密钥。</translation>
+<translation id="9207596996305971030">不报告登录/退出事件</translation>
 <translation id="9213751049772256263">停用所有变体</translation>
 <translation id="9217154963008402249">发送监控网络数据包的频率</translation>
 <translation id="922540222991413931">配置扩展程序、应用和用户脚本安装源</translation>

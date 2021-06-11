@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">ລະ​ຫັດ​ການ​ເຂົ້າ​ຫາ</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>
 <translation id="4240294130679914010">ຕົວຖອນຕິດຕັ້ງແມ່ຂ່າຍ Chromoting</translation>
+<translation id="4257751272692708833">ຕົວສົ່ງຕໍ່ URL ຂອງ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">ລະ​ຫັດ​ການ​ເຂົ້າ​ຫາໃຊ້ບໍ່ໄດ້​. ກະ​ລຸ​ນາລອງໃໝ່ອີກ.</translation>
 <translation id="4281844954008187215">ຂໍ້ກໍານົດການບໍລິການ</translation>
 <translation id="4405930547258349619">ຄັງເກັບມ້ຽນຕົ້ນຕໍ</translation>
@@ -122,6 +123,7 @@ Desktop</translation>
 <translation id="6612717000975622067">ສົ່ງ Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">ແບ່ງປັນ</translation>
 <translation id="677755392401385740">ແມ່ຂ່າຍ​ເລີ່ມ​ຕົ້ນ​ສໍາ​ລັບ​ຜູ້​ໃຊ້​ແລ້ວ: <ph name="HOST_USERNAME" /> .</translation>
+<translation id="6902524959760471898">ແອັບພລິເຄຊັນຕົວຊ່ວຍເພື່ອເປີດ URL ຢູ່ລູກຂ່າຍ <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">ສະແດງ/ເຊື່ອງຄີບອດ.</translation>
 <translation id="6963936880795878952">ການເຊື່ອມຕໍ່ກັບຄອມພິວເຕີທາງໄກຖືກບລັອກໄວ້ຊົ່ວຄາວ ເພາະວ່າມີບາງຄົນໄດ້ພະຍາຍາມເຊື່ອມຕໍ່ກັບມັນດ້ວຍ PIN ທີ່ບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງໃນພາຍຫຼັງ.</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>

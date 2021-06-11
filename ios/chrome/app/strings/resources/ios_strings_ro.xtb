@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Activ acum <ph name="DAYS" /> zile</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anulează</translation>
-<translation id="2086623437239112659">Este posibil ca informațiile de conectare stocate să fie învechite.</translation>
 <translation id="209018056901015185">Site desktop</translation>
 <translation id="2103075008456228677">Deschide history.google.com</translation>
 <translation id="2116625576999540962">Elemente mutate: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -408,6 +407,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Închide fila</translation>
 <translation id="5228579091201413441">Activează sincronizarea</translation>
+<translation id="5232485538978018676">Conectează-te cu un cont gestionat</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5245322853195994030">Anulează sincronizarea</translation>
 <translation id="5271549068863921519">Salvează parola</translation>
@@ -724,6 +724,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8206354486702514201">Această setare este impusă de administratorul dvs.</translation>
 <translation id="8225985093977202398">Imaginile și fișierele memorate în cache</translation>
 <translation id="8261506727792406068">Șterge</translation>
+<translation id="8271720166617117963">Acceptă și conectează-te</translation>
 <translation id="8281781826761538115">Prestabilit – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8283172974887967105">Setează…</translation>

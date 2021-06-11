@@ -308,6 +308,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}=1{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}one{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dia.}other{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
 <translation id="2053553514270667976">CEP</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}one{# sugestão}other{# sugestões}}</translation>
+<translation id="2071156619270205202">Esse não é um número de cartão virtual.</translation>
 <translation id="2071692954027939183">As notificações foram bloqueadas automaticamente porque você não costuma permiti-las</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="20817612488360358">As configurações de proxy do sistema são definidas para serem utilizadas, mas uma configuração explícita de proxy também foi especificada.</translation>
@@ -436,9 +437,11 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2521385132275182522">Grampo na parte inferior direita</translation>
 <translation id="2523886232349826891">Salvo apenas neste dispositivo</translation>
 <translation id="2524461107774643265">Adicione Mais Informações</translation>
+<translation id="2529899080962247600">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as entradas excedentes serão ignoradas.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}one{e mais #}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar Endereço</translation>
 <translation id="2539524384386349900">Detectar</translation>
+<translation id="2540701853218677861">Histórico de login/logout do dispositivo, incluindo carimbos de data/hora e tentativas falhas</translation>
 <translation id="2541219929084442027">As páginas que você acessa em guias anônimas não permanecem no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisa depois que as guias são fechadas. Os downloads de arquivos ou favoritos criados são mantidos.</translation>
 <translation id="2544644783021658368">Documento avulso</translation>
 <translation id="254947805923345898">O valor da política não é válido.</translation>
@@ -629,6 +632,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3320021301628644560">Adicionar endereço de faturamento</translation>
 <translation id="3324983252691184275">Carmim</translation>
 <translation id="3329013043687509092">Saturação</translation>
+<translation id="3333762389743153920">Não qualificado como cartão virtual</translation>
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="3360103848165129075">Página do gerenciador de pagamento</translation>
@@ -1137,6 +1141,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5125394840236832993">B Plus</translation>
 <translation id="5126510351761255129">Verificar seu cartão</translation>
 <translation id="5135404736266831032">Gerenciar endereços…</translation>
+<translation id="5138014172396933048">O cartão virtual não está disponível no momento. Entre em contato com seu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="514010763713772514">Agilize a próxima finalização de compra</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
@@ -1183,6 +1188,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5287240709317226393">Mostrar cookies</translation>
 <translation id="5287456746628258573">Este site usa uma configuração de segurança desatualizada que pode expor suas informações, como senhas ou números de cartão de crédito, quando elas forem enviadas para o site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou alguns avisos</translation>
+<translation id="5288808348893593856">A conexão do site é sempre segura, a menos que o Chrome informe o contrário.</translation>
 <translation id="5289384342738547352">Gerenciamento de vários documentos</translation>
 <translation id="5299298092464848405">Política de análise de erros</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1545,9 +1551,11 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6685834062052613830">Saia e conclua a configuração</translation>
 <translation id="6687335167692595844">Tamanho da fonte solicitado</translation>
 <translation id="6688743156324860098">Atualizar…</translation>
+<translation id="6688775486821967877">O cartão virtual não está disponível no momento. Tente novamente mais tarde</translation>
 <translation id="6689249931105087298">Relativa com compressão de pontos pretos</translation>
 <translation id="6689271823431384964">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6698381487523150993">Criado em:</translation>
+<translation id="6699188552522342100">O site está correto?</translation>
 <translation id="6702919718839027939">Apresentação</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Digitar termo de pesquisa&gt;</translation>
@@ -1674,6 +1682,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7219179957768738017">A conexão usa a <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Processando</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
+<translation id="722454870747268814">Nova guia anônima</translation>
 <translation id="7229659723041939809">Você acabou de digitar sua senha em um site suspeito. O Chrome recomenda que você verifique agora suas senhas salvas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que você usa essa senha.</translation>
 <translation id="7233592378249864828">Imprimir página de confirmação</translation>
 <translation id="7238585580608191973">Assinatura digital SHA-256</translation>
@@ -2051,6 +2060,7 @@ Mais detalhes:
           <ph name="LIST_ITEM" />Cookies e dados de sites
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Use o Touch ID para confirmar seus cartões mais rapidamente</translation>
+<translation id="8577348305244205642">Cartão virtual indisponível</translation>
 <translation id="858637041960032120">Ad. nº. telefone
 </translation>
 <translation id="8589998999637048520">Melhor qualidade</translation>

@@ -308,6 +308,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየቀኑ ይዘምናል።}=1{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየቀኑ ይዘምናል።}one{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየ{NUM_DAYS} ቀኖች ይዘመናል።}other{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየ{NUM_DAYS} ቀኖች ይዘመናል።}}</translation>
 <translation id="2053553514270667976">ዚፕ ኮድ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 የአስተያየት ጥቆማ}one{# የአስተያየት ጥቆማዎች}other{# የአስተያየት ጥቆማዎች}}</translation>
+<translation id="2071156619270205202">ይህ ካርድ ለምናባዊ ካርድ ቁጥር ብቁ አይደለም።</translation>
 <translation id="2071692954027939183">ማሳወቂያዎች ብዙውን ጊዜ ስለማይፈቅዱሏቸው በራስ-ሰር ታግደዋል</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="20817612488360358">የስርዓት ተኪ ቅንብሮች ስራ ላይ እንዲውሉ ተቀናብረዋል ግን ግልጽ የሆነ የተኪ ውቅርም ተገልጿል።</translation>
@@ -436,9 +437,11 @@
 <translation id="2521385132275182522">ከግራጌ በቀኝ በኩል ስቴፕለር ምታ</translation>
 <translation id="2523886232349826891">በዚህ መሣሪያ ላይ ብቻ ይቀመጣል</translation>
 <translation id="2524461107774643265">ተጨማሪ መረጃ ያክሉ</translation>
+<translation id="2529899080962247600">ይህ መስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሁሉም ተጨማሪ ግቤቶች ችላ ይባላሉ።</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{እና 1 ተጨማሪ}one{እና # ተጨማሪ}other{እና # ተጨማሪ}}</translation>
 <translation id="2536110899380797252">አድራሻ ያክሉ</translation>
 <translation id="2539524384386349900">አግኝ</translation>
+<translation id="2540701853218677861">የጊዜ ማህተሞችን እና ያልተሳኩ ሙከራዎችን ጨምሮ የመሣሪያ መግቢያ/መውጣት ታሪክ</translation>
 <translation id="2541219929084442027">ማንነትን በማያሳውቅ ትሮች ውስጥ የሚያዩዋቸው ገጾች ሁሉንም ማንነት የማያሳውቁ ትሮችዎን ከዘጉ በኋላ በአሳሽዎ ታሪክ፣ የኩኪ ማከማቻ፣ ወይም የፍለጋ ታሪክ ውስጥ አይቀመጡም። ማንነት በማያስውቅ ሁነታ መሥራት የሌሎች ሰዎች፣ አገልጋዮች፣ ሶፍትዌሮች ወይም ከጀርባዎ በቆሙ የሌሎች ሰዎች ባህሪ ላይ ለውጥ አያመጣም።</translation>
 <translation id="2544644783021658368">ነጠላ ሰነድ</translation>
 <translation id="254947805923345898">የመመሪያ እሴት የሚሰራ አይደለም።</translation>
@@ -628,6 +631,7 @@
 <translation id="3320021301628644560">የመክፈያ አድራሻ አክል</translation>
 <translation id="3324983252691184275">ክሪምሶን</translation>
 <translation id="3329013043687509092">የቀለም ሙሌት</translation>
+<translation id="3333762389743153920">ለምናባዊ ካርድ ብቁ አይደለም</translation>
 <translation id="3338095232262050444">ደህንነቱ የተጠበቀ ነው</translation>
 <translation id="3355823806454867987">የተኪ ቅንብሮችን በመቀየር ላይ...</translation>
 <translation id="3360103848165129075">የክፍያ ተቆጣጣሪ ሉህ</translation>
@@ -761,6 +765,7 @@
 <translation id="3754210790023674521">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
 <translation id="3759461132968374835">በቅርብ ጊዜ ሪፖርት የተደረጉ ብልሽቶች የለዎትም።  የብልሽት ሪፖርት ማድረግ ተሰናክሎ ሳለ የተከሰቱ ብልሽቶች እዚህ አይታዩም።</translation>
 <translation id="3760561303380396507">ከCVC ይልቅ Windows Helloን ይጠቀሙ?</translation>
+<translation id="3761171036307311438">በካርድ ላይ ያለ ስም፦</translation>
 <translation id="3761718714832595332">ሁኔታን ደብቅ</translation>
 <translation id="3765032636089507299">የSafe Browsing ገጽ በግንባታ ላይ ነው።</translation>
 <translation id="3765588406864124894">የመልዕክት ሳጥን 9</translation>
@@ -1137,6 +1142,7 @@
 <translation id="5125394840236832993">B-ፕላስ</translation>
 <translation id="5126510351761255129">የእርስዎን ኮርድ ያረጋግጡ</translation>
 <translation id="5135404736266831032">አድራሻዎችን ያቀናብሩ...</translation>
+<translation id="5138014172396933048">ምናባዊ ካርድ አሁን አይገኝም፣ እባክዎ ባንክዎን ያነጋግሩ</translation>
 <translation id="5138227688689900538">ያነሰ አሳይ</translation>
 <translation id="514010763713772514">በሚቀጥለው ጊዜ በፍጥነት ገዝተው ይውጡ</translation>
 <translation id="5145883236150621069">የስህተት ኮድ በመምሪያው ምላሽ ውስጥ አለ</translation>
@@ -1183,6 +1189,7 @@
 <translation id="5287240709317226393">ኩኪዎችን አሳይ</translation>
 <translation id="5287456746628258573">ይህ ጣቢያ ጊዜ ያለፈበት የደህንነት ውቅረትን ይጠቀማል፣ ይህ ወደዚህ ጣቢያ ሲላክ መረጃዎን (ለምሳሌ፦ የይለፍ ቃላት ወይም የክሬዲት ካርድ ቁጥሮች) ሊያጋልጥ ይችላል።</translation>
 <translation id="5288108484102287882">የመመሪያ እሴቶችን ማረጋገጥ ማስጠንቀቂያዎችን አስነስቷል</translation>
+<translation id="5288808348893593856">Chrome ካልነገረዎት በስተቀር የጣቢያው ግንኙነት ደህንነቱ የተጠበቀ ነው።</translation>
 <translation id="5289384342738547352">የበርካታ ሰነዶች አያያዝ</translation>
 <translation id="5299298092464848405">መምሪያን መተንተን ላይ ስህተት</translation>
 <translation id="5300589172476337783">አሳይ</translation>
@@ -1545,9 +1552,11 @@
 <translation id="6685834062052613830">ዘግተው ይውጡ እና ቅንብርን ያጠናቅቁ</translation>
 <translation id="6687335167692595844">የቅርጸ-ቁምፊ መጠን ተጠይቋል</translation>
 <translation id="6688743156324860098">አዘምን…</translation>
+<translation id="6688775486821967877">ምናባዊ ካርድ አሁን አይገኝም፣ እባክዎ ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="6689249931105087298">አንጻራዊ ከጥቁር ነጥብ እመቃ ጋር</translation>
 <translation id="6689271823431384964">በመለያ ስለገቡ Chrome ካርዶችዎን በGoogle መለያዎ ሊያስቀምጥልዎ እየጠየቀ ነው። ይህን ባህሪ በቅንብሮች ውስጥ መቀየር ይችላሉ። የካርድ ያዢው ስም ከመለያዎ ነው የመጣው።</translation>
 <translation id="6698381487523150993">ተፈጠረ:</translation>
+<translation id="6699188552522342100">ይህ ድር ጣቢያ ትክክለኛ ነው?</translation>
 <translation id="6702919718839027939">አቅርብ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6710594484020273272">&lt;የፍለጋ ቃል ይተይቡ&gt;</translation>
@@ -1674,6 +1683,7 @@
 <translation id="7219179957768738017">ግንኙነቱ <ph name="SSL_VERSION" />ን ይጠቀማል።</translation>
 <translation id="7220786058474068424">በማስሄድ ላይ</translation>
 <translation id="7221855153210829124">ማሳወቂያዎችን አሳይ</translation>
+<translation id="722454870747268814">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="7229659723041939809">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። Chrome የ<ph name="WEBSITE_1" />፣ <ph name="WEBSITE_2" />፣ <ph name="WEBSITE_3" /> እና አሁን ይህን የይለፍ ቃል የተጠቀሙባቸው የሌሎች ጣቢያዎች የተቀመጡ የይለፍ ቃላትዎን መፈተሽ ይመክራል።</translation>
 <translation id="7233592378249864828">የህትመት ማረጋገጫ ሉህ</translation>
 <translation id="7238585580608191973">SHA-256 የጣት አሻራ</translation>
@@ -2051,6 +2061,7 @@
           <ph name="LIST_ITEM" />ኩኪዎች እና የጣቢያ ውሂብ
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">ካርዶችን በበለጠ ፍጥነት ለማረጋገጥ የንኪ መታወቂያን ይጠቀሙ</translation>
+<translation id="8577348305244205642">ምናባዊ ካርድ አይገኝም</translation>
 <translation id="858637041960032120">ስልክ ቁጥር ያክሉ
 </translation>
 <translation id="8589998999637048520">ምርጥ ጥራት</translation>

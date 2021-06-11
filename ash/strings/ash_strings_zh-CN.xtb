@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
 <translation id="3513798432020909783">该帐号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
+<translation id="3560866052109807830">标记绘制工具</translation>
 <translation id="3563775809269155755">启用热点</translation>
 <translation id="3571734092741541777">设置</translation>
 <translation id="3573179567135747900">重新更改为“<ph name="FROM_LOCALE" />”（需要重启）</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4285498937028063278">取消固定</translation>
+<translation id="429402653707266969">切换工具栏位置</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，上午好！</translation>
 <translation id="4296136865091727875">清除所有 <ph name="COUNT" /> 条通知</translation>
 <translation id="4302592941791324970">不可用</translation>

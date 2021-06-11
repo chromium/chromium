@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" />일 전 사용됨</translation>
 <translation id="2074131957428911366">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
-<translation id="2086623437239112659">저장된 로그인 정보가 오래되었을 수 있습니다.</translation>
 <translation id="209018056901015185">데스크톱 버전으로 보기</translation>
 <translation id="2103075008456228677">history.google.com 열기</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 이동함</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">인터넷</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
 <translation id="5228579091201413441">동기화 사용</translation>
+<translation id="5232485538978018676">관리 계정으로 로그인</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5245322853195994030">동기화 취소</translation>
 <translation id="5271549068863921519">비밀번호 저장</translation>
@@ -724,6 +724,7 @@
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>
 <translation id="8225985093977202398">캐시된 이미지 및 파일</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8271720166617117963">수락 및 로그인</translation>
 <translation id="8281781826761538115">기본값 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8283172974887967105">설정…</translation>

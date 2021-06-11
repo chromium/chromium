@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
-<translation id="2086623437239112659">Your stored sign-in info might be out of date.</translation>
 <translation id="209018056901015185">Request desktop site</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
@@ -408,6 +407,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Close tab</translation>
 <translation id="5228579091201413441">Enable sync</translation>
+<translation id="5232485538978018676">Sign in with managed account</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5245322853195994030">Cancel sync</translation>
 <translation id="5271549068863921519">Save password</translation>
@@ -724,6 +724,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
 <translation id="8261506727792406068">Delete</translation>
+<translation id="8271720166617117963">Accept and sign in</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8283172974887967105">Set…</translation>

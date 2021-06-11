@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Επισήμανση δείκτη ποντικιού</translation>
 <translation id="3513798432020909783">Ο λογαριασμός είναι διαχειριζόμενος από τον χρήστη <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Το Wi-Fi είναι απενεργοποιημένο</translation>
+<translation id="3560866052109807830">Εργαλεία σχεδίασης μαρκαδόρου</translation>
 <translation id="3563775809269155755">Ενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
 <translation id="3571734092741541777">Ρύθμιση</translation>
 <translation id="3573179567135747900">Αλλάξτε το πάλι σε "<ph name="FROM_LOCALE" />" (απαιτείται επανεκκίνηση)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">Η συντόμευση πληκτρολογίου Ctrl + Alt + Κάτω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο End, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Δεξί βέλος.</translation>
 <translation id="4279490309300973883">Κατοπτρισμός</translation>
 <translation id="4285498937028063278">Ξεκαρφίτσωμα</translation>
+<translation id="429402653707266969">Εναλλαγή θέσης γραμμής εργαλείων</translation>
 <translation id="4294319844246081198">Καλημέρα <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Διαγραφή και των <ph name="COUNT" /> ειδοποιήσεων</translation>
 <translation id="4302592941791324970">Μη διαθέσιμη</translation>

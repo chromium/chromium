@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">ใช้งานเมื่อ <ph name="DAYS" /> วันที่ผ่านมา</translation>
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
-<translation id="2086623437239112659">ข้อมูลการลงชื่อเข้าใช้ที่คุณเก็บไว้อาจล้าสมัย</translation>
 <translation id="209018056901015185">ขอไซต์สำหรับเดสก์ท็อป</translation>
 <translation id="2103075008456228677">เปิด history.google.com</translation>
 <translation id="2116625576999540962">ย้ายแล้ว <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">อินเทอร์เน็ต</translation>
 <translation id="5210365745912300556">ปิดแท็บ</translation>
 <translation id="5228579091201413441">เปิดใช้การซิงค์</translation>
+<translation id="5232485538978018676">ลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5245322853195994030">ยกเลิกการซิงค์</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>
@@ -724,6 +724,7 @@
 <translation id="8206354486702514201">ผู้ดูแลระบบของคุณกำหนดให้ใช้การตั้งค่านี้</translation>
 <translation id="8225985093977202398">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="8261506727792406068">ลบ</translation>
+<translation id="8271720166617117963">ยอมรับและลงชื่อเข้าใช้</translation>
 <translation id="8281781826761538115">ค่าเริ่มต้น - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8283172974887967105">ตั้งค่า…</translation>

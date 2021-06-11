@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
-<translation id="2086623437239112659">Сакталган кирүү маалыматынын мөөнөтү өтүп кеткен окшойт.</translation>
 <translation id="209018056901015185">Толк верс талп кылнт</translation>
 <translation id="2103075008456228677">history.google.com сайтын ачуу</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> нерсе жылдырылды</translation>
@@ -615,7 +614,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7015203776128479407">Баштапкы шайкештирүү жөндөөсү аяктаган жок. Шайкештештирүү өчүк.</translation>
 <translation id="7029809446516969842">Сырсөздөр</translation>
 <translation id="7053983685419859001">Бөгөттөө</translation>
-<translation id="7062545763355031412">Кабыл алып, каттоо эсептерин которуу</translation>
+<translation id="7062545763355031412">Кабыл алып, башка аккаунтка которулуңуз</translation>
 <translation id="7099761977003084116">Акыркы өтмөктөр</translation>
 <translation id="7102005569666697658">Жүктөлүп алынууда… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Жашыруу</translation>

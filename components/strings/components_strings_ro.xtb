@@ -312,6 +312,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat în fiecare zi.}=1{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat în fiecare zi.}few{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat o dată la {NUM_DAYS} zile.}other{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat o dată la {NUM_DAYS} de zile.}}</translation>
 <translation id="2053553514270667976">Cod zip</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestie}few{# sugestii}other{# de sugestii}}</translation>
+<translation id="2071156619270205202">Cardul nu este eligibil pentru un număr de card virtual.</translation>
 <translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="20817612488360358">Setările proxy de sistem sunt setate pentru a fi utilizate, dar o configurație explicită pentru proxy este, de asemenea, specificată.</translation>
@@ -440,9 +441,11 @@
 <translation id="2521385132275182522">Capsare în dreapta jos</translation>
 <translation id="2523886232349826891">Salvat numai pe acest dispozitiv</translation>
 <translation id="2524461107774643265">Adaugă mai multe informații</translation>
+<translation id="2529899080962247600">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Intrările suplimentare vor fi ignorate.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
 <translation id="2536110899380797252">Adaugă o adresă</translation>
 <translation id="2539524384386349900">Detectează</translation>
+<translation id="2540701853218677861">Istoricul conectărilor / deconectărilor de pe dispozitiv, inclusiv marcaje temporale și încercări nereușite</translation>
 <translation id="2541219929084442027">Paginile pe care le accesezi în filele incognito nu vor fi înregistrate în istoricul browserului, nu vor stoca cookie-uri și nu vor rămâne în istoricul căutărilor după ce închizi toate filele incognito. Fișierele descărcate și marcajele create vor fi păstrate.</translation>
 <translation id="2544644783021658368">Un document</translation>
 <translation id="254947805923345898">Valoarea politicii nu este validă.</translation>
@@ -633,6 +636,7 @@
 <translation id="3320021301628644560">Adaugă o adresă de facturare</translation>
 <translation id="3324983252691184275">Roșu aprins</translation>
 <translation id="3329013043687509092">Saturație</translation>
+<translation id="3333762389743153920">Nu este eligibil pentru un card virtual</translation>
 <translation id="3338095232262050444">Securizat</translation>
 <translation id="3355823806454867987">Modifica setările proxy...</translation>
 <translation id="3360103848165129075">Foaia handlerului pentru plăți</translation>
@@ -1146,6 +1150,7 @@
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Confirmă cardul</translation>
 <translation id="5135404736266831032">Gestionează adresele...</translation>
+<translation id="5138014172396933048">Momentan, cardul virtual nu este disponibil. Contactează banca.</translation>
 <translation id="5138227688689900538">Afișează mai puțin</translation>
 <translation id="514010763713772514">Finalizează mai rapid achiziția data viitoare</translation>
 <translation id="5145883236150621069">Răspunsul pentru politică include un cod de eroare</translation>
@@ -1192,6 +1197,7 @@
 <translation id="5287240709317226393">Afișați cookie-urile</translation>
 <translation id="5287456746628258573">Site-ul folosește o configurație de securitate învechită, care îți poate expune informațiile (de exemplu, parolele sau numerele cardurilor de credit) când sunt trimise la acest site.</translation>
 <translation id="5288108484102287882">Validarea valorilor de politică a returnat avertismente</translation>
+<translation id="5288808348893593856">Conexiunea site-ului este sigură dacă Chrome nu anunță contrariul.</translation>
 <translation id="5289384342738547352">Gestionarea mai multor documente</translation>
 <translation id="5299298092464848405">Eroare la analizarea politicii</translation>
 <translation id="5300589172476337783">Afișează</translation>
@@ -1554,9 +1560,11 @@
 <translation id="6685834062052613830">Deconectează-te și finalizează configurarea</translation>
 <translation id="6687335167692595844">Dimensiunea fontului solicitată</translation>
 <translation id="6688743156324860098">Actualizează…</translation>
+<translation id="6688775486821967877">Momentan, cardul virtual nu este disponibil. Încearcă din nou mai târziu.</translation>
 <translation id="6689249931105087298">Relativă cu comprimarea punctelor negre</translation>
 <translation id="6689271823431384964">Chrome oferă salvarea cardurilor în Contul Google pentru că te-ai conectat. Poți schimba acest comportament în setări. Numele titularului de card vine din contul tău.</translation>
 <translation id="6698381487523150993">Creat:</translation>
+<translation id="6699188552522342100">Site-ul oferă informații corecte?</translation>
 <translation id="6702919718839027939">Prezentare</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6710594484020273272">&lt;Introdu termenul de căutare&gt;</translation>
@@ -1683,6 +1691,7 @@
 <translation id="7219179957768738017">Conexiunea utilizează <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Se procesează</translation>
 <translation id="7221855153210829124">Afișeze notificări</translation>
+<translation id="722454870747268814">Filă incognito nouă</translation>
 <translation id="7229659723041939809">Ai introdus parola pe un site înșelător. Chrome recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă.</translation>
 <translation id="7233592378249864828">Printează foaia de confirmare</translation>
 <translation id="7238585580608191973">Amprentă digitală SHA-256</translation>
@@ -2060,6 +2069,7 @@ Detalii suplimentare:
           <ph name="LIST_ITEM" />cookie-uri și date privind site-urile.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Folosește Touch ID ca să confirmi cardurile mai rapid</translation>
+<translation id="8577348305244205642">Cardul virtual nu este disponibil</translation>
 <translation id="858637041960032120">Adăugați telefon
 </translation>
 <translation id="8589998999637048520">Calitate optimă</translation>

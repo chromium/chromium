@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
+<translation id="3560866052109807830">כלי השרטוט להדגשה</translation>
 <translation id="3563775809269155755">הפעלת נקודה לשיתוף אינטרנט</translation>
 <translation id="3571734092741541777">הגדרה</translation>
 <translation id="3573179567135747900">לשינוי בחזרה ל"<ph name="FROM_LOCALE" />" (נדרשת הפעלה מחדש)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">‏מקשי הקיצור Ctrl ‏+ ‏Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש End, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ ימינה.</translation>
 <translation id="4279490309300973883">שיקוף</translation>
 <translation id="4285498937028063278">ביטול הצמדה</translation>
+<translation id="429402653707266969">החלפת המצב של מיקום סרגל הכלים</translation>
 <translation id="4294319844246081198">בוקר טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ניקוי כל <ph name="COUNT" /> ההתראות</translation>
 <translation id="4302592941791324970">לא זמינה</translation>

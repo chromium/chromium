@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome ले तपाईंको जानकारी पुष्टि गर्न सकेन</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
-<translation id="1067922213147265141">Google का अन्य सेवाहरू</translation>
 <translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को एपमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
 <translation id="1095761715416917775">तपाईं आफूले सिंक गरेको डेटा जुनसुकै बेला प्रयोग गर्न तथा हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">फेरि नदेखाउनुहोस्</translation>
 <translation id="1680919990519905526">Google लेन्समार्फत फोटो किन्नुहोस्<ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">अहिले गरी हेर्नुहोस्</translation>
-<translation id="1692118695553449118">सिंक खुला छ</translation>
 <translation id="1697284962337958118">यहाँ राख्नुहोस्</translation>
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1724977129262658800">आफ्नो पासवर्ड बदल्न अनलक गर्नुहोस्</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">डेटा राख्नुहोस्</translation>
 <translation id="1974060860693918893">उन्नत</translation>
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
-<translation id="1984705450038014246">Chrome को आफ्नो डेटा सिंक गर्नुहोस्</translation>
 <translation id="1986685561493779662">नाम पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> बटन</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> जोडा बनाउन चाहन्छ</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">प्रयोगसम्बन्धी डेटा सेयर गर्ने सेटिङ व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
 <translation id="22320125457191592">तपाईंका लागि</translation>
-<translation id="2234876718134438132">सिंक तथा Google सेवाहरू</translation>
 <translation id="2239812875700136898">Discover का विकल्पहरू नामक बटन प्रयोग गरी आफ्नो समाचार फिडमा देखिने सामग्री नियन्त्रण गर्नुहोस्</translation>
 <translation id="2259659629660284697">पासवर्डहरू निर्यात गर्नुहोस्…</translation>
 <translation id="2276696007612801991">आफ्ना पासवर्डहरू जाँच गर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
@@ -363,7 +359,6 @@
 <translation id="3295530008794733555">अझ छिटो ब्राउज गर्नुहोस्। कम डेटा प्रयोग गर्नुहोस्।</translation>
 <translation id="3297344142967351106">आवाज सहायता</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
-<translation id="3315103659806849044">तपाईं हाल आफ्ना सिंक तथा Google का सेवासम्बन्धी सेटिङहरूलाई आफू अनुकूल पार्दै हुनुहुन्छ। सिंक सेवा सक्रिय पार्ने कार्य पूरा गर्न स्क्रिन बटनको छेवैमा रहेको सुनिश्चित गर्नुहोस् नामक बटनमा ट्याप गर्नुहोस्। माथि नेभिगेसन गर्नुहोस्</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
 <translation id="3341058695485821946">आफूले सुरक्षित गरेको डेटाको मात्रा हेर्नुहोस्</translation>
 <translation id="3341262203274374114">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
@@ -501,7 +496,6 @@
 <translation id="4298388696830689168">लिंक गरिएका साइटहरू</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">आधारभूत</translation>
-<translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4320177379694898372">इन्टरनेट छैन</translation>
 <translation id="4321739720395210191">तपाईंको क्यामेरा खोल्न सकिएन। आफ्नो यन्त्र पुनः सुरु गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="433213510553688132">फलो गरिँदै छ…</translation>
@@ -629,9 +623,7 @@
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
 <translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
-<translation id="5127805178023152808">सिंक अफ छ</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
-<translation id="5136035049889637840">उस्तै उत्पादनहरू किन्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google Drive प्रयोग गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="5152843274749979095">समर्थन गरिने कुनै एप स्थापना गरिएको छैन</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
@@ -751,6 +743,7 @@
 <translation id="5854790677617711513">३० दिनभन्दा पुरानो</translation>
 <translation id="5855546874025048181">यसअनुसार परिष्कृत गर्नुहोस्: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ले ब्लुटुथ एडाप्टरलाई सक्रिय गर्न सकेन</translation>
+<translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">सक्रिय गर्नुहोस्</translation>
 <translation id="5862731021271217234">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="5864174910718532887">विवरणहरू: साइटको नामअनुसार क्रमबद्ध गरिएको</translation>
@@ -760,6 +753,7 @@
 <translation id="587735546353481577">आफूले चाहेको साइट फलो गर्न उक्त साइटमा जानुहोस्, Chrome मेनु खोल्नुहोस् र 'फलो गर्नुहोस्' मा ट्याप गर्नुहोस्।</translation>
 <translation id="5880748256563468367">फिडमा जानुहोस्</translation>
 <translation id="5884076754568147479">तपाईंलाई काम सम्पन्न गर्न मद्दत गर्न Google ले तपाईंले सहायक प्रयोग गर्ने साइटका URL र सामग्रीहरूका साथै तपाईंले सहायकमार्फत पेस गर्न जानकारी प्राप्त गर्ने छ</translation>
+<translation id="5916664084637901428">अन</translation>
 <translation id="5919204609460789179">सिंक सुरु गर्न <ph name="PRODUCT_NAME" /> लाई अपडेट गर्नुहोस्</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> बचत गरियो</translation>
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
@@ -810,7 +804,6 @@
 <translation id="6192907950379606605">फोटोका विवरणहरू पाउनुहोस्</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> होइन?</translation>
 <translation id="6211386937064921208">यो पृष्ठको प्रिभ्यु हेरिँदै छ</translation>
-<translation id="6218096829563201111">उस्तै उत्पादनहरू खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">आफ्ना पासवर्डहरू निर्यात गर्न अनलक गर्नुहोस्</translation>
 <translation id="6232535412751077445">'ट्रयाक नगर्नुहोस्' सक्रिय गर्नुको अर्थ तपाईँको ब्राउजिङ ट्राफिकसँगै अनुरोध समावेश गरिनेछ भन्ने हो। कुनै पनि प्रभाव वेबसाइटले अनुरोधको जवाफ दिने नदिने, र अनुरोधलाई कसरी व्याख्या गरिन्छ भन्नेमा निर्भर गर्दछ।
 

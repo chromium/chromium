@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="2074131957428911366">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
-<translation id="2086623437239112659">Jou gebergde aanmeldinligting is dalk verouderd.</translation>
 <translation id="209018056901015185">Versoek werkskermwerf</translation>
 <translation id="2103075008456228677">Maak history.google.com oop</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items is geskuif</translation>
@@ -408,6 +407,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Maak oortjie toe</translation>
 <translation id="5228579091201413441">Aktiveer sinkronisering</translation>
+<translation id="5232485538978018676">Meld met bestuurde rekening aan</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5245322853195994030">Kanselleer sinkronisering</translation>
 <translation id="5271549068863921519">Stoor wagwoord</translation>
@@ -724,6 +724,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8206354486702514201">Hierdie instelling word deur jou administrateur afgedwing.</translation>
 <translation id="8225985093977202398">Gekaste prente en lêers</translation>
 <translation id="8261506727792406068">Vee uit</translation>
+<translation id="8271720166617117963">Aanvaar en meld aan</translation>
 <translation id="8281781826761538115">Verstek – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Slaan oor</translation>
 <translation id="8283172974887967105">Stel …</translation>
@@ -766,6 +767,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8654802032646794042">Kanselleer</translation>
 <translation id="8668210798914567634">Hierdie bladsy is na jou Leeslys gestoor.</translation>
 <translation id="8680787084697685621">Rekening se aanmeldbesonderhede is verouderd.</translation>
+<translation id="8691262314411702087">Kies wat om te sinkroniseer</translation>
 <translation id="8693663554456874301">{count,plural, =1{Maak oortjie toe}other{Maak oortjies toe}}</translation>
 <translation id="8706588385081740091">Wagwoorde</translation>
 <translation id="8717864919010420084">Kopieer skakel</translation>

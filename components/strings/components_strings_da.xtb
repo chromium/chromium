@@ -312,6 +312,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres hver dag.}=1{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres hver dag.}one{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres med {NUM_DAYS} dags mellemrum.}other{Når denne indstilling er aktiveret og angives som aktiv, fastslår Chrome, hvilken stor gruppe eller "kohorte" din seneste browseraktivitet minder mest om. Annoncører kan vælge annoncer til gruppen, og din browserhistorik forbliver privat på din enhed. Din gruppe opdateres med {NUM_DAYS} dages mellemrum.}}</translation>
 <translation id="2053553514270667976">Postnummer</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}one{# forslag}other{# forslag}}</translation>
+<translation id="2071156619270205202">Dette kort er ikke kvalificeret til et virtuelt kortnummer</translation>
 <translation id="2071692954027939183">Der blev automatisk blokeret notifikationer, da du som regel ikke tillader notifikationer</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="20817612488360358">Indstillingerne for systemproxy er angivet at blive brugt, men en eksplicit proxykonfiguration er også angivet.</translation>
@@ -440,9 +441,11 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2521385132275182522">Hæftning nederst til højre</translation>
 <translation id="2523886232349826891">Gemmes kun på denne enhed</translation>
 <translation id="2524461107774643265">Tilføj flere oplysninger</translation>
+<translation id="2529899080962247600">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster ignoreres.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 mere}one{og # mere}other{og # mere}}</translation>
 <translation id="2536110899380797252">Tilføj adresse</translation>
 <translation id="2539524384386349900">Registrer</translation>
+<translation id="2540701853218677861">Historik for login og logout på enheden, herunder tidsstempler og mislykkede forsøg</translation>
 <translation id="2541219929084442027">Når du har lukket alle dine inkognitofaner, gemmes der hverken cookies, browser- eller søgehistorik for de sider, du besøger i inkognitotilstand. Dog gemmes alle de filer, du downloader, og bogmærker, du opretter.</translation>
 <translation id="2544644783021658368">Enkelt dokument</translation>
 <translation id="254947805923345898">Værdien for politikken er ikke gyldig.</translation>
@@ -635,6 +638,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3320021301628644560">Tilføj faktureringsadresse</translation>
 <translation id="3324983252691184275">Højrød</translation>
 <translation id="3329013043687509092">Mætning</translation>
+<translation id="3333762389743153920">Ikke kvalificeret til virtuelt kort</translation>
 <translation id="3338095232262050444">Sikker</translation>
 <translation id="3355823806454867987">Skift indstillinger for proxy...</translation>
 <translation id="3360103848165129075">Regneark for betalingshandler</translation>
@@ -1148,6 +1152,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Bekræft dit kort</translation>
 <translation id="5135404736266831032">Administrer adresser...</translation>
+<translation id="5138014172396933048">Det virtuelle kort er ikke tilgængeligt lige nu. Du bedes kontakte din bank.</translation>
 <translation id="5138227688689900538">Vis færre</translation>
 <translation id="514010763713772514">Betal hurtigere næste gang</translation>
 <translation id="5145883236150621069">Fejlkode til stede i politiksvar</translation>
@@ -1194,6 +1199,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5287240709317226393">Vis cookies</translation>
 <translation id="5287456746628258573">Dette website benytter en forældet sikkerhedskonfiguration, der muligvis afslører dine oplysninger (f.eks. adgangskoder eller betalingskortnumre), når de sendes til dette website.</translation>
 <translation id="5288108484102287882">Validering af politikværdier har genereret advarsler</translation>
+<translation id="5288808348893593856">Websitets forbindelse er sikker, medmindre Chrome angiver andet.</translation>
 <translation id="5289384342738547352">Håndtering af flere dokumenter</translation>
 <translation id="5299298092464848405">Der opstod en fejl ved parsing af politik</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -1556,9 +1562,11 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6685834062052613830">Log ud, og fuldfør konfigurationen</translation>
 <translation id="6687335167692595844">Der blev anmodet om størrelse på skrifttype</translation>
 <translation id="6688743156324860098">Opdater…</translation>
+<translation id="6688775486821967877">Det virtuelle kort er ikke tilgængeligt lige nu. Prøv igen senere.</translation>
 <translation id="6689249931105087298">Relativ komprimering med sorte punkter</translation>
 <translation id="6689271823431384964">Chrome tilbyder at gemme dine kort på din Google-konto, fordi du er logget ind. Du kan ændre dette i indstillingerne. Kortindehaverens navn hentes fra din konto.</translation>
 <translation id="6698381487523150993">Oprettet:</translation>
+<translation id="6699188552522342100">Er dette website korrekt?</translation>
 <translation id="6702919718839027939">Nutid</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6710594484020273272">&lt;Indtast søgeterm&gt;</translation>
@@ -1685,6 +1693,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7219179957768738017">Forbindelsen bruger <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vise notifikationer</translation>
+<translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7229659723041939809">Du har lige angivet din adgangskode på et vildledende website. Chrome anbefaler, at straks du tjekker dine gemte adgangskoder til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og andre websites, hvor du bruger denne adgangskode.</translation>
 <translation id="7233592378249864828">Udskriv bekræftelsesark</translation>
 <translation id="7238585580608191973">SHA-256-fingeraftryk</translation>
@@ -2062,6 +2071,7 @@ Yderligere oplysninger:
           <ph name="LIST_ITEM" />Cookies og websitedata
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Brug Touch ID for at bekræfte dine kort hurtigere</translation>
+<translation id="8577348305244205642">Virtuelt kort er ikke tilgængeligt</translation>
 <translation id="858637041960032120">Tilføj tlf.nr.
 </translation>
 <translation id="8589998999637048520">Bedste kvalitet:</translation>

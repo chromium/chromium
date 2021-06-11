@@ -317,6 +317,7 @@
 <translation id="3510164367642747937">Открояване на курсора на мишката</translation>
 <translation id="3513798432020909783">Профилът се управлява от <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Функцията за Wi-Fi е изключена</translation>
+<translation id="3560866052109807830">Инструменти за маркиране</translation>
 <translation id="3563775809269155755">Активиране на точката за достъп</translation>
 <translation id="3571734092741541777">Настройване</translation>
 <translation id="3573179567135747900">Връщане към „<ph name="FROM_LOCALE" />“ (изисква рестартиране)</translation>
@@ -411,6 +412,7 @@
 <translation id="4274537685965975248">Клавишната комбинация Ctrl + Alt + стрелка надолу се промени. За да използвате клавиша End, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката надясно.</translation>
 <translation id="4279490309300973883">Дублиране</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
+<translation id="429402653707266969">Превключване на местоположението на лентата с инструменти</translation>
 <translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Изчистване на всичките <ph name="COUNT" /> известия</translation>
 <translation id="4302592941791324970">Не е налице</translation>

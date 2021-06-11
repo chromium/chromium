@@ -58,6 +58,7 @@
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">检查互联网连接状况</translation>
 <translation id="2388990488038464401">要用手机拨打此号码？</translation>
+<translation id="2435457462613246316">显示密码</translation>
 <translation id="24452542372838207">展开通知</translation>
 <translation id="2445449901874883781">使用高密度</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -123,6 +124,7 @@
 <translation id="4306392492252714209">从剪贴板中移除。</translation>
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4491109536499578614">图片</translation>
+<translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4588090240171750605">向右滚动</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，星级评分为 <ph name="RATING_SCORE" /></translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推荐的应用</translation>

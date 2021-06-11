@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Isebenze ezinsukwini ezingu-<ph name="DAYS" /> ezedlule</translation>
 <translation id="2074131957428911366">Ungahlala ukhetha ukuthi yini ezovunyelaniswa <ph name="BEGIN_LINK" />kuzilungiselelo<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Hlehlisa</translation>
-<translation id="2086623437239112659">Ulwazi lwakho olugciniwe lokungena ngemvume lungahle lube oluphelelwe yisikhathi.</translation>
 <translation id="209018056901015185">Cela isayithi ledeskithophu</translation>
 <translation id="2103075008456228677">Vula ku-history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> izinto zihanjisiwe</translation>
@@ -408,6 +407,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5197255632782567636">I-inthanethi</translation>
 <translation id="5210365745912300556">Vala ithebhu</translation>
 <translation id="5228579091201413441">Nika amandla ukuvumelanisa</translation>
+<translation id="5232485538978018676">Ngena ngemvume nge-akhawunti ephethwe</translation>
 <translation id="5234764350956374838">Cashisa</translation>
 <translation id="5245322853195994030">Khansela ukuvumelanisa</translation>
 <translation id="5271549068863921519">Londoloza iphasiwedi</translation>
@@ -724,6 +724,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8206354486702514201">Lokhu kulungiselelwa kusetshenziswa umlawuli wakho.</translation>
 <translation id="8225985093977202398">Izithombe ezifakwe kunqolobane namafayela</translation>
 <translation id="8261506727792406068">Susa</translation>
+<translation id="8271720166617117963">Yamukela futhi Ungene ngemvume</translation>
 <translation id="8281781826761538115">Okuzenzakalelayo - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Yeqa</translation>
 <translation id="8283172974887967105">Setha…</translation>
@@ -766,6 +767,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8654802032646794042">Khansela</translation>
 <translation id="8668210798914567634">Leli khasi lilondolozwe kuhlu lwakho lokufunda.</translation>
 <translation id="8680787084697685621">Imininingwane yokungena ngemvume ye-akhawunti ingaphandle kwedethi.</translation>
+<translation id="8691262314411702087">Khetha Lokho Ozokuvumelanisa</translation>
 <translation id="8693663554456874301">{count,plural, =1{Vala Ithebhu}one{Vala Amathebhu}other{Vala Amathebhu}}</translation>
 <translation id="8706588385081740091">Amaphasiwedi</translation>
 <translation id="8717864919010420084">Kopisha isixhumanisi</translation>

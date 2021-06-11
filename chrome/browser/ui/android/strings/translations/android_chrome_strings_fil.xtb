@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Hindi ma-verify ng Chrome ang iyong impormasyon</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Hindi kailanman nag-save</translation>
-<translation id="1067922213147265141">Iba pang serbisyo ng Google</translation>
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
 <translation id="1095761715416917775">Tiyaking maa-access mo sa anumang oras ang iyong sini-sync na data</translation>
 <translation id="1100066534610197918">Buksan sa bagong tab sa grupo</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Huwag ipakitang muli</translation>
 <translation id="1680919990519905526">Mamili ng larawan sa Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Subukan ngayon</translation>
-<translation id="1692118695553449118">Naka-on ang pag-sync</translation>
 <translation id="1697284962337958118">Idagdag sa</translation>
 <translation id="1718835860248848330">Huling oras</translation>
 <translation id="1724977129262658800">I-unlock para i-edit ang iyong password</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
-<translation id="1984705450038014246">I-sync ang iyong data ng Chrome</translation>
 <translation id="1986685561493779662">May ganito nang pangalan</translation>
 <translation id="1987739130650180037">Button ng <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658">Gustong makipagpares ng <ph name="SITE" /></translation>
@@ -188,7 +185,6 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2200113223741723867">Pamahalaan ang pagbabahagi ng data ng paggamit</translation>
 <translation id="2227444325776770048">Magpatuloy bilang si <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Para sa iyo</translation>
-<translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2239812875700136898">Kontrolin ang iyong mga kuwento mula sa Mga Opsyon para sa button na I-discover</translation>
 <translation id="2259659629660284697">I-export ang mga password…</translation>
 <translation id="2276696007612801991">Mag-sign in sa iyong Google account para masuri ang mga password mo</translation>
@@ -364,7 +360,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3295530008794733555">Mag-browse nang mas mabilis. Gumamit ng mas kaunting data.</translation>
 <translation id="3297344142967351106">Tulong sa pamamagitan ng boses</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
-<translation id="3315103659806849044">Kasalukuyan mong kino-customize ang iyong mga setting ng Pag-sync at serbisyo ng Google. Para tapusin ang pag-on ng pag-sync, i-tap ang button na Kumpirmahin malapit sa ibaba ng screen. Mag-navigate pataas</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="3341058695485821946">Tingnan kung gaano karaming data ang iyong natipid</translation>
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
@@ -502,7 +497,6 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="4298388696830689168">Mga naka-link na site</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Mga Pangunahing Kaalaman</translation>
-<translation id="4314815835985389558">Pamahalaan ang pag-sync</translation>
 <translation id="4320177379694898372">Walang koneksyon sa internet</translation>
 <translation id="4321739720395210191">Hindi mabuksan ang iyong camera. I-restart ang iyong device at subukan ulit.</translation>
 <translation id="433213510553688132">Sinusubaybayan…</translation>
@@ -631,9 +625,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
 <translation id="5118713593561876160">Mga Interes</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
-<translation id="5127805178023152808">Naka-off ang pag-sync</translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
-<translation id="5136035049889637840">Mamili pa ng produkto <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Alamin kung paano gamitin ang Google Drive</translation>
 <translation id="5152843274749979095">Walang naka-install na sinusuportahang app</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
@@ -753,6 +745,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5854790677617711513">Mas matagal sa 30 araw</translation>
 <translation id="5855546874025048181">Pinuhin: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Hindi ma-on ng Chrome ang Bluetooth adapter</translation>
+<translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5862731021271217234">Para makuha ang iyong mga tab mula sa iba mo pang device, i-on ang pag-sync</translation>
 <translation id="5864174910718532887">Mga detalye: Pinagbukud-bukod ayon sa pangalan ng site</translation>
@@ -762,6 +755,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="587735546353481577">Para subaybayan ang isang site, pumunta sa site, buksan ang menu ng Chrome, at i-tap ang Subaybayan.</translation>
 <translation id="5880748256563468367">Pumunta sa feed</translation>
 <translation id="5884076754568147479">Para tulungan kang tapusin ang mga gawain, matatanggap ng Google ang mga URL at content ng mga site kung saan ka gumamit ng Assistant, gayundin ang impormasyong isinumite mo sa pamamagitan ng Assistant</translation>
+<translation id="5916664084637901428">Naka-on</translation>
 <translation id="5919204609460789179">I-update ang <ph name="PRODUCT_NAME" /> upang simulan ang pag-sync</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ang natipid</translation>
 <translation id="5939518447894949180">I-reset</translation>
@@ -812,7 +806,6 @@ Kasalukuyan pa ring dine-develop ang mga trial ng Privacy Sandbox at available a
 <translation id="6192907950379606605">Makakuha ng desc ng larawan</translation>
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pini-preview ang page na ito</translation>
-<translation id="6218096829563201111">Maghanap pa ng produkto <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">I-unlock upang i-export ang iyong mga password</translation>
 <translation id="6232535412751077445">Kapag na-enable mo ang “Huwag Subaybayan,” magsasama ng isang kahilingan sa trapiko ng iyong pagba-browse. Ang anumang magiging epekto ay dedepende sa pagtugon at pagbibigay-kahulugan ng website sa nabanggit na kahilingan.
 

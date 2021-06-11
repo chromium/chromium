@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome konnte Ihre Daten nicht bestätigen</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Nie speichern für…</translation>
-<translation id="1067922213147265141">Weitere Google-Dienste</translation>
 <translation id="107147699690128016">Eine Änderung der Dateiendung kann zum Öffnen der Datei in einer anderen Anwendung führen und Schäden an Ihrem Gerät verursachen.</translation>
 <translation id="1095761715416917775">Sie sollten jederzeit auf Ihre synchronisierten Daten zugreifen können</translation>
 <translation id="1100066534610197918">In neuem Tab in Gruppe öffnen</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Nicht mehr anzeigen</translation>
 <translation id="1680919990519905526">Über Google Lens kaufen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Jetzt ausprobieren</translation>
-<translation id="1692118695553449118">Synchronisierung ist aktiviert</translation>
 <translation id="1697284962337958118">Hinzufügen zu</translation>
 <translation id="1718835860248848330">Letzte Stunde</translation>
 <translation id="1724977129262658800">Entsperren, um Ihr Passwort zu bearbeiten</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Daten behalten</translation>
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
-<translation id="1984705450038014246">Chrome-Daten synchronisieren</translation>
 <translation id="1986685561493779662">Name ist bereits vorhanden</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> – Schaltfläche "<ph name="LINK_NAME" />"</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> möchte eine Kopplung durchführen</translation>
@@ -188,7 +185,6 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2200113223741723867">Freigabe von Nutzungsdaten verwalten</translation>
 <translation id="2227444325776770048">Als <ph name="USER_FULL_NAME" /> fortfahren</translation>
 <translation id="22320125457191592">Für mich</translation>
-<translation id="2234876718134438132">Synchronisierung und Google-Dienste</translation>
 <translation id="2239812875700136898">Über die Schaltfläche "Optionen für Discover" können Sie festlegen, welche Meldungen Ihnen angezeigt werden</translation>
 <translation id="2259659629660284697">Passwörter exportieren…</translation>
 <translation id="2276696007612801991">Melden Sie sich in Ihrem Google-Konto an, um Ihre Passwörter zu prüfen</translation>
@@ -364,7 +360,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3295530008794733555">Schneller surfen. Weniger Daten verbrauchen.</translation>
 <translation id="3297344142967351106">Sprachassistent</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
-<translation id="3315103659806849044">Sie passen gerade die Einstellungen für "Synchronisierung und Google-Dienste" an Wenn Sie die Aktivierung der Synchronisierung abschließen möchten, tippen Sie unten auf dem Bildschirm auf "Bestätigen". Nach oben</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
 <translation id="3341058695485821946">Erfahren Sie, wie viel Datenvolumen Sie eingespart haben</translation>
 <translation id="3341262203274374114">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4298388696830689168">Verknüpfte Websites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
-<translation id="4314815835985389558">Synchronisierung verwalten</translation>
 <translation id="4320177379694898372">Keine Internetverbindung</translation>
 <translation id="4321739720395210191">Die Kamera kann nicht geöffnet werden. Starten Sie das Gerät neu und versuchen Sie es noch einmal.</translation>
 <translation id="433213510553688132">Folgen wird aktiviert…</translation>
@@ -631,9 +625,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="510275257476243843">1 Stunde übrig</translation>
 <translation id="5118713593561876160">Interessen</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
-<translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
-<translation id="5136035049889637840">Ähnliche Produkte kaufen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">So nutzen Sie Google Drive</translation>
 <translation id="5152843274749979095">Keine unterstützten Apps installiert</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
@@ -753,6 +745,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5855546874025048181">Eingrenzen: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome kann den Bluetooth-Adapter nicht aktivieren</translation>
+<translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5862731021271217234">Aktivieren Sie die Synchronisierung, um Ihre Tabs von Ihren anderen Geräten abzurufen</translation>
 <translation id="5864174910718532887">Details: Nach Websitename sortiert</translation>
@@ -762,6 +755,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="587735546353481577">Wenn Sie einer Website folgen möchten, rufen Sie die Website auf, öffnen Sie das Chrome-Menü und tippen Sie auf „Folgen“.</translation>
 <translation id="5880748256563468367">Zum Feed</translation>
 <translation id="5884076754568147479">Wenn Sie in Chrome mit Assistant Aufgaben erledigen, werden die URLs und Inhalte der Websites, auf denen Sie Assistant verwenden, sowie die Daten, die Sie über Assistant weitergeben, an Google gesendet</translation>
+<translation id="5916664084637901428">An</translation>
 <translation id="5919204609460789179">Zur Synchronisierung müssen Sie <ph name="PRODUCT_NAME" /> aktualisieren</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> gespeichert</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
@@ -812,7 +806,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 <translation id="6192907950379606605">Bildbeschreibungen abrufen</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht Ihre E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
-<translation id="6218096829563201111">Ähnliche Produkte suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Zum Exportieren Ihrer Passwörter entsperren</translation>
 <translation id="6232535412751077445">Wenn Sie das Kästchen „Do Not Track“ anklicken, wird mit Ihren Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 

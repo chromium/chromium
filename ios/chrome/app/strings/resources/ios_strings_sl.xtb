@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
-<translation id="2086623437239112659">Shranjeni podatki za prijavo so morda zastareli.</translation>
 <translation id="209018056901015185">Zahtevaj spletno mesto za nam. računalnik</translation>
 <translation id="2103075008456228677">Odpri history.google.com</translation>
 <translation id="2116625576999540962">Št. premaknjenih elementov: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -408,6 +407,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Zapri zavihek</translation>
 <translation id="5228579091201413441">Omogoči sinhronizacijo</translation>
+<translation id="5232485538978018676">Prijava z upravljanim računom</translation>
 <translation id="5234764350956374838">Opusti</translation>
 <translation id="5245322853195994030">Prekliči sinhronizacijo</translation>
 <translation id="5271549068863921519">Shrani geslo</translation>
@@ -724,6 +724,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8206354486702514201">To nastavitev je uveljavil skrbnik.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8271720166617117963">Sprejem in prijava</translation>
 <translation id="8281781826761538115">Privzeto - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8283172974887967105">Nastavi …</translation>

@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome आपकी जानकारी की पुष्टि नहीं कर सका</translation>
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="10614374240317010">कभी नहीं सेव किया गया</translation>
-<translation id="1067922213147265141">Google की दूसरी सेवाएंं</translation>
 <translation id="107147699690128016">अगर आप फ़ाइल का एक्सटेंशन बदलते हैं, तो हो सकता है कि फ़ाइल अलग ऐप्लिकेशन में खुले. इससे आपके डिवाइस को नुकसान पहुंच सकता है.</translation>
 <translation id="1095761715416917775">पक्का करें कि आप हमेशा अपना सिंक किया हुआ डेटा ऐक्सेस कर सकें</translation>
 <translation id="1100066534610197918">समूह में नए टैब में खोलें</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">फिर से न दिखाएं</translation>
 <translation id="1680919990519905526">Google Lens से इमेज खरीदें <ph name="BEGIN_NEW" />नए<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">अभी आज़माएं</translation>
-<translation id="1692118695553449118">समन्वयन चालू है</translation>
 <translation id="1697284962337958118">इनमें शामिल करें</translation>
 <translation id="1718835860248848330">पिछला घंटा</translation>
 <translation id="1724977129262658800">अपना पासवर्ड बदलने के लिए अनलॉक करें</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">डेटा को सेव रखें</translation>
 <translation id="1974060860693918893">बेहतर</translation>
 <translation id="1984417487208496350">कोई सुरक्षा नहीं (हम ऐसा करने का सुझाव नहीं देते)</translation>
-<translation id="1984705450038014246">अपना Chrome डेटा सिंक करें</translation>
 <translation id="1986685561493779662">नाम पहले से मौजूद है</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> बटन</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> युग्मित करना चाहता है</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">इस्तेमाल के बारे में डेटा शेयर करने की सेटिंग प्रबंधित करें</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> के रूप में जारी रखें</translation>
 <translation id="22320125457191592">आपके लिए</translation>
-<translation id="2234876718134438132">सिंक और Google सेवाएं</translation>
 <translation id="2239812875700136898">डिस्कवर बटन के विकल्पों से सामग्री को नियंत्रित करें</translation>
 <translation id="2259659629660284697">पासवर्ड निर्यात करें…</translation>
 <translation id="2276696007612801991">अपने पासवर्ड की जांच करने के लिए, Google खाते में साइन इन करें</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">तेज़ी से ब्राउज़ करें. कम डेटा इस्तेमाल करें.</translation>
 <translation id="3297344142967351106">आवाज़ से डिवाइस का इस्तेमाल करना</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड करने के लिए आगे बढ़ें?</translation>
-<translation id="3315103659806849044">आप इस समय अपनी सिंक की सुविधा और Google सेवा की सेटिंग कस्टमाइज़ कर रहे हैं. सिंक चालू करने की प्रक्रिया पूरी करने के लिए, स्क्रीन के निचले हिस्से पर मौजूद 'पुष्टि करें' बटन पर टैप करें. ऊपर जाएं</translation>
 <translation id="3334729583274622784">फ़ाइल एक्सटेंशन बदलना चाहते हैं?</translation>
 <translation id="3341058695485821946">देखें कि आपने कितना डेटा बचाया है</translation>
 <translation id="3341262203274374114">अनफ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">लिंक की हुई साइटें</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">बुनियादी चीज़ें</translation>
-<translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
 <translation id="4320177379694898372">कोई इंटरनेट कनेक्‍शन नहीं</translation>
 <translation id="4321739720395210191">कैमरा खाेला नहीं जा सकता. अपने डिवाइस को रीस्टार्ट करके, फिर से कोशिश करें.</translation>
 <translation id="433213510553688132">फ़ॉलो किया जा रहा है...</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">1 घंटा शेष</translation>
 <translation id="5118713593561876160">रुचि</translation>
 <translation id="5123685120097942451">गुप्त टैब</translation>
-<translation id="5127805178023152808">समन्वयन बंद है</translation>
 <translation id="5132942445612118989">सभी डिवाइस पर अपने पासवर्ड, इतिहास और दूसरी कई चीज़ें सिंक करें</translation>
-<translation id="5136035049889637840">मिलते-जुलते प्रॉडक्ट खरीदें <ph name="BEGIN_NEW" />नए<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google डिस्क के इस्तेमाल का तरीका जानें</translation>
 <translation id="5152843274749979095">भुगतान करने के लिए कोई ऐप्लिकेशन इंस्‍टॉल नहीं है</translation>
 <translation id="5161254044473106830">शीर्षक आवश्‍यक</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">30 दिनों से ज़्यादा पुराना</translation>
 <translation id="5855546874025048181">बेहतर बनाएं: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome, ब्लूटूथ एडाप्टर को चालू नहीं कर सका</translation>
+<translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5862731021271217234">अपने दूसरे डिवाइस से अपने टैब पाने के लिए, 'सिंक करें' को चालू करें</translation>
 <translation id="5864174910718532887">जानकारी: 'साइट नाम' के अनुसार क्रम से लगाया गया</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">किसी साइट को फ़ॉलो करने के लिए, उस साइट पर जाएं, Chrome मेन्यू को खोलें, और 'फ़ॉलो करें' पर टैप करें.</translation>
 <translation id="5880748256563468367">फ़ीड पर जाएं</translation>
 <translation id="5884076754568147479">टास्क पूरे करने में आपकी मदद के लिए, Google उन साइटों के यूआरएल और सामग्री का इस्तेमाल करेगा जिनसे आपने Assistant को जोड़ा है. साथ ही, वह उस जानकारी का भी इस्तेमाल करेगा जिसे आपने Assistant की मदद से सबमिट किया है</translation>
+<translation id="5916664084637901428">चालू है</translation>
 <translation id="5919204609460789179">सिंक शुरू करने के लिए <ph name="PRODUCT_NAME" /> अपडेट करें</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> सेव किए गए</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">ज़्यादा जानकारी पाएं</translation>
 <translation id="6210748933810148297">क्या <ph name="EMAIL" /> नहीं हैं?</translation>
 <translation id="6211386937064921208">इस पेज की झलक दिखाई जा रही है</translation>
-<translation id="6218096829563201111">मिलते-जुलते प्रॉडक्ट खोजें <ph name="BEGIN_NEW" />नए<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">अपने पासवर्ड निर्यात करने के लिए अनलॉक करें</translation>
 <translation id="6232535412751077445">‘नज़र न रखें’ सुविधा को चालू करने का मतलब है कि आपके ब्राउज़िंग ट्रैफ़िक के साथ कोई अनुरोध शामिल किया जाएगा. कोई भी प्रभाव इस बात पर निर्भर करता है कि वेबसाइट, अनुरोध का जवाब देती है या नहीं और अनुरोध को किस तरह समझा जाता है.
 

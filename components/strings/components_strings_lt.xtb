@@ -312,6 +312,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}=1{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}one{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dieną.}few{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienas.}many{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienos.}other{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienų.}}</translation>
 <translation id="2053553514270667976">Pašto kodas</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 pasiūlymas}one{# pasiūlymas}few{# pasiūlymai}many{# pasiūlymo}other{# pasiūlymų}}</translation>
+<translation id="2071156619270205202">Šiai kortelei negali būti suteiktas virtualios kortelės numeris.</translation>
 <translation id="2071692954027939183">Pranešimai automatiškai užblokuoti, nes įprastai jų neleidžiate</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="20817612488360358">Sistemos įgaliotojo serverio nustatymai nustatyti kaip naudotini, bet taip pat nurodyta tiksli įgaliotojo serverio konfigūracija.</translation>
@@ -440,9 +441,11 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2521385132275182522">Sankabėlė apačioje dešinėje</translation>
 <translation id="2523886232349826891">Išsaugota tik šiame įrenginyje</translation>
 <translation id="2524461107774643265">Daugiau informacijos pridėjimas</translation>
+<translation id="2529899080962247600">Šiame lauke gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš. Į visus kitus įrašus nebus atsižvelgiama.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ir dar 1}one{ir dar #}few{ir dar #}many{ir dar #}other{ir dar #}}</translation>
 <translation id="2536110899380797252">Pridėti adresą</translation>
 <translation id="2539524384386349900">Aptikti</translation>
+<translation id="2540701853218677861">Prisijungimo prie įrenginio ir atsijungimo nuo jo istorija, įskaitant laiko žymes ir nepavykusius bandymus</translation>
 <translation id="2541219929084442027">Puslapiai, kuriuos peržiūrite inkognito skirtukuose, nebus rodomi naršyklės istorijoje, slapukų saugykloje ar paieškos istorijoje, kai uždarysite visus inkognito skirtukus. Visi atsisiųsti failai ar sukurtos žymės išliks.</translation>
 <translation id="2544644783021658368">Vienas dokumentas</translation>
 <translation id="254947805923345898">Politikos vertė netinkama.</translation>
@@ -636,6 +639,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3320021301628644560">Atsiskaitymo adreso pridėjimas</translation>
 <translation id="3324983252691184275">Tamsiai raudona</translation>
 <translation id="3329013043687509092">Spalvų sodrumas</translation>
+<translation id="3333762389743153920">Negalima naudoti kaip virtualios kortelės</translation>
 <translation id="3338095232262050444">Saugi</translation>
 <translation id="3355823806454867987">Pakeisti įgaliotojo serverio nustatymus...</translation>
 <translation id="3360103848165129075">Mokėjimo doroklės lapas</translation>
@@ -1149,6 +1153,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kortelės patvirtinimas</translation>
 <translation id="5135404736266831032">Tvarkyti adresus...</translation>
+<translation id="5138014172396933048">Šiuo metu virtuali kortelė nepasiekiama. Susisiekite su savo banku.</translation>
 <translation id="5138227688689900538">Rodyti mažiau</translation>
 <translation id="514010763713772514">Spartesnis mokėjimo apdorojimas kitą kartą</translation>
 <translation id="5145883236150621069">Politikos atsakyme yra klaidos kodas</translation>
@@ -1195,6 +1200,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5287240709317226393">Rodyti slapukus</translation>
 <translation id="5287456746628258573">Šioje svetainėje naudojama pasenusi saugos konfigūracija, todėl gali būti atskleista į šią svetainę siunčiama informacija (pvz., slaptažodžiai ar kredito kortelių numeriai).</translation>
 <translation id="5288108484102287882">Patvirtinant politikos vertes pateikta įspėjimų</translation>
+<translation id="5288808348893593856">Svetainės ryšys yra saugus, nebent „Chrome“ nurodo kitaip.</translation>
 <translation id="5289384342738547352">Kelių dokumentų apdorojimas</translation>
 <translation id="5299298092464848405">Analizuojant politiką įvyko klaida</translation>
 <translation id="5300589172476337783">Rodyti</translation>
@@ -1557,9 +1563,11 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6685834062052613830">Atsijunkite ir užbaikite sąranką</translation>
 <translation id="6687335167692595844">Reikia nurodyti šrifto dydį</translation>
 <translation id="6688743156324860098">Atnaujinti…</translation>
+<translation id="6688775486821967877">Šiuo metu virtuali kortelė nepasiekiama. Bandykite dar kartą vėliau.</translation>
 <translation id="6689249931105087298">Santykinis su juodų taškų sutankinimu</translation>
 <translation id="6689271823431384964">„Chrome“ siūlo išsaugoti korteles „Google“ paskyroje, nes esate prisijungę. Šią elgseną galite pakeisti nustatymuose. Kortelės savininko vardas gaunamas iš jūsų paskyros.</translation>
 <translation id="6698381487523150993">Sukurta:</translation>
+<translation id="6699188552522342100">Ar šios svetainės informacija tiksli?</translation>
 <translation id="6702919718839027939">Rodyti</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6710594484020273272">&lt;Įveskite paieškos terminą&gt;</translation>
@@ -1686,6 +1694,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7219179957768738017">Ryšiui naudojama <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Apdorojama</translation>
 <translation id="7221855153210829124">Rodyti pranešimus</translation>
+<translation id="722454870747268814">Naujas inkognito skirtukas</translation>
 <translation id="7229659723041939809">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. „Chrome“ rekomenduoja patikrinti išsaugotus <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ir kitų svetainių, kuriose dabar naudojate šį slaptažodį, slaptažodžius.</translation>
 <translation id="7233592378249864828">Spausdinti patvirtinimo lapą</translation>
 <translation id="7238585580608191973">SHA-256 piršto antspaudas</translation>
@@ -2063,6 +2072,7 @@ Papildoma išsami informacija:
           <ph name="LIST_ITEM" />slapukai ir svetainės duomenys.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Patvirtinkite korteles greičiau su „Touch ID“</translation>
+<translation id="8577348305244205642">Virtuali kortelė nepasiekiama</translation>
 <translation id="858637041960032120">Pridėti tel. nr.
 </translation>
 <translation id="8589998999637048520">Geriausia kokybė</translation>

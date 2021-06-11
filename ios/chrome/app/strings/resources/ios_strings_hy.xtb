@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
-<translation id="2086623437239112659">Հնարավոր է՝ մուտքի պահված տվյալները հնացել են։</translation>
 <translation id="209018056901015185">Հայցել աշխատասեղանի տարբերակը</translation>
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
 <translation id="2116625576999540962">Տեղափոխվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> տարր</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">Համացանց</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5228579091201413441">Միացնել համաժամացումը</translation>
+<translation id="5232485538978018676">Մուտք կառավարվող հաշիվ</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5245322853195994030">Չեղարկել համաժամացումը</translation>
 <translation id="5271549068863921519">Պահել գաղտնաբառը</translation>
@@ -724,6 +724,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8206354486702514201">Այս կարգավորումը պարտադրված է ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="8225985093977202398">Քեշավորված պատկերներ և ֆայլեր</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8271720166617117963">Ընդունել և մուտք գործել</translation>
 <translation id="8281781826761538115">Կանխադրված՝ <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Բաց թողնել</translation>
 <translation id="8283172974887967105">Սահմանել…</translation>
@@ -766,6 +767,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8654802032646794042">Չեղարկել</translation>
 <translation id="8668210798914567634">Այս էջը պահվեց ձեր ընթերցանության ցանկում:</translation>
 <translation id="8680787084697685621">Հաշվի մուտքի տվյալները հնացած են:</translation>
+<translation id="8691262314411702087">Ընտրել տարրեր համաժամացման համար</translation>
 <translation id="8693663554456874301">{count,plural, =1{Փակել ներդիրը}one{Փակել ներդիրները}other{Փակել ներդիրները}}</translation>
 <translation id="8706588385081740091">Գաղտնաբառեր</translation>
 <translation id="8717864919010420084">Պատճենել հղումը</translation>

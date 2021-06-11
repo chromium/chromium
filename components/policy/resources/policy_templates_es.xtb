@@ -2337,8 +2337,8 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       SharedArrayBuffers en Chrome 91 o posterior (25-05-2021) por motivos de compatibilidad
       con la Web. Información adicional disponible en:
       https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      Si se le asigna el valor True, los sitios podrán usar SharedArrayBuffer sin restricciones.
-      Si se le asigna el valor False o no se le asigna ninguno, los sitios solo podrán usar SharedArrayBuffers si están
+      Si se le asigna el valor true, los sitios podrán usar SharedArrayBuffer sin restricciones.
+      Si se le asigna el valor false o no se le asigna ninguno, los sitios solo podrán usar SharedArrayBuffers si están
       aislados de otros orígenes.</translation>
 <translation id="3942041691320538491">Si se asigna el valor "0" (predeterminado) a esta política, podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript, pero no en extensiones instaladas por políticas de empresa. Si se le asigna el valor "1", podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript sin excepciones, incluso en extensiones instaladas por políticas de empresa. Si se le asigna el valor "2", no podrás acceder a las herramientas para desarrolladores ni tampoco podrás inspeccionar elementos de sitios web.
 
@@ -3425,13 +3425,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="547601067149622666">No permitir anuncios en sitios web con anuncios invasivos</translation>
 <translation id="5480380613778757009">Si se inhabilita esta política o no se establece, todos los ajustes de pantalla que se hayan definido en la sesión de invitado gestionada se borrarán en cuanto finalice la sesión. Si se le asigna el valor True a esta política, las propiedades de pantalla se conservarán después de salir de la sesión de invitado gestionada.</translation>
 <translation id="5483065054530244863">Permite certificados SHA-1 firmados emitidos por anclajes de veracidad locales</translation>
-<translation id="5483584677807837752">Si está habilitada, la función <ph name="PRODUCT_NAME" /> envía encabezados de solicitud granulares con información sobre el entorno y el navegador del usuario.
-
-      Esta función es adicional, pero los nuevos encabezados podrían afectar a la funcionalidad de algunos sitios web que restringen el número de caracteres que pueden tener las solicitudes.
-
-      Si se habilita esta política o no se le asigna ningún valor, se habilitará la función <ph name="PRODUCT_NAME" />. Si no se habilita esta política, dicha función no estará disponible.
-
-      Esta política de empresa sirve para una adaptación a corto plazo y estará disponible como mínimo hasta la versión 93 de Chrome.</translation>
 <translation id="5494322570831642650">Especifica si el usuario podrá abrir páginas en modo de incógnito en <ph name="PRODUCT_NAME" />.
 
       Si se habilita esta política o no se le asigna ningún valor, se podrán abrir páginas en modo de incógnito.
@@ -6076,11 +6069,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si no se le asigna ningún valor a la política o se deja en blanco, el dispositivo utilizará la zona horaria activa, pero los usuarios podrán cambiarla.</translation>
 <translation id="8880294585549584028">Permitir el acceso de escritura a archivos y directorios en estos sitios web</translation>
 <translation id="8882006618241293596">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios web</translation>
-<translation id="8887158351295718009">Las cookies establecidas para los dominios que coincidan con estos patrones recuperarán la antigua configuración de comportamiento de <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si restableces la configuración de comportamiento antigua, las cookies que no especifiquen ningún atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> se tratarán como si tuvieran "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" y las cookies "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" no necesitarán tener el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />". Además, se omitirá la comparación de esquemas cuando se evalúe si dos sitios web son iguales. Para ver la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Para las cookies de dominios que no coincidan con los patrones indicados, o para todas las cookies si no se define esta política, se usará el valor global predeterminado de la política <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" /> (si se ha definido) o la configuración personal del usuario (si no se ha definido).
-
-          Nota: Los patrones que indiques aquí se tratarán como dominios, no como URLs, así que no especifiques esquemas ni puertos.</translation>
 <translation id="8887709920496070892">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se muestre un cuadro de diálogo de advertencia</translation>
 <translation id="8890438048579188548">Ocultar las advertencias de desactivación de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Espacio disponible en disco necesario para <ph name="PLUGIN_VM_NAME" /></translation>

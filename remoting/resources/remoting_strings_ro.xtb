@@ -67,6 +67,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="4176825807642096119">Cod de acces</translation>
 <translation id="4227991223508142681">Utilitarul de configurare a gazdei</translation>
 <translation id="4240294130679914010">Program de dezinstalare a gazdei Chromoting</translation>
+<translation id="4257751272692708833">Aplicația de redirecționare a adreselor URL pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Codul de acces este greșit. Încercați din nou.</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4405930547258349619">Biblioteca nucleu</translation>
@@ -121,6 +122,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="6612717000975622067">Trimite Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Permite accesul</translation>
 <translation id="677755392401385740">Gazda a fost inițiată pentru utilizatorul: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplicație de ajutor pentru deschiderea unei adrese URL pe clientul <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Afișați/Ascundeți tastatura.</translation>
 <translation id="6963936880795878952">Conexiunile cu computerul la distanță sunt blocate temporar, deoarece cineva a încercat să se conecteze la acesta folosind un cod PIN nevalid. Încearcă din nou mai târziu.</translation>
 <translation id="6965382102122355670">OK</translation>

@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chromeமால் உங்கள் தகவல்களைச் சரிபார்க்க முடியவில்லை</translation>
 <translation id="1049743911850919806">மறைநிலை</translation>
 <translation id="10614374240317010">எப்போதும் சேமிக்காதவை</translation>
-<translation id="1067922213147265141">பிற Google சேவைகள்</translation>
 <translation id="107147699690128016">கோப்பு நீட்டிப்பை மாற்றினால் இந்தக் கோப்பு வேறொரு ஆப்ஸில் திறக்கக்கூடும், இது உங்கள் சாதனத்திற்குத் தீங்கிழைக்கக்கூடும்.</translation>
 <translation id="1095761715416917775">உங்கள் ஒத்திசைவுத் தரவை எப்போதும் அணுகக்கூடியதாக அமைத்துக் கொள்ளுங்கள்</translation>
 <translation id="1100066534610197918">குழுவில் புதிய தாவலில் திற</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">மீண்டும் காட்டாதே</translation>
 <translation id="1680919990519905526">Google Lens மூலம் வாங்குக <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">இப்போதே பயன்படுத்துக</translation>
-<translation id="1692118695553449118">ஒத்திசைவு இயக்கத்தில்</translation>
 <translation id="1697284962337958118">இதில் சேர்:</translation>
 <translation id="1718835860248848330">கடந்த ஒரு மணிநேரம்</translation>
 <translation id="1724977129262658800">கடவுச்சொல்லைத் திருத்த, அன்லாக் செய்யவும்</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">தரவை அழிக்காதே</translation>
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
 <translation id="1984417487208496350">பாதுகாப்பற்ற பயன்முறை (பரிந்துரைக்கப்படவில்லை)</translation>
-<translation id="1984705450038014246">உங்கள் Chrome தரவை ஒத்திசைக்கவும்</translation>
 <translation id="1986685561493779662">பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> பட்டன்</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> இணைய விரும்புகிறது</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">உபயோகத் தரவுப் பகிர்தலை நிர்வகித்தல்</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ஆகத் தொடர்க</translation>
 <translation id="22320125457191592">உங்களுக்கானவை</translation>
-<translation id="2234876718134438132">ஒத்திசைவு &amp; Google சேவைகள்</translation>
 <translation id="2239812875700136898">கண்டறிவதற்கான விருப்பங்கள் என்ற பட்டன் மூலம் உங்கள் செய்திகளைக் கட்டுப்படுத்தலாம்</translation>
 <translation id="2259659629660284697">கடவுச்சொற்களை ஏற்று…</translation>
 <translation id="2276696007612801991">கடவுச்சொற்களைச் சரிபார்க்க, உங்கள் Google கணக்கில் உள்நுழையவும்</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">வேகமாக உலாவலாம். குறைவான டேட்டாவைப் பயன்படுத்தலாம்.</translation>
 <translation id="3297344142967351106">குரல் உதவி</translation>
 <translation id="3303414029551471755">உள்ளடக்கத்தைப் பதிவிறக்குவதைத் தொடரவா?</translation>
-<translation id="3315103659806849044">உங்கள் ஒத்திசைவு மற்றும் Google சேவை அமைப்புகளைத் தற்போது உங்களுக்கேற்ப மாற்றியமைக்கிறீர்கள். ஒத்திசைவை இயக்க, திரையின் அடிப்பகுதிக்கு அருகிலுள்ள ‘உறுதிப்படுத்து’ பட்டனைத் தட்டவும். மேலே செல்</translation>
 <translation id="3334729583274622784">கோப்பு நீட்டிப்பை மாற்றவா?</translation>
 <translation id="3341058695485821946">எவ்வளவு தரவைச் சேமித்துள்ளீர்கள் என்பதைப் பார்க்கவும்</translation>
 <translation id="3341262203274374114">பின்தொடர்வதை நிறுத்த முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">இணைக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="4303044213806199882">chrome_ஸ்கிரீன்ஷாட்_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">அடிப்படைகள்</translation>
-<translation id="4314815835985389558">ஒத்திசைவை நிர்வகிக்கும் பக்கம்</translation>
 <translation id="4320177379694898372">இணைய இணைப்பு இல்லை</translation>
 <translation id="4321739720395210191">கேமராவைத் திறக்க முடியவில்லை. சாதனத்தை மீண்டும் தொடங்கி மறுபடியும் முயலவும்.</translation>
 <translation id="433213510553688132">செயல்படுவதைக் காட்டும் ஸ்பின்னர்...</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">1 மணிநேரம் மீதமுள்ளது</translation>
 <translation id="5118713593561876160">ஆர்வங்கள்</translation>
 <translation id="5123685120097942451">மறைநிலைத் தாவல்</translation>
-<translation id="5127805178023152808">ஒத்திசைவு முடக்கத்தில்</translation>
 <translation id="5132942445612118989">எல்லாச் சாதனங்களிலும் உங்கள் கடவுச்சொற்கள், வரலாறு மற்றும் பலவற்றை ஒத்திசைக்கலாம்</translation>
-<translation id="5136035049889637840">இதுபோன்றவற்றை வாங்குக <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google இயக்ககத்தை எப்படிப் பயன்படுத்துவது என்பதை அறிக</translation>
 <translation id="5152843274749979095">ஆதரிக்கப்படும் ஆப்ஸ் நிறுவப்படவில்லை</translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">30 நாட்களுக்கு முந்தையவை</translation>
 <translation id="5855546874025048181">துல்லியமாக: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ஆல் புளூடூத் அடாப்டரை இயக்க முடியவில்லை</translation>
+<translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5862731021271217234">உங்கள் பிற சாதனங்களிலிருந்து தாவல்களைப் பெற, ஒத்திசைவை இயக்கவும்</translation>
 <translation id="5864174910718532887">விவரங்கள்: தளப் பெயரின்படி வரிசைப்படுத்தப்பட்டுள்ளன</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">ஒரு தளத்தைப் பின்தொடர, அதற்குச் சென்று Chrome மெனுவைத் திறந்து ‘பின்தொடர்’ என்பதைத் தட்டவும்.</translation>
 <translation id="5880748256563468367">ஊட்டத்திற்குச் செல்</translation>
 <translation id="5884076754568147479">உங்கள் பணிகளை நிறைவு செய்வதில் உதவும் பொருட்டு, நீங்கள் Assistantடைப் பயன்படுத்தும் தளங்களின் URLகளையும் உள்ளடக்கங்களையும் அத்துடன் நீங்கள் Assistant மூலம் சமர்ப்பிக்கும் தகவலையும் Google பெறும்</translation>
+<translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5919204609460789179">ஒத்திசைவைத் தொடங்க, <ph name="PRODUCT_NAME" />ஐப் புதுப்பிக்கவும்</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> சேமிக்கப்பட்டது</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">பட விளக்கங்களைப் பெறு</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> இல்லையா?</translation>
 <translation id="6211386937064921208">இந்தப் பக்கத்தின் மாதிரிக்காட்சி</translation>
-<translation id="6218096829563201111">இதுபோன்றவற்றைத் தேடுக <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">உங்கள் கடவுச்சொற்களை ஏற்ற, திறக்கவும்</translation>
 <translation id="6232535412751077445">‘கண்காணிக்க வேண்டாம்’ என்பதை இயக்குவதால் உங்கள் உலாவல் டிராஃபிக்குடன் கோரிக்கை ஒன்று இணைக்கப்படும். கோரிக்கைக்கு இணையதளம் எவ்வாறு பதிலளிக்கிறது என்பதையும் கோரிக்கையானது எவ்வாறு புரிந்து கொள்ளப்படுகிறது என்பதையும் பொருத்து எந்தவொரு விளைவும் இருக்கும்.
 

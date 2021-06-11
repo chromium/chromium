@@ -317,6 +317,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del mouse</translation>
 <translation id="3513798432020909783">Cuenta administrada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">La conexión Wi-Fi está desactivada</translation>
+<translation id="3560866052109807830">Herramientas de dibujo con marcador</translation>
 <translation id="3563775809269155755">Habilitar el hotspot</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Volver a "<ph name="FROM_LOCALE" />" (debes reiniciar).</translation>
@@ -412,6 +413,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4274537685965975248">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia abajo. Para usar la tecla Fin, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la derecha.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4285498937028063278">No fijar</translation>
+<translation id="429402653707266969">Activar o desactivar la ubicación de la barra de herramientas</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
 <translation id="4302592941791324970">No disponible</translation>

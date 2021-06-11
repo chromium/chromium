@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">‏Chrome نتوانست اطلاعاتتان را تأیید کند</translation>
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="10614374240317010">هرگز ذخیره نمی‌شود</translation>
-<translation id="1067922213147265141">‏سایر سرویس‌های Google</translation>
 <translation id="107147699690128016">اگر پسوند فایل را تغییر دهید، ممکن است فایل در برنامه دیگری باز شود و به‌طور بالقوه برای دستگاه مضر باشد.</translation>
 <translation id="1095761715416917775">مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید</translation>
 <translation id="1100066534610197918">باز کردن در برگه جدید در گروه</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">دیگر نشان داده نشود</translation>
 <translation id="1680919990519905526">‏خرید محتوای تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">امتحان می‌کنید؟</translation>
-<translation id="1692118695553449118">همگام‌سازی روشن است</translation>
 <translation id="1697284962337958118">افزودن به</translation>
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1724977129262658800">برای ویرایش گذرواژه‌تان، قفل صفحه را باز کنید</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">نگه داشتن داده‌ها</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
-<translation id="1984705450038014246">‏همگام‌سازی داده‌های Chrome</translation>
 <translation id="1986685561493779662">نام ازقبل وجود دارد</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> دکمه <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> می‌خواهد مرتبط شود</translation>
@@ -188,7 +185,6 @@
 <translation id="2200113223741723867">مدیریت هم‌رسانی داده‌های استفاده</translation>
 <translation id="2227444325776770048">ادامه دادن به‌عنوان <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">برای شما</translation>
-<translation id="2234876718134438132">‏همگام‌سازی و سرویس‌های Google</translation>
 <translation id="2239812875700136898">کنترل داستان‌ها از دکمه «گزینه‌های یافته‌ها»</translation>
 <translation id="2259659629660284697">درحال صادر کردن گذرواژه‌ها…</translation>
 <translation id="2276696007612801991">‏برای بررسی گذرواژه‌هایتان، به سیستم حساب Google وارد شوید</translation>
@@ -364,7 +360,6 @@
 <translation id="3295530008794733555">سریع‌تر مرور کنید. از داده کمتری استفاده کنید.</translation>
 <translation id="3297344142967351106">دستیار صوتی</translation>
 <translation id="3303414029551471755">ادامه می‌دهید و محتوا را بارگیری می‌کنید؟</translation>
-<translation id="3315103659806849044">‏شما درحال سفارشی کردن تنظیمات همگام‌سازی و سرویس‌های Google هستید. برای تکمیل روشن کردن همگام‌سازی، روی دکمه «تأیید» در پایین صفحه ضربه بزنید. پیمایش به بالا</translation>
 <translation id="3334729583274622784">پسوند فایل تغییر کند؟</translation>
 <translation id="3341058695485821946">ببینید چه مقدار داده صرفه‌جویی کرده‌اید</translation>
 <translation id="3341262203274374114">لغو دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
@@ -502,7 +497,6 @@
 <translation id="4298388696830689168">سایت‌های مرتبط</translation>
 <translation id="4303044213806199882"><ph name="CURRENT_TIMESTAMP_MS" />chrome_screenshot_‎</translation>
 <translation id="4307992518367153382">موارد اصلی</translation>
-<translation id="4314815835985389558">مدیریت همگام‌سازی</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
 <translation id="4321739720395210191">نمی‌توان دوربین را باز کرد. دستگاه را بازراه‌اندازی و دوباره امتحان کنید.</translation>
 <translation id="433213510553688132">دنبال می‌کنید…</translation>
@@ -631,9 +625,7 @@
 <translation id="510275257476243843">۱ ساعت باقی‌مانده است</translation>
 <translation id="5118713593561876160">علایق</translation>
 <translation id="5123685120097942451">برگه ناشناس</translation>
-<translation id="5127805178023152808">همگام‌سازی خاموش است</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
-<translation id="5136035049889637840">خرید محصولات مشابه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">‏آشنایی با نحوه استفاده از Google Drive</translation>
 <translation id="5152843274749979095">هیچ برنامه پشتیبانی‌شده‌ای نصب نشده است</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
@@ -753,6 +745,7 @@
 <translation id="5854790677617711513">قدیمی‌تر از ۳۰ روز</translation>
 <translation id="5855546874025048181">پالایش: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">‏Chrome قادر به روشن کردن آداپتور بلوتوث نیست</translation>
+<translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5862731021271217234">برای اینکه به برگه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، همگام‌سازی را روشن کنید</translation>
 <translation id="5864174910718532887">جزئیات: مرتب‌شده براساس نام سایت</translation>
@@ -762,6 +755,7 @@
 <translation id="587735546353481577">‏برای دنبال کردن سایت، به سایت موردنظر بروید، منوی Chrome را باز کنید و روی «دنبال کردن» ضربه بزنید.</translation>
 <translation id="5880748256563468367">رفتن به جارزن</translation>
 <translation id="5884076754568147479">‏برای کمک به انجام کارها، Google نشانی‌های وب و محتوای سایت‌هایی را که در آن‌ها از «دستیار» استفاده می‌کنید، و همچنین اطلاعاتی را که ازطریق «دستیار» ارسال می‌کنید دریافت خواهد کرد</translation>
+<translation id="5916664084637901428">روشن</translation>
 <translation id="5919204609460789179">برای شروع همگام‌سازی، <ph name="PRODUCT_NAME" /> را به‌روزرسانی کنید</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> صرفه‌جویی‌شده</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
@@ -812,7 +806,6 @@
 <translation id="6192907950379606605">دریافت توضیحات تصویر</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ایمیل شما نیست؟</translation>
 <translation id="6211386937064921208">درحال پیش‌نمایش این صفحه</translation>
-<translation id="6218096829563201111">جستجوی محصولات مشابه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">برای صادر کردن گذرواژه‌ها، قفل را باز کنید</translation>
 <translation id="6232535412751077445">فعال کردن «ردیابی نشود» به این معنی است که درخواستی به ترافیک مرور شما اضافه می‌شود. نتیجه به این بستگی دارد که وب‌سایت به درخواست‌ پاسخ بدهد یا نه و درخواست چگونه تفسیر شود.
 

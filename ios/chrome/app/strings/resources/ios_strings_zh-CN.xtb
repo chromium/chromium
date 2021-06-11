@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
-<translation id="2086623437239112659">您存储的登录信息可能已过期。</translation>
 <translation id="209018056901015185">请求切换到桌面版网站</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
@@ -408,6 +407,7 @@
 <translation id="5197255632782567636">互联网</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
+<translation id="5232485538978018676">使用受管理的帐号登录</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5245322853195994030">取消同步</translation>
 <translation id="5271549068863921519">保存密码</translation>
@@ -724,6 +724,7 @@
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>
 <translation id="8225985093977202398">缓存的图片和文件</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8271720166617117963">接受并登录</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8283172974887967105">设置…</translation>
@@ -809,6 +810,7 @@
 <translation id="9148126808321036104">重新登录</translation>
 <translation id="9152539721251340337">生成二维码</translation>
 <translation id="9157836665414082580">禁止显示对话框</translation>
+<translation id="9183059292653643328">此浏览器由贵单位管理。</translation>
 <translation id="9188680907066685419">退出受管理的帐号</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>

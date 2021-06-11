@@ -317,6 +317,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3510164367642747937">Markera muspekaren</translation>
 <translation id="3513798432020909783">Kontot hanteras av <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">wifi är inaktiverat</translation>
+<translation id="3560866052109807830">Ritverktyg för markeringar</translation>
 <translation id="3563775809269155755">Aktivera surfzon</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
 <translation id="3573179567135747900">Byt tillbaka till "<ph name="FROM_LOCALE" />" (kräver omstart)</translation>
@@ -411,6 +412,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
 <translation id="4279490309300973883">Spegling</translation>
 <translation id="4285498937028063278">Lossa</translation>
+<translation id="429402653707266969">Byt plats för verktygsfältet</translation>
 <translation id="4294319844246081198">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Rensa alla <ph name="COUNT" /> aviseringar</translation>
 <translation id="4302592941791324970">Inte tillgängligt</translation>

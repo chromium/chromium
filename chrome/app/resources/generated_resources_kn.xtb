@@ -52,7 +52,6 @@
 <translation id="1054048317165655285">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="1054153489933238809">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಮೂಲ &amp;ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 ವಾರದ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}one{{NUM_WEEKS} ವಾರಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}other{{NUM_WEEKS} ವಾರಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}}</translation>
-<translation id="1056775291175587022">ನೆಟ್ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{ನಿಮ್ಮ ಹೊಸ ಪಿನ್ ನಮೂದಿಸಿ. ಪಿನ್ ಕನಿಷ್ಠ ಒಂದು ಅಕ್ಷರ ಹೊಂದಿರಬೇಕು ಮತ್ತು ಅಕ್ಷರಗಳು, ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಇತರ ಅಕ್ಷರಗಳನ್ನು ಒಳಗೊಂಡಿರಬಹುದು.}one{ನಿಮ್ಮ ಹೊಸ ಪಿನ್ ನಮೂದಿಸಿ. ಪಿನ್‌ನಲ್ಲಿ ಕನಿಷ್ಠ # ಅಕ್ಷರಗಳಿರಬೇಕು ಮತ್ತು ಅದರಲ್ಲಿ ಅಕ್ಷರಗಳು, ಅಂಕಿಗಳು ಹಾಗೂ ಇತರ ಅಕ್ಷರಗಳು ಇರಬಹುದು.}other{ನಿಮ್ಮ ಹೊಸ ಪಿನ್ ನಮೂದಿಸಿ. ಪಿನ್‌ನಲ್ಲಿ ಕನಿಷ್ಠ # ಅಕ್ಷರಗಳಿರಬೇಕು ಮತ್ತು ಅದರಲ್ಲಿ ಅಕ್ಷರಗಳು, ಅಂಕಿಗಳು ಹಾಗೂ ಇತರ ಅಕ್ಷರಗಳು ಇರಬಹುದು.}}</translation>
@@ -160,13 +159,11 @@
 <translation id="1165039591588034296">ದೋಷ</translation>
 <translation id="1166212789817575481">ಬಲಗಡೆಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ನಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತಿದೆ...</translation>
-<translation id="1168100932582989117">Google ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="1170288591054440704">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸೈಟ್ ಬಯಸಿದಾಗ ಸೂಚನೆ ನೀಡಿ</translation>
 <translation id="1171135284592304528">ಆಬ್ಜೆಕ್ಟ್ ಬದಲಾದಾಗ ಕೀಬೋರ್ಡ್ ಫೋಕಸ್ ಬಳಸಿಕೊಂಡು ಅದನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> HID ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="1172750555846831341">ಚಿಕ್ಕ ಅಂಚಿನಲ್ಲಿ ಫ್ಲಿಪ್ ಮಾಡಿ</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
-<translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ವಿವರಗಳು</translation>
 <translation id="1174073918202301297">ಶಾರ್ಟ್‌ಕಟ್ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="1174366174291287894">Chrome ನಿಮಗೆ ಸೂಚಿಸಿದ ಹೊರತು, ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಯಾವಾಗಲೂ ಸುರಕ್ಷಿತವಾಗಿರುತ್ತದೆ</translation>
 <translation id="117445914942805388">ಸಿಂಕ್ ಮಾಡಿರುವ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳು ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲು, <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ<ph name="END_LINK" />.</translation>
@@ -201,7 +198,6 @@
 <translation id="1202596434010270079">ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ. ದಯವಿಟ್ಟು USB ಸ್ಟಿಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="120368089816228251">ಸಂಗೀತ ಟಿಪ್ಪಣಿ</translation>
 <translation id="1203942045716040624">ಹಂಚಿದ ಕೆಲಸಗಾರ: <ph name="SCRIPT_URL" /></translation>
-<translation id="1209796539517632982">ಸ್ವಯಂಚಾಲಿತ ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="1211769675100312947">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು ನಿಮ್ಮ ನಿರ್ವಹಣೆಯಲ್ಲಿರುತ್ತವೆ</translation>
 <translation id="1213254615020057352">ಬಳಕೆ ಮತ್ತು ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಿ. ಡಯಾಗ್ನಾಸ್ಟಿಕ್, ಸಾಧನ ಹಾಗೂ ಆ್ಯಪ್ ಬಳಕೆಯ ಡೇಟಾವನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುವ ಮೂಲಕ ನಿಮ್ಮ ಮಗುವಿನ Android ಅನುಭವವನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ. ನಿಮ್ಮ ಮಗುವನ್ನು ಗುರುತಿಸಲು ಈ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ, ಹಾಗೂ ಇದು ಸಿಸ್ಟಂ ಮತ್ತು ಆ್ಯಪ್‌ನ ಸ್ಥಿರತೆ, ಹಾಗೂ ಇತರ ಸುಧಾರಣೆಗಳಿಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಒಟ್ಟುಗೂಡಿಸಲಾದ ಕೆಲವೊಂದು ಡೇಟಾ, Google ಆ್ಯಪ್‌ಗಳಿಗೆ ಮತ್ತು Android ಡೆವಲಪರ್‌ಗಳಂತಹ ಪಾಲುದಾರರಿಗೂ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಮಾಲೀಕರು ಜಾರಿಗೊಳಿಸುತ್ತಾರೆ. ಈ ಸಾಧನದ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಮತ್ತು ಬಳಕೆಯ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸಲು ಮಾಲೀಕರು ಆಯ್ಕೆ ಮಾಡಬಹುದು. ನಿಮ್ಮ ಮಗುವಿಗಾಗಿ, ಹೆಚ್ಚುವರಿ ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್‌ ಚಟುವಟಿಕೆಯನ್ನು ಆನ್ ಮಾಡಿದ್ದರೆ, ಈ ಡೇಟಾವನ್ನು ಅವರ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬಹುದು.</translation>
 <translation id="121384500095351701">ಈ ಫೈಲ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -258,14 +254,12 @@
 <translation id="126710816202626562">ಅನುವಾದ ಭಾಷೆ:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
-<translation id="1272293450992660632">ಪಿನ್ ಮೌಲ್ಯಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="1272978324304772054">ಈ ಬಳಕೆದಾರನ ಖಾತೆಯು ಸಾಧನವು ದಾಖಲಾಗಿರುವ ಡೊಮೇನ್‌ಗೆ ಸಂಬಂಧಿಸಿಲ್ಲ. ನೀವು ವಿಭಿನ್ನ ಡೊಮೆನ್ ಅನ್ನು ದಾಖಲಿಸಲು ಬಯಸುವುದಾದರೆ ನೀವು ಮೊದಲು ಮರುಪ್ರಾಪ್ತಿಯ ಸಾಧನದ ಮೂಲಕ ಹೋಗುವ ಅವಶ್ಯಕತೆ ಇದೆ.</translation>
 <translation id="1274997165432133392">ಕುಕೀಗಳು ಮತ್ತು ಇತರ ಡೇಟಾ</translation>
 <translation id="1275718070701477396">ಆಯ್ಕೆ ಮಾಡಿದ</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1277020343994096713">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪಿನ್‌ಗಿಂತ ವಿಭಿನ್ನವಾಗಿರುವ ಹೊಸ ಪಿನ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="127946606521051357">ಸಮೀಪದ ಸಾಧನವು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
-<translation id="1280820357415527819">ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1280965841156951489">ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1285320974508926690">ಈ ಸೈಟ್ ಅನ್ನು ಎಂದಿಗೂ ಭಾಷಾಂತರಿಸದಿರಿ</translation>
 <translation id="1285484354230578868">ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಡ್ರೈವ್ ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹಿಸಿ</translation>
@@ -274,7 +268,6 @@
 <translation id="1288300545283011870">ಧ್ವನಿ ಗುಣಲಕ್ಷಣಗಳು</translation>
 <translation id="1289619947962767206">ಇನ್ನು ಮುಂದೆ ಈ ಆಯ್ಕೆಯನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ. ಟ್ಯಾಬ್ ಅನ್ನು ಪ್ರಸ್ತುತಪಡಿಸಲು, <ph name="GOOGLE_MEET" /> ಬಳಸಿ.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> ಸೇವಾ ನಿಯಮಗಳು</translation>
-<translation id="1291603679744561561">ಸಿಮ್ ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="1292849930724124745">ಸೈನ್ ಇನ್ ಆಗಿ ಉಳಿಯಲು ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="1293264513303784526">USB-C ಸಾಧನ (ಎಡ ಪೋರ್ಟ್)</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -326,7 +319,6 @@
 <translation id="1347512539447549782">Linux ಸಂಗ್ರಹಣೆ</translation>
 <translation id="1347975661240122359">ಬ್ಯಾಟರಿ <ph name="BATTERY_LEVEL" />% ಪ್ರಮಾಣ ತಲುಪಿದಾಗ ಅಪ್‌ಡೇಟ್ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</translation>
 <translation id="1353275871123211385">ಆ್ಯಪ್ ಅನುಮೋದನೆ ಮತ್ತು ವೀಕ್ಷಣಾ ಅವಧಿ ಮಿತಿಗಳಂತಹ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಬಳಸಲು, ಮಗುವು ಪೋಷಕರು ನಿರ್ವಹಿಸುವ Google ಖಾತೆಯೊಂದನ್ನು ಹೊಂದಿರಬೇಕು. Google Classroom ನಂತಹ ಪರಿಕರಗಳಿಗಾಗಿ ಶಾಲಾ ಖಾತೆಯನ್ನು ನಂತರ ಸೇರಿಸಬಹುದು.</translation>
-<translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">PPD ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ Chromebook ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಂಡು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1354045473509304750">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸರಿಸಲು <ph name="HOST" /> ಗೆ ಅನುಮತಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="1355088139103479645">ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
@@ -367,7 +359,6 @@
 <translation id="1397500194120344683">ಯಾವುದೇ ಅರ್ಹ ಸಾಧನಗಳಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1398853756734560583">ಗರಿಷ್ಠಗೊಳಿಸು</translation>
 <translation id="139911022479327130">ನಿಮ್ಮ ಫೋನ್‌ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ ಹಾಗೂ ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ.</translation>
-<translation id="1399511500114202393">ಯಾವುದೇ ಬಳಕೆದಾರ ಪ್ರಮಾಣಪತ್ರವಿಲ್ಲ</translation>
 <translation id="1401308693935339022">ಸ್ಥಳ ಬಳಸಿ. ಸ್ಥಳ ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ಸೇವೆಗಳು ಈ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಅನುಮತಿ ನೀಡಿ. Google, ಸ್ಥಳ ಡೇಟಾವನ್ನು ನಿಯಮಿತವಾಗಿ ಸಂಗ್ರಹಿಸಬಹುದು ಮತ್ತು ಸ್ಥಳದ ನಿಖರತೆ ಹಾಗೂ ಸ್ಥಳ-ಆಧಾರಿತ ಸೇವೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಈ ಡೇಟಾವನ್ನು ಅನಾಮಧೇಯವಾಗಿ ಬಳಸಬಹುದು.</translation>
 <translation id="1403222014593521787">ಪ್ರಾಕ್ಸಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1405779994569073824">ಕ್ರ್ಯಾಶ್ ಆಗಿದೆ.</translation>
@@ -487,7 +478,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅದರ ಮಾಲೀಕರಿಗೆ ಕೇಳಿ.</translation>
 <translation id="151501797353681931">Safari ಯಿಂದ ಆಮದು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1515163294334130951">ಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ಹೋಸ್ಟ್</translation>
 <translation id="1521442365706402292">ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1521774566618522728">ಇಂದು ಸಕ್ರಿಯ</translation>
 <translation id="152234381334907219">ಎಂದಿಗೂ ಉಳಿಸಿಲ್ಲ</translation>
@@ -598,7 +588,6 @@
 <translation id="1627408615528139100">ಈಗಾಗಲೇ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1628948239858170093">ಫೈಲ್ ತೆರೆಯುವ ಮೊದಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ?</translation>
 <translation id="1629314197035607094">ಪಾಸ್‌ವರ್ಡ್ ಅವಧಿ ಮೀರಿದೆ</translation>
-<translation id="1629521517399325891">ನೆಟ್‌ವರ್ಕ್ ದೃಢೀಕರಣಕ್ಕಾಗಿ ಬಳಕೆದಾರ ಪ್ರಮಾಣಪತ್ರ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="163072119192489970">ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವುದು ಮತ್ತು ಸ್ವೀಕರಿಸುವುದನ್ನು ಮುಗಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1630768113285622200">ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಿ</translation>
 <translation id="1632082166874334883">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿರುತ್ತದೆ</translation>
@@ -635,7 +624,6 @@
 <translation id="1661156625580498328">AES ಎನ್‌ಕ್ರಿಪ್ಶನ್‌‌ ಅನ್ನು ಜಾರಿಗೊಳಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ).</translation>
 <translation id="16620462294541761">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="166278006618318542">ವಿಷಯ ಸಾರ್ವಜನಿಕ ಕೀಲಿ ಆಲ್ಗಾರಿದಮ್</translation>
-<translation id="166439687370499867">ಹಂಚಿದ ನೆಟ್‌ವರ್ಕ್‌ ಕಾನ್ಫಿಗರ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1666232093776384142">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗೆ ಡೇಟಾ ಪ್ರವೇಶದ ಸುರಕ್ಷತೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1668435968811469751">ಹಸ್ತಚಾಲಿತವಾಗಿ ನೋಂದಾಯಿಸಿ</translation>
 <translation id="1668979692599483141">ಸಲಹೆಗಳ ಕುರಿತು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
@@ -687,11 +675,9 @@
 <translation id="1720318856472900922">TLS WWW ಸರ್ವರ್ ಪ್ರಮಾಣೀಕರಣ</translation>
 <translation id="1721312023322545264">ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಲು ನಿಮಗೆ <ph name="NAME" /> ಅವರ ಅನುಮತಿಯ ಅಗತ್ಯವಿರುತ್ತದೆ</translation>
 <translation id="1722460139690167654">ನಿಮ್ಮ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ಅನ್ನು<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
-<translation id="1722687688096767818">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1723824996674794290">&amp;ಹೊಸ ವಿಂಡೋ</translation>
 <translation id="1725149567830788547">&amp;ನಿಯಂತ್ರಣಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1725562816265788801">ಟ್ಯಾಬ್ ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆ</translation>
-<translation id="1726100011689679555">ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" /> ಅನ್ನು Parallels Desktop ಅಥವಾ Linux ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1729533290416704613">ಓಮ್ನಿಬಾಕ್ಸ್‌ನಿಂದ ನೀವು ಹುಡುಕಾಟ ನಡೆಸಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ಆ್ಯಪ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; Google Play ಸ್ಟೋರ್ &gt; Android ಆದ್ಯತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ &gt; ಆ್ಯಪ್‌ಗಳು ಅಥವಾ ಆ್ಯಪ್ ನಿರ್ವಾಹಕ ಆಯ್ಕೆಗೆ ಹೋಗಿ. ನಂತರ ನೀವು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುವ ಆ್ಯಪ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ (ನೀವು ಆ್ಯಪ್ ಅನ್ನು ಹುಡುಕಲು ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡುವ ಅಗತ್ಯವಿರಬಹುದು). ನಂತರ ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಅಥವಾ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ ಆಯ್ಕೆಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.<ph name="END_PARAGRAPH1" /></translation>
@@ -855,7 +841,6 @@
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" ಪ್ರಮಾಣಪತ್ರವನ್ನು ಅಳಿಸುವುದೆ?</translation>
 <translation id="1881445033931614352">ಕೀಬೋರ್ಡ್‌ ವಿನ್ಯಾಸ</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ಐಟಂ}one{# ಐಟಂಗಳು}other{# ಐಟಂಗಳು}}</translation>
-<translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಕನೆಕ್ಟ್</translation>
 <translation id="1884340228047885921">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಕೆಲವು ಸಂಪರ್ಕಗಳು ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="1884705339276589024">Linux ಡಿಸ್ಕ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಿ</translation>
 <translation id="1885106732301550621">ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶ</translation>
@@ -904,7 +889,6 @@
 <translation id="1935303383381416800">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1936931585862840749">ಎಷ್ಟು ಪ್ರತಿಗಳನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಬೇಕೆಂದು (1 ರಿಂದ <ph name="MAX_COPIES" />) ಸೂಚಿಸಲು ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಿ.</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ಪ್ರಕಾರದ ಈ ಸಾಧನದ ಜೊತೆಗೆ ಕಂಟೇನರ್ ಆರ್ಕಿಟೆಕ್ಚರ್ ಪ್ರಕಾರವನ್ನು <ph name="ARCHITECTURE_CONTAINER" /> ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನೀವು ಈ ಕಂಟೇನರ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನದಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು ಅಥವಾ ಫೈಲ್‌ಗಳು ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯುವುದರ ಮೂಲಕ ಈ ಕಂಟೇನರ್ ಚಿತ್ರದಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಪ್ರವೇಶಿಸಬಹುದು.</translation>
-<translation id="1937869457490567002">{COUNT,plural, =1{1 Google ಖಾತೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ}one{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}other{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}}</translation>
 <translation id="1938351510777341717">ಬಾಹ್ಯ ಕಮಾಂಡ್ ಕೀ</translation>
 <translation id="1940546824932169984">ಸಂಪರ್ಕಗೊಂಡಿರುವ ಸಾಧನಗಳು</translation>
 <translation id="1942600407708803723">ಕವರ್ ಮುಚ್ಚಿದ ನಂತರ ಸ್ಥಗಿತಗೊಳಿಸಿ</translation>
@@ -1030,7 +1014,6 @@
 <translation id="208586643495776849">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="208634871997892083">VPN ಯಾವಾಗಲೂ ಆನ್ ಇರುತ್ತದೆ</translation>
 <translation id="2087822576218954668">ಮುದ್ರಿಸು: <ph name="PRINT_NAME" /></translation>
-<translation id="2088690981887365033">VPN ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="208928984520943006">ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಹೋಗಲು, ಕೆಳಗಿನಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
 <translation id="2089566709556890888">Google Chrome ಮೂಲಕ ಸುರಕ್ಷಿತವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="2089795179672254991">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ನೋಡಲು ಸೈಟ್ ಬಯಸಿದರೆ, ಅನುಮತಿ ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -1064,7 +1047,6 @@
 <translation id="2120639962942052471"><ph name="PERMISSION" /> ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}=1{ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ, 1 ವಿನಾಯಿತಿಯಿದೆ}one{ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ, {COUNT} ವಿನಾಯಿತಿಯಿದೆ}other{ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ, {COUNT} ವಿನಾಯಿತಿಯಿದೆ}}</translation>
 <translation id="2121825465123208577">ಮರುಗಾತ್ರ</translation>
-<translation id="2122305276694332719">ಮರೆ ಮಾಡಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಂಪರ್ಕಗೊಳ್ಳುವುದರಿಂದ ಇತರರು ನಿಮ್ಮ ಸಾಧನ ಮತ್ತು ಕೆಲವು ನೆಟ್‌ವರ್ಕ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೋಡಲು ಅನುಮತಿಸುತ್ತದೆ, ಆದ್ದರಿಂದ ಇದನ್ನು ಬಳಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="2123766928840368256">ಬೇರೊಂದು ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2124930039827422115">{1,plural, =1{ಒಬ್ಬ ಬಳಕೆದಾರರ ಮೂಲಕ <ph name="AVERAGE_RATING" /> ರೇಟ್‌ ಮಾಡಲಾಗಿದೆ.}one{# ಬಳಕೆದಾರರ ಮೂಲಕ <ph name="AVERAGE_RATING" /> ರೇಟ್‌ ಮಾಡಲಾಗಿದೆ.}other{# ಬಳಕೆದಾರರ ಮೂಲಕ <ph name="AVERAGE_RATING" /> ರೇಟ್‌ ಮಾಡಲಾಗಿದೆ.}}</translation>
 <translation id="2126167708562367080">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸಿಂಕ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
@@ -1079,7 +1061,6 @@
 <translation id="2136372518715274136">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="2136476978468204130">ನೀವು ನಮೂದಿಸಿದ ಪಾಸ್‌ಫ್ರೇಸ್ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="2138398485845393913">"<ph name="DEVICE_NAME" />" ಗೆ ಸಂಪರ್ಕವು ಇನ್ನೂ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
-<translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ಕನೆಕ್ಟ್</translation>
 <translation id="2139919072249842737">ಸೆಟಪ್ ಬಟನ್</translation>
 <translation id="2140788884185208305">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ</translation>
 <translation id="214169863967063661">ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1221,7 +1202,6 @@
 <translation id="2278668501808246459">ಕಂಟೇನರ್ ನಿರ್ವಾಹಕರನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2280486287150724112">ಬಲ ಅಂಚು</translation>
 <translation id="2282146716419988068">GPU ಪ್ರಕ್ರಿಯೆ</translation>
-<translation id="2282155092769082568">ಸ್ವಯಂ ಕಾನ್ಫಿಗರೇಶನ್ URL:</translation>
 <translation id="2285942871162473373">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2287944065963043964">ಲಾಗಿನ್ ಸ್ಕ್ರೀನ್‌</translation>
 <translation id="2288181517385084064">ವೀಡಿಯೊ ರೆಕಾರ್ಡರ್‌ಗೆ ಬದಲಿಸಿ</translation>
@@ -1245,7 +1225,6 @@
 <translation id="2300578660547687840">ಹುಡುಕಾಟ ಕೀವರ್ಡ್‌ಗಳಿಗಾಗಿ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="2301382460326681002">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ಹೆಚ್ಚುವರಿ ಅನುಮತಿಗಳನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ.</translation>
-<translation id="2303282178633578561">ಸಿಮ್‌ ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="23055578400314116">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2307462900900812319">ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರ್ ಮಾಡು</translation>
 <translation id="230927227160767054">ಸೇವೆ ಹ್ಯಾಂಡ್ಲರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಈ ಪುಟವು ಬಯಸುತ್ತದೆ.</translation>
@@ -1313,7 +1292,6 @@
 <translation id="2365507699358342471">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ಈ ಸೈಟ್ ವೀಕ್ಷಿಸಬಹುದು.</translation>
 <translation id="2367972762794486313">ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತೋರಿಸು</translation>
 <translation id="2371076942591664043">&amp;ಮುಗಿಸಿದಾಗ ತೆರೆಯಿರಿ</translation>
-<translation id="23721837607121582">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2373666622366160481">ಕಾಗದಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="2375406435414127095">ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="2377588536920405462">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮುಖ್ಯ ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಸ್ಥಳವನ್ನು ಆಫ್ ಮಾಡಬಹುದು. ನೀವು ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ, ಸ್ಥಳಕ್ಕಾಗಿ ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳ ಬಳಕೆಯನ್ನು ಸಹ ಆಫ್ ಮಾಡಬಹುದು.</translation>
@@ -1324,7 +1302,6 @@
 <translation id="2381756643783702095">ಕಳುಹಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="2382818385048255866">ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2387052489799050037">ಹೋಮ್‌ಗೆ ಹೋಗಿ</translation>
-<translation id="2387458720915042159">ಪ್ರಾಕ್ಸಿ ಪ್ರಕಾರ ಸಂಪರ್ಕ</translation>
 <translation id="2390347491606624519">ಪ್ರಾಕ್ಸಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ, ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2390782873446084770">ವೈ-ಫೈ ಸಿಂಕ್</translation>
 <translation id="2391419135980381625">ರೂಢಿಯಲ್ಲಿರುವ ಫಾಂಟ್</translation>
@@ -1384,9 +1361,7 @@
 <translation id="2459703812219683497">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="2462724976360937186">ಪ್ರಮಾಣದಪತ್ರದ ಪ್ರಾಧಿಕಾರ ಕೀ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
-<translation id="2464089476039395325">HTTP ಪ್ರಾಕ್ಸಿ</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" />, ನೀವು ಇದೀಗ ವೈ-ಫೈಗೆ ಸಂಪರ್ಕ ಹೊಂದುವ ಮೂಲಕ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿಕೊಳ್ಳಬೇಕೆಂದು ಬಯಸುತ್ತದೆ. ಅಥವಾ ಮಾಪನ ಮಾಡಿದ ಸಂಪರ್ಕದಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿಕೊಳ್ಳಿ (ಶುಲ್ಕಗಳು ಅನ್ವಯವಾಗಬಹುದು).</translation>
-<translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಆಫ್</translation>
 <translation id="2467755475704469005">ಯಾವುದೇ ಸಾಧನ ಪತ್ತೆಯಾಗಿಲ್ಲ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">ಟಚ್‌ಪ್ಯಾಡ್ ಸ್ಕ್ರಾಲ್ ವೇಗವರ್ಧನೆ</translation>
 <translation id="2468205691404969808">ನೀವು ಆ ಪುಟಗಳಿಗೆ ಭೇಟಿ ನೀಡದಿದ್ದರೂ, ನಿಮ್ಮ ಆದ್ಯತೆಗಳನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ಕುಕೀಗಳನ್ನು ಬಳಸುತ್ತದೆ</translation>
@@ -1397,7 +1372,6 @@
 <translation id="2469375675106140201">ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="247051149076336810">ಫೈಲ್‌ ಹಂಚಿಕೊಳ್ಳುವ URL</translation>
 <translation id="2470702053775288986">ಬೆಂಬಲವಿರದ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="2470939964922472929">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿಲಾಗಿದೆ. ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲು, ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಒದಗಿಸಿದ 8-ಸಂಖ್ಯೆಯ ಪರ್ಸನಲ್ ಅನ್‌ಬ್ಲಾಕಿಂಗ್ ಕೀ (PUK) ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="2471469610750100598">ಕಪ್ಪು (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="2471506181342525583">ಸ್ಥಳ ಪ್ರವೇಶವನ್ನುಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2473195200299095979">ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
@@ -1464,7 +1438,6 @@
 <translation id="2530166226437958497">ಸಮಸ್ಯೆ ನಿವಾರಣೆ</translation>
 <translation id="2532589005999780174">ಹೆಚ್ಚಿನ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್</translation>
 <translation id="253434972992662860">&amp;ವಿರಾಮ</translation>
-<translation id="2534460670861217804">ಸುರಕ್ಷಿತ HTTP ಪ್ರಾಕ್ಸಿ</translation>
 <translation id="253557089021624350">ಎಣಿಕೆಯನ್ನು ಚಾಲ್ತಿಯಲ್ಲಿರಿಸಿ</translation>
 <translation id="2535799430745250929">ಯಾವುದೇ ಸೆಲ್ಯುಲರ್ ನೆಟ್‌ವರ್ಕ್ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> ಕೆಳಗಿನ ಫೈಲ್‌ಗಳು ಮತ್ತು ಫೋಲ್ಡರ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
@@ -1528,13 +1501,11 @@
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="2613535083491958306"><ph name="FILENAME" /> ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> ನಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
-<translation id="2617342710774726426">ಸಿಮ್‌ ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2618797463720777311">Nearby ಶೇರ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="2619761439309613843">ಪ್ರತಿದಿನವು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="2620436844016719705">ಸಿಸ್ಟಂ</translation>
 <translation id="262154978979441594">Google Assistant ಗೆ ವಾಯ್ಸ್ ಮಾಡೆಲ್‌ನ ತರಬೇತಿ ನೀಡಿ</translation>
-<translation id="2621713457727696555">ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
 <translation id="26224892172169984">ಪ್ರೊಟೋಕಾಲ್‌‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಯಾವ ಸೈಟ್‌ ಅನ್ನು  ಅನುಮತಿಸಬೇಡ</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">ಈ ಪುಟವು ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಪ್ರವೇಶಿಸುತ್ತಿದೆ.</translation>
@@ -1623,7 +1594,6 @@
 <translation id="2716986496990888774">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಪೋಷಕರು ನಿರ್ವಹಿಸಿರುತ್ತಾರೆ.</translation>
 <translation id="2718395828230677721">ನೈಟ್ ಲೈಟ್</translation>
 <translation id="2718998670920917754">ಆಂಟಿ ವೈರಸ್ ಸಾಫ್ಟ್‌ವೇರ್ ವೈರಸ್ ಒಂದನ್ನು ಪತ್ತೆಹಚ್ಚಿದೆ.</translation>
-<translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ವಿವರಗಳು</translation>
 <translation id="2719936478972253983">ಕೆಳಗಿನ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2721037002783622288">ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> &amp;ಹುಡುಕಿ</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
@@ -1709,7 +1679,6 @@
 <translation id="2801954693771979815">ಸ್ಕ್ರೀನ್ ಗಾತ್ರ</translation>
 <translation id="2802557211515765772">ನಿರ್ವಹಿಸಲಾದ ಯಾವುದೇ ಪ್ರಿಂಟರ್‌ಗಳಿಲ್ಲ.</translation>
 <translation id="2803313416453193357">ಫೋಲ್ಡರ್ ತೆರೆಯಿರಿ</translation>
-<translation id="2803375539583399270">ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="2804043232879091219">ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌‌ ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="2804667941345577550">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲೂ ಸೇರಿದಂತೆ, ಈ ಸೈಟ್‌ನಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="2804680522274557040">ಕ್ಯಾಮರಾವನ್ನು ಆಫ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1735,7 +1704,6 @@
 <translation id="2816319641769218778">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="2816628817680324566">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಗುರುತಿಸಲು ಈ ಸೈಟ್‌ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="2818476747334107629">ಪ್ರಿಂಟರ್ ವಿವರಗಳು</translation>
-<translation id="2820957248982571256">ಸ್ಕ್ಯಾನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="2822634587701817431">ಕುಗ್ಗಿಸಿ/ವಿಸ್ತರಿಸಿ</translation>
 <translation id="2822910719211888134">Linux ಬ್ಯಾಕಪ್ ಮಾಡುತ್ತಿರುವಾಗ ದೋಷ ಸಂಭವಿಸಿದೆ</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> ನಿಮ್ಮ ನಿರ್ವಾಹಕದಿಂದ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
@@ -1896,7 +1864,6 @@
 <translation id="3000461861112256445">ಮೊನೊ ಆಡಿಯೊ</translation>
 <translation id="3001144475369593262">ಮಕ್ಕಳ ಖಾತೆಗಳು</translation>
 <translation id="3003144360685731741">ಆದ್ಯತೆಯ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
-<translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="3003623123441819449">CSS ಕ್ಯಾಷ್</translation>
 <translation id="3003828226041301643">ಡೊಮೇನ್‌ಗೆ ಸಾಧನವನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಾಧನಗಳನ್ನು ಸೇರಿಸಲು ನೀವು ಸವಲತ್ತುಗಳನ್ನು ಹೊಂದಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="3003967365858406397">ಖಾಸಗಿ ವೈ-ಫೈ ಸಂಪರ್ಕವನ್ನು ನಿಮ್ಮ <ph name="PHONE_NAME" /> ರಚಿಸುತ್ತದೆ.</translation>
@@ -1976,7 +1943,6 @@
 <translation id="3084771660770137092">Chrome ಮೆಮೊರಿ ಖಾಲಿಯಾಗಿದೆ ಇಲ್ಲವೇ ಇತರೆ ಕಾರಣಗಳಿಗಾಗಿ ವೆಬ್‌ಪುಟದ ಪ್ರಕ್ರಿಯೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಮುಂದುವರಿಯಲು, ಮರುಲೋಡ್ ಮಾಡಿ ಅಥವಾ ಮತ್ತೊಂದು ಪುಟಕ್ಕೆ ಹೋಗಿ.</translation>
 <translation id="3084958266922136097">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3085412380278336437">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಸೈಟ್ ಬಳಸಬಹುದು</translation>
-<translation id="3085752524577180175">SOCKS ಹೋಸ್ಟ್</translation>
 <translation id="3088052000289932193">ಸೈಟ್, MIDI ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="3088128611727407543">ಆ್ಯಪ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸಿದ್ದಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3088325635286126843">&amp;ಮರುಹೆಸರಿಸು...</translation>
@@ -1996,7 +1962,6 @@
 <translation id="310671807099593501">ಸೈಟ್‌ ಬ್ಲೂಟೂತ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="3108931485517391283">ಫೈಲ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3109724472072898302">ಕುಗ್ಗಿಸಿದ</translation>
-<translation id="3113592018909187986">ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ. ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವವರೆಗೆ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="311394601889664316">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಫೈಲ್‍ಗಳು ಅಥವಾ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಎಡಿಟ್‌ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="3115147772012638511">ಕ್ಯಾಷ್‌ಗಾಗಿ ನಿರೀಕ್ಷಿಸುತ್ತಿದೆ...</translation>
 <translation id="3115580024857770654">ಎಲ್ಲವನ್ನೂ ಕುಗ್ಗಿಸಿ</translation>
@@ -2022,7 +1987,6 @@
 <translation id="3132277757485842847">ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಕನೆಕ್ಷನ್ ಕಾಯ್ದುಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3132996321662585180">ಪ್ರತಿದಿನ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> ಪ್ರಯೋಗಕ್ಕಾಗಿ, ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಪ್ರಯೋಗದ ವಿವರಣೆ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3138624403379688522">ಅಮಾನ್ಯ ಪಿನ್. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="313963229645891001">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ಡಿಫಾಲ್ಟ್ ಹಳದಿ ಅವರಾರ್</translation>
 <translation id="3141318088920353606">ಆಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -2047,7 +2011,6 @@
 <translation id="3158770568048368350">ಇದು ನಿಮ್ಮ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ತಾತ್ಕಾಲಿಕವಾಗಿ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಲು ಕಾರಣವಾಗಬಹುದು</translation>
 <translation id="3159493096109238499">ಬೈಜೆ</translation>
 <translation id="3159978855457658359">ಸಾಧನದ ಹೆಸರನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
-<translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ಹಾರ್ಡ್‌ವೇರ್-ಹಿಂದಕ್ಕೆ ಪಡೆದ)</translation>
 <translation id="3160928651883997588">VPN ಆದ್ಯತೆಗಳು</translation>
 <translation id="3161522574479303604">ಎಲ್ಲಾ ಭಾಷೆಗಳು</translation>
 <translation id="3162853326462195145">ಶಾಲೆಯ ಖಾತೆ</translation>
@@ -2106,7 +2069,6 @@
 <translation id="3248902735035392926">ಎಲ್ಲಕ್ಕಿಂತ ಸುರಕ್ಷತೆಯೇ ಮುಖ್ಯ. <ph name="BEGIN_LINK" />ಈಗ ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ಪರಿಶೀಲಿಸಲು<ph name="END_LINK" /> ಸ್ವಲ್ಪ ಸಮಯವನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ.</translation>
 <translation id="3251759466064201842">&lt;ಪ್ರಮಾಣಪತ್ರದ ಭಾಗವಲ್ಲ&gt;</translation>
 <translation id="325238099842880997">ಮಕ್ಕಳಿಗೆ ಮನೆಯಲ್ಲಿ ಆಟವಾಡಲು, ಅನ್ವೇಷಿಸಲು ಮತ್ತು ಶಾಲೆಯ ಕೆಲಸ ಮಾಡಲು ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ತಳಮಟ್ಟದ ಡಿಜಿಟಲ್ ನಿಯಮಗಳನ್ನು ಹೊಂದಿಸಿ</translation>
-<translation id="3253225298092156258">ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3253448572569133955">ಅಪರಿಚಿತ ಖಾತೆ</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{ಯಾವುದೇ ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ}=1{{COUNT} ಭದ್ರತಾ ಸಮಸ್ಯೆ ಕಂಡುಬಂದಿದೆ}one{{COUNT} ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳು ಕಂಡುಬಂದಿವೆ}other{{COUNT} ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳು ಕಂಡುಬಂದಿವೆ}}</translation>
 <translation id="3254516606912442756">ಸಮಯ ವಲಯವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -2146,8 +2108,6 @@
 <translation id="3288047731229977326">ಡೆವಲಪರ್ ಮೋಡ್‌ನಲ್ಲಿ ಚಾಲನೆಯಾಗುವ ವಿಸ್ತರಣೆಗಳು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಹಾನಿಮಾಡಬಹುದು. ನೀವು ಡೆವಲಪರ್ ಆಗಿರದಿದ್ದರೇ, ಸುರಕ್ಷಿತವಾಗಿರಲು ಡೆವಲಪರ್ ಮೋಡ್‌ನಲ್ಲಿ ಈ ವಿಸ್ತರಣೆಗಳ ಚಾಲನೆಯನ್ನು ನೀವು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
 <translation id="3289668031376215426">ಸ್ವಯಂ-ದೊಡ್ಡಕ್ಷರ</translation>
 <translation id="3289856944988573801">ನವೀಕರಣಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಲು, ದಯವಿಟ್ಟು Ethernet ಅಥವಾ ವೈ-ಫೈ ಬಳಸಿ.</translation>
-<translation id="3290356915286466215">ಅಸುರಕ್ಷಿತ</translation>
-<translation id="3291218047831493686">ಸಿಮ್ ಲಾಕ್ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="3293644607209440645">ಈ ಪುಟವನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="32939749466444286">Linux ಕಂಟೇನರ್ ಪ್ರಾರಂಭವಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3294437725009624529">ಅತಿಥಿ</translation>
@@ -2221,7 +2181,6 @@
 <translation id="338323348408199233">VPN ಬಳಸದೇ ಟ್ರಾಫಿಕ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">ವಿಭಾಜಕ</translation>
-<translation id="338691029516748599"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ಕನೆಕ್ಟ್</translation>
 <translation id="3387614642886316601">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="3387829698079331264">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನೀವು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಲು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3388094447051599208">ಔಟ್‌ಪುಟ್ ಟ್ರೇ ಬಹುತೇಕ ಭರ್ತಿಯಾಗಿದೆ</translation>
@@ -2247,7 +2206,6 @@
 <translation id="3406396172897554194">ಭಾಷೆ ಅಥವಾ ಇನ್‌ಪುಟ್ ಹೆಸರಿನ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="3406605057700382950">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು &amp;ತೋರಿಸಿ</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{ಈ ವಿಸ್ತರಣೆ ಅಪಾಯ ಉಂಟುಮಾಡಬಹುದು}one{ಈ ವಿಸ್ತರಣೆಗಳು ಅಪಾಯ ಉಂಟುಮಾಡಬಹುದು}other{ಈ ವಿಸ್ತರಣೆಗಳು ಅಪಾಯ ಉಂಟುಮಾಡಬಹುದು}}</translation>
-<translation id="3408072735282270043"><ph name="NETWORK_NAME" /> ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">ಈ ಬಳಕೆದಾರರನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ, ಈ ಬಳಕೆದಾರರೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ. <ph name="USER_EMAIL" />, ಆನಂತರ ಕೂಡಾ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3412265149091626468">ಆಯ್ಕೆಗೆ ತೆರಳಿ</translation>
@@ -2354,7 +2312,6 @@
 <translation id="3507888235492474624">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಮರು-ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3508492320654304609">ನಿಮ್ಮ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3508920295779105875">ಮತ್ತೊಂದು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ...</translation>
-<translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="3511200754045804813">ಮರು-ಸ್ಕ್ಯಾನ್</translation>
 <translation id="3511307672085573050">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="351152300840026870">ಸ್ಥಿರ-ಅಗಲ ಫಾಂಟ್</translation>
@@ -2430,7 +2387,6 @@
 <translation id="3599863153486145794">ಸೈನ್-ಇನ್ ಮಾಡಿರುವ ಎಲ್ಲ ಸಾಧನಗಳಿಂದ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="3600051066689725006">ವೆಬ್ ಕೋರಿಕೆ ಮಾಹಿತಿ</translation>
 <translation id="3600792891314830896">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಧ್ವನಿ ಪ್ಲೇ ಆಗುವುದನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
-<translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">ಲಭ್ಯವಿರುವಾಗ ಹೊಸ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಆಫರ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="3602290021589620013">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="3602870520245633055">ಪ್ರಿಂಟ್ ಮಾಡಿ ಮತ್ತು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -2465,7 +2421,6 @@
 <translation id="3629631988386925734">Smart Lock ಸಕ್ರಿಯಗೊಳಿಸಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ. ಮುಂದಿನ ಬಾರಿ, ನಿಮ್ಮ ಫೋನ್ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡುತ್ತದೆ. ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Smart Lock ಅನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3630132874740063857">ನಿಮ್ಮ ಫೋನ್</translation>
 <translation id="3630995161997703415">ಈ ಸೈಟ್‌ ಅನ್ನು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಬಳಸಲು ನಿಮ್ಮ ಶೆಲ್ಫ್‌ಗೆ ಅದನ್ನು ಸೇರಿಸಿ</translation>
-<translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="3634652306074934350">ಅನುಮತಿ ವಿನಂತಿಯ ಅವಧಿ ಮುಕ್ತಾಯವಾಗಿದೆ</translation>
 <translation id="3635353578505343390">Google ಗೆ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="3635960017746711110">Crostini USB ಆದ್ಯತೆಗಳು</translation>
@@ -2518,7 +2473,6 @@
 <translation id="3688526734140524629">ಚಾನಲ್ ಬದಲಿಸಿ</translation>
 <translation id="3688578402379768763">ನವೀಕೃತವಾಗಿದೆ</translation>
 <translation id="3688794912214798596">ಭಾಷೆಗಳನ್ನು ಬದಲಾಯಿಸಿ...</translation>
-<translation id="3690128548376345212">ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="3690369331356918524">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯ ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಬಹಿರಂಗವಾದರೆ, ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
 <translation id="3691231116639905343">ಕೀಬೋರ್ಡ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="3691267899302886494"><ph name="HOST" /> ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುತ್ತದೆ</translation>
@@ -2555,7 +2509,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ನೀವು ಮತ್ತು Google</translation>
 <translation id="3722108462506185496">ವರ್ಚುವಲ್ ಯಂತ್ರದ ಸೇವೆಯನ್ನು ಪ್ರಾರಂಭಿಸುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="3727148787322499904">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸುವುದರಿಂದ ಎಲ್ಲಾ ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ</translation>
 <translation id="3727187387656390258">ಪಾಪ್‌ಅಪ್ ಪರೀಕ್ಷಿಸಿ</translation>
 <translation id="372722114124766626">ಒಮ್ಮೆ ಮಾತ್ರ</translation>
 <translation id="3728188878314831180">ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸುತ್ತದೆ</translation>
@@ -2648,15 +2601,12 @@
 <translation id="3814529970604306954">ಶಾಲೆಯ ಖಾತೆ</translation>
 <translation id="3816118180265633665">Chrome ಬಣ್ಣಗಳು</translation>
 <translation id="3817524650114746564">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="3817579325494460411">ಒದಗಿಸಿಲ್ಲ</translation>
 <translation id="3819257035322786455">ಬ್ಯಾಕಪ್‌</translation>
 <translation id="3819261658055281761">ಈ ಸಾಧನಕ್ಕಾಗಿ ದೀರ್ಘ-ಕಾಲದ API ಪ್ರವೇಶ ಟೋಕನ್ ಅನ್ನು ಸಂಗ್ರಹಣೆ ಮಾಡಲು ಸಿಸ್ಟಂ ವಿಫಲವಾಗಿದೆ.</translation>
-<translation id="3819448694985509187">ತಪ್ಪಾದ ಪಿನ್. ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="3819800052061700452">&amp;ಪೂರ್ಣ-ಪರದೆ</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ತೋರಿಸಿ}one{ಎಲ್ಲವನ್ನೂ ತೋರಿಸಿ}other{ಎಲ್ಲವನ್ನೂ ತೋರಿಸಿ}}</translation>
 <translation id="3820749202859700794">SECG ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ಒಂದು ವಿಸ್ತರಣೆಯನ್ನು ಅನುಮೋದಿಸಲಾಗಿದೆ}one{# ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮೋದಿಸಲಾಗಿದೆ}other{# ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮೋದಿಸಲಾಗಿದೆ}}</translation>
-<translation id="3822559385185038546">ಈ ಪ್ರಾಕ್ಸಿಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಜಾರಿಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="3823310065043511710">Linux ಗಾಗಿ ಕನಿಷ್ಠ <ph name="INSTALL_SIZE" /> ಸ್ಥಳಾವಕಾಶವನ್ನು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3824621460022590830">ಸಾಧನ ನೋಂದಣಿ ಟೋಕನ್ ಅಮಾನ್ಯವಾಗಿದೆ. ನಿಮ್ಮ ಸಾಧನದ ಮಾಲೀಕರು ಅಥವಾ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -2738,11 +2688,9 @@
 <translation id="3899879303189199559">ಒಂದು ವರ್ಷ‌ಕ್ಕಿಂತಲೂ ಹೆಚ್ಚು ಕಾಲ ಆಫ್‌ಲೈನ್</translation>
 <translation id="3900789207771372462">ಕೆಲವು ವಿಸ್ತರಣೆಗಳು ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯೂ ಸೇರಿದಂತೆ, ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="3900966090527141178">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ</translation>
-<translation id="3901991538546252627"><ph name="NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3903187154317825986">ಅಂತರ್ನಿರ್ಮಿತ ಕೀಬೋರ್ಡ್</translation>
 <translation id="3904326018476041253">ಸ್ಥಳ ಸೇವೆಗಳು</translation>
 <translation id="3905761538810670789">ಅಪ್ಲಿಕೇಶನ್ ಸರಿಪಡಿಸು</translation>
-<translation id="3906232975181435906">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="3908501907586732282">ವಿಸ್ತರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="3909791450649380159">ಕತ್ತರಿ&amp;ಸು</translation>
@@ -2814,7 +2762,6 @@
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3970114302595058915">ಐಡಿ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="3971140002794351170">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3971764089670057203">ಈ ಭದ್ರತೆ ಕೀನಲ್ಲಿರುವ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳು</translation>
 <translation id="3973005893595042880">ಬಳಕೆದಾರರನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3973660817924297510">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ (<ph name="TOTAL_PASSWORDS" /> ರಲ್ಲಿ <ph name="CHECKED_PASSWORDS" />)…</translation>
@@ -2870,7 +2817,6 @@
 <translation id="4035758313003622889">&amp;ಕಾರ್ಯ ನಿರ್ವಾಹಕ</translation>
 <translation id="4036778507053569103">ಸರ್ವರ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ ಕಾರ್ಯನೀತಿಯು ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
 <translation id="4037084878352560732">ಕುದುರೆ</translation>
-<translation id="4040753847560036377">ತಪ್ಪಾದ PUK</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ನಿರ್ಗಮನ ಪುಟ}one{ನಿರ್ಗಮನ ಪುಟಗಳು}other{ನಿರ್ಗಮನ ಪುಟಗಳು}}</translation>
 <translation id="4044612648082411741">ನಿಮ್ಮ ಪ್ರಮಾಣಪತ್ರ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="4044708573046946214">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -2888,7 +2834,6 @@
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ಆ್ಯಪ್‌ಗೆ ನಿಮ್ಮ ಪೋಷಕರು ಹೊಂದಿಸಿದ ಸಮಯ-ಮಿತಿಯನ್ನು ನೀವು ತಲುಪಿದ್ದೀರಿ. ನಾಳೆ ಇದನ್ನು <ph name="TIME_LIMIT" /> ಸಮಯದವರೆಗೆ ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ಸ್ಟೋರ್‌ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
-<translation id="4057991113334098539">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಇದೀಗ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="406070391919917862">ಹಿನ್ನೆಲೆ ಅಪ್ಲಿಕೇಶನ್</translation>
@@ -3011,7 +2956,6 @@
 <translation id="42126664696688958">ರಫ್ತು</translation>
 <translation id="42137655013211669">ಈ ಸಂಪನ್ಮೂಲಕ್ಕೆ ಪ್ರವೇಶವನ್ನು ಸರ್ವರ್‌ ಮೂಲಕ ನಿಷೇಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4217571870635786043">ಉಕ್ತಲೇಖನ</translation>
-<translation id="4218274196133425560"><ph name="HOST_NAME" /> ಗಾಗಿ ವಿನಾಯಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4220648711404560261">ಸಕ್ರಿಯಗೊಳಿಸುವಾಗ, ದೋಷ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="4222772810963087151">ಬಿಲ್ಡ್ ವಿವರಗಳು</translation>
 <translation id="4225397296022057997">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ</translation>
@@ -3079,7 +3023,6 @@
 <translation id="4297813521149011456">ಡಿಸ್‌ಪ್ಲೇ ತಿರುಗಿಸುವಿಕೆ</translation>
 <translation id="4299022904780065004">ಹೊಸ &amp;ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="4301671483919369635">ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಈ ಪುಟಕ್ಕೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
-<translation id="4302605047395093221">ಈ ಸಾಧನವನ್ನು ಬಳಸುತ್ತಿರುವ ಯಾರಾದರೂ ಈ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಲು ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಹೊಂದಿಸಿ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ನಕಲಿಸಿ</translation>
 <translation id="4305817255990598646">ಬದಲಿಸಿ</translation>
@@ -3089,6 +3032,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ಲೈವ್)</translation>
 <translation id="4310139701823742692">ಫೈಲ್ ತಪ್ಪು ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿದೆ. PPD ಫೈಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="431076611119798497">&amp;ವಿವರಗಳು</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Google ಖಾತೆ}one{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}other{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}}</translation>
 <translation id="4312866146174492540">ನಿರ್ಬಂಧಿಸು (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="4314815835985389558">ಸಿಂಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4316850752623536204">ಡೆವಲಪರ್ ವೆಬ್‌ಸೈಟ್</translation>
@@ -3141,7 +3085,6 @@
 <translation id="4378551569595875038">ಕನೆಕ್ಟ್...</translation>
 <translation id="4378556263712303865">ಸಾಧನದ ನಿಯೋಜನೆ</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />" ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?</translation>
-<translation id="4380245540200674032"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="4380648069038809855">ಪೂರ್ಣಪರದೆಗೆ ಪ್ರವೇಶಿಸಲಾಗಿದೆ</translation>
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +1 ಕ್ಕೂ ಹೆಚ್ಚಿನ ಖಾತೆ}one{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> ಕ್ಕೂ ಹೆಚ್ಚಿನ ಖಾತೆಗಳು}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> ಕ್ಕೂ ಹೆಚ್ಚಿನ ಖಾತೆಗಳು}}</translation>
 <translation id="4384312707950789900">ಆದ್ಯತೆಗೆ ಸೇರಿಸಿ</translation>
@@ -3196,7 +3139,6 @@
 <translation id="443475966875174318">ಹೊಂದಾಣಿಕೆಯಾಗದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ಅಥವಾ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4438043733494739848">ಪಾರದರ್ಶಕ</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ಗೆ ಉಳಿಸಲಾಗುತ್ತದೆ</translation>
-<translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" />, ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಅಧಿಸೂಚನೆಯನ್ನು ಕಳುಹಿಸಿದೆ. ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಲು, “<ph name="NOTIFICATIONTITLE" />” ಅಧಿಸೂಚನೆಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಹಾಗೂ ಈ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.</translation>
 <translation id="4441124369922430666">ಯಂತ್ರವು ಆನ್ ಆದ ಸಂದರ್ಭದಲ್ಲಿ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ನೀವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆರಂಭಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="4441147046941420429">ಮುಂದುವರಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಕೀಯನ್ನು ತೆಗೆಯಿರಿ, ನಂತರ ಅದನ್ನು ಪುನಃ ಸೇರಿಸಿ ಮತ್ತು ಸ್ಪರ್ಶಿಸಿ.</translation>
@@ -3217,7 +3159,6 @@
 <translation id="4460014764210899310">ಗುಂಪು ವಿಂಗಡಿಸಿ</translation>
 <translation id="4462159676511157176">ಕಸ್ಟಮ್ ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ಗಾಗಿ <ph name="TIME" /> ಸಮಯದ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
-<translation id="4465725236958772856"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ಕನೆಕ್ಟ್</translation>
 <translation id="4466068638972170851">ನೀವು ಆಲಿಸಲು ಬಯಸಿರುವುದನ್ನು ಹೈಲೈಟ್ ಮಾಡಿದ ನಂತರ ಹುಡುಕಾಟ + S ಅನ್ನು ಒತ್ತಿರಿ. ನೀವು ಹುಡುಕಾಟದ ಕೀ ಅನ್ನು ಸಹ ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಆಯ್ಕೆಮಾಡಲು ಸ್ಟೇಟಸ್ ಟ್ರೇ ಸಮೀಪವಿರುವ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="4469477701382819144">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುವ ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" /> ನಲ್ಲಿ <ph name="ORIGIN" /> ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
@@ -3309,7 +3250,6 @@
 <translation id="4547672827276975204">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="4549791035683739768">ನಿಮ್ಮ ಭದ್ರತಾ ಕೀಯಲ್ಲಿ ಯಾವುದೇ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌‍ಗಳನ್ನು ಸಂಗ್ರಹಣೆ ಮಾಡಿಲ್ಲ</translation>
 <translation id="4551763574344810652">ರದ್ದುಮಾಡಲು <ph name="MODIFIER_KEY_DESCRIPTION" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
-<translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">ಸಾಧನದ ಭಾಷೆ ಬದಲಾಯಿಸಲು ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">ಬಾಹ್ಯ ವಿಸ್ತರಣೆಯು ಅಸ್ತಿತ್ವದಲ್ಲಿರುವುದಕ್ಕೆ ಹೋಲಿಸಿದರೆ ಅದೇ ಅಥವಾ ಕಡಿಮೆ ಆವೃತ್ತಿಯಲ್ಲಿದೆ</translation>
 <translation id="4555769855065597957">ನೆರಳು</translation>
@@ -3395,7 +3335,6 @@
 <translation id="4637252186848840278">{COUNT,plural, =1{ಪಠ್ಯ}one{# ಪಠ್ಯಗಳು}other{# ಪಠ್ಯಗಳು}}</translation>
 <translation id="4638930039313743000">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4641539339823703554">Chrome ಗೆ ಸಿಸ್ಟಂ ಸಮಯವನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಕೆಳಗಿನ ಸಮಯವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಅಗತ್ಯವಿದ್ದರೆ ಅದನ್ನು ಸರಿಪಡಿಸಿ.</translation>
-<translation id="4642769377300286600">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4643612240819915418">&amp;ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ವೀಡಿಯೊ ತೆರೆಯಿರಿ</translation>
 <translation id="4644205769234414680">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಅನುಮತಿಸಿ</translation>
 <translation id="4645676300727003670">&amp;ಇರಿಸಿ</translation>
@@ -3460,7 +3399,6 @@
 <translation id="4711638718396952945">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪುನಃಸ್ಥಾಪಿಸು</translation>
 <translation id="4716483597559580346">ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ ಪವರ್‌ವಾಶ್</translation>
 <translation id="471880041731876836">ಈ ಸೈಟ್‌ ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿ ಹೊಂದಿಲ್ಲ</translation>
-<translation id="4720185134442950733">ಮೊಬೈಲ್ ಡೇಟಾ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="4723140812774948886">ಮುಂದಿನದರ ಮೂಲಕ ಸ್ವ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -3621,11 +3559,9 @@
 <translation id="4900392736118574277">ನಿಮ್ಮ ಆರಂಭಿಕ ಪುಟವನ್ನು <ph name="URL" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ಇಂಟರ್‌ಲೇಸ್ ಆಗಿದೆ</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> ಪ್ರಯೋಗಕ್ಕಾಗಿ, ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
-<translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="49027928311173603">ಸರ್ವರ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ ನೀತಿಯು ಅಮಾನ್ಯವಾಗಿದೆ: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4905269543817054577">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇತಿಹಾಸವನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="4906490889887219338">ನೆಟ್‌ವರ್ಕ್‌ ಫೈಲ್‌ ಹಂಚಿಕೆಗಳನ್ನು ಸೆಟಪ್‌ ಮಾಡಿ ಅಥವಾ ನಿರ್ವಹಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
-<translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ವಿವರಗಳು</translation>
 <translation id="4907161631261076876">ಈ ಫೈಲ್ ಅನ್ನು ಸಾಮಾನ್ಯ ರೀತಿಯಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ ಮತ್ತು ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು.</translation>
 <translation id="4907306957610201395">ಅನುಮತಿ ವರ್ಗ</translation>
 <translation id="4908811072292128752">ಒಮ್ಮೆಲೆ ಎರಡೂ ಸೈಟ್‌ಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಲು ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
@@ -3839,7 +3775,6 @@
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> ಗಾಗಿ ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5154702632169343078">ವಿಷಯವಸ್ತು</translation>
 <translation id="5157635116769074044">ಆರಂಭಿಕ ಪರದೆಗೆ ಈ ಪುಟವನ್ನು ಪಿನ್ ಮಾಡಿ...</translation>
-<translation id="5158983316805876233">ಎಲ್ಲಾ ಪ್ರೊಟೋಕಾಲ್‌ಗಳಿಗೆ ಒಂದೇ ರೀತಿಯ ಪ್ರಾಕ್ಸಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="5159094275429367735">Crostini ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="5159419673777902220">ನಿಮ್ಮ ಪೋಷಕರು ವಿಸ್ತರಣೆಯ ಅನುಮತಿಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="5160634252433617617">ಭೌತಿಕ ಕೀಬೋರ್ಡ್</translation>
@@ -3977,7 +3912,6 @@
 <translation id="5302048478445481009">ಭಾಷೆ</translation>
 <translation id="5302932258331363306">ಬದಲಿಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5305145881844743843">ಈ ಖಾತೆಯನ್ನು <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
-<translation id="5305688511332277257">ಯಾವುದನ್ನೂ ಸ್ಥಾಪನೆ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="5307030433605830021">ಬಿತ್ತರಿಸುವಿಕೆ ಮೂಲಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ</translation>
 <translation id="5307386115243749078">ಬ್ಲೂಟೂತ್ ಸ್ವಿಚ್ ಅನ್ನು ಜೋಡಿಸಿ</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
@@ -4060,14 +3994,12 @@
 <translation id="5407167491482639988">ಗ್ರಹಿಸಲಾಗದ</translation>
 <translation id="5408750356094797285">ಝೂಮ್: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ</translation>
-<translation id="5411472733320185105">ಈ ಹೋಸ್ಟ್‌ಗಳಿಗೆ ಮತ್ತು ಡೊಮೇನ್‌ಗಳಿಗೆ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಉಪಯೋಗಿಸಬೇಡಿ:</translation>
 <translation id="5414198321558177633">ಪ್ರೊಫೈಲ್ ಪಟ್ಟಿಯನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="5414566801737831689">ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಐಕಾನ್‌ಗಳನ್ನು ಓದಿರಿ</translation>
 <translation id="5417312524372586921">ಬ್ರೌಸರ್ ಥೀಮ್‌ಗಳು</translation>
 <translation id="5419405654816502573">ಧ್ವನಿ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="5420274697768050645">ಹೆಚ್ಚಿನ ಸುರಕ್ಷತೆಗಾಗಿ ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಪಾಸ್‌ವರ್ಡ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5420438158931847627">ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳ ತೀಕ್ಷ್ಣತೆಯನ್ನು ನಿರ್ಧರಿಸುತ್ತದೆ</translation>
-<translation id="5422221874247253874">ಪ್ರವೇಶ ಬಿಂದು</translation>
 <translation id="5422781158178868512">ಕ್ಷಮಸಿ, ನಿಮ್ಮ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯ ಸಾಧನವನ್ನು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423829801105537712">ಪ್ರಾಥಮಿಕ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆ</translation>
@@ -4101,7 +4033,6 @@
 <translation id="5458998536542739734">ಲಾಕ್‌ ಪರದೆಯ ಟಿಪ್ಪಣಿಗಳು</translation>
 <translation id="5459864179070366255">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="5461050611724244538">ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಕನೆಕ್ಷನ್ ಕಡಿದುಹೋಗಿದೆ</translation>
-<translation id="5463231940765244860">ನಮೂದಿಸಿ</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> ನ ಸೂಚಿಕೆ</translation>
 <translation id="5463625433003343978">ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5463856536939868464">ಮರೆಮಾಡಿದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಹೊಂದಿರುವ ಮೆನು</translation>
@@ -4115,7 +4046,6 @@
 <translation id="5471768120198416576">ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಪಠ್ಯದಿಂದ ಧ್ವನಿಯ ಧ್ವನಿ.</translation>
 <translation id="5472627187093107397">ಈ ಸೈಟ್‌ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{ಪಿನ್ ಕನಿಷ್ಠ ಒಂದು ಅಕ್ಷರವನ್ನು ಹೊಂದಿರಬೇಕು}one{ಪಿನ್ ಕನಿಷ್ಠ # ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು}other{ಪಿನ್ ಕನಿಷ್ಠ # ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು}}</translation>
-<translation id="5473333559083690127">ಹೊಸ ಪಿನ್ ಮರು-ನಮೂದಿಸಿ</translation>
 <translation id="5481273127572794904">ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5481941284378890518">ಸಮೀಪದ ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಸೇರಿಸು</translation>
 <translation id="5483785310822538350">ಫೈಲ್ ಮತ್ತು ಸಾಧನ ಪ್ರವೇಶವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ</translation>
@@ -4299,7 +4229,6 @@
 <translation id="5662513737565158057">Linux ಆ್ಯಪ್‌ಗಳು ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸಬೇಕು ಎಂಬುದನ್ನು ಬದಲಾಯಿಸಿ.</translation>
 <translation id="5667546120811588575">Google Play ಅನ್ನು ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5668351004957198136">ವಿಫಲ</translation>
-<translation id="5669691691057771421">ಹೊಸ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="56702779821643359">ನಿಮ್ಮ ಸುತ್ತಲಿನ ಜನರ ಜೊತೆಗೆ ಫೈಲ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">ಚಿತ್ರಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5671658447180261823"><ph name="SUGGESTION_NAME" /> ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
@@ -4325,7 +4254,6 @@
 <translation id="5696177755977520104">Chrome OS ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಸಿಂಕ್</translation>
 <translation id="5696679855467848181">ಪ್ರಸ್ತುತ PPD ಫೈಲ್ ಬಳಕೆಯಲ್ಲಿದೆ: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ಎಮೋಜಿ ಪಿಕರ್</translation>
-<translation id="5698411045597658393"><ph name="NETWORK_NAME" /> ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="570043786759263127">Google Play ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಮತ್ತು ಸೇವೆಗಳು</translation>
 <translation id="5700836101007545240">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸಂಪರ್ಕ ಸೇರಿಸುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="5701080607174488915">ಸರ್ವರ್‌ನಿಂದ ಕಾರ್ಯನೀತಿಯನ್ನು ಪಡೆಯುವಾಗ ದೋಷ ಸಂಭವಿಸಿದೆ.</translation>
@@ -4381,7 +4309,6 @@
 <translation id="5765425701854290211">ಕ್ಷಮಿಸಿ, ಕೆಲವು ಫೈಲ್‌ಗಳು ಹಾನಿಗೊಳಗಾಗಿದ್ದವು ಮತ್ತು ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆ ಯಶಸ್ವಿಯಾಗಿರಲಿಲ್ಲ. ಸಿಂಕ್ ಆಗಿರುವ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ಸುರಕ್ಷಿತವಾಗಿವೆ.</translation>
 <translation id="5765491088802881382">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="5766243637773654698"><ph name="FILE_NAME" />, ಅಪಾಯಕಾರಿ ಫೈಲ್ ಆಗಿರಬಹುದು. ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Google ಗೆ ಕಳುಹಿಸುವುದೇ? ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪಟ್ಟಿಯ ಪ್ರದೇಶಕ್ಕೆ ತೆರಳಲು Shift+F6 ಒತ್ತಿ.</translation>
-<translation id="5769519078756170258">ಹೊರಗಿರಿಸಬೇಕಾದ ಹೋಸ್ಟ್ ಅಥವಾ ಡೊಮೇನ್</translation>
 <translation id="5770125698810550803">ನ್ಯಾವಿಗೇಷನ್‌ ಬಟನ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5771816112378578655">ಸೆಟಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ...</translation>
 <translation id="5772114492540073460">ನಿಮ್ಮ Chromebook ನಲ್ಲಿ Windows® ಆ್ಯಪ್‌ಗಳನ್ನು ರನ್‌ ಮಾಡಲು <ph name="PARALLELS_NAME" /> ಅನುಮತಿಸುತ್ತದೆ. ಇನ್‌ಸ್ಟಾಲೇಶನ್‌ಗಾಗಿ <ph name="MINIMUM_SPACE" /> ಯಷ್ಟು ಸ್ಪೇಸ್ ಖಾಲಿಯಿರಬೇಕೆಂದು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ.</translation>
@@ -4421,7 +4348,6 @@
 <translation id="5806773519584576205">0° (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="5810809306422959727">ಈ ಖಾತೆಯು ಪೋಷಕ ನಿಯಂತ್ರಣಗಳಿಗಾಗಿ ಅರ್ಹವಾಗಿಲ್ಲ</translation>
 <translation id="5812674658566766066">ಎಲ್ಲವನ್ನೂ ವಿಸ್ತರಿಸಿ</translation>
-<translation id="5814126672212206791">ಸಂಪರ್ಕ ಪ್ರಕಾರ</translation>
 <translation id="5815645614496570556">X.400 ವಿಳಾಸ</translation>
 <translation id="5816434091619127343">ವಿನಂತಿಸಿದ ಪ್ರಿಂಟರ್ ಬದಲಾವಣೆಗಳು ಪ್ರಿಂಟರ್ ಅನ್ನು ನಿಷ್ಪ್ರಯೋಜಕಗೊಳಿಸಬಹುದು.</translation>
 <translation id="5817069030404929329">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸರಿಸಬೇಕೆ?</translation>
@@ -4437,7 +4363,6 @@
 <translation id="5830720307094128296">&amp;ಇದರಂತೆ ಪುಟವನ್ನು ಉಳಿಸಿ...</translation>
 <translation id="5832813618714645810">ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
-<translation id="5832976493438355584">ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5833397272224757657">ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳ ವಿಷಯ, ಜೊತೆಗೆ ಬ್ರೌಸರ್ ಚಟುವಟಿಕೆ ಹಾಗೂ ಸಂವಹನಗಳನ್ನು ವೈಯಕ್ತೀಕರಣಕ್ಕಾಗಿ ಬಳಸುತ್ತದೆ</translation>
 <translation id="5833726373896279253">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮಾಲೀಕರಿಂದ ಮಾತ್ರ ನವೀಕರಿಸಬಹುದಾಗಿದೆ:</translation>
 <translation id="5834581999798853053">ಸುಮಾರು <ph name="TIME" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
@@ -4491,7 +4416,6 @@
 <translation id="5889282057229379085">ಮಧ್ಯಂತರ CA ಗಳ ಗರಿಷ್ಠ ಸಂಖ್ಯೆ: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">ಆದ್ಯತೆಯ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="5896749729057314184">ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="5900302528761731119">Google ಪ್ರೊಫೈಲ್ ಫೋಟೋ</translation>
 <translation id="590036993063074298">ಗುಣಮಟ್ಟದ ವಿವರಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5901069264981746702">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಡೇಟಾವನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ಇದು ಎಂದೂ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ಹೊರಗೆ ಹೋಗುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -4595,7 +4519,6 @@
 <translation id="6003582434972667631">ನಿಮ್ಮ ಸಂಸ್ಥೆಯಿಂದ ಥೀಮ್ ಅನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="6006484371116297560">ಕ್ಲಾಸಿಕ್</translation>
 <translation id="6007240208646052708">ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಧ್ವನಿ ಹುಡುಕಾಟ ಲಭ್ಯವಿಲ್ಲ.</translation>
-<translation id="6011074160056912900">ಈಥರ್‌ನೆಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="6011193465932186973">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್</translation>
 <translation id="6011449291337289699">ಸೈಟ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6013027779243312217">ನಿಮ್ಮ ಆಡಿಯೊ ಮತ್ತು ವೀಡಿಯೊಗಾಗಿ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -4618,7 +4541,6 @@
 <translation id="6032912588568283682">ಫೈಲ್ ಸಿಸ್ಟಂ</translation>
 <translation id="603539183851330738">ಆಟೋಕರೆಕ್ಟ್ ರದ್ದುಗೊಳಿಸಿ ಬಟನ್. ಮರಳಿ <ph name="TYPED_WORD" /> ಗೆ ಬದಲಿಸಿ.  ಸಕ್ರಿಯಗೊಳಿಸಲು ಎಂಟರ್ ಒತ್ತಿ, ವಜಾಗೊಳಿಸಲು ಎಸ್ಕೇಪ್ ಒತ್ತಿ.</translation>
 <translation id="6038929619733116134">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ಸೈಟ್ ತೋರಿಸಿದಲ್ಲಿ ಅದನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
-<translation id="603895874132768835">ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವವರೆಗೆ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6039651071822577588">ನೆಟ್‌ವರ್ಕ್ ಗುಣಲಕ್ಷಣದ ನಿಘಂಟು ದೋಷಪೂರಿತವಾಗಿದೆ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />ಈ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಅಂದಾಜಿಸುವಲ್ಲಿ ಸಹಾಯ ಮಾಡಲು, Google ನ ಸ್ಥಳ ಸೇವೆಯು ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳಂತಹ ಮೂಲಗಳನ್ನು ಬಳಸುತ್ತದೆ.<ph name="END_PARAGRAPH1" />
@@ -4638,7 +4560,6 @@
 <translation id="6054961935262556546">ಗೋಚರತೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6055171183283175969">ನೀವು ನಮೂದಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="6055392876709372977">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-256</translation>
-<translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ</translation>
 <translation id="6056710589053485679">ಸಾಮಾನ್ಯ ಮರುಲೋಡ್</translation>
 <translation id="6057312498756061228">ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಾಗಿ ಈ ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ. ನೀವು 50 MB ವರೆಗಿನ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬಹುದು.</translation>
 <translation id="6057381398996433816">ಈ ಸೈಟ್ ಅನ್ನು ಚಲನೆ ಅಥವಾ ಲೈಟ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಬಳಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
@@ -4722,7 +4643,6 @@
 <translation id="6136287496450963112">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಪಿನ್‌ ಸಂರಕ್ಷಿತವಾಗಿಲ್ಲ. ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು, ಮೊದಲು ಪಿನ್ ಅನ್ನು ರಚಿಸಿ.</translation>
 <translation id="6138680304137685902">SHA-384 ಜೊತೆಗೆ X9.62 ECDSA ಸಹಿ</translation>
 <translation id="6138774640412545950">"<ph name="APP_NAME" />" ವಿಸ್ತರಣೆಯು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ವಿಷಯಗಳನ್ನು <ph name="TARGET_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುತ್ತದೆ.</translation>
-<translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="6141988275892716286">ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6143186082490678276">ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="6143366292569327983">ಅನುವಾದಿಸಲು ಪುಟದ ಭಾಷೆಯನ್ನು ಆರಿಸಿ</translation>
@@ -4834,7 +4754,6 @@
 <translation id="6264365405983206840">&amp;ಎಲ್ಲ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6265687851677020761">ಪೋರ್ಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> ಗೆ ನಿಮ್ಮನ್ನು ಪ್ರಮಾಣೀಕರಿಸಲು ಒಂದು ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
-<translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ರಿಂದ ತೆರೆಯಿರಿ</translation>
 <translation id="6270391203985052864">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಬಹುದೇ ಎಂದು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />ಸಿಸ್ಟಂ ಮತ್ತು ಅಪ್ಲಿಕೇಶನ್ ಮಾಹಿತಿ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಮಾಪನಗಳನ್ನು<ph name="END_LINK2" /> ಕಳುಹಿಸಿ</translation>
@@ -4866,7 +4785,6 @@
 <translation id="6292699686837272722">ಟ್ಯಾಬ್‌ಗಳು ಮಧ್ಯಮ ಅಗಲಕ್ಕೆ ಕುಗ್ಗುತ್ತವೆ</translation>
 <translation id="6295158916970320988">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6295855836753816081">ಉಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="6296410173147755564">ಅಮಾನ್ಯ PUK</translation>
 <translation id="6298962879096096191">Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು Google Play ಬಳಸಿ</translation>
 <translation id="6300177430812514606">ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವುದು ಅಥವಾ ಸ್ವೀಕರಿಸುವುದನ್ನು ಮುಗಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="630065524203833229">ನಿರ್ಗ&amp;ಮನ</translation>
@@ -4888,7 +4806,6 @@
 <translation id="6315493146179903667">ಎಲ್ಲವನ್ನೂ ಮುಂದಕ್ಕೆ ಬರಿಸು</translation>
 <translation id="6317318380444133405">ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="6317369057005134371">ಅಪ್ಲಿಕೇಶನ್ ವಿಂಡೋಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="6317608858038767920">ಕಸ್ಟಮ್ ನೇಮ್ ಸರ್ವರ್ <ph name="INPUT_INDEX" /></translation>
 <translation id="6318125393809743217">ಕಾರ್ಯನೀತಿ ಕಾನ್ಫಿಗರೇಷನ್‌ಗಳನ್ನು ಹೊಂದಿರುವ policies.json ಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ.</translation>
 <translation id="6318407754858604988">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ</translation>
 <translation id="6318944945640833942">ಪ್ರಿಂಟರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪ್ರಿಂಟರ್ ವಿಳಾಸವನ್ನು ಪುನಃ ನಮೂದಿಸಿ.</translation>
@@ -5043,12 +4960,10 @@
 <translation id="6494445798847293442">ಪ್ರಮಾಣೀಕರಣದ ಪ್ರಾಧಿಕಾರವಲ್ಲ</translation>
 <translation id="6494750904506170417">ಪಾಪ್-ಅಪ್‌ಗಳು ಹಾಗೂ ಮರುನಿರ್ದೇಶನಗಳು</translation>
 <translation id="6494974875566443634">ಕಸ್ಟಮೈಸ್ ಮಾಡುವಿಕೆ</translation>
-<translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{ಈ ಡೇಟಾ ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿದೆ}=1{ಈ ಫೈಲ್ ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿದೆ}one{ಈ ಫೈಲ್‌ಗಳು ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿವೆ}other{ಈ ಫೈಲ್‌ಗಳು ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿವೆ}}</translation>
 <translation id="6497789971060331894">ಮೌಸ್ ಹಿಮ್ಮುಖ ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="6498249116389603658">&amp;ನಿಮ್ಮ ಎಲ್ಲಾ ಭಾಷೆಗಳು</translation>
 <translation id="6499143127267478107">ಪ್ರಾಕ್ಸಿ ಸ್ಕ್ರಿಪ್ಟ್‌ನಲ್ಲಿ ಹೋಸ್ಟ್ ಅನ್ನು ಪರಿಹರಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="6499681088828539489">ಹಂಚಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಪ್ರಾಕ್ಸಿಗಳನ್ನು ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="650266656685499220">ಆಲ್ಬಮ್‌ಗಳನ್ನು ರಚಿಸಲು, Google Photos ಗೆ ಹೋಗಿ</translation>
 <translation id="6503077044568424649">ಅತಿಹೆಚ್ಚು ಬಾರಿ ಸಂದರ್ಶಿಸಿರುವುದು</translation>
 <translation id="650457560773015827">ಎಡ ಬಟನ್</translation>
@@ -5071,7 +4986,6 @@
 <translation id="6521214596282732365">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ನಿಮ್ಮ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸುತ್ತವೆ, ಇದರಿಂದ ನೀವು ಆನ್‌ಲೈನ್ ವಿನ್ಯಾಸ ಮತ್ತು ಗ್ರಾಫಿಕ್ಸ್ ಪರಿಕರಗಳೊಂದಿಗೆ ಹೈ ಫಿಡೆಲಿಟಿ ಕಂಟೆಂಟ್ ಅನ್ನು ರಚಿಸಬಹುದು</translation>
 <translation id="652492607360843641">ನೀವು <ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿದ್ದೀರಿ.</translation>
 <translation id="6527303717912515753">ಹಂಚಿಕೊಳ್ಳು</translation>
-<translation id="6528513914570774834">ಈ ನೆಟ್‌ವರ್ಕ್ ಬಳಸಲು, ಈ ಸಾಧನದ ಇತರ ಬಳಕೆದಾರರಿಗೆ ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="652948702951888897">Chrome ಇತಿಹಾಸ</translation>
 <translation id="6530186581263215931">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಜಾರಿಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="6531282281159901044">ಅಪಾಯಕಾರಿ ಫೈಲ್ ಇರಿಸು</translation>
@@ -5160,7 +5074,6 @@
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿದೆ. ಅದರ ಮಾಲೀಕರಿಗೆ ಸರಿಪಡಿಸಲು ಕೇಳಿ.</translation>
 <translation id="6624687053722465643">ಸ್ವೀಟ್‌ನೆಸ್</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="6629518321609546825">ಕನಿಷ್ಠ 4 ಸಂಖ್ಯೆಗಳನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> ನಿಮ್ಮ ಪರವಾಗಿ ಸ್ವತಃ ಪ್ರಮಾಣೀಕರಿಸಲು ಪ್ರಮಾಣಪತ್ರಕ್ಕೆ ಶಾಶ್ವತ ಪ್ರವೇಶ ಬಯಸುತ್ತದೆ.</translation>
 <translation id="6635362468090274700">ನಿಮ್ಮನ್ನು ನೀವು ಗೋಚರಿಸುವಂತೆ ಮಾಡುವವರೆಗೂ ನಿಮ್ಮ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಯಾರೊಬ್ಬರಿಗೂ ಸಾಧ್ಯವಿಲ್ಲ.<ph name="BR" /><ph name="BR" />ನಿಮ್ಮನ್ನು ನೀವು ತಾತ್ಕಾಲಿಕವಾಗಿ ಗೋಚರಿಸುವಂತೆ ಮಾಡಲು, ಸ್ಥಿತಿ ಕ್ಷೇತ್ರವನ್ನು ತೆರೆಯಿರಿ, ನಂತರ ಸಮೀಪದ ಗೋಚರತೆಯನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="6635944431854494329">ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಸುಧಾರಿತ &gt; ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಹಾಗೂ ಬಳಕೆಯ ಡೇಟಾವನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸಿ ಎಂಬಲ್ಲಿಂದ ಮಾಲೀಕರು ಈ ಫೀಚರ್ ಅನ್ನು ನಿಯಂತ್ರಿಸಬಹುದು.</translation>
@@ -5254,7 +5167,6 @@
 <translation id="6732087373923685049">ಕ್ಯಾಮರಾ</translation>
 <translation id="6735304988756581115">ಕುಕ್ಕಿಗಳು ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾವನ್ನು ತೋರಿಸಿ...</translation>
 <translation id="6736243959894955139">ವಿಳಾಸ</translation>
-<translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6737663862851963468">Kerberos ಟಿಕೆಟ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6739923123728562974">ಡೆಸ್ಕ್‌ಟಾಪ್ ಶಾರ್ಟ್‌ಕಟ್ ತೋರಿಸಿ</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -5368,7 +5280,6 @@
 <translation id="68541483639528434">ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="6855892664589459354">Crostini ಬ್ಯಾಕಪ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ</translation>
 <translation id="6856348640027512653">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಅಥವಾ ಡೇಟಾವನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
-<translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="6856623341093082836">ನಿಮ್ಮ ಟಚ್‌ಸ್ಕ್ರೀನ್‌ ನಿಖರತೆಯನ್ನು ಸೆಟಪ್ ಮಾಡಿ ಮತ್ತು ಹೊಂದಿಸಿ</translation>
 <translation id="6857145580237920905">ಪವರ್‌ವಾಷ್‌‌‌ನ ಮೊದಲೇ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6857699260879628349">ಕಾನ್ಫಿಗರೇಶನ್ ಮಾಹಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
@@ -5456,7 +5367,6 @@
 <translation id="6955535239952325894">ನಿರ್ವಹಿಸಲಾದ ಬ್ರೌಸರ್‌ಗಳಲ್ಲಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6957044667612803194">ಈ ಭದ್ರತೆ ಕೀ, ಪಿನ್‌ಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="6960507406838246615">Linux ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕಾಗಿದೆ</translation>
-<translation id="6960565108681981554">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ. ನಿಮಗೆ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="696103774840402661">ಈ <ph name="DEVICE_TYPE" /> ದಲ್ಲಿ ಇರುವ ಎಲ್ಲಾ ಬಳಕೆದಾರರ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="6964390816189577014">ಹೀರೋ</translation>
 <translation id="6964760285928603117">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
@@ -5553,7 +5463,6 @@
 <translation id="7044124535091449260">ಸೈಟ್ ಪ್ರವೇಶದ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="7044606776288350625">ಡೇಟಾ ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="7047059339731138197">ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="7048024426273850086"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7049293980323620022">ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="7052237160939977163">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್‌ ಡೇಟಾ ಕಳುಹಿಸಿ</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
@@ -5586,7 +5495,6 @@
 <translation id="7077829361966535409">ಪ್ರಸ್ತುತ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಲೋಡ್ ಮಾಡುವಲ್ಲಿ ಸೈನ್-ಇನ್ ಪುಟವು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು <ph name="GAIA_RELOAD_LINK_START" />ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ<ph name="GAIA_RELOAD_LINK_END" />, ಅಥವಾ ಬೇರೆಯ <ph name="PROXY_SETTINGS_LINK_START" />ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="PROXY_SETTINGS_LINK_END" /> ಬಳಸಿ.</translation>
 <translation id="7078120482318506217">ಎಲ್ಲಾ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="708060913198414444">ಆಡಿಯೋ ವಿಳಾಸವನ್ನು ನ&amp;ಕಲಿಸಿ</translation>
-<translation id="708278670402572152">ಸ್ಕ್ಯಾನಿಂಗ್ ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="7085389578340536476">ಆಡಿಯೋ ರೆಕಾರ್ಡ್ ಮಾಡಲು Chrome ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="7085805695634549980">Google ಸೇವೆಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">ಆರ್ಕೈವ್‌ನಲ್ಲಿರುವ Chrome ಲಾಗ್ ಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
@@ -5706,7 +5614,6 @@
 <translation id="7235737137505019098">ಇನ್ನು ಯಾವುದೇ ಖಾತೆಗಳಿಗಾಗಿ ನಿಮ್ಮ ಭದ್ರತೆಯ ಕೀ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವನ್ನು ಹೊಂದಿಲ್ಲ.</translation>
 <translation id="7235873936132740888">ನೀವು ಕೆಲವು ಪ್ರಕಾರದ ಲಿಂಕ್‌ಗಳನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಸೈಟ್‌ಗಳು ವಿಶೇಷ ಕಾರ್ಯಗಳನ್ನು ನಿರ್ವಹಿಸಬಲ್ಲವು, ಉದಾಹರಣೆಗೆ, ನಿಮ್ಮ ಇಮೇಲ್ ಕ್ಲೈಂಟ್‌ನಲ್ಲಿ ಹೊಸ ಸಂದೇಶವನ್ನು ರಚಿಸುವುದು ಅಥವಾ ನಿಮ್ಮ ಆನ್‌ಲೈನ್ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಹೊಸ ಈವೆಂಟ್‌ಗಳನ್ನು ಸೇರಿಸುವುದು</translation>
 <translation id="7238640585329759787">ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, ಸೈಟ್‌ಗಳು ತಮ್ಮ ಕಂಟೆಂಟ್ ಮತ್ತು ಸೇವೆಗಳನ್ನು ಒದಗಿಸಲು ಇಲ್ಲಿ ತೋರಿಸಿರುವ ಗೌಪ್ಯತೆ ಕಾಪಾಡುವ ತಂತ್ರಗಳನ್ನು ಬಳಸಬಹುದು. ಕ್ರಾಸ್-ಸೈಟ್ ಟ್ರ್ಯಾಕಿಂಗ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಪರ್ಯಾಯಗಳು ಇವುಗಳಲ್ಲಿ ಸೇರಿವೆ. ಕಾಲಾನಂತರದಲ್ಲಿ ಹೆಚ್ಚಿನ ಪ್ರಯೋಗಗಳನ್ನು ಸೇರಿಸಬಹುದು.</translation>
-<translation id="7238643356913091553"><ph name="NETWORK_NAME" />, ವಿವರಗಳು</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ವರ್ಗಾವಣೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿದೆ</translation>
 <translation id="7240339475467890413">ಹೊಸ ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಳಿಸುವುದೇ?</translation>
 <translation id="7241389281993241388">ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು <ph name="TOKEN_NAME" /> ಗೆ ದಯವಿಟ್ಟು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
@@ -5714,7 +5621,6 @@
 <translation id="7243784282103630670">Linux ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವಾಗ ದೋಷ ಕಂಡುಬಂದಿದೆ. ನಿಮ್ಮ ಬ್ಯಾಕಪ್ ಬಳಸಿ ನಾವು ಕಂಟೇನರ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸುತ್ತೇವೆ.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಅತ್ಯುತ್ತಮ)</translation>
 <translation id="7246230585855757313">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಸೇರ್ಪಡಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="7246947237293279874">FTP ಪ್ರಾಕ್ಸಿ</translation>
 <translation id="7249777306773517303">ಈ ಸಾಧನವನ್ನು <ph name="DOMAIN" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ ಮತ್ತು ನೀವು ಪ್ರತಿ ಬಾರಿಯೂ ಸೈನ್ ಇನ್ ಮಾಡುವ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="7250616558727237648">ನೀವು ಯಾವ ಸಾಧನದೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿರುವಿರೋ ಅದು ಪ್ರತಿಕ್ರಿಯಿಸಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="725109152065019550">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
@@ -5911,7 +5817,6 @@
 <translation id="7465635034594602553">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಕೆಲವು ನಿಮಿಷಗಳವರೆಗೆ ನಿರೀಕ್ಷಿಸಿ ಮತ್ತು <ph name="APP_NAME" /> ಅನ್ನು ಪುನಃ ರನ್ ಮಾಡಿ.</translation>
 <translation id="7465778193084373987">Netscape ಪ್ರಮಾಣಪತ್ರ ಹಿಂತೆಗೆದುಕೊಳ್ಳುವಿಕೆ URL</translation>
 <translation id="746861123368584540">ವಿಸ್ತರಣೆಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="7469894403370665791">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="7470424110735398630">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="747114903913869239">ದೋಷ: ವಿಸ್ತರಣೆಯನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="7473891865547856676">ಇಲ್ಲ, ಧನ್ಯವಾದಗಳು</translation>
@@ -6165,7 +6070,6 @@
 <translation id="7728668285692163452">ಚಾನಲ್ ಬದಲಾವಣೆಯನ್ನು ನಂತರ ಅನ್ವಯಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="7730449930968088409">ನಿಮ್ಮ ಪರದೆಯ ವಿಷಯವನ್ನು ಸೆರೆಹಿಡಿಯಿರಿ</translation>
 <translation id="7730683939467795481">ಈ ಪುಟವನ್ನು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆ ಬಳಸಿ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
-<translation id="7732111077498238432">ನೆಟ್‌ವರ್ಕ್‌ ನೀತಿಯ ನಿಯಂತ್ರಣದಲ್ಲಿದೆ</translation>
 <translation id="7734486794139738745">ನಾನು ಒಂದು ಸ್ವಿಚ್ ಅನ್ನು ಮಾತ್ರ ಬಳಸುತ್ತೇನೆ</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ಜೊತೆ ಜೋಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7737948071472253612">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -6270,7 +6174,6 @@
     <ph name="BEGIN_BOLD" />ಗಮನಿಸಿ:<ph name="END_BOLD" /> ಪ್ರಕ್ರಿಯೆಯು ನಡೆಯುವಾಗ ಸಿಸ್ಟಂ ರೀಬೂಟ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="7828731929332799387">ಇದು ಮೂರನೇ-ವ್ಯಕ್ತಿ ಸಂದರ್ಭಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ಎಲ್ಲಾ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ. ನೀವು ಮುಂದುವರಿಯಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="7829877209233347340">ಶಾಲಾ ಖಾತೆಯನ್ನು ಸೇರಿಸುವುದಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅನುಮತಿ ನೀಡುವುದಕ್ಕೆ ಪೋಷಕರಿಗೆ ಹೇಳಿ</translation>
-<translation id="7831491651892296503">ನೆಟ್‌ವರ್ಕ್‌ ಕಾನ್ಫಿಗರ್‌ ಮಾಡುವಲ್ಲಿ ದೋಷ</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">ಮುಕ್ತಾಯದ ಸಮಯ</translation>
 <translation id="783229689197954457">Google ಗೆ ರಿಯಾಯಿತಿ ಕಂಡುಬಂದರೆ, ನೀವು ಅದನ್ನು ಈ ಪುಟದಲ್ಲಿ ನೋಡಬಹುದು</translation>
@@ -6286,7 +6189,6 @@
 <translation id="7844992432319478437">ವ್ಯತ್ಯಾಸವನ್ನು ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7846634333498149051">ಕೀಬೋರ್ಡ್</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ಗೆ ಬದಲಾಯಿಸಲು Ctrl + Alt + S ಒತ್ತಿರಿ</translation>
-<translation id="7847617962681804761">ಮೊಬೈಲ್ ಡೇಟಾ ಬಳಸಲು ಪಿನ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7849264908733290972">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ &amp;ಇಮೇಜ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="784934925303690534">ಸಮಯ ವ್ಯಾಪ್ತಿ</translation>
 <translation id="7851457902707056880">ಮಾಲೀಕನ ಖಾತೆಗೆ ಮಾತ್ರ ಸೈನ್‌-ಇನ್‌ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ರೀಬೂಟ್ ಮಾಡಿ ಮತ್ತು ಮಾಲೀಕರ ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ. ಯಂತ್ರವು 30 ಸೆಕುಂಡುಗಳಲ್ಲಿ ಸ್ವಯಂ ರೀಬೂಟ್ ಆಗುತ್ತದೆ.</translation>
@@ -6296,7 +6198,6 @@
 <translation id="7853747251428735">ಇನ್ನಷ್ಟು ಪರಿಕರ&amp;ಗಳು</translation>
 <translation id="7855678561139483478">ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ</translation>
 <translation id="7857093393627376423">ಪಠ್ಯ ಸಲಹೆಗಳು</translation>
-<translation id="7857117644404132472">ವಿನಾಯಿತಿ ಸೇರಿಸು</translation>
 <translation id="7857949311770343000">ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿರುವುದು ಈ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವೇ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">ಸೇವೆ: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6425,7 +6326,6 @@
 <translation id="7999229196265990314">ಕೆಳಗಿನ ಫೈಲ್‌ಗಳನ್ನು ರಚಿಸಲಾಗಿದೆ:
 
 ವಿಸ್ತರಣೆ: <ph name="EXTENSION_FILE" />             ಮುಖ್ಯ ಫೈಲ್: <ph name="KEY_FILE" />             ನಿಮ್ಮ ಮುಖ್ಯ ಫೈಲ್ ಅನ್ನು ಸುರಕ್ಷಿತ ಸ್ಥಳದಲ್ಲಿಡಿ. ನಿಮ್ಮ ವಿಸ್ತರಣೆಯ ಹೊಸ ಆವೃತ್ತಿಗಳನ್ನು ರಚಿಸುವ ಅಗತ್ಯತೆ ಇದೆ.</translation>
-<translation id="8000066093800657092">ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="8002274832045662704">ಸುಧಾರಿತ ಪ್ರಿಂಟರ್ ಕಾನ್ಫಿಗರೇಶನ್</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ಪ್ರಿಂಟರ್ ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="8004582292198964060">ಬ್ರೌಸರ್</translation>
@@ -6469,7 +6369,6 @@
 <translation id="804786196054284061">ಅಂತಿಮ ಬಳಕೆದಾರ ಪರವಾನಗಿ ಒಪ್ಪಂದ</translation>
 <translation id="8048977114738515028">ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನೇರವಾಗಿ ಪ್ರವೇಶಿಸಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೆಸ್ಕ್‌ಟಾಪ್ ಶಾರ್ಟ್‌ಕಟ್ ರಚಿಸಿ</translation>
 <translation id="8049029041626250638">ಕೀಬೋರ್ಡ್ ಅಥವಾ ಮೌಸ್ ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿ. ನೀವು ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ, ನಿಮ್ಮ ಸಾಧನಗಳು ಜೋಡಿಸಲು ಸಿದ್ಧವಾಗಿವೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
-<translation id="8049184478152619004">ಪರ್ಸನಲ್ ಅನ್‌ಬ್ಲಾಕಿಂಗ್ ಕೀ ಅನ್ನು ನಮೂದಿಸಿ (PUK)</translation>
 <translation id="8049705080247101012"><ph name="EXTENSION_NAME" /> ದೋಷಪೂರಿತವೆಂದು Google ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದೆ ಹಾಗೂ ಅದರ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅನ್ನು ತಡೆಗಟ್ಟಲಾಗಿದೆ</translation>
 <translation id="8049948037269924837">ಟಚ್‌ಪ್ಯಾಡ್ ಹಿಮ್ಮುಖ ಸ್ಕ್ರಾಲ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>
@@ -6511,7 +6410,6 @@
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ಈ ಫೈಲ್ ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅದರ ಮಾಲೀಕರಿಗೆ ಕೇಳಿ.}one{ಈ ಫೈಲ್‌ಗಳಲ್ಲಿನ ಕೆಲವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಲಾಗಿದೆ. ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅವುಗಳ ಮಾಲೀಕರನ್ನು ಕೇಳಿ}other{ಈ ಫೈಲ್‌ಗಳಲ್ಲಿನ ಕೆಲವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಲಾಗಿದೆ. ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅವುಗಳ ಮಾಲೀಕರನ್ನು ಕೇಳಿ}}</translation>
-<translation id="8087576439476816834"><ph name="PROFILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
 <translation id="8090234456044969073">ನಿಮ್ಮ ಪದೇ ಪದೇ ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಓದಿ</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ</translation>
@@ -6550,8 +6448,6 @@
 <translation id="811994229154425014">ವಿರಾಮ ಚಿಹ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಲು ಡಬಲ್ ಸ್ಪೇಸ್ ನೀಡಿ</translation>
 <translation id="8120505434908124087">eSIM ಪ್ರೊಫೈಲ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="812260729110117038">ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡದ ರೀತಿಯಲ್ಲಿ ಜಾಹೀರಾತುಗಳ ಪರಿಣಾಮಕಾರಿತ್ವವನ್ನು ಜಾಹೀರಾತುದಾರರು ಮತ್ತು ಪ್ರಕಾಶಕರು ಅಧ್ಯಯನ ಮಾಡಬಹುದು.</translation>
-<translation id="8123590694679414600"><ph name="TIME" /> ರಂದು ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್ ಬಳಸಿಕೊಂಡು ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ 
-     ಮಾಡಲಾಗಿತ್ತು. ಇದು Google Pay ನಿಂದ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಒಳಗೊಂಡಿರುವುದಿಲ್ಲ.</translation>
 <translation id="81238879832906896">ಹಳದಿ ಮತ್ತು ಬಿಳಿ ಹೂ</translation>
 <translation id="8124313775439841391">ನಿರ್ವಹಿಸಲಾದ ONC</translation>
 <translation id="813082847718468539">ಸೈಟ್ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
@@ -6564,7 +6460,6 @@
 <translation id="8138082791834443598">ಐಚ್ಛಿಕ — ಈ ಸಾಧನಕ್ಕೆ ಸಂಯೋಜಿಸಲು ಹೊಸ ಮಾಹಿತಿಯನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಮಾಹಿತಿಯನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ.</translation>
 <translation id="8138217203226449454">ನಿಮ್ಮ ಹುಡುಕಾಟ ಪೂರೈಕೆದಾರರನ್ನು ಬದಲಾಯಿಸಬೇಕೆಂದುಕೊಂಡಿರಾ?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ಸ್ಥಿತಿ</translation>
-<translation id="813913629614996137">ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8139447493436036221">Google Drive ಫೈಲ್‌ಗಳು</translation>
 <translation id="8141584439523427891">ಇದೀಗ ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8141725884565838206">ನಿನ್ನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -6773,7 +6668,6 @@
 <translation id="8382913212082956454">ಇಮೇಲ್ &amp;ವಿಳಾಸವನ್ನು ನಕಲು ಮಾಡಿ</translation>
 <translation id="8386091599636877289">ಕಾರ್ಯನೀತಿ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="8386819192691131213">ಅನುವಾದ, ವ್ಯಾಖ್ಯಾನ, ಯೂನಿಟ್ ಪರಿವರ್ತನೆ ಮತ್ತು ಇನ್ನಷ್ಟವುಗಳಂತಹ ತ್ವರಿತ ಉತ್ತರಗಳನ್ನು ಒದಗಿಸುವುದಕ್ಕಾಗಿ ಪರದೆಯ ಮೇಲೆ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು Assistant ಅನುಮತಿಸಿ</translation>
-<translation id="8386903983509584791">ಸ್ಕ್ಯಾನ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />ಹುಡುಕಾಟ<ph name="END_LINK_SEARCH" /> ಅಥವಾ ಇತರೆ ರೀತಿಯ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, <ph name="BEGIN_LINK_GOOGLE" />ನನ್ನ Google ಖಾತೆ<ph name="END_LINK_GOOGLE" />ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="8387361103813440603">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8388770971141403598">ಸೆಕೆಂಡರಿ ಪ್ರೊಫೈಲ್‌ಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
@@ -6791,7 +6685,6 @@
 <translation id="8404893580027489425">ಈ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆನ್ಸರ್‌‌ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಬಲಭಾಗದಲ್ಲಿದೆ. ಯಾವುದೇ ಬೆರಳಿನ ಮೂಲಕ ಅದನ್ನು ಮೆಲ್ಲಗೆ ಸ್ಪರ್ಶಿಸಿ.</translation>
 <translation id="8405046151008197676">ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ ಕುರಿತು ಮುಖ್ಯಾಂಶಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="8407199357649073301">ಲಾಗ್ ಹಂತ:</translation>
-<translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8409413588194360210">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳು</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> ಮತ್ತು <ph name="COUNT" /> ಕ್ಕೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -6813,7 +6706,6 @@
 <translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="84297032718407999">ಇಷ್ಟು ಸಮಯ ಆದ ಮೇಲೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ: <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">ಟ್ಯಾಪ್‌ ಪಾಯಿಂಟ್‌‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
-<translation id="8431909052837336408">ಸಿಮ್‌ ಪಿನ್‌ ಬದಲಾಯಿಸು</translation>
 <translation id="8434480141477525001">NaCl ಡೀಬಗ್‌ ಪೋರ್ಟ್‌</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> ಮೂಲಕ ನಿಮ್ಮ ಗುರುತನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -6826,7 +6718,6 @@
 <translation id="8448729345478502352">ನಿಮ್ಮ ಪರದೆಯ ಮೇಲೆ ಐಟಂಗಳನ್ನು ಸಣ್ಣದು ಅಥವಾ ದೊಡ್ಡದು ಮಾಡಿ</translation>
 <translation id="8449008133205184768">ಅಂಟಿಸು  ಮತ್ತು  ಶೈಲಿ ಹೊಂದಿಸು</translation>
 <translation id="8449036207308062757">ಸಂಗ್ರಹಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="8452135315243592079">ಕಾಣೆಯಾಗಿರುವ ಸಿಮ್ ಕಾರ್ಡ್</translation>
 <translation id="8455026683977728932">ADB ನಿದರ್ಶನ ಸಕ್ರಿಯಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8456512334795994339">ಕೆಲಸ ಮಾಡಲು ಮತ್ತು ಪ್ಲೇ ಮಾಡಲು ಆ್ಯಪ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="845702320058262034">ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್‌ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -6894,14 +6785,12 @@
 <translation id="8539766201049804895">ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="8540136935098276800">ಸರಿಯಾಗಿ ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಲಾದ URL ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="8540503336857689453">ಭದ್ರತಾ ಕಾರಣಗಳಿಗಾಗಿ ಮರೆಮಾಡಿರುವ ನೆಟ್‌ವರ್ಕ್ ಬಳಸುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ.</translation>
-<translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="854071720451629801">ಓದಿದಂತೆ ಗುರುತಿಸಿ</translation>
 <translation id="8541462173655894684">ಪ್ರಿಂಟ್ ಸರ್ವರ್‌ನಿಂದ ಯಾವುದೇ ಪ್ರಿಂಟರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="8542618328173222274">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಲು ಸೈಟ್ ಬಯಸಿದಾಗ, ಕೇಳಿ</translation>
 <translation id="8543556556237226809">ಪ್ರಶ್ನೆಗಳಿವೆಯೇ? ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡುವ ವ್ಯಕ್ತಿಯನ್ನು ಸಂಪರ್ಕಸಿ.</translation>
 <translation id="8546186510985480118">ಸಾಧನದ ಸ್ಥಳಾವಕಾಶ ಕಡಿಮೆ ಇದೆ</translation>
 <translation id="8546306075665861288">ಇಮೇಜ್ ಕ್ಯಾಷ್</translation>
-<translation id="854655314928502177">ವೆಬ್‌ ಪ್ರಾಕ್ಸಿಯ ಸ್ವಯಂ ಅನ್ವೇಷಣೆಯ URL:</translation>
 <translation id="8546930481464505581">ಸ್ಪರ್ಶ ಪಟ್ಟಿಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="8547013269961688403">ಪೂರ್ಣಪರದೆ ವರ್ಧಕವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="85486688517848470">ಮೇಲಿನ-ಸಾಲುಗಳ ಕೀಗಳ ನಡುವಳಿಕೆಯನ್ನು ಬದಲಾಯಿಸಲು ಹುಡುಕಾಟದ ಕೀ ಅನ್ನು ಒತ್ತಿ ಹಿಡಿಯಿರಿ</translation>
@@ -6978,9 +6867,7 @@
 <translation id="8636500887554457830">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ಅಥವಾ ಮರುನಿರ್ದೇಶನಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="8637542770513281060">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್, ಸುಭದ್ರ ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಹೊಂದಿದೆ. Chrome OS ನಲ್ಲಿ ಹಲವು ಪ್ರಮುಖ ಭದ್ರತಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಕಾರ್ಯಗತಗೊಳಿಸಲು ಇದನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ಇದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು Chromebook ಸಹಾಯ ಕೇಂದ್ರಕ್ಕೆ ಭೇಟಿ ನೀಡಿ: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8637688295594795546">ಸಿಸ್ಟಂ ಅಪ್‌ಡೇಟ್‌‌ ಲಭ್ಯವಿದೆ. ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಿದ್ಧಗೊಳ್ಳುತ್ತಿದೆ...</translation>
-<translation id="863903787380594467">ತಪ್ಪಾದ ಪಿನ್. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="8639047128869322042">ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್‌ಗಾಗಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ಪೋರ್ಟ್</translation>
 <translation id="8639635302972078117">ಬಳಕೆ ಮತ್ತು ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಿ. ಪ್ರಸ್ತುತ, ಈ ಸಾಧನವು ಡಯಾಗ್ನಾಸ್ಟಿಕ್, ಸಾಧನ ಹಾಗೂ ಆ್ಯಪ್ ಬಳಕೆಯ ಡೇಟಾವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ Google ಗೆ ಕಳುಹಿಸುತ್ತಿದೆ. ನಿಮ್ಮ ಮಗುವನ್ನು ಗುರುತಿಸಲು ಈ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ, ಹಾಗೂ ಇದು ಸಿಸ್ಟಂ ಮತ್ತು ಆ್ಯಪ್‌ನ ಸ್ಥಿರತೆ, ಹಾಗೂ ಇತರ ಸುಧಾರಣೆಗಳಿಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಒಟ್ಟುಗೂಡಿಸಲಾದ ಕೆಲವೊಂದು ಡೇಟಾ, Google ಆ್ಯಪ್‌ಗಳಿಗೆ ಮತ್ತು Android ಡೆವಲಪರ್‌ಗಳಂತಹ ಪಾಲುದಾರರಿಗೂ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ನಿಮ್ಮ ಮಗುವಿಗಾಗಿ, ಹೆಚ್ಚುವರಿ ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್‌ ಚಟುವಟಿಕೆಯನ್ನು ಆನ್ ಮಾಡಿದ್ದರೆ, ಈ ಡೇಟಾವನ್ನು ಅವರ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬಹುದು.</translation>
 <translation id="8642900771896232685">2 ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="8642947597466641025">ಪಠ್ಯವನ್ನು ದೊಡ್ಡದಾಗಿ ಮಾಡಿಕೊಳ್ಳಿ</translation>
@@ -7002,7 +6889,6 @@
 <translation id="8654151524613148204">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ನಿಭಾಯಿಸಲಾಗದಷ್ಟು ದೊಡ್ಡದಾಗಿದೆ ನಿಮ್ಮ ಫೈಲ್‌. ಕ್ಷಮಿಸಿ.</translation>
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
 <translation id="8655972064210167941">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲದಿರುವುದರಿಂದ ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ ಅಥವಾ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="8656768832129462377">ಪರಿಶೀಲಿಸಬೇಡ</translation>
 <translation id="8657393004602556571">ನೀವು ಪ್ರತಿಕ್ರಿಯೆ ತ್ಯಜಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="8658645149275195032"><ph name="TAB_NAME" /> ಜೊತೆಗೆ ನಿಮ್ಮ ಪರದೆ ಮತ್ತು ಆಡಿಯೋವನ್ನು <ph name="APP_NAME" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="8661290697478713397">ಅಜ್ಞಾ&amp;ತ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
@@ -7088,7 +6974,6 @@
 <translation id="8740247629089392745">ಈ Chromebook ಅನ್ನು <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಹಸ್ತಾಂತರಿಸಬಹುದು. ಸೆಟಪ್ ಬಹುತೇಕ ಪೂರ್ಣಗೊಂಡಿದೆ, ಇದು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡುವ ಸಮಯ.</translation>
 <translation id="8741944563400125534">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಸೆಟಪ್ ಗೈಡ್</translation>
 <translation id="8742998548129056176">ನಿಮ್ಮ ಸಾಧನದ ಕುರಿತು ಮತ್ತು ಅದನ್ನು ನೀವು ಹೇಗೆ ಬಳಸುತ್ತೀರಿ ಎಂಬುದರ ಕುರಿತು ಇದು ಸಾಮಾನ್ಯ ಮಾಹಿತಿಯಾಗಿದೆ (ಉದಾಹರಣೆಗೆ, ಬ್ಯಾಟರಿಯ ಮಟ್ಟ, ಸಿಸ್ಟಂ ಹಾಗೂ ಆ್ಯಪ್ ಚಟುವಟಿಕೆ ಮತ್ತು ದೋಷಗಳು). Android ಅನ್ನು ಸುಧಾರಿಸಲು ಈ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ ಮತ್ತು ಒಟ್ಟುಗೂಡಿಸಲಾದ ಕೆಲವೊಂದು ಮಾಹಿತಿಯು Google ಆ್ಯಪ್‌ಗಳಿಗೆ ಮತ್ತು Android ಡೆವಲಪರ್‌ಗಳಂತಹ ಪಾಲುದಾರರಿಗೆ, ಅವರ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ಉತ್ಪನ್ನಗಳನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
-<translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ, ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8746654918629346731">ನೀವು ಈಗಾಗಲೇ "<ph name="EXTENSION_NAME" />" ಗಾಗಿ ವಿನಂತಿಸಿದ್ದೀರಿ</translation>
 <translation id="874689135111202667">{0,plural, =1{ಈ ಸೈಟ್‌ಗೆ ಒಂದು ಫೈಲ್‌ ಅನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೇ?}one{ಈ ಸೈಟ್‌ಗೆ # ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೇ?}other{ಈ ಸೈಟ್‌ಗೆ # ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೇ?}}</translation>
 <translation id="8749805710397399240">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಿಸ್ಟಂ ಆದ್ಯತೆಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನುಮತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
@@ -7133,7 +7018,6 @@
 <translation id="8783834180813871000">ಬ್ಲೂಟೂತ್ ಜೋಡಣೆ ಕೋಡ್‌ ಟೈಪ್‌ ಮಾಡಿ ನಂತರ Return ಅಥವಾ Enter ಒತ್ತಿ.</translation>
 <translation id="8784626084144195648">ಶೇಖರಿಸಿದ ಸರಾಸರಿ</translation>
 <translation id="8785622406424941542">ಸ್ಟೈಲಸ್</translation>
-<translation id="8787254343425541995">ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಪ್ರಾಕ್ಸಿಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{ಹೆಸರಿಸದ ಗುಂಪು - 1 ಟ್ಯಾಬ್}one{ಹೆಸರಿಸದ ಗುಂಪು - # ಟ್ಯಾಬ್‌ಗಳು}other{ಹೆಸರಿಸದ ಗುಂಪು - # ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="8791534160414513928">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್‍ ಟ್ರಾಫಿಕ್‍ನೊಂದಿಗೆ "ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡ" ವಿನಂತಿಯನ್ನು ಕಳುಹಿಸು</translation>
 <translation id="8792626944327216835">ಮೈಕ್ರೋಫೋನ್‌</translation>
@@ -7343,7 +7227,6 @@
 <translation id="8999560016882908256">ವಿಭಾಗದ ಸಿಂಟ್ಯಾಕ್ಸ್ ದೋಷ: <ph name="ERROR_LINE" /></translation>
 <translation id="9003647077635673607">ಎಲ್ಲ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಅನುಮತಿಸಿ</translation>
 <translation id="9003677638446136377">ಮತ್ತೆ ಪರಿಶೀಲಿಸು</translation>
-<translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="9004952710076978168">ಅಪರಿಚಿತ ಮುದ್ರಣಕ್ಕಾಗಿ ಅಧಿಸೂಚನೆಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ.</translation>
 <translation id="9008201768610948239">ನಿರ್ಲಕ್ಷಿಸಿ</translation>
 <translation id="9009369504041480176">ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />%)...</translation>
@@ -7376,7 +7259,6 @@
 <translation id="9031549947500880805">Google ಡ್ರೈವ್‌ನಲ್ಲಿ ಬ್ಯಾಕಪ್‌ ಮಾಡಿ. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸುಲಭವಾಗಿ ಮರುಸ್ಥಾಪಿಸಿ ಅಥವಾ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಾಧನವನ್ನು ಬದಲಾಯಿಸಿ. ನಿಮ್ಮ ಬ್ಯಾಕಪ್, ಆ್ಯಪ್ ಡೇಟಾವನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ.</translation>
 <translation id="9033765790910064284">ಹೇಗಾದರೂ ಮುಂದುವರಿಸಿ</translation>
 <translation id="9033857511263905942">&amp;ಅಂಟಿಸಿ</translation>
-<translation id="9035689366572880647">ಪ್ರಸ್ತುತ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="9037640663275993951">ಸಾಧನವನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="9037818663270399707">ಎಲ್ಲಾ ನೆಟ್‌ವರ್ಕ್ ಟ್ರಾಫಿಕ್‌ಗೆ ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಖಾಸಗಿಯಾಗಿಲ್ಲ</translation>
 <translation id="9037965129289936994">ಮೂಲವನ್ನು ತೋರಿಸು</translation>
@@ -7403,7 +7285,6 @@
 <translation id="9063800855227801443">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="9064275926664971810">ಒಂದು ಕ್ಲಿಕ್‌ನೊಂದಿಗೆ ವೆಬ್ ಫಾರ್ಮ್‌ಗಳನ್ನು ತುಂಬಲು ಸ್ವಯಂ ತುಂಬುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
-<translation id="9065512565307033593">ನೀವು ಪರಿಶೀಲಿಸಲು ವಿಫಲವಾದರೆ, ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಪ್ರವೇಶವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="9066782832737749352">ಪಠ್ಯದಿಂದ ಧ್ವನಿ</translation>
 <translation id="9068878141610261315">ಬೆಂಬಲರಹಿತ ಫೈಲ್‌ ಪ್ರಕಾರ</translation>
 <translation id="9070342919388027491">ಟ್ಯಾಬ್ ಅನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
@@ -7432,7 +7313,6 @@
 <translation id="9095253524804455615">ತೆಗೆದುಹಾಕು</translation>
 <translation id="909554839118732438">ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="9100416672768993722">ಕೊನೆಯದಾಗಿ ಬಳಸಿದ ಇನ್‌ಪುಟ್ ವಿಧಾನಕ್ಕೆ ಬದಲಾಯಿಸಲು, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />ಸ್ಪೇಸ್<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ಒತ್ತಿರಿ</translation>
-<translation id="9100610230175265781">ಪಾಸ್‌ಫ್ರೇಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="9100765901046053179">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="9101691533782776290">ಆ್ಯಪ್ ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="9102610709270966160">ವಿಸ್ತರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -7478,12 +7358,10 @@
 <translation id="9147392381910171771">&amp;ಆಯ್ಕೆಗಳು</translation>
 <translation id="9148058034647219655">ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="9148126808321036104">ಪುನಃ ಸೈನ್ ಇನ್  ಆಗಿ</translation>
-<translation id="914873105831852105">ಅಮಾನ್ಯ ಪಿನ್. ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="9148963623915467028">ಈ ಸೈಟ್ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು.</translation>
 <translation id="9149866541089851383">ಎಡಿಟ್...</translation>
 <translation id="9150045010208374699">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ</translation>
 <translation id="9150079578948279438">ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ತಾಂತ್ರಿಕ ಬೆಂಬಲಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
-<translation id="9153934054460603056">ಗುರುತಿಸುವಿಕೆ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಿ</translation>
 <translation id="9154194610265714752">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="91568222606626347">ಶಾರ್ಟ್‌ಕಟ್‌ ರಚಿಸಿ...</translation>
 <translation id="9157096865782046368">0.8 ಸೆಕೆಂಡುಗಳು</translation>
@@ -7558,7 +7436,6 @@
 <translation id="936646668635477464">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೋಫೋನ್</translation>
 <translation id="936801553271523408">ಸಿಸ್ಟಂ ವಿಶ್ಲೇಷಣಾತ್ಮಕ ಡೇಟಾ</translation>
 <translation id="93766956588638423">ವಿಸ್ತರಣೆ ದುರಸ್ತಿಪಡಿಸಿ</translation>
-<translation id="938470336146445890">ದಯವಿಟ್ಟು ಬಳಕೆದಾರರ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ.</translation>
 <translation id="939252827960237676">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಉಳಿಸುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="939736085109172342">ಹೊಸ ಫೋಲ್ಡರ್</translation>
@@ -7609,7 +7486,6 @@
 <translation id="991413375315957741">ಮೋಷನ್ ಅಥವಾ ಲೈಟ್ ಸೆನ್ಸರ್‌ಗಳು</translation>
 <translation id="992032470292211616">ವಿಸ್ತರಣೆಗಳು, ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಮತ್ತು ಥೀಮ್‌ಗಳು ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಹಾನಿಯುಂಟು ಮಾಡಬಹುದು. ಮುಂದುವರಿಯಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="992256792861109788">ಗುಲಾಬಿ ಬಣ್ಣ</translation>
-<translation id="992401651319295351">ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ. ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವವರೆಗೆ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="992592832486024913">ChromeVox ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>
 <translation id="992778845837390402">ಪ್ರಸ್ತುತವಾಗಿ Linux ಬ್ಯಾಕಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="993540765962421562">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>

@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">Хандалтын код</translation>
 <translation id="4227991223508142681">Хост хангалтын хэрэгсэл</translation>
 <translation id="4240294130679914010">Chromoting Host устгагч</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL дамжуулагч</translation>
 <translation id="4277736576214464567">Хандалтын код хүчингүй байна. Дахин оролдоно уу.</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="4405930547258349619">Эх код бүхий гол программуудын багц</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">Илгээх Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Хуваалцах</translation>
 <translation id="677755392401385740">Хост нь хэрэглэгчид зориулсан үйлдлийг эхэлсэн байна:<ph name="HOST_USERNAME" /> .</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> клиент дээр URL нээхэд туслагч аппликэйшн</translation>
 <translation id="6939719207673461467">Компьютерийн гарыг гаргах/хаах.</translation>
 <translation id="6963936880795878952">Хэн нэгэн буруу ПИН-р нэвтрэхийг оролдсон тул алсын компьютерт хийх холболтыг түр хугацаанд блоклосон байна. Дараа дахин оролдоно уу.</translation>
 <translation id="6965382102122355670">OK</translation>

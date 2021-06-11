@@ -10,7 +10,6 @@
 <translation id="1047303875618851375">Chrome nu a putut verifica informațiile</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
-<translation id="1067922213147265141">Alte servicii Google</translation>
 <translation id="107147699690128016">Dacă modifici extensia de fișier, fișierul poate să se deschidă în altă aplicație și să dăuneze dispozitivului.</translation>
 <translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
 <translation id="1100066534610197918">Deschide în filă nouă în grup</translation>
@@ -102,7 +101,6 @@
 <translation id="1672586136351118594">Nu mai afișa</translation>
 <translation id="1680919990519905526">Cumpără cu Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Încearcă acum</translation>
-<translation id="1692118695553449118">Sincronizarea este activată</translation>
 <translation id="1697284962337958118">Adaugă în</translation>
 <translation id="1718835860248848330">Ultima oră</translation>
 <translation id="1724977129262658800">Deblochează pentru a modifica parola</translation>
@@ -141,7 +139,6 @@
 <translation id="1973912524893600642">Păstrează datele</translation>
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
-<translation id="1984705450038014246">Sincronizează datele din Chrome</translation>
 <translation id="1986685561493779662">Numele există deja</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> Butonul <ph name="LINK_NAME" /></translation>
 <translation id="1993768208584545658"><ph name="SITE" /> dorește să se asocieze</translation>
@@ -188,7 +185,6 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 <translation id="2200113223741723867">Gestionează accesul la datele de utilizare</translation>
 <translation id="2227444325776770048">Continuă ca <ph name="USER_FULL_NAME" /></translation>
 <translation id="22320125457191592">Pentru tine</translation>
-<translation id="2234876718134438132">Sincronizarea și serviciile Google</translation>
 <translation id="2239812875700136898">Gestionează subiectele folosind butonul Opțiuni pentru Discover</translation>
 <translation id="2259659629660284697">Exportă parolele…</translation>
 <translation id="2276696007612801991">Conectează-te la contul Google pentru a verifica parolele</translation>
@@ -364,7 +360,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3295530008794733555">Navighează mai rapid. Folosește mai puține date.</translation>
 <translation id="3297344142967351106">Asistență vocală</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
-<translation id="3315103659806849044">Acum personalizezi setările pentru sincronizare și serviciul Google. Pentru a finaliza activarea sincronizării, atinge butonul Confirmă din partea de jos a ecranului. Navighează în sus</translation>
 <translation id="3334729583274622784">Modifici extensia de fișier?</translation>
 <translation id="3341058695485821946">Vezi ce volum de date ai economisit</translation>
 <translation id="3341262203274374114">Nu se poate anula urmărirea. A apărut o eroare.</translation>
@@ -502,7 +497,6 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="4298388696830689168">Site-uri conectate</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Elemente de bază</translation>
-<translation id="4314815835985389558">Gestionează sincronizarea</translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
 <translation id="4321739720395210191">Nu se poate deschide camera. Repornește dispozitivul și încearcă din nou.</translation>
 <translation id="433213510553688132">Urmărești...</translation>
@@ -631,9 +625,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="510275257476243843">1 oră rămasă</translation>
 <translation id="5118713593561876160">Interese</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
-<translation id="5127805178023152808">Sincronizarea este dezactivată</translation>
 <translation id="5132942445612118989">Sincronizează parolele, istoricul și alte date pe toate dispozitivele</translation>
-<translation id="5136035049889637840">Cumpără produse similare <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Află cum să folosești Google Drive</translation>
 <translation id="5152843274749979095">Nu sunt instalate aplicații acceptate</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
@@ -753,6 +745,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5854790677617711513">Mai vechi de 30 de zile</translation>
 <translation id="5855546874025048181">Rafinează: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome nu poate activa adaptorul Bluetooth</translation>
+<translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5862731021271217234">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea</translation>
 <translation id="5864174910718532887">Detalii: sortate după numele site-ului</translation>
@@ -762,6 +755,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="587735546353481577">Pentru a urmări un site, accesează site-ul, deschide meniul Chrome și atinge Urmărește.</translation>
 <translation id="5880748256563468367">Accesează feedul</translation>
 <translation id="5884076754568147479">Pentru a te ajuta să finalizezi sarcini, Google va primi adresele URL și conținutul site-urilor în care folosești Asistentul, precum și informațiile pe care le trimiți cu ajutorul Asistentului</translation>
+<translation id="5916664084637901428">Activat</translation>
 <translation id="5919204609460789179">Actualizează <ph name="PRODUCT_NAME" /> pentru a începe sincronizarea</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> salvați</translation>
 <translation id="5939518447894949180">Resetează</translation>
@@ -812,7 +806,6 @@ Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt dis
 <translation id="6192907950379606605">Generează descrieri imagine</translation>
 <translation id="6210748933810148297">Nu ești <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previzualizare a paginii</translation>
-<translation id="6218096829563201111">Caută produse similare <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Deblochează pentru a-ți exporta parolele.</translation>
 <translation id="6232535412751077445">Dacă activezi opțiunea „Nu urmări”, o solicitare va fi inclusă împreună cu traficul de navigare. Efectul variază în funcție de răspunsul site-ului la solicitare și în funcție de modul în care este interpretată solicitarea.
 

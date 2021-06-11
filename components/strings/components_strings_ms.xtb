@@ -312,6 +312,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}=1{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}other{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap {NUM_DAYS} hari.}}</translation>
 <translation id="2053553514270667976">Poskod</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 cadangan}other{# cadangan}}</translation>
+<translation id="2071156619270205202">Kad ini tidak layak untuk nombor kad maya.</translation>
 <translation id="2071692954027939183">Pemberitahuan disekat secara automatik kerana biasanya anda tidak membenarkan pemberitahuan</translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="20817612488360358">Tetapan proksi sistem telah sedia untuk digunakan tetapi konfigurasi proksi jelas juga telah ditentukan.</translation>
@@ -440,9 +441,11 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2521385132275182522">Kokot bawah sebelah kanan</translation>
 <translation id="2523886232349826891">Disimpan pada peranti ini sahaja</translation>
 <translation id="2524461107774643265">Tambahkan Maklumat Lanjut</translation>
+<translation id="2529899080962247600">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dan 1 lagi}other{dan # lagi}}</translation>
 <translation id="2536110899380797252">Tambahkan Alamat</translation>
 <translation id="2539524384386349900">Kesan</translation>
+<translation id="2540701853218677861">Sejarah log masuk/log keluar peranti, termasuk cap masa dan percubaan yang gagal</translation>
 <translation id="2541219929084442027">Halaman yang anda lihat dalam tab Inkognito tidak akan kekal dalam sejarah, simpanan kuki atau sejarah carian penyemak imbas anda selepas anda menutup semua tab Inkognito anda. Sebarang fail yang anda muat turun atau penanda halaman yang anda buat akan disimpan.</translation>
 <translation id="2544644783021658368">Satu dokumen</translation>
 <translation id="254947805923345898">Nilai dasar tidak sah.</translation>
@@ -635,6 +638,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3320021301628644560">Tambahkan alamat pengebilan</translation>
 <translation id="3324983252691184275">Merah lembayung</translation>
 <translation id="3329013043687509092">Ketepuan</translation>
+<translation id="3333762389743153920">Tidak layak untuk kad maya</translation>
 <translation id="3338095232262050444">Selamat</translation>
 <translation id="3355823806454867987">Tukar tetapan proksi...</translation>
 <translation id="3360103848165129075">Helaian pengendali pembayaran</translation>
@@ -769,6 +773,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3754210790023674521">Keluar daripada gambar dalam gambar</translation>
 <translation id="3759461132968374835">Tiada laporan nahas yang dibuat baru-baru ini.  Nahas yang berlaku apabila laporan nahas dilumpuhkan tidak akan kelihatan di sini.</translation>
 <translation id="3760561303380396507">Gunakan Windows Hello dan bukan CVC?</translation>
+<translation id="3761171036307311438">Nama pada kad:</translation>
 <translation id="3761718714832595332">Sembunyikan status</translation>
 <translation id="3765032636089507299">Halaman Penyemakan Imbas Selamat sedang dalam pembinaan.</translation>
 <translation id="3765588406864124894">Peti mel 9</translation>
@@ -1148,6 +1153,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Sahkan kad anda</translation>
 <translation id="5135404736266831032">Urus alamat...</translation>
+<translation id="5138014172396933048">Kad maya tidak tersedia sekarang, sila hubungi bank anda</translation>
 <translation id="5138227688689900538">Tunjukkan kurang</translation>
 <translation id="514010763713772514">Daftar keluar lebih pantas selepas ini</translation>
 <translation id="5145883236150621069">Terdapat kod ralat dalam balasan dasar</translation>
@@ -1194,6 +1200,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5287240709317226393">Tunjukkan kuki</translation>
 <translation id="5287456746628258573">Tapak ini menggunakan konfigurasi keselamatan yang sudah lapuk, yang mungkin mendedahkan maklumat anda (contohnya, kata laluan atau nombor kad kredit) apabila dihantar ke tapak ini.</translation>
 <translation id="5288108484102287882">Pengesahan nilai dasar telah menimbulkan amaran</translation>
+<translation id="5288808348893593856">Sambungan laman selamat melainkan Chrome memberitahu anda sebaliknya.</translation>
 <translation id="5289384342738547352">Pengendalian berbilang dokumen</translation>
 <translation id="5299298092464848405">Ralat semasa menghuraikan dasar</translation>
 <translation id="5300589172476337783">Paparkan</translation>
@@ -1556,9 +1563,11 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6685834062052613830">Log keluar dan selesaikan persediaan</translation>
 <translation id="6687335167692595844">Saiz fon diminta</translation>
 <translation id="6688743156324860098">Kemas kini…</translation>
+<translation id="6688775486821967877">Kad maya tidak tersedia sekarang, sila cuba sebentar lagi</translation>
 <translation id="6689249931105087298">Relatif dengan mampatan mata hitam</translation>
 <translation id="6689271823431384964">Chrome menawarkan penyimpanan kad dalam Akaun Google anda kerana anda telah log masuk. Anda boleh menukar gelagat ini dalam tetapan. Nama pemegang kad diambil daripada akaun anda.</translation>
 <translation id="6698381487523150993">Dicipta:</translation>
+<translation id="6699188552522342100">Adakah laman web ini tepat?</translation>
 <translation id="6702919718839027939">Pembentangan</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6710594484020273272">&lt;Taip istilah carian&gt;</translation>
@@ -1685,6 +1694,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7219179957768738017">Sambungan menggunakan <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Memproses</translation>
 <translation id="7221855153210829124">Tunjukkan pemberitahuan</translation>
+<translation id="722454870747268814">Tab Inkognito Baharu</translation>
 <translation id="7229659723041939809">Anda baru sahaja memasukkan kata laluan pada tapak yang menipu. Chrome mengesyorkan penyemakan kata laluan anda yang disimpan untuk <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dan tapak lain yang menggunakan kata laluan ini sekarang.</translation>
 <translation id="7233592378249864828">Cetak helaian pengesahan</translation>
 <translation id="7238585580608191973">Cap jari SHA-256</translation>
@@ -2062,6 +2072,7 @@ Butiran tambahan:
           <ph name="LIST_ITEM" />Kuki dan data laman
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Gunakan Touch ID untuk mengesahkan kad dengan lebih cepat</translation>
+<translation id="8577348305244205642">Kad maya tidak tersedia</translation>
 <translation id="858637041960032120">Tambah no. tel.
 </translation>
 <translation id="8589998999637048520">Kualiti terbaik</translation>

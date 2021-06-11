@@ -317,6 +317,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del ratón</translation>
 <translation id="3513798432020909783">Cuenta gestionada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">La conexión Wi‑Fi está desactivada</translation>
+<translation id="3560866052109807830">Herramientas de dibujo del marcador</translation>
 <translation id="3563775809269155755">Habilitar punto de acceso</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Cambiar de nuevo por "<ph name="FROM_LOCALE" />" (requiere reiniciar)</translation>
@@ -412,6 +413,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4274537685965975248">La combinación de teclas Ctrl + Alt + tecla de flecha hacia abajo ha cambiado. Para usar la tecla Fin, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + tecla de flecha hacia la derecha.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4285498937028063278">No fijar</translation>
+<translation id="429402653707266969">Alternar la ubicación de la barra de herramientas</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
 <translation id="4302592941791324970">No disponible</translation>

@@ -110,7 +110,6 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> kun oldin onlayn edi</translation>
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
-<translation id="2086623437239112659">Kirishga oid saqlangan axborotingiz eskirgan.</translation>
 <translation id="209018056901015185">To‘liq versiya</translation>
 <translation id="2103075008456228677">history.google.com sahifasini ochish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
@@ -408,6 +407,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Tabni yopish</translation>
 <translation id="5228579091201413441">Sinxronlashni yoqish</translation>
+<translation id="5232485538978018676">Boshqariladigan hisobga kirish</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="5245322853195994030">Sinxronizatsiyani bekor qilish</translation>
 <translation id="5271549068863921519">Parolni saqlash</translation>
@@ -724,6 +724,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8206354486702514201">Bu parametr administrator tomonidan yoqilgan.</translation>
 <translation id="8225985093977202398">Keshdagi tasvir va fayllar</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
+<translation id="8271720166617117963">Qabul qilish va kirish</translation>
 <translation id="8281781826761538115">Standart - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Tashlab ketish</translation>
 <translation id="8283172974887967105">Belgilash…</translation>
@@ -766,6 +767,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8654802032646794042">Bekor qilish</translation>
 <translation id="8668210798914567634">Bu sahifa mutolaa ro‘yxatingizga saqlandi.</translation>
 <translation id="8680787084697685621">Hisob haqidagi ma’lumotlar eskirgan.</translation>
+<translation id="8691262314411702087">Sinxronlanadigan obyektlarni tanlash</translation>
 <translation id="8693663554456874301">{count,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
 <translation id="8706588385081740091">Parollar</translation>
 <translation id="8717864919010420084">Havolani nusxalash</translation>

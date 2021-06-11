@@ -3388,13 +3388,6 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="547601067149622666">Werbung auf Websites mit aufdringlichen Werbeanzeigen nicht zulassen</translation>
 <translation id="5480380613778757009">Wenn diese Richtlinie deaktiviert oder nicht eingerichtet ist, werden alle in der verwalteten Gastsitzung festgelegten Anzeigeeinstellungen zurückgesetzt, sobald die Sitzung beendet ist. Ist diese Richtlinie auf „True“ gesetzt, bleiben Anzeigeeigenschaften nach dem Beenden der verwalteten Gastsitzung bestehen.</translation>
 <translation id="5483065054530244863">SHA-1-signierte Zertifikate zulassen, die von lokalen Vertrauensankern ausgestellt werden</translation>
-<translation id="5483584677807837752">Wenn die Funktion „<ph name="PRODUCT_NAME" />“ aktiviert ist, sendet sie detaillierte Anfrageheader mit Informationen über den Browser und die Umgebung des Nutzers.
-
-      Dies ist eine Zusatzfunktion, doch die neuen Header funktionieren möglicherweise mit manchen Websites nicht, die die Anzahl der Zeichen einschränken, die eine Anfrage enthalten darf.
-
-      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Funktion „<ph name="PRODUCT_NAME" />“ aktiviert. Ist sie deaktiviert, ist die Funktion nicht verfügbar.
-
-      Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und ist mindestens bis Chrome 93 verfügbar.</translation>
 <translation id="5494322570831642650">Gibt an, ob der Nutzer Seiten in <ph name="PRODUCT_NAME" /> im Inkognitomodus öffnen kann.
 
       Ist diese Richtlinie aktiviert oder nicht konfiguriert, können Seiten im Inkognitomodus geöffnet werden.
@@ -3566,7 +3559,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
       Ist die Richtlinie auf „Disabled“ gesetzt, werden PDF-Dateien mit dem PDF-Plug-in geöffnet, sofern es nicht von den Nutzern deaktiviert wird.
 
-      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn sie nicht konfiguriert ist, können Nutzer entscheiden, ob die PDF extern geöffnet werden soll.</translation>
+      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn sie nicht konfiguriert ist, können Nutzer entscheiden, ob das PDF extern geöffnet werden soll.</translation>
 <translation id="570062449808736508">Wenn für diese Richtlinie kein leerer String angegeben ist, wird WebView URL-Einschränkungen des Contentanbieters des angegebenen Befugnisnamens erkennen.</translation>
 <translation id="5708969689202733975">Zulässige Modi für das schnelle Entsperren konfigurieren</translation>
 <translation id="5715617256528927547">Wenn die Richtlinie konfiguriert ist, wird die Cachelebensdauer von Gruppenrichtlinienobjekten (Group Policy Objects, GPOs) in Stunden festgelegt. Das ist die maximale Dauer, während der GPOs wiederverwendet werden können, bevor sie nochmals heruntergeladen werden. Anstatt sie bei jedem Richtlinienabruf herunterzuladen, kann das System die im Cache gespeicherten GPOs nochmals verwenden, solange die Version dieselbe ist.
@@ -6017,11 +6010,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Ist die Richtlinie nicht konfiguriert oder ein leerer String angegeben, wird auf dem Gerät die momentan aktive Zeitzone verwendet. Allerdings können Nutzer diese dann ändern.</translation>
 <translation id="8880294585549584028">Schreibzugriff auf Dateien und Verzeichnisse auf diesen Websites erlauben</translation>
 <translation id="8882006618241293596">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" auf diesen Websites blockieren</translation>
-<translation id="8887158351295718009">Für Cookies, die in Domains festgelegt sind, die diesen Mustern entsprechen, wird das alte Verhalten von "<ph name="ATTRIBUTE_SAMESITE_NAME" />" wiederhergestellt. Wird es wiederhergestellt, werden Cookies, für die kein "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Attribut angegeben ist, so behandelt, als würden sie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" auch das Attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
-
-          Für Cookies, die in Domains festgelegt sind, die diesen Mustern nicht entsprechen, oder für alle Cookies, falls diese Richtlinie nicht konfiguriert ist, kommt entweder der globale Standardwert der Richtlinie "<ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_POLICY_NAME" />", sofern konfiguriert, oder die persönliche Konfiguration des Nutzers zum Einsatz.
-
-          Beachten Sie, dass die Muster, die Sie hier eintragen, als Domains und nicht als URLs behandelt werden. Geben Sie deshalb kein Schema und keinen Port an.</translation>
 <translation id="8887709920496070892">Zeitraum ohne Nutzereingabe, nach dem eine Warnung angezeigt wird, angegeben in Millisekunden.</translation>
 <translation id="8890438048579188548">Warnungen zu veralteten Funktionen für <ph name="CLOUD_PRINT_NAME" /> ausblenden</translation>
 <translation id="8892286064305622118">Erforderlicher freier Speicherplatz für <ph name="PLUGIN_VM_NAME" /></translation>

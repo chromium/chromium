@@ -110,7 +110,6 @@
 <translation id="2073572773299281212">Aktiivinen <ph name="DAYS" /> päivää sitten</translation>
 <translation id="2074131957428911366">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Kumoa</translation>
-<translation id="2086623437239112659">Tallennetut sisäänkirjautumistietosi voivat olla vanhentuneita.</translation>
 <translation id="209018056901015185">Käytä tietokoneversiota</translation>
 <translation id="2103075008456228677">Avaa history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kohdetta siirretty</translation>
@@ -408,6 +407,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Sulje välilehti</translation>
 <translation id="5228579091201413441">Ota synkronointi käyttöön</translation>
+<translation id="5232485538978018676">Kirjaudu sisään hallinnoidulla tilillä</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5245322853195994030">Peru synkronointi</translation>
 <translation id="5271549068863921519">Tallenna salasana</translation>
@@ -724,6 +724,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8206354486702514201">Järjestelmänvalvojasi hallinnoi tätä asetusta.</translation>
 <translation id="8225985093977202398">Välimuistissa olevat kuvat ja tiedostot</translation>
 <translation id="8261506727792406068">Poista</translation>
+<translation id="8271720166617117963">Hyväksy ja kirjaudu sisään</translation>
 <translation id="8281781826761538115">Oletus – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8283172974887967105">Valitse…</translation>

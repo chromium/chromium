@@ -74,11 +74,13 @@
 <translation id="3350761136195634146">已有一份使用此帐号创建的 Chromium 个人资料</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
 <translation id="3430503420100763906">借助 Chromium 个人资料，您可将自己的所有 Chromium 内容分门别类。比如，您可为朋友和家人创建专属个人资料，或者将工作内容和娱乐内容分开。</translation>
+<translation id="3433271666494956603">正在安装 Chromium 操作系统</translation>
 <translation id="347328004046849135">当您使用已泄露的密码登录时，Chromium 会通知您</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可用于切换 Chromium 个人资料</translation>
 <translation id="3509308970982693815">请关闭所有 Chromium 窗口并重试。</translation>
 <translation id="3575459661164320785">您的计算机上存在有害软件。Chromium 可以移除该软件、恢复您的设置并停用扩展程序，以确保您的浏览器能够重新正常运行。</translation>
+<translation id="3610776674893128619">清除硬盘数据并安装 Chromium 操作系统</translation>
 <translation id="3639635944603682591">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3651803019964686660">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
@@ -162,6 +164,15 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="6134968993075716475">“安全浏览”功能已关闭。Chromium 建议开启此功能。</translation>
 <translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>
+<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />我们已准备就绪，可以安装 Chromium 操作系统了！一旦您继续操作：
+          <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />系统会清除文件、数据和您目前使用的操作系统。
+          <ph name="LIST_ITEM" />系统会安装 Chromium 操作系统。
+          <ph name="LIST_ITEM" />您的设备会在安装完毕后关机。
+          <ph name="END_LIST" />
+          <ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />最后请注意：安装流程会清除您的整个硬盘中的数据。请确保您已妥善地备份了所有重要数据。<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />安装流程一旦开始就无法取消。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>
 <translation id="6212496753309875659">此计算机已安装了更高版本的 Chromium。如果软件无法正常运行，请卸载 Chromium 并重试。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 将立即重新启动}=1{Chromium 将在 1 秒后重新启动}other{Chromium 将在 # 秒后重新启动}}</translation>
@@ -179,6 +190,7 @@
 <translation id="6434250628340475518">Chromium 操作系统</translation>
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 将在 1 秒后重新启动}other{Chromium 将在 # 秒后重新启动}}</translation>
+<translation id="646620589868199210">一切就绪，可以安装 Chromium 操作系统了</translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
 <translation id="6510925080656968729">卸载 Chromium</translation>
 <translation id="6542839706527980775">每份个人资料均包含自己的 Chromium 信息，例如书签、历史记录、密码等等</translation>
@@ -193,6 +205,7 @@
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
 <translation id="673636774878526923">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的帐号，然后开启同步功能。</translation>
 <translation id="6774082503108938489">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
+<translation id="6827182711503025204">安装 Chromium 操作系统会覆盖您的设备上的所有数据。</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay（已复制到 Chromium）</translation>
@@ -226,6 +239,10 @@ Chromium 无法恢复您的设置。</translation>
       Chromium 操作系统设置<ph name="LINK_END" />中查找</translation>
 <translation id="761356813943268536">Chromium 正在使用您的摄像头和麦克风。</translation>
 <translation id="7617377681829253106">Chromium现在更好用了</translation>
+<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />开始安装前，请确保您拥有最新的数据备份。安装 Chromium 操作系统会覆盖您的硬盘上的所有数据。<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Google 不对任何数据损失承担责任，也不保证 Chromium 操作系统能在未经认证的型号上正常运行。如需详细了解经过认证的型号，请访问 [TBD]。<ph name="END_PARAGRAPH2" />
+          <ph name="BEGIN_PARAGRAPH3" />如需详细了解 Chromium 操作系统安装方法和数据清除情况，请访问：[TBD URL]<ph name="END_PARAGRAPH3" />
+          <ph name="BEGIN_PARAGRAPH4" />如果您已准备好继续操作，请点击“安装 Chromium 操作系统”，然后我们会引导您通过几个简单的步骤完成安装。在对您的计算机进行任何更改之前，我们会让您再次确认。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium 不是您的默认浏览器</translation>
 <translation id="7689606757190482937">在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="7729447699958282447">由于您的网域停用了同步功能，Chromium无法同步您的数据。</translation>

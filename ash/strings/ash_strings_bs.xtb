@@ -317,6 +317,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
 <translation id="3513798432020909783">Računom upravlja <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">WiFi je isključen</translation>
+<translation id="3560866052109807830">Alati za crtanje označivača</translation>
 <translation id="3563775809269155755">Omogućavanje pristupne tačke</translation>
 <translation id="3571734092741541777">Postavi</translation>
 <translation id="3573179567135747900">Vrati na "<ph name="FROM_LOCALE" />" (potrebno je ponovo pokrenuti)</translation>
@@ -411,6 +412,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4274537685965975248">Prečica na tastaturi Ctrl + Alt + strelica nadolje je promijenjena. Da koristite tipku End, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu udesno.</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4285498937028063278">Otkači</translation>
+<translation id="429402653707266969">Uključivanje/isključivanje lokacije alatne trake</translation>
 <translation id="4294319844246081198">Dobro jutro <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Brisanje svih obavijesti (<ph name="COUNT" />)</translation>
 <translation id="4302592941791324970">Nije dostupno</translation>

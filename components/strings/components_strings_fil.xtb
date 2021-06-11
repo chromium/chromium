@@ -312,6 +312,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo araw-araw.}=1{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo araw-araw.}one{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo kada {NUM_DAYS} araw.}other{Kapag naka-on ang kontrol na ito at aktibo ang status, tinutukoy ng Chrome kung aling malaking grupo ng mga tao, o "cohort," ang pinakakatulad ng iyong kamakailang aktibidad sa pag-browse. Makakapili ang mga advertiser ng mga ad para sa grupo at pinapanatiling pribado sa iyong device ang aktibidad mo sa pag-browse. Ina-update ang iyong grupo kada {NUM_DAYS} na araw.}}</translation>
 <translation id="2053553514270667976">ZIP code</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suhestyon}one{# suhestyon}other{# na suhestyon}}</translation>
+<translation id="2071156619270205202">Hindi kwalipikado ang card na ito para sa virtual card number.</translation>
 <translation id="2071692954027939183">Awtomatikong na-block ang mga notification dahil karaniwang hindi mo pinapayagan ang mga ito</translation>
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="20817612488360358">Itinatakda ang mga setting ng proxy ng system upang magamit ngunit tinutukoy rin ang isang tahasang configuration ng proxy.</translation>
@@ -440,9 +441,11 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2523886232349826891">Ise-save sa device lang na ito</translation>
 <translation id="2524461107774643265">Magdagdag ng Higit Pang Impormasyon</translation>
+<translation id="2529899080962247600">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry ang field na ito. Babalewalain ang lahat ng entry na lalampas dito.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{at 1 pa}one{at # pa}other{at # pa}}</translation>
 <translation id="2536110899380797252">Magdagdag ng Address</translation>
 <translation id="2539524384386349900">Tukuyin</translation>
+<translation id="2540701853218677861">History ng pag-log in/pag-log out sa device, kasama ang mga timestamp at hindi matagumpay na pagsubok</translation>
 <translation id="2541219929084442027">Hindi mananatili ang mga page na titingnan mo sa mga tab na Incognito sa history, cookie store o history ng paghahanap ng iyong browser pagkatapos mong isara ang lahat ng iyong tab na incognito. Papanatilihin ang anumang file na ida-download o mga bookmark na gagawin mo.</translation>
 <translation id="2544644783021658368">Isang dokumento</translation>
 <translation id="254947805923345898">Di-wasto ang value ng patakaran.</translation>
@@ -635,6 +638,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3320021301628644560">Magdagdag ng billing address</translation>
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3329013043687509092">Saturation</translation>
+<translation id="3333762389743153920">Hindi kwalipikado para sa virtual card</translation>
 <translation id="3338095232262050444">Secure</translation>
 <translation id="3355823806454867987">Baguhin ang mga setting ng proxy...</translation>
 <translation id="3360103848165129075">Sheet ng tagapangasiwa ng pagbabayad</translation>
@@ -1148,6 +1152,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">I-verify ang iyong card</translation>
 <translation id="5135404736266831032">Pamahalaan ang mga address...</translation>
+<translation id="5138014172396933048">Hindi available sa ngayon ang virtual card, makipag-ugnayan sa iyong bangko</translation>
 <translation id="5138227688689900538">Magpakita ng mas kaunti</translation>
 <translation id="514010763713772514">Mas mabilis na mag-check out sa susunod</translation>
 <translation id="5145883236150621069">May code ng error sa tugon sa patakaran</translation>
@@ -1194,6 +1199,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5287240709317226393">Ipakita ang cookies</translation>
 <translation id="5287456746628258573">Gumagamit ang site na ito ng lumang configuration sa seguridad, na posibleng maglantad ng iyong impormasyon (halimbawa, mga password o numero ng credit card) kapag ipinadala ito sa site na ito.</translation>
 <translation id="5288108484102287882">Na-validate ang mga value ng patakaran at nagkaroon ng mga babala</translation>
+<translation id="5288808348893593856">Secure ang koneksyon ng site maliban na lang kung sabihin sa iyo ng Chrome na hindi.</translation>
 <translation id="5289384342738547352">Pangangasiwa sa maraming dokumento</translation>
 <translation id="5299298092464848405">Error sa pag-parse ng patakaran</translation>
 <translation id="5300589172476337783">Ipakita</translation>
@@ -1556,9 +1562,11 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6685834062052613830">Mag-sign out at kumpletuhin ang setup</translation>
 <translation id="6687335167692595844">Hiniling na laki ng font</translation>
 <translation id="6688743156324860098">I-update…</translation>
+<translation id="6688775486821967877">Hindi available sa ngayon ang virtual card, pakisubukan ulit sa ibang pagkakataon</translation>
 <translation id="6689249931105087298">Kaugnay sa black point compression</translation>
 <translation id="6689271823431384964">Nag-aalok ang Chrome na i-save ang iyong mga card sa Google Account mo dahil naka-sign in ka. Puwede mong baguhin ang gawing ito sa mga setting. Mula sa iyong account ang pangalan ng cardholder.</translation>
 <translation id="6698381487523150993">Nalikha:</translation>
+<translation id="6699188552522342100">Tumpak ba ang website na ito?</translation>
 <translation id="6702919718839027939">I-present</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6710594484020273272">&lt;I-type ang termino para sa paghahanap&gt;</translation>
@@ -1685,6 +1693,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7219179957768738017">Gumagamit ng <ph name="SSL_VERSION" /> ang koneksyon.</translation>
 <translation id="7220786058474068424">Pinoproseso</translation>
 <translation id="7221855153210829124">Ipakita ang mga notification</translation>
+<translation id="722454870747268814">Bagong Tab na Incognito</translation>
 <translation id="7229659723041939809">Kakalagay mo lang ng iyong password sa isang mapanlinlang na site. Inirerekomenda ng Chrome na suriin mo ngayon ang iyong mga naka-save na password para sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, at iba pang site kung saan mo ginagamit ang password na ito.</translation>
 <translation id="7233592378249864828">I-print ang sheet ng kumpirmasyon</translation>
 <translation id="7238585580608191973">SHA-256 Fingerprint</translation>
@@ -2062,6 +2071,7 @@ Mga karagdagang detalye:
           <ph name="LIST_ITEM" />Cookies at data ng site
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Gamitin ang Touch ID para kumpirmahin nang mas mabilis ang mga card</translation>
+<translation id="8577348305244205642">Hindi available ang virtual card</translation>
 <translation id="858637041960032120">Magdagdag ng numero ng telepono</translation>
 <translation id="8589998999637048520">Pinakamahusay na kalidad</translation>
 <translation id="8600271352425265729">Sa pagkakataong ito lang</translation>

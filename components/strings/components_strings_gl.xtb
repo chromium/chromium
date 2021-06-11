@@ -1681,6 +1681,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7219179957768738017">A conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificacións</translation>
+<translation id="722454870747268814">Nova pestana do modo de incógnito</translation>
 <translation id="7229659723041939809">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>
 <translation id="7233592378249864828">Folla de confirmación da impresión</translation>
 <translation id="7238585580608191973">Impresión dixital SHA-256</translation>

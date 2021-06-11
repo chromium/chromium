@@ -67,6 +67,7 @@
 <translation id="4176825807642096119">รหัสการเข้าถึง</translation>
 <translation id="4227991223508142681">ยูทิลิตีของการจัดสรรการโฮสต์</translation>
 <translation id="4240294130679914010">Chromoting Host Uninstaller</translation>
+<translation id="4257751272692708833">ผู้ส่งต่อ URL ของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">รหัสการเข้าถึงไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
 <translation id="4405930547258349619">Core Library</translation>
@@ -121,6 +122,7 @@
 <translation id="6612717000975622067">ส่ง Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">แชร์</translation>
 <translation id="677755392401385740">โฮสต์เริ่มใช้งานสำหรับผู้ใช้: <ph name="HOST_USERNAME" /></translation>
+<translation id="6902524959760471898">แอปพลิเคชันตัวช่วยที่จะเปิด URL ในไคลเอ็นต์ของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">แสดง/ซ่อนแป้นพิมพ์</translation>
 <translation id="6963936880795878952">การเชื่อมต่อกับคอมพิวเตอร์ระยะไกลถูกบล็อกไว้ชั่วคราว เนื่องจากมีผู้พยายามเชื่อมต่อกับคอมพิวเตอร์ดังกล่าวโดยใช้ PIN ที่ไม่ถูกต้อง โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="6965382102122355670">ตกลง</translation>

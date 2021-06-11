@@ -308,6 +308,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Si habilitas este control y su estado es "activado", Chrome determinará el grupo grande de personas, o "cohorte", al que más se asemeja tu actividad de navegación reciente. Los anunciantes podrán seleccionar los anuncios para el grupo, y tu actividad de navegación se mantendrá privada en tu dispositivo. Tu grupo se actualiza todos los días.}=1{Si habilitas este control y su estado es "activado", Chrome determinará el grupo grande de personas, o "cohorte", al que más se asemeja tu actividad de navegación reciente. Los anunciantes podrán seleccionar los anuncios para el grupo, y tu actividad de navegación se mantendrá privada en tu dispositivo. Tu grupo se actualiza todos los días.}other{Si habilitas este control y su estado es "activado", Chrome determinará el grupo grande de personas, o "cohorte", al que más se asemeja tu actividad de navegación reciente. Los anunciantes podrán seleccionar los anuncios para el grupo, y tu actividad de navegación se mantendrá privada en tu dispositivo. Tu grupo se actualiza cada {NUM_DAYS} días.}}</translation>
 <translation id="2053553514270667976">Código Postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugerencia}other{# sugerencias}}</translation>
+<translation id="2071156619270205202">Esta tarjeta no admite un número de tarjeta virtual.</translation>
 <translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración de proxy del sistema, pero también se ha especificado una configuración explícita de proxy.</translation>
@@ -436,9 +437,11 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2521385132275182522">Grapa en la esquina inferior derecha</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
 <translation id="2524461107774643265">Agregar más información</translation>
+<translation id="2529899080962247600">Esta campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán todas las entradas posteriores.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
 <translation id="2536110899380797252">Agregar dirección</translation>
 <translation id="2539524384386349900">Detectar</translation>
+<translation id="2540701853218677861">Historial de acceso y salida del dispositivo, lo que incluye intentos fallidos y marcas de tiempo</translation>
 <translation id="2541219929084442027">Una vez que cierres todas las pestañas de incógnito, las páginas que hayas visitado en ese modo no se guardarán en el historial del navegador, en la lista de cookies ni en el historial de búsqueda. Sí se guardarán los archivos que descargues y los favoritos que crees.</translation>
 <translation id="2544644783021658368">Documento único</translation>
 <translation id="254947805923345898">El valor de la política no es válido.</translation>
@@ -630,6 +633,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3320021301628644560">Agregar dirección de facturación</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3329013043687509092">Saturación</translation>
+<translation id="3333762389743153920">No admite una tarjeta virtual</translation>
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
@@ -1138,6 +1142,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifica tu tarjeta</translation>
 <translation id="5135404736266831032">Administrar direcciones…</translation>
+<translation id="5138014172396933048">La tarjeta virtual no está disponible ahora mismo; comunícate con tu banco.</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="514010763713772514">Agiliza tus próximos pagos</translation>
 <translation id="5145883236150621069">Código de error en la respuesta de la política</translation>
@@ -1184,6 +1189,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5287240709317226393">Mostrar cookies</translation>
 <translation id="5287456746628258573">Este sitio usa una configuración de seguridad obsoleta. Si envías información (p. ej., contraseñas o números de tarjetas de crédito) a este sitio, es posible que quede expuesta.</translation>
 <translation id="5288108484102287882">La validación de los valores de la política generó advertencias</translation>
+<translation id="5288808348893593856">La conexión del sitio es segura a menos que Chrome te indique lo contrario.</translation>
 <translation id="5289384342738547352">Control de varios documentos</translation>
 <translation id="5299298092464848405">Error al analizar la política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1546,9 +1552,11 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6685834062052613830">Salir y completar la configuración</translation>
 <translation id="6687335167692595844">Se necesita el tamaño de la fuente</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
+<translation id="6688775486821967877">La tarjeta virtual no está disponible en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="6689249931105087298">Relativo con la compresión de puntos negros</translation>
 <translation id="6689271823431384964">Como accediste a tu Cuenta de Google, Chrome te ofrece guardar tus tarjetas allí. Puedes modificar este comportamiento en la configuración. El nombre del titular de la tarjeta se obtiene de tu cuenta.</translation>
 <translation id="6698381487523150993">Creado:</translation>
+<translation id="6699188552522342100">¿Este sitio web es preciso?</translation>
 <translation id="6702919718839027939">Presente</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Escribe el término de búsqueda&gt;</translation>
@@ -1675,6 +1683,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7219179957768738017">La conexión usa <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
+<translation id="722454870747268814">Nueva pestaña de incógnito</translation>
 <translation id="7229659723041939809">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
 <translation id="7238585580608191973">Huella digital SHA-256</translation>
@@ -2052,6 +2061,7 @@ Detalles adicionales:
           <ph name="LIST_ITEM" />Las cookies ni los datos del sitio
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Usa Touch ID para confirmar las tarjetas más rápido</translation>
+<translation id="8577348305244205642">La tarjeta virtual no está disponible</translation>
 <translation id="858637041960032120">Agregar teléfono
 </translation>
 <translation id="8589998999637048520">Mejor calidad</translation>
