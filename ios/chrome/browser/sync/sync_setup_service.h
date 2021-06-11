@@ -53,8 +53,10 @@ class SyncSetupService : public KeyedService {
   // |SyncableDatatypes|.
   syncer::ModelType GetModelType(SyncableDatatype datatype);
 
-  // Returns whether sync is enabled.
-  virtual bool IsSyncEnabled() const;
+  // Deprecated, use |CanSyncFeatureStart|.
+  bool IsSyncEnabled() const;
+  // Returns whether Sync-the-transport can start the Sync feature.
+  virtual bool CanSyncFeatureStart() const;
   // Enables or disables sync. Changes won't take effect in the sync backend
   // before the next call to |CommitChanges|.
   virtual void SetSyncEnabled(bool sync_enabled);
@@ -68,7 +70,7 @@ class SyncSetupService : public KeyedService {
   // Returns whether the given datatype is enabled by the user.
   virtual bool IsDataTypePreferred(syncer::ModelType datatype) const;
   // Enables or disables the given datatype. To be noted: this can be called at
-  // any time, but will only be meaningful if |IsSyncEnabled| is true and
+  // any time, but will only be meaningful if |CanSyncFeatureStart| is true and
   // |IsSyncingAllDataTypes| is false. Changes won't take effect in the sync
   // backend before the next call to |CommitChanges|.
   void SetDataTypeEnabled(syncer::ModelType datatype, bool enabled);

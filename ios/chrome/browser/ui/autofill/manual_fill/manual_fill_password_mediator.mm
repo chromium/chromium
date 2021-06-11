@@ -243,7 +243,7 @@ BOOL AreCredentialsAtIndexesConnected(
                   : nullptr;
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnableManualPasswordGeneration) &&
-        _syncService && _syncService->IsSyncEnabled() &&
+        _syncService && _syncService->CanSyncFeatureStart() &&
         passwordManagerClient &&
         passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
         _activeFieldIsPassword) {

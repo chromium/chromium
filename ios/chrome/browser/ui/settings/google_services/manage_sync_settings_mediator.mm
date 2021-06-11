@@ -140,10 +140,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // is set to YES.
 - (void)updateSyncEverythingItemNotifyConsumer:(BOOL)notifyConsumer {
   BOOL shouldSyncEverythingBeEditable =
-      self.syncSetupService->IsSyncEnabled() &&
+      self.syncSetupService->CanSyncFeatureStart() &&
       (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed);
   BOOL shouldSyncEverythingItemBeOn =
-      self.syncSetupService->IsSyncEnabled() &&
+      self.syncSetupService->CanSyncFeatureStart() &&
       self.syncSetupService->IsSyncingAllDataTypes();
   BOOL needsUpdate =
       (self.syncEverythingItem.on != shouldSyncEverythingItemBeOn) ||
@@ -422,19 +422,19 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 - (BOOL)shouldSyncDataItemEnabled {
   return (!self.syncSetupService->IsSyncingAllDataTypes() &&
-          self.syncSetupService->IsSyncEnabled() &&
+          self.syncSetupService->CanSyncFeatureStart() &&
           (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed));
 }
 
 - (BOOL)shouldEncryptionItemBeEnabled {
   return self.syncService->IsEngineInitialized() &&
-         self.syncSetupService->IsSyncEnabled() &&
+         self.syncSetupService->CanSyncFeatureStart() &&
          !self.disabledBecauseOfSyncError;
 }
 
 - (BOOL)shouldDisplaySignoutSection {
   return self.syncSetupService->IsFirstSetupComplete() &&
-         self.syncSetupService->IsSyncEnabled();
+         self.syncSetupService->CanSyncFeatureStart();
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate

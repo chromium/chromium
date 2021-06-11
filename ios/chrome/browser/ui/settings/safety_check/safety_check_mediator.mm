@@ -613,7 +613,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
 // Computes whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return self.syncService->IsSyncEnabled() &&
+  return self.syncService->CanSyncFeatureStart() &&
          !self.syncService->IsEncryptEverythingEnabled();
 }
 

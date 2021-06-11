@@ -286,7 +286,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return _syncService->IsSyncEnabled() &&
+  return _syncService->CanSyncFeatureStart() &&
          !_syncService->IsEncryptEverythingEnabled();
 }
 

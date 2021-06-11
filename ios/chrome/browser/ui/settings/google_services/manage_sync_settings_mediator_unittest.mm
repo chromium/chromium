@@ -100,7 +100,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   void SetupSyncServiceInitializedExpectations() {
     ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
+    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
         .WillByDefault(Return(true));
@@ -111,7 +111,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
   void SetupSyncDisabledExpectations() {
-    ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
+    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
         .WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
         .WillByDefault(Return(true));

@@ -167,7 +167,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   } else if (!syncSetupService->IsFirstSetupComplete()) {
     // User has not completed Sync setup in sign-in flow.
     return kSyncConsentOff;
-  } else if (!syncSetupService->IsSyncEnabled()) {
+  } else if (!syncSetupService->CanSyncFeatureStart()) {
     // Sync engine is off.
     return kSyncOff;
   } else if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
@@ -1574,7 +1574,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
     googleServicesItem.image =
         [UIImage imageNamed:kSyncAndGoogleServicesSyncErrorImageName];
-  } else if (syncSetupService->IsSyncEnabled()) {
+  } else if (syncSetupService->CanSyncFeatureStart()) {
     googleServicesItem.detailText =
         l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_ON);
     googleServicesItem.image =

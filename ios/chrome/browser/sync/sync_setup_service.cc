@@ -66,7 +66,7 @@ void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
       selected_types.Put(type);
     }
   }
-  if (enabled && !IsSyncEnabled())
+  if (enabled && !CanSyncFeatureStart())
     SetSyncEnabledWithoutChangingDatatypes(true);
   sync_service_->GetUserSettings()->SetSelectedTypes(IsSyncingAllDataTypes(),
                                                      selected_types);
@@ -75,7 +75,7 @@ void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
 }
 
 bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
-  if (!IsSyncEnabled() || !IsDataTypePreferred(syncer::PROXY_TABS)) {
+  if (!CanSyncFeatureStart() || !IsDataTypePreferred(syncer::PROXY_TABS)) {
     return true;
   }
   switch (this->GetSyncServiceState()) {
@@ -104,13 +104,17 @@ bool SyncSetupService::IsSyncingAllDataTypes() const {
 void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
-  if (sync_all && !IsSyncEnabled())
+  if (sync_all && !CanSyncFeatureStart())
     SetSyncEnabled(true);
   sync_service_->GetUserSettings()->SetSelectedTypes(
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
 
 bool SyncSetupService::IsSyncEnabled() const {
+  return CanSyncFeatureStart();
+}
+
+bool SyncSetupService::CanSyncFeatureStart() const {
   return sync_service_->CanSyncFeatureStart();
 }
 
@@ -154,7 +158,7 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
           ->IsPassphraseRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsPassphrase;
   }
-  if (!IsFirstSetupComplete() && IsSyncEnabled())
+  if (!IsFirstSetupComplete() && CanSyncFeatureStart())
     return kSyncSettingsNotConfirmed;
   if (sync_service_->GetUserSettings()
           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {

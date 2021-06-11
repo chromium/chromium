@@ -439,7 +439,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   if (self.isSyncDisabledByAdministrator) {
     type = SyncDisabledByAdministratorErrorItemType;
     hasError = YES;
-  } else if (self.isAuthenticated && self.syncSetupService->IsSyncEnabled()) {
+  } else if (self.isAuthenticated &&
+             self.syncSetupService->CanSyncFeatureStart()) {
     switch (self.syncSetupService->GetSyncServiceState()) {
       case SyncSetupService::kSyncServiceUnrecoverableError:
         type = RestartAuthenticationFlowErrorItemType;
@@ -678,7 +679,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (BOOL)isSyncEnabled {
   // Sync is not active when |syncSetupService->IsFirstSetupComplete()| is
   // false. Show sync being turned off in the UI in this cases.
-  return self.syncSetupService->IsSyncEnabled() &&
+  return self.syncSetupService->CanSyncFeatureStart() &&
          (self.syncSetupService->IsFirstSetupComplete() ||
           self.mode == GoogleServicesSettingsModeAdvancedSigninSettings);
 }

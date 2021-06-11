@@ -62,7 +62,7 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
           UserMetricsAction("Signin_Signin_ConfirmAdvancedSyncSettings"));
       RecordSyncSetupDataTypesHistrogam(self.syncService->GetUserSettings(),
                                         self.prefService);
-      if (self.syncSetupService->IsSyncEnabled()) {
+      if (self.syncSetupService->CanSyncFeatureStart()) {
         // FirstSetupComplete flag should be only turned on when the user agrees
         // to start Sync.
         self.syncSetupService->PrepareForFirstSyncSetup();

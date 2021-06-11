@@ -44,11 +44,11 @@ bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state_);
 
-  bool sync_enabled = sync_setup_service->IsSyncEnabled();
+  bool can_sync_start = sync_setup_service->CanSyncFeatureStart();
   bool no_sync_error = (sync_setup_service->GetSyncServiceState() ==
                         SyncSetupService::kNoSyncServiceError);
 
-  return sync_enabled && no_sync_error &&
+  return can_sync_start && no_sync_error &&
          !sync_setup_service->IsDataTypeActive(syncer::BOOKMARKS);
 }
 

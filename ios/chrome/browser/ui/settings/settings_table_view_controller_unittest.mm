@@ -143,7 +143,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   void SetupSyncServiceEnabledExpectations() {
-    ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
+    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
         .WillByDefault(Return(true));

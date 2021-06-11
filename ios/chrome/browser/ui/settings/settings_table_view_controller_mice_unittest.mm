@@ -119,7 +119,7 @@ class SettingsTableViewControllerMICETest
   }
 
   void SetupSyncServiceEnabledExpectations() {
-    ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
+    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
         .WillByDefault(Return(true));
@@ -216,7 +216,7 @@ TEST_F(SettingsTableViewControllerMICETest, SyncPasswordError) {
 TEST_F(SettingsTableViewControllerMICETest, TurnsSyncOffAfterFirstSetup) {
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
-  ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
+  ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
       .WillByDefault(Return(false));
   auth_service_->SignIn(fake_identity_);
 
@@ -246,7 +246,7 @@ TEST_F(SettingsTableViewControllerMICETest,
       .WillByDefault(Return(syncer::UserSelectableTypeSet()));
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
-  ON_CALL(*sync_setup_service_mock_, IsSyncEnabled())
+  ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
       .WillByDefault(Return(true));
   auth_service_->SignIn(fake_identity_);
 

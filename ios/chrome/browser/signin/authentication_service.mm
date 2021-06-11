@@ -127,10 +127,10 @@ void AuthenticationService::Shutdown() {
 
 void AuthenticationService::OnApplicationWillEnterForeground() {
   if (IsAuthenticated()) {
-    bool sync_enabled = sync_setup_service_->IsSyncEnabled();
+    bool can_sync_start = sync_setup_service_->CanSyncFeatureStart();
     LoginMethodAndSyncState loginMethodAndSyncState =
-        sync_enabled ? SHARED_AUTHENTICATION_SYNC_ON
-                     : SHARED_AUTHENTICATION_SYNC_OFF;
+        can_sync_start ? SHARED_AUTHENTICATION_SYNC_ON
+                       : SHARED_AUTHENTICATION_SYNC_OFF;
     UMA_HISTOGRAM_ENUMERATION("Signin.IOSLoginMethodAndSyncState",
                               loginMethodAndSyncState,
                               LOGIN_METHOD_AND_SYNC_STATE_COUNT);

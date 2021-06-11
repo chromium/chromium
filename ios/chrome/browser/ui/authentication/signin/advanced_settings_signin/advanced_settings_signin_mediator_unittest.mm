@@ -125,7 +125,8 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
 // sign-in is successful.
 TEST_F(AdvancedSettingsSigninMediatorTest,
        saveUserPreferenceSigninSuccessSyncEnabled) {
-  EXPECT_CALL(*sync_setup_service_mock_, IsSyncEnabled).WillOnce(Return(true));
+  EXPECT_CALL(*sync_setup_service_mock_, CanSyncFeatureStart)
+      .WillOnce(Return(true));
   EXPECT_CALL(*sync_setup_service_mock_,
               SetFirstSetupComplete(
                   syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM));
@@ -140,7 +141,8 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
 // sign-in is successful.
 TEST_F(AdvancedSettingsSigninMediatorTest,
        saveUserPreferenceSigninSuccessSyncDisabled) {
-  EXPECT_CALL(*sync_setup_service_mock_, IsSyncEnabled).WillOnce(Return(false));
+  EXPECT_CALL(*sync_setup_service_mock_, CanSyncFeatureStart)
+      .WillOnce(Return(false));
   EXPECT_CALL(*sync_setup_service_mock_,
               SetFirstSetupComplete(
                   syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM))
