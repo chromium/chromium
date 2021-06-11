@@ -9,32 +9,31 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "chrome/common/cloud_print_utility.mojom.h"
 #include "printing/buildflags/buildflags.h"
 
 #if !defined(OS_WIN) || !BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #error "Windows printing and print preview must be enabled"
 #endif
 
-namespace IPC {
-class Message;
-}
-
 namespace printing {
 
 // Dispatches IPCs for printing.
-class PrintingHandler {
+class PrintingHandler : public chrome::mojom::CloudPrintUtility {
  public:
   PrintingHandler();
-  ~PrintingHandler();
-
-  bool OnMessageReceived(const IPC::Message& message);
+  PrintingHandler(const PrintingHandler&) = delete;
+  PrintingHandler& operator=(const PrintingHandler&) = delete;
+  ~PrintingHandler() override;
 
  private:
-  // IPC message handlers.
-  void OnGetPrinterCapsAndDefaults(const std::string& printer_name);
-  void OnGetPrinterSemanticCapsAndDefaults(const std::string& printer_name);
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingHandler);
+  // chrome::mojom::CloudPrintUtility:
+  void GetPrinterCapsAndDefaults(
+      const std::string& printer_name,
+      GetPrinterCapsAndDefaultsCallback callback) override;
+  void GetPrinterSemanticCapsAndDefaults(
+      const std::string& printer_name,
+      GetPrinterSemanticCapsAndDefaultsCallback callback) override;
 };
 
 }  // namespace printing

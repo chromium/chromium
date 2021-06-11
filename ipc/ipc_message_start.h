@@ -23,7 +23,6 @@ enum IPCMessageStart {
   NaClHostMsgStart,
   EncryptedMediaMsgStart,
   GinJavaBridgeMsgStart,
-  ChromeUtilityPrintingMsgStart,
   ExtensionsGuestViewMsgStart,
   GuestViewMsgStart,
   MediaPlayerDelegateMsgStart,

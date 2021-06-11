@@ -395,7 +395,7 @@ static_library("common") {
       }
       if (is_win) {
         sources += [
-          "chrome_utility_printing_messages.h",
+          "chrome_utility_printing_param_traits_macros.h",
           "service_process_util_win.cc",
         ]
 
@@ -792,4 +792,26 @@ mojom("available_offline_content_mojom") {
 mojom("offline_page_auto_fetcher_mojom") {
   sources = [ "offline_page_auto_fetcher.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
+}
+
+if (enable_basic_printing && is_win) {
+  mojom("cloud_print_utility_mojom") {
+    sources = [ "cloud_print_utility.mojom" ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "chrome.mojom.PrinterCapsAndDefaults"
+            cpp = "::printing::PrinterCapsAndDefaults"
+          },
+          {
+            mojom = "chrome.mojom.PrinterSemanticCapsAndDefaults"
+            cpp = "::printing::PrinterSemanticCapsAndDefaults"
+          },
+        ]
+        traits_headers = [ "chrome_utility_printing_param_traits_macros.h" ]
+        traits_public_deps = [ ":common" ]
+      },
+    ]
+  }
 }

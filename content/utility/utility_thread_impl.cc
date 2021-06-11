@@ -252,10 +252,6 @@ void UtilityThreadImpl::Init() {
   service_factory_ = std::make_unique<UtilityServiceFactory>();
 }
 
-bool UtilityThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
-  return GetContentClient()->utility()->OnMessageReceived(msg);
-}
-
 void UtilityThreadImpl::RunServiceDeprecated(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle service_pipe) {

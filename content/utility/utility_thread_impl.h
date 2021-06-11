@@ -56,7 +56,6 @@ class UtilityThreadImpl : public UtilityThread,
   void Init();
 
   // ChildThreadImpl:
-  bool OnControlMessageReceived(const IPC::Message& msg) override;
   void RunServiceDeprecated(
       const std::string& service_name,
       mojo::ScopedMessagePipeHandle service_pipe) override;

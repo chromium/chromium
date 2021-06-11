@@ -14,11 +14,11 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#undef CHROME_COMMON_CHROME_UTILITY_PRINTING_MESSAGES_H_
-#include "chrome/common/chrome_utility_printing_messages.h"
-#ifndef CHROME_COMMON_CHROME_UTILITY_PRINTING_MESSAGES_H_
+#undef CHROME_COMMON_CHROME_UTILITY_PRINTING_PARAM_TRAITS_MACROS_H_
+#include "chrome/common/chrome_utility_printing_param_traits_macros.h"
+#ifndef CHROME_COMMON_CHROME_UTILITY_PRINTING_PARAM_TRAITS_MACROS_H_
 #error \
-    "Failed to include header chrome/common/chrome_utility_printing_messages.h"
+    "Failed to include header chrome/common/chrome_utility_printing_param_traits_macros.h"
 #endif
 #endif
 

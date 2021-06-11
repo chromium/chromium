@@ -28,7 +28,7 @@
 #include "base/win/win_util.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/chrome_utility_printing_messages.h"
+#include "chrome/common/cloud_print_utility.mojom.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -221,6 +221,8 @@ ServiceUtilityProcessHost::ServiceUtilityProcessHost(
       waiting_for_reply_(false) {
   child_process_host_ =
       ChildProcessHost::Create(this, ChildProcessHost::IpcMode::kNormal);
+  child_process_host_->BindReceiver(
+      cloud_print_utility_remote_.BindNewPipeAndPassReceiver());
 }
 
 ServiceUtilityProcessHost::~ServiceUtilityProcessHost() {
@@ -267,7 +269,11 @@ bool ServiceUtilityProcessHost::StartGetPrinterCapsAndDefaults(
     return false;
   DCHECK(!waiting_for_reply_);
   waiting_for_reply_ = true;
-  return Send(new ChromeUtilityMsg_GetPrinterCapsAndDefaults(printer_name));
+  cloud_print_utility_remote_->GetPrinterCapsAndDefaults(
+      printer_name,
+      base::BindOnce(&ServiceUtilityProcessHost::OnGetPrinterCapsAndDefaults,
+                     base::Unretained(this), printer_name));
+  return true;
 }
 
 bool ServiceUtilityProcessHost::StartGetPrinterSemanticCapsAndDefaults(
@@ -276,8 +282,12 @@ bool ServiceUtilityProcessHost::StartGetPrinterSemanticCapsAndDefaults(
     return false;
   DCHECK(!waiting_for_reply_);
   waiting_for_reply_ = true;
-  return Send(
-      new ChromeUtilityMsg_GetPrinterSemanticCapsAndDefaults(printer_name));
+  cloud_print_utility_remote_->GetPrinterSemanticCapsAndDefaults(
+      printer_name,
+      base::BindOnce(
+          &ServiceUtilityProcessHost::OnGetPrinterSemanticCapsAndDefaults,
+          base::Unretained(this), printer_name));
+  return true;
 }
 
 bool ServiceUtilityProcessHost::StartProcess(bool sandbox) {
@@ -286,10 +296,6 @@ bool ServiceUtilityProcessHost::StartProcess(bool sandbox) {
     NOTREACHED() << "Unable to get utility process binary name.";
     return false;
   }
-
-  // NOTE: This call to |CreateChannelMojo()| requires a working
-  // ServiceManagerConnection to have already been established.
-  child_process_host_->CreateChannelMojo();
 
   base::CommandLine cmd_line(exe_path);
   cmd_line.AppendSwitchASCII(switches::kProcessType, switches::kUtilityProcess);
@@ -357,13 +363,6 @@ bool ServiceUtilityProcessHost::Launch(base::CommandLine* cmd_line,
   return true;
 }
 
-bool ServiceUtilityProcessHost::Send(IPC::Message* msg) {
-  if (child_process_host_)
-    return child_process_host_->Send(msg);
-  delete msg;
-  return false;
-}
-
 base::FilePath ServiceUtilityProcessHost::GetUtilityProcessCmd() {
   return ChildProcessHost::GetChildPath(ChildProcessHost::CHILD_NORMAL);
 }
@@ -381,22 +380,7 @@ void ServiceUtilityProcessHost::OnChildDisconnected() {
 }
 
 bool ServiceUtilityProcessHost::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ServiceUtilityProcessHost, message)
-    IPC_MESSAGE_HANDLER(
-        ChromeUtilityHostMsg_GetPrinterCapsAndDefaults_Succeeded,
-        OnGetPrinterCapsAndDefaultsSucceeded)
-    IPC_MESSAGE_HANDLER(ChromeUtilityHostMsg_GetPrinterCapsAndDefaults_Failed,
-                        OnGetPrinterCapsAndDefaultsFailed)
-    IPC_MESSAGE_HANDLER(
-        ChromeUtilityHostMsg_GetPrinterSemanticCapsAndDefaults_Succeeded,
-        OnGetPrinterSemanticCapsAndDefaultsSucceeded)
-    IPC_MESSAGE_HANDLER(
-        ChromeUtilityHostMsg_GetPrinterSemanticCapsAndDefaults_Failed,
-        OnGetPrinterSemanticCapsAndDefaultsFailed)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+  return false;
 }
 
 const base::Process& ServiceUtilityProcessHost::GetProcess() {
@@ -448,52 +432,33 @@ void ServiceUtilityProcessHost::OnPDFToEmfFinished(bool success) {
   delete this;
 }
 
-void ServiceUtilityProcessHost::OnGetPrinterCapsAndDefaultsSucceeded(
+void ServiceUtilityProcessHost::OnGetPrinterCapsAndDefaults(
     const std::string& printer_name,
-    const printing::PrinterCapsAndDefaults& caps_and_defaults) {
+    const absl::optional<printing::PrinterCapsAndDefaults>& caps_and_defaults) {
   DCHECK(waiting_for_reply_);
   waiting_for_reply_ = false;
   client_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&Client::OnGetPrinterCapsAndDefaults, client_.get(), true,
-                     printer_name, caps_and_defaults));
+      base::BindOnce(
+          &Client::OnGetPrinterCapsAndDefaults, client_.get(),
+          caps_and_defaults.has_value(), printer_name,
+          caps_and_defaults.value_or(printing::PrinterCapsAndDefaults())));
   // The child process disconnects itself and this host deletes itself via
   // OnChildDisconnected().
 }
 
-void ServiceUtilityProcessHost::OnGetPrinterSemanticCapsAndDefaultsSucceeded(
+void ServiceUtilityProcessHost::OnGetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
-    const printing::PrinterSemanticCapsAndDefaults& caps_and_defaults) {
+    const absl::optional<printing::PrinterSemanticCapsAndDefaults>&
+        caps_and_defaults) {
   DCHECK(waiting_for_reply_);
   waiting_for_reply_ = false;
   client_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Client::OnGetPrinterSemanticCapsAndDefaults,
-                     client_.get(), true, printer_name, caps_and_defaults));
-  // The child process disconnects itself and this host deletes itself via
-  // OnChildDisconnected().
-}
-
-void ServiceUtilityProcessHost::OnGetPrinterCapsAndDefaultsFailed(
-    const std::string& printer_name) {
-  DCHECK(waiting_for_reply_);
-  waiting_for_reply_ = false;
-  client_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Client::OnGetPrinterCapsAndDefaults, client_.get(), false,
-                     printer_name, printing::PrinterCapsAndDefaults()));
-  // The child process disconnects itself and this host deletes itself via
-  // OnChildDisconnected().
-}
-
-void ServiceUtilityProcessHost::OnGetPrinterSemanticCapsAndDefaultsFailed(
-    const std::string& printer_name) {
-  DCHECK(waiting_for_reply_);
-  waiting_for_reply_ = false;
-  client_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Client::OnGetPrinterSemanticCapsAndDefaults,
-                                client_.get(), false, printer_name,
-                                printing::PrinterSemanticCapsAndDefaults()));
+                     client_.get(), caps_and_defaults.has_value(), printer_name,
+                     caps_and_defaults.value_or(
+                         printing::PrinterSemanticCapsAndDefaults())));
   // The child process disconnects itself and this host deletes itself via
   // OnChildDisconnected().
 }

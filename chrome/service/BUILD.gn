@@ -95,6 +95,9 @@ static_library("service") {
       "service_utility_process_host.h",
       "service_utility_process_host_receiver_bindings.cc",
     ]
-    deps += [ "//sandbox/win:sandbox" ]
+    deps += [
+      "//chrome/common:cloud_print_utility_mojom",
+      "//sandbox/win:sandbox",
+    ]
   }
 }

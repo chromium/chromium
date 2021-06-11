@@ -34,9 +34,6 @@ base::LazyInstance<ChromeContentUtilityClient::NetworkBinderCreationCallback>::
 
 ChromeContentUtilityClient::ChromeContentUtilityClient()
     : utility_process_running_elevated_(false) {
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-  printing_handler_ = std::make_unique<printing::PrintingHandler>();
-#endif
 }
 
 ChromeContentUtilityClient::~ChromeContentUtilityClient() = default;
@@ -57,18 +54,6 @@ void ChromeContentUtilityClient::ExposeInterfacesToBrowser(
   // to ensure security review coverage.
   if (!utility_process_running_elevated_)
     ExposeElevatedChromeUtilityInterfacesToBrowser(binders);
-}
-
-bool ChromeContentUtilityClient::OnMessageReceived(
-    const IPC::Message& message) {
-  if (utility_process_running_elevated_)
-    return false;
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-  if (printing_handler_->OnMessageReceived(message))
-    return true;
-#endif
-  return false;
 }
 
 void ChromeContentUtilityClient::RegisterNetworkBinders(

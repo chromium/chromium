@@ -48,7 +48,6 @@ static bool check_msgtable() {
   // include message files used inside the actual chrome browser in this list.
   exemptions.push_back(TestMsgStart);
   exemptions.push_back(WorkerMsgStart);    // Now only used by tests.
-  exemptions.push_back(ChromeUtilityPrintingMsgStart);  // BUILDFLAGS, sigh.
 
 #if !BUILDFLAG(ENABLE_NACL)
   exemptions.push_back(NaClMsgStart);

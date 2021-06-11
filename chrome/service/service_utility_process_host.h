@@ -11,10 +11,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/cloud_print_utility.mojom.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "content/public/common/child_process_host_delegate.h"
-#include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -112,8 +114,6 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
   bool StartGetPrinterSemanticCapsAndDefaults(const std::string& printer_name);
 
  protected:
-  bool Send(IPC::Message* msg);
-
   // Allows this method to be overridden for tests.
   virtual base::FilePath GetUtilityProcessCmd();
 
@@ -143,19 +143,19 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
       base::ReadOnlySharedMemoryRegion emf_region,
       float scale_factor);
 
-  // IPC Messages handlers:
-  void OnGetPrinterCapsAndDefaultsSucceeded(
+  // IPC response handlers:
+  void OnGetPrinterCapsAndDefaults(
       const std::string& printer_name,
-      const printing::PrinterCapsAndDefaults& caps_and_defaults);
-  void OnGetPrinterCapsAndDefaultsFailed(const std::string& printer_name);
-  void OnGetPrinterSemanticCapsAndDefaultsSucceeded(
+      const absl::optional<printing::PrinterCapsAndDefaults>&
+          caps_and_defaults);
+  void OnGetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
-      const printing::PrinterSemanticCapsAndDefaults& caps_and_defaults);
-  void OnGetPrinterSemanticCapsAndDefaultsFailed(
-      const std::string& printer_name);
+      const absl::optional<printing::PrinterSemanticCapsAndDefaults>&
+          caps_and_defaults);
 
   std::unique_ptr<content::ChildProcessHost> child_process_host_;
   base::Process process_;
+  mojo::Remote<chrome::mojom::CloudPrintUtility> cloud_print_utility_remote_;
   // A pointer to our client interface, who will be informed of progress.
   scoped_refptr<Client> client_;
   scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;

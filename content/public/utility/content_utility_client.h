@@ -13,10 +13,6 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
-namespace IPC {
-class Message;
-}
-
 namespace mojo {
 class BinderMap;
 class ServiceFactory;
@@ -31,9 +27,6 @@ class CONTENT_EXPORT ContentUtilityClient {
 
   // Notifies us that the UtilityThread has been created.
   virtual void UtilityThreadStarted() {}
-
-  // Allows the embedder to filter messages.
-  virtual bool OnMessageReceived(const IPC::Message& message);
 
   // Allows the embedder to register interface binders to handle interface
   // requests coming in from the browser process. These are requests that the

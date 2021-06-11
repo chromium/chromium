@@ -6,10 +6,6 @@
 
 namespace content {
 
-bool ContentUtilityClient::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
 bool ContentUtilityClient::HandleServiceRequestDeprecated(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle service_pipe) {

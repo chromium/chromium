@@ -13,11 +13,33 @@
 #include "chrome/services/printing/pdf_to_emf_converter_factory.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
+#include "chrome/common/cloud_print_utility.mojom.h"
+#include "chrome/utility/printing_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
+namespace {
+
+void BindCloudPrintUtility(
+    mojo::PendingReceiver<chrome::mojom::CloudPrintUtility> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PrintingHandler>(),
+                              std::move(receiver));
+}
+
+}  // namespace
+#endif
+
 void ExposeElevatedChromeUtilityInterfacesToBrowser(mojo::BinderMap* binders) {
 #if BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN)
   // TODO(crbug.com/798782): remove when the Cloud print chrome/service is
   // removed.
   binders->Add(base::BindRepeating(printing::PdfToEmfConverterFactory::Create),
                base::ThreadTaskRunnerHandle::Get());
+#endif
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
+  binders->Add(base::BindRepeating(&BindCloudPrintUtility));
 #endif
 }
