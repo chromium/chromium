@@ -35,8 +35,7 @@ FileUtilService::~FileUtilService() = default;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FileUtilService::BindZipFileCreator(
     mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<chrome::ZipFileCreator>(),
-                              std::move(receiver));
+  new chrome::ZipFileCreator(std::move(receiver));  // self deleting
 }
 #endif
 

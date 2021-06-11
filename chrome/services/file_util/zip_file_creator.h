@@ -7,27 +7,71 @@
 
 #include <vector>
 
+#include "base/memory/ref_counted.h"
+#include "base/synchronization/atomic_flag.h"
+#include "base/task/thread_pool.h"
 #include "chrome/services/file_util/public/mojom/zip_file_creator.mojom.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class FilePath;
 }
 
+namespace zip {
+struct Progress;
+}
+
 namespace chrome {
 
-class ZipFileCreator : public chrome::mojom::ZipFileCreator {
+// Implementation of the ZipFileCreator Mojo service.
+class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
+                       private chrome::mojom::ZipFileCreator {
  public:
-  ZipFileCreator();
-  ~ZipFileCreator() override;
+  using PendingCreator = mojo::PendingReceiver<chrome::mojom::ZipFileCreator>;
+
+  explicit ZipFileCreator(PendingCreator receiver);
+
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
  private:
+  friend class base::RefCountedThreadSafe<ZipFileCreator>;
+
+  ~ZipFileCreator() override;
+
+  using PendingDirectory = mojo::PendingRemote<filesystem::mojom::Directory>;
+
   // chrome::mojom::ZipFileCreator:
-  void CreateZipFile(
-      mojo::PendingRemote<filesystem::mojom::Directory> source_dir_remote,
-      const std::vector<base::FilePath>& source_relative_paths,
-      base::File zip_file,
-      CreateZipFileCallback callback) override;
+  void CreateZipFile(PendingDirectory src_dir,
+                     const std::vector<base::FilePath>& relative_paths,
+                     base::File zip_file,
+                     CreateZipFileCallback callback) override;
+
+  // Zips |src_dir| files given by |relative_paths| into |zip_file|.
+  // Must be run in a separate task runner.
+  bool WriteZipFile(PendingDirectory src_dir,
+                    const std::vector<base::FilePath>& relative_paths,
+                    base::File zip_file) const;
+
+  // Progress handler.
+  bool OnProgress(const zip::Progress& progress) const;
+
+  // Disconnection handler.
+  void OnDisconnect();
+
+  // Underlying ZipFileCreator receiver.
+  mojo::Receiver<chrome::mojom::ZipFileCreator> receiver_;
+
+  // Task runner for ZIP creation.
+  using RunnerPtr = scoped_refptr<base::SequencedTaskRunner>;
+  const RunnerPtr runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  // Flag used to cancel an ongoing ZIP creation.
+  base::AtomicFlag cancelled_;
 
   DISALLOW_COPY_AND_ASSIGN(ZipFileCreator);
 };
