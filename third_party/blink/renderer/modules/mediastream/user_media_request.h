@@ -66,7 +66,8 @@ class MODULES_EXPORT UserMediaRequest final
     kTrackStart,
     kFailedDueToShutdown,
     kKillSwitchOn,
-    kSystemPermissionDenied
+    kSystemPermissionDenied,
+    kDeviceInUse
   };
 
   enum class MediaType {

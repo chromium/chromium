@@ -485,6 +485,7 @@ enum MediaStreamType {
 enum InputStreamErrorCode {
   kUnknown = 0,
   kSystemPermissions = 1,
+  kDeviceInUse = 2,
 };
 
 // See media/base/renderer_factory_selector.h for description.

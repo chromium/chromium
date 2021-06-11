@@ -424,8 +424,14 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
     return OpenOutcome::kSuccess;
   }
 
-  return (hr == E_ACCESSDENIED) ? OpenOutcome::kFailedSystemPermissions
-                                : OpenOutcome::kFailed;
+  switch (hr) {
+    case E_ACCESSDENIED:
+      return OpenOutcome::kFailedSystemPermissions;
+    case AUDCLNT_E_DEVICE_IN_USE:
+      return OpenOutcome::kFailedInUse;
+    default:
+      return OpenOutcome::kFailed;
+  }
 }
 
 void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {

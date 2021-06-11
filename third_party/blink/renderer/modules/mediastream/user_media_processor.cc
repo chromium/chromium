@@ -62,6 +62,7 @@ using blink::mojom::MediaStreamType;
 using blink::mojom::StreamSelectionStrategy;
 using EchoCancellationType =
     blink::AudioProcessingProperties::EchoCancellationType;
+using AudioSourceErrorCode = media::AudioCapturerSource::ErrorCode;
 
 namespace {
 
@@ -99,6 +100,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "KILL_SWITCH_ON";
     case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
       return "SYSTEM_PERMISSION_DENIED";
+    case MediaStreamRequestResult::DEVICE_IN_USE:
+      return "DEVICE_IN_USE";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       return "NUM_MEDIA_REQUEST_RESULTS";
     default:
@@ -1710,6 +1713,10 @@ void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
       user_media_request->Fail(UserMediaRequest::Error::kSystemPermissionDenied,
                                "Permission denied by system");
       return;
+    case MediaStreamRequestResult::DEVICE_IN_USE:
+      user_media_request->Fail(UserMediaRequest::Error::kDeviceInUse,
+                               "Device in use");
+      return;
   }
   NOTREACHED();
   user_media_request->Fail(UserMediaRequest::Error::kPermissionDenied, "");
@@ -1774,15 +1781,19 @@ bool UserMediaProcessor::RemoveLocalSource(MediaStreamSource* source) {
       String message;
       if (source->GetType() == MediaStreamSource::kTypeAudio) {
         auto error = MediaStreamAudioSource::From(source)->ErrorCode();
-        if (error.has_value() &&
-            error.value() ==
-                media::AudioCapturerSource::ErrorCode::kSystemPermissions) {
-          result = MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
-          message =
-              "System Permssions prevented access to audio capture device";
-        } else {
-          result = MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO;
-          message = "Failed to access audio capture device";
+        switch (error.value_or(AudioSourceErrorCode::kUnknown)) {
+          case AudioSourceErrorCode::kSystemPermissions:
+            result = MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+            message =
+                "System Permssions prevented access to audio capture device";
+            break;
+          case AudioSourceErrorCode::kDeviceInUse:
+            result = MediaStreamRequestResult::DEVICE_IN_USE;
+            message = "Audio capture device already in use";
+            break;
+          default:
+            result = MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO;
+            message = "Failed to access audio capture device";
         }
       } else {
         result = MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;

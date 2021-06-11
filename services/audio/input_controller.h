@@ -63,6 +63,9 @@ class InputController final : public StreamMonitor {
 
     // Open failed due to lack of system permissions.
     STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR,  // = 4
+
+    // Open failed due to device in use by another app.
+    STREAM_OPEN_DEVICE_IN_USE_ERROR,  // = 5
   };
 
 #if defined(AUDIO_POWER_MONITORING)

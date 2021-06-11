@@ -10,6 +10,8 @@ AudioCapturerSource::ErrorCode ConvertToCaptureCallbackCode(
   switch (code) {
     case mojom::InputStreamErrorCode::kSystemPermissions:
       return AudioCapturerSource::ErrorCode::kSystemPermissions;
+    case mojom::InputStreamErrorCode::kDeviceInUse:
+      return AudioCapturerSource::ErrorCode::kDeviceInUse;
     case mojom::InputStreamErrorCode::kUnknown:
       break;
   }

@@ -208,6 +208,8 @@ InputStreamErrorCode MapDisconnectReasonToErrorCode(DisconnectReason reason) {
   switch (static_cast<DisconnectReason>(reason)) {
     case DisconnectReason::kSystemPermissions:
       return InputStreamErrorCode::kSystemPermissions;
+    case DisconnectReason::kDeviceInUse:
+      return InputStreamErrorCode::kDeviceInUse;
     case DisconnectReason::kDefault:
     case DisconnectReason::kPlatformError:
     case DisconnectReason::kTerminatedByClient:

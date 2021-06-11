@@ -604,6 +604,7 @@ void UserMediaRequest::Fail(Error name, const String& message) {
       exception_code = DOMExceptionCode::kAbortError;
       break;
     case Error::kTrackStart:
+    case Error::kDeviceInUse:
       exception_code = DOMExceptionCode::kNotReadableError;
       break;
     case Error::kNotSupported:

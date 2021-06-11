@@ -26,6 +26,7 @@ class AudioCapturerSource
   enum class ErrorCode {
     kUnknown = 0,
     kSystemPermissions = 1,
+    kDeviceInUse = 2,
   };
 
   class CaptureCallback {

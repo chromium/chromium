@@ -32,6 +32,8 @@
 namespace audio {
 namespace {
 
+using OpenOutcome = media::AudioInputStream::OpenOutcome;
+
 const int kMaxInputChannels = 3;
 constexpr base::TimeDelta kCheckMutedStateInterval =
     base::TimeDelta::FromSeconds(1);
@@ -395,6 +397,17 @@ void InputController::OnStreamInactive(Snoopable* output_stream) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
 }
 
+InputController::ErrorCode MapOpenOutcomeToErrorCode(OpenOutcome outcome) {
+  switch (outcome) {
+    case OpenOutcome::kFailedSystemPermissions:
+      return InputController::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR;
+    case OpenOutcome::kFailedInUse:
+      return InputController::STREAM_OPEN_DEVICE_IN_USE_ERROR;
+    default:
+      return InputController::STREAM_OPEN_ERROR;
+  }
+}
+
 void InputController::DoCreate(media::AudioManager* audio_manager,
                                const media::AudioParameters& params,
                                const std::string& device_id,
@@ -425,14 +438,10 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   }
 
   auto open_outcome = stream->Open();
-  if (open_outcome != media::AudioInputStream::OpenOutcome::kSuccess) {
+  if (open_outcome != OpenOutcome::kSuccess) {
     stream->Close();
     LogCaptureStartupResult(CAPTURE_STARTUP_OPEN_STREAM_FAILED);
-    handler_->OnError(
-        open_outcome ==
-                media::AudioInputStream::OpenOutcome::kFailedSystemPermissions
-            ? STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR
-            : STREAM_OPEN_ERROR);
+    handler_->OnError(MapOpenOutcomeToErrorCode(open_outcome));
     return;
   }
 
