@@ -876,6 +876,10 @@ std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
     dict.SetKey("upload", base::Value(cdr.upload()));
   }
 
+  if (cdr.has_request_deep_scan()) {
+    dict.SetBoolean("request_deep_scan", cdr.request_deep_scan());
+  }
+
   base::Value* request_tree = &dict;
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
