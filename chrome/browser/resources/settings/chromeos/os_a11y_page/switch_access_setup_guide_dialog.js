@@ -19,6 +19,7 @@ const SASetupElement = {
   PREVIOUS_BUTTON: 'previous',
   INTRO_CONTENT: 'intro',
   ASSIGN_SELECT_CONTENT: 'assign-select',
+  AUTO_SCAN_ENABLED_CONTENT: 'auto-scan-enabled',
   CHOOSE_SWITCH_COUNT_CONTENT: 'choose-switch-count',
 };
 
@@ -29,7 +30,7 @@ const SASetupElement = {
 const SASetupPageId = {
   INTRO: 0,
   ASSIGN_SELECT: 1,
-  AUTO_SCAN_EXPLANATION: 2,
+  AUTO_SCAN_ENABLED: 2,
   CHOOSE_SWITCH_COUNT: 3,
   AUTO_SCAN_SPEED: 4,
   ASSIGN_NEXT: 5,
@@ -66,6 +67,15 @@ SASetupPageList[SASetupPageId.ASSIGN_SELECT] = {
     SASetupElement.ASSIGN_SELECT_CONTENT
   ]
 };
+
+SASetupPageList[SASetupPageId.AUTO_SCAN_ENABLED] = {
+  titleId: 'switchAccessSetupAutoScanEnabledTitle',
+  visibleElements: [
+    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.AUTO_SCAN_ENABLED_CONTENT
+  ]
+};
+
 SASetupPageList[SASetupPageId.CHOOSE_SWITCH_COUNT] = {
   titleId: 'switchAccessSetupChooseSwitchCountTitle',
   visibleElements: [
@@ -79,9 +89,11 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
+    PrefsBehavior,
   ],
 
   properties: {
+    autoScanPreviouslyEnabled_: {type: Boolean, value: false},
     currentPageId_: {
       type: Number,
       value: SASetupPageId.INTRO,
@@ -104,7 +116,7 @@ Polymer({
   },
 
   /**
-   * Determines what page is shown next, given the current page ID and other
+   * Determines what page is shown next, from the current page ID and other
    * state.
    * @return {!SASetupPageId}
    * @private
@@ -114,23 +126,27 @@ Polymer({
       case SASetupPageId.INTRO:
         return SASetupPageId.ASSIGN_SELECT;
       case SASetupPageId.ASSIGN_SELECT:
+        return SASetupPageId.AUTO_SCAN_ENABLED;
+      case SASetupPageId.AUTO_SCAN_ENABLED:
       default:
         return SASetupPageId.CHOOSE_SWITCH_COUNT;
     }
   },
 
   /**
-   * Returns what page was shown previously, given the current page ID.
+   * Returns what page was shown previously from the current page ID.
    * @return {!SASetupPageId}
    * @private
    */
   getPreviousPageId_() {
     switch (this.currentPageId_) {
-      case SASetupPageId.ASSIGN_SELECT:
-        return SASetupPageId.INTRO;
       case SASetupPageId.CHOOSE_SWITCH_COUNT:
-      default:
+        return SASetupPageId.AUTO_SCAN_ENABLED;
+      case SASetupPageId.AUTO_SCAN_ENABLED:
         return SASetupPageId.ASSIGN_SELECT;
+      case SASetupPageId.ASSIGN_SELECT:
+      default:
+        return SASetupPageId.INTRO;
     }
   },
 
@@ -142,10 +158,25 @@ Polymer({
   /** @private */
   onNextClick_() {
     this.loadPage_(this.getNextPageId_());
+
+    // Enable auto-scan when we reach that page of the setup guide.
+    if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED) {
+      this.autoScanPreviouslyEnabled_ = /** @type {boolean} */ (
+          this.getPref('settings.a11y.switch_access.auto_scan.enabled').value);
+      chrome.settingsPrivate.setPref(
+          'settings.a11y.switch_access.auto_scan.enabled', true);
+    }
   },
 
   /** @private */
   onPreviousClick_() {
+    // Disable auto-scan, if we enabled it as part of the setup guide.
+    if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED &&
+        !this.autoScanPreviouslyEnabled_) {
+      chrome.settingsPrivate.setPref(
+          'settings.a11y.switch_access.auto_scan.enabled', false);
+    }
+
     this.loadPage_(this.getPreviousPageId_());
   },
 

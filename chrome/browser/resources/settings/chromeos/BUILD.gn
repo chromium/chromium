@@ -148,6 +148,7 @@ generate_grd("build_grd") {
     "images/notification_access_setup.svg",
     "images/keyboard_shortcut.svg",
     "images/switch_access_setup_guide_choose_two_switches.svg",
+    "images/switch_access_setup_guide_auto_scan_enabled.svg",
     "../../nearby_share/shared/nearby_share_pulse_animation.json",
   ]
   input_files_base_dir = rebase_path(".", "//")

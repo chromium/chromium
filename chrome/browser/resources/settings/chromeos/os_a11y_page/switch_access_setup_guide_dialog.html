@@ -58,6 +58,11 @@
           url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches.svg);
       }
 
+      #auto-scan-enabled .illustration {
+        background-image:
+          url(chrome://os-settings/images/switch_access_setup_guide_auto_scan_enabled.svg);
+      }
+
       #button-container {
         padding: 24px;
       }
@@ -99,6 +104,13 @@
           <div class="sa-setup-contents cr-title-text">
             Nothing to see here yet!
           </div>
+        </div>
+        <div id="auto-scan-enabled" class="flex" hidden>
+          <div class="sa-setup-contents cr-title-text">
+            <p>$i18n{switchAccessSetupAutoScanEnabledExplanation}</p>
+            <p>$i18n{switchAccessSetupAutoScanEnabledDirections}</p>
+          </div>
+          <div class="illustration"></div>
         </div>
         <div id="choose-switch-count" class="flex" hidden>
           <div class="sa-setup-contents">

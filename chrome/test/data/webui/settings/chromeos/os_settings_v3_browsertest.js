@@ -387,6 +387,7 @@ TEST_F(
    'SwitchAccessActionAssignmentDialog',
    'switch_access_action_assignment_dialog_test.m.js'
  ],
+ ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.m.js'],
  ['SwitchAccessSubpage', 'switch_access_subpage_tests.m.js'],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
  ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.m.js'],
