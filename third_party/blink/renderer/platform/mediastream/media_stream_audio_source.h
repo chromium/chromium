@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/limits.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_deliverer.h"
@@ -127,6 +128,11 @@ class PLATFORM_EXPORT MediaStreamAudioSource
     return absl::nullopt;
   }
 
+  absl::optional<media::AudioCapturerSource::ErrorCode> ErrorCode() {
+    DCHECK(task_runner_->BelongsToCurrentThread());
+    return error_code_;
+  }
+
  protected:
   // Returns a new MediaStreamAudioTrack. |id| is the blink track's ID in UTF-8.
   // Subclasses may override this to provide an extended implementation.
@@ -169,7 +175,8 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // Called by subclasses when capture error occurs.
   // Note: This can be called on any thread, and will post a task to the main
   // thread to stop the source soon.
-  void StopSourceOnError(const std::string& why);
+  void StopSourceOnError(media::AudioCapturerSource::ErrorCode code,
+                         const std::string& why);
 
   // Sets muted state and notifies it to all registered tracks.
   void SetMutedState(bool state);
@@ -196,6 +203,15 @@ class PLATFORM_EXPORT MediaStreamAudioSource
 
   void LogMessage(const std::string& message);
 
+  void SetErrorCode(media::AudioCapturerSource::ErrorCode code) {
+    DCHECK(task_runner_->BelongsToCurrentThread());
+    error_code_ = code;
+  }
+
+  // The portion of StopSourceOnError processing carried out on the main thread.
+  void StopSourceOnErrorOnTaskRunner(
+      media::AudioCapturerSource::ErrorCode code);
+
   // True if the source of audio is a local device. False if the source is
   // remote (e.g., streamed-in from a server).
   const bool is_local_source_;
@@ -213,6 +229,9 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // could cause object graph or data flow changes are being called on the main
   // thread.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Code set if this source was closed due to an error.
+  absl::optional<media::AudioCapturerSource::ErrorCode> error_code_;
 
   // Provides weak pointers so that MediaStreamAudioTracks won't call
   // StopAudioDeliveryTo() if this instance dies first.

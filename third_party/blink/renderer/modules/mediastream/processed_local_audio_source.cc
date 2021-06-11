@@ -491,7 +491,7 @@ void ProcessedLocalAudioSource::OnCaptureError(
     const std::string& message) {
   SendLogMessageWithSessionId(base::StringPrintf(
       "OnCaptureError({code=%d, message=%s})", code, message.c_str()));
-  StopSourceOnError(message);
+  StopSourceOnError(code, message);
 }
 
 void ProcessedLocalAudioSource::OnCaptureMuted(bool is_muted) {
