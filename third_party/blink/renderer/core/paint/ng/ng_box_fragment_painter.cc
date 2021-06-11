@@ -437,23 +437,8 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
 
   // If the caret's node's fragment's containing block is this block, and
   // the paint action is PaintPhaseForeground, then paint the caret.
-  if (original_phase == PaintPhase::kForeground &&
-      ShouldPaintCarets(box_fragment_)) {
-    // Apply overflow clip if needed.
-    // reveal-caret-of-multiline-contenteditable.html needs this.
-    // TDOO(yoisn): We should share this code with |BlockPainter::Paint()|
-    absl::optional<ScopedPaintChunkProperties> paint_chunk_properties;
-    if (const auto* fragment = paint_state.FragmentToPaint()) {
-      if (const auto* properties = fragment->PaintProperties()) {
-        if (const auto* overflow_clip = properties->OverflowClip()) {
-          paint_chunk_properties.emplace(
-              paint_info.context.GetPaintController(), *overflow_clip,
-              *box_fragment_.GetLayoutObject(), DisplayItem::kCaret);
-        }
-      }
-    }
-    PaintCarets(paint_info, paint_offset);
-  }
+  if (original_phase == PaintPhase::kForeground)
+    PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
 
   if (ShouldPaintSelfOutline(original_phase)) {
     info.phase = PaintPhase::kSelfOutlineOnly;
@@ -598,14 +583,32 @@ void NGBoxFragmentPainter::PaintObject(
   }
 }
 
-void NGBoxFragmentPainter::PaintCarets(const PaintInfo& paint_info,
-                                       const PhysicalOffset& paint_offset) {
-  const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-  LocalFrame* frame = fragment.GetLayoutObject()->GetFrame();
-  if (ShouldPaintCursorCaret(fragment))
+void NGBoxFragmentPainter::PaintCaretsIfNeeded(
+    const ScopedPaintState& paint_state,
+    const PaintInfo& paint_info,
+    const PhysicalOffset& paint_offset) {
+  if (!ShouldPaintCarets(box_fragment_))
+    return;
+
+  // Apply overflow clip if needed.
+  // reveal-caret-of-multiline-contenteditable.html needs this.
+  // TDOO(yoisn): We should share this code with |BlockPainter::Paint()|
+  absl::optional<ScopedPaintChunkProperties> paint_chunk_properties;
+  if (const auto* fragment = paint_state.FragmentToPaint()) {
+    if (const auto* properties = fragment->PaintProperties()) {
+      if (const auto* overflow_clip = properties->OverflowClip()) {
+        paint_chunk_properties.emplace(
+            paint_info.context.GetPaintController(), *overflow_clip,
+            *box_fragment_.GetLayoutObject(), DisplayItem::kCaret);
+      }
+    }
+  }
+
+  LocalFrame* frame = box_fragment_.GetLayoutObject()->GetFrame();
+  if (ShouldPaintCursorCaret(box_fragment_))
     frame->Selection().PaintCaret(paint_info.context, paint_offset);
 
-  if (ShouldPaintDragCaret(fragment)) {
+  if (ShouldPaintDragCaret(box_fragment_)) {
     frame->GetPage()->GetDragCaret().PaintDragCaret(frame, paint_info.context,
                                                     paint_offset);
   }

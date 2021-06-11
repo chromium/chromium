@@ -167,7 +167,9 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                        const PhysicalRect&,
                        const Color& background_color,
                        BackgroundBleedAvoidance = kBackgroundBleedNone);
-  void PaintCarets(const PaintInfo&, const PhysicalOffset& paint_offset);
+  void PaintCaretsIfNeeded(const ScopedPaintState&,
+                           const PaintInfo&,
+                           const PhysicalOffset& paint_offset);
 
   // This should be called in the background paint phase even if there is no
   // other painted content.
