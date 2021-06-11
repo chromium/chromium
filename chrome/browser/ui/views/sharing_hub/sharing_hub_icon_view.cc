@@ -57,16 +57,6 @@ void SharingHubIconView::UpdateImpl() {
 void SharingHubIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void SharingHubIconView::NotifyClick(const ui::Event& event) {
-  // Unlike WML, ChromeOS uses a separate dialog that is not attached to the
-  // omnibox. Therefore, we do not want the icon to remain highlighted while
-  // the dialog is open.
-  PageActionIconView::NotifyClick(event);
-  SetHighlighted(false);
-}
-#endif
-
 const gfx::VectorIcon& SharingHubIconView::GetVectorIcon() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return omnibox::kShareIcon;

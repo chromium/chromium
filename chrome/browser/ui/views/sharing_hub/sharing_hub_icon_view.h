@@ -37,9 +37,6 @@ class SharingHubIconView : public PageActionIconView {
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void NotifyClick(const ui::Event& event) override;
-#endif
 
  private:
   SharingHubBubbleController* GetController() const;
