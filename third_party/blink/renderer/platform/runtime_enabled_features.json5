@@ -378,6 +378,10 @@
       status: "experimental",
     },
     {
+      name: "CLSScrollAnchoring",
+      status: "experimental",
+    },
+    {
       name: "COLRV1Fonts",
       status: "experimental",
     },

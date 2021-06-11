@@ -2772,8 +2772,6 @@ TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {
   EXPECT_TRUE(layer->HasNonEmptyChildLayoutObjects());
 }
 
-enum { kCompositingOptimizations = 1 << 0 };
-
 class PaintLayerOverlapTest : public RenderingTest {
  public:
   PaintLayerOverlapTest()

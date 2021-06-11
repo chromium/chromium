@@ -775,8 +775,8 @@ bool IsParkableStringsToDiskEnabled() {
 const base::Feature kCrOSAutoSelect{"CrOSAutoSelect",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kCompositingOptimizations{
-    "CompositingOptimizations", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCLSScrollAnchoring{"CLSScrollAnchoring",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Reduce the amount of information in the default 'referer' header for
 // cross-origin requests.

@@ -244,6 +244,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableParseUrlProtocolHandler(bool);
 
   BLINK_PLATFORM_EXPORT static void EnableDocumentTransition(bool);
+  BLINK_PLATFORM_EXPORT static void EnableCLSScrollAnchoring(bool);
 
  private:
   WebRuntimeFeatures();

@@ -266,7 +266,8 @@ void LayoutShiftTracker::ObjectShifted(
                                      new_starting_point, threshold_physical_px))
       return;
 
-    if (!scroll_anchor_adjustment.IsZero() &&
+    if (RuntimeEnabledFeatures::CLSScrollAnchoringEnabled() &&
+        !scroll_anchor_adjustment.IsZero() &&
         EqualWithinMovementThreshold(
             old_starting_point + scroll_delta + scroll_anchor_adjustment,
             new_starting_point, threshold_physical_px))

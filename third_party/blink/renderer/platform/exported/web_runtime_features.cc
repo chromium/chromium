@@ -686,4 +686,8 @@ void WebRuntimeFeatures::EnableDocumentTransition(bool enable) {
   RuntimeEnabledFeatures::SetDocumentTransitionEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableCLSScrollAnchoring(bool enable) {
+  RuntimeEnabledFeatures::SetCLSScrollAnchoringEnabled(enable);
+}
+
 }  // namespace blink
