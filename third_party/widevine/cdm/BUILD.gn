@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/toolchain/toolchain.gni")
 import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 import("//third_party/widevine/cdm/widevine.gni")
@@ -22,59 +23,43 @@ buildflag_header("buildflags") {
   ]
 }
 
-widevine_arch = current_cpu
-if (widevine_arch == "x86") {
-  widevine_arch = "ia32"
-}
-
+# No branding, use the default one.
+widevine_cdm_version_h_file = "widevine_cdm_version.h"
 widevine_cdm_binary_files = []
 widevine_cdm_manifest_and_license_files = []
 
 # TODO(xhwang): widevine_cdm_version.h is only used in few places. Clean this up
 # so we don't need to copy it in most cases.
 if (bundle_widevine_cdm) {
-  if (is_chromeos_ash) {
-    widevine_cdm_version_h_file =
-        "chromeos/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [ "chromeos/$widevine_arch/libwidevinecdm.so" ]
-  } else if (is_linux || is_chromeos_lacros) {
-    widevine_cdm_version_h_file =
-        "$widevine_root/linux/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files =
-        [ "$widevine_root/linux/$widevine_arch/libwidevinecdm.so" ]
-    widevine_cdm_manifest_and_license_files = [
-      "$widevine_root/linux/$widevine_arch/manifest.json",
-      "../LICENSE",
-    ]
-  } else if (is_win) {
-    widevine_cdm_version_h_file = "win/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [ "win/$widevine_arch/widevinecdm.dll" ]
-    widevine_cdm_manifest_and_license_files = [
-      "win/$widevine_arch/manifest.json",
-      "../LICENSE",
-    ]
-  } else if (is_mac) {
-    widevine_cdm_version_h_file = "mac/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [ "mac/$widevine_arch/libwidevinecdm.dylib" ]
-    widevine_cdm_manifest_and_license_files = [
-      "mac/$widevine_arch/manifest.json",
-      "../LICENSE",
-    ]
-  } else {
-    assert(false, "Platform not supported to bundle Widevine CDM.")
+  widevine_os = target_os
+  if (is_chromeos_lacros) {
+    widevine_os = "linux"  # Bundle Linux CDM for Lacros builds.
   }
-} else {
-  # No branding, use the default one.
-  widevine_cdm_version_h_file = "widevine_cdm_version.h"
+
+  widevine_arch = target_cpu
+  if (widevine_arch == "x86") {
+    widevine_arch = "ia32"
+  }
+
+  widevine_cdm_root = "${widevine_root}/${widevine_os}/${widevine_arch}"
+  cdm_file_name = "${shlib_prefix}widevinecdm${shlib_extension}"
+
+  widevine_cdm_version_h_file = "${widevine_cdm_root}/widevine_cdm_version.h"
+  widevine_cdm_binary_files = [ "${widevine_cdm_root}/${cdm_file_name}" ]
+  widevine_cdm_manifest_and_license_files = [
+    "${widevine_cdm_root}/manifest.json",
+    "../LICENSE",
+  ]
+
+  if (enable_widevine_cdm_host_verification) {
+    assert(is_win || is_mac)
+    widevine_cdm_binary_files += [ "${widevine_cdm_root}/${cdm_file_name}.sig" ]
+  }
 }
 
-if (bundle_widevine_cdm && enable_widevine_cdm_host_verification) {
-  if (is_win) {
-    widevine_cdm_binary_files += [ "win/$widevine_arch/widevinecdm.dll.sig" ]
-  } else if (is_mac) {
-    widevine_cdm_binary_files +=
-        [ "mac/$widevine_arch/libwidevinecdm.dylib.sig" ]
-  }
+# For ChromeOS Ash build, the CDM is not component updated hence no manifest.
+if (is_chromeos_ash) {
+  widevine_cdm_manifest_and_license_files = []
 }
 
 copy("version_h") {
@@ -84,7 +69,7 @@ copy("version_h") {
   # TODO(brettw) this should go into target_out_dir and callers should include
   # it from there. This requires, however, renaming the default
   # widevine_cdm_version.h in this directory to avoid conflicts.
-  outputs = [ "$root_gen_dir/widevine_cdm_version.h" ]
+  outputs = [ "${root_gen_dir}/widevine_cdm_version.h" ]
 }
 
 source_set("headers") {
@@ -101,7 +86,7 @@ source_set("headers") {
 if (widevine_cdm_manifest_and_license_files != []) {
   copy("widevine_cdm_manifest_and_license") {
     sources = widevine_cdm_manifest_and_license_files
-    outputs = [ "$root_out_dir/WidevineCdm/{{source_file_part}}" ]
+    outputs = [ "${root_out_dir}/WidevineCdm/{{source_file_part}}" ]
   }
 } else {
   group("widevine_cdm_manifest_and_license") {
@@ -112,7 +97,7 @@ if (widevine_cdm_manifest_and_license_files != []) {
 if (widevine_cdm_binary_files != []) {
   copy("widevine_cdm_binary") {
     sources = widevine_cdm_binary_files
-    outputs = [ "$root_out_dir/$widevine_cdm_path/{{source_file_part}}" ]
+    outputs = [ "${root_out_dir}/${widevine_cdm_path}/{{source_file_part}}" ]
 
     # TODO(jrummell)
     # 'COPY_PHASE_STRIP': 'NO',
