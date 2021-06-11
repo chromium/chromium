@@ -163,7 +163,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
     // effective security of these responses is equivalent to that of the
     // service worker.
     scoped_refptr<net::HttpResponseHeaders> headers;
-    net::SSLInfo ssl_info;
+    absl::optional<net::SSLInfo> ssl_info;
   };
 
   class Observer {

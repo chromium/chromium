@@ -42,7 +42,12 @@ network::mojom::URLResponseHeadPtr ConvertHttpResponseInfo(
   response_head->alpn_negotiated_protocol = http_info.alpn_negotiated_protocol;
   response_head->remote_endpoint = http_info.remote_endpoint;
   response_head->cert_status = http_info.ssl_info.cert_status;
-  response_head->ssl_info = http_info.ssl_info;
+  // See ConvertToPickle(), where an invalid ssl_info is put into storage in
+  // case of |response_head->ssl_info| being nullptr. Here we restore
+  // |response_head->ssl_info| to nullptr if we got the invalid ssl_info from
+  // storage.
+  if (http_info.ssl_info.is_valid())
+    response_head->ssl_info = http_info.ssl_info;
 
   return response_head;
 }
@@ -53,8 +58,10 @@ std::unique_ptr<base::Pickle> ConvertToPickle(
     network::mojom::URLResponseHeadPtr response_head) {
   net::HttpResponseInfo response_info;
   response_info.headers = response_head->headers;
-  if (response_head->ssl_info.has_value())
+  if (response_head->ssl_info.has_value()) {
     response_info.ssl_info = *response_head->ssl_info;
+    DCHECK(response_info.ssl_info.is_valid());
+  }
   response_info.was_fetched_via_spdy = response_head->was_fetched_via_spdy;
   response_info.was_alpn_negotiated = response_head->was_alpn_negotiated;
   response_info.alpn_negotiated_protocol =
