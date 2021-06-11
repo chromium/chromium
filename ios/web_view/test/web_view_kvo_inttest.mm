@@ -7,6 +7,7 @@
 
 #include "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "components/url_formatter/elide_url.h"
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
@@ -109,18 +110,30 @@ TEST_F(WebViewKvoTest, Title) {
       base::SysNSStringToUTF8(page_1_title), page_1_html);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, net::NSURLWithGURL(page_1_url)));
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^{
+        return [page_1_title isEqualToString:web_view_.title];
+      }));
   EXPECT_NSEQ(page_1_title, observer.lastValue);
 
   // Navigate to page 2.
   EXPECT_TRUE(test::TapWebViewElementWithId(web_view_, @"link_1"));
   ASSERT_TRUE(
       test::WaitForWebViewContainingTextOrTimeout(web_view_, @"Body 2"));
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^{
+        return [page_2_title isEqualToString:web_view_.title];
+      }));
   EXPECT_NSEQ(page_2_title, observer.lastValue);
 
   // Navigate back to page 1.
   [web_view_ goBack];
   ASSERT_TRUE(
       test::WaitForWebViewContainingTextOrTimeout(web_view_, @"Link 1"));
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^{
+        return [page_1_title isEqualToString:web_view_.title];
+      }));
   EXPECT_NSEQ(page_1_title, observer.lastValue);
 }
 
