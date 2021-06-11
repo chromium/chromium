@@ -166,10 +166,18 @@ class JavaScriptFeature {
  protected:
   explicit JavaScriptFeature(ContentWorld supported_world);
 
+  // Calls |function_name| with |parameters| in |web_frame| within the content
+  // world that this feature has been configured. |web_frame| must not be null.
+  // See WebFrame::CallJavaScriptFunction for more details.
   bool CallJavaScriptFunction(WebFrame* web_frame,
                               const std::string& function_name,
                               const std::vector<base::Value>& parameters);
 
+  // Calls |function_name| with |parameters| in |web_frame| within the content
+  // world that this feature has been configured. |callback| will be called with
+  // the return value of the function if it completes within |timeout|.
+  // |web_frame| must not be null.
+  // See WebFrame::CallJavaScriptFunction for more details.
   bool CallJavaScriptFunction(
       WebFrame* web_frame,
       const std::string& function_name,
