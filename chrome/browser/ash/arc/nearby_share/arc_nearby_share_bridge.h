@@ -29,13 +29,13 @@ class ArcNearbyShareBridge : public KeyedService,
                              public mojom::NearbyShareHost {
  public:
   // Returns singleton instance for the given BrowserContext,
-  // or nullptr if the browser |context| is not allowed to use ARC.
+  // or nullptr if the |browser_context| is not allowed to use ARC.
   static ArcNearbyShareBridge* GetForBrowserContext(
-      content::BrowserContext* context);
+      content::BrowserContext* browser_context);
   static ArcNearbyShareBridge* GetForBrowserContextForTesting(
-      content::BrowserContext* context);
+      content::BrowserContext* browser_context);
 
-  ArcNearbyShareBridge(content::BrowserContext* context,
+  ArcNearbyShareBridge(content::BrowserContext* browser_context,
                        ArcBridgeService* bridge_service);
 
   ArcNearbyShareBridge(const ArcNearbyShareBridge&) = delete;

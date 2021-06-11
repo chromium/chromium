@@ -46,21 +46,23 @@ class ArcNearbyShareBridgeFactory
 
 // static
 ArcNearbyShareBridge* ArcNearbyShareBridge::GetForBrowserContext(
-    content::BrowserContext* context) {
+    content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return ArcNearbyShareBridgeFactory::GetForBrowserContext(context);
+  return ArcNearbyShareBridgeFactory::GetForBrowserContext(browser_context);
 }
 
 // static
 ArcNearbyShareBridge* ArcNearbyShareBridge::GetForBrowserContextForTesting(
-    content::BrowserContext* context) {
-  return ArcNearbyShareBridgeFactory::GetForBrowserContextForTesting(context);
+    content::BrowserContext* browser_context) {
+  return ArcNearbyShareBridgeFactory::GetForBrowserContextForTesting(
+      browser_context);
 }
 
-ArcNearbyShareBridge::ArcNearbyShareBridge(content::BrowserContext* context,
-                                           ArcBridgeService* bridge_service)
+ArcNearbyShareBridge::ArcNearbyShareBridge(
+    content::BrowserContext* browser_context,
+    ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
-      profile_(Profile::FromBrowserContext(context)) {
+      profile_(Profile::FromBrowserContext(browser_context)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->nearby_share()->SetHost(this);
 }
@@ -79,8 +81,7 @@ void ArcNearbyShareBridge::StartNearbyShare(
 
   VLOG(1) << "Creating Nearby Share session";
   std::move(callback).Run(NearbyShareSessionImpl::Create(
-      CreateArcCustomTabWebContents(profile_, GURL("about:blank")), task_id,
-      std::move(share_info), std::move(session_instance)));
+      profile_, task_id, std::move(share_info), std::move(session_instance)));
 }
 
 }  // namespace arc

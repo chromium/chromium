@@ -24,7 +24,7 @@ class Profile;
 namespace apps {
 struct IntentLaunchInfo;
 class AppServiceProxyBase;
-}
+}  // namespace apps
 
 namespace views {
 class View;
@@ -72,7 +72,7 @@ class SharesheetService : public KeyedService {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
-  void ShowNearbyShareBubble(content::WebContents* web_contents,
+  void ShowNearbyShareBubble(gfx::NativeWindow native_window,
                              apps::mojom::IntentPtr intent,
                              SharesheetMetrics::LaunchSource source,
                              sharesheet::DeliveredCallback delivered_callback,

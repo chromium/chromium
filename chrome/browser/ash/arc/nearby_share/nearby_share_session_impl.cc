@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
 
-#include <limits>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "ash/public/cpp/app_types_util.h"
@@ -18,9 +16,8 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/arc/arc_util.h"
-#include "components/arc/intent_helper/custom_tab.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace arc {
 
@@ -42,7 +39,7 @@ constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
 // static
 mojo::PendingRemote<mojom::NearbyShareSessionHost>
 NearbyShareSessionImpl::Create(
-    std::unique_ptr<content::WebContents> web_contents,
+    Profile* profile,
     int32_t task_id,
     mojom::ShareIntentInfoPtr share_info,
     mojo::PendingRemote<mojom::NearbyShareSessionInstance> instance) {
@@ -51,20 +48,18 @@ NearbyShareSessionImpl::Create(
     return mojo::NullRemote();
   }
 
-  auto* web_contents_ptr = web_contents.get();
   mojo::PendingRemote<mojom::NearbyShareSessionHost> remote;
   // The NearbyShareSessionImpl instance will be deleted when the mojo
   // connection is closed.
-  NearbyShareSessionImpl::CreateForWebContents(
-      web_contents_ptr, std::move(web_contents), task_id, std::move(share_info),
-      std::move(instance), remote.InitWithNewPipeAndPassReceiver());
+  new NearbyShareSessionImpl(profile, task_id, std::move(share_info),
+                             std::move(instance),
+                             remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
 
 NearbyShareSessionImpl::~NearbyShareSessionImpl() {
   env_observation_.Reset();
   arc_window_observation_.Reset();
-  web_contents_->RemoveUserData(UserDataKey());
 }
 
 void NearbyShareSessionImpl::OnNearbyShareClosed() {
@@ -92,27 +87,17 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(aura::Window* window,
   }
 }
 
-// Overridden from aura::WindowObserver
-void NearbyShareSessionImpl::OnWindowDestroying(aura::Window* removed_window) {
-  Close();
-}
-
 NearbyShareSessionImpl::NearbyShareSessionImpl(
-    content::WebContents* web_contents_ptr,
-    std::unique_ptr<content::WebContents> web_contents,
+    Profile* profile,
     int32_t task_id,
     mojom::ShareIntentInfoPtr share_info,
     mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
     mojo::PendingReceiver<mojom::NearbyShareSessionHost> session_receiver)
-    : ArcCustomTabModalDialogHost(nullptr, web_contents.get()),
-      task_id_(task_id),
+    : task_id_(task_id),
       session_instance_(std::move(session_instance)),
       session_receiver_(this, std::move(session_receiver)),
       share_info_(std::move(share_info)),
-      web_contents_(std::move(web_contents)) {
-  session_receiver_.set_disconnect_handler(base::BindOnce(
-      &NearbyShareSessionImpl::Close, weak_ptr_factory_.GetWeakPtr()));
-
+      profile_(profile) {
   aura::Window* arc_window = GetArcWindow(task_id_);
   if (arc_window) {
     VLOG(1) << "ARC window found. Creating NearbySession.";
@@ -128,19 +113,9 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
 }
 
 void NearbyShareSessionImpl::ShowNearbyBubble(aura::Window* arc_window) {
-  // Create ARC Custom Tab for given ARC window
-  custom_tab_ = std::make_unique<CustomTab>(arc_window);
-
-  // Attach |web_contents_| to the Custom Tab and show it.
-  aura::Window* window = web_contents_->GetNativeView();
-  custom_tab_->Attach(window);
-  window->Show();
-
   VLOG(1) << "Getting Sharesheet service";
-  content::BrowserContext* browser_context = web_contents_->GetBrowserContext();
   sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
     LOG(ERROR) << "Cannot find sharesheet service";
     return;
@@ -148,7 +123,7 @@ void NearbyShareSessionImpl::ShowNearbyBubble(aura::Window* arc_window) {
 
   VLOG(1) << "Calling ShowNearbyShareBubble";
   sharesheet_service->ShowNearbyShareBubble(
-      web_contents_.get(), ConvertShareIntentInfoToIntentFilter(),
+      arc_window, ConvertShareIntentInfoToIntentFilter(),
       sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare,
       base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -214,11 +189,5 @@ void NearbyShareSessionImpl::OnTimerFired() {
   LOG(ERROR) << " ARC window didn't get initialized in time.";
   env_observation_.Reset();
 }
-
-void NearbyShareSessionImpl::Close() {
-  web_contents_->RemoveUserData(UserDataKey());
-}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NearbyShareSessionImpl)
 
 }  // namespace arc
