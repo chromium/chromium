@@ -865,7 +865,7 @@ TEST_F(AccessibilitySelectionTest,
   ASSERT_TRUE(ax_selection.Extent().IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_selection.Extent().ContainerObject());
   EXPECT_EQ(ax_static_text->ComputedName().length(),
-            unsigned{ax_selection.Extent().TextOffset()});
+            static_cast<unsigned>(ax_selection.Extent().TextOffset()));
 }
 
 TEST_F(AccessibilitySelectionTest,
@@ -1187,8 +1187,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextField) {
 
     testing::Message message;
     message << "While selecting forward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1206,8 +1206,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextField) {
 
     testing::Message message;
     message << "While selecting backward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1263,8 +1263,8 @@ TEST_F(AccessibilitySelectionTest,
 
     testing::Message message;
     message << "While selecting forward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1282,8 +1282,8 @@ TEST_F(AccessibilitySelectionTest,
 
     testing::Message message;
     message << "While selecting backward character "
-            << char{text_control.InnerEditorValue()[i]} << " at position " << i
-            << " in text field.";
+            << static_cast<char>(text_control.InnerEditorValue()[i])
+            << " at position " << i << " in text field.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1510,8 +1510,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
 
     testing::Message message;
     message << "While selecting forward character "
-            << char{text_control.value()[i]} << " at position " << i
-            << " in textarea.";
+            << static_cast<char>(text_control.value()[i]) << " at position "
+            << i << " in textarea.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1530,8 +1530,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
 
     testing::Message message;
     message << "While selecting backward character "
-            << char{text_control.value()[i]} << " at position " << i
-            << " in textarea.";
+            << static_cast<char>(text_control.value()[i]) << " at position "
+            << i << " in textarea.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1651,13 +1651,13 @@ TEST_F(AccessibilitySelectionTest,
   EXPECT_TRUE(ax_selection.Base().IsTextPosition());
   EXPECT_EQ(ax_text, ax_selection.Base().ContainerObject());
   EXPECT_LE(15, ax_selection.Base().TextOffset());
-  EXPECT_GT(int{ax_text->ComputedName().length()},
+  EXPECT_GT(static_cast<int>(ax_text->ComputedName().length()),
             ax_selection.Base().TextOffset());
   EXPECT_EQ(TextAffinity::kUpstream, ax_selection.Base().Affinity());
   EXPECT_TRUE(ax_selection.Extent().IsTextPosition());
   EXPECT_EQ(ax_text, ax_selection.Extent().ContainerObject());
   EXPECT_LE(15, ax_selection.Extent().TextOffset());
-  EXPECT_GT(int{ax_text->ComputedName().length()},
+  EXPECT_GT(static_cast<int>(ax_text->ComputedName().length()),
             ax_selection.Extent().TextOffset());
   EXPECT_EQ(TextAffinity::kUpstream, ax_selection.Extent().Affinity());
 }
@@ -1712,8 +1712,10 @@ TEST_F(AccessibilitySelectionTest,
     // The discrepancy between DOM and AX text offsets is due to the fact that
     // there is some white space in the DOM that is compressed in the
     // accessibility tree.
-    EXPECT_EQ(int{i + 9}, dom_selection.Base().OffsetInContainerNode());
-    EXPECT_EQ(int{i + 10}, dom_selection.Extent().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 9),
+              dom_selection.Base().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 10),
+              dom_selection.Extent().OffsetInContainerNode());
   }
 
   for (unsigned int i = computed_name.length(); i > 0; --i) {
@@ -1738,8 +1740,10 @@ TEST_F(AccessibilitySelectionTest,
     // The discrepancy between DOM and AX text offsets is due to the fact that
     // there is some white space in the DOM that is compressed in the
     // accessibility tree.
-    EXPECT_EQ(int{i + 9}, dom_selection.Base().OffsetInContainerNode());
-    EXPECT_EQ(int{i + 8}, dom_selection.Extent().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 9),
+              dom_selection.Base().OffsetInContainerNode());
+    EXPECT_EQ(static_cast<int>(i + 8),
+              dom_selection.Extent().OffsetInContainerNode());
   }
 }
 

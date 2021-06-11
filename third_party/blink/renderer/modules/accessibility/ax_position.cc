@@ -266,9 +266,10 @@ const AXPosition AXPosition::FromPosition(
     // same formatting context.
     int container_offset = container->TextOffsetInFormattingContext(0);
     int text_offset =
-        int{container_offset_mapping
+        static_cast<int>(
+            container_offset_mapping
                 ->GetTextContentOffset(parent_anchored_position)
-                .value_or(static_cast<unsigned int>(container_offset))} -
+                .value_or(static_cast<unsigned int>(container_offset))) -
         container_offset;
     DCHECK_GE(text_offset, 0);
     ax_position.text_offset_or_child_index_ = text_offset;
@@ -463,8 +464,8 @@ int AXPosition::MaxTextOffset() const {
       container_offset_mapping->GetMappingUnitsForNode(*container_node);
   if (mapping_units.empty())
     return container_object_->ComputedName().length();
-  return int{mapping_units.back().TextContentEnd() -
-             mapping_units.front().TextContentStart()};
+  return static_cast<int>(mapping_units.back().TextContentEnd() -
+                          mapping_units.front().TextContentStart());
 }
 
 TextAffinity AXPosition::Affinity() const {

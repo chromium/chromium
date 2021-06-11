@@ -197,7 +197,7 @@ void YUVAToRGBA(const avifImage* image,
   avifGetPixelFormatInfo(image->yuvFormat, &format_info);
   gfx::Point3F pixel;
   const int max_channel_i = (1 << image->depth) - 1;
-  const float max_channel = float{max_channel_i};
+  const float max_channel = static_cast<float>(max_channel_i);
   for (uint32_t j = 0; j < image->height; ++j) {
     const int uv_j = j >> format_info.chromaShiftY;
 

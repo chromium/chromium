@@ -286,8 +286,9 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(request->media_config);
 
-  if (decoder_ && pending_decodes_.size() + 1 >
-                      size_t{Traits::GetMaxDecodeRequests(*decoder_)}) {
+  if (decoder_ &&
+      pending_decodes_.size() + 1 >
+          static_cast<size_t>(Traits::GetMaxDecodeRequests(*decoder_))) {
     // Try again after OnDecodeDone().
     return false;
   }
@@ -366,7 +367,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   }
 
   if (pending_decodes_.size() + 1 >
-      size_t{Traits::GetMaxDecodeRequests(*decoder_)}) {
+      static_cast<size_t>(Traits::GetMaxDecodeRequests(*decoder_))) {
     // Try again after OnDecodeDone().
     return false;
   }
@@ -417,7 +418,7 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
   DCHECK(decoder_);
 
   if (pending_decodes_.size() + 1 >
-      size_t{Traits::GetMaxDecodeRequests(*decoder_)}) {
+      static_cast<size_t>(Traits::GetMaxDecodeRequests(*decoder_))) {
     // Try again after OnDecodeDone().
     return false;
   }

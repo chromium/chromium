@@ -172,7 +172,7 @@ unsigned LegacyAbstractInlineTextBox::TextOffsetInFormattingContext(
   // return a more exact offset in our formatting context. Otherwise, we need to
   // approximate the offset using our associated layout object.
   if (node && node->IsTextNode()) {
-    const Position position(node, int{offset_in_parent});
+    const Position position(node, static_cast<int>(offset_in_parent));
     LayoutBlockFlow* formatting_context =
         NGOffsetMapping::GetInlineFormattingContextOf(position);
     // If "formatting_context" is not a Layout NG object, the offset mappings
@@ -254,7 +254,8 @@ void AbstractInlineTextBox::GetWordBoundaries(
 
   TextBreakIterator* it = WordBreakIterator(text, 0, text.length());
   absl::optional<int> word_start;
-  for (int offset = 0; offset != kTextBreakDone && offset < int{text.length()};
+  for (int offset = 0;
+       offset != kTextBreakDone && offset < static_cast<int>(text.length());
        offset = it->following(offset)) {
     // Unlike in ICU's WordBreakIterator, a word boundary is valid only if it is
     // before, or immediately preceded by, an alphanumeric character, a series

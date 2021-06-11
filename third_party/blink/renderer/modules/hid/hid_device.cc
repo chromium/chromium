@@ -145,7 +145,7 @@ int8_t UnitFactorExponentToInt(uint8_t unit_factor_exponent) {
   DCHECK_LE(unit_factor_exponent, 0x0f);
   // Values from 0x08 to 0x0f encode negative exponents.
   if (unit_factor_exponent > 0x08)
-    return int8_t{unit_factor_exponent} - 16;
+    return static_cast<int8_t>(unit_factor_exponent) - 16;
   return unit_factor_exponent;
 }
 

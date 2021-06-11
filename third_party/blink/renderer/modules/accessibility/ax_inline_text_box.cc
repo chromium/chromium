@@ -98,7 +98,7 @@ void AXInlineTextBox::TextCharacterOffsets(Vector<int>& offsets) const {
 
   Vector<float> widths;
   inline_text_box_->CharacterWidths(widths);
-  DCHECK_EQ(int{widths.size()}, TextLength());
+  DCHECK_EQ(static_cast<int>(widths.size()), TextLength());
   offsets.resize(TextLength());
 
   float width_so_far = 0;
@@ -131,8 +131,8 @@ int AXInlineTextBox::TextOffsetInFormattingContext(int offset) const {
     return 0;
 
   // Retrieve the text offset from the start of the layout block flow ancestor.
-  return int{inline_text_box_->TextOffsetInFormattingContext(
-      static_cast<unsigned int>(offset))};
+  return static_cast<int>(inline_text_box_->TextOffsetInFormattingContext(
+      static_cast<unsigned int>(offset)));
 }
 
 int AXInlineTextBox::TextOffsetInContainer(int offset) const {
@@ -389,7 +389,7 @@ bool AXInlineTextBox::IsLineBreakingObject() const {
 int AXInlineTextBox::TextLength() const {
   if (IsDetached())
     return 0;
-  return int{inline_text_box_->Len()};
+  return static_cast<int>(inline_text_box_->Len());
 }
 
 void AXInlineTextBox::ClearChildren() const {

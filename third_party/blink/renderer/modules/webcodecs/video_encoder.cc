@@ -125,7 +125,7 @@ bool IsAcceleratedConfigurationSupported(
     }
 
     double max_supported_framerate =
-        double{supported_profile.max_framerate_numerator} /
+        static_cast<double>(supported_profile.max_framerate_numerator) /
         supported_profile.max_framerate_denominator;
     if (options.framerate.has_value() &&
         options.framerate.value() > max_supported_framerate) {

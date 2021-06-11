@@ -158,13 +158,13 @@ AXSelection AXSelection::FromCurrentSelection(
   const bool is_backward = (text_control.selectionDirection() == "backward");
   const auto ax_base = AXPosition::CreatePositionInTextObject(
       *ax_text_control,
-      (is_backward ? int{text_control.selectionEnd()}
-                   : int{text_control.selectionStart()}),
+      static_cast<int>(is_backward ? text_control.selectionEnd()
+                                   : text_control.selectionStart()),
       base_affinity);
   const auto ax_extent = AXPosition::CreatePositionInTextObject(
       *ax_text_control,
-      (is_backward ? int{text_control.selectionStart()}
-                   : int{text_control.selectionEnd()}),
+      static_cast<int>(is_backward ? text_control.selectionStart()
+                                   : text_control.selectionEnd()),
       extent_affinity);
 
   if (!ax_base.IsValid() || !ax_extent.IsValid())

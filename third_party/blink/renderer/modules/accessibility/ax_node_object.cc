@@ -3480,7 +3480,7 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
       inline_offset_mapping->GetMappingUnitsForLayoutObject(*layout_obj);
   if (mapping_units.empty())
     return AXObject::TextOffsetInFormattingContext(offset);
-  return int{mapping_units.front().TextContentStart()} + offset;
+  return static_cast<int>(mapping_units.front().TextContentStart()) + offset;
 }
 
 //
