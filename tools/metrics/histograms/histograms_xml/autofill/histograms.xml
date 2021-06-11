@@ -252,6 +252,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.AutocompleteEnabled" enum="BooleanEnabled"
     expires_after="M85">
+  <obsolete>
+    Removed in June 2021.
+  </obsolete>
   <owner>michaelbai@chromium.org</owner>
   <summary>Whether autocomplete is enabled.</summary>
 </histogram>

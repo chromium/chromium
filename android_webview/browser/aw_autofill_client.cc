@@ -14,7 +14,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
@@ -245,12 +244,7 @@ void AwAutofillClient::HideAutofillPopup(autofill::PopupHidingReason reason) {
 }
 
 bool AwAutofillClient::IsAutocompleteEnabled() {
-  bool enabled = GetSaveFormData();
-  if (!autocomplete_uma_recorded_) {
-    UMA_HISTOGRAM_BOOLEAN("Autofill.AutocompleteEnabled", enabled);
-    autocomplete_uma_recorded_ = true;
-  }
-  return enabled;
+  return GetSaveFormData();
 }
 
 void AwAutofillClient::PropagateAutofillPredictions(
