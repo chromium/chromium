@@ -1987,7 +1987,7 @@
         ],
         'mixins': [
           'enable_resultdb',
-          'mac_11_x64',
+          'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_12d4e',
@@ -2021,7 +2021,7 @@
           'enable_resultdb',
           'ios_restart_device',
           'limited_capacity_bot',
-          'mac_11_x64',
+          'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_12d4e',
