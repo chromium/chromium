@@ -32,6 +32,8 @@ void EcheConnector::SendMessage(const std::string& message) {
       eche_feature_status_provider_->GetStatus();
   switch (feature_status) {
     case FeatureStatus::kDependentFeature:
+      FALLTHROUGH;
+    case FeatureStatus::kDependentFeaturePending:
       PA_LOG(WARNING) << "Attempting to send message with ineligible dep";
       break;
     case FeatureStatus::kIneligible:

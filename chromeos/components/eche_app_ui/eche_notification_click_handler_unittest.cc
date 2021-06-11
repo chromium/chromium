@@ -43,9 +43,7 @@ class EcheNotificationClickHandlerTest : public testing::Test {
     // Do nothing.
   }
 
-  void FakeCloseEcheAppFunction() {
-    // Do nothing.
-  }
+  void FakeCloseEcheAppFunction() { close_eche_is_called_ = true; }
 
   void SetStatus(FeatureStatus status) {
     fake_feature_status_provider_.SetStatus(status);
@@ -56,11 +54,16 @@ class EcheNotificationClickHandlerTest : public testing::Test {
         ->notification_click_handler_count();
   }
 
+  bool getCloseEcheAppFlag() { return close_eche_is_called_; }
+
+  void resetCloseEcheAppFlag() { close_eche_is_called_ = false; }
+
  private:
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   eche_app::FakeFeatureStatusProvider fake_feature_status_provider_;
   std::unique_ptr<EcheNotificationClickHandler> handler_;
+  bool close_eche_is_called_;
 };
 
 TEST_F(EcheNotificationClickHandlerTest, StatusChangeTransitions) {
@@ -73,15 +76,42 @@ TEST_F(EcheNotificationClickHandlerTest, StatusChangeTransitions) {
   EXPECT_EQ(1u, GetNumberOfClickHandlers());
   SetStatus(FeatureStatus::kConnected);
   EXPECT_EQ(1u, GetNumberOfClickHandlers());
-  SetStatus(FeatureStatus::kDisconnected);
-  EXPECT_EQ(1u, GetNumberOfClickHandlers());
   SetStatus(FeatureStatus::kIneligible);
   EXPECT_EQ(0u, GetNumberOfClickHandlers());
   SetStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(1u, GetNumberOfClickHandlers());
   SetStatus(FeatureStatus::kDisabled);
   EXPECT_EQ(0u, GetNumberOfClickHandlers());
+  SetStatus(FeatureStatus::kDisconnected);
+  EXPECT_EQ(1u, GetNumberOfClickHandlers());
+  SetStatus(FeatureStatus::kDependentFeature);
+  EXPECT_EQ(0u, GetNumberOfClickHandlers());
+  SetStatus(FeatureStatus::kDisconnected);
+  EXPECT_EQ(1u, GetNumberOfClickHandlers());
+  SetStatus(FeatureStatus::kDependentFeaturePending);
+  EXPECT_EQ(0u, GetNumberOfClickHandlers());
 }
 
+TEST_F(EcheNotificationClickHandlerTest,
+       StatusChangeTransitionsAndCloseEcheWindow) {
+  SetStatus(FeatureStatus::kDisconnected);
+  SetStatus(FeatureStatus::kIneligible);
+  EXPECT_EQ(true, getCloseEcheAppFlag());
+
+  resetCloseEcheAppFlag();
+  SetStatus(FeatureStatus::kDisconnected);
+  SetStatus(FeatureStatus::kDisabled);
+  EXPECT_EQ(true, getCloseEcheAppFlag());
+
+  resetCloseEcheAppFlag();
+  SetStatus(FeatureStatus::kDisconnected);
+  SetStatus(FeatureStatus::kDependentFeature);
+  EXPECT_EQ(true, getCloseEcheAppFlag());
+
+  resetCloseEcheAppFlag();
+  SetStatus(FeatureStatus::kDisconnected);
+  SetStatus(FeatureStatus::kDependentFeaturePending);
+  EXPECT_EQ(false, getCloseEcheAppFlag());
+}
 }  // namespace eche_app
 }  // namespace chromeos

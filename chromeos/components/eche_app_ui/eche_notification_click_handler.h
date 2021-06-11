@@ -47,6 +47,8 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
 
   bool IsClickable(FeatureStatus status);
 
+  bool NeedClose(FeatureStatus status);
+
   phonehub::NotificationInteractionHandler* handler_;
   FeatureStatusProvider* feature_status_provider_;
   LaunchEcheAppFunction launch_eche_app_function_;

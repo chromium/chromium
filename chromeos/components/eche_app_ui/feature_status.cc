@@ -27,6 +27,9 @@ std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
     case FeatureStatus::kDependentFeature:
       stream << "[Dependent feature not in a compatible state]";
       break;
+    case FeatureStatus::kDependentFeaturePending:
+      stream << "[Dependent feature is in a pending state]";
+      break;
   }
 
   return stream;

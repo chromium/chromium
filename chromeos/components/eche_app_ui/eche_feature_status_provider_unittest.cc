@@ -129,6 +129,11 @@ class EcheFeatureStatusProviderTest : public testing::Test {
                                                    feature_state);
   }
 
+  void SetPhoneHubFeatureStatus(phonehub::FeatureStatus feature_status) {
+    fake_phone_hub_manager.fake_feature_status_provider()->SetStatus(
+        feature_status);
+  }
+
   FeatureStatus GetStatus() const { return provider_->GetStatus(); }
 
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
@@ -242,6 +247,34 @@ TEST_F(EcheFeatureStatusProviderTest, TransitionBetweenAllStatuses) {
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   EXPECT_EQ(FeatureStatus::kDisconnected, GetStatus());
   EXPECT_EQ(5u, GetNumObserverCalls());
+}
+
+TEST_F(EcheFeatureStatusProviderTest,
+       TransitionWhenPhoneHubFeatureStatusChanged) {
+  SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kNotEligibleForFeature);
+  EXPECT_EQ(FeatureStatus::kDependentFeature, GetStatus());
+
+  SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
+  EXPECT_EQ(FeatureStatus::kDependentFeature, GetStatus());
+
+  SetPhoneHubFeatureStatus(
+      phonehub::FeatureStatus::kPhoneSelectedAndPendingSetup);
+  EXPECT_EQ(FeatureStatus::kDependentFeature, GetStatus());
+
+  SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kDisabled);
+  EXPECT_EQ(FeatureStatus::kDependentFeature, GetStatus());
+
+  SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kUnavailableBluetoothOff);
+  EXPECT_EQ(FeatureStatus::kDependentFeature, GetStatus());
+
+  SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kEnabledButDisconnected);
+  EXPECT_EQ(FeatureStatus::kDependentFeaturePending, GetStatus());
+
+  SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kEnabledAndConnecting);
+  EXPECT_EQ(FeatureStatus::kDependentFeaturePending, GetStatus());
+
+  SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kLockOrSuspended);
+  EXPECT_EQ(FeatureStatus::kDependentFeaturePending, GetStatus());
 }
 
 }  // namespace eche_app

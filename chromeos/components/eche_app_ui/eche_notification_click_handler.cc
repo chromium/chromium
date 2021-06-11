@@ -56,7 +56,10 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
     } else if (is_click_handler_set && !clickable) {
       handler_->RemoveNotificationClickHandler(this);
       is_click_handler_set = false;
-      close_eche_app_function_.Run();
+      if (NeedClose(feature_status_provider_->GetStatus())) {
+        PA_LOG(INFO) << "Close Eche app window";
+        close_eche_app_function_.Run();
+      }
     }
   } else {
     PA_LOG(INFO)
@@ -68,6 +71,13 @@ bool EcheNotificationClickHandler::IsClickable(FeatureStatus status) {
   return status == FeatureStatus::kDisconnected ||
          status == FeatureStatus::kConnecting ||
          status == FeatureStatus::kConnected;
+}
+
+// Checks FeatureStatus that eche feature is not able to use.
+bool EcheNotificationClickHandler::NeedClose(FeatureStatus status) {
+  return status == FeatureStatus::kIneligible ||
+         status == FeatureStatus::kDisabled ||
+         status == FeatureStatus::kDependentFeature;
 }
 }  // namespace eche_app
 }  // namespace chromeos
