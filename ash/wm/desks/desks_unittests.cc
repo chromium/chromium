@@ -5852,6 +5852,23 @@ TEST_F(PersistentDesksBarTest, OverviewMode) {
     EXPECT_EQ(desk_buttons_text[i], desks_controller->desks()[i]->name());
 }
 
+TEST_F(PersistentDesksBarTest, LeavingOrEnteringTabletModeWithOverviewModeOn) {
+  NewDesk();
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+
+  // The bar should not be created while entering or leaving tablet mode with
+  // overview mode on.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(GetBarWidget());
+  TabletModeControllerTestApi().LeaveTabletMode();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(GetBarWidget());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

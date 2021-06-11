@@ -51,6 +51,7 @@ std::unique_ptr<views::Widget> CreatePersistentDesksBarWidget() {
 // Returns true if the persistent desks bar should be created and shown.
 bool ShouldPersistentDesksBarBeCreated() {
   return !TabletMode::Get()->InTabletMode() &&
+         !Shell::Get()->overview_controller()->InOverviewSession() &&
          DesksController::Get()->desks().size() > 1;
 }
 
@@ -93,8 +94,7 @@ void PersistentDesksBarController::OnOverviewModeEndingAnimationComplete(
 }
 
 void PersistentDesksBarController::OnDeskAdded(const Desk* desk) {
-  if (!Shell::Get()->overview_controller()->InOverviewSession())
-    MaybeInitBarWidget();
+  MaybeInitBarWidget();
 }
 
 void PersistentDesksBarController::OnDeskRemoved(const Desk* desk) {
