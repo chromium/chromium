@@ -615,6 +615,10 @@
 #include "chrome/browser/plugins/plugin_response_interceptor_url_loader_throttle.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_navigation_throttle.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 #endif
@@ -4099,6 +4103,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
   MaybeAddThrottle(PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle),
                    &throttles);
+#if BUILDFLAG(ENABLE_PDF)
+  MaybeAddThrottle(pdf::PdfNavigationThrottle::MaybeCreateThrottleFor(handle),
+                   &throttles);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   MaybeAddThrottle(TabUnderNavigationThrottle::MaybeCreate(handle), &throttles);
 

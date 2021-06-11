@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PDF_BROWSER_PDF_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_PDF_BROWSER_PDF_NAVIGATION_THROTTLE_H_
 
+#include <memory>
+
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -15,6 +17,9 @@ namespace pdf {
 
 class PdfNavigationThrottle final : public content::NavigationThrottle {
  public:
+  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
+      content::NavigationHandle* navigation_handle);
+
   explicit PdfNavigationThrottle(content::NavigationHandle* navigation_handle);
   PdfNavigationThrottle(const PdfNavigationThrottle&) = delete;
   PdfNavigationThrottle& operator=(const PdfNavigationThrottle&) = delete;

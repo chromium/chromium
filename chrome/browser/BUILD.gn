@@ -6169,6 +6169,7 @@ static_library("browser") {
       "pdf/pdf_extension_util.h",
     ]
     deps += [
+      "//components/pdf/browser:interceptors",
       "//pdf:buildflags",
       "//pdf:features",
     ]

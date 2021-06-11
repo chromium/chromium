@@ -1,6 +1,7 @@
 include_rules = [
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
+  "+pdf/pdf_features.h",
   "+services/network/public/cpp",
   "+ui/base",
   "+ui/touch_selection",

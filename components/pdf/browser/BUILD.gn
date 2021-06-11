@@ -3,13 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//pdf/features.gni")
 
+# TODO(crbug.com/1218971): Fix PDFWebContentsHelper usage to require enable_pdf.
 static_library("browser") {
   sources = [
-    "pdf_navigation_throttle.cc",
-    "pdf_navigation_throttle.h",
-    "pdf_url_loader_request_interceptor.cc",
-    "pdf_url_loader_request_interceptor.h",
     "pdf_web_contents_helper.cc",
     "pdf_web_contents_helper.h",
     "pdf_web_contents_helper_client.h",
@@ -24,4 +22,39 @@ static_library("browser") {
   ]
 
   public_deps = [ "//ipc" ]
+}
+
+if (enable_pdf) {
+  static_library("interceptors") {
+    sources = [
+      "pdf_navigation_throttle.cc",
+      "pdf_navigation_throttle.h",
+      "pdf_url_loader_request_interceptor.cc",
+      "pdf_url_loader_request_interceptor.h",
+    ]
+
+    deps = [
+      "//base",
+      "//content/public/browser",
+      "//pdf:features",
+      "//services/network/public/cpp:cpp_base",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [ "pdf_navigation_throttle_unittest.cc" ]
+
+    deps = [
+      ":interceptors",
+      "//base",
+      "//base/test:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//pdf:features",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
 }
