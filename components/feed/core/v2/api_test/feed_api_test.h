@@ -26,6 +26,7 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
+#include "components/feed/core/v2/public/reliability_logger.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/test/proto_printer.h"
@@ -84,6 +85,7 @@ class TestSurfaceBase : public FeedStreamSurface {
   void ReplaceDataStoreEntry(base::StringPiece key,
                              base::StringPiece data) override;
   void RemoveDataStoreEntry(base::StringPiece key) override;
+  ReliabilityLogger* GetReliabilityLogger() override;
 
   // Test functions.
 

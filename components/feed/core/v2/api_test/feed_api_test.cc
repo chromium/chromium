@@ -6,6 +6,7 @@
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/public/reliability_logger.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #include "base/callback.h"
@@ -180,6 +181,10 @@ void TestSurfaceBase::ReplaceDataStoreEntry(base::StringPiece key,
 }
 void TestSurfaceBase::RemoveDataStoreEntry(base::StringPiece key) {
   data_store_entries_.erase(std::string(key));
+}
+ReliabilityLogger* TestSurfaceBase::GetReliabilityLogger() {
+  // TODO(iwells): Make a fake ReliabilityLogger when needed.
+  return nullptr;
 }
 
 void TestSurfaceBase::Clear() {

@@ -42,6 +42,7 @@ source_set("feed_core_v2") {
     "public/persistent_key_value_store.cc",
     "public/persistent_key_value_store.h",
     "public/refresh_task_scheduler.h",
+    "public/reliability_logger.h",
     "public/types.cc",
     "public/unread_content_observer.cc",
     "public/unread_content_observer.h",

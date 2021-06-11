@@ -28,6 +28,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
@@ -419,6 +420,7 @@ public class FeedStream implements Stream {
     private ScrollReporter mScrollReporter;
     private final Map<String, Object> mHandlersMap;
     private RotationObserver mRotationObserver;
+    private FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
 
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
@@ -452,7 +454,9 @@ public class FeedStream implements Stream {
             boolean isInterestFeed) {
         this.mActivity = activity;
         mIsInterestFeed = isInterestFeed;
-        mNativeFeedStream = FeedStreamJni.get().init(this, isInterestFeed);
+        mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
+        mNativeFeedStream = FeedStreamJni.get().init(
+                this, isInterestFeed, mReliabilityLoggingBridge.getNativePtr());
 
         mBottomSheetController = bottomSheetController;
         mNavigationDelegate = nativePageNavigationDelegate;
@@ -502,6 +506,7 @@ public class FeedStream implements Stream {
         if (mUnreadContentObserver != null) {
             mUnreadContentObserver.destroy();
         }
+        mReliabilityLoggingBridge.destroy();
     }
 
     @Override
@@ -515,6 +520,7 @@ public class FeedStream implements Stream {
             FeedSurfaceMediator.ScrollState savedInstanceState, SurfaceScope surfaceScope,
             HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger) {
         launchReliabilityLogger.logFeedReloading(System.nanoTime());
+        mReliabilityLoggingBridge.setLogger(launchReliabilityLogger);
 
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
@@ -1032,7 +1038,7 @@ public class FeedStream implements Stream {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        long init(FeedStream caller, boolean isForYou);
+        long init(FeedStream caller, boolean isForYou, long nativeFeedReliabilityLoggingBridge);
         boolean isActivityLoggingEnabled(long nativeFeedStream, FeedStream caller);
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);

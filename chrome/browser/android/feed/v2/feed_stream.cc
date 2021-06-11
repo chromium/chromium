@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string_piece.h"
 #include "chrome/android/chrome_jni_headers/FeedStream_jni.h"
+#include "chrome/browser/android/feed/v2/feed_reliability_logging_bridge.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -33,15 +34,21 @@ namespace android {
 
 static jlong JNI_FeedStream_Init(JNIEnv* env,
                                  const JavaParamRef<jobject>& j_this,
-                                 jboolean is_for_you_stream) {
-  return reinterpret_cast<intptr_t>(new FeedStream(j_this, is_for_you_stream));
+                                 jboolean is_for_you_stream,
+                                 jlong native_feed_reliability_logging_bridge) {
+  return reinterpret_cast<intptr_t>(
+      new FeedStream(j_this, is_for_you_stream,
+                     reinterpret_cast<FeedReliabilityLoggingBridge*>(
+                         native_feed_reliability_logging_bridge)));
 }
 
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
-                       jboolean is_for_you_stream)
+                       jboolean is_for_you_stream,
+                       FeedReliabilityLoggingBridge* reliability_logger)
     : ::feed::FeedStreamSurface(is_for_you_stream ? kForYouStream
                                                   : kWebFeedStream),
-      feed_stream_api_(nullptr) {
+      feed_stream_api_(nullptr),
+      reliability_logging_bridge_(reliability_logger) {
   java_ref_.Reset(j_this);
 
   FeedService* service = FeedServiceFactory::GetForBrowserContext(
@@ -54,6 +61,10 @@ FeedStream::FeedStream(const JavaRef<jobject>& j_this,
 FeedStream::~FeedStream() {
   if (feed_stream_api_)
     feed_stream_api_->DetachSurface(this);
+}
+
+ReliabilityLogger* FeedStream::GetReliabilityLogger() {
+  return reliability_logging_bridge_;
 }
 
 void FeedStream::StreamUpdate(const feedui::StreamUpdate& stream_update) {

@@ -27,18 +27,12 @@ public interface FeedNetworkRequestReliabilityLogger {
     default void logResponseReceived(
             long serverRecvTimestamp, long serverSendTimestamp, long clientRecvTimestamp) {}
 
-    /** Special network request status: see {@link #logRequestFinished}. */
-    static final int NO_STATUS = 0;
-
     /**
      * Log after logResponseReceived() if there's a network error, or after parsing the response
      * otherwise.
      * @param timestamp Event time.
-     * @param cronetStatusCode Network error code from
-     *         components/cronet/android/api/src/org/chromium/net/NetworkException.java. Pass {@link
-     *         #NO_STATUS} if there's no error.
-     * @param httpStatusCode HTTP status code. If there is no HTTP status code because there was a
-     *         network error, pass {@link #NO_STATUS}.
+     * @param canonicalStatus Network request status code. See
+     *         //third_party/abseil-cpp/absl/status/status.h.
      */
-    default void logRequestFinished(long timestamp, int cronetStatusCode, int httpStatusCode) {}
+    default void logRequestFinished(long timestamp, int canonicalStatus) {}
 }

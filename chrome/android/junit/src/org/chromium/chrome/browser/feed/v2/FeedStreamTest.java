@@ -48,6 +48,7 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MetricsUtils;
+import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -95,6 +96,8 @@ public class FeedStreamTest {
     private FeedStream.Natives mFeedStreamJniMock;
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock
+    private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
 
     @Mock
     private SnackbarManager mSnackbarManager;
@@ -140,6 +143,8 @@ public class FeedStreamTest {
 
         mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
         mocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServiceBridgeJniMock);
+        mocker.mock(FeedReliabilityLoggingBridge.getTestHooksForTesting(),
+                mFeedReliabilityLoggingBridgeJniMock);
         Profile.setLastUsedProfileForTesting(mProfileMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())

@@ -152,6 +152,8 @@ public class FeedSurfaceCoordinatorTest {
     private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock
     private FeedSurfaceScopeDependencyProvider.Natives mSurfaceScopeJniMock;
+    @Mock
+    private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
 
     // Mocked xSurface setup.
     @Mock
@@ -201,6 +203,8 @@ public class FeedSurfaceCoordinatorTest {
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
         mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mocker.mock(FeedSurfaceScopeDependencyProviderJni.TEST_HOOKS, mSurfaceScopeJniMock);
+        mocker.mock(FeedReliabilityLoggingBridge.getTestHooksForTesting(),
+                mFeedReliabilityLoggingBridgeJniMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead()).thenReturn(5);
 

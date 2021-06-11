@@ -10,6 +10,7 @@ import("//chrome/browser/buildflags.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/feed/FeedImageFetchClient.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedUma.java",
     "java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",
@@ -88,6 +89,7 @@ android_resources("web_feed_java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/feed/FeedImageFetchClient.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
   ]

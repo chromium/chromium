@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_FEED_STREAM_SURFACE_H_
 
 #include "base/observer_list_types.h"
+#include "components/feed/core/v2/public/reliability_logger.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 
@@ -36,6 +37,9 @@ class FeedStreamSurface : public base::CheckedObserver {
   virtual void ReplaceDataStoreEntry(base::StringPiece key,
                                      base::StringPiece data) = 0;
   virtual void RemoveDataStoreEntry(base::StringPiece key) = 0;
+
+  // Returns the ReliabilityLogger associated with this surface.
+  virtual ReliabilityLogger* GetReliabilityLogger() = 0;
 
  private:
   StreamType stream_type_;

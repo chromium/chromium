@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "chrome/browser/android/feed/v2/feed_reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 
@@ -23,7 +24,8 @@ namespace android {
 class FeedStream : public ::feed::FeedStreamSurface {
  public:
   explicit FeedStream(const base::android::JavaRef<jobject>& j_this,
-                      jboolean is_for_you_stream);
+                      jboolean is_for_you_stream,
+                      FeedReliabilityLoggingBridge* reliability_logger);
   FeedStream(const FeedStream&) = delete;
   FeedStream& operator=(const FeedStream&) = delete;
 
@@ -34,6 +36,8 @@ class FeedStream : public ::feed::FeedStreamSurface {
   void ReplaceDataStoreEntry(base::StringPiece key,
                              base::StringPiece data) override;
   void RemoveDataStoreEntry(base::StringPiece key) override;
+
+  ReliabilityLogger* GetReliabilityLogger() override;
 
   void OnStreamUpdated(const feedui::StreamUpdate& stream_update);
 
@@ -107,6 +111,7 @@ class FeedStream : public ::feed::FeedStreamSurface {
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   FeedApi* feed_stream_api_;
   bool attached_ = false;
+  FeedReliabilityLoggingBridge* reliability_logging_bridge_ = nullptr;
 };
 
 }  // namespace android
