@@ -23,8 +23,6 @@ namespace blink {
 
 using mojom::blink::ViewportStatus;
 static constexpr int kSmallFontThreshold = 9;
-const base::Feature kBadTapTargetsRatio{"BadTapTargetsRatio",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
 static constexpr int kTimeBudgetExceeded = -2;
 
 // Finding bad tap targets may takes too time for big page and should abort if
@@ -36,7 +34,6 @@ MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
       font_size_check_enabled_(frame_view_->GetFrame().GetWidgetForLocalRoot()),
       tap_target_check_enabled_(
-          base::FeatureList::IsEnabled(kBadTapTargetsRatio) &&
           frame_view_->GetFrame().GetWidgetForLocalRoot()),
       viewport_scalar_(
           font_size_check_enabled_

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
-#include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-shared.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -24,10 +23,6 @@ class MobileFriendlinessCheckerTest : public testing::Test {
  public:
   ~MobileFriendlinessCheckerTest() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
-  }
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kBadTapTargetsRatio}, {});
   }
 
   static void ConfigureAndroidSettings(WebSettings* settings) {
@@ -83,7 +78,6 @@ class MobileFriendlinessCheckerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 

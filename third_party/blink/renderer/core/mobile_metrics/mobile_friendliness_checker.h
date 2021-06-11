@@ -9,14 +9,14 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
+
 class LocalFrameView;
 class LayoutObject;
-struct ViewportDescription;
+class Visitor;
 
-CORE_EXPORT extern const base::Feature kBadTapTargetsRatio;
+struct ViewportDescription;
 
 // Calculates the mobile usability of current page, especially friendliness on
 // smart phone devices are checked. The calculated value will be sent as a part
