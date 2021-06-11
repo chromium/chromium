@@ -5,9 +5,9 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 
 #include <memory>
-#include "build/chromeos_buildflags.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

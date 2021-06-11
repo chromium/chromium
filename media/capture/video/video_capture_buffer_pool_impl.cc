@@ -275,7 +275,7 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
 
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
       buffer_tracker_factory_->CreateTracker(buffer_type_);
-  if (!tracker->Init(dimensions, pixel_format, strides)) {
+  if (!tracker || !tracker->Init(dimensions, pixel_format, strides)) {
     DLOG(ERROR) << "Error initializing VideoCaptureBufferTracker";
     *buffer_id = kInvalidId;
     return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
