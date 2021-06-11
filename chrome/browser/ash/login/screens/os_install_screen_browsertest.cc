@@ -23,10 +23,33 @@ const test::UIPath kOsInstallIntroNextButton = {"os-install",
 const test::UIPath kOsInstallConfirmNextButton = {"os-install",
                                                   "osInstallConfirmNextButton"};
 
+const test::UIPath kOsInstallDialogIntro = {"os-install",
+                                            "osInstallDialogIntro"};
+const test::UIPath kOsInstallDialogConfirm = {"os-install",
+                                              "osInstallDialogConfirm"};
+const test::UIPath kOsInstallDialogInProgress = {"os-install",
+                                                 "osInstallDialogInProgress"};
+const test::UIPath kOsInstallDialogError = {"os-install",
+                                            "osInstallDialogError"};
+const test::UIPath kOsInstallDialogSuccess = {"os-install",
+                                              "osInstallDialogSuccess"};
+
 }  // namespace
 
-class OsInstallScreenTest : public OobeBaseTest {
+class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
  public:
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+
+    OsInstallClient::Get()->AddObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    OobeBaseTest::TearDownOnMainThread();
+
+    OsInstallClient::Get()->RemoveObserver(this);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeBaseTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kAllowOsInstall);
@@ -36,7 +59,33 @@ class OsInstallScreenTest : public OobeBaseTest {
     OobeScreenWaiter(WelcomeView::kScreenId).Wait();
     test::OobeJS().TapOnPath(kOsInstallButton);
     OobeScreenWaiter(OsInstallScreenView::kScreenId).Wait();
+    test::OobeJS().ExpectVisiblePath(kOsInstallDialogIntro);
   }
+
+  void AdvanceThroughIntroStep() {
+    test::OobeJS().ExpectVisiblePath(kOsInstallDialogIntro);
+
+    test::OobeJS().TapOnPath(kOsInstallIntroNextButton);
+    test::OobeJS().ExpectVisiblePath(kOsInstallDialogConfirm);
+  }
+
+  void ConfirmInstallation() {
+    test::OobeJS().ExpectVisiblePath(kOsInstallDialogConfirm);
+
+    test::OobeJS().TapOnPath(kOsInstallConfirmNextButton);
+    test::OobeJS().ExpectVisiblePath(kOsInstallDialogInProgress);
+  }
+
+  absl::optional<OsInstallClient::Status> GetStatus() const { return status_; }
+
+ private:
+  // OsInstallClient::Observer override:
+  void StatusChanged(OsInstallClient::Status status,
+                     const std::string& service_log) override {
+    status_ = status;
+  }
+
+  absl::optional<OsInstallClient::Status> status_ = absl::nullopt;
 };
 
 // If the kAllowOsInstall switch is not set, the welcome screen should
@@ -57,19 +106,53 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, InstallButtonVisibleWithSwitch) {
   test::OobeJS().ExpectVisiblePath(kOsInstallButton);
 }
 
-// Clicking the next buttons should advance from the intro step to the
-// confirm step, then to the in-progress step.
-IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSteps) {
-  const std::string current_step = "login.OsInstallScreen.currentUIStep()";
-
+// Check that installation starts after clicking next on the confirm step.
+IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, StartOsInstall) {
   AdvanceToOsInstallScreen();
-  test::OobeJS().ExpectEQ(current_step, std::string("intro"));
+  AdvanceThroughIntroStep();
 
-  test::OobeJS().TapOnPath(kOsInstallIntroNextButton);
-  test::OobeJS().ExpectEQ(current_step, std::string("confirm"));
+  EXPECT_EQ(GetStatus(), absl::nullopt);
 
   test::OobeJS().TapOnPath(kOsInstallConfirmNextButton);
-  test::OobeJS().ExpectEQ(current_step, std::string("in_progress"));
+  test::OobeJS().ExpectVisiblePath(kOsInstallDialogInProgress);
+
+  EXPECT_EQ(GetStatus(), OsInstallClient::Status::InProgress);
+}
+
+// Check that if no destination device is found, the error step is shown.
+IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallNoDestinationDevice) {
+  auto* ti = OsInstallClient::Get()->GetTestInterface();
+
+  AdvanceToOsInstallScreen();
+  AdvanceThroughIntroStep();
+  ConfirmInstallation();
+
+  ti->UpdateStatus(OsInstallClient::Status::NoDestinationDeviceFound);
+  test::OobeJS().ExpectVisiblePath(kOsInstallDialogError);
+}
+
+// Check that a generic install error shows the error step.
+IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
+  auto* ti = OsInstallClient::Get()->GetTestInterface();
+
+  AdvanceToOsInstallScreen();
+  AdvanceThroughIntroStep();
+  ConfirmInstallation();
+
+  ti->UpdateStatus(OsInstallClient::Status::Failed);
+  test::OobeJS().ExpectVisiblePath(kOsInstallDialogError);
+}
+
+// Check that a successful install shows the success step.
+IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccess) {
+  auto* ti = OsInstallClient::Get()->GetTestInterface();
+
+  AdvanceToOsInstallScreen();
+  AdvanceThroughIntroStep();
+  ConfirmInstallation();
+
+  ti->UpdateStatus(OsInstallClient::Status::Succeeded);
+  test::OobeJS().ExpectVisiblePath(kOsInstallDialogSuccess);
 }
 
 }  // namespace chromeos

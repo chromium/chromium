@@ -44,6 +44,7 @@ class OsInstallClientImpl : public OsInstallClient {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
+  TestInterface* GetTestInterface() override;
   void StartOsInstall() override;
 
  private:
@@ -85,6 +86,10 @@ void OsInstallClientImpl::RemoveObserver(Observer* observer) {
 
 bool OsInstallClientImpl::HasObserver(const Observer* observer) const {
   return observers_.HasObserver(observer);
+}
+
+OsInstallClient::TestInterface* OsInstallClientImpl::GetTestInterface() {
+  return nullptr;
 }
 
 void OsInstallClientImpl::StartOsInstall() {

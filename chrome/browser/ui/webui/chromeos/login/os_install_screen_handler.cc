@@ -14,6 +14,16 @@
 
 namespace chromeos {
 
+namespace {
+constexpr const char kShowConfirmStep[] =
+    "login.OsInstallScreen.showConfirmStep";
+constexpr const char kShowInProgressStep[] =
+    "login.OsInstallScreen.showInProgressStep";
+constexpr const char kShowErrorStep[] = "login.OsInstallScreen.showErrorStep";
+constexpr const char kShowSuccessStep[] =
+    "login.OsInstallScreen.showSuccessStep";
+}  // namespace
+
 // static
 constexpr StaticOobeScreenId OsInstallScreenView::kScreenId;
 
@@ -24,6 +34,7 @@ OsInstallScreenHandler::OsInstallScreenHandler(
 }
 
 OsInstallScreenHandler::~OsInstallScreenHandler() {
+  OsInstallClient::Get()->RemoveObserver(this);
   if (screen_)
     screen_->OnViewDestroyed(this);
 }
@@ -69,11 +80,43 @@ void OsInstallScreenHandler::Unbind() {
 }
 
 void OsInstallScreenHandler::ShowConfirmStep() {
-  CallJS("login.OsInstallScreen.showConfirmStep");
+  CallJS(kShowConfirmStep);
 }
 
 void OsInstallScreenHandler::StartInstall() {
-  CallJS("login.OsInstallScreen.showInProgressStep");
+  CallJS(kShowInProgressStep);
+
+  OsInstallClient* const os_install_client = OsInstallClient::Get();
+
+  os_install_client->AddObserver(this);
+  os_install_client->StartOsInstall();
+}
+
+void OsInstallScreenHandler::StatusChanged(OsInstallClient::Status status,
+                                           const std::string& service_log) {
+  switch (status) {
+    case OsInstallClient::Status::InProgress:
+      CallJS(kShowInProgressStep);
+      break;
+
+    case OsInstallClient::Status::Succeeded:
+      CallJS(kShowSuccessStep);
+      break;
+
+    case OsInstallClient::Status::Failed:
+    case OsInstallClient::Status::NoDestinationDeviceFound:
+      CallJS(kShowErrorStep);
+      break;
+  }
+}
+
+void OsInstallScreenHandler::OsInstallStarted(
+    absl::optional<OsInstallClient::Status> status) {
+  if (!status) {
+    status = OsInstallClient::Status::Failed;
+  }
+
+  StatusChanged(*status, /*service_log=*/"");
 }
 
 }  // namespace chromeos

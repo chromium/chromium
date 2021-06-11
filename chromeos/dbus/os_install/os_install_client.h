@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -40,6 +41,11 @@ class COMPONENT_EXPORT(OS_INSTALL) OsInstallClient {
                                const std::string& service_log) = 0;
   };
 
+  class TestInterface {
+   public:
+    virtual void UpdateStatus(Status status) = 0;
+  };
+
   OsInstallClient(const OsInstallClient&) = delete;
   OsInstallClient& operator=(const OsInstallClient&) = delete;
 
@@ -60,6 +66,8 @@ class COMPONENT_EXPORT(OS_INSTALL) OsInstallClient {
   virtual void RemoveObserver(Observer* observer) = 0;
   // Returns true if this object has the given observer.
   virtual bool HasObserver(const Observer* observer) const = 0;
+
+  virtual TestInterface* GetTestInterface() = 0;
 
   // Start the installation process. Status updates can be monitored
   // by adding an Observer.

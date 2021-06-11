@@ -2765,6 +2765,7 @@ static_library("ui") {
       "//chromeos/dbus/cryptohome:cryptohome_proto",
       "//chromeos/dbus/hermes",
       "//chromeos/dbus/kerberos:kerberos_proto",
+      "//chromeos/dbus/os_install",
       "//chromeos/dbus/pciguard:pciguard",
       "//chromeos/dbus/power",
       "//chromeos/dbus/session_manager",

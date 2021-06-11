@@ -26,9 +26,10 @@ Polymer({
   ],
 
   EXTERNAL_API: [
-    'currentUIStep',
     'showConfirmStep',
     'showInProgressStep',
+    'showErrorStep',
+    'showSuccessStep',
   ],
 
   UI_STEPS: UIState,
@@ -38,13 +39,6 @@ Polymer({
    */
   defaultUIStep() {
     return UIState.INTRO;
-  },
-
-  /**
-   * @return {string}
-   */
-  currentUIStep() {
-    return this.uiStep;
   },
 
   ready() {
@@ -59,6 +53,14 @@ Polymer({
 
   showInProgressStep() {
     this.setUIStep(UIState.IN_PROGRESS);
+  },
+
+  showErrorStep() {
+    this.setUIStep(UIState.ERROR);
+  },
+
+  showSuccessStep() {
+    this.setUIStep(UIState.SUCCESS);
   },
 
   onIntroNextButtonPressed_() {

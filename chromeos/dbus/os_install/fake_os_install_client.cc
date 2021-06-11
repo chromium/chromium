@@ -21,8 +21,16 @@ bool FakeOsInstallClient::HasObserver(const Observer* observer) const {
   return observers_.HasObserver(observer);
 }
 
+OsInstallClient::TestInterface* FakeOsInstallClient::GetTestInterface() {
+  return this;
+}
+
 void FakeOsInstallClient::StartOsInstall() {
   NotifyObservers(Status::InProgress, /*service_log=*/"");
+}
+
+void FakeOsInstallClient::UpdateStatus(Status status) {
+  NotifyObservers(status, /*service_log=*/"");
 }
 
 void FakeOsInstallClient::NotifyObservers(Status status,

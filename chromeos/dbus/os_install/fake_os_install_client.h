@@ -12,7 +12,8 @@
 namespace chromeos {
 
 class COMPONENT_EXPORT(OS_INSTALL) FakeOsInstallClient
-    : public OsInstallClient {
+    : public OsInstallClient,
+      public OsInstallClient::TestInterface {
  public:
   FakeOsInstallClient();
   ~FakeOsInstallClient() override;
@@ -24,7 +25,11 @@ class COMPONENT_EXPORT(OS_INSTALL) FakeOsInstallClient
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
+  TestInterface* GetTestInterface() override;
   void StartOsInstall() override;
+
+  // TestInterface overrides
+  void UpdateStatus(Status status) override;
 
  private:
   void NotifyObservers(Status status, const std::string& service_log);

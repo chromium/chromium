@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_OS_INSTALL_SCREEN_HANDLER_H_
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
+#include "chromeos/dbus/os_install/os_install_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace login {
 class LocalizedValuesBuilder;
@@ -38,7 +40,8 @@ class OsInstallScreenView {
 };
 
 class OsInstallScreenHandler : public BaseScreenHandler,
-                               public OsInstallScreenView {
+                               public OsInstallScreenView,
+                               public OsInstallClient::Observer {
  public:
   using TView = OsInstallScreenView;
 
@@ -60,7 +63,15 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void ShowConfirmStep() override;
   void StartInstall() override;
 
+  // OsInstallClient::Observer:
+  void StatusChanged(OsInstallClient::Status status,
+                     const std::string& service_log) override;
+
+  void OsInstallStarted(absl::optional<OsInstallClient::Status> status);
+
   OsInstallScreen* screen_ = nullptr;
+
+  base::WeakPtrFactory<OsInstallScreenHandler> weak_factory_{this};
 };
 
 }  // namespace chromeos
