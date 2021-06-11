@@ -36,9 +36,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
@@ -169,7 +169,6 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1216600")
     public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
         View view = mSettingsActivityTestRule.getActivity()
@@ -183,7 +182,7 @@ public class MainSettingsFragmentTest {
         // Waiting for sync to become active might take some time, so the scrollbar on the settings
         // view starts to fade, making the test flaky due to differences in the rendered image.
         // Sanitize the view to hide scrollbars (see https://crbug.com/1204117 for details).
-        RenderTestRule.sanitize(view);
+        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view));
         mRenderTestRule.render(view, "main_settings_signed_in");
     }
 
