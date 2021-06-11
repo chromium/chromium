@@ -7184,6 +7184,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableWebAppShareFeature)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"tab-restore-sub-menus", flag_descriptions::kTabRestoreSubMenusName,
+     flag_descriptions::kTabRestoreSubMenusDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabRestoreSubMenus)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

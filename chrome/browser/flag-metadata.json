@@ -4982,6 +4982,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "tab-restore-sub-menus",
+    "owners": [ "emshack", "chrome-desktop-ui-sea" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "tabgrid-context-menu-ios",
     "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
     "expiry_milestone": 95

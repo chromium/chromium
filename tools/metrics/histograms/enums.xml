@@ -45140,6 +45140,7 @@ from previous Chrome versions.
   <int value="-2026156288"
       label="LookalikeUrlNavigationSuggestionsUI:disabled"/>
   <int value="-2025367104" label="enable-material-design-ntp"/>
+  <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
   <int value="-2020721975" label="smart-virtual-keyboard"/>
@@ -48584,6 +48585,7 @@ from previous Chrome versions.
   <int value="887011602" label="enable-spelling-auto-correct"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
+  <int value="894434593" label="TabRestoreSubMenus:enabled"/>
   <int value="898311758" label="ReaderMode:disabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
