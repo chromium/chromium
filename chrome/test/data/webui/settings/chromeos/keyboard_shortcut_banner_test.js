@@ -33,7 +33,7 @@ suite('keyboard-shortcut-banner', () => {
     PolymerTest.clearBody();
 
     banner = document.createElement('keyboard-shortcut-banner');
-    banner.setAttribute('title', title);
+    banner.setAttribute('header', title);
     banner.setAttribute('body', JSON.stringify(body));
 
     document.body.appendChild(banner);

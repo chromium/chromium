@@ -38,7 +38,7 @@ class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
 
   static get properties() {
     return {
-      title: {
+      header: {
         type: String,
       },
 

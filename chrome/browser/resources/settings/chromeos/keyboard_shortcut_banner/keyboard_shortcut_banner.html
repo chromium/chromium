@@ -71,7 +71,7 @@
 <div id="icon"></div>
 
 <div id="text">
-  <h2>[[title]]</h2>
+  <h2>[[header]]</h2>
   <template is="dom-repeat" items="[[body]]" as="message">
     <div id="[[getIdForIndex_(index)]]" aria-hidden="true"
         class="reminder-message" inner-h-t-m-l="[[message]]">
@@ -79,7 +79,7 @@
   </template>
 </div>
 
-<cr-button on-click="onDismissClick_" title="$i18n{dismiss}"
+<cr-button on-click="onDismissClick_" id="dismiss" aria-describedby="dismiss"
     aria-labelledby$="[[getBodyIds_(body)]]">
   $i18n{dismiss}
 </cr-button>
