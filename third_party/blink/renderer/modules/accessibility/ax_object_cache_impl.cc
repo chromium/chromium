@@ -383,7 +383,7 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   // An HTML <title> does not require an AXObject: the document's name is
   // retrieved directly via the inner text.
   if (IsA<HTMLTitleElement>(node))
-    return node->IsSVGElement();
+    return false;
 
   return true;
 }
@@ -478,7 +478,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   // An HTML <title> does not require an AXObject: the document's name is
   // retrieved directly via the inner text.
   if (IsA<HTMLTitleElement>(node))
-    return node->IsSVGElement();
+    return false;
 
   // The node is either hidden or display locked:
   // Do not consider <head>/<style>/<script> relevant in these cases.
