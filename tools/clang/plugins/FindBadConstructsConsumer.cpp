@@ -332,7 +332,12 @@ void FindBadConstructsConsumer::CheckEnumMaxValue(EnumDecl* decl) {
   if (max_enumerators.find(max_value) == max_enumerators.end()) {
     ReportIfSpellingLocNotIgnored(max_value->getLocation(),
                                   diag_bad_enum_max_value_)
+#if defined(LLVM_FORCE_HEAD_REVISION)
+        << toString(max_seen, 10);
+#else
+        // TODO(crbug.com/1218876): Remove after clang roll.
         << max_seen.toString(10);
+#endif
   } else if (max_enumerators.size() < 2) {
     ReportIfSpellingLocNotIgnored(decl->getLocation(),
                                   diag_enum_max_value_unique_);
