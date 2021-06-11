@@ -233,6 +233,11 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     // requires a re-layout when in fullscreen and shown.
     if (web_app_frame_toolbar() && !ShouldHideTopUIForFullscreen())
       InvalidateLayout();
+
+    if (ShouldHideTopUIForFullscreen() &&
+        browser_view()->IsWindowControlsOverlayEnabled()) {
+      InvalidateLayout();
+    }
   }
 }
 
