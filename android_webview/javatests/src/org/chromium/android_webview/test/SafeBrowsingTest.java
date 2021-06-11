@@ -51,7 +51,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
@@ -395,6 +394,15 @@ public class SafeBrowsingTest {
     }
 
     private void loadPathAndWaitForInterstitial(final String path) throws Exception {
+        loadPathAndWaitForInterstitial(path, /* waitForVisualStateCallback= */ true);
+    }
+
+    /**
+     * waitForVisualStateCallback should be false for tests where the subresource triggers the
+     * SafeBrowsing check. See crbug.com/1107540 for details.
+     */
+    private void loadPathAndWaitForInterstitial(
+            final String path, boolean waitForVisualStateCallback) throws Exception {
         final String responseUrl = mTestServer.getURL(path);
         mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
         // Subresource triggered interstitials will trigger after the page containing the
@@ -402,7 +410,9 @@ public class SafeBrowsingTest {
         // triggered, then for a visual state callback to allow the interstitial to render.
         CriteriaHelper.pollUiThread(() -> mAwContents.isDisplayingInterstitialForTesting());
         // Wait for the interstitial to actually render.
-        mActivityTestRule.waitForVisualStateCallback(mAwContents);
+        if (waitForVisualStateCallback) {
+            mActivityTestRule.waitForVisualStateCallback(mAwContents);
+        }
     }
 
     private void assertTargetPageHasLoaded(int pageColor) throws Exception {
@@ -619,14 +629,12 @@ public class SafeBrowsingTest {
     }
 
     @Test
-    @DisabledTest(message = "Wait for interstitial is flaky. crbug.com/1107540")
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingShowsInterstitialForSubresource() throws Throwable {
         loadGreenPage();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH);
+        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ false);
         assertGreenPageNotShowing();
-        assertTargetPageNotShowing(IFRAME_EMBEDDER_BACKGROUND_COLOR);
         // Assume that we are rendering the interstitial, since we see neither the previous page
         // nor the target page
     }
@@ -648,12 +656,11 @@ public class SafeBrowsingTest {
     }
 
     @Test
-    @DisabledTest(message = "Wait for interstitial is flaky. crbug.com/1107540")
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingProceedThroughInterstitialForSubresource() throws Throwable {
         int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH);
+        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ false);
         waitForInterstitialDomToLoad();
         clickVisitUnsafePage();
         // For subresources, the initial site finishes loading before the interstitial is shown,
@@ -698,12 +705,11 @@ public class SafeBrowsingTest {
     }
 
     @Test
-    @DisabledTest(message = "Wait for interstitial is flaky. crbug.com/1107540")
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingDontProceedNavigatesBackForSubResource() throws Throwable {
         loadGreenPage();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH);
+        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ false);
         waitForInterstitialDomToLoad();
         OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
         int errorCount = errorHelper.getCallCount();
