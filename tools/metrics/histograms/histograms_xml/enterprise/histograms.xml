@@ -152,6 +152,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Total duration time of the auto-enrollment protocol.</summary>
 </histogram>
 
+<histogram name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2021-10-31">
+<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
+
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    Device management server request status for auto-enrollment PSM requests.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison"
     enum="PsmHashDanceDifferentResultsComparison" expires_after="2021-09-01">

@@ -1578,6 +1578,15 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
                                        success_time_recorded ? 1 : 0);
   }
 
+  // Expects a sample |dm_status| for kUMAPsmDmServerRequestStatus with count
+  // |dm_status_count|.
+  void ExpectPsmRequestStatusHistogram(DeviceManagementStatus dm_status,
+                                       int dm_status_count) const {
+    histogram_tester_.ExpectBucketCount(
+        kUMAPsmDmServerRequestStatus + GetAutoEnrollmentProtocolUmaSuffix(),
+        dm_status, dm_status_count);
+  }
+
   // Expects one sample for |kUMAPsmNetworkErrorCode| which has value of
   // |network_error|.
   void ExpectPsmNetworkErrorHistogram(int network_error) const {
@@ -1673,6 +1682,8 @@ TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
                 : StateDiscoveryResult::kSuccessNoServerSideState);
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
@@ -1690,6 +1701,8 @@ TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kEmptyQueryResponseError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
@@ -1706,6 +1719,8 @@ TEST_P(PsmHelperTest, EmptyRlweOprfResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kEmptyOprfResponseError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/1);
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
 }
@@ -1723,6 +1738,10 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweQueryResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kConnectionError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/1);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
+                                  /*dm_status_count=*/1);
   ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
@@ -1740,6 +1759,8 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweOprfResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kConnectionError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
+                                  /*dm_status_count=*/1);
   ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
@@ -1757,6 +1778,8 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweOprfResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
+                                  /*dm_status_count=*/1);
   VerifyPsmLastRequestJobType();
 }
 
@@ -1773,6 +1796,10 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/1);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
+                                  /*dm_status_count=*/1);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
@@ -1806,6 +1833,8 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
@@ -1837,6 +1866,10 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/1);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
+                                  /*dm_status_count=*/1);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 }
@@ -1874,6 +1907,10 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweQueryFailedAndHashDanceSucceeded) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/1);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
+                                  /*dm_status_count=*/1);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 
@@ -1922,6 +1959,8 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceSucceeded) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                  /*dm_status_count=*/1);
   VerifyPsmLastRequestJobType();
 
   // Verify Hash dance result.
@@ -1975,6 +2014,8 @@ TEST_P(PsmHelperAndHashDanceTest, PsmSucceedAndHashDanceSucceed) {
                 : StateDiscoveryResult::kSuccessNoServerSideState);
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 
@@ -2033,6 +2074,8 @@ TEST_P(PsmHelperAndHashDanceTest,
                 : StateDiscoveryResult::kSuccessNoServerSideState);
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 
@@ -2080,6 +2123,8 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceFailed) {
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                  /*dm_status_count=*/1);
   VerifyPsmLastRequestJobType();
 
   // Verify failure of Hash dance by inexistence of its cached decision.
@@ -2145,6 +2190,8 @@ TEST_P(PsmHelperAndHashDanceTest,
   EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 
@@ -2212,6 +2259,8 @@ TEST_P(PsmHelperAndHashDanceTest,
   EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                  /*dm_status_count=*/1);
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
 
@@ -2273,6 +2322,8 @@ TEST_P(PsmHelperAndHashDanceTest,
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                  /*dm_status_count=*/1);
 
   // Verify hash dance job has been captured.
   ASSERT_TRUE(hash_dance_job);
@@ -2366,6 +2417,8 @@ TEST_P(PsmHelperAndHashDanceTest,
                 : StateDiscoveryResult::kSuccessNoServerSideState);
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
 
   // Verify hash dance job has been captured.
   ASSERT_TRUE(hash_dance_job);
