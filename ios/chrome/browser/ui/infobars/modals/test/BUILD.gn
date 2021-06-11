@@ -6,8 +6,12 @@ source_set("test") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "fake_infobar_edit_address_profile_modal_consumer.h",
+    "fake_infobar_edit_address_profile_modal_consumer.mm",
     "fake_infobar_password_modal_consumer.h",
     "fake_infobar_password_modal_consumer.mm",
+    "fake_infobar_save_address_profile_modal_consumer.h",
+    "fake_infobar_save_address_profile_modal_consumer.mm",
     "fake_infobar_translate_modal_consumer.h",
     "fake_infobar_translate_modal_consumer.mm",
   ]

@@ -49,6 +49,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/infobars/modals/test",

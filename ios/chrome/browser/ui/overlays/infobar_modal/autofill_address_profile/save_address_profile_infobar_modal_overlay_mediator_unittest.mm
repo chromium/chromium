@@ -15,8 +15,11 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_responses.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_consumer.h"
+#import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_edit_address_profile_modal_consumer.h"
+#import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_save_address_profile_modal_consumer.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -75,6 +78,37 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
   SaveAddressProfileInfobarModalOverlayMediator* mediator_ = nil;
   id<OverlayRequestMediatorDelegate> mediator_delegate_ = nil;
 };
+
+// Tests that a SaveAddressProfileInfobarModalOverlayMediator correctly sets up
+// its consumer.
+TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, SetUpConsumer) {
+  FakeInfobarSaveAddressProfileModalConsumer* consumer =
+      [[FakeInfobarSaveAddressProfileModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate_->GetEnvelopeStyleAddress()),
+              consumer.address);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate_->GetPhoneNumber()),
+              consumer.phoneNumber);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate_->GetEmailAddress()),
+              consumer.emailAddress);
+  EXPECT_FALSE(consumer.currentAddressProfileSaved);
+  EXPECT_FALSE(consumer.isUpdateModal);
+  EXPECT_EQ(0U, [consumer.profileDataDiff count]);
+  EXPECT_NSEQ(@"", consumer.updateModalDescription);
+}
+
+// Tests that a SaveAddressProfileInfobarModalOverlayMediator correctly sets up
+// its edit consumer.
+TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, SetUpEditConsumer) {
+  FakeInfobarEditAddressProfileModalConsumer* consumer =
+      [[FakeInfobarEditAddressProfileModalConsumer alloc] init];
+  mediator_.editAddressConsumer = consumer;
+  for (const auto& type : GetAutofillTypeForProfileEdit()) {
+    EXPECT_NSEQ(base::SysUTF16ToNSString(delegate_->GetProfileInfo(type)),
+                consumer.profileData[[NSNumber
+                    numberWithInt:AutofillUITypeFromAutofillType(type)]]);
+  }
+}
 
 // Tests that calling saveEditedProfileWithData: triggers a
 // EditedProfileSaveAction response.
