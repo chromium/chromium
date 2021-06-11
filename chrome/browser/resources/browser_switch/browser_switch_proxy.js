@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /** @interface */
 export class BrowserSwitchProxy {
@@ -27,6 +27,12 @@ export class BrowserSwitchProxyImpl {
   gotoNewTabPage() {
     chrome.send('gotoNewTabPage');
   }
+
+  /** @return {!BrowserSwitchProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserSwitchProxyImpl());
+  }
 }
 
-addSingletonGetter(BrowserSwitchProxyImpl);
+/** @type {?BrowserSwitchProxy} */
+let instance = null;
