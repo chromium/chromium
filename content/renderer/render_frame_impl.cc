@@ -5139,6 +5139,16 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
   // though the provider should not be used for any actual networking.
   navigation_params->service_worker_network_provider =
       ServiceWorkerNetworkProviderForFrame::CreateInvalidInstance();
+  // The synchronous about:blank commit should only happen when the frame is
+  // currently showing the initial empty document. For iframes, all navigations
+  // that happen on the initial empty document should result in replacement, we
+  // must have set the `frame_load_type` to kReplaceCurrentItem. For main frames
+  // there are still cases where we will append instead of replace, but the
+  // browser already expects this case.
+  // TODO(https://crbug.com/1215096): Ensure main frame cases always do
+  // replacement too.
+  DCHECK(IsMainFrame() || navigation_params->frame_load_type ==
+                              WebFrameLoadType::kReplaceCurrentItem);
   frame_->CommitNavigation(std::move(navigation_params), BuildDocumentState());
 }
 

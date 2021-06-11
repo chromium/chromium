@@ -3543,6 +3543,86 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 }
 
+// Tests that reloading a synchronously loaded about:blank document (whose load
+// is triggered by browsing context creation) won't crash.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ReloadSynchronouslyLoadedAboutBlankDocument) {
+  GURL main_window_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_window_url));
+
+  // Create a new blank window that won't create a NavigationEntry. This will
+  // trigger a synchronous load to about:blank.
+  Shell* new_shell = OpenBlankWindow(contents());
+  WebContentsImpl* new_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  NavigationControllerImpl& controller = new_contents->GetController();
+  FrameTreeNode* root = new_contents->GetFrameTree()->root();
+  EXPECT_EQ(0, controller.GetEntryCount());
+  EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+  {
+    // Reload the tab. The navigation will be ignored by the browser because
+    // there is no NavigationEntry for it.
+    // TODO(https://crbug.com/524208): Fix this.
+    NoNavigationsObserver observer(new_contents);
+    controller.Reload(ReloadType::NORMAL, false /* check_for_repost */);
+    // Check that the renderer is still alive and no NavigationEntry is added.
+    EXPECT_TRUE(ExecJs(new_shell, "true"));
+    EXPECT_EQ(0, controller.GetEntryCount());
+  }
+
+  {
+    // Reload the tab, bypassing the cache. The navigation will be ignored by
+    // the browser because there is no NavigationEntry for it.
+    // TODO(https://crbug.com/524208): Fix this.
+    NoNavigationsObserver observer(new_contents);
+    controller.Reload(ReloadType::BYPASSING_CACHE,
+                      false /* check_for_repost */);
+    // Check that the renderer is still alive and no NavigationEntry is added.
+    EXPECT_TRUE(ExecJs(new_shell, "true"));
+    EXPECT_EQ(0, controller.GetEntryCount());
+  }
+
+  // Navigate the tab to a page that has an about:blank iframe, which will load
+  // the about:blank page synchronously.
+  GURL url_with_synchronous_blank_iframe(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(new_shell, url_with_synchronous_blank_iframe));
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  {
+    // Reload the tab. This also reloads the iframe and re-triggers the
+    // synchronous about:blank navigation.
+    FrameNavigateParamsCapturer capturer(root);
+    controller.Reload(ReloadType::NORMAL, false /* check_for_repost */);
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    // Check that the renderer is still alive and no new navigation entry is
+    // added.
+    EXPECT_TRUE(ExecJs(new_shell, "true"));
+    EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
+    EXPECT_EQ(1, controller.GetEntryCount());
+  }
+  {
+    // Reload the tab, bypassing the cache. This also reloads the iframe and
+    // re-triggers the synchronous about:blank navigation.
+    FrameNavigateParamsCapturer capturer(root);
+    controller.Reload(ReloadType::BYPASSING_CACHE,
+                      false /* check_for_repost */);
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    // Check that the renderer is still alive and no new navigation entry is
+    // added.
+    EXPECT_TRUE(ExecJs(new_shell, "true"));
+    EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
+    EXPECT_EQ(1, controller.GetEntryCount());
+  }
+}
+
 // Verify that navigations caused by client-side redirects are correctly
 // classified.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
