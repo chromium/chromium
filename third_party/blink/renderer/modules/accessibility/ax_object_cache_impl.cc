@@ -334,7 +334,11 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     return true;
 
   // Slots are relevant if they have content.
-  return LayoutTreeBuilderTraversal::FirstChild(*slot_element);
+  // However, this can only be checked during safe times.
+  // During other times we must assume that the <slot> is relevant.
+  return node->GetDocument().IsFlatTreeTraversalForbidden() ||
+         node->GetDocument().IsSlotAssignmentRecalcForbidden() ||
+         LayoutTreeBuilderTraversal::FirstChild(*slot_element);
 }
 
 bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
