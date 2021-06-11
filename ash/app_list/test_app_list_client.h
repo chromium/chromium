@@ -43,7 +43,7 @@ class TestAppListClient : public AppListClient {
   void ViewShown(int64_t display_id) override {}
   void ActivateItem(int profile_id,
                     const std::string& id,
-                    int event_flags) override {}
+                    int event_flags) override;
   void GetContextMenuModel(int profile_id,
                            const std::string& id,
                            GetContextMenuModelCallback callback) override;
@@ -67,11 +67,20 @@ class TestAppListClient : public AppListClient {
       int position_index) override {}
   AppListNotifier* GetNotifier() override;
 
+  // Returns the number of AppItems that have been activated. These items could
+  // live in search, RecentAppsView, or ScrollableAppsGridView.
+  int activate_item_count() const { return activate_item_count_; }
+
+  // Returns the ID of the last activated AppItem.
+  std::string activate_item_last_id() const { return activate_item_last_id_; }
+
   using SearchResultActionId = std::pair<std::string, int>;
   std::vector<SearchResultActionId> GetAndClearInvokedResultActions();
 
  private:
   std::vector<SearchResultActionId> invoked_result_actions_;
+  int activate_item_count_ = 0;
+  std::string activate_item_last_id_;
 
   DISALLOW_COPY_AND_ASSIGN(TestAppListClient);
 };

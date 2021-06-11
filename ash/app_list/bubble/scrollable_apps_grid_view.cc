@@ -6,7 +6,11 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 
+#include "ash/app_list/app_list_util.h"
+#include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -115,6 +119,24 @@ void ScrollableAppsGridView::CalculateIdealBounds() {
     ++model_index;
     ++grid_index;
   }
+}
+
+void ScrollableAppsGridView::OnAppListItemViewActivated(
+    AppListItemView* pressed_item_view,
+    const ui::Event& event) {
+  if (IsFolderItem(pressed_item_view->item())) {
+    // TODO(https://crbug.com/1214064): Implement showing folder contents.
+    return;
+  }
+  // TODO(https://crbug.com/1218435): Implement metrics for app launch.
+
+  // Avoid using |item->id()| as the parameter. In some rare situations,
+  // activating the item may destruct it. Using the reference to an object
+  // which may be destroyed during the procedure as the function parameter
+  // may bring the crash like https://crbug.com/990282.
+  const std::string id = pressed_item_view->item()->id();
+  app_list_view_delegate()->ActivateItem(
+      id, event.flags(), AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
 }  // namespace ash

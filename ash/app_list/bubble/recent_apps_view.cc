@@ -90,7 +90,8 @@ std::vector<std::string> GetRecentAppIdsFromSuggestionChips(
 // dragged, so this implementation is mostly a stub.
 class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
  public:
-  GridDelegateImpl() = default;
+  explicit GridDelegateImpl(AppListViewDelegate* view_delegate)
+      : view_delegate_(view_delegate) {}
   GridDelegateImpl(const GridDelegateImpl&) = delete;
   GridDelegateImpl& operator=(const GridDelegateImpl&) = delete;
   ~GridDelegateImpl() override = default;
@@ -128,6 +129,18 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   bool IsDragViewMoved(const AppListItemView& view) const override {
     return false;
   }
+  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
+                                  const ui::Event& event) override {
+    // TODO(crbug.com/1216594): Add a new launch type for "recent apps".
+    // NOTE: Avoid using |item->id()| as the parameter. In some rare situations,
+    // activating the item may destruct it. Using the reference to an object
+    // which may be destroyed during the procedure as the function parameter
+    // may bring the crash like https://crbug.com/990282.
+    const std::string id = pressed_item_view->item()->id();
+    view_delegate_->ActivateItem(
+        id, event.flags(), AppListLaunchedFrom::kLaunchedFromSuggestionChip);
+    // `this` may be deleted.
+  }
   const AppListConfig& GetAppListConfig() const override {
     // TODO(crbug.com/1211592): Eliminate this method and use the real config.
     return *AppListConfigProvider::Get().GetConfigForType(
@@ -135,12 +148,13 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   }
 
  private:
+  AppListViewDelegate* const view_delegate_;
   AppListItemView* selected_view_ = nullptr;
 };
 
 RecentAppsView::RecentAppsView(AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate),
-      grid_delegate_(std::make_unique<GridDelegateImpl>()) {
+      grid_delegate_(std::make_unique<GridDelegateImpl>(view_delegate_)) {
   DCHECK(view_delegate_);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -155,7 +169,10 @@ RecentAppsView::RecentAppsView(AppListViewDelegate* view_delegate)
     std::string item_id = ItemIdFromAppId(app_id);
     AppListItem* item = model->FindItem(item_id);
     if (item) {
-      AddAppIcon(item);
+      // NOTE: If you change the view structure, update GetItemForTest() as
+      // well.
+      AddChildView(std::make_unique<AppListItemView>(grid_delegate_.get(), item,
+                                                     view_delegate_));
     }
   }
 }
@@ -164,23 +181,6 @@ RecentAppsView::~RecentAppsView() = default;
 
 AppListItemView* RecentAppsView::GetItemViewForTest(int index) {
   return static_cast<AppListItemView*>(children()[index]);
-}
-
-void RecentAppsView::AddAppIcon(AppListItem* item) {
-  // NOTE: If you change the view structure, update GetItemForTest() as well.
-  AppListItemView* item_view = AddChildView(std::make_unique<AppListItemView>(
-      grid_delegate_.get(), item, view_delegate_));
-  item_view->SetCallback(
-      base::BindRepeating(&RecentAppsView::OnAppListItemViewPressed,
-                          base::Unretained(this), item->id()));
-}
-
-void RecentAppsView::OnAppListItemViewPressed(const std::string& item_id,
-                                              const ui::Event& event) {
-  // TODO(crbug.com/1216594): Add a new launch type for "recent apps".
-  view_delegate_->ActivateItem(
-      item_id, event.flags(), AppListLaunchedFrom::kLaunchedFromSuggestionChip);
-  // `this` may be deleted.
 }
 
 }  // namespace ash

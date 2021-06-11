@@ -66,7 +66,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
                               const gfx::Point& location,
                               const gfx::Point& root_location) = 0;
     virtual void StartDragAndDropHostDragAfterLongPress() = 0;
-
     // Called from AppListItemView when it receives a drag event. Returns true
     // if the drag is still happening.
     virtual bool UpdateDragFromItem(bool is_touch,
@@ -77,6 +76,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
     // Whether |view| is being dragged and is not in its drag start position.
     virtual bool IsDragViewMoved(const AppListItemView& view) const = 0;
+
+    // Provided as a callback for AppListItemView to notify of activation via
+    // press/click/return key.
+    virtual void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
+                                            const ui::Event& event) = 0;
 
     // TODO(crbug.com/1211592): Eliminate this method.
     virtual const AppListConfig& GetAppListConfig() const = 0;

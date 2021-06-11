@@ -4,6 +4,8 @@
 
 #include "ash/app_list/app_list_util.h"
 
+#include "ash/app_list/model/app_list_folder_item.h"
+#include "ash/app_list/model/app_list_item.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
@@ -49,6 +51,10 @@ bool IsArrowKeyEvent(const ui::KeyEvent& event) {
 bool IsArrowKey(const ui::KeyboardCode& key_code) {
   return key_code == ui::VKEY_DOWN || key_code == ui::VKEY_RIGHT ||
          key_code == ui::VKEY_LEFT || key_code == ui::VKEY_UP;
+}
+
+bool IsFolderItem(AppListItem* item) {
+  return item->GetItemType() == AppListFolderItem::kItemType;
 }
 
 bool LeftRightKeyEventShouldExitText(views::Textfield* textfield,

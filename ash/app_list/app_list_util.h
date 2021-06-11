@@ -14,6 +14,7 @@ class Textfield;
 }
 
 namespace ash {
+class AppListItem;
 
 // Returns true if the key event is an unhandled left or right arrow (unmodified
 // by ctrl, shift, or alt)
@@ -33,6 +34,9 @@ ASH_EXPORT bool IsArrowKeyEvent(const ui::KeyEvent& event);
 // Returns true if the keyboard code is one of: |VKEY_UP|, |VKEY_LEFT|,
 // |VKEY_RIGHT|, |VKEY_DOWN|
 ASH_EXPORT bool IsArrowKey(const ui::KeyboardCode& key_code);
+
+// Returns true if the |item| is a folder item.
+ASH_EXPORT bool IsFolderItem(AppListItem* item);
 
 // Returns true if the arrow key event should move focus away from the
 // |textfield|. This is usually when the insertion point would move away from

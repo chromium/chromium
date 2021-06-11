@@ -258,7 +258,11 @@ class AppListItemView::IconImageView : public views::ImageView {
 AppListItemView::AppListItemView(GridDelegate* grid_delegate,
                                  AppListItem* item,
                                  AppListViewDelegate* view_delegate)
-    : is_folder_(item->GetItemType() == AppListFolderItem::kItemType),
+    : views::Button(
+          base::BindRepeating(&GridDelegate::OnAppListItemViewActivated,
+                              base::Unretained(grid_delegate),
+                              base::Unretained(this))),
+      is_folder_(item->GetItemType() == AppListFolderItem::kItemType),
       item_weak_(item),
       grid_delegate_(grid_delegate),
       view_delegate_(view_delegate),

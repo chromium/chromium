@@ -275,6 +275,24 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Cancel any animations currently running within the view.
   void CancelAnimationsForTest();
 
+  AppsGridViewFolderDelegate* folder_delegate() const {
+    return folder_delegate_;
+  }
+
+  void set_folder_delegate(AppsGridViewFolderDelegate* folder_delegate) {
+    folder_delegate_ = folder_delegate;
+  }
+
+  AppListItemView* activated_folder_item_view() const {
+    return activated_folder_item_view_;
+  }
+
+  void set_activated_folder_item_view(AppListItemView* item_view) {
+    activated_folder_item_view_ = item_view;
+  }
+
+  const AppListModel* model() const { return model_; }
+
   bool FirePageFlipTimerForTest();
   bool FireFolderItemReparentTimerForTest();
   bool FireFolderDroppingTimerForTest();
@@ -289,16 +307,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool forward_events_to_drag_and_drop_host_for_test() {
     return forward_events_to_drag_and_drop_host_;
   }
-
-  void set_folder_delegate(AppsGridViewFolderDelegate* folder_delegate) {
-    folder_delegate_ = folder_delegate;
-  }
-
-  AppListItemView* activated_folder_item_view() const {
-    return activated_folder_item_view_;
-  }
-
-  const AppListModel* model() const { return model_; }
 
   void set_page_flip_delay_for_testing(base::TimeDelta page_flip_delay) {
     page_flip_delay_ = page_flip_delay;
@@ -386,6 +394,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   int reorder_placeholder_slot() const { return reorder_placeholder_.slot; }
   const gfx::Point& last_drag_point() const { return last_drag_point_; }
   bool handling_keyboard_move() const { return handling_keyboard_move_; }
+
+  AppListViewDelegate* app_list_view_delegate() const {
+    return app_list_view_delegate_;
+  }
 
   // TODO(crbug.com/1211608): Move these member variables to PagedAppsGridView.
   PaginationModel pagination_model_{this};
@@ -561,10 +573,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns whether |point| is in the bottom drag buffer, and not over the
   // shelf.
   bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const;
-
-  // AppListItemView pressed callback binds here:
-  void OnAppListItemViewPressed(AppListItemView* pressed_item_view,
-                                const ui::Event& event);
 
   // Overridden from AppListItemListObserver:
   void OnListItemAdded(size_t index, AppListItem* item) override;

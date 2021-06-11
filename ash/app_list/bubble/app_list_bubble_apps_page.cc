@@ -87,14 +87,14 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       ColorProvider::ContentLayerType::kSeparatorColor));
 
   // All apps section.
-  auto* apps_grid =
+  scrollable_apps_grid_view_ =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           view_delegate, /*folder_delegate=*/nullptr));
-  apps_grid->Init();
+  scrollable_apps_grid_view_->Init();
   AppListModel* model = view_delegate->GetModel();
-  apps_grid->SetModel(model);
-  apps_grid->SetItemList(model->top_level_item_list());
-  apps_grid->ResetForShowApps();
+  scrollable_apps_grid_view_->SetModel(model);
+  scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
+  scrollable_apps_grid_view_->ResetForShowApps();
 
   scroll->SetContents(std::move(scroll_contents));
 }

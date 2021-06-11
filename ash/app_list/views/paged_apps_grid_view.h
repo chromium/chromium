@@ -75,6 +75,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void MaybeStartCardifiedView() override;
   void MaybeEndCardifiedView() override;
 
+  // AppListItemView::GridDelegate:
+  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
+                                  const ui::Event& event) override;
+
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
   void SelectedPageChanged(int old_selected, int new_selected) override;

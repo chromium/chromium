@@ -8,10 +8,13 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -514,6 +517,32 @@ void PagedAppsGridView::MaybeStartCardifiedView() {
 void PagedAppsGridView::MaybeEndCardifiedView() {
   if (cardified_state_)
     EndAppsGridCardifiedView();
+}
+
+void PagedAppsGridView::OnAppListItemViewActivated(
+    AppListItemView* pressed_item_view,
+    const ui::Event& event) {
+  if (IsDragging())
+    return;
+
+  if (contents_view_->apps_container_view()
+          ->app_list_folder_view()
+          ->IsAnimationRunning()) {
+    return;
+  }
+
+  // Always set the previous `activated_folder_item_view_` to be visible. This
+  // prevents a case where the item would remain hidden due the
+  // `activated_folder_item_view_` changing during the animation. We only
+  // need to track `activated_folder_item_view_` in the root level grid view.
+  if (!folder_delegate()) {
+    if (activated_folder_item_view())
+      activated_folder_item_view()->SetVisible(true);
+    set_activated_folder_item_view(
+        IsFolderItem(pressed_item_view->item()) ? pressed_item_view : nullptr);
+  }
+  contents_view_->GetAppListMainView()->ActivateApp(pressed_item_view->item(),
+                                                    event.flags());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -24,6 +24,13 @@ void TestAppListClient::GetSearchResultContextMenuModel(
   std::move(callback).Run(nullptr);
 }
 
+void TestAppListClient::ActivateItem(int profile_id,
+                                     const std::string& id,
+                                     int event_flags) {
+  activate_item_count_++;
+  activate_item_last_id_ = id;
+}
+
 void TestAppListClient::GetContextMenuModel(
     int profile_id,
     const std::string& id,

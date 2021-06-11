@@ -32,6 +32,10 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   int GetPaddingBetweenPages() const override;
   bool IsScrollAxisVertical() const override;
   void CalculateIdealBounds() override;
+
+  // AppListItemView::GridDelegate:
+  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
+                                  const ui::Event& event) override;
 };
 
 }  // namespace ash

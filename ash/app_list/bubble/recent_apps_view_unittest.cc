@@ -12,6 +12,7 @@
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test_app_list_client.h"
@@ -68,20 +69,6 @@ RecentAppsView* GetRecentAppsView() {
       ->recent_apps_for_test();
 }
 
-// An AppListClient that records some method calls.
-class RecordingAppListClient : public TestAppListClient {
- public:
-  void ActivateItem(int profile_id,
-                    const std::string& id,
-                    int event_flags) override {
-    activate_item_count_++;
-    activate_item_last_id_ = id;
-  }
-
-  int activate_item_count_ = 0;
-  std::string activate_item_last_id_;
-};
-
 class RecentAppsViewTest : public AshTestBase {
  public:
   RecentAppsViewTest() {
@@ -101,7 +88,7 @@ class RecentAppsViewTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  RecordingAppListClient app_list_client_;
+  TestAppListClient app_list_client_;
 };
 
 TEST_F(RecentAppsViewTest, CreatesIconsForApps) {
@@ -155,8 +142,8 @@ TEST_F(RecentAppsViewTest, ClickOnRecentApp) {
   GetEventGenerator()->ClickLeftButton();
 
   // The item was activated.
-  EXPECT_EQ(app_list_client_.activate_item_count_, 1);
-  EXPECT_EQ(app_list_client_.activate_item_last_id_, "id");
+  EXPECT_EQ(1, app_list_client_.activate_item_count());
+  EXPECT_EQ("id", app_list_client_.activate_item_last_id());
 }
 
 TEST_F(RecentAppsViewTest, RightClickOpensContextMenu) {

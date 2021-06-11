@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_APPS_PAGE_H_
 #define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_APPS_PAGE_H_
 
+#include "ash/app_list/bubble/scrollable_apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
 
@@ -12,6 +13,7 @@ namespace ash {
 
 class AppListViewDelegate;
 class RecentAppsView;
+class ScrollableAppsGridView;
 
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
@@ -26,9 +28,13 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
   ~AppListBubbleAppsPage() override;
 
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
+  ScrollableAppsGridView* scrollable_apps_grid_view_for_test() {
+    return scrollable_apps_grid_view_;
+  }
 
  private:
   RecentAppsView* recent_apps_ = nullptr;
+  ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;
 };
 
 }  // namespace ash
