@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -48,7 +49,8 @@ KeyedService* ScanServiceFactory::BuildInstanceFor(
       LorgnetteScannerManagerFactory::GetForBrowserContext(context),
       file_manager::util::GetMyFilesFolderForProfile(profile),
       drive_available ? integration_service->GetMountPointPath()
-                      : base::FilePath());
+                      : base::FilePath(),
+      context);
 }
 
 ScanServiceFactory::ScanServiceFactory()
@@ -56,6 +58,7 @@ ScanServiceFactory::ScanServiceFactory()
           "ScanService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(LorgnetteScannerManagerFactory::GetInstance());
+  DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());
 }
 
 ScanServiceFactory::~ScanServiceFactory() = default;

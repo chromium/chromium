@@ -27,6 +27,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chromeos/utils/pdf_conversion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -185,14 +187,17 @@ void RecordScanJobResult(
 
 ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
                          base::FilePath my_files_path,
-                         base::FilePath google_drive_path)
+                         base::FilePath google_drive_path,
+                         content::BrowserContext* context)
     : lorgnette_scanner_manager_(lorgnette_scanner_manager),
       my_files_path_(std::move(my_files_path)),
       google_drive_path_(std::move(google_drive_path)),
+      context_(context),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK(lorgnette_scanner_manager_);
+  DCHECK(context_);
 }
 
 ScanService::~ScanService() = default;
@@ -436,6 +441,12 @@ void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
       mojo::ConvertTo<mojo_ipc::ScanResult>(
           static_cast<lorgnette::ScanFailureMode>(failure_mode)),
       scanned_file_paths_);
+  HoldingSpaceKeyedService* holding_space_keyed_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(context_);
+  if (holding_space_keyed_service) {
+    for (const auto& saved_scan_path : scanned_file_paths_)
+      holding_space_keyed_service->AddScan(saved_scan_path);
+  }
   RecordScanJobResult(failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
                           !page_save_failed_,
                       failure_reason, num_pages_scanned_);

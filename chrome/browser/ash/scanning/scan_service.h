@@ -28,6 +28,10 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace ash {
 
 class LorgnetteScannerManager;
@@ -39,7 +43,8 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
  public:
   ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
               base::FilePath my_files_path,
-              base::FilePath google_drive_path);
+              base::FilePath google_drive_path,
+              content::BrowserContext* context);
   ~ScanService() override;
 
   ScanService(const ScanService&) = delete;
@@ -141,6 +146,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // determine if a selected file path is supported.
   base::FilePath my_files_path_;
   base::FilePath google_drive_path_;
+
+  // The browser context from which scans are initiated.
+  content::BrowserContext* const context_;
 
   // Indicates whether there was a failure to save scanned images.
   bool page_save_failed_;
