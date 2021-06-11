@@ -62,6 +62,7 @@ class DummyFrameScheduler : public FrameScheduler {
   void DidCommitProvisionalLoad(bool, FrameScheduler::NavigationType) override {
   }
   void OnFirstContentfulPaintInMainFrame() override {}
+  void OnDomContentLoaded() override {}
   void OnFirstMeaningfulPaint() override {}
   void OnLoad() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }

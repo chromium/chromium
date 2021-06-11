@@ -126,6 +126,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   void OnTraceLogEnabled();
 
+  void OnFirstContentfulPaintInMainFrame();
+
   bool IsPageFocused() const;
 
   // Virtual for testing.

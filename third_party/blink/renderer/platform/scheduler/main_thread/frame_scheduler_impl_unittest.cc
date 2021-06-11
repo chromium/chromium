@@ -411,6 +411,27 @@ class FrameSchedulerImplTest : public testing::Test {
             PrioritisationType::kJavaScriptTimer));
   }
 
+  scoped_refptr<MainThreadTaskQueue>
+  JavaScriptTimerNormalThrottleableTaskQueueForFrame(
+      FrameSchedulerImpl* frame_scheduler) {
+    return GetTaskQueueForFrame(frame_scheduler,
+                                TaskType::kJavascriptTimerDelayedLowNesting);
+  }
+
+  scoped_refptr<MainThreadTaskQueue>
+  JavaScriptTimerIntensivelyThrottleableTaskQueueForFrame(
+      FrameSchedulerImpl* frame_scheduler) {
+    return GetTaskQueueForFrame(frame_scheduler,
+                                TaskType::kJavascriptTimerDelayedHighNesting);
+  }
+
+  scoped_refptr<MainThreadTaskQueue>
+  JavaScriptTimerNonThrottleableTaskQueueForFrame(
+      FrameSchedulerImpl* frame_scheduler) {
+    return GetTaskQueueForFrame(frame_scheduler,
+                                TaskType::kJavascriptTimerImmediate);
+  }
+
   scoped_refptr<MainThreadTaskQueue> LoadingTaskQueue() {
     return GetTaskQueue(FrameSchedulerImpl::LoadingTaskQueueTraits());
   }
@@ -448,6 +469,12 @@ class FrameSchedulerImplTest : public testing::Test {
     return frame_scheduler_->GetTaskQueue(type);
   }
 
+  scoped_refptr<MainThreadTaskQueue> GetTaskQueueForFrame(
+      FrameSchedulerImpl* frame_scheduler,
+      TaskType type) {
+    return frame_scheduler->GetTaskQueue(type);
+  }
+
   std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
   GetResourceLoadingTaskRunnerHandleImpl() {
     return frame_scheduler_->CreateResourceLoadingTaskRunnerHandleImpl();
@@ -478,6 +505,21 @@ class FrameSchedulerImplTest : public testing::Test {
       FrameScheduler::NavigationType navigation_type) {
     frame_scheduler_->DidCommitProvisionalLoad(
         /*is_web_history_inert_commit=*/false, navigation_type);
+  }
+
+  void DidCommitProvisionalLoadForFrame(
+      FrameSchedulerImpl* frame_scheduler,
+      FrameScheduler::NavigationType navigation_type) {
+    frame_scheduler->DidCommitProvisionalLoad(
+        /*is_web_history_inert_commit=*/false, navigation_type);
+  }
+
+  void OnDomContentLoadedForFrame(FrameSchedulerImpl* frame_scheduler) {
+    frame_scheduler->OnDomContentLoaded();
+  }
+
+  void OnLoadForFrame(FrameSchedulerImpl* frame_scheduler) {
+    frame_scheduler->OnLoad();
   }
 
   base::test::ScopedFeatureList& scoped_feature_list() { return feature_list_; }
@@ -3651,6 +3693,246 @@ TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
        PolicyForceDisable) {
   SetPolicyOverride(/* enabled = */ false);
   EXPECT_FALSE(IsIntensiveWakeUpThrottlingEnabled());
+}
+
+class DeprioritizeDOMTimerTest : public FrameSchedulerImplTest {
+ public:
+  DeprioritizeDOMTimerTest(DeprioritizeDOMTimersPhase phase)
+      : FrameSchedulerImplTest(
+            blink::scheduler::kDeprioritizeDOMTimersDuringPageLoading,
+            base::FieldTrialParams(
+                {{"phase", blink::scheduler::kDeprioritizeDOMTimersPhase
+                               .GetName(phase)}}),
+            {}) {}
+
+  void SetUp() override {
+    FrameSchedulerImplTest::SetUp();
+    scheduler_of_main_frame_ = CreateFrameScheduler(
+        page_scheduler_.get(), frame_scheduler_delegate_.get(), nullptr,
+        FrameScheduler::FrameType::kMainFrame);
+  }
+
+  void TearDown() override {
+    scheduler_of_main_frame_.reset();
+    FrameSchedulerImplTest::TearDown();
+  }
+
+  void ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      FrameSchedulerImpl* frame_scheduler,
+      TaskQueue::QueuePriority expected_priority) {
+    EXPECT_EQ(
+        JavaScriptTimerNormalThrottleableTaskQueueForFrame(frame_scheduler)
+            ->GetTaskQueue()
+            ->GetQueuePriority(),
+        expected_priority);
+    EXPECT_EQ(
+        JavaScriptTimerIntensivelyThrottleableTaskQueueForFrame(frame_scheduler)
+            ->GetTaskQueue()
+            ->GetQueuePriority(),
+        expected_priority);
+    EXPECT_EQ(JavaScriptTimerNonThrottleableTaskQueueForFrame(frame_scheduler)
+                  ->GetTaskQueue()
+                  ->GetQueuePriority(),
+              expected_priority);
+  }
+
+ protected:
+  std::unique_ptr<FrameSchedulerImpl> scheduler_of_main_frame_;
+};
+
+class DeprioritizeDOMTimerUntilDOMContentLoadedTest
+    : public DeprioritizeDOMTimerTest {
+ public:
+  DeprioritizeDOMTimerUntilDOMContentLoadedTest()
+      : DeprioritizeDOMTimerTest(
+            DeprioritizeDOMTimersPhase::kOnDOMContentLoaded) {}
+};
+
+// Test whether the JavaScript timer task queues' priorities are properly
+// updated on DOMContentLoaded event for frame load and reloads.
+TEST_F(DeprioritizeDOMTimerUntilDOMContentLoadedTest,
+       MainAndNonMainFrameLoadAndReload) {
+  FrameSchedulerImpl* frame_schedulers[2] = {scheduler_of_main_frame_.get(),
+                                             frame_scheduler_.get()};
+  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers) {
+    // Initial priority is low.
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal when DOMContentLoaded triggered.
+    OnDomContentLoadedForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+
+    // After reload navigation, priority is reset to low.
+    DidCommitProvisionalLoadForFrame(frame_scheduler,
+                                     FrameScheduler::NavigationType::kReload);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal when DOMContentLoaded triggered.
+    OnDomContentLoadedForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+
+    // After other type navigation, priority is reset to low.
+    DidCommitProvisionalLoadForFrame(frame_scheduler,
+                                     FrameScheduler::NavigationType::kOther);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal when DOMContentLoaded triggered.
+    OnDomContentLoadedForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+  }
+}
+
+class DeprioritizeDOMTimerUntilFCPTest : public DeprioritizeDOMTimerTest {
+ public:
+  DeprioritizeDOMTimerUntilFCPTest()
+      : DeprioritizeDOMTimerTest(
+            DeprioritizeDOMTimersPhase::kFirstContentfulPaint) {}
+};
+
+// Test whether the JavaScript timer task queues' priorities are properly
+// updated when FCP is triggered for frame load and reloads.
+TEST_F(DeprioritizeDOMTimerUntilFCPTest, MainAndNonMainFrameLoadAndReload) {
+  // Initial priorities are low.
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      scheduler_of_main_frame_.get(), TaskQueue::QueuePriority::kLowPriority);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      frame_scheduler_.get(), TaskQueue::QueuePriority::kLowPriority);
+
+  // Priority is set to normal when FCP triggered.
+  scheduler_of_main_frame_->OnFirstContentfulPaintInMainFrame();
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      scheduler_of_main_frame_.get(),
+      TaskQueue::QueuePriority::kNormalPriority);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      frame_scheduler_.get(), TaskQueue::QueuePriority::kNormalPriority);
+
+  // After reload type navigation, priority is reset to low.
+  DidCommitProvisionalLoadForFrame(scheduler_of_main_frame_.get(),
+                                   FrameScheduler::NavigationType::kReload);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      scheduler_of_main_frame_.get(), TaskQueue::QueuePriority::kLowPriority);
+
+  DidCommitProvisionalLoadForFrame(frame_scheduler_.get(),
+                                   FrameScheduler::NavigationType::kReload);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      frame_scheduler_.get(), TaskQueue::QueuePriority::kLowPriority);
+
+  // Priority is set to normal when FCP triggered.
+  scheduler_of_main_frame_->OnFirstContentfulPaintInMainFrame();
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      scheduler_of_main_frame_.get(),
+      TaskQueue::QueuePriority::kNormalPriority);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      frame_scheduler_.get(), TaskQueue::QueuePriority::kNormalPriority);
+
+  // After other type navigation, priority is reset to low.
+  DidCommitProvisionalLoadForFrame(scheduler_of_main_frame_.get(),
+                                   FrameScheduler::NavigationType::kOther);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      scheduler_of_main_frame_.get(), TaskQueue::QueuePriority::kLowPriority);
+
+  DidCommitProvisionalLoadForFrame(frame_scheduler_.get(),
+                                   FrameScheduler::NavigationType::kOther);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      frame_scheduler_.get(), TaskQueue::QueuePriority::kLowPriority);
+
+  // Priority is set to normal when FCP triggered.
+  scheduler_of_main_frame_->OnFirstContentfulPaintInMainFrame();
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      scheduler_of_main_frame_.get(),
+      TaskQueue::QueuePriority::kNormalPriority);
+  ExpectJavaScriptTimerTaskQueuePriorityToBe(
+      frame_scheduler_.get(), TaskQueue::QueuePriority::kNormalPriority);
+}
+
+// Test that if FCP is not triggered, the JavaScript timer task queues'
+// priorities are updated when load is triggered.
+TEST_F(DeprioritizeDOMTimerUntilFCPTest, FCPNotTriggered) {
+  FrameSchedulerImpl* frame_schedulers[2] = {scheduler_of_main_frame_.get(),
+                                             frame_scheduler_.get()};
+  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers) {
+    // Initial priority is low.
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal on load event.
+    OnLoadForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+
+    // After reload type navigation, priority is reset to low.
+    DidCommitProvisionalLoadForFrame(frame_scheduler,
+                                     FrameScheduler::NavigationType::kReload);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal on load event.
+    OnLoadForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+
+    // After other type navigation, priority is reset to low.
+    DidCommitProvisionalLoadForFrame(frame_scheduler,
+                                     FrameScheduler::NavigationType::kOther);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal on load event.
+    OnLoadForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+  }
+}
+
+class DeprioritizeDOMTimerUntilLoadedTest : public DeprioritizeDOMTimerTest {
+ public:
+  DeprioritizeDOMTimerUntilLoadedTest()
+      : DeprioritizeDOMTimerTest(DeprioritizeDOMTimersPhase::kOnLoad) {}
+};
+
+// Test whether the JavaScript timer task queues' priorities are properly
+// updated on load event for frame load and reloads.
+TEST_F(DeprioritizeDOMTimerUntilLoadedTest, MainAndNonMainFrameLoadAndReload) {
+  FrameSchedulerImpl* frame_schedulers[2] = {scheduler_of_main_frame_.get(),
+                                             frame_scheduler_.get()};
+  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers) {
+    // Initial priority is low.
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal on load event.
+    OnLoadForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+
+    // After reload type navigation, priority is reset to low.
+    DidCommitProvisionalLoadForFrame(frame_scheduler,
+                                     FrameScheduler::NavigationType::kReload);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal on load event.
+    OnLoadForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+
+    // After other type navigation, priority is reset to low.
+    DidCommitProvisionalLoadForFrame(frame_scheduler,
+                                     FrameScheduler::NavigationType::kOther);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kLowPriority);
+
+    // Priority is set to normal on load event.
+    OnLoadForFrame(frame_scheduler);
+    ExpectJavaScriptTimerTaskQueuePriorityToBe(
+        frame_scheduler, TaskQueue::QueuePriority::kNormalPriority);
+  }
 }
 
 }  // namespace frame_scheduler_impl_unittest

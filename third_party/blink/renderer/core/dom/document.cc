@@ -6601,6 +6601,9 @@ void Document::FinishedParsing() {
 
     frame->Loader().FinishedParsing();
 
+    if (frame->GetFrameScheduler())
+      frame->GetFrameScheduler()->OnDomContentLoaded();
+
     DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
         "MarkDOMContent", inspector_mark_load_event::Data, frame);
     probe::DomContentLoadedEventFired(frame);

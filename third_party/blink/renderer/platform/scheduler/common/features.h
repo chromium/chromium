@@ -249,6 +249,26 @@ const base::Feature kMbiCompositorTaskRunnerPerAgentSchedulingGroup{
 const base::Feature kThrottleVisibleNotFocusedTimers{
     "ThrottleVisibleNotFocusedTimers", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Deprioritizes JS timer tasks during a particular phase of page loading.
+PLATFORM_EXPORT extern const base::Feature
+    kDeprioritizeDOMTimersDuringPageLoading;
+
+// The phase in which we deprioritize JS timer tasks.
+enum class DeprioritizeDOMTimersPhase {
+  // Until the DOMContentLoaded event is fired.
+  kOnDOMContentLoaded,
+  // Until First Contentful Paint is reached.
+  kFirstContentfulPaint,
+  // Until the load event is fired.
+  kOnLoad,
+};
+
+PLATFORM_EXPORT extern const base::FeatureParam<
+    DeprioritizeDOMTimersPhase>::Option kDeprioritizeDOMTimersPhaseOptions[];
+
+PLATFORM_EXPORT extern const base::FeatureParam<DeprioritizeDOMTimersPhase>
+    kDeprioritizeDOMTimersPhase;
+
 }  // namespace scheduler
 }  // namespace blink
 

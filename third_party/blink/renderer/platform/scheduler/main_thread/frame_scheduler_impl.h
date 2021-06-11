@@ -122,6 +122,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
 
   void OnFirstContentfulPaintInMainFrame() override;
+  void OnDomContentLoaded() override;
   void OnFirstMeaningfulPaint() override;
   void OnLoad() override;
   bool IsWaitingForContentfulPaint() const;
@@ -373,9 +374,12 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       page_keep_active_for_tracing_;
 
   TraceableState<bool, TracingCategoryName::kInfo>
+      waiting_for_dom_content_loaded_;
+  TraceableState<bool, TracingCategoryName::kInfo>
       waiting_for_contentful_paint_;
   TraceableState<bool, TracingCategoryName::kInfo>
       waiting_for_meaningful_paint_;
+  TraceableState<bool, TracingCategoryName::kInfo> waiting_for_load_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> loading_power_mode_voter_;
 
