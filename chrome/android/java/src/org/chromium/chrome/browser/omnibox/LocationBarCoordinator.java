@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -126,6 +127,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param omniboxUma Interface for logging UMA histogram.
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
+     * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -143,7 +145,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull PageInfoAction pageInfoAction, @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
-            @NonNull BookmarkState bookmarkState) {
+            @NonNull BookmarkState bookmarkState,
+            @NonNull BooleanSupplier isToolbarMicEnabledSupplier) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -160,7 +163,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 AppHooks.get().getLocaleManager(), mTemplateUrlServiceSupplier, backKeyBehavior,
                 windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
                 LensController.getInstance(), launchAssistanceSettingsAction,
-                saveOfflineButtonState, omniboxUma);
+                saveOfflineButtonState, omniboxUma, isToolbarMicEnabledSupplier);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),

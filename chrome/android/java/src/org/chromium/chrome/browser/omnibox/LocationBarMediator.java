@@ -27,6 +27,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -172,6 +173,7 @@ class LocationBarMediator
     private float mUrlFocusChangeFraction;
     private boolean mUrlHasFocus;
     private LensController mLensController;
+    private final BooleanSupplier mIsToolbarMicEnabledSupplier;
 
     /*package */ LocationBarMediator(@NonNull Context context,
             @NonNull LocationBarLayout locationBarLayout,
@@ -185,8 +187,8 @@ class LocationBarMediator
             boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull LensController lensController,
             @NonNull Runnable launchAssistanceSettingsAction,
-            @NonNull SaveOfflineButtonState saveOfflineButtonState,
-            @NonNull OmniboxUma omniboxUma) {
+            @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
+            @NonNull BooleanSupplier isToolbarMicEnabledSupplier) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -209,6 +211,7 @@ class LocationBarMediator
         mLensController = lensController;
         mSaveOfflineButtonState = saveOfflineButtonState;
         mOmniboxUma = omniboxUma;
+        mIsToolbarMicEnabledSupplier = isToolbarMicEnabledSupplier;
     }
 
     /**
@@ -657,6 +660,11 @@ class LocationBarMediator
         mShouldShowLensButtonWhenUnfocused = shouldShow;
     }
 
+    /* package */ void setShouldShowMicButtonWhenUnfocusedForTesting(boolean shouldShow) {
+        assert mIsTablet;
+        mShouldShowMicButtonWhenUnfocused = shouldShow;
+    }
+
     /**
      * @param shouldShow Whether buttons should be displayed in the URL bar when it's not
      *                          focused.
@@ -970,14 +978,17 @@ class LocationBarMediator
     }
 
     private boolean shouldShowMicButton() {
+        if (!mNativeInitialized || mVoiceRecognitionHandler == null
+                || !mVoiceRecognitionHandler.isVoiceSearchEnabled()) {
+            return false;
+        }
+        boolean isToolbarMicEnabled = mIsToolbarMicEnabledSupplier.getAsBoolean();
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
-            return mVoiceRecognitionHandler != null
-                    && mVoiceRecognitionHandler.isVoiceSearchEnabled() && mNativeInitialized
-                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+            return !isToolbarMicEnabled && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
         } else {
             boolean deleteButtonVisible = shouldShowDeleteButton();
-            return mVoiceRecognitionHandler != null
-                    && mVoiceRecognitionHandler.isVoiceSearchEnabled() && !deleteButtonVisible
+            boolean canShowMicButton = !mIsTablet || !isToolbarMicEnabled;
+            return canShowMicButton && !deleteButtonVisible
                     && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
                             || mShouldShowMicButtonWhenUnfocused);
         }

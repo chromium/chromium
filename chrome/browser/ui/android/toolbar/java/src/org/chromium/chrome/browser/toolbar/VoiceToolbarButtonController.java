@@ -203,7 +203,7 @@ public class VoiceToolbarButtonController
     }
 
     private boolean shouldShowVoiceButton(Tab tab) {
-        if (!FeatureList.isInitialized() || !isFeatureEnabled() || tab == null || tab.isIncognito()
+        if (!isToolbarMicEnabled() || tab == null || tab.isIncognito()
                 || !mVoiceSearchDelegate.isVoiceSearchEnabled()) {
             return false;
         }
@@ -220,7 +220,9 @@ public class VoiceToolbarButtonController
         return UrlUtilities.isHttpOrHttps(tab.getUrl());
     }
 
-    private static boolean isFeatureEnabled() {
+    /** Returns whether the feature flags allow showing the mic icon in the toolbar. */
+    public static boolean isToolbarMicEnabled() {
+        if (!FeatureList.isInitialized()) return false;
         if (AdaptiveToolbarFeatures.isEnabled()) {
             return AdaptiveToolbarFeatures.getSingleVariantMode()
                     == AdaptiveToolbarButtonVariant.VOICE;

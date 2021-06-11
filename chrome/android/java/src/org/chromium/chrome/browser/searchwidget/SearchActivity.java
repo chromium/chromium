@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
+import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -190,7 +191,8 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*pageInfoAction=*/(tab, permission) -> {},
                 IntentHandler::bringTabToFront,
                 /*saveOfflineButtonState=*/(tab) -> false, /*omniboxUma*/(url, transition) -> {},
-                TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false);
+                TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
+                VoiceToolbarButtonController::isToolbarMicEnabled);
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

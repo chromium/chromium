@@ -84,8 +84,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
         doReturn(mUrl).when(mTab).getUrl();
 
         doReturn(mContext).when(mTab).getContext();
-
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
+        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         // clang-format off
         mVoiceToolbarButtonController = new VoiceToolbarButtonController(mContext, mDrawable,
                 () -> mTab, mActivityLifecycleDispatcher, mModalDialogManager,
@@ -97,7 +96,9 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @DisableFeatures({ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID})
     @Test
     public void onConfigurationChanged_screenWidthChanged() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
         AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NONE);
+
         assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
 
         // Screen width shrinks below the threshold (e.g. screen rotated).
@@ -120,6 +121,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Test
     public void
     testIPHCommandHelper() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
         AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NONE);
         assertNull(mVoiceToolbarButtonController.get(/*tab*/ null)
                            .getButtonSpec()
@@ -128,9 +130,34 @@ public final class VoiceToolbarButtonControllerUnitTest {
         // Verify that IPHCommandBuilder is set just once;
         IPHCommandBuilder builder =
                 mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder();
+
         assertNotNull(
                 mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
         assertEquals(builder,
                 mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+    }
+
+    @Test
+    public void isToolbarMicEnabled_adaptiveButtons_nonVoice() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, true);
+        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_SHARE);
+
+        assertFalse(VoiceToolbarButtonController.isToolbarMicEnabled());
+    }
+
+    @Test
+    public void isToolbarMicEnabled_adaptiveButtons_voice() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, true);
+        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_VOICE);
+
+        assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
+    }
+
+    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
+    @Test
+    public void isToolbarMicEnabled_toolbarMic() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
+
+        assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
     }
 }

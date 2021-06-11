@@ -543,7 +543,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     IntentHandler::bringTabToFront, DownloadUtils::isAllowedToDownloadPage,
                     NewTabPageUma::recordOmniboxNavigation, TabWindowManagerSingleton::getInstance,
                     (url) -> mBookmarkBridgeSupplier.hasValue()
-                            && mBookmarkBridgeSupplier.get().isBookmarked(url));
+                            && mBookmarkBridgeSupplier.get().isBookmarked(url),
+                    VoiceToolbarButtonController::isToolbarMicEnabled);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mLocationBar = locationBarCoordinator;
         }
