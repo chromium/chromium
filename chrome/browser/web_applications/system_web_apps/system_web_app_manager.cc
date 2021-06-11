@@ -54,6 +54,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -195,10 +196,11 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::DIAGNOSTICS).show_in_launcher = false;
   }
 
-  infos.emplace(SystemAppType::SETTINGS,
-                SystemAppInfo("OSSettings", GURL(chrome::kChromeUISettingsURL),
-                              base::BindRepeating(
-                                  &CreateWebAppInfoForOSSettingsSystemWebApp)));
+  infos.emplace(
+      SystemAppType::SETTINGS,
+      SystemAppInfo(
+          "OSSettings", GURL(chrome::kChromeUIOSSettingsURL),
+          base::BindRepeating(&CreateWebAppInfoForOSSettingsSystemWebApp)));
   infos.at(SystemAppType::SETTINGS).uninstall_and_replace = {
       kSettingsAppId, ash::kInternalAppIdSettings};
   // Large enough to see the heading text "Settings" in the top-left.
@@ -589,8 +591,8 @@ void SystemWebAppManager::Start() {
   const base::TimeTicks install_start_time = base::TimeTicks::Now();
 
 #if DCHECK_IS_ON()
-  // Check Origin Trials are defined correctly.
   for (const auto& type_and_app_info : system_app_infos_) {
+    // Check Origin Trials are defined correctly.
     for (const auto& origin_to_trial_names :
          type_and_app_info.second.enabled_origin_trials) {
       // Only allow force enabled origin trials on chrome:// and
@@ -598,11 +600,16 @@ void SystemWebAppManager::Start() {
       const auto& scheme = origin_to_trial_names.first.scheme();
       DCHECK(scheme == content::kChromeUIScheme ||
              scheme == content::kChromeUIUntrustedScheme);
+      // TODO(https://crbug.com/1043843): Find some ways to validate supplied
+      // origin trial names. Ideally, construct them from some static const
+      // char*.
     }
-  }
 
-  // TODO(https://crbug.com/1043843): Find some ways to validate supplied origin
-  // trial names. Ideally, construct them from some static const char*.
+    // App's install_url and start_url should share the same origin.
+    DCHECK(url::IsSameOriginWith(
+        type_and_app_info.second.install_url,
+        type_and_app_info.second.app_info_factory.Run()->start_url));
+  }
 #endif  // DCHECK_IS_ON()
 
   std::vector<ExternalInstallOptions> install_options_list;

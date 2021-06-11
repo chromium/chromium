@@ -242,7 +242,7 @@ TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms() {
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
   SystemAppInfo app_info(
-      "Test", GURL("chrome://test-system-web-app/pwa.html"),
+      "Test", GURL("chrome://test-system-app/pwa.html"),
       base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   app_info.capture_navigations = true;
 

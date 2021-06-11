@@ -78,8 +78,11 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
           ->BrowserAppLauncher()
           ->LaunchAppWithParams(std::move(params));
 
-  if (wait_for_load)
+  if (wait_for_load) {
     navigation_observer.Wait();
+    // TODO(https://crbug.com/1218703): We should check the navigation succeeds
+    // (i.e. doesn't end up in an error page).
+  }
 
   if (out_browser)
     *out_browser = chrome::FindBrowserWithWebContents(web_contents);
