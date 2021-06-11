@@ -53,7 +53,8 @@ void ArcWindowHandler::LaunchArcGhostWindow(
       InitArcGhostWindow(
           this, app_id, session_id, restore_data->display_id.value(),
           restore_data->current_bounds.value(), restore_data->maximum_size,
-          restore_data->minimum_size, restore_data->status_bar_color,
+          restore_data->minimum_size, restore_data->title,
+          restore_data->status_bar_color,
           base::BindRepeating(&ArcWindowHandler::CloseWindow,
                               weak_ptr_factory_.GetWeakPtr(), session_id)));
 }

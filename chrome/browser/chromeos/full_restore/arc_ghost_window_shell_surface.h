@@ -23,6 +23,7 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     gfx::Rect bounds,
     absl::optional<gfx::Size> maximum_size,
     absl::optional<gfx::Size> minimum_size,
+    absl::optional<std::u16string> title,
     absl::optional<uint32_t> color,
     base::RepeatingClosure close_callback);
 
