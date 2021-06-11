@@ -27,6 +27,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -120,14 +121,19 @@ class ResetDataInstallableManager : public InstallableManager {
     quit_closure_ = quit_closure;
   }
 
+  bool GetOnResetData() { return is_reset_data_; }
+  void ClearOnResetData() { is_reset_data_ = false; }
+
  protected:
   void OnResetData() override {
+    is_reset_data_ = true;
     if (quit_closure_)
       quit_closure_.Run();
   }
 
  private:
   base::RepeatingClosure quit_closure_;
+  bool is_reset_data_ = false;
 };
 
 class CallbackTester {
@@ -1910,8 +1916,10 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   NavigateAndRunInstallableManager(browser(), tester.get(), GetManifestParams(),
                                    "/banners/manifest_test_page.html");
   // Simulate a manifest URL update by just calling the observer function.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   static_cast<content::WebContentsObserver*>(manager)->DidUpdateWebManifestURL(
-      nullptr, absl::nullopt);
+      web_contents->GetMainFrame(), absl::nullopt);
   run_loop.Run();
 
   ASSERT_EQ(tester->errors().size(), 1u);
@@ -2002,6 +2010,92 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_TRUE(tester->splash_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->splash_icon());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+}
+
+class InstallableManagerInPrerenderingBrowserTest
+    : public InstallableManagerBrowserTest {
+ public:
+  InstallableManagerInPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &InstallableManagerInPrerenderingBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~InstallableManagerInPrerenderingBrowserTest() override = default;
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
+                       InstallableManagerInPrerendering) {
+  auto manager = std::make_unique<ResetDataInstallableManager>(web_contents());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  manager->ClearOnResetData();
+
+  // Loads a page in the prerendering.
+  auto prerender_url =
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // The prerendering should not affect the current data.
+  EXPECT_FALSE(manager->GetOnResetData());
+
+  {
+    // Fetches the data.
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    manager->GetData(
+        GetWebAppParams(),
+        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
+                       base::Unretained(tester.get())));
+    run_loop.Run();
+  }
+  // It should have no data since manifest_test_page.html is loaded in the
+  // prerendering.
+  EXPECT_TRUE(manager->manifest().IsEmpty());
+  EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+
+  {
+    // If the page is activated from the prerendering and the data should be
+    // reset.
+    base::RunLoop run_loop;
+    manager->SetQuitClosure(run_loop.QuitClosure());
+    ui_test_utils::NavigateToURL(browser(), prerender_url);
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(manager->manifest().IsEmpty());
+  EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
+
+  {
+    // Fetch the data again. This should succeed.
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    manager->GetData(
+        GetWebAppParams(),
+        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
+                       base::Unretained(tester.get())));
+    run_loop.Run();
+    EXPECT_FALSE(tester->manifest().IsEmpty());
+    EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+    EXPECT_EQ(u"Manifest test app", tester->manifest().name);
+    EXPECT_EQ(std::u16string(),
+              tester->manifest().short_name.value_or(std::u16string()));
+  }
 }
 
 }  // namespace webapps

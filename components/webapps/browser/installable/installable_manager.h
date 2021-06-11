@@ -99,6 +99,8 @@ class InstallableManager
                            CheckWebapp);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerOfflineCapabilityBrowserTest,
                            CheckNotOfflineCapableStartUrl);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
+                           InstallableManagerInPrerendering);
 
   using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 

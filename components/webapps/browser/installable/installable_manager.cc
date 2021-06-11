@@ -973,7 +973,7 @@ void InstallableManager::OnDestruct(content::ServiceWorkerContext* context) {
 
 void InstallableManager::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  if (handle->IsInMainFrame() && handle->HasCommitted() &&
+  if (handle->IsInPrimaryMainFrame() && handle->HasCommitted() &&
       !handle->IsSameDocument()) {
     Reset(USER_NAVIGATED);
   }
