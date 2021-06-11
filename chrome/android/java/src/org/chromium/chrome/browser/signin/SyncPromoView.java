@@ -20,7 +20,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -180,8 +180,8 @@ public class SyncPromoView
 
         ButtonState positiveButton = new ButtonPresent(R.string.enable_sync_button, view -> {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(getContext(), SyncAndServicesSettings.class,
-                    SyncAndServicesSettings.createArguments(false));
+            settingsLauncher.launchSettingsActivity(getContext(), ManageSyncSettings.class,
+                    ManageSyncSettings.createArguments(false));
         });
 
         return new ViewState(descId, positiveButton);
