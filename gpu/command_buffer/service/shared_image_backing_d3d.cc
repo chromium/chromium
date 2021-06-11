@@ -449,7 +449,8 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
     texture_descriptor.format = wgpu_format;
     texture_descriptor.usage = GetAllowedDawnUsages();
     texture_descriptor.dimension = WGPUTextureDimension_2D;
-    texture_descriptor.size = {size().width(), size().height(), 1};
+    texture_descriptor.size = {static_cast<uint32_t>(size().width()),
+                               static_cast<uint32_t>(size().height()), 1};
     texture_descriptor.mipLevelCount = 1;
     texture_descriptor.sampleCount = 1;
 

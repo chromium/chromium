@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_crash_keys.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -178,15 +179,18 @@ bool VulkanInstance::Initialize(
   }
 
   VkInstanceCreateInfo instance_create_info = {
-      VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,           // sType
-      nullptr,                                          // pNext
-      0,                                                // flags
-      &app_info,                                        // pApplicationInfo
-      enabled_layer_names.size(),                       // enableLayerCount
-      enabled_layer_names.data(),                       // ppEnabledLayerNames
-      vulkan_info_.enabled_instance_extensions.size(),  // enabledExtensionCount
-      vulkan_info_.enabled_instance_extensions
-          .data(),  // ppEnabledExtensionNames
+      VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,  // sType
+      nullptr,                                 // pNext
+      0,                                       // flags
+      &app_info,                               // pApplicationInfo
+      base::checked_cast<uint32_t>(enabled_layer_names.size()),
+      // enableLayerCount
+      enabled_layer_names.data(),  // ppEnabledLayerNames
+      base::checked_cast<uint32_t>(
+          vulkan_info_.enabled_instance_extensions.size()),
+      // enabledExtensionCount
+      vulkan_info_.enabled_instance_extensions.data(),
+      // ppEnabledExtensionNames
   };
 
   result = vkCreateInstance(&instance_create_info, nullptr, &vk_instance_);

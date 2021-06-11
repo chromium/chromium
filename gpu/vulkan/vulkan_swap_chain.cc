@@ -178,7 +178,8 @@ bool VulkanSwapChain::InitializeSwapChain(
       .minImageCount = min_image_count,
       .imageFormat = surface_format.format,
       .imageColorSpace = surface_format.colorSpace,
-      .imageExtent = {image_size.width(), image_size.height()},
+      .imageExtent = {static_cast<uint32_t>(image_size.width()),
+                      static_cast<uint32_t>(image_size.height())},
       .imageArrayLayers = 1,
       .imageUsage = image_usage_flags,
       .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
@@ -362,7 +363,8 @@ bool VulkanSwapChain::PresentBuffer(const gfx::Rect& rect) {
 
   VkRectLayerKHR rect_layer = {
       .offset = {rect.x(), rect.y()},
-      .extent = {rect.width(), rect.height()},
+      .extent = {static_cast<uint32_t>(rect.width()),
+                 static_cast<uint32_t>(rect.height())},
       .layer = 0,
   };
 

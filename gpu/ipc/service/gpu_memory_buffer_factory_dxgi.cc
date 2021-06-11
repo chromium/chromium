@@ -56,8 +56,8 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
          usage == gfx::BufferUsage::SCANOUT);
 
   D3D11_TEXTURE2D_DESC desc = {
-      size.width(),
-      size.height(),
+      static_cast<UINT>(size.width()),
+      static_cast<UINT>(size.height()),
       1,
       1,
       dxgi_format,
