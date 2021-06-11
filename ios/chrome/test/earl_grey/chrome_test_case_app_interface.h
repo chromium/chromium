@@ -29,6 +29,9 @@
 // will return NO.
 + (BOOL)isCompletionInvokedWithUUID:(NSUUID*)completionUUID;
 
+// TODO(crbug.com/1218575): Remove once moved to EG.
++ (void)disableKeyboardTutorials;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_TEST_CASE_APP_INTERFACE_H_

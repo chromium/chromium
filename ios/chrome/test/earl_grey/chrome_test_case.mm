@@ -197,6 +197,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [[AppLaunchManager sharedManager] addObserver:self];
 
   [super setUp];
+
+  // TODO(crbug.com/1218575): Remove once moved to EG.
+  [ChromeTestCaseAppInterface disableKeyboardTutorials];
+
   [self resetAppState];
 
   ResetAuthentication();
