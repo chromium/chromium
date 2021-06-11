@@ -128,15 +128,6 @@ if (is_android) {
     ]
   }
 
-  group("telemetry_chrome_test_android_monochrome_bundle") {
-    testonly = true
-
-    data_deps = [
-      ":telemetry_chrome_test",
-      "//chrome/android:monochrome_public_bundle",
-    ]
-  }
-
   group("telemetry_chrome_test_android_weblayer") {
     testonly = true
 
@@ -155,28 +146,6 @@ if (is_android) {
       "//android_webview/test:webview_instrumentation_apk",
       "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
     ]
-  }
-
-  if (enable_chrome_android_internal) {
-    import("//clank/telemetry_browser_types.gni")
-
-    template("telemetry_chrome_test_clank_template") {
-      forward_variables_from(invoker, [ "telemetry_target_suffix" ])
-      group(target_name) {
-        testonly = true
-        data_deps = [
-          ":telemetry_chrome_test",
-          "//clank:telemetry_clank_test${telemetry_target_suffix}",
-        ]
-      }
-    }
-
-    foreach(_target_suffix, telemetry_clank_browser_target_suffixes) {
-      telemetry_chrome_test_clank_template(
-          "telemetry_chrome_test${_target_suffix}") {
-        telemetry_target_suffix = _target_suffix
-      }
-    }
   }
 }
 

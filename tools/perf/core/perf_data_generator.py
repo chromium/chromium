@@ -27,7 +27,6 @@ import sys
 import tempfile
 import textwrap
 
-from chrome_telemetry_build import android_browser_types
 from core import benchmark_finders
 from core import benchmark_utils
 from core import bot_platforms
@@ -128,11 +127,9 @@ CALIBRATION_BUILDERS = {
     },
     'android-pixel2-perf-calibration': {
         'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_monochrome_64_32_bundle',
+            'isolate': 'performance_test_suite',
         }],
-        'platform':
-        'android-chrome-64-bundle',
+        'platform': 'android-chrome-64-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
@@ -159,7 +156,7 @@ FYI_BUILDERS = {
     'android-nexus5x-perf-fyi': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_chrome',
+            'performance_test_suite',
             'extra_args': [
                 '--output-format=histograms',
                 '--experimental-tbmv3-metrics',
@@ -178,7 +175,7 @@ FYI_BUILDERS = {
     'android-pixel2-perf-fyi': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_chrome',
+            'performance_test_suite',
             'extra_args': [
                 '--output-format=histograms',
                 '--experimental-tbmv3-metrics',
@@ -198,11 +195,9 @@ FYI_BUILDERS = {
     },
     'android-pixel2-perf-aab-fyi': {
         'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_monochrome_bundle',
+            'isolate': 'performance_test_suite',
         }],
-        'platform':
-        'android-chrome-bundle',
+        'platform': 'android-chrome-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf-fyi',
             'os': 'Android',
@@ -544,7 +539,7 @@ BUILDERS = {
     'android-go-perf': {
         'tests': [{
             'name': 'performance_test_suite',
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite',
         }],
         'platform':
         'android-chrome',
@@ -572,7 +567,7 @@ BUILDERS = {
     'Android Nexus5 Perf': {
         'tests': [
             {
-                'isolate': 'performance_test_suite_android_chrome',
+                'isolate': 'performance_test_suite',
                 'extra_args': [
                     '--assert-gpu-compositing',
                 ],
@@ -633,11 +628,9 @@ BUILDERS = {
     },
     'android-pixel2-perf': {
         'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_monochrome_64_32_bundle',
+            'isolate': 'performance_test_suite',
         }],
-        'platform':
-        'android-chrome-64-bundle',
+        'platform': 'android-chrome-64-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
@@ -674,11 +667,9 @@ BUILDERS = {
     },
     'android-pixel4-perf': {
         'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_trichrome_bundle',
+            'isolate': 'performance_test_suite',
         }],
-        'platform':
-        'android-trichrome-bundle',
+        'platform': 'android-trichrome-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
@@ -689,7 +680,7 @@ BUILDERS = {
     },
     'android-pixel4a_power-perf': {
         'tests': [{
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite',
             'extra_args': [
                 '--experimental-tbmv3-metrics',
             ],
@@ -1189,15 +1180,6 @@ def _get_telemetry_perf_benchmarks_metadata():
 
 TELEMETRY_PERF_BENCHMARKS = _get_telemetry_perf_benchmarks_metadata()
 
-PERFORMANCE_TEST_SUITES = [
-    'performance_test_suite',
-    'performance_test_suite_eve',
-    'performance_webview_test_suite',
-    'performance_weblayer_test_suite',
-]
-for suffix in android_browser_types.TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES:
-  PERFORMANCE_TEST_SUITES.append('performance_test_suite' + suffix)
-
 
 def get_scheduled_non_telemetry_benchmarks(perf_waterfall_file):
   test_names = set()
@@ -1217,7 +1199,9 @@ def get_scheduled_non_telemetry_benchmarks(perf_waterfall_file):
     # TODO(eyaich): Determine new way to generate ownership based
     # on the benchmark bot map instead of on the generated tests
     # for new perf recipe.
-    if not name in PERFORMANCE_TEST_SUITES:
+    if not name in ('performance_test_suite', 'performance_test_suite_eve',
+                    'performance_webview_test_suite',
+                    'performance_weblayer_test_suite'):
       test_names.add(name)
 
   for platform in bot_platforms.ALL_PLATFORMS:

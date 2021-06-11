@@ -6,7 +6,6 @@ import argparse
 import os
 import json
 
-from chrome_telemetry_build import android_browser_types
 from core import path_util
 from core import bot_platforms
 
@@ -41,14 +40,6 @@ _VALID_WEBVIEW_BROWSERS = {
     'android-webview-google',
     'android-webview-trichrome-google-bundle',
 }
-
-_PERFORMANCE_TEST_SUITES = {
-    'performance_test_suite',
-    'performance_test_suite_eve',
-    'performance_webview_test_suite',
-}
-for suffix in android_browser_types.TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES:
-  _PERFORMANCE_TEST_SUITES.add('performance_test_suite' + suffix)
 
 
 def _ValidateSwarmingDimension(builder_name, swarming_dimensions):
@@ -153,16 +144,21 @@ def ValidateTestingBuilder(builder_name, builder_data):
     _ValidateSwarmingDimension(
         builder_name,
         swarming_dimensions=test_config['swarming'].get('dimension_sets', {}))
-    if test_config['isolate_name'] in _PERFORMANCE_TEST_SUITES:
+    if (test_config['isolate_name'] in ('performance_test_suite',
+                                        'performance_test_suite_eve',
+                                        'performance_webview_test_suite')):
       _ValidateShardingData(builder_name, test_config)
       _ValidateBrowserType(builder_name, test_config)
 
-  if any(suite in test_names for suite in _PERFORMANCE_TEST_SUITES):
-    if test_names[-1] not in _PERFORMANCE_TEST_SUITES:
+  if ('performance_test_suite' in test_names or
+      'performance_webview_test_suite' in test_names):
+    if test_names[-1] not in ('performance_test_suite',
+                              'performance_webview_test_suite'):
       raise ValueError(
-          'performance_test_suite-based targets must run at the end of builder '
-          '%s to avoid starving other test step (see crbug.com/873389). '
-          'Instead found %s' % (repr(builder_name), test_names[-1]))
+          'performance_test_suite or performance_webview_test_suite must run '
+          'at the end of builder %s to avoid starving other test step '
+          '(see crbug.com/873389). Instead found %s' % (
+            repr(builder_name), test_names[-1]))
 
 
 
