@@ -172,15 +172,17 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   PhysicalRect box_rect = ComputeBoxRect(cursor_, paint_offset, parent_offset_);
   IntRect visual_rect;
-  const LayoutSVGInlineText* svg_inline_text = nullptr;
+  const auto* const svg_inline_text =
+      DynamicTo<LayoutSVGInlineText>(layout_object);
   float scaling_factor = 1.0f;
-  if (text_item.Type() == NGFragmentItem::kSvgText) {
-    svg_inline_text = To<LayoutSVGInlineText>(layout_object);
+  if (UNLIKELY(svg_inline_text)) {
+    DCHECK_EQ(text_item.Type(), NGFragmentItem::kSvgText);
     scaling_factor = svg_inline_text->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
     visual_rect = EnclosingIntRect(
         svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
+    DCHECK_NE(text_item.Type(), NGFragmentItem::kSvgText);
     PhysicalRect ink_overflow = text_item.SelfInkOverflow();
     ink_overflow.Move(box_rect.offset);
     visual_rect = EnclosingIntRect(ink_overflow);
