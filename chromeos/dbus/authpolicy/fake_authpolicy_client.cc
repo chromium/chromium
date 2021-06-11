@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -56,6 +57,16 @@ void RunSignalCallback(const std::string& interface_name,
                        dbus::ObjectProxy::SignalCallback signal_callback) {
   signal_callback.Run(
       std::make_unique<dbus::Signal>(interface_name, method_name).get());
+}
+
+// Reads the password from the file descriptor `password_fd`.
+// Not very efficient, but simple!
+std::string ReadPassword(int password_fd) {
+  std::string password;
+  char c;
+  while (base::ReadFromFD(password_fd, &c, 1))
+    password.push_back(c);
+  return password;
 }
 
 }  // namespace
@@ -121,6 +132,9 @@ void FakeAuthPolicyClient::AuthenticateUser(
     int password_fd,
     AuthCallback callback) {
   DCHECK(InstallAttributes::Get()->IsActiveDirectoryManaged());
+
+  auth_password_ = ReadPassword(password_fd);
+
   authpolicy::ErrorType error = authpolicy::ERROR_NONE;
   authpolicy::ActiveDirectoryAccountInfo account_info;
   if (auth_error_ != authpolicy::ERROR_NONE) {

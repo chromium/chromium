@@ -41,7 +41,8 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
                     int password_fd,
                     JoinCallback callback) override;
 
-  // Runs |callback| with |auth_error_|.
+  // Runs `callback` with `auth_error_`. Stores given password in
+  // `auth_password_`.
   void AuthenticateUser(const authpolicy::AuthenticateUserRequest& request,
                         int password_fd,
                         AuthCallback callback) override;
@@ -130,6 +131,8 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
     refresh_user_policy_error_ = error;
   }
 
+  std::string auth_password() const { return auth_password_; }
+
   void DisableOperationDelayForTesting() {
     dbus_operation_delay_ = disk_operation_delay_ =
         base::TimeDelta::FromSeconds(0);
@@ -155,6 +158,9 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
   std::string dm_token_;
   std::string user_kerberos_creds_;
   std::string user_kerberos_conf_;
+
+  // Stores the password received in the last `AuthenticateUser()` call.
+  std::string auth_password_;
 
   std::set<std::string> user_affiliation_ids_;
   std::set<std::string> device_affiliation_ids_;
