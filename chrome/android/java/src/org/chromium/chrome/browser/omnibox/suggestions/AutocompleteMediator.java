@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -642,9 +641,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * autocomplete suggestions should be updated.
      */
     public void onTextChanged(String textWithoutAutocomplete, String textWithAutocomplete) {
-        // crbug.com/764749
-        Log.w(TAG, "onTextChangedForAutocomplete");
-
         if (mShouldPreventOmniboxAutocomplete) return;
 
         mIgnoreOmniboxItemSelection = true;
@@ -659,11 +655,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
         stopAutocomplete(false);
         if (TextUtils.isEmpty(textWithoutAutocomplete)) {
-            // crbug.com/764749
-            Log.w(TAG, "onTextChangedForAutocomplete: url is empty");
             hideSuggestions();
             postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
         } else {
+            // There may be no tabs when searching form omnibox in overview mode. In that case,
+            // LocationBarDataProvider.getCurrentUrl() returns NTP url.
             if (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox()) {
                 boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
                 int cursorPosition = mUrlBarEditingTextProvider.getSelectionStart()
@@ -680,11 +676,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                     mAutocomplete.start(currentUrl, pageClassification, textWithoutAutocomplete,
                             cursorPosition, preventAutocomplete, null, isQueryStartedFromTiles);
                 }, OMNIBOX_SUGGESTION_START_DELAY_MS);
-            } else {
-                // There may be no tabs when searching form omnibox in overview mode. In that case,
-                // LocationBarDataProvider.getCurrentUrl() returns NTP url.
-                // crbug.com/764749
-                Log.w(TAG, "onTextChangedForAutocomplete: no tab");
             }
         }
 

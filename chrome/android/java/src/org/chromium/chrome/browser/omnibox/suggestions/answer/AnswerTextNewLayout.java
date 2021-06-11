@@ -10,7 +10,6 @@ import android.text.style.TextAppearanceSpan;
 
 import androidx.annotation.StyleRes;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.AnswerTextType;
@@ -168,7 +167,7 @@ class AnswerTextNewLayout extends AnswerText {
                 break;
 
             default:
-                Log.w(TAG, "Unknown answer type: " + type);
+                assert false : "Unknown answer type: " + type;
                 res = R.style.TextAppearance_TextLarge_Primary;
                 break;
         }

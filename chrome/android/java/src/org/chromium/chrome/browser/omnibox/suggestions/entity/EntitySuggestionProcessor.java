@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
-import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
@@ -129,7 +128,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
         try {
             color = Color.parseColor(colorSpec);
         } catch (IllegalArgumentException e) {
-            Log.i(TAG, "Failed to parse dominant color: " + colorSpec);
+            // The supplied color information could not be parsed.
             return;
         }
 
