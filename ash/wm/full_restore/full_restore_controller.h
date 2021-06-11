@@ -112,11 +112,14 @@ class ASH_EXPORT FullRestoreController
   // `full_restore::kLaunchedFromFullRestoreKey`.
   void RestoreStateTypeAndClearLaunchedKey(aura::Window* window);
 
-  // Cancels and removes the Full Restore property clear callback for `window`
-  // from `restore_property_clear_callbacks_`. Also sets the `window`'s
-  // `full_restore::kLaunchedFromFullRestoreKey` to false if the window is not
-  // destroying.
+  // Calls `CancelAndRemoveRestorePropertyClearCallback()`. Also sets the
+  // `window`'s `full_restore::kLaunchedFromFullRestoreKey` to false if the
+  // window is not destroying.
   void ClearLaunchedKey(aura::Window* window);
+
+  // Cancels and removes the Full Restore property clear callback for `window`
+  // from `restore_property_clear_callbacks_`.
+  void CancelAndRemoveRestorePropertyClearCallback(aura::Window* window);
 
   // Sets a callback for testing that will be read from in
   // `OnWidgetInitialized()`.
