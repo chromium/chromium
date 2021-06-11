@@ -408,7 +408,7 @@ void GlassBrowserFrameView::Layout() {
   else
     LayoutTitleBar();
   LayoutClientView();
-  NonClientFrameView::Layout();
+  BrowserNonClientFrameView::Layout();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
