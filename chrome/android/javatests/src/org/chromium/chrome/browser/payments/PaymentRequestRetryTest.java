@@ -47,7 +47,8 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
             new PaymentRequestTestRule("payment_request_retry.html", this);
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @Override
     public void onMainActivityStarted() throws TimeoutException {

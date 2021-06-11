@@ -188,5 +188,7 @@
         <item name="colorOnBackground">@color/modern_grey_900</item>
         <item name="colorOnSurfaceVariant">@color/modern_grey_700</item>
         <item name="colorOnSurfaceInverse">@color/modern_white</item>
+        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
     </style>
 </resources>

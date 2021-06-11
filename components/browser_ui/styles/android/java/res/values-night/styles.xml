@@ -12,5 +12,7 @@
         <item name="colorOnBackground">@color/modern_white</item>
         <item name="colorOnSurfaceVariant">@color/white_alpha_70</item>
         <item name="colorOnSurfaceInverse">@color/modern_grey_800</item>
+        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
     </style>
 </resources>

@@ -153,7 +153,7 @@ public class InstantStartTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @Rule
     public ErrorCollector collector = new ErrorCollector();
