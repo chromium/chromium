@@ -7201,11 +7201,11 @@
       ],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': [
-        'chrome.*',
-        'chrome_os',
-        'android',
-        'webview_android',
+      'supported_on': [
+        'chrome.*:92-',
+        'chrome_os:92-',
+        'android:92-',
+        'webview_android:92-',
       ],
       'features': {
         'dynamic_refresh': True,
@@ -7242,11 +7242,11 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': [
-        'chrome.*',
-        'chrome_os',
-        'android',
-        'webview_android',
+      'supported_on': [
+        'chrome.*:92-',
+        'chrome_os:92-',
+        'android:92-',
+        'webview_android:92-',
       ],
       'features': {
         'dynamic_refresh': True,
