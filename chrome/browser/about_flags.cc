@@ -2791,10 +2791,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalWebPlatformFeaturesName,
      flag_descriptions::kExperimentalWebPlatformFeaturesDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableExperimentalWebPlatformFeatures)},
-    {"silent-debugger-extension-api",
-     flag_descriptions::kSilentDebuggerExtensionApiName,
-     flag_descriptions::kSilentDebuggerExtensionApiDescription, kOsDesktop,
-     SINGLE_VALUE_TYPE(switches::kSilentDebuggerExtensionAPI)},
 #if BUILDFLAG(ENABLE_SPELLCHECK) && defined(OS_ANDROID)
     {"enable-android-spellchecker",
      flag_descriptions::kEnableAndroidSpellcheckerDescription,

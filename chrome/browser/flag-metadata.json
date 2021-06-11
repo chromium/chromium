@@ -4845,11 +4845,6 @@
     "expiry_milestone" : 96
   },
   {
-    "name": "silent-debugger-extension-api",
-    "owners": [ "//extensions/OWNERS" ],
-    "expiry_milestone": 77
-  },
-  {
     "name": "simplify-sign-out-ios",
     "owners": [ "jlebel", "msarda", "fernandex" ],
     "expiry_milestone": 95

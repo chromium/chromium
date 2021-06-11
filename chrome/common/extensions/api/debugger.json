@@ -13,7 +13,7 @@
         "description": "Debuggee identifier. Either tabId or extensionId must be specified",
         "properties": {
           "tabId": { "type": "integer", "optional": true, "description": "The id of the tab which you intend to debug." },
-          "extensionId": { "type": "string", "optional": true, "description": "The id of the extension which you intend to debug. Attaching to an extension background page is only possible when 'silent-debugger-extension-api' flag is enabled on the target browser." },
+          "extensionId": { "type": "string", "optional": true, "description": "The id of the extension which you intend to debug. Attaching to an extension background page is only possible when the <code>--silent-debugger-extension-api</code> command-line switch is used." },
           "targetId": { "type": "string", "optional": true, "description": "The opaque id of the debug target." }
         }
       },

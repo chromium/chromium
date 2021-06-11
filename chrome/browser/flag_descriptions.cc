@@ -2241,12 +2241,6 @@ const char kHistoryManipulationInterventionDescription[] =
     "If a page does a client side redirect or adds to the history without a "
     "user gesture, then skip it on back/forward UI.";
 
-const char kSilentDebuggerExtensionApiName[] = "Silent Debugging";
-const char kSilentDebuggerExtensionApiDescription[] =
-    "Do not show the infobar when an extension attaches to a page via "
-    "chrome.debugger API. This is required to debug extension background "
-    "pages.";
-
 const char kIsolateOriginsName[] = "Isolate additional origins";
 const char kIsolateOriginsDescription[] =
     "Requires dedicated processes for an additional set of origins, "

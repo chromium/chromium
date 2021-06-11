@@ -1285,9 +1285,6 @@ extern const char kSkiaRendererDescription[];
 extern const char kHistoryManipulationIntervention[];
 extern const char kHistoryManipulationInterventionDescription[];
 
-extern const char kSilentDebuggerExtensionApiName[];
-extern const char kSilentDebuggerExtensionApiDescription[];
-
 extern const char kStorageAccessAPIName[];
 extern const char kStorageAccessAPIDescription[];
 

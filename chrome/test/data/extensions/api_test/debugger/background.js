@@ -12,8 +12,6 @@ var protocolPreviousVersion = "1.2";
 var unsupportedMinorProtocolVersion = "1.5";
 var unsupportedMajorProtocolVersion = "100.0";
 
-var SILENT_FLAG_REQUIRED = "Cannot attach to this target unless " +
-    "'silent-debugger-extension-api' flag is enabled.";
 var DETACHED_WHILE_HANDLING = "Detached while handling command.";
 
 let openTab;
