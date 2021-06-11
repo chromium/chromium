@@ -48,6 +48,7 @@ VIZ_COMMON_EXPORT bool IsSimpleFrameRateThrottlingEnabled();
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
 VIZ_COMMON_EXPORT bool IsOverlayPrioritizationEnabled();
+VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsSyncWindowDestructionEnabled();
 VIZ_COMMON_EXPORT bool IsUsingFastPathForSolidColorQuad();
 VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();

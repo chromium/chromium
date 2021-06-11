@@ -327,6 +327,8 @@ viz_component("service") {
 
   if (use_ozone) {
     sources += [
+      "display/overlay_processor_delegated.cc",
+      "display/overlay_processor_delegated.h",
       "display/overlay_processor_ozone.cc",
       "display/overlay_processor_ozone.h",
       "display_embedder/software_output_device_ozone.cc",

@@ -142,7 +142,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
-      std::vector<gfx::Rect>* content_bounds) final;
+      std::vector<gfx::Rect>* content_bounds)
+      // TODO(petermcneeley) : Restore to "final" once
+      // |OverlayProcessorDelegated| has been reintegrated into
+      // |OverlayProcessorOzone|.
+      override;
 
   // This function takes a pointer to the absl::optional instance so the
   // instance can be reset. When overlay strategy covers the entire output

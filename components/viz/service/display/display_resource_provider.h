@@ -79,6 +79,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   bool DoesResourceWantPromotionHint(ResourceId id);
 #endif
 
+  // Returns the size in pixels of the underlying gpu mailbox/software bitmap.
+  const gfx::Size GetResourceBackedSize(ResourceId id);
+
   bool IsResourceSoftwareBacked(ResourceId id);
   // Return the format of the underlying buffer that can be used for scanout.
   gfx::BufferFormat GetBufferFormat(ResourceId id);

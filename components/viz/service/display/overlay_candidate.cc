@@ -18,10 +18,12 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/gfx/video_types.h"
 
@@ -133,7 +135,8 @@ bool OverlayCandidate::FromDrawQuad(
     const SkMatrix44& output_color_matrix,
     const DrawQuad* quad,
     const gfx::RectF& primary_rect,
-    OverlayCandidate* candidate) {
+    OverlayCandidate* candidate,
+    bool allow_delegated_quads) {
   // It is currently not possible to set a color conversion matrix on an HW
   // overlay plane.
   // TODO(https://crbug.com/792757): Remove this check once the bug is resolved.
@@ -169,6 +172,12 @@ bool OverlayCandidate::FromDrawQuad(
       return FromStreamVideoQuad(resource_provider, surface_damage_rect_list,
                                  StreamVideoDrawQuad::MaterialCast(quad),
                                  candidate);
+    case DrawQuad::Material::kTiledContent:
+      if (!allow_delegated_quads)
+        return false;
+      return candidate->FromTileQuad(
+          resource_provider, surface_damage_rect_list,
+          TileDrawQuad::MaterialCast(quad), primary_rect, candidate);
     default:
       break;
   }
@@ -352,6 +361,36 @@ bool OverlayCandidate::FromVideoHoleQuad(
   // damage.
   candidate->damage_area_estimate =
       GetDamageRect(quad, surface_damage_rect_list).size().GetArea();
+  return true;
+}
+
+bool OverlayCandidate::FromTileQuad(
+    DisplayResourceProvider* resource_provider,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const TileDrawQuad* quad,
+    const gfx::RectF& primary_rect,
+    OverlayCandidate* candidate) {
+  if (quad->nearest_neighbor)
+    return false;
+
+  if (!FromDrawQuadResource(resource_provider, surface_damage_rect_list, quad,
+                            quad->resource_id(), false, candidate)) {
+    return false;
+  }
+
+  candidate->resource_size_in_pixels =
+      resource_provider->GetResourceBackedSize(quad->resource_id());
+
+  float x = quad->tex_coord_rect.origin().x() /
+            candidate->resource_size_in_pixels.width();
+  float xw = quad->tex_coord_rect.size().width() /
+             candidate->resource_size_in_pixels.width();
+  float y = quad->tex_coord_rect.origin().y() /
+            candidate->resource_size_in_pixels.height();
+  float yh = quad->tex_coord_rect.size().height() /
+             candidate->resource_size_in_pixels.height();
+  candidate->uv_rect = gfx::RectF(x, y, xw, yh);
+
   return true;
 }
 

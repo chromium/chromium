@@ -35,6 +35,9 @@ const base::Feature kEnableOverlayPrioritization {
 #endif
 };
 
+const base::Feature kDelegatedCompositing{"DelegatedCompositing",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSimpleFrameRateThrottling{
     "SimpleFrameRateThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -145,6 +148,10 @@ bool IsAdpfEnabled() {
 
 bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
+}
+
+bool IsDelegatedCompositingEnabled() {
+  return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }
 
 // If a synchronous IPC should used when destroying windows. This exists to test

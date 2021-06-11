@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/viz_service_export.h"
@@ -43,7 +44,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                            const SkMatrix44& output_color_matrix,
                            const DrawQuad* quad,
                            const gfx::RectF& primary_rect,
-                           OverlayCandidate* candidate);
+                           OverlayCandidate* candidate,
+                           bool allow_delegated_quads = false);
   // Returns true if |quad| will not block quads underneath from becoming
   // an overlay.
   static bool IsInvisibleQuad(const DrawQuad* quad);
@@ -154,6 +156,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                               const TextureDrawQuad* quad,
                               const gfx::RectF& primary_rect,
                               OverlayCandidate* candidate);
+
+  static bool FromTileQuad(DisplayResourceProvider* resource_provider,
+                           SurfaceDamageRectList* surface_damage_rect_list,
+                           const TileDrawQuad* quad,
+                           const gfx::RectF& primary_rect,
+                           OverlayCandidate* candidate);
   static bool FromStreamVideoQuad(
       DisplayResourceProvider* resource_provider,
       SurfaceDamageRectList* surface_damage_rect_list,
