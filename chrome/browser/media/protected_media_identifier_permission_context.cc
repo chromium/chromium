@@ -23,6 +23,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <utility>
 
@@ -35,7 +36,9 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_prefs/user_prefs.h"
-#elif !defined(OS_ANDROID) && !defined(OS_WIN)
+#endif
+
+#if !(defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_CHROMEOS))
 #error This file currently only supports Chrome OS, Android and Windows.
 #endif
 

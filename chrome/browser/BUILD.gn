@@ -5438,7 +5438,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_android || is_chromeos_ash || is_win) {
+  if (is_android || is_chromeos || is_win) {
     sources += [
       "media/protected_media_identifier_permission_context.cc",
       "media/protected_media_identifier_permission_context.h",

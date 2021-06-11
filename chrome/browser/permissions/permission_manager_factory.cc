@@ -40,7 +40,7 @@
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
 #endif
 
@@ -77,7 +77,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
           std::make_unique<GeolocationPermissionContextDelegateAndroid>(
               profile));
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID) || defined(OS_WIN)
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_WIN)
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<ProtectedMediaIdentifierPermissionContext>(profile);
 #endif
