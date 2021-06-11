@@ -38,6 +38,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -101,6 +102,9 @@ class VirtualKeyboardController : public ui::VirtualKeyboardController {
     if (keyboard_ui_controller_->IsEnabled() &&
         !keyboard_ui_controller_->keyboard_locked()) {
       keyboard_ui_controller_->ShowKeyboard(false /* locked */);
+      for (auto& observer : observer_list_) {
+        observer.OnKeyboardVisible(gfx::Rect());
+      }
       return true;
     }
     return false;
@@ -108,15 +112,18 @@ class VirtualKeyboardController : public ui::VirtualKeyboardController {
 
   void DismissVirtualKeyboard() override {
     keyboard_ui_controller_->HideKeyboardByUser();
+    for (auto& observer : observer_list_) {
+      observer.OnKeyboardHidden();
+    }
   }
 
   void AddObserver(ui::VirtualKeyboardControllerObserver* observer) override {
-    // TODO(shend): Implement.
+    observer_list_.AddObserver(observer);
   }
 
   void RemoveObserver(
       ui::VirtualKeyboardControllerObserver* observer) override {
-    // TODO(shend): Implement.
+    observer_list_.RemoveObserver(observer);
   }
 
   bool IsKeyboardVisible() override {
@@ -125,6 +132,8 @@ class VirtualKeyboardController : public ui::VirtualKeyboardController {
 
  private:
   KeyboardUIController* keyboard_ui_controller_;
+  base::ObserverList<ui::VirtualKeyboardControllerObserver>::Unchecked
+      observer_list_;
 };
 
 }  // namespace
