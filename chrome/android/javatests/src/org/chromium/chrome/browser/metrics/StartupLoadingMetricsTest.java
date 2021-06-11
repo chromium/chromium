@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.metrics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
@@ -215,6 +216,8 @@ public class StartupLoadingMetricsTest {
     @Test
     @LargeTest
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1062055")
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1062055")
     public void testBackgroundedPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(() -> {
             Intent intent = new Intent(Intent.ACTION_VIEW);
