@@ -20,8 +20,8 @@
 #include "content/browser/indexed_db/indexed_db_origin_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
-#include "url/origin.h"
 
 namespace content {
 class IndexedDBBackingStore;
@@ -36,8 +36,8 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // shut off.
 CONTENT_EXPORT extern const base::Feature kCompactIDBOnClose;
 
-// IndexedDBOriginState manages the per-origin IndexedDB state, and contains the
-// backing store for the origin.
+// IndexedDBOriginState manages the per-storage_key IndexedDB state, and
+// contains the backing store for the storage_key.
 //
 // This class is expected to manage its own lifetime by using the
 // |destruct_myself_| closure, which is expected to destroy this object in the
@@ -61,7 +61,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
   static constexpr const base::TimeDelta kMaxEarliestGlobalSweepFromNow =
       base::TimeDelta::FromHours(1);
   // Maximum time interval between runs of the IndexedDBSweeper for a given
-  // origin. Sweeping only occurs after backing store close.
+  // storage_key. Sweeping only occurs after backing store close.
   // Visible for testing.
   static constexpr const base::TimeDelta kMaxEarliestOriginSweepFromNow =
       base::TimeDelta::FromDays(3);
@@ -72,7 +72,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
   static constexpr const base::TimeDelta kMaxEarliestGlobalCompactionFromNow =
       base::TimeDelta::FromHours(1);
   // Maximum time interval between runs of the IndexedDBCompactionTask for a
-  // given origin. Compaction only occurs after backing store close.
+  // given storage_key. Compaction only occurs after backing store close.
   // Visible for testing.
   static constexpr const base::TimeDelta kMaxEarliestOriginCompactionFromNow =
       base::TimeDelta::FromDays(3);
@@ -93,7 +93,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // |earliest_global_sweep_time| and |earliest_global_compaction_time| are
   // expected to outlive this object.
   IndexedDBOriginState(
-      url::Origin origin,
+      blink::StorageKey storage_key,
       bool persist_for_incognito,
       base::Clock* clock,
       TransactionalLevelDBFactory* transactional_leveldb_factory,
@@ -123,7 +123,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
 
   void StopPersistingForIncognito();
 
-  const url::Origin& origin() { return origin_; }
+  const blink::StorageKey& storage_key() { return storage_key_; }
   IndexedDBBackingStore* backing_store() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
@@ -208,7 +208,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
 
   // True if this factory should be remain alive due to the storage partition
   // being for incognito mode, and our backing store being in-memory. This is

@@ -120,7 +120,7 @@ constexpr const base::TimeDelta
     IndexedDBOriginState::kMaxEarliestOriginCompactionFromNow;
 
 IndexedDBOriginState::IndexedDBOriginState(
-    url::Origin origin,
+    blink::StorageKey storage_key,
     bool persist_for_incognito,
     base::Clock* clock,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
@@ -130,7 +130,7 @@ IndexedDBOriginState::IndexedDBOriginState(
     TasksAvailableCallback notify_tasks_callback,
     TearDownCallback tear_down_callback,
     std::unique_ptr<IndexedDBBackingStore> backing_store)
-    : origin_(std::move(origin)),
+    : storage_key_(std::move(storage_key)),
       persist_for_incognito_(persist_for_incognito),
       clock_(clock),
       transactional_leveldb_factory_(transactional_leveldb_factory),

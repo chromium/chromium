@@ -771,8 +771,7 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
       storage_key, weak_factory_.GetWeakPtr());
 
   auto origin_state = std::make_unique<IndexedDBOriginState>(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      storage_key.origin(),
+      storage_key,
       /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
       &class_factory_->transactional_leveldb_factory(), &earliest_sweep_,
       &earliest_compaction_, std::move(lock_manager),
@@ -1020,14 +1019,10 @@ void IndexedDBFactoryImpl::RunTasksForOrigin(
     case IndexedDBOriginState::RunTasksResult::kDone:
       return;
     case IndexedDBOriginState::RunTasksResult::kError:
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      OnDatabaseError(blink::StorageKey(origin_state->origin()), status,
-                      nullptr);
+      OnDatabaseError(origin_state->storage_key(), status, nullptr);
       return;
     case IndexedDBOriginState::RunTasksResult::kCanBeDestroyed:
-      factories_per_storage_key_.erase(
-          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-          blink::StorageKey(origin_state->origin()));
+      factories_per_storage_key_.erase(origin_state->storage_key());
       return;
   }
 }
