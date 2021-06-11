@@ -211,7 +211,7 @@ def capture(cmd, cwd):
   env['LANGUAGE'] = 'en_US.UTF-8'
   p = subprocess.Popen(
       cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
-  return p.communicate()[0]
+  return p.communicate()[0].decode('utf-8', 'ignore')
 
 
 def get_git_root(dir_path):
