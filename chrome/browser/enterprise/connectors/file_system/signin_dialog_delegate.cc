@@ -63,7 +63,7 @@ FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
   SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_custom_frame(false);
-  SetCancelCallback(
+  SetCloseCallback(
       base::BindOnce(&FileSystemSigninDialogDelegate::OnCancellation,
                      weak_factory_.GetWeakPtr()));
 
