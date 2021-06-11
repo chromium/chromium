@@ -88,8 +88,8 @@ bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
 
 base::UnguessableToken BrowserGpuVideoAcceleratorFactories::GetChannelToken() {
   if (channel_token_.is_empty()) {
-    context_provider_->GetCommandBufferProxy()->channel()->Send(
-        new GpuCommandBufferMsg_GetChannelToken(&channel_token_));
+    context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
+        &channel_token_);
   }
 
   return channel_token_;

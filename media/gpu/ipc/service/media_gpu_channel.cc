@@ -5,9 +5,7 @@
 #include "media/gpu/ipc/service/media_gpu_channel.h"
 
 #include "base/single_thread_task_runner.h"
-#include "base/unguessable_token.h"
 #include "gpu/ipc/service/gpu_channel.h"
-#include "ipc/message_filter.h"
 #include "media/gpu/ipc/common/media_messages.h"
 #include "media/gpu/ipc/service/gpu_video_decode_accelerator.h"
 
@@ -33,54 +31,10 @@ class MediaGpuChannelDispatchHelper {
   DISALLOW_COPY_AND_ASSIGN(MediaGpuChannelDispatchHelper);
 };
 
-// Filter to respond to GetChannelToken on the IO thread.
-class MediaGpuChannelFilter : public IPC::MessageFilter {
- public:
-  explicit MediaGpuChannelFilter(const base::UnguessableToken& channel_token)
-      : channel_token_(channel_token) {}
-
-  void OnFilterAdded(IPC::Channel* channel) override { channel_ = channel; }
-
-  void OnFilterRemoved() override { channel_ = nullptr; }
-
-  bool OnMessageReceived(const IPC::Message& msg) override {
-    bool handled = true;
-    IPC_BEGIN_MESSAGE_MAP(MediaGpuChannelFilter, msg)
-      IPC_MESSAGE_HANDLER_DELAY_REPLY(GpuCommandBufferMsg_GetChannelToken,
-                                      OnGetChannelToken)
-      IPC_MESSAGE_UNHANDLED(handled = false)
-    IPC_END_MESSAGE_MAP()
-    return handled;
-  }
-
-  void OnGetChannelToken(IPC::Message* reply_message) {
-    GpuCommandBufferMsg_GetChannelToken::WriteReplyParams(reply_message,
-                                                          channel_token_);
-    Send(reply_message);
-  }
-
-  bool Send(IPC::Message* msg) {
-    if (channel_)
-      return channel_->Send(msg);
-    return false;
-  }
-
- private:
-  ~MediaGpuChannelFilter() override = default;
-
-  IPC::Channel* channel_;
-  base::UnguessableToken channel_token_;
-};
-
 MediaGpuChannel::MediaGpuChannel(
     gpu::GpuChannel* channel,
-    const base::UnguessableToken& channel_token,
     const AndroidOverlayMojoFactoryCB& overlay_factory_cb)
-    : channel_(channel),
-      filter_(new MediaGpuChannelFilter(channel_token)),
-      overlay_factory_cb_(overlay_factory_cb) {
-  channel_->AddFilter(filter_.get());
-}
+    : channel_(channel), overlay_factory_cb_(overlay_factory_cb) {}
 
 MediaGpuChannel::~MediaGpuChannel() = default;
 

@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
@@ -979,8 +980,10 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
     return;
   }
 
+  auto channel_token = base::UnguessableToken::Create();
   gpu::GpuChannel* gpu_channel = gpu_channel_manager_->EstablishChannel(
-      client_id, client_tracing_id, is_gpu_host, cache_shaders_on_disk);
+      channel_token, client_id, client_tracing_id, is_gpu_host,
+      cache_shaders_on_disk);
 
   if (!gpu_channel) {
     // This returns a null handle, which is treated by the client as a failure
@@ -992,7 +995,7 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
   mojo::MessagePipe pipe;
   gpu_channel->Init(pipe.handle0.release(), shutdown_event_);
 
-  media_gpu_channel_manager_->AddChannel(client_id);
+  media_gpu_channel_manager_->AddChannel(client_id, channel_token);
 
   std::move(callback).Run(std::move(pipe.handle1), gpu_info_,
                           gpu_feature_info_);

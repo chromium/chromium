@@ -33,7 +33,8 @@ class MediaGpuChannelManager
   explicit MediaGpuChannelManager(gpu::GpuChannelManager* channel_manager);
   ~MediaGpuChannelManager();
 
-  void AddChannel(int32_t client_id);
+  void AddChannel(int32_t client_id,
+                  const base::UnguessableToken& channel_token);
   void RemoveChannel(int32_t client_id);
   void DestroyAllChannels();
 

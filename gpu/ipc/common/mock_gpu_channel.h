@@ -19,6 +19,7 @@ class MockGpuChannel : public mojom::GpuChannel {
   // mojom::GpuChannel:
   MOCK_METHOD0(CrashForTesting, void());
   MOCK_METHOD0(TerminateForTesting, void());
+  MOCK_METHOD1(GetChannelToken, void(GetChannelTokenCallback));
   MOCK_METHOD0(Flush, bool());
   MOCK_METHOD1(Flush, void(FlushCallback));
   MOCK_METHOD6(CreateCommandBuffer,
@@ -45,21 +46,12 @@ class MockGpuChannel : public mojom::GpuChannel {
                void(std::vector<mojom::DeferredRequestPtr>));
 #if defined(OS_ANDROID)
   MOCK_METHOD3(CreateStreamTexture,
-               bool(int32_t,
-                    mojo::PendingAssociatedReceiver<mojom::StreamTexture>,
-                    bool*));
-  MOCK_METHOD3(CreateStreamTexture,
                void(int32_t,
                     mojo::PendingAssociatedReceiver<mojom::StreamTexture>,
                     CreateStreamTextureCallback));
 #endif  // defined(OS_ANDROID)
   MOCK_METHOD4(WaitForTokenInRange,
-               bool(int32_t, int32_t, int32_t, CommandBuffer::State*));
-  MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));
-  MOCK_METHOD5(
-      WaitForGetOffsetInRange,
-      bool(int32_t, uint32_t, int32_t, int32_t, CommandBuffer::State*));
   MOCK_METHOD5(WaitForGetOffsetInRange,
                void(int32_t,
                     uint32_t,

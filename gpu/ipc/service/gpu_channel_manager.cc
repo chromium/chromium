@@ -419,18 +419,20 @@ GpuChannel* GpuChannelManager::LookupChannel(int32_t client_id) const {
   return it != gpu_channels_.end() ? it->second.get() : nullptr;
 }
 
-GpuChannel* GpuChannelManager::EstablishChannel(int client_id,
-                                                uint64_t client_tracing_id,
-                                                bool is_gpu_host,
-                                                bool cache_shaders_on_disk) {
+GpuChannel* GpuChannelManager::EstablishChannel(
+    const base::UnguessableToken& channel_token,
+    int client_id,
+    uint64_t client_tracing_id,
+    bool is_gpu_host,
+    bool cache_shaders_on_disk) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (gr_shader_cache_ && cache_shaders_on_disk)
     gr_shader_cache_->CacheClientIdOnDisk(client_id);
 
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
-      this, scheduler_, sync_point_manager_, share_group_, task_runner_,
-      io_task_runner_, client_id, client_tracing_id, is_gpu_host,
+      this, channel_token, scheduler_, sync_point_manager_, share_group_,
+      task_runner_, io_task_runner_, client_id, client_tracing_id, is_gpu_host,
       image_decode_accelerator_worker_);
 
   if (!gpu_channel)

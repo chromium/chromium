@@ -298,8 +298,8 @@ void CastGpuFactoryImpl::SetupContext() {
   }
 
   // Get the channel token for the current connection.
-  context_provider_->GetCommandBufferProxy()->channel()->Send(
-      new GpuCommandBufferMsg_GetChannelToken(&channel_token_));
+  context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
+      &channel_token_);
 
   gpu_->CreateVideoEncodeAcceleratorProvider(
       vea_provider_.BindNewPipeAndPassReceiver());

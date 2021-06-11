@@ -34,15 +34,6 @@ IPC_STRUCT_BEGIN(AcceleratedVideoDecoderHostMsg_PictureReady_Params)
 IPC_STRUCT_END()
 
 //------------------------------------------------------------------------------
-// Utility Messages
-
-// Sent from Renderer to GPU process to request a token identifying the channel.
-// These tokens can be used to prove ownership of the channel. The intended use
-// case is to share the command buffer with MojoMediaApplication.
-IPC_SYNC_MESSAGE_CONTROL0_1(GpuCommandBufferMsg_GetChannelToken,
-                            base::UnguessableToken /* channel_token */)
-
-//------------------------------------------------------------------------------
 // Accelerated Video Decoder Messages
 // These messages are sent from Renderer process to GPU process.
 

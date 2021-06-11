@@ -140,6 +140,10 @@ interface GpuChannel {
   // intentionally terminated with an exit code of 0.
   TerminateForTesting();
 
+  // Returns a globally unique token which can be used by other interfaces to
+  // securely identify this GpuChannel endpoint within the GPU process.
+  [Sync] GetChannelToken() => (mojo_base.mojom.UnguessableToken token);
+
   // A simple no-op message used as a fence to ensure all previously sent
   // messages have been received.
   //

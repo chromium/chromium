@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event_filter.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
+#include "base/unguessable_token.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -179,7 +180,8 @@ TEST_F(GpuChannelManagerTest, EstablishChannel) {
 
   ASSERT_TRUE(channel_manager());
   GpuChannel* channel = channel_manager()->EstablishChannel(
-      kClientId, kClientTracingId, false, true);
+      base::UnguessableToken::Create(), kClientId, kClientTracingId, false,
+      true);
   EXPECT_TRUE(channel);
   EXPECT_EQ(channel_manager()->LookupChannel(kClientId), channel);
 }

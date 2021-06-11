@@ -18,12 +18,10 @@ class GpuChannel;
 namespace media {
 
 class MediaGpuChannelDispatchHelper;
-class MediaGpuChannelFilter;
 
 class MediaGpuChannel : public IPC::Listener, public IPC::Sender {
  public:
   MediaGpuChannel(gpu::GpuChannel* channel,
-                  const base::UnguessableToken& channel_token,
                   const AndroidOverlayMojoFactoryCB& overlay_factory_cb);
   ~MediaGpuChannel() override;
 
@@ -43,7 +41,6 @@ class MediaGpuChannel : public IPC::Listener, public IPC::Sender {
                             IPC::Message* reply_message);
 
   gpu::GpuChannel* const channel_;
-  scoped_refptr<MediaGpuChannelFilter> filter_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaGpuChannel);

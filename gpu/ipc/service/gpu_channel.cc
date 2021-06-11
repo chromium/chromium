@@ -34,6 +34,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/image_factory.h"
@@ -105,6 +106,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
  public:
   GpuChannelMessageFilter(
       gpu::GpuChannel* gpu_channel,
+      const base::UnguessableToken& channel_token,
       Scheduler* scheduler,
       ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
@@ -147,6 +149,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   // mojom::GpuChannel:
   void CrashForTesting() override;
   void TerminateForTesting() override;
+  void GetChannelToken(GetChannelTokenCallback callback) override;
   void Flush(FlushCallback callback) override;
   void CreateCommandBuffer(
       mojom::CreateCommandBufferParamsPtr config,
@@ -222,6 +225,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   // before dereferencing.
   gpu::GpuChannel* gpu_channel_ GUARDED_BY(gpu_channel_lock_) = nullptr;
 
+  // A token which can be retrieved by GetChannelToken to uniquely identify this
+  // channel. Assigned at construction time by the GpuChannelManager, where the
+  // token-to-GpuChannel mapping lives.
+  const base::UnguessableToken channel_token_;
+
   Scheduler* scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
@@ -237,10 +245,12 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
 
 GpuChannelMessageFilter::GpuChannelMessageFilter(
     gpu::GpuChannel* gpu_channel,
+    const base::UnguessableToken& channel_token,
     Scheduler* scheduler,
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : gpu_channel_(gpu_channel),
+      channel_token_(channel_token),
       scheduler_(scheduler),
       main_task_runner_(std::move(main_task_runner)),
       image_decode_accelerator_stub_(
@@ -444,6 +454,11 @@ void GpuChannelMessageFilter::TerminateForTesting() {
   receiver_.ReportBadMessage("TerminateForTesting is a test-only API");
 }
 
+void GpuChannelMessageFilter::GetChannelToken(
+    GetChannelTokenCallback callback) {
+  std::move(callback).Run(channel_token_);
+}
+
 void GpuChannelMessageFilter::Flush(FlushCallback callback) {
   std::move(callback).Run();
 }
@@ -552,6 +567,7 @@ void GpuChannelMessageFilter::WaitForGetOffsetInRange(
 
 GpuChannel::GpuChannel(
     GpuChannelManager* gpu_channel_manager,
+    const base::UnguessableToken& channel_token,
     Scheduler* scheduler,
     SyncPointManager* sync_point_manager,
     scoped_refptr<gl::GLShareGroup> share_group,
@@ -573,8 +589,9 @@ GpuChannel::GpuChannel(
       is_gpu_host_(is_gpu_host) {
   DCHECK(gpu_channel_manager_);
   DCHECK(client_id_);
-  filter_ = new GpuChannelMessageFilter(
-      this, scheduler, image_decode_accelerator_worker, task_runner);
+  filter_ =
+      new GpuChannelMessageFilter(this, channel_token, scheduler,
+                                  image_decode_accelerator_worker, task_runner);
 }
 
 GpuChannel::~GpuChannel() {
@@ -598,6 +615,7 @@ GpuChannel::~GpuChannel() {
 
 std::unique_ptr<GpuChannel> GpuChannel::Create(
     GpuChannelManager* gpu_channel_manager,
+    const base::UnguessableToken& channel_token,
     Scheduler* scheduler,
     SyncPointManager* sync_point_manager,
     scoped_refptr<gl::GLShareGroup> share_group,
@@ -607,11 +625,11 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
     uint64_t client_tracing_id,
     bool is_gpu_host,
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker) {
-  auto gpu_channel = base::WrapUnique(
-      new GpuChannel(gpu_channel_manager, scheduler, sync_point_manager,
-                     std::move(share_group), std::move(task_runner),
-                     std::move(io_task_runner), client_id, client_tracing_id,
-                     is_gpu_host, image_decode_accelerator_worker));
+  auto gpu_channel = base::WrapUnique(new GpuChannel(
+      gpu_channel_manager, channel_token, scheduler, sync_point_manager,
+      std::move(share_group), std::move(task_runner), std::move(io_task_runner),
+      client_id, client_tracing_id, is_gpu_host,
+      image_decode_accelerator_worker));
 
   if (!gpu_channel->CreateSharedImageStub()) {
     LOG(ERROR) << "GpuChannel: Failed to create SharedImageStub";
