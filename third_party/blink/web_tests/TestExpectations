@@ -1650,6 +1650,14 @@ crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck.h
 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
 crbug.com/666993 [ Debug ] external/wpt/requestidlecallback/callback-idle-periods.html [ Pass Timeout ]
 
+# crbug.com/1218716: These fail when TrustTokenOriginTrial is enabled.
+crbug.com/1218716 external/wpt/trust-tokens/trust-token-parameter-validation-xhr.tentative.https.html [ Failure ]
+crbug.com/1218716 external/wpt/trust-tokens/trust-token-parameter-validation.tentative.https.html [ Failure ]
+crbug.com/1218716 webexposed/element-instance-property-listing.html [ Failure ]
+crbug.com/1218716 webexposed/feature-policy-features.html [ Failure ]
+crbug.com/1218716 webexposed/global-interface-listing-dedicated-worker.html [ Failure ]
+crbug.com/1218716 webexposed/global-interface-listing-shared-worker.html [ Failure ]
+crbug.com/1218716 webexposed/global-interface-listing.html [ Failure ]
 
 # crbug.com/1095379: These three time out 100% of the time across all platforms:
 crbug.com/919789 images/image-click-scale-restore-zoomed-image.html [ Timeout ]
