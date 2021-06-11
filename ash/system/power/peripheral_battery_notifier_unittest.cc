@@ -52,7 +52,6 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
   ~PeripheralBatteryNotifierTest() override = default;
 
   void SetUp() override {
-    ui::DeviceDataManager::CreateInstance();
     chromeos::PowerManagerClient::InitializeFake();
     AshTestBase::SetUp();
     ASSERT_TRUE(ui::DeviceDataManager::HasInstance());
@@ -71,11 +70,10 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
   }
 
   void TearDown() override {
-    AshTestBase::TearDown();
     battery_notifier_.reset();
     battery_listener_.reset();
+    AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();
-    ui::DeviceDataManager::DeleteInstance();
   }
 
   // Extracts the battery percentage from the message of a notification.
