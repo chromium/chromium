@@ -41,47 +41,47 @@ const base::Feature kAmbientModeFeature{"ChromeOSAmbientMode",
 constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelAlbumEnabled{
     &kAmbientModeFeature, "CapturedOnPixelAlbumEnabled", false};
 
-constexpr base::FeatureParam<bool> kAmbientModeFineArtAlbumEnabled{
-    &kAmbientModeFeature, "FineArtAlbumEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotoAlbumEnabled{
-    &kAmbientModeFeature, "FeaturedPhotoAlbumEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled{
-    &kAmbientModeFeature, "EarthAndSpaceAlbumEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
-    &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModeDefaultFeedEnabled{
-    &kAmbientModeFeature, "DefaultFeedEnabled", false};
-
-constexpr base::FeatureParam<bool> kAmbientModePersonalPhotosEnabled{
-    &kAmbientModeFeature, "PersonalPhotosEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotosEnabled{
-    &kAmbientModeFeature, "FeaturedPhotosEnabled", true};
-
-constexpr base::FeatureParam<bool> kAmbientModeGeoPhotosEnabled{
-    &kAmbientModeFeature, "GeoPhotosEnabled", true};
+constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelPhotosEnabled{
+    &kAmbientModeFeature, "CapturedOnPixelPhotosEnabled", false};
 
 constexpr base::FeatureParam<bool> kAmbientModeCulturalInstitutePhotosEnabled{
     &kAmbientModeFeature, "CulturalInstitutePhotosEnabled", false};
 
+constexpr base::FeatureParam<bool> kAmbientModeDefaultFeedEnabled{
+    &kAmbientModeFeature, "DefaultFeedEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeEarthAndSpaceAlbumEnabled{
+    &kAmbientModeFeature, "EarthAndSpaceAlbumEnabled", true};
+
+constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotoAlbumEnabled{
+    &kAmbientModeFeature, "FeaturedPhotoAlbumEnabled", true};
+
+constexpr base::FeatureParam<bool> kAmbientModeFeaturedPhotosEnabled{
+    &kAmbientModeFeature, "FeaturedPhotosEnabled", true};
+
+constexpr base::FeatureParam<bool> kAmbientModeFineArtAlbumEnabled{
+    &kAmbientModeFeature, "FineArtAlbumEnabled", false};
+
+constexpr base::FeatureParam<bool> kAmbientModeGeoPhotosEnabled{
+    &kAmbientModeFeature, "GeoPhotosEnabled", true};
+
+constexpr base::FeatureParam<bool> kAmbientModePersonalPhotosEnabled{
+    &kAmbientModeFeature, "PersonalPhotosEnabled", true};
+
 constexpr base::FeatureParam<bool> kAmbientModeRssPhotosEnabled{
     &kAmbientModeFeature, "RssPhotosEnabled", false};
 
-constexpr base::FeatureParam<bool> kAmbientModeCapturedOnPixelPhotosEnabled{
-    &kAmbientModeFeature, "CapturedOnPixelPhotosEnabled", false};
-
-// Controls whether to enable Ambient mode album selection with photo previews.
-const base::Feature kAmbientModePhotoPreviewFeature{
-    "ChromeOSAmbientModePhotoPreview", base::FEATURE_ENABLED_BY_DEFAULT};
+constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
+    &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
 
 // Controls whether to allow Dev channel to use Prod server feature.
 const base::Feature kAmbientModeDevUseProdFeature{
     "ChromeOSAmbientModeDevChannelUseProdServer",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to enable Ambient mode album selection with photo previews.
+const base::Feature kAmbientModePhotoPreviewFeature{
+    "ChromeOSAmbientModePhotoPreview", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // See https://crbug.com/1204551
 const base::Feature kAppListBubble{"AppListBubble",
@@ -99,11 +99,6 @@ const base::Feature kArcManagedAdbSideloadingSupport{
 // Controls whether to enable support for View.onKeyPreIme() of ARC apps.
 const base::Feature kArcPreImeKeyEventSupport{"ArcPreImeKeyEventSupport",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables or disables auto screen-brightness adjustment when ambient light
-// changes.
-const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable assistive autocorrect.
 const base::Feature kAssistAutoCorrect{"AssistAutoCorrect",
@@ -137,6 +132,11 @@ const base::Feature kAssistPersonalInfoName{"AssistPersonalInfoName",
 const base::Feature kAssistPersonalInfoPhoneNumber{
     "AssistPersonalInfoPhoneNumber", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables auto screen-brightness adjustment when ambient light
+// changes.
+const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Displays the avatar toolbar button and the profile menu.
 // https://crbug.com/1041472
 extern const base::Feature kAvatarToolbarButton{
@@ -147,11 +147,6 @@ extern const base::Feature kAvatarToolbarButton{
 const base::Feature kBluetoothAggressiveAppearanceFilter{
     "BluetoothAggressiveAppearanceFilter", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables Bluetooth WBS microphone be selected as default
-// audio input option.
-const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 const base::Feature kBluetoothFixA2dpPacketSize{
@@ -161,10 +156,15 @@ const base::Feature kBluetoothFixA2dpPacketSize{
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables the preference of using constant frame rate for camera
-// when streaming.
-const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables Bluetooth WBS microphone be selected as default
+// audio input option.
+const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the camera privacy switch toasts and notification should be
+// displayed.
+const base::Feature kCameraPrivacySwitchNotifications{
+    "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, will use the CDM in the Chrome OS daemon rather than loading the
 // CDM using the library CDM interface.
@@ -188,10 +188,25 @@ const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
 const base::Feature kCellularUseExternalEuicc{
     "CellularUseExternalEuicc", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, options page for each input method will be opened in ChromeOS
-// settings. Otherwise it will be opened in a new web page in Chrome browser.
-const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables pasting a few recently copied items in a menu when pressing search +
+// v.
+const base::Feature kClipboardHistory{"ClipboardHistory",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, a blue new nudge will show on the context menu option for
+// clipboard history.
+const base::Feature kClipboardHistoryContextMenuNudge{
+    "ClipboardHistoryContextMenuNudge", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, the clipboard nudge shown prefs will be reset at the start of
+// each new user session.
+const base::Feature kClipboardHistoryNudgeSessionReset{
+    "ClipboardHistoryNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, the clipboard history shortcut will appear in screenshot
+// notifications.
+const base::Feature kClipboardHistoryScreenshotNudge{
+    "ClipboardHistoryScreenshotNudge", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables Crosh System Web App. When enabled, crosh (Chrome OS
 // Shell) will run as a tabbed System Web App rather than a normal browser tab.
@@ -201,13 +216,17 @@ const base::Feature kCroshSWA{"CroshSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCrostiniDiskResizing{"CrostiniDiskResizing",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables Crostini using Buster container images.
-const base::Feature kCrostiniUseBusterImage{"CrostiniUseBusterImage",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables Crostini GPU support.
 const base::Feature kCrostiniGpuSupport{"CrostiniGpuSupport",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Force enable recreating the LXD DB at LXD launch.
+const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables Crostini using Buster container images.
+const base::Feature kCrostiniUseBusterImage{"CrostiniUseBusterImage",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables using Cryptauth's GetDevicesActivityStatus API.
 const base::Feature kCryptAuthV2DeviceActivityStatus{
@@ -217,15 +236,6 @@ const base::Feature kCryptAuthV2DeviceActivityStatus{
 // GetDevicesActivityStatus API to sort devices.
 const base::Feature kCryptAuthV2DeviceActivityStatusUseConnectivity{
     "CryptAuthV2DeviceActivityStatusUseConnectivity",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Disable idle sockets closing on memory pressure for NetworkContexts that
-// belong to Profiles. It only applies to Profiles because the goal is to
-// improve perceived performance of web browsing within the Chrome OS user
-// session by avoiding re-estabshing TLS connections that require client
-// certificates.
-const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
-    "disable_idle_sockets_close_on_memory_pressure",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables the CryptAuth v2 DeviceSync flow. Regardless of this
@@ -255,6 +265,15 @@ const base::Feature kDiagnosticsAppNavigation{
 // kCryptAuthV2DeviceSync should be enabled before this flag is flipped.
 const base::Feature kDisableCryptAuthV1DeviceSync{
     "DisableCryptAuthV1DeviceSync", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Disable idle sockets closing on memory pressure for NetworkContexts that
+// belong to Profiles. It only applies to Profiles because the goal is to
+// improve perceived performance of web browsing within the Chrome OS user
+// session by avoiding re-estabshing TLS connections that require client
+// certificates.
+const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
+    "disable_idle_sockets_close_on_memory_pressure",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Disables "Office Editing for Docs, Sheets & Slides" component app so handlers
 // won't be registered, making it possible to install another version for
@@ -289,6 +308,11 @@ const base::Feature kEmojiSuggestAddition{"EmojiSuggestAddition",
 const base::Feature kEnableDnsProxy{"EnableDnsProxy",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables copying an image to the system clipboard to support pasting onto
+// different surfaces
+const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables setting the device hostname.
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -296,6 +320,10 @@ const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
 // If enabled, the input device cards will be shown in the diagnostics app.
 const base::Feature kEnableInputInDiagnosticsApp{
     "EnableInputInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables noise cancellation UI toggle.
+const base::Feature kEnableInputNoiseCancellationUi{
+    "EnableInputNoiseCancellationUi", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables LocalSearchService to be initialized.
 const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
@@ -322,6 +350,10 @@ const base::Feature kEnableSamlReauthenticationOnLockscreen{
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable bubble showing when an application gains any UI lock.
+const base::Feature kExoLockNotification{"ExoLockNotification",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
@@ -330,29 +362,21 @@ const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
 const base::Feature kExoPointerLock{"ExoPointerLock",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable bubble showing when an application gains any UI lock.
-const base::Feature kExoLockNotification{"ExoLockNotification",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
 const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the System Web App (SWA) version of file manager.
+const base::Feature kFilesSWA{"FilesSWA", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables partitioning of removable disks in file manager.
 const base::Feature kFilesSinglePartitionFormat{
     "FilesSinglePartitionFormat", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the System Web App (SWA) version of file manager.
-const base::Feature kFilesSWA{"FilesSWA", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable files app trash.
 const base::Feature kFilesTrash{"FilesTrash",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables filters in Files app Recents view.
-const base::Feature kFiltersInRecents{"FiltersInRecents",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables new ZIP archive handling in Files App.
 // https://crbug.com/912236
@@ -362,6 +386,10 @@ const base::Feature kFilesZipPack{"FilesZipPack",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFilesZipUnpack{"FilesZipUnpack",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables filters in Files app Recents view.
+const base::Feature kFiltersInRecents{"FiltersInRecents",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables handle of `closeView` message from Gaia. The message is
 // supposed to end the flow.
@@ -375,37 +403,6 @@ const base::Feature kGaiaReauthEndpoint{"GaiaReauthEndpoint",
 // Controls gamepad vibration in Exo.
 const base::Feature kGamepadVibration{"ExoGamepadVibration",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables the use of Mojo by Chrome-process code to communicate with Power
-// Manager. In order to use mojo, this feature must be turned on and a callsite
-// must use PowerManagerMojoClient::Get().
-const base::Feature kMojoDBusRelay{"MojoDBusRelay",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables pasting a few recently copied items in a menu when pressing search +
-// v.
-const base::Feature kClipboardHistory{"ClipboardHistory",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, the clipboard nudge shown prefs will be reset at the start of
-// each new user session.
-const base::Feature kClipboardHistoryNudgeSessionReset{
-    "ClipboardHistoryNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, a blue new nudge will show on the context menu option for
-// clipboard history.
-const base::Feature kClipboardHistoryContextMenuNudge{
-    "ClipboardHistoryContextMenuNudge", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, the clipboard history shortcut will appear in screenshot
-// notifications.
-const base::Feature kClipboardHistoryScreenshotNudge{
-    "ClipboardHistoryScreenshotNudge", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables copying an image to the system clipboard to support pasting onto
-// different surfaces
-const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable a D-Bus service for accessing gesture properties.
 const base::Feature kGesturePropertiesDBusService{
@@ -446,22 +443,22 @@ const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable MOZC IME to use protobuf as interactive message format.
+const base::Feature kImeMozcProto{"ImeMozcProto",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, options page for each input method will be opened in ChromeOS
+// settings. Otherwise it will be opened in a new web page in Chrome browser.
+const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable system emoji picker.
 const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disable using the floating virtual keyboard as the default option
-// on Chrome OS.
-const base::Feature kVirtualKeyboardFloatingDefault{
-    "VirtualKeyboardFloatingDefault", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables or disables noise cancellation UI toggle.
-const base::Feature kEnableInputNoiseCancellationUi{
-    "EnableInputNoiseCancellationUi", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables to use lacros-chrome as a primary web browser on Chrome OS.
 // This works only when LacrosSupport below is enabled.
@@ -485,18 +482,6 @@ const base::Feature kLacrosSupport{"LacrosSupport",
 const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables notification of when a microphone-using app is launched while the
-// microphone is muted.
-const base::Feature kMicMuteNotifications{"MicMuteNotifications",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether to enable the requirement of a minimum chrome version on the
-// device through the policy DeviceMinimumVersion. If the requirement is
-// not met and the warning time in the policy has expired, the user is
-// restricted from using the session.
-const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether image annotation is enabled in the ChromeOS media app.
 const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -512,6 +497,24 @@ const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
 // Whether to show the new Video controls UI in the ChromeOS media app.
 const base::Feature kMediaAppVideoControls{"MediaAppVideoControls",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables notification of when a microphone-using app is launched while the
+// microphone is muted.
+const base::Feature kMicMuteNotifications{"MicMuteNotifications",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether to enable the requirement of a minimum chrome version on the
+// device through the policy DeviceMinimumVersion. If the requirement is
+// not met and the warning time in the policy has expired, the user is
+// restricted from using the session.
+const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables the use of Mojo by Chrome-process code to communicate with Power
+// Manager. In order to use mojo, this feature must be turned on and a callsite
+// must use PowerManagerMojoClient::Get().
+const base::Feature kMojoDBusRelay{"MojoDBusRelay",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables support for multilingual assistive typing on Chrome OS.
 const base::Feature kMultilingualTyping{"MultilingualTyping",
@@ -534,16 +537,16 @@ const base::Feature kNotificationsRefresh{"NotificationsRefresh",
 const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether the device supports on-device speech recognition.
+const base::Feature kOnDeviceSpeechRecognition{
+    "OnDeviceSpeechRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the feedback tool new UX on Chrome OS.
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
 // tool on CrOS.
 const base::Feature kOsFeedback{"OsFeedback",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Whether the device supports on-device speech recognition.
-const base::Feature kOnDeviceSpeechRecognition{
-    "OnDeviceSpeechRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, a new App Notifications subpage will appear in CrOS Apps section.
 const base::Feature kOsSettingsAppNotificationsPage{
@@ -575,6 +578,11 @@ const base::Feature kPluginVmShowCameraPermissions{
 const base::Feature kPluginVmShowMicrophonePermissions{
     "PluginVmShowMicrophonePermissions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables the preference of using constant frame rate for camera
+// when streaming.
+const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -590,6 +598,14 @@ const base::Feature kQuickAnswers{"QuickAnswers",
 const base::Feature kQuickAnswersDogfood{"QuickAnswersDogfood",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to trigger quick answers on editable text selection.
+const base::Feature kQuickAnswersOnEditableText{
+    "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether to enable quick answers standalone settings section.
+const base::Feature kQuickAnswersStandaloneSettings{
+    "QuickAnswersStandaloneSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable quick answers text annotator.
 const base::Feature kQuickAnswersTextAnnotator{
     "QuickAnswersTextAnnotator", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -601,14 +617,6 @@ const base::Feature kQuickAnswersTranslation{"QuickAnswersTranslation",
 // Controls whether to enable quick answers translation using Cloud API.
 const base::Feature kQuickAnswersTranslationCloudAPI{
     "QuickAnswersTranslationCloudAPI", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether to trigger quick answers on editable text selection.
-const base::Feature kQuickAnswersOnEditableText{
-    "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether to enable quick answers standalone settings section.
-const base::Feature kQuickAnswersStandaloneSettings{
-    "QuickAnswersStandaloneSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether the PIN auto submit feature is enabled.
 const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",
@@ -709,15 +717,20 @@ const base::Feature kUpdatedCellularActivationUi{
 const base::Feature kUseBrowserSyncConsent{"UseBrowserSyncConsent",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use the staging server as part of the Wallpaper App to verify
-// additions/removals of wallpapers.
-const base::Feature kUseWallpaperStagingUrl{"UseWallpaperStagingUrl",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 const base::Feature kUseMessagesStagingUrl{"UseMessagesStagingUrl",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Remap search+click to right click instead of the legacy alt+click on
+// Chrome OS.
+const base::Feature kUseSearchClickForRightClick{
+    "UseSearchClickForRightClick", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Use the staging server as part of the Wallpaper App to verify
+// additions/removals of wallpapers.
+const base::Feature kUseWallpaperStagingUrl{"UseWallpaperStagingUrl",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables user activity prediction for power management on
 // Chrome OS.
@@ -726,10 +739,10 @@ const base::Feature kUseMessagesStagingUrl{"UseMessagesStagingUrl",
 const base::Feature kUserActivityPrediction{"UserActivityPrediction",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Remap search+click to right click instead of the legacy alt+click on
-// Chrome OS.
-const base::Feature kUseSearchClickForRightClick{
-    "UseSearchClickForRightClick", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enable or disable using the floating virtual keyboard as the default option
+// on Chrome OS.
+const base::Feature kVirtualKeyboardFloatingDefault{
+    "VirtualKeyboardFloatingDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable or disable bordered key for virtual keyboard on Chrome OS.
 const base::Feature kVirtualKeyboardBorderedKey{
@@ -764,33 +777,24 @@ const base::Feature kWebApkGenerator{"WebApkGenerator",
 const base::Feature kWifiSyncAllowDeletes{"WifiSyncAllowDeletes",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to apply incoming Wi-Fi configuration delete events from
-// the Chrome Sync server.
-const base::Feature kWifiSyncApplyDeletes{"WifiSyncApplyDeletes",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to enable syncing of Wi-Fi configurations between
 // ChromeOS and a connected Android phone.
 const base::Feature kWifiSyncAndroid{"WifiSyncAndroid",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disable MOZC IME to use protobuf as interactive message format.
-const base::Feature kImeMozcProto{"ImeMozcProto",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Force enable recreating the LXD DB at LXD launch.
-const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether the camera privacy switch toasts and notification should be
-// displayed.
-const base::Feature kCameraPrivacySwitchNotifications{
-    "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
+// Controls whether to apply incoming Wi-Fi configuration delete events from
+// the Chrome Sync server.
+const base::Feature kWifiSyncApplyDeletes{"WifiSyncApplyDeletes",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool IsAccountManagementFlowsV2Enabled() {
   return base::FeatureList::IsEnabled(kAccountManagementFlowsV2);
+}
+
+bool IsAmbientModeDevUseProdEnabled() {
+  return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
 }
 
 bool IsAmbientModeEnabled() {
@@ -801,12 +805,12 @@ bool IsAmbientModePhotoPreviewEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModePhotoPreviewFeature);
 }
 
-bool IsAmbientModeDevUseProdEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
-}
-
 bool IsAppListBubbleEnabled() {
   return base::FeatureList::IsEnabled(kAppListBubble);
+}
+
+bool IsAppNotificationsPageEnabled() {
+  return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
 }
 
 bool IsAssistiveMultiWordEnabled() {
@@ -819,16 +823,28 @@ bool IsCellularActivationUiEnabled() {
   return base::FeatureList::IsEnabled(kUpdatedCellularActivationUi);
 }
 
-bool IsDemoModeSWAEnabled() {
-  return base::FeatureList::IsEnabled(kDemoModeSWA);
+bool IsClipboardHistoryContextMenuNudgeEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryContextMenuNudge);
 }
 
-bool IsAppNotificationsPageEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
+bool IsClipboardHistoryEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistory);
+}
+
+bool IsClipboardHistoryNudgeSessionResetEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
+}
+
+bool IsClipboardHistoryScreenshotNudgeEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryScreenshotNudge);
 }
 
 bool IsDeepLinkingEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsDeepLinking);
+}
+
+bool IsDemoModeSWAEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeSWA);
 }
 
 bool IsDiagnosticsAppEnabled() {
@@ -843,14 +859,6 @@ bool IsEcheSWAResizingEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWAResizing);
 }
 
-bool IsHostnameSettingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableHostnameSetting);
-}
-
-bool IsLocalSearchServiceEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLocalSearchService);
-}
-
 bool IsFamilyLinkOnSchoolDeviceEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
 }
@@ -861,6 +869,10 @@ bool IsGaiaCloseViewMessageEnabled() {
 
 bool IsGaiaReauthEndpointEnabled() {
   return base::FeatureList::IsEnabled(kGaiaReauthEndpoint);
+}
+
+bool IsHostnameSettingEnabled() {
+  return base::FeatureList::IsEnabled(kEnableHostnameSetting);
 }
 
 bool IsInputInDiagnosticsAppEnabled() {
@@ -897,22 +909,6 @@ bool IsOobeChromeVoxHintEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeChromeVoxHint);
 }
 
-bool IsClipboardHistoryEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistory);
-}
-
-bool IsClipboardHistoryNudgeSessionResetEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
-}
-
-bool IsClipboardHistoryContextMenuNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryContextMenuNudge);
-}
-
-bool IsClipboardHistoryScreenshotNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryScreenshotNudge);
-}
-
 bool IsPciguardUiEnabled() {
   return base::FeatureList::IsEnabled(kEnablePciguardUi);
 }
@@ -921,20 +917,16 @@ bool IsPhoneHubEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHub);
 }
 
-bool IsSamlReauthenticationOnLockscreenEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSamlReauthenticationOnLockscreen);
-}
-
-bool IsPinSetupForManagedUsersEnabled() {
-  return base::FeatureList::IsEnabled(kPinSetupForManagedUsers);
+bool IsPinAutosubmitBackfillFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmitBackfill);
 }
 
 bool IsPinAutosubmitFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmit);
 }
 
-bool IsPinAutosubmitBackfillFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmitBackfill);
+bool IsPinSetupForManagedUsersEnabled() {
+  return base::FeatureList::IsEnabled(kPinSetupForManagedUsers);
 }
 
 bool IsProjectorEnabled() {
@@ -954,20 +946,24 @@ bool IsQuickAnswersEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswers);
 }
 
-bool IsQuickAnswersTranslationEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersTranslation);
-}
-
-bool IsQuickAnswersTranslationCloudAPIEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersTranslationCloudAPI);
-}
-
 bool IsQuickAnswersOnEditableTextEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersOnEditableText);
 }
 
 bool IsQuickAnswersStandaloneSettingsEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersStandaloneSettings);
+}
+
+bool IsQuickAnswersTranslationCloudAPIEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersTranslationCloudAPI);
+}
+
+bool IsQuickAnswersTranslationEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersTranslation);
+}
+
+bool IsSamlReauthenticationOnLockscreenEnabled() {
+  return base::FeatureList::IsEnabled(kEnableSamlReauthenticationOnLockscreen);
 }
 
 bool IsShimlessRMAFlowEnabled() {
@@ -995,6 +991,12 @@ bool ShouldShowPlayStoreInDemoMode() {
   return base::FeatureList::IsEnabled(kShowPlayInDemoMode);
 }
 
+bool ShouldUseAttachApn() {
+  // See comment on |kCellularForbidAttachApn| for details.
+  return !base::FeatureList::IsEnabled(kCellularForbidAttachApn) &&
+         base::FeatureList::IsEnabled(kCellularUseAttachApn);
+}
+
 bool ShouldUseBrowserSyncConsent() {
   // UseBrowserSyncConsent requires SplitSettingsSync.
   return base::FeatureList::IsEnabled(kSplitSettingsSync) &&
@@ -1015,12 +1017,6 @@ bool ShouldUseV1DeviceSync() {
 bool ShouldUseV2DeviceSync() {
   return base::FeatureList::IsEnabled(kCryptAuthV2Enrollment) &&
          base::FeatureList::IsEnabled(kCryptAuthV2DeviceSync);
-}
-
-bool ShouldUseAttachApn() {
-  // See comment on |kCellularForbidAttachApn| for details.
-  return !base::FeatureList::IsEnabled(kCellularForbidAttachApn) &&
-         base::FeatureList::IsEnabled(kCellularUseAttachApn);
 }
 
 }  // namespace features
