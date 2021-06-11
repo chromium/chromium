@@ -7,6 +7,10 @@
 
   .row {
     align-items: center;
+    appearance: none;
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
     cursor: pointer;
     display: grid;
     grid-template-areas: 'arrow icon title';
@@ -14,10 +18,14 @@
     height: 40px;
     line-height: 40px;
     padding-inline-start: calc(var(--node-depth) * 17px);
+    text-align: start;
+    width: 100%;
   }
 
-  .row:hover {
+  .row:hover,
+  .row:focus-visible:focus {
     background-color: var(--cr-hover-background-color);
+    outline: none;
   }
 
   .row:active {
@@ -70,29 +78,32 @@
     text-decoration: none;
   }
 </style>
-<div class="row" on-click="onFolderClick_">
+<button class="row" on-click="onFolderClick_" tabindex="0">
   <div id="arrow" hidden$="[[!folder.children.length]]">
     <cr-icon-button
         id="arrowIcon"
         iron-icon="cr:arrow-drop-down"
-        open$="[[open_]]">
+        open$="[[open_]]"
+        tabindex="-1">
     </cr-icon-button>
   </div>
   <div id="folderIcon" class="icon"></div>
   <div class="title">[[folder.title]]</div>
-</div>
+</button>
 
-<div id="children">
+<div id="children" role="group">
   <template is="dom-if" if="[[open_]]">
     <template is="dom-repeat" items="[[folder.children]]">
       <template is="dom-if" if="[[!item.url]]">
-        <bookmark-folder folder="[[item]]" depth="[[childDepth_]]"
+        <bookmark-folder role="treeitem" folder="[[item]]"
+            depth="[[childDepth_]]"
             open-folders="[[openFolders]]">
         </bookmark-folder>
       </template>
 
       <template is="dom-if" if="[[item.url]]">
-        <a href="[[item.url]]" class="bookmark row" on-click="onBookmarkClick_">
+        <a role="treeitem" href="[[item.url]]" class="bookmark row"
+            on-click="onBookmarkClick_">
           <div
               class="icon"
               style="background-image: [[getBookmarkIcon_(item.url)]]">

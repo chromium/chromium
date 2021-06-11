@@ -68,6 +68,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
   connectedCallback() {
     super.connectedCallback();
+    this.setAttribute('role', 'tree');
     this.bookmarksApi_.getFolders().then(folders => {
       this.folders_ = folders;
 
