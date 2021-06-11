@@ -22,6 +22,7 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
       {blink::mojom::DisplayMode::kFullscreen, "fullscreen"},
       {blink::mojom::DisplayMode::kWindowControlsOverlay,
        "window-controls-overlay"},
+      {blink::mojom::DisplayMode::kTabbed, "tabbed"},
   };
 
   for (const ReversibleConversion& conversion : reversible_conversions) {

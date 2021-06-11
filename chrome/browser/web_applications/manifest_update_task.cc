@@ -566,6 +566,7 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
+    case DisplayMode::kTabbed:
       NOTREACHED();
       break;
   }

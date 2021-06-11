@@ -24,6 +24,8 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
       return "fullscreen";
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
       return "window-controls-overlay";
+    case blink::mojom::DisplayMode::kTabbed:
+      return "tabbed";
   }
   return "";
 }
@@ -39,6 +41,8 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kFullscreen;
   if (base::LowerCaseEqualsASCII(display, "window-controls-overlay"))
     return blink::mojom::DisplayMode::kWindowControlsOverlay;
+  if (base::LowerCaseEqualsASCII(display, "tabbed"))
+    return blink::mojom::DisplayMode::kTabbed;
   return blink::mojom::DisplayMode::kUndefined;
 }
 

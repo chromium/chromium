@@ -282,6 +282,12 @@ TEST_F(InstallableManagerUnitTest, ManifestDisplayModes) {
       IsManifestValid(manifest, false /* check_webapp_manifest_display */));
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
+
+  manifest.display = blink::mojom::DisplayMode::kTabbed;
+  EXPECT_TRUE(
+      IsManifestValid(manifest, false /* check_webapp_manifest_display */));
+  EXPECT_FALSE(IsManifestValid(manifest));
+  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
 }
 
 TEST_F(InstallableManagerUnitTest, ManifestDisplayOverride) {
@@ -319,6 +325,13 @@ TEST_F(InstallableManagerUnitTest, ManifestDisplayOverride) {
       IsManifestValid(manifest, false /* check_webapp_manifest_display */));
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED, GetErrorCode());
+
+  manifest.display_override.insert(manifest.display_override.begin(),
+                                   blink::mojom::DisplayMode::kTabbed);
+  EXPECT_TRUE(
+      IsManifestValid(manifest, false /* check_webapp_manifest_display */));
+  EXPECT_FALSE(IsManifestValid(manifest));
+  EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED, GetErrorCode());
 }
 
 TEST_F(InstallableManagerUnitTest, FallbackToBrowser) {
@@ -348,6 +361,23 @@ TEST_F(InstallableManagerUnitTest_WindowControlsOverlay,
 
   manifest.display_override.push_back(
       blink::mojom::DisplayMode::kWindowControlsOverlay);
+  EXPECT_TRUE(IsManifestValid(manifest));
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+}
+
+class InstallableManagerUnitTest_Tabbed : public InstallableManagerUnitTest {
+ public:
+  InstallableManagerUnitTest_Tabbed() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsTabStrip};
+};
+
+TEST_F(InstallableManagerUnitTest_Tabbed, SupportTabbed) {
+  blink::Manifest manifest = GetValidManifest();
+
+  manifest.display_override.push_back(blink::mojom::DisplayMode::kTabbed);
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }

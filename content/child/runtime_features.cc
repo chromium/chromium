@@ -398,6 +398,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
                kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},
           {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", features::kUserAgentClientHint},
+          {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},

@@ -98,6 +98,7 @@ message WebAppProto {
     STANDALONE = 3;
     FULLSCREEN = 4;
     WINDOW_CONTROLS_OVERLAY = 5;
+    TABBED = 6;
   }
 
   // Local data. May vary across devices. Not to be synced.

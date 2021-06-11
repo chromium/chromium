@@ -182,7 +182,9 @@ bool ShouldRejectDisplayMode(blink::mojom::DisplayMode display_mode) {
       display_mode == blink::mojom::DisplayMode::kFullscreen ||
       display_mode == blink::mojom::DisplayMode::kMinimalUi ||
       (display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay &&
-       base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay)));
+       base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay)) ||
+      (display_mode == blink::mojom::DisplayMode::kTabbed &&
+       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip)));
 }
 
 void OnDidCompleteGetAllErrors(

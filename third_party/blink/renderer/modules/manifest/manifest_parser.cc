@@ -414,6 +414,11 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }
 
+    if (!RuntimeEnabledFeatures::WebAppTabStripEnabled(feature_context_) &&
+        display_enum == mojom::blink::DisplayMode::kTabbed) {
+      display_enum = mojom::blink::DisplayMode::kUndefined;
+    }
+
     if (display_enum != mojom::blink::DisplayMode::kUndefined)
       display_override.push_back(display_enum);
   }

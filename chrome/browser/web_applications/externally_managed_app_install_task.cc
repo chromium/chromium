@@ -254,6 +254,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
+    case DisplayMode::kTabbed:
       web_app_info.open_as_window = true;
       break;
   }

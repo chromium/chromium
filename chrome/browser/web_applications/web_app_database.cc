@@ -934,6 +934,8 @@ DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode) {
       return DisplayMode::kFullscreen;
     case WebAppProto::WINDOW_CONTROLS_OVERLAY:
       return DisplayMode::kWindowControlsOverlay;
+    case WebAppProto::TABBED:
+      return DisplayMode::kTabbed;
   }
 }
 
@@ -966,6 +968,8 @@ WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
       return WebAppProto::FULLSCREEN;
     case DisplayMode::kWindowControlsOverlay:
       return WebAppProto::WINDOW_CONTROLS_OVERLAY;
+    case DisplayMode::kTabbed:
+      return WebAppProto::TABBED;
   }
 }
 

@@ -609,6 +609,24 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
   }
+
+  // Parsing fails for 'tabbed' when flag is disabled.
+  {
+    ScopedWebAppTabStripForTest tabbed(false);
+    auto& manifest = ParseManifest("{ \"display\": \"tabbed\" }");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
+
+  // Parsing fails for 'tabbed' when flag is enabled.
+  {
+    ScopedWebAppTabStripForTest tabbed(true);
+    auto& manifest = ParseManifest("{ \"display\": \"tabbed\" }");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
 }
 
 TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
@@ -754,6 +772,25 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_FALSE(manifest->display_override.IsEmpty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kWindowControlsOverlay);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Ignore 'tabbed' when flag is disabled.
+  {
+    ScopedWebAppTabStripForTest tabbed(false);
+    auto& manifest = ParseManifest("{ \"display_override\": [ \"tabbed\" ] }");
+    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'tabbed' when flag is enabled.
+  {
+    ScopedWebAppTabStripForTest tabbed(true);
+    auto& manifest = ParseManifest("{ \"display_override\": [ \"tabbed\" ] }");
+    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_EQ(manifest->display_override[0],
+              blink::mojom::DisplayMode::kTabbed);
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }

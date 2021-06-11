@@ -30,6 +30,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
       FALLTHROUGH;
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
+    case DisplayMode::kTabbed:
       return DisplayMode::kStandalone;
     case DisplayMode::kWindowControlsOverlay:
       if (base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
@@ -136,6 +137,7 @@ DisplayMode ResolveEffectiveDisplayMode(
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
+    case DisplayMode::kTabbed:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:
@@ -160,12 +162,10 @@ apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     case DisplayMode::kBrowser:
       return apps::mojom::LaunchContainer::kLaunchContainerTab;
     case DisplayMode::kMinimalUi:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kStandalone:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kFullscreen:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kWindowControlsOverlay:
+    case DisplayMode::kTabbed:
       return apps::mojom::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kUndefined:
       return apps::mojom::LaunchContainer::kLaunchContainerNone;
