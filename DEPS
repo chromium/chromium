@@ -3801,7 +3801,7 @@ hooks = [
     # download it there. Should run after the clang hook.
     'name': 'lld/mac',
     'pattern': '.',
-    'condition': 'host_os == "mac"',
+    'condition': 'host_os == "mac" and (checkout_win or checkout_fuchsia)',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=lld_mac'],
   },
