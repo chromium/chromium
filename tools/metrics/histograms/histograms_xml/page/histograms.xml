@@ -1553,7 +1553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatus"
-    enum="CrossOriginCreativeStatus" expires_after="2021-06-30">
+    enum="CrossOriginCreativeStatus" expires_after="2021-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1570,7 +1570,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling"
-    enum="CrossOriginCreativeStatusWithThrottling" expires_after="2021-06-30">
+    enum="CrossOriginCreativeStatusWithThrottling" expires_after="2021-12-31">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
