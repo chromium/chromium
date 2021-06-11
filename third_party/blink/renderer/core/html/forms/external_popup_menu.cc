@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
@@ -53,6 +54,22 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
+
+namespace {
+
+float GetDprForSizeAdjustment(const Element& owner_element) {
+  float dpr = 1.0f;
+  // Android doesn't need these adjustments and it makes tests fail.
+#ifndef OS_ANDROID
+  if (Platform::Current()->IsUseZoomForDSFEnabled() &&
+      owner_element.GetDocument().GetFrame()) {
+    dpr = owner_element.GetDocument().GetFrame()->DevicePixelRatio();
+  }
+#endif
+  return dpr;
+}
+
+}  // namespace
 
 ExternalPopupMenu::ExternalPopupMenu(LocalFrame& frame,
                                      HTMLSelectElement& owner_element)
@@ -105,6 +122,11 @@ bool ExternalPopupMenu::ShowInternal() {
     float scale_for_emulation = WebLocalFrameImpl::FromFrame(local_frame_)
                                     ->LocalRootFrameWidget()
                                     ->GetEmulatorScale();
+
+    // rect_in_viewport needs to be in CSS pixels.
+    float dpr = GetDprForSizeAdjustment(*owner_element_);
+    if (dpr != 1.0)
+      rect_in_viewport.Scale(1 / dpr);
 
     gfx::Rect bounds =
         gfx::Rect(rect_in_viewport.X() * scale_for_emulation,
@@ -278,9 +300,11 @@ void ExternalPopupMenu::GetPopupMenuInfo(
                                         : *owner_element.EnsureComputedStyle();
   const SimpleFontData* font_data = menu_style.GetFont().PrimaryFont();
   DCHECK(font_data);
-  *item_height = font_data ? font_data->GetFontMetrics().Height() : 0;
+  // These coordinates need to be in CSS pixels.
+  float dpr = GetDprForSizeAdjustment(owner_element);
+  *item_height = font_data ? font_data->GetFontMetrics().Height() / dpr : 0;
   *font_size = static_cast<int>(
-      menu_style.GetFont().GetFontDescription().ComputedSize());
+      menu_style.GetFont().GetFontDescription().SpecifiedSize());
   *selected_item = ToExternalPopupMenuItemIndex(
       owner_element.SelectedListIndex(), owner_element);
 

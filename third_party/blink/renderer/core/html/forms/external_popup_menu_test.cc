@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
@@ -217,6 +218,39 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
 
   EXPECT_EQ(expected_x, ShownBounds().x());
   EXPECT_EQ(expected_y, ShownBounds().y());
+}
+
+// Android doesn't use this position data and we don't adjust it for DPR there..
+#ifdef OS_ANDROID
+#define MAYBE_PopupAccountsForDeviceScaleFactor \
+  DISABLED_PopupAccountsForDeviceScaleFactor
+#else
+#define MAYBE_PopupAccountsForDeviceScaleFactor \
+  PopupAccountsForDeviceScaleFactor
+#endif
+
+TEST_F(ExternalPopupMenuTest, MAYBE_PopupAccountsForDeviceScaleFactor) {
+  content::TestBlinkWebUnitTestSupport::SetUseZoomForDsfEnabled(true);
+
+  RegisterMockedURLLoad("select_mid_screen.html");
+  LoadFrame("select_mid_screen.html");
+
+  constexpr int kScaleFactor = 2;
+  WebView()->SetZoomFactorForDeviceScaleFactor(kScaleFactor);
+  WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+
+  auto* select = To<HTMLSelectElement>(
+      MainFrame()->GetFrame()->GetDocument()->getElementById("select"));
+  auto* layout_object = select->GetLayoutObject();
+  ASSERT_TRUE(layout_object);
+
+  select->ShowPopup();
+  WaitUntilShowedPopup();
+
+  // The test file has no body margins but 50px of padding.
+  EXPECT_EQ(50, ShownBounds().x());
+  EXPECT_EQ(50, ShownBounds().y());
 }
 
 TEST_F(ExternalPopupMenuTest, DidAcceptIndex) {

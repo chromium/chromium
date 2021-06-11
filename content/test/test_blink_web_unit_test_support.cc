@@ -248,6 +248,10 @@ bool TestBlinkWebUnitTestSupport::IsThreadedAnimationEnabled() {
   return threaded_animation_;
 }
 
+bool TestBlinkWebUnitTestSupport::IsUseZoomForDSFEnabled() {
+  return use_zoom_for_dsf_;
+}
+
 cc::TaskGraphRunner* TestBlinkWebUnitTestSupport::GetTaskGraphRunner() {
   return &test_task_graph_runner_;
 }
@@ -258,6 +262,15 @@ bool TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(bool enabled) {
       << "Not using TestBlinkWebUnitTestSupport as blink::Platform";
   bool old = g_test_platform->threaded_animation_;
   g_test_platform->threaded_animation_ = enabled;
+  return old;
+}
+
+// static
+bool TestBlinkWebUnitTestSupport::SetUseZoomForDsfEnabled(bool enabled) {
+  DCHECK(g_test_platform)
+      << "Not using TestBlinkWebUnitTestSupport as blink::Platform";
+  bool old = g_test_platform->use_zoom_for_dsf_;
+  g_test_platform->use_zoom_for_dsf_ = enabled;
   return old;
 }
 

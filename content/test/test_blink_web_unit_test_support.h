@@ -54,6 +54,7 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   blink::WebString DefaultLocale() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const override;
   bool IsThreadedAnimationEnabled() override;
+  bool IsUseZoomForDSFEnabled() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
 
   // May be called when |this| is registered as the active blink Platform
@@ -63,11 +64,14 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   // cross-test side effects.
   static bool SetThreadedAnimationEnabled(bool enabled);
 
+  static bool SetUseZoomForDsfEnabled(bool enabled);
+
  private:
   void BindClipboardHost(mojo::ScopedMessagePipeHandle handle);
 
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
   bool threaded_animation_ = true;
+  bool use_zoom_for_dsf_ = false;
   cc::TestTaskGraphRunner test_task_graph_runner_;
 
   base::WeakPtrFactory<TestBlinkWebUnitTestSupport> weak_factory_{this};

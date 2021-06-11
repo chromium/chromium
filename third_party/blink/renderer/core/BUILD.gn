@@ -1648,6 +1648,7 @@ source_set("unit_tests") {
     "//components/paint_preview/common:common",
     "//components/shared_highlighting/core/common",
     "//components/ukm:test_support",
+    "//content/test:test_support",
     "//mojo/public/cpp/system",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/metrics/public/cpp:ukm_builders",
