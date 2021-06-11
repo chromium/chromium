@@ -20,6 +20,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -102,6 +103,7 @@ public class ChromeHttpAuthHandlerTest {
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "https://crbug.com/1218039")
     public void authDialogSuppressedOnBackgroundTab() throws Exception {
         Tab firstTab = mActivityTestRule.getActivity().getActivityTab();
         ChromeTabUtils.newTabFromMenu(
