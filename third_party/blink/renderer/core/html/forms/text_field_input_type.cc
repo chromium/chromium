@@ -93,7 +93,9 @@ class DataListIndicatorElement final : public HTMLDivElement {
     SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
     setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
     setAttribute(html_names::kStyleAttr,
-                 "display:list-item; list-style:disclosure-open inside; "
+                 "display:list-item; "
+                 "list-style:disclosure-open inside; "
+                 "counter-increment: list-item 0;"
                  "block-size:1em;");
     // Do not expose list-item role.
     setAttribute(html_names::kAriaHiddenAttr, "true");
