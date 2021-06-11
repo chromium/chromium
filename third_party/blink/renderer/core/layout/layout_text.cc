@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
@@ -829,12 +830,17 @@ PositionWithAffinity CreatePositionWithAffinityForBox(
                      : TextAffinity::kDownstream;
       break;
   }
-  int text_start_offset =
-      box->GetLineLayoutItem().IsText()
-          ? LineLayoutText(box->GetLineLayoutItem()).TextStartOffset()
-          : 0;
-  return box->GetLineLayoutItem().CreatePositionWithAffinity(
-      offset + text_start_offset, affinity);
+  const LineLayoutItem& layout_item = box->GetLineLayoutItem();
+  if (!layout_item.IsText()) {
+    if (const Node* node = layout_item.NonPseudoNode()) {
+      if (offset && UNLIKELY(offset > Position::LastOffsetInNode(*node)))
+        return layout_item.PositionAfterThis();
+    }
+    return layout_item.CreatePositionWithAffinity(offset, affinity);
+  }
+  int text_start_offset = LineLayoutText(layout_item).TextStartOffset();
+  return layout_item.CreatePositionWithAffinity(offset + text_start_offset,
+                                                affinity);
 }
 
 PositionWithAffinity
@@ -896,13 +902,9 @@ PositionWithAffinity LayoutText::PositionForPoint(
         continue;
       if (auto position_with_affinity =
               cursor.PositionForPointInChild(point_in_container_fragment)) {
-        // Note: Due by Bidi adjustment, |position| isn't relative to this.
-        const Position& position = position_with_affinity.GetPosition();
-        DCHECK(position.IsOffsetInAnchor()) << position;
-        return position.ComputeContainerNode()
-            ->GetLayoutObject()
-            ->CreatePositionWithAffinity(position.OffsetInContainerNode(),
-                                         position_with_affinity.Affinity());
+        // Note: Due by Bidi adjustment, |position_with_affinity| isn't relative
+        // to this.
+        return AdjustForEditingBoundary(position_with_affinity);
       }
     }
     // Try for leading and trailing spaces between lines.

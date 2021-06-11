@@ -48,7 +48,7 @@ PositionWithAffinity LineLayoutItem::PositionForPoint(
 
 PositionWithAffinity LineLayoutItem::CreatePositionWithAffinity(
     int offset,
-    TextAffinity affinity) {
+    TextAffinity affinity) const {
   return layout_object_->CreatePositionWithAffinity(offset, affinity);
 }
 

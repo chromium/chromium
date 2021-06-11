@@ -1043,4 +1043,99 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
   EXPECT_EQ(expected, HitTest(55, 5)) << "after XY";
 }
 
+TEST_P(LayoutViewHitTestTest, TextAndInputsWithRtlDirection) {
+  LoadAhem();
+  InsertStyleElement(R"CSS(
+    body {
+      margin: 0 auto 0 0;
+      direction: rtl;
+      width: 200px;
+      font: 50px/1 Ahem;
+    }
+    input {
+      width: 100px;
+      height: 50px;
+      box-sizing: border-box;
+      vertical-align: top;
+    }
+  )CSS");
+  SetBodyInnerHTML("ab<input><input>cd");
+
+  Element* body = GetDocument().body();
+  Node* text_ab = body->firstChild();
+  Node* input_1 = text_ab->nextSibling();
+  Node* input_2 = input_1->nextSibling();
+  Node* text_cd = input_2->nextSibling();
+  Node* shadow_div_1 = input_1->GetShadowRoot()->firstChild();
+  Node* shadow_div_2 = input_2->GetShadowRoot()->firstChild();
+  TextAffinity downstream_if_ng =
+      LayoutNG() ? TextAffinity::kDownstream : TextAffinity::kUpstream;
+
+  // Note: This is a crash test. The expectations only reflect the current
+  // behavior, which may change.
+  for (int y : {0, 25, 49}) {
+    for (int x : {0, 25}) {
+      EXPECT_EQ(PositionWithAffinity(Position::AfterNode(*input_1),
+                                     LayoutNG() ? TextAffinity::kUpstream
+                                                : TextAffinity::kDownstream),
+                HitTest(x, y));
+    }
+    for (int x : {26, 50, 75}) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_ab, 1), downstream_if_ng),
+                HitTest(x, y));
+    }
+    for (int x : {76, 99}) {
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text_ab, 2), TextAffinity::kUpstream),
+          HitTest(x, y));
+    }
+    for (int x : {100, 125, 150, 175, 199}) {
+      EXPECT_EQ(PositionWithAffinity(Position(shadow_div_1, 0)), HitTest(x, y));
+    }
+    EXPECT_EQ(PositionWithAffinity(Position::AfterNode(*input_1)),
+              HitTest(200, y));
+  }
+  for (int y : {50, 75, 99}) {
+    for (int x : {0, 25, 50, 75, 99}) {
+      EXPECT_EQ(PositionWithAffinity(Position(shadow_div_2, 0)), HitTest(x, y));
+    }
+    for (int x : {100, 125}) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_cd, 0)), HitTest(x, y));
+    }
+    for (int x : {126, 150, 175}) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_cd, 1), downstream_if_ng),
+                HitTest(x, y));
+    }
+    for (int x : {176, 200}) {
+      EXPECT_EQ(PositionWithAffinity(LayoutNG() ? Position::BeforeNode(*input_2)
+                                                : Position(input_2, 0)),
+                HitTest(x, y));
+    }
+  }
+  if (IsAndroidOrWindowsEditingBehavior()) {
+    for (int x : {0, 25, 50, 75, 99}) {
+      EXPECT_EQ(PositionWithAffinity(Position::AfterNode(*input_2)),
+                HitTest(x, 100));
+    }
+    for (int x : {100, 125}) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_cd, 0)), HitTest(x, 100));
+    }
+    for (int x : {126, 150, 175}) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_cd, 1), downstream_if_ng),
+                HitTest(x, 100));
+    }
+    for (int x : {176, 200}) {
+      EXPECT_EQ(PositionWithAffinity(LayoutNG() ? Position::BeforeNode(*input_2)
+                                                : Position(input_2, 0)),
+                HitTest(x, 100));
+    }
+  } else {
+    for (int x : {0, 25, 50, 75, 100, 125, 150, 175, 200}) {
+      EXPECT_EQ(PositionWithAffinity(LayoutNG() ? Position::AfterNode(*input_2)
+                                                : Position(text_cd, 2)),
+                HitTest(x, 100));
+    }
+  }
+}
+
 }  // namespace blink

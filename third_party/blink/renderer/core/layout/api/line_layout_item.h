@@ -247,7 +247,7 @@ class LineLayoutItem {
   PositionWithAffinity PositionForPoint(const PhysicalOffset& point);
 
   PositionWithAffinity CreatePositionWithAffinity(int offset,
-                                                  TextAffinity affinity);
+                                                  TextAffinity affinity) const;
 
   PositionWithAffinity PositionAfterThis() const;
 
