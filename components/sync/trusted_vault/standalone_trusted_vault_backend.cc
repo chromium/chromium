@@ -62,12 +62,6 @@ absl::optional<TrustedVaultKeyAndVersion> GetLastTrustedVaultKeyAndVersion(
   return absl::nullopt;
 }
 
-void RetrieveIsRecoverabilityDegradedCompleted(
-    base::OnceCallback<void(bool)> cb,
-    TrustedVaultRecoverabilityStatus status) {
-  std::move(cb).Run(status == TrustedVaultRecoverabilityStatus::kDegraded);
-}
-
 }  // namespace
 
 StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
@@ -242,13 +236,9 @@ bool StandaloneTrustedVaultBackend::MarkKeysAsStale(
 void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  // TODO(crbug.com/1201659): Improve this logic properly and add test coverage,
-  // including throttling and periodic polling.
-  ongoing_degraded_recoverability_request_ =
-      connection_->RetrieveIsRecoverabilityDegraded(
-          account_info,
-          base::BindOnce(&RetrieveIsRecoverabilityDegradedCompleted,
-                         std::move(cb)));
+  // TODO(crbug.com/1201659): Implement logic.
+  NOTIMPLEMENTED();
+  std::move(cb).Run(is_recoverability_degraded_for_testing_);
 }
 
 void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
@@ -327,6 +317,11 @@ StandaloneTrustedVaultBackend::GetDeviceRegistrationInfoForTesting(
     return sync_pb::LocalDeviceRegistrationInfo();
   }
   return per_user_vault->local_device_registration_info();
+}
+
+void StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting() {
+  is_recoverability_degraded_for_testing_ = true;
+  delegate_->NotifyRecoverabilityDegradedChanged();
 }
 
 std::vector<uint8_t>
@@ -498,6 +493,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
     TrustedVaultRegistrationStatus status) {
   DCHECK(ongoing_degraded_recoverability_request_);
   ongoing_degraded_recoverability_request_ = nullptr;
+  is_recoverability_degraded_for_testing_ = false;
 
   std::move(cb).Run();
   delegate_->NotifyRecoverabilityDegradedChanged();
