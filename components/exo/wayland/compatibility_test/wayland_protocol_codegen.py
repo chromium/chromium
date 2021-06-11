@@ -6,6 +6,7 @@ import argparse
 import os.path
 import subprocess
 import sys
+from typing import Any, Mapping
 
 import wayland_protocol_c_arg_handling
 import wayland_protocol_construction
@@ -14,8 +15,7 @@ import wayland_protocol_externals
 import wayland_protocol_identifiers
 
 
-def expand_template(template, context):
-    # type: (str, Mapping[str, Any]) -> str
+def expand_template(template: str, context: Mapping[str, Any]) -> str:
     """Expands the template using context, and returns the result"""
 
     # Loaded from third_party/jinja2 after a sys.path modification
@@ -58,34 +58,27 @@ def expand_template(template, context):
     return env.get_template(os.path.basename(template)).render(context)
 
 
-def clang_format_source_text(source_text, clang_format_path,
-                             effective_filename):
-    # type: (str, str, str) -> str
+def clang_format_source_text(source_text: str, clang_format_path: str,
+                             effective_filename: str) -> str:
     """Runs clang-format on source_text and returns the result."""
     # clang-format the output, for better readability and for
     # -Wmisleading-indentation.
-    proc = subprocess.Popen(
+    return subprocess.run(
         [clang_format_path, '--assume-filename', effective_filename],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE)
-    stdout_output, stderr_output = proc.communicate(
-            input=source_text.encode('utf8'))
-    retcode = proc.wait()
-    if retcode != 0:
-        raise CalledProcessError(retcode,
-                                 'clang-format error: ' + stderr_output)
-    return stdout_output
+        input=source_text,
+        capture_output=True,
+        check=True,
+        text=True).stdout
 
 
-def write_if_changed(source_text, output):
-    # type: (str, str) -> None
+def write_if_changed(source_text: str, output: str) -> str:
     """Writes source_text to output, but only if different."""
     if os.path.exists(output):
-        with open(output, 'rb') as infile:
+        with open(output, 'rt') as infile:
             if infile.read() == source_text:
                 return
 
-    with open(output, 'wb') as outfile:
+    with open(output, 'wt') as outfile:
         outfile.write(source_text)
 
 

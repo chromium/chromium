@@ -6,32 +6,33 @@ import collections
 import functools
 import itertools
 import re
+from typing import Dict, Iterable, Tuple
 
 import wayland_protocol_data_classes
-import wayland_protocol_utils
+
+# Short aliases for typing
+Interface = wayland_protocol_data_classes.Interface
+Protocol = wayland_protocol_data_classes.Protocol
 
 
-def split_for_words(x):
-    # type: (str) -> Tuple[str, ...]
+def split_for_words(x: str) -> Tuple[str, ...]:
     """Split underscore_seperated identifiers into a component words."""
     return tuple(w.lower() for w in x.split('_'))
 
 
-def kebab_case(x):
-    # type: (str) -> str
+def kebab_case(x: str) -> str:
     """Convert the input identifier to kebab-case"""
     return '-'.join(split_for_words(x))
 
 
-def pascal_case(x):
-    # type: (str) -> str
+def pascal_case(x: str) -> str:
     """Convert the input identifier to PascalCase"""
     return ''.join(w.title() for w in split_for_words(x))
 
 
-@wayland_protocol_utils.memoize(cache={})
-def get_base_human_readable_name_map(protocols):
-    # type: (Iterable[Protocol]) -> Dict[str, str]
+@functools.lru_cache(maxsize=None)
+def get_base_human_readable_name_map(
+        protocols: Iterable[Protocol]) -> Dict[str, str]:
     """Determines a mapping of each interface name to an identifier name."""
 
     # Default to the full interface name as the identifier.
@@ -43,8 +44,8 @@ def get_base_human_readable_name_map(protocols):
     # ever shortened to another interface name.
     used = set(interface_identifiers.keys())
 
-    def set_identifier_name_for_protocol(names, interface):
-        # type: (Iterable[str], Interface) -> None
+    def set_identifier_name_for_protocol(names: Iterable[str],
+                                         interface: Interface) -> None:
         """Set the first unused name in |names| as the name for |interface|"""
         for name in names:
             if name not in used:
@@ -52,8 +53,8 @@ def get_base_human_readable_name_map(protocols):
                 interface_identifiers[interface.name] = name
                 return
 
-    def set_identifier_names_for_interface(interfaces):
-        # type: (Iterable[Interface]) -> None
+    def set_identifier_names_for_interface(
+            interfaces: Iterable[Interface]) -> None:
         """Try and set a shorter name for each interface"""
         # For each interface in protocol, try and find a shorter name to use
         # when representing instances of that interface.
@@ -67,9 +68,8 @@ def get_base_human_readable_name_map(protocols):
                 [name_no_prefix_or_suffix, name_no_prefix, name_no_suffix],
                 interface)
 
-    def prioritize_interfaces(interfaces):
-        # type: (Iterable[Interface]) -> Tuple[Interface, ...]
-
+    def prioritize_interfaces(
+            interfaces: Iterable[Interface]) -> Tuple[Interface, ...]:
         DEFAULT_STABLE_PRIORITY = 100
         DEFAULT_UNSTABLE_PRIORITY = 101
         UNSTABLE_PREFIX = 'z'

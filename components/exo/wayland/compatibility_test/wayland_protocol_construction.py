@@ -4,21 +4,26 @@
 
 import argparse
 import collections
+import dataclasses
 import functools
 import io
 import itertools
 import sys
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 import wayland_protocol_data_classes
 import wayland_protocol_identifiers
-import wayland_protocol_utils
 
+# Short aliases for typing
+Message = wayland_protocol_data_classes.Message
+Interface = wayland_protocol_data_classes.Interface
+Protocol = wayland_protocol_data_classes.Protocol
 RequestType = wayland_protocol_data_classes.RequestType
 
 
-@wayland_protocol_utils.memoize(cache={})
-def get_interface_for_name(protocols, target_interface_name):
-    # type: (Iterable[Protocol], str) -> Optional[Interface]
+@functools.lru_cache(maxsize=None)
+def get_interface_for_name(protocols: Iterable[Protocol],
+                           target_interface_name: str) -> Optional[Interface]:
     """Given a name string, gets the interface that has that name, or None."""
     for protocol in protocols:
         for interface in protocol.interfaces:
@@ -27,9 +32,9 @@ def get_interface_for_name(protocols, target_interface_name):
     return None
 
 
-@wayland_protocol_utils.memoize(cache={})
-def get_constructor_for_interface(target_interface):
-    # type: (Interface) -> Optional[Message]
+@functools.lru_cache(maxsize=None)
+def get_constructor_for_interface(
+        target_interface: Interface) -> Optional[Message]:
     """Gets the message to use to construct the target interface, or None."""
 
     # Note: We assume there is only one constructor for any interface, and
@@ -50,53 +55,50 @@ def get_constructor_for_interface(target_interface):
     return None
 
 
-class ConstructionStepCtor(object):
+@dataclasses.dataclass(frozen=True)
+class ConstructionStepCtor:
     """Message and related data for a ConstructionStep"""
-    def __init__(self, interface_step, message, object_args):
-        # type: (ConstructionStep, Message,
-        #        Tuple[Optional['ConstructionStep'], ...]) -> None
 
-        # The construction step for the interface needed for this step.
-        self.interface_step = interface_step
+    # The construction step for the interface needed for this step.
+    interface_step: 'ConstructionStep'
 
-        # The message on the interface used to perform the construction in this
-        # step. Note that while this is normally a client request, it can
-        # occasionally be a server event. One example of that is the
-        # wl_data_offer in the core Wayland protocol.
-        self.message = message
+    # The message on the interface used to perform the construction in this
+    # step. Note that while this is normally a client request, it can
+    # occasionally be a server event. One example of that is the wl_data_offer
+    # in the core Wayland protocol.
+    message: Message
 
-        # For request constructors, gives the construction steps for any
-        # additional objects that are needed for constructing the target.
-        # There are entries only for the arguments that are objects. The rest
-        # are None. For event constructors this will always be empty.
-        self.object_args = object_args
+    # For request constructors, gives the construction steps for any
+    # additional objects that are needed for constructing the target.
+    # There are entries only for the arguments that are objects. The rest
+    # are None. For event constructors this will always be empty.
+    object_args: Tuple[Optional['ConstructionStep'], ...]
 
 
-class ConstructionStep(object):
+@dataclasses.dataclass(frozen=True)
+class ConstructionStep:
     """Represents a step in the construction path of a target interface."""
-    def __init__(self, interface, instance_name, ctor, minimum_version):
-        # type: (Interface, str, Optional[ConstructionStepCtor], int) -> None
 
-        # Wayland interface constructed by this step
-        self.interface = interface
+    # Wayland interface constructed by this step
+    interface: Interface
 
-        # A reasonable human-readable name that can be used to generate variable
-        # and function names for this step. The names will be unique within a
-        # single generated sequence of steps.
-        self.instance_name = instance_name
+    # A reasonable human-readable name that can be used to generate variable
+    # and function names for this step. The names will be unique within a single
+    # generated sequence of steps.
+    instance_name: str
 
-        # The details of how to construct this interface, based on other
-        # construction steps. This will be None if the interface in this step
-        # is a Wayland global interface.
-        self.ctor = ctor
+    # The details of how to construct this interface, based on other
+    # construction steps. This will be None if the interface in this step
+    # is a Wayland global interface.
+    ctor: Optional[ConstructionStepCtor]
 
-        # Set to the minimum version needed for this interface.
-        self.minimum_version = minimum_version
+    # Set to the minimum version needed for this interface.
+    minimum_version: int
 
 
-@wayland_protocol_utils.memoize(cache={})
-def get_construction_steps(target_interface):
-    # type: (Interface) -> Tuple[ConstructionStep, ...]
+@functools.lru_cache(maxsize=None)
+def get_construction_steps(
+        target_interface: Interface) -> Tuple[ConstructionStep, ...]:
     """Generates the ConstructionSteps to construct a target interface."""
 
     # For brevity later, get the list of protocols as a local
@@ -116,12 +118,8 @@ def get_construction_steps(target_interface):
     # To help ensure unique instance names
     uniquifier = collections.Counter()
 
-    def unique_instance_name(prefix, name):
-        # type: (str, str) -> str
-
-        def dedupe_words(name):
-            # type: (str) -> str
-
+    def unique_instance_name(prefix: str, name: str) -> str:
+        def dedupe_words(name: str) -> str:
             # Otherwise a generated name might be "parent_surface_surface"
             # for a wl_surface passed as a parent_surface argument.
             words = name.split("_")
@@ -138,9 +136,8 @@ def get_construction_steps(target_interface):
         uniquifier[name] += 1
         return name + suffix + "_"
 
-    def recursive_construction_steps(current_target, prefix, minimum_version):
-        # type: (Interface, str, int) -> ConstructionStep
-
+    def recursive_construction_steps(current_target: Interface, prefix: str,
+                                     minimum_version: int):
         ctor_message = get_constructor_for_interface(current_target)
         ctor = None
 
@@ -164,7 +161,7 @@ def get_construction_steps(target_interface):
                         arg_interface = get_interface_for_name(
                             protocols, arg.interface)
                         arg_step = recursive_construction_steps(
-                            arg_interface, '%s%s_' % (prefix, arg.name), 1)
+                            arg_interface, f'{prefix}{arg.name}_', 1)
                     ctor_object_args.append(arg_step)
 
             ctor = ConstructionStepCtor(ctor_interface, ctor_message,
@@ -193,9 +190,8 @@ def get_construction_steps(target_interface):
                   for name in sorted(global_steps)] + instance_steps)
 
 
-@wayland_protocol_utils.memoize(cache={})
-def get_destructor(interface):
-    # type: (Interface) -> Optional[Message]
+@functools.lru_cache(maxsize=None)
+def get_destructor(interface: Interface) -> Optional[Message]:
     """Gets the Message that acts as the interface destructor, if present."""
     for message in interface.requests:
         if message.request_type == RequestType.DESTRUCTOR.value:
@@ -203,12 +199,9 @@ def get_destructor(interface):
     return None
 
 
-def get_minimum_version_to_construct(target):
-    # type: (Interface) -> int
+def get_minimum_version_to_construct(target: Interface) -> int:
     """Gets the minimum version of the global needed to construct a target."""
-    def recursive_minimum(interface, minimum_version):
-        # type: (Interface, int) -> int
-
+    def recursive_minimum(interface: Interface, minimum_version: int) -> int:
         ctor_message = get_constructor_for_interface(interface)
 
         # If there is no explicit constructor for this target, it must be a
@@ -227,10 +220,8 @@ def get_minimum_version_to_construct(target):
     return recursive_minimum(target, 1)
 
 
-def get_versions_to_test_for_event_delivery(interface):
-    # type: (Interface) -> Tuple[int, ...]
-    """Returns the list of versions around which the interface changes."""
-
+def get_versions_to_test_for_event_delivery(
+        interface: Interface) -> Tuple[int, ...]:
     # Get the minimum interface version
     min_version = get_minimum_version_to_construct(interface)
 
@@ -246,7 +237,6 @@ def get_versions_to_test_for_event_delivery(interface):
     return tuple(versions)
 
 
-def is_global_interface(interface):
-    # type: (Interface) -> bool
+def is_global_interface(interface: Interface) -> bool:
     """Returns true if the interface is a global interface."""
     return get_constructor_for_interface(interface) is None
