@@ -59,10 +59,10 @@ class NET_EXPORT CanonicalCookie {
 
   CanonicalCookie();
   CanonicalCookie(const CanonicalCookie& other);
-
+  CanonicalCookie(CanonicalCookie&& other);
+  CanonicalCookie& operator=(const CanonicalCookie& other);
+  CanonicalCookie& operator=(CanonicalCookie&& other);
   ~CanonicalCookie();
-
-  // Supports the default copy constructor.
 
   // Creates a new |CanonicalCookie| from the |cookie_line| and the
   // |creation_time|.  Canonicalizes inputs.  May return nullptr if

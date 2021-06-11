@@ -274,6 +274,13 @@ CanonicalCookie::CanonicalCookie() = default;
 
 CanonicalCookie::CanonicalCookie(const CanonicalCookie& other) = default;
 
+CanonicalCookie::CanonicalCookie(CanonicalCookie&& other) = default;
+
+CanonicalCookie& CanonicalCookie::operator=(const CanonicalCookie& other) =
+    default;
+
+CanonicalCookie& CanonicalCookie::operator=(CanonicalCookie&& other) = default;
+
 CanonicalCookie::CanonicalCookie(const std::string& name,
                                  const std::string& value,
                                  const std::string& domain,
