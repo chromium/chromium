@@ -2022,13 +2022,17 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
 
   if (!NeedsLayoutTreeUpdate()) {
     if (Lifecycle().GetState() < DocumentLifecycle::kStyleClean) {
-      // needsLayoutTreeUpdate may change to false without any actual layout
-      // tree update.  For example, needsAnimationTimingUpdate may change to
+      // NeedsLayoutTreeUpdate may change to false without any actual layout
+      // tree update.  For example, NeedsAnimationTimingUpdate may change to
       // false when time elapses.  Advance lifecycle to StyleClean because style
       // is actually clean now.
       Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
       Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     }
+    // If we insert <object> elements into display:none subtrees, we might not
+    // need a layout tree update, but need to make sure they are not blocking
+    // the load event.
+    UnblockLoadEventAfterLayoutTreeUpdate();
     return;
   }
 
