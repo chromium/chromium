@@ -274,8 +274,14 @@ class AX_EXPORT AXNode final {
   SkColor ComputeColor() const;
   SkColor ComputeBackgroundColor() const;
 
-  // Accessing accessibility attributes.
-  // See |AXNodeData| for more information.
+  //
+  // Methods for accessing accessibility attributes including attributes that
+  // are computed on the browser side. (See `AXNodeData` and
+  // `AXComputedNodeData` for more information.)
+  //
+  // Please prefer using the methods in this file for retrieving attributes, as
+  // computed attributes would be automatically returned if available.
+  //
 
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const {
     return data().HasBoolAttribute(attribute);
@@ -308,26 +314,16 @@ class AX_EXPORT AXNode final {
     return data().GetIntAttribute(attribute, value);
   }
 
-  bool HasStringAttribute(ax::mojom::StringAttribute attribute) const {
-    return data().HasStringAttribute(attribute);
-  }
+  bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(
-      ax::mojom::StringAttribute attribute) const {
-    return data().GetStringAttribute(attribute);
-  }
+      ax::mojom::StringAttribute attribute) const;
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
-                          std::string* value) const {
-    return data().GetStringAttribute(attribute, value);
-  }
+                          std::string* value) const;
 
-  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            std::u16string* value) const {
-    return data().GetString16Attribute(attribute, value);
-  }
   std::u16string GetString16Attribute(
-      ax::mojom::StringAttribute attribute) const {
-    return data().GetString16Attribute(attribute);
-  }
+      ax::mojom::StringAttribute attribute) const;
+  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
+                            std::u16string* value) const;
 
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
     return data().HasIntListAttribute(attribute);

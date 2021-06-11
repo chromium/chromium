@@ -130,7 +130,7 @@ TEST(AXNodeTest, TreeWalking) {
   initial_state.tree_data = tree_data;
 
   AXTree tree;
-  ASSERT_TRUE(tree.Unserialize(initial_state));
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
 
   const AXNode* root_node = tree.root();
   ASSERT_EQ(root.id, root_node->id());
@@ -393,6 +393,112 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
   EXPECT_EQ(root_node_1, root_node_2->GetUnignoredParentCrossingTreeBoundary());
 }
 
+TEST(AXNodeTest, GetValueForControlTextField) {
+  // kRootWebArea
+  // ++kTextField (contenteditable)
+  // ++++kGenericContainer
+  // ++++++kStaticText "Line 1"
+  // ++++++kLineBreak '\n'
+  // ++++++kStaticText "Line 2"
+
+  AXNodeData root;
+  root.id = 1;
+  AXNodeData rich_text_field;
+  rich_text_field.id = 2;
+  AXNodeData rich_text_field_text_container;
+  rich_text_field_text_container.id = 3;
+  AXNodeData rich_text_field_line_1;
+  rich_text_field_line_1.id = 4;
+  AXNodeData rich_text_field_line_break;
+  rich_text_field_line_break.id = 5;
+  AXNodeData rich_text_field_line_2;
+  rich_text_field_line_2.id = 6;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {rich_text_field.id};
+
+  rich_text_field.role = ax::mojom::Role::kTextField;
+  rich_text_field.AddState(ax::mojom::State::kEditable);
+  rich_text_field.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+  rich_text_field.SetName("Rich text field");
+  rich_text_field.child_ids = {rich_text_field_text_container.id};
+
+  rich_text_field_text_container.role = ax::mojom::Role::kGenericContainer;
+  rich_text_field_text_container.AddState(ax::mojom::State::kIgnored);
+  rich_text_field_text_container.AddState(ax::mojom::State::kEditable);
+  rich_text_field_text_container.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_text_container.child_ids = {rich_text_field_line_1.id,
+                                              rich_text_field_line_break.id,
+                                              rich_text_field_line_2.id};
+
+  rich_text_field_line_1.role = ax::mojom::Role::kStaticText;
+  rich_text_field_line_1.AddState(ax::mojom::State::kEditable);
+  rich_text_field_line_1.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_line_1.SetName("Line 1");
+
+  rich_text_field_line_break.role = ax::mojom::Role::kLineBreak;
+  rich_text_field_line_break.AddState(ax::mojom::State::kEditable);
+  rich_text_field_line_break.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_line_break.SetName("\n");
+
+  rich_text_field_line_2.role = ax::mojom::Role::kStaticText;
+  rich_text_field_line_2.AddState(ax::mojom::State::kEditable);
+  rich_text_field_line_2.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field_line_2.SetName("Line 2");
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.root_id = root.id;
+  update.nodes = {root,
+                  rich_text_field,
+                  rich_text_field_text_container,
+                  rich_text_field_line_1,
+                  rich_text_field_line_break,
+                  rich_text_field_line_2};
+
+  AXTree tree(update);
+  {
+    const AXNode* text_field_node = tree.GetFromId(rich_text_field.id);
+    ASSERT_NE(nullptr, text_field_node);
+    EXPECT_EQ("Line 1\nLine 2", text_field_node->GetValueForControl());
+  }
+
+  // Only rich text fields should have their value attribute automatically
+  // computed from their inner text. Atomic text fields, such as <input> or
+  // <textarea> should not.
+  rich_text_field.RemoveState(ax::mojom::State::kRichlyEditable);
+  rich_text_field.RemoveBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot);
+  AXTreeUpdate update_2;
+  update_2.nodes = {rich_text_field};
+
+  ASSERT_TRUE(tree.Unserialize(update_2)) << tree.error();
+  {
+    const AXNode* text_field_node = tree.GetFromId(rich_text_field.id);
+    ASSERT_NE(nullptr, text_field_node);
+    EXPECT_EQ("", text_field_node->GetValueForControl());
+  }
+
+  rich_text_field.AddState(ax::mojom::State::kRichlyEditable);
+  rich_text_field.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  // A node's data should override any computed node data.
+  rich_text_field.SetValue("Other value");
+  AXTreeUpdate update_3;
+  update_3.nodes = {rich_text_field};
+
+  ASSERT_TRUE(tree.Unserialize(update_3)) << tree.error();
+  {
+    const AXNode* text_field_node = tree.GetFromId(rich_text_field.id);
+    ASSERT_NE(nullptr, text_field_node);
+    EXPECT_EQ("Other value", text_field_node->GetValueForControl());
+  }
+}
+
 TEST(AXNodeTest, GetLowestPlatformAncestor) {
   // ++kRootWebArea
   // ++++kButton (IsLeaf=false)
@@ -466,7 +572,7 @@ TEST(AXNodeTest, GetLowestPlatformAncestor) {
   initial_state.tree_data = tree_data;
 
   AXTree tree;
-  ASSERT_TRUE(tree.Unserialize(initial_state));
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
 
   const AXNode* root_node = tree.root();
   ASSERT_EQ(root.id, root_node->id());

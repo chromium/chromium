@@ -701,12 +701,44 @@ SkColor AXNode::ComputeColorAttribute(ax::mojom::IntAttribute attr) const {
   return color;
 }
 
+bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
+  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+}
+
+const std::string& AXNode::GetStringAttribute(
+    ax::mojom::StringAttribute attribute) const {
+  return GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
+}
+
+bool AXNode::GetStringAttribute(ax::mojom::StringAttribute attribute,
+                                std::string* value) const {
+  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
+    *value = GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
+    return true;
+  }
+  return false;
+}
+
+std::u16string AXNode::GetString16Attribute(
+    ax::mojom::StringAttribute attribute) const {
+  return GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
+}
+
+bool AXNode::GetString16Attribute(ax::mojom::StringAttribute attribute,
+                                  std::u16string* value) const {
+  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
+    *value = GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
+    return true;
+  }
+  return false;
+}
+
 const std::string& AXNode::GetInheritedStringAttribute(
     ax::mojom::StringAttribute attribute) const {
   const AXNode* current_node = this;
   do {
-    if (current_node->data().HasStringAttribute(attribute))
-      return current_node->data().GetStringAttribute(attribute);
+    if (current_node->HasStringAttribute(attribute))
+      return current_node->GetStringAttribute(attribute);
     current_node = current_node->parent();
   } while (current_node);
   return base::EmptyString();
@@ -845,15 +877,12 @@ std::string AXNode::GetLanguage() const {
   for (const AXNode* cur = this; cur; cur = cur->parent()) {
     // If language detection has assigned a language then we prefer that.
     const AXLanguageInfo* lang_info = cur->GetLanguageInfo();
-    if (lang_info && !lang_info->language.empty()) {
+    if (lang_info && !lang_info->language.empty())
       return lang_info->language;
-    }
 
     // If the page author has declared a language attribute we fallback to that.
-    const AXNodeData& data = cur->data();
-    if (data.HasStringAttribute(ax::mojom::StringAttribute::kLanguage)) {
-      return data.GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
-    }
+    if (cur->HasStringAttribute(ax::mojom::StringAttribute::kLanguage))
+      return cur->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
   }
 
   return std::string();
@@ -869,7 +898,7 @@ std::string AXNode::GetValueForControl() const {
     return GetValueForColorWell();
   if (!IsControl(data().role))
     return std::string();
-  return data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  return GetStringAttribute(ax::mojom::StringAttribute::kValue);
 }
 
 std::ostream& operator<<(std::ostream& stream, const AXNode& node) {
@@ -1434,7 +1463,7 @@ AXNode* AXNode::ComputeFirstUnignoredChildRecursive() const {
 std::string AXNode::GetTextForRangeValue() const {
   DCHECK(data().IsRangeValueSupported());
   std::string range_value =
-      data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
+      GetStringAttribute(ax::mojom::StringAttribute::kValue);
   float numeric_value;
   if (range_value.empty() &&
       data().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
@@ -1459,8 +1488,7 @@ std::string AXNode::GetValueForColorWell() const {
 
 std::string AXNode::GetValueForTextField() const {
   DCHECK(data().IsTextField());
-  std::string value =
-      data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  std::string value = GetStringAttribute(ax::mojom::StringAttribute::kValue);
   // Some screen readers like Jaws and VoiceOver require a value to be set in
   // text fields with rich content, even though the same information is
   // available on the children.
@@ -1576,8 +1604,7 @@ bool AXNode::IsLeaf() const {
     case ax::mojom::Role::kImage: {
       // Images are not leaves when they are image maps. Therefore, do not
       // truncate descendants except in the case where ARIA role=img.
-      std::string role =
-          data().GetStringAttribute(ax::mojom::StringAttribute::kRole);
+      std::string role = GetStringAttribute(ax::mojom::StringAttribute::kRole);
       return role == "img" || role == "image";
     }
     case ax::mojom::Role::kDocCover:

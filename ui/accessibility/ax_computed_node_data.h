@@ -8,6 +8,7 @@
 #include <string>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
@@ -24,6 +25,21 @@ class AX_EXPORT AXComputedNodeData final {
   virtual ~AXComputedNodeData();
   AXComputedNodeData(const AXComputedNodeData& other) = delete;
   AXComputedNodeData& operator=(const AXComputedNodeData& other) = delete;
+
+  // Given an accessibility string attribute, returns whether the attribute is
+  // currently present in the node's data, or if it can always be computed on
+  // demand.
+  bool HasOrCanComputeAttribute(
+      const ax::mojom::StringAttribute attribute) const;
+
+  // Given an accessibility string attribute, returns the attribute's value. The
+  // attribute is computed if not provided by the tree's source, otherwise it is
+  // simply returned from the node's data. String attributes are potentially the
+  // slowest to compute at the tree's source, e.g. in Blink.
+  const std::string& GetOrComputeAttributeUTF8(
+      const ax::mojom::StringAttribute attribute) const;
+  std::u16string GetOrComputeAttributeUTF16(
+      const ax::mojom::StringAttribute attribute) const;
 
   // Retrieves from the cache or computes the on-screen text that is found
   // inside the associated node and all its descendants, caches the result, and

@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_computed_node_data.h"
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -17,6 +18,49 @@ namespace ui {
 AXComputedNodeData::AXComputedNodeData(const AXNode& node) : owner_(&node) {}
 
 AXComputedNodeData::~AXComputedNodeData() = default;
+
+bool AXComputedNodeData::HasOrCanComputeAttribute(
+    const ax::mojom::StringAttribute attribute) const {
+  DCHECK(owner_);
+  if (owner_->data().HasStringAttribute(attribute))
+    return true;
+
+  switch (attribute) {
+    case ax::mojom::StringAttribute::kValue:
+      // The value attribute could be computed on the browser for content
+      // editables and ARIA text/search boxes.
+      return owner_->data().IsNonAtomicTextField();
+    default:
+      return false;
+  }
+}
+
+const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
+    const ax::mojom::StringAttribute attribute) const {
+  DCHECK(owner_);
+  if (owner_->data().HasStringAttribute(attribute))
+    return owner_->data().GetStringAttribute(attribute);
+
+  switch (attribute) {
+    case ax::mojom::StringAttribute::kValue:
+      if (owner_->data().IsNonAtomicTextField()) {
+        DCHECK(HasOrCanComputeAttribute(attribute))
+            << "Code in `HasOrCanComputeAttribute` should be in sync with "
+               "'GetOrComputeAttributeUTF8`";
+        return GetOrComputeInnerTextUTF8();
+      }
+      return base::EmptyString();
+    default:
+      // This is a special case: for performance reasons do not use
+      // `base::EmptyString()` in other places throughout the codebase.
+      return base::EmptyString();
+  }
+}
+
+std::u16string AXComputedNodeData::GetOrComputeAttributeUTF16(
+    const ax::mojom::StringAttribute attribute) const {
+  return base::UTF8ToUTF16(GetOrComputeAttributeUTF8(attribute));
+}
 
 const std::string& AXComputedNodeData::GetOrComputeInnerTextUTF8() const {
   if (!inner_text_utf8_) {
