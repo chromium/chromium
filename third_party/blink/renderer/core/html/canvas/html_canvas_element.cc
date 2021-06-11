@@ -452,8 +452,8 @@ bool HTMLCanvasElement::IsWebGLBlocked() const {
   return blocked;
 }
 
-void HTMLCanvasElement::DidDraw(const FloatRect& rect) {
-  if (rect.IsEmpty())
+void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
+  if (rect.isEmpty())
     return;
   if (GetLayoutObject() && GetLayoutObject()->PreviousVisibilityVisible() &&
       GetDocument().GetPage())
@@ -463,18 +463,12 @@ void HTMLCanvasElement::DidDraw(const FloatRect& rect) {
     GetLayoutObject()->SetShouldCheckForPaintInvalidation();
   if (IsRenderingContext2D() && context_->ShouldAntialias() && GetPage() &&
       GetPage()->DeviceScaleFactorDeprecated() > 1.0f) {
-    FloatRect inflated_rect = rect;
-    inflated_rect.Inflate(1);
-    dirty_rect_.Unite(inflated_rect);
+    dirty_rect_.join(rect.makeOutset(1, 1));
   } else {
-    dirty_rect_.Unite(rect);
+    dirty_rect_.join(rect);
   }
   if (IsRenderingContext2D() && canvas2d_bridge_)
-    canvas2d_bridge_->DidDraw(rect);
-}
-
-void HTMLCanvasElement::DidDraw() {
-  DidDraw(FloatRect(0, 0, Size().Width(), Size().Height()));
+    canvas2d_bridge_->DidDraw();
 }
 
 void HTMLCanvasElement::PreFinalizeFrame() {
@@ -488,7 +482,7 @@ void HTMLCanvasElement::PreFinalizeFrame() {
 
   // Low-latency 2d canvases produce their frames after the resource gets single
   // buffered.
-  if (LowLatencyEnabled() && !dirty_rect_.IsEmpty() &&
+  if (LowLatencyEnabled() && !dirty_rect_.isEmpty() &&
       GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
     // TryEnableSingleBuffering() the first time we FinalizeFrame().  This is
     // a nop if already single buffered or if single buffering is unsupported.
@@ -497,21 +491,19 @@ void HTMLCanvasElement::PreFinalizeFrame() {
 }
 
 void HTMLCanvasElement::PostFinalizeFrame() {
-  if (LowLatencyEnabled() && !dirty_rect_.IsEmpty() &&
+  if (LowLatencyEnabled() && !dirty_rect_.isEmpty() &&
       GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     const scoped_refptr<CanvasResource> canvas_resource =
         ResourceProvider()->ProduceCanvasResource();
-    const FloatRect src_rect(0, 0, Size().Width(), Size().Height());
-    dirty_rect_.Intersect(src_rect);
-    const IntRect int_dirty = EnclosingIntRect(dirty_rect_);
-    const SkIRect damage_rect = SkIRect::MakeXYWH(
-        int_dirty.X(), int_dirty.Y(), int_dirty.Width(), int_dirty.Height());
+    SkIRect damage_rect = SkIRect::MakeWH(Size().Width(), Size().Height());
+    damage_rect.intersect(dirty_rect_);
+
     const bool needs_vertical_flip = !RenderingContext()->IsOriginTopLeft();
     frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
                                      damage_rect, needs_vertical_flip,
                                      IsOpaque());
-    dirty_rect_ = FloatRect();
+    dirty_rect_.setEmpty();
   }
 
   // If the canvas is visible, notifying listeners is taken care of in
@@ -549,41 +541,35 @@ void HTMLCanvasElement::SetNeedsCompositingUpdate() {
 }
 
 void HTMLCanvasElement::DoDeferredPaintInvalidation() {
-  DCHECK(!dirty_rect_.IsEmpty());
+  DCHECK(!dirty_rect_.isEmpty());
   if (LowLatencyEnabled()) {
     // Low latency canvas handles dirty propagation in FinalizeFrame();
     return;
   }
   LayoutBox* layout_box = GetLayoutBox();
 
-  FloatRect content_rect;
-  if (layout_box) {
-    if (auto* replaced = DynamicTo<LayoutReplaced>(layout_box))
-      content_rect = FloatRect(replaced->ReplacedContentRect());
-    else
-      content_rect = FloatRect(layout_box->PhysicalContentBoxRect());
-  }
-
   if (IsRenderingContext2D()) {
-    FloatRect src_rect(0, 0, Size().Width(), Size().Height());
-    dirty_rect_.Intersect(src_rect);
-
-    FloatRect invalidation_rect;
+    if (dirty_rect_.isEmpty())  // TODO(junov): Do we still need this?
+      return;
+    IntRect src_rect(0, 0, Size().Width(), Size().Height());
+    IntRect invalidation_rect(dirty_rect_);
+    invalidation_rect.Intersect(src_rect);
     if (layout_box) {
-      FloatRect mapped_dirty_rect =
-          MapRect(dirty_rect_, src_rect, content_rect);
+      FloatRect content_rect;
+      if (auto* replaced = DynamicTo<LayoutReplaced>(layout_box))
+        content_rect = FloatRect(replaced->ReplacedContentRect());
+      else
+        content_rect = FloatRect(layout_box->PhysicalContentBoxRect());
+
+      FloatRect mapped_invalidation_rect = MapRect(
+          FloatRect(invalidation_rect), FloatRect(src_rect), content_rect);
       if (context_->IsComposited()) {
         // Composited 2D canvases need the dirty rect to be expressed relative
         // to the content box, as opposed to the layout box.
-        mapped_dirty_rect.MoveBy(-content_rect.Location());
+        mapped_invalidation_rect.MoveBy(-content_rect.Location());
       }
-      invalidation_rect = mapped_dirty_rect;
-    } else {
-      invalidation_rect = dirty_rect_;
+      invalidation_rect = EnclosingIntRect(mapped_invalidation_rect);
     }
-
-    if (dirty_rect_.IsEmpty())
-      return;
 
     if (canvas2d_bridge_)
       canvas2d_bridge_->DoPaintInvalidation(invalidation_rect);
@@ -601,14 +587,14 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
     layout_box->SetShouldDoFullPaintInvalidation();
   }
 
-  dirty_rect_ = FloatRect();
+  dirty_rect_.setEmpty();
 }
 
 void HTMLCanvasElement::Reset() {
   if (ignore_reset_)
     return;
 
-  dirty_rect_ = FloatRect();
+  dirty_rect_.setEmpty();
 
   bool had_resource_provider = HasResourceProvider();
 
@@ -1236,7 +1222,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
 void HTMLCanvasElement::DiscardResourceProvider() {
   canvas2d_bridge_.reset();
   CanvasResourceHost::DiscardResourceProvider();
-  dirty_rect_ = FloatRect();
+  dirty_rect_.setEmpty();
 }
 
 void HTMLCanvasElement::PageVisibilityChanged() {

@@ -434,10 +434,7 @@ void CanvasRenderingContext2D::clearRect(double x,
   }
 }
 
-void CanvasRenderingContext2D::DidDraw(const SkIRect& dirty_rect) {
-  if (dirty_rect.isEmpty())
-    return;
-
+void CanvasRenderingContext2D::DidDraw2D(const SkIRect& dirty_rect) {
   CanvasRenderingContext::DidDraw(dirty_rect);
 }
 
