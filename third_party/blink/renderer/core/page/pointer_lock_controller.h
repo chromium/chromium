@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_POINTER_LOCK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_POINTER_LOCK_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
@@ -54,6 +53,8 @@ class CORE_EXPORT PointerLockController final
     : public GarbageCollected<PointerLockController> {
  public:
   explicit PointerLockController(Page*);
+  PointerLockController(const PointerLockController&) = delete;
+  PointerLockController& operator=(const PointerLockController&) = delete;
 
   using ResultCallback =
       base::OnceCallback<void(mojom::blink::PointerLockResult)>;
@@ -124,8 +125,6 @@ class CORE_EXPORT PointerLockController final
   FloatPoint pointer_lock_screen_position_;
 
   bool current_unadjusted_movement_setting_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PointerLockController);
 };
 
 }  // namespace blink

@@ -118,9 +118,9 @@ class TextAutosizerPageInfo;
 using CompositorElementId = cc::ElementId;
 
 class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
-  DISALLOW_COPY_AND_ASSIGN(ChromeClient);
-
  public:
+  ChromeClient(const ChromeClient&) = delete;
+  ChromeClient& operator=(const ChromeClient&) = delete;
   virtual ~ChromeClient() = default;
 
   virtual WebViewImpl* GetWebView() const = 0;

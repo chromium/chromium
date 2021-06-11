@@ -26,7 +26,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
@@ -118,6 +117,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
        ChromeClient& chrome_client,
        scheduler::WebAgentGroupScheduler& agent_group_scheduler,
        bool is_ordinary);
+  Page(const Page&) = delete;
+  Page& operator=(const Page&) = delete;
   ~Page() override;
 
   void CloseSoon();
@@ -496,8 +497,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 
   WebScopedVirtualTimePauser history_navigation_virtual_time_pauser_;
-
-  DISALLOW_COPY_AND_ASSIGN(Page);
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

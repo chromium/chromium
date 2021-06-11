@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -57,6 +56,8 @@ class CORE_EXPORT DragController final
       public ExecutionContextLifecycleObserver {
  public:
   explicit DragController(Page*);
+  DragController(const DragController&) = delete;
+  DragController& operator=(const DragController&) = delete;
 
   ui::mojom::blink::DragOperation DragEnteredOrUpdated(DragData*,
                                                        LocalFrame& local_root);
@@ -139,7 +140,6 @@ class CORE_EXPORT DragController final
 
   DragDestinationAction drag_destination_action_;
   bool did_initiate_drag_;
-  DISALLOW_COPY_AND_ASSIGN(DragController);
 };
 
 }  // namespace blink

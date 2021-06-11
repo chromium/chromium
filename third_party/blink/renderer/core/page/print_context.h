@@ -137,14 +137,14 @@ class CORE_EXPORT ScopedPrintContext {
 
  public:
   explicit ScopedPrintContext(LocalFrame*);
+  ScopedPrintContext(const ScopedPrintContext&) = delete;
+  ScopedPrintContext& operator=(const ScopedPrintContext&) = delete;
   ~ScopedPrintContext();
 
   PrintContext* operator->() const { return context_; }
 
  private:
   PrintContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPrintContext);
 };
 
 }  // namespace blink

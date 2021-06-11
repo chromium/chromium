@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_CONTEXT_MENU_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_CONTEXT_MENU_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
@@ -49,6 +48,8 @@ class CORE_EXPORT ContextMenuController final
       public mojom::blink::ContextMenuClient {
  public:
   explicit ContextMenuController(Page*);
+  ContextMenuController(const ContextMenuController&) = delete;
+  ContextMenuController operator=(const ContextMenuController&) = delete;
   ~ContextMenuController() override;
   void Trace(Visitor*) const;
 
@@ -138,8 +139,6 @@ class CORE_EXPORT ContextMenuController final
   Member<ContextMenuProvider> menu_provider_;
   HitTestResult hit_test_result_;
   Member<Node> image_selection_cached_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuController);
 };
 
 }  // namespace blink

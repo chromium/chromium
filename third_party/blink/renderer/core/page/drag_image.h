@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
@@ -62,6 +61,9 @@ class CORE_EXPORT DragImage {
                                            const String& label,
                                            const FontDescription& system_font,
                                            float device_scale_factor);
+
+  DragImage(const DragImage&) = delete;
+  DragImage& operator=(const DragImage&) = delete;
   ~DragImage();
 
   static FloatSize ClampedImageScale(const IntSize&,
@@ -80,8 +82,6 @@ class CORE_EXPORT DragImage {
   SkBitmap bitmap_;
   float resolution_scale_;
   InterpolationQuality interpolation_quality_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragImage);
 };
 
 }  // namespace blink
