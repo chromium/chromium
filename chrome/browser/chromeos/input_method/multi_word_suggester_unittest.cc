@@ -339,4 +339,28 @@ TEST(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
       "InputMethod.Assistive.TimeToAccept.MultiWord", 1);
 }
 
+TEST(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.TimeToDismiss.MultiWord", 0);
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"how", 3, 3);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.DismissSuggestion();
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.TimeToDismiss.MultiWord", 1);
+}
+
 }  // namespace chromeos

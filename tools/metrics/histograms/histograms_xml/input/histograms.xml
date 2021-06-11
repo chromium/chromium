@@ -230,6 +230,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.TimeToDismiss.MultiWord" units="ms"
+    expires_after="2022-06-09">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The duration from when a multi word suggestion is shown to a user, to the
+    time the user dimisses that suggestion. The metric is recorded when the user
+    dismisses the suggestion.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.TimeToDismiss.PersonalInfo" units="ms"
     expires_after="2021-09-12">
   <owner>jiwan@google.com</owner>

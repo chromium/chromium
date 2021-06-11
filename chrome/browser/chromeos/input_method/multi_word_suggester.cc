@@ -52,6 +52,11 @@ void RecordTimeToAccept(base::TimeDelta delta) {
                           delta);
 }
 
+void RecordTimeToDismiss(base::TimeDelta delta) {
+  base::UmaHistogramTimes("InputMethod.Assistive.TimeToDismiss.MultiWord",
+                          delta);
+}
+
 }  // namespace
 
 MultiWordSuggester::MultiWordSuggester(
@@ -174,6 +179,11 @@ void MultiWordSuggester::DismissSuggestion() {
   if (!error.empty()) {
     LOG(ERROR) << "suggest: Failed to dismiss suggestion - " << error;
     return;
+  }
+
+  if (suggestion_state_) {
+    RecordTimeToDismiss(base::TimeTicks::Now() -
+                        suggestion_state_->time_shown_to_user);
   }
 
   ResetSuggestionState();
