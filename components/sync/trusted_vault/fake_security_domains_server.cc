@@ -142,6 +142,9 @@ FakeSecurityDomainsServer::HandleRequest(
                  http_request.GetURL().spec(),
                  server_url_.spec() + kSecurityDomainMemberNamePrefix)) {
     response = HandleGetSecurityDomainMemberRequest(http_request);
+  } else if (http_request.GetURL() ==
+             GetFullGetSecurityDomainURLForTesting(server_url_)) {
+    response = HandleGetSecurityDomainRequest(http_request);
   } else {
     base::AutoLock autolock(lock_);
     DVLOG(1) << "Unknown request url: " << http_request.GetURL().spec();
@@ -190,6 +193,11 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
   return new_trusted_vault_key;
 }
 
+void FakeSecurityDomainsServer::SetRecoverabilityDegraded() {
+  base::AutoLock autolock(lock_);
+  state_.is_recoverability_degraded = true;
+}
+
 int FakeSecurityDomainsServer::GetMemberCount() const {
   base::AutoLock autolock(lock_);
   return state_.public_key_to_shared_keys.size();
@@ -221,6 +229,11 @@ bool FakeSecurityDomainsServer::AllMembersHaveKey(
     }
   }
   return true;
+}
+
+int FakeSecurityDomainsServer::GetCurrentEpoch() const {
+  base::AutoLock autolock(lock_);
+  return state_.current_epoch;
 }
 
 bool FakeSecurityDomainsServer::ReceivedInvalidRequest() const {
@@ -275,6 +288,13 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     state_.public_key_to_shared_keys[member.public_key()] = {shared_key};
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
+
+    // TODO(crbug.com/1201659): This logic should be smarter.
+    if (member.member_type() ==
+        sync_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED) {
+      state_.is_recoverability_degraded = false;
+    }
+
     return response;
   }
 
@@ -350,6 +370,22 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
   response->set_content(member.SerializeAsString());
+  return response;
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+FakeSecurityDomainsServer::HandleGetSecurityDomainRequest(
+    const net::test_server::HttpRequest& http_request) {
+  base::AutoLock autolock(lock_);
+
+  sync_pb::SecurityDomain security_domain;
+  security_domain.mutable_security_domain_details()
+      ->mutable_sync_details()
+      ->set_degraded_recoverability(state_.is_recoverability_degraded);
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(security_domain.SerializeAsString());
   return response;
 }
 

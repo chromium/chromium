@@ -120,6 +120,7 @@ class TrustedVaultConnection {
   // Asynchronously attempts to retrieve degraded recoverability status from the
   // trusted vault server. Caller should hold returned request object until
   // |callback| call or until request needs to be cancelled.
+  // TODO(crbug.com/1081649): Avoid term 'retrieve' in this name.
   virtual std::unique_ptr<Request> RetrieveIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) WARN_UNUSED_RESULT = 0;
