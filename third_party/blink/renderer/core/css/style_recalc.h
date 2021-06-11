@@ -18,15 +18,21 @@ class PseudoElement;
 // attachment during the style recalc phase.
 class StyleRecalcChange {
  private:
-  enum ContainerQueryDependentFlag {
-    kNoContainerRecalc,
+  enum Flag {
+    kNoFlags = 0,
     // Recalc container query dependent elements within this container,
     // but not in nested containers.
-    kRecalcContainer,
+    kRecalcContainer = 1 << 0,
     // Recalc container query dependent elements within this container,
     // and also in nested containers.
-    kRecalcDescendantContainers,
+    kRecalcDescendantContainers = 1 << 1,
+    // If set, need to reattach layout tree.
+    kReattach = 1 << 2,
   };
+  using Flags = uint8_t;
+
+  static const Flags kRecalcContainerFlags =
+      kRecalcContainer | kRecalcDescendantContainers;
 
  public:
   enum Propagate {
@@ -60,27 +66,27 @@ class StyleRecalcChange {
   StyleRecalcChange(Propagate propagate) : propagate_(propagate) {}
 
   StyleRecalcChange ForChildren(const Element& element) const {
-    return {RecalcDescendants() ? kRecalcDescendants : kNo, reattach_,
-            ContainerQueryDependentFlagForChildren(element)};
+    return {RecalcDescendants() ? kRecalcDescendants : kNo,
+            FlagsForChildren(element)};
   }
   StyleRecalcChange ForPseudoElement() const {
     if (propagate_ == kUpdatePseudoElements)
-      return {kRecalcChildren, reattach_, container_query_dependent_flag_};
+      return {kRecalcChildren, flags_};
     return *this;
   }
   StyleRecalcChange EnsureAtLeast(Propagate propagate) const {
     if (propagate > propagate_)
-      return {propagate, reattach_, container_query_dependent_flag_};
-    return {propagate_, reattach_, container_query_dependent_flag_};
+      return {propagate, flags_};
+    return {propagate_, flags_};
   }
   StyleRecalcChange ForceRecalcDescendants() const {
-    return {kRecalcDescendants, reattach_, container_query_dependent_flag_};
+    return {kRecalcDescendants, flags_};
   }
   StyleRecalcChange ForceReattachLayoutTree() const {
-    return {propagate_, true, container_query_dependent_flag_};
+    return {propagate_, flags_ | kReattach};
   }
 
-  bool ReattachLayoutTree() const { return reattach_; }
+  bool ReattachLayoutTree() const { return flags_ & kReattach; }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }
   bool RecalcDescendants() const { return propagate_ == kRecalcDescendants; }
   bool UpdatePseudoElements() const { return propagate_ != kNo; }
@@ -92,26 +98,18 @@ class StyleRecalcChange {
   bool ShouldUpdatePseudoElement(const PseudoElement&) const;
 
  private:
-  StyleRecalcChange(Propagate propagate,
-                    bool reattach,
-                    ContainerQueryDependentFlag container_query_dependent_flag)
-      : propagate_(propagate),
-        reattach_(reattach),
-        container_query_dependent_flag_(container_query_dependent_flag) {}
+  StyleRecalcChange(Propagate propagate, Flags flags)
+      : propagate_(propagate), flags_(flags) {}
 
   bool RecalcContainerQueryDependent() const {
-    return container_query_dependent_flag_ != kNoContainerRecalc;
+    return flags_ & kRecalcContainerFlags;
   }
-  ContainerQueryDependentFlag ContainerQueryDependentFlagForChildren(
-      const Element&) const;
+  Flags FlagsForChildren(const Element&) const;
 
   // To what extent do we need to update style for children.
   Propagate propagate_ = kNo;
-  // Need to reattach layout tree if true.
-  bool reattach_ = false;
-  // Force recalc of elements depending on container queries.
-  ContainerQueryDependentFlag container_query_dependent_flag_ =
-      kNoContainerRecalc;
+  // See StyleRecalc::Flag.
+  Flags flags_ = kNoFlags;
 };
 
 // StyleRecalcContext is an object that is passed on the stack during

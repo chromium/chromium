@@ -56,32 +56,28 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
          pseudo_element.ComputedStyleRef().DependsOnContainerQueries();
 }
 
-StyleRecalcChange::ContainerQueryDependentFlag
-StyleRecalcChange::ContainerQueryDependentFlagForChildren(
+StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
     const Element& element) const {
   // kRecalc[Descendant]ContainerQueryDependent means we are at the container
   // root for a container query recalc.
   if (propagate_ == kRecalcContainerQueryDependent)
-    return kRecalcContainer;
+    return flags_ | kRecalcContainer;
   if (propagate_ == kRecalcDescendantContainerQueryDependent)
-    return kRecalcDescendantContainers;
+    return flags_ | kRecalcDescendantContainers;
 
-  switch (container_query_dependent_flag_) {
-    case kNoContainerRecalc:
-      return kNoContainerRecalc;
-    case kRecalcContainer: {
-      // Don't traverse into children if we hit a descendant container while
-      // recalculating container queries. If the queries for this container also
-      // changes, we will enter another container query recalc for this subtree
-      // from layout.
-      const ComputedStyle* old_style = element.GetComputedStyle();
-      if (old_style && old_style->IsContainerForContainerQueries())
-        return kNoContainerRecalc;
-      return kRecalcContainer;
-    }
-    case kRecalcDescendantContainers:
-      return kRecalcDescendantContainers;
+  Flags result = flags_;
+
+  if ((result & kRecalcContainerFlags) == kRecalcContainer) {
+    // Don't traverse into children if we hit a descendant container while
+    // recalculating container queries. If the queries for this container also
+    // changes, we will enter another container query recalc for this subtree
+    // from layout.
+    const ComputedStyle* old_style = element.GetComputedStyle();
+    if (old_style && old_style->IsContainerForContainerQueries())
+      result &= ~kRecalcContainer;
   }
+
+  return result;
 }
 
 StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
