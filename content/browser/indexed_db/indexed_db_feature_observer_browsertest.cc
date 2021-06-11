@@ -259,7 +259,14 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
 
 // Verify that content::FeatureObserver is notified when a frame with active
 // IndexedDB connections is navigated away.
-IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
+// https://crbug.com/1218731 disabled on desktop.
+#if defined(OS_ANDROID)
+#define MAYBE_ObserverNavigate ObserverNavigate
+#else
+#define MAYBE_ObserverNavigate DISABLED_ObserverNavigate
+#endif
+IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
+                       MAYBE_ObserverNavigate) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
