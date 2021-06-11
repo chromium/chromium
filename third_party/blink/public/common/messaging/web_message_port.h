@@ -83,6 +83,10 @@ class BLINK_COMMON_EXPORT WebMessagePort : public mojo::MessageReceiver {
   // are conjugates of each other.
   static std::pair<WebMessagePort, WebMessagePort> CreatePair();
 
+  // Wraps one end of a message channel. |port|'s mojo pipe must
+  // be paired, valid and not entangled.
+  static WebMessagePort Create(MessagePortDescriptor port);
+
   // Sets a message receiver for this message port. Once bound any incoming
   // messages to this port will be routed to the provided |receiver| with
   // callbacks invoked on the provided |runner|. Note that if you set a receiver

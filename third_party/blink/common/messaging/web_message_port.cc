@@ -69,6 +69,14 @@ std::pair<WebMessagePort, WebMessagePort> WebMessagePort::CreatePair() {
                         WebMessagePort(port_pair.TakePort1()));
 }
 
+// static
+WebMessagePort WebMessagePort::Create(MessagePortDescriptor port) {
+  DCHECK(port.IsValid());
+  DCHECK(!port.IsEntangled());
+
+  return WebMessagePort(std::move(port));
+}
+
 void WebMessagePort::SetReceiver(
     MessageReceiver* receiver,
     scoped_refptr<base::SequencedTaskRunner> runner) {

@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 
 namespace cast_api_bindings {
 
@@ -23,6 +24,13 @@ void MessagePort::CreatePair(std::unique_ptr<MessagePort>* client,
 std::unique_ptr<MessagePort> MessagePortCast::Create(
     blink::WebMessagePort&& port) {
   return std::make_unique<MessagePortCast>(std::move(port));
+}
+
+// static
+std::unique_ptr<MessagePort> MessagePortCast::Create(
+    blink::MessagePortDescriptor&& port_descriptor) {
+  return std::make_unique<MessagePortCast>(
+      blink::WebMessagePort::Create(std::move(port_descriptor)));
 }
 
 // static

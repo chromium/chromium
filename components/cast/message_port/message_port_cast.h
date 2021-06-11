@@ -8,6 +8,10 @@
 #include "components/cast/message_port/message_port.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
+namespace blink {
+class MessagePortDescriptor;
+}
+
 namespace cast_api_bindings {
 
 // Abstraction of HTML MessagePortCast away from blink::WebMessagePort
@@ -22,6 +26,8 @@ class MessagePortCast : public cast_api_bindings::MessagePort,
   MessagePortCast& operator=(const MessagePortCast&) = delete;
 
   static std::unique_ptr<MessagePort> Create(blink::WebMessagePort&& port);
+  static std::unique_ptr<MessagePort> Create(
+      blink::MessagePortDescriptor&& port_descriptor);
 
   // Gets the implementation of |port| for callers who know its platform type.
   static MessagePortCast* FromMessagePort(MessagePort* port);
