@@ -27,6 +27,7 @@ import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.services.SafeModeService;
+import org.chromium.android_webview.services.SafeModeService.TrustedPackage;
 import org.chromium.android_webview.test.VariationsSeedLoaderTest.TestLoader;
 import org.chromium.android_webview.test.VariationsSeedLoaderTest.TestLoaderResult;
 import org.chromium.android_webview.test.services.ServiceConnectionHelper;
@@ -50,6 +51,24 @@ public class SafeModeTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.
     public static final String TEST_WEBVIEW_PACKAGE_NAME = "org.chromium.android_webview.shell";
+
+    // This is the actual certificate hash we use to sign webview_instrumentation_apk (Signer #1
+    // certificate SHA-256 digest). This can be obtained by running:
+    // $ out/Default/bin/webview_instrumentation_apk print-certs
+    private static final byte[] TEST_WEBVIEW_CERT_HASH = new byte[] {(byte) 0x32, (byte) 0xa2,
+            (byte) 0xfc, (byte) 0x74, (byte) 0xd7, (byte) 0x31, (byte) 0x10, (byte) 0x58,
+            (byte) 0x59, (byte) 0xe5, (byte) 0xa8, (byte) 0x5d, (byte) 0xf1, (byte) 0x6d,
+            (byte) 0x95, (byte) 0xf1, (byte) 0x02, (byte) 0xd8, (byte) 0x5b, (byte) 0x22,
+            (byte) 0x09, (byte) 0x9b, (byte) 0x80, (byte) 0x64, (byte) 0xc5, (byte) 0xd8,
+            (byte) 0x91, (byte) 0x5c, (byte) 0x61, (byte) 0xda, (byte) 0xd1, (byte) 0xe0};
+
+    // Arbitrary sha256 digest which does not match TEST_WEBVIEW_PACKAGE_NAME's certificate.
+    private static final byte[] FAKE_CERT_HASH = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 
     private AtomicInteger mTestSafeModeActionExecutionCounter;
 
@@ -367,5 +386,78 @@ public class SafeModeTest {
         } finally {
             VariationsTestUtils.deleteSeeds();
         }
+    }
+
+    @Test
+    @MediumTest
+    public void testTrustedPackage_invalidCert() throws Exception {
+        TrustedPackage invalidPackage =
+                new TrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, FAKE_CERT_HASH, null);
+        Assert.assertFalse("wrong certificate should not verify",
+                invalidPackage.verify(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    private static class TestTrustedPackage extends TrustedPackage {
+        private boolean mIsDebug = true;
+        TestTrustedPackage(String packageName, byte[] release, byte[] debug) {
+            super(packageName, release, debug);
+        }
+        @Override
+        protected boolean isDebugAndroid() {
+            return mIsDebug;
+        }
+        void setDebugBuildForTesting(boolean debug) {
+            mIsDebug = debug;
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testTrustedPackage_wrongPackageName() throws Exception {
+        TrustedPackage webviewTestShell =
+                new TestTrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, null);
+        Assert.assertFalse("Wrong pacakge name should not verify",
+                webviewTestShell.verify("com.fake.package.name"));
+    }
+
+    @Test
+    @MediumTest
+    public void testTrustedPackage_eitherCertCanMatchOnDebugAndroid() throws Exception {
+        TrustedPackage webviewTestShell =
+                new TrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, null);
+        Assert.assertTrue("The WebView test shell should match itself",
+                webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
+        // Adding a non-matching certificate should not change anything (we should still trust
+        // this).
+        webviewTestShell = new TestTrustedPackage(
+                TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, FAKE_CERT_HASH);
+        Assert.assertTrue("The WebView test shell should match itself",
+                webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    public void testTrustedPackage_debugCertsOnlyTrustedOnDebugAndroid() throws Exception {
+        // Use a fake release cert and real debug cert so this package can only be trusted on a
+        // debug build.
+        TestTrustedPackage webviewTestShell = new TestTrustedPackage(
+                TEST_WEBVIEW_PACKAGE_NAME, FAKE_CERT_HASH, TEST_WEBVIEW_CERT_HASH);
+
+        webviewTestShell.setDebugBuildForTesting(true);
+        Assert.assertTrue("Debug cert should be trusted on debug Android build",
+                webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
+
+        webviewTestShell.setDebugBuildForTesting(false);
+        Assert.assertFalse("Debug cert should not be trusted on release Android build",
+                webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    public void testTrustedPackage_verifyWebViewTestShell() throws Exception {
+        TrustedPackage webviewTestShell =
+                new TestTrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, null);
+        Assert.assertTrue("The WebView test shell should match itself",
+                webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
     }
 }
