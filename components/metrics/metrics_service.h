@@ -198,7 +198,7 @@ class MetricsService : public base::HistogramFlattener {
     INITIALIZED,          // InitializeMetricsRecordingState() was called.
     INIT_TASK_SCHEDULED,  // Waiting for deferred init tasks to finish.
     INIT_TASK_DONE,       // Waiting for timer to send initial log.
-    SENDING_LOGS,         // Sending logs and creating new ones when we run out.
+    SENDING_LOGS,         // Sending logs an creating new ones when we run out.
   };
 
   State state() const { return state_; }
@@ -259,7 +259,8 @@ class MetricsService : public base::HistogramFlattener {
   void CloseCurrentLog();
 
   // Pushes the text of the current and staged logs into persistent storage.
-  bool PushPendingLogsToPersistentStorage();
+  // Called when Chrome shuts down.
+  void PushPendingLogsToPersistentStorage();
 
   // Ensures that scheduler is running, assuming the current settings are such
   // that metrics should be reported. If not, this is a no-op.
@@ -279,6 +280,14 @@ class MetricsService : public base::HistogramFlattener {
   // to validate the version number recovered from the system profile.  Returns
   // true if a log was created.
   bool PrepareInitialStabilityLog(const std::string& prefs_previous_version);
+
+  // Prepares the initial metrics log, which includes startup histograms and
+  // profiler data, as well as incremental stability-related metrics.
+  void PrepareInitialMetricsLog();
+
+  // Reads, increments and then sets the specified long preference that is
+  // stored as a string.
+  void IncrementLongPrefsValue(const char* path);
 
   // Records that the browser was shut down cleanly.
   void LogCleanShutdown(bool end_completed);
@@ -352,6 +361,11 @@ class MetricsService : public base::HistogramFlattener {
   // The progression of states made by the browser are recorded in the following
   // state.
   State state_;
+
+  // The initial metrics log, used to record startup metrics (histograms and
+  // profiler data). Note that if a crash occurred in the previous session, an
+  // initial stability log may be sent before this.
+  std::unique_ptr<MetricsLog> initial_metrics_log_;
 
   // Whether the MetricsService object has received any notifications since
   // the last time a transmission was sent.
