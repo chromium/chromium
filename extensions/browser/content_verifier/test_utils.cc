@@ -202,7 +202,11 @@ bool TestContentVerifyJobObserver::ObserverClient::WaitForExpectedJobs() {
 }
 
 // MockContentVerifierDelegate ------------------------------------------------
-MockContentVerifierDelegate::MockContentVerifierDelegate() = default;
+MockContentVerifierDelegate::MockContentVerifierDelegate()
+    : verifier_key_(
+          kWebstoreSignaturesPublicKey,
+          kWebstoreSignaturesPublicKey + kWebstoreSignaturesPublicKeySize) {}
+
 MockContentVerifierDelegate::~MockContentVerifierDelegate() = default;
 
 ContentVerifierDelegate::VerifierSourceType
@@ -212,8 +216,7 @@ MockContentVerifierDelegate::GetVerifierSourceType(const Extension& extension) {
 
 ContentVerifierKey MockContentVerifierDelegate::GetPublicKey() {
   DCHECK_EQ(VerifierSourceType::SIGNED_HASHES, verifier_source_type_);
-  return ContentVerifierKey(kWebstoreSignaturesPublicKey,
-                            kWebstoreSignaturesPublicKeySize);
+  return verifier_key_;
 }
 
 GURL MockContentVerifierDelegate::GetSignatureFetchUrl(
@@ -242,6 +245,10 @@ void MockContentVerifierDelegate::Shutdown() {}
 void MockContentVerifierDelegate::SetVerifierSourceType(
     VerifierSourceType type) {
   verifier_source_type_ = type;
+}
+
+void MockContentVerifierDelegate::SetVerifierKey(std::vector<uint8_t> key) {
+  verifier_key_ = std::move(key);
 }
 
 // VerifierObserver -----------------------------------------------------------
@@ -367,6 +374,11 @@ void TestExtensionBuilder::WriteResource(
     base::FilePath::StringType relative_path,
     std::string contents) {
   extension_dir_.WriteFile(relative_path, contents);
+  AddResource(std::move(relative_path), std::move(contents));
+}
+
+void TestExtensionBuilder::AddResource(base::FilePath::StringType relative_path,
+                                       std::string contents) {
   extension_resources_.emplace_back(base::FilePath(std::move(relative_path)),
                                     std::move(contents));
 }
@@ -386,10 +398,11 @@ void TestExtensionBuilder::WriteComputedHashes() {
                       extension_dir_.UnpackedPath())));
 }
 
-void TestExtensionBuilder::WriteVerifiedContents() {
-  std::unique_ptr<base::Value> payload = CreateVerifiedContents();
+std::string TestExtensionBuilder::CreateVerifiedContents() const {
+  std::unique_ptr<base::Value> payload = CreateVerifiedContentsPayload();
   std::string payload_value;
-  ASSERT_TRUE(base::JSONWriter::Write(*payload, &payload_value));
+  if (!base::JSONWriter::Write(*payload, &payload_value))
+    return "";
 
   std::string payload_b64;
   base::Base64UrlEncode(
@@ -399,9 +412,10 @@ void TestExtensionBuilder::WriteVerifiedContents() {
   std::vector<uint8_t> signature_source(signature_sha256.begin(),
                                         signature_sha256.end());
   std::vector<uint8_t> signature_value;
-  ASSERT_TRUE(crypto::SignatureCreator::Sign(
-      test_content_verifier_key_.get(), crypto::SignatureCreator::SHA256,
-      signature_source.data(), signature_source.size(), &signature_value));
+  if (!crypto::SignatureCreator::Sign(
+          test_content_verifier_key_.get(), crypto::SignatureCreator::SHA256,
+          signature_source.data(), signature_source.size(), &signature_value))
+    return "";
 
   std::string signature_b64;
   base::Base64UrlEncode(
@@ -430,12 +444,21 @@ void TestExtensionBuilder::WriteVerifiedContents() {
           .Build();
 
   std::string json;
-  ASSERT_TRUE(base::JSONWriter::Write(*verified_contents, &json));
+  if (!base::JSONWriter::Write(*verified_contents, &json))
+    return "";
+
+  return json;
+}
+
+void TestExtensionBuilder::WriteVerifiedContents() {
+  std::string verified_contents = CreateVerifiedContents();
+  ASSERT_NE(verified_contents.size(), 0u);
 
   base::FilePath verified_contents_path =
       file_util::GetVerifiedContentsPath(extension_dir_.UnpackedPath());
-  ASSERT_EQ(static_cast<int>(json.size()),
-            base::WriteFile(verified_contents_path, json.data(), json.size()));
+  ASSERT_EQ(static_cast<int>(verified_contents.size()),
+            base::WriteFile(verified_contents_path, verified_contents.data(),
+                            verified_contents.size()));
 }
 
 std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey() {
@@ -444,7 +467,8 @@ std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey() {
   return public_key;
 }
 
-std::unique_ptr<base::Value> TestExtensionBuilder::CreateVerifiedContents() {
+std::unique_ptr<base::Value>
+TestExtensionBuilder::CreateVerifiedContentsPayload() const {
   int block_size = extension_misc::kContentVerificationDefaultBlockSize;
 
   ListBuilder files;

@@ -179,9 +179,11 @@ class MockContentVerifierDelegate : public ContentVerifierDelegate {
 
   // Modifier.
   void SetVerifierSourceType(VerifierSourceType type);
+  void SetVerifierKey(std::vector<uint8_t> key);
 
  private:
   VerifierSourceType verifier_source_type_ = VerifierSourceType::SIGNED_HASHES;
+  std::vector<uint8_t> verifier_key_;
 
   DISALLOW_COPY_AND_ASSIGN(MockContentVerifierDelegate);
 };
@@ -271,12 +273,19 @@ class TestExtensionBuilder {
   TestExtensionBuilder(const TestExtensionBuilder&) = delete;
   TestExtensionBuilder& operator=(const TestExtensionBuilder&) = delete;
 
+  // Accept parameters by values since we'll store them.
+  void AddResource(base::FilePath::StringType relative_path,
+                   std::string contents);
+
   void WriteManifest();
 
+  // Accept parameters by values since we'll store them.
   void WriteResource(base::FilePath::StringType relative_path,
                      std::string contents);
 
   void WriteComputedHashes();
+
+  std::string CreateVerifiedContents() const;
 
   void WriteVerifiedContents();
 
@@ -297,7 +306,7 @@ class TestExtensionBuilder {
     std::string contents;
   };
 
-  std::unique_ptr<base::Value> CreateVerifiedContents();
+  std::unique_ptr<base::Value> CreateVerifiedContentsPayload() const;
 
   std::unique_ptr<crypto::RSAPrivateKey> test_content_verifier_key_;
   ExtensionId extension_id_;

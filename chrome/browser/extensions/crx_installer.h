@@ -287,7 +287,13 @@ class CrxInstaller : public SandboxedUnpackerClient {
   void ShouldComputeHashesOnUI(scoped_refptr<const Extension> extension,
                                base::OnceCallback<void(bool)> callback);
 
+  // To provide content verifier key to the unpacker.
+  void GetContentVerifierKeyOnUI(
+      base::OnceCallback<void(ContentVerifierKey)> callback);
+
   // SandboxedUnpackerClient
+  void GetContentVerifierKey(
+      base::OnceCallback<void(ContentVerifierKey)> callback) override;
   void ShouldComputeHashesForOffWebstoreExtension(
       scoped_refptr<const Extension> extension,
       base::OnceCallback<void(bool)> callback) override;

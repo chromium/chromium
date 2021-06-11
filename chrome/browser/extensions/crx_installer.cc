@@ -506,6 +506,28 @@ void CrxInstaller::ShouldComputeHashesOnUI(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
+void CrxInstaller::GetContentVerifierKeyOnUI(
+    base::OnceCallback<void(ContentVerifierKey)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ContentVerifierKey key = ExtensionSystem::Get(profile_)
+                               ->content_verifier()
+                               ->GetContentVerifierKey();
+  // Normally content verifier key is an std::span, so only a reference to the
+  // real key. Hence we have to make a copy before passing it to another thread.
+  std::vector<const uint8_t> key_copy(key.begin(), key.end());
+  GetUnpackerTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(key_copy)));
+}
+
+void CrxInstaller::GetContentVerifierKey(
+    base::OnceCallback<void(ContentVerifierKey)> callback) {
+  if (!content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&CrxInstaller::GetContentVerifierKeyOnUI,
+                                    this, std::move(callback)))) {
+    NOTREACHED();
+  }
+}
+
 void CrxInstaller::ShouldComputeHashesForOffWebstoreExtension(
     scoped_refptr<const Extension> extension,
     base::OnceCallback<void(bool)> callback) {

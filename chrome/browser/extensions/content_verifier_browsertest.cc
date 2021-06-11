@@ -215,27 +215,30 @@ class ContentVerifierTest : public ExtensionBrowserTest {
   }
 
   // Creates a CRX in a temporary directory under |temp_dir| using contents from
-  // |unpacked_path|. Compresses the contents in |verified_contents_path| and
-  // injects these contents into the the header of the CRX. Creates a random
-  // signing key and sets |extension_id| using it.
-  base::FilePath CreateCrxWithVerifiedContentsInHeader(
+  // |unpacked_path|. Compresses the |verified_contents| and injects these
+  // contents into the the header of the CRX. Creates a random signing key
+  // and sets |extension_id| using it. Returns path to new CRX in |crx_path|.
+  testing::AssertionResult CreateCrxWithVerifiedContentsInHeader(
       base::ScopedTempDir* temp_dir,
       const base::FilePath& unpacked_path,
-      const base::FilePath& verified_contents_path,
-      std::string* extension_id) {
-    std::string contents;
-    EXPECT_TRUE(base::ReadFileToString(verified_contents_path, &contents));
+      const std::string& verified_contents,
+      std::string* extension_id,
+      base::FilePath* crx_path) {
     std::string compressed_verified_contents;
-    EXPECT_TRUE(
-        compression::GzipCompress(contents, &compressed_verified_contents));
+    if (!compression::GzipCompress(verified_contents,
+                                   &compressed_verified_contents)) {
+      return testing::AssertionFailure();
+    }
 
-    EXPECT_TRUE(temp_dir->CreateUniqueTempDir());
-    base::FilePath crx_path = temp_dir->GetPath().AppendASCII("temp.crx");
+    if (!temp_dir->CreateUniqueTempDir()) {
+      return testing::AssertionFailure();
+    }
+    *crx_path = temp_dir->GetPath().AppendASCII("temp.crx");
 
     ExtensionCreator creator;
     creator.CreateCrxWithVerifiedContentsInHeaderForTesting(
-        unpacked_path, crx_path, compressed_verified_contents, extension_id);
-    return crx_path;
+        unpacked_path, *crx_path, compressed_verified_contents, extension_id);
+    return testing::AssertionSuccess();
   }
 
  protected:
@@ -590,19 +593,40 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, VerificationFailureOnNavigate) {
 // successfully installed and verified.
 IN_PROC_BROWSER_TEST_F(
     ContentVerifierTest,
-    VerificationSuccessfullForCrxWithVerifiedContentsInjectedInHeader) {
+    VerificationSuccessfulForCrxWithVerifiedContentsInjectedInHeader) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::ScopedTempDir temp_dir;
   base::FilePath test_dir =
       test_data_dir_.AppendASCII("content_verifier/missing_verified_contents");
-  std::string extension_id;
-  base::FilePath crx_path = CreateCrxWithVerifiedContentsInHeader(
-      &temp_dir, test_dir.AppendASCII("source"),
-      test_dir.AppendASCII("verified_contents.json"), &extension_id);
+  base::FilePath extension_dir = test_dir.AppendASCII("source");
+  base::FilePath resource_path = base::FilePath().AppendASCII("script.js");
 
-  TestContentVerifySingleJobObserver observer(
-      extension_id, base::FilePath().AppendASCII("script.js"));
+  extensions::content_verifier_test_utils::TestExtensionBuilder
+      verified_contents_builder;
+
+  std::string resource_contents;
+  base::ReadFileToString(extension_dir.Append(resource_path),
+                         &resource_contents);
+  verified_contents_builder.AddResource(resource_path.value(),
+                                        resource_contents);
+  std::string verified_contents =
+      verified_contents_builder.CreateVerifiedContents();
+
+  auto mock_content_verifier_delegate =
+      std::make_unique<MockContentVerifierDelegate>();
+  mock_content_verifier_delegate->SetVerifierKey(
+      verified_contents_builder.GetTestContentVerifierPublicKey());
+  ExtensionSystem::Get(profile())
+      ->content_verifier()
+      ->OverrideDelegateForTesting(std::move(mock_content_verifier_delegate));
+
+  std::string extension_id;
+  base::FilePath crx_path;
+  ASSERT_TRUE(CreateCrxWithVerifiedContentsInHeader(
+      &temp_dir, extension_dir, verified_contents, &extension_id, &crx_path));
+
+  TestContentVerifySingleJobObserver observer(extension_id, resource_path);
 
   const Extension* extension = InstallExtensionFromWebstore(crx_path, 1);
   ASSERT_TRUE(extension);
@@ -622,12 +646,15 @@ IN_PROC_BROWSER_TEST_F(
   base::FilePath test_dir =
       test_data_dir_.AppendASCII("content_verifier/missing_verified_contents");
   std::string extension_id;
-  base::FilePath crx_path = CreateCrxWithVerifiedContentsInHeader(
-      &temp_dir, test_dir.AppendASCII("source"),
-      test_dir.AppendASCII("invalid_verified_contents.json"), &extension_id);
+  std::string verified_contents =
+      "Not a valid verified contents, not even a valid JSON.";
+  base::FilePath crx_path;
+  ASSERT_TRUE(CreateCrxWithVerifiedContentsInHeader(
+      &temp_dir, test_dir.AppendASCII("source"), verified_contents,
+      &extension_id, &crx_path));
 
   const Extension* extension = InstallExtensionFromWebstore(crx_path, 0);
-  ASSERT_FALSE(extension);
+  EXPECT_FALSE(extension);
 }
 
 // Verifies that CRX with missing verified contents is successfully installed

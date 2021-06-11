@@ -169,6 +169,12 @@ void SandboxedUnpackerClient::ShouldComputeHashesForOffWebstoreExtension(
   std::move(callback).Run(false);
 }
 
+void SandboxedUnpackerClient::GetContentVerifierKey(
+    base::OnceCallback<void(ContentVerifierKey)> callback) {
+  std::move(callback).Run(ContentVerifierKey(kWebstoreSignaturesPublicKey,
+                                             kWebstoreSignaturesPublicKeySize));
+}
+
 SandboxedUnpacker::ScopedVerifierFormatOverrideForTest::
     ScopedVerifierFormatOverrideForTest(crx_file::VerifierFormat format) {
   DCHECK(!g_verifier_format_override_for_test.has_value());
@@ -388,25 +394,27 @@ void SandboxedUnpacker::OnVerifiedContentsUncompressed(
   std::vector<uint8_t> verified_contents(
       result.value.value().data(),
       result.value.value().data() + result.value.value().size());
-  if (!StoreVerifiedContentsInExtensionDir(std::move(verified_contents)))
-    return;
-  Unpack(unzip_dir);
+
+  client_->GetContentVerifierKey(
+      base::BindOnce(&SandboxedUnpacker::StoreVerifiedContentsInExtensionDir,
+                     this, unzip_dir, std::move(verified_contents)));
 }
 
-bool SandboxedUnpacker::StoreVerifiedContentsInExtensionDir(
-    base::span<const uint8_t> verified_contents) {
+void SandboxedUnpacker::StoreVerifiedContentsInExtensionDir(
+    const base::FilePath& unzip_dir,
+    base::span<const uint8_t> verified_contents,
+    ContentVerifierKey content_verifier_key) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
 
   if (!VerifiedContents::Create(
-          ContentVerifierKey(kWebstoreSignaturesPublicKey,
-                             kWebstoreSignaturesPublicKeySize),
+          content_verifier_key,
           {reinterpret_cast<const char*>(verified_contents.data()),
            verified_contents.size()})) {
     ReportFailure(
         SandboxedUnpackerFailureReason::MALFORMED_VERIFIED_CONTENTS,
         l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
                                    u"MALFORMED_VERIFIED_CONTENTS"));
-    return false;
+    return;
   }
 
   base::FilePath metadata_path = extension_root_.Append(kMetadataFolder);
@@ -415,7 +423,7 @@ bool SandboxedUnpacker::StoreVerifiedContentsInExtensionDir(
         SandboxedUnpackerFailureReason::COULD_NOT_CREATE_METADATA_DIRECTORY,
         l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
                                    u"COULD_NOT_CREATE_METADATA_DIRECTORY"));
-    return false;
+    return;
   }
 
   base::FilePath verified_contents_path =
@@ -428,10 +436,10 @@ bool SandboxedUnpacker::StoreVerifiedContentsInExtensionDir(
                   l10n_util::GetStringFUTF16(
                       IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
                       u"COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE"));
-    return false;
+    return;
   }
 
-  return true;
+  Unpack(unzip_dir);
 }
 
 void SandboxedUnpacker::Unpack(const base::FilePath& directory) {

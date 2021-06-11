@@ -594,6 +594,11 @@ void ContentVerifier::OnExtensionUnloaded(
                                 extension->id(), extension->version()));
 }
 
+ContentVerifierKey ContentVerifier::GetContentVerifierKey() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return delegate_->GetPublicKey();
+}
+
 GURL ContentVerifier::GetSignatureFetchUrlForTest(
     const ExtensionId& extension_id,
     const base::Version& extension_version) {
@@ -804,6 +809,11 @@ bool ContentVerifier::ShouldVerifyAnyPathsForTesting(
     const std::set<base::FilePath>& relative_unix_paths) {
   return ShouldVerifyAnyPaths(extension_id, extension_root,
                               relative_unix_paths);
+}
+
+void ContentVerifier::OverrideDelegateForTesting(
+    std::unique_ptr<ContentVerifierDelegate> delegate) {
+  delegate_ = std::move(delegate);
 }
 
 }  // namespace extensions
