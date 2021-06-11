@@ -174,7 +174,7 @@ public class LargeIconBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init();
         void destroy(long nativeLargeIconBridge);
         boolean getLargeIconForURL(long nativeLargeIconBridge,
