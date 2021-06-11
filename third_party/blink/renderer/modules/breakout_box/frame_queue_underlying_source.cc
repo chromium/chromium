@@ -42,23 +42,25 @@ template <typename NativeFrameType>
 ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
     ScriptState* script_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  {
+    MutexLocker locker(mutex_);
+    num_pending_pulls_++;
+  }
   auto frame_queue = frame_queue_handle_.Queue();
   if (!frame_queue)
     return ScriptPromise::CastUndefined(script_state);
-  if (frame_queue->IsEmpty()) {
-    MutexLocker locker(mutex_);
-    is_pending_pull_ = true;
-    return ScriptPromise::CastUndefined(script_state);
+
+  if (!frame_queue->IsEmpty()) {
+    // Enqueuing the frame in the stream controller synchronously can lead to a
+    // state where the JS code issuing and handling the read requests keeps
+    // executing and prevents other tasks from executing. To avoid this, enqueue
+    // the frame on another task. See https://crbug.com/1216445#c1
+    realm_task_runner_->PostTask(
+        FROM_HERE,
+        WTF::Bind(&FrameQueueUnderlyingSource<
+                      NativeFrameType>::MaybeSendFrameFromQueueToStream,
+                  WrapPersistent(this)));
   }
-  // Enqueuing the frame in the stream controller synchronously can lead to a
-  // state where the JS code issuing and handling the read requests keeps
-  // executing and prevents other tasks from executing. To avoid this, enqueue
-  // the frame on another task. See https://crbug.com/1216445#c1
-  realm_task_runner_->PostTask(
-      FROM_HERE,
-      WTF::Bind(&FrameQueueUnderlyingSource<
-                    NativeFrameType>::MaybeSendFrameFromQueueToStream,
-                WrapPersistent(this)));
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -97,7 +99,7 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
 template <typename NativeFrameType>
 bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
   MutexLocker locker(mutex_);
-  return is_pending_pull_ && Controller();
+  return (num_pending_pulls_ > 0) && Controller();
 }
 
 template <typename NativeFrameType>
@@ -131,7 +133,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   is_closed_ = true;
   {
     MutexLocker locker(mutex_);
-    is_pending_pull_ = false;
+    num_pending_pulls_ = 0;
     if (transferred_source_) {
       PostCrossThreadTask(
           *transferred_source_->GetRealmRunner(), FROM_HERE,
@@ -153,7 +155,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
       transferred_source_->QueueFrame(std::move(media_frame));
       return;
     }
-    should_send_frame_to_stream = is_pending_pull_;
+    should_send_frame_to_stream = num_pending_pulls_ > 0;
   }
 
   auto frame_queue = frame_queue_handle_.Queue();
@@ -178,10 +180,10 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Trace(
 }
 
 template <typename NativeFrameType>
-bool FrameQueueUnderlyingSource<NativeFrameType>::IsPendingPullForTesting()
+int FrameQueueUnderlyingSource<NativeFrameType>::NumPendingPullsForTesting()
     const {
   MutexLocker locker(mutex_);
-  return is_pending_pull_;
+  return num_pending_pulls_;
 }
 
 template <typename NativeFrameType>
@@ -217,14 +219,22 @@ void FrameQueueUnderlyingSource<
   if (!frame_queue)
     return;
 
-  absl::optional<NativeFrameType> media_frame = frame_queue->Pop();
-  if (!media_frame.has_value())
-    return;
-
-  Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame.value())));
   {
     MutexLocker locker(mutex_);
-    is_pending_pull_ = false;
+    if (num_pending_pulls_ == 0)
+      return;
+  }
+  while (true) {
+    absl::optional<NativeFrameType> media_frame = frame_queue->Pop();
+    if (!media_frame.has_value())
+      return;
+
+    Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame.value())));
+    {
+      MutexLocker locker(mutex_);
+      if (--num_pending_pulls_ == 0)
+        return;
+    }
   }
 }
 

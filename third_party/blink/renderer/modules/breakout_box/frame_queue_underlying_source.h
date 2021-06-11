@@ -62,7 +62,7 @@ class FrameQueueUnderlyingSource
   // Delivers a new frame to this source.
   void QueueFrame(NativeFrameType);
 
-  bool IsPendingPullForTesting() const;
+  int NumPendingPullsForTesting() const;
   double DesiredSizeForTesting() const;
 
   void Trace(Visitor*) const override;
@@ -115,7 +115,7 @@ class FrameQueueUnderlyingSource
   // transferred stream.
   CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
       transferred_source_ GUARDED_BY(mutex_);
-  bool is_pending_pull_ GUARDED_BY(mutex_) = false;
+  int num_pending_pulls_ GUARDED_BY(mutex_) = 0;
 };
 
 template <>

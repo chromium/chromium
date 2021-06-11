@@ -814,3 +814,5 @@ DUPLICATE-BASENAME-PATH: dom/nodes/ParentNode-querySelector-All-content.html
 DUPLICATE-BASENAME-PATH: dom/nodes/ParentNode-querySelector-All-content.xht
 DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.html
 DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.svg
+
+SET TIMEOUT: mediacapture-insertable-streams/MediaStreamTrackProcessor-video.https.html
