@@ -10,6 +10,8 @@
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 
 namespace {
 // On-device speech recognition is only available in US English.
@@ -61,7 +63,9 @@ void ProjectorClientImpl::StopSpeechRecognition() {
 }
 
 void ProjectorClientImpl::ShowSelfieCam() {
-  selfie_cam_bubble_manager_.Show(ProfileManager::GetPrimaryUserProfile());
+  selfie_cam_bubble_manager_.Show(
+      ProfileManager::GetPrimaryUserProfile(),
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
 }
 
 void ProjectorClientImpl::CloseSelfieCam() {

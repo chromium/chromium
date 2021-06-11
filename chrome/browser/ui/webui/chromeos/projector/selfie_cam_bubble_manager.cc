@@ -30,6 +30,9 @@ constexpr int kCornerRadiusDip = 80;
 
 constexpr gfx::Size kPreferredSize(2 * kCornerRadiusDip, 2 * kCornerRadiusDip);
 
+// Margin of the bubble with respect to the context window.
+constexpr int kMinAnchorMarginDip = 40;
+
 // Makes the selfie cam draggable.
 class SelfieCamBubbleFrameView : public views::BubbleFrameView {
  public:
@@ -71,30 +74,31 @@ class SelfieCamBubbleFrameView : public views::BubbleFrameView {
 class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
  public:
   SelfieCamBubbleDialogView(
-      std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
+      std::unique_ptr<BubbleContentsWrapper> contents_wrapper,
+      const gfx::Rect& context_bounds_in_screen)
       : WebUIBubbleDialogView(/*anchor_view=*/nullptr, contents_wrapper.get()),
-        contents_wrapper_(std::move(contents_wrapper)) {
+        contents_wrapper_(std::move(contents_wrapper)),
+        context_bounds_in_screen_(context_bounds_in_screen) {
     set_has_parent(false);
     set_close_on_deactivate(false);
   }
   ~SelfieCamBubbleDialogView() override = default;
 
   // views::BubbleDialogDelegateView:
-  // Opens the selfie cam in the middle of the screen initially.
-  // TODO(crbug/1199396): Consider if the selfie cam should appear somewhere
-  // else by default initially, such as the bottom right of the screen.
+  // Opens the selfie cam in the bottom-right of the `context_bounds_in_screen_`
+  // rectangle initially.
   gfx::Rect GetBubbleBounds() override {
     // Bubble bounds are what the computed bubble bounds would be, taking into
     // account the current bubble size.
     gfx::Rect bubble_bounds =
         views::BubbleDialogDelegateView::GetBubbleBounds();
-    // Widget bounds are where the bubble currently is in space.
-    gfx::Rect widget_bounds = GetWidget()->GetWindowBoundsInScreen();
-    // Use the widget x and y to keep the bubble oriented at its current
-    // location, and use the bubble width and height to set the correct bubble
-    // size.
-    return gfx::Rect(widget_bounds.x(), widget_bounds.y(),
-                     bubble_bounds.width(), bubble_bounds.height());
+
+    gfx::Rect context_rect = context_bounds_in_screen_;
+    context_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
+    int target_x = context_rect.right() - bubble_bounds.width();
+    int target_y = context_rect.bottom() - bubble_bounds.height();
+    return gfx::Rect(target_x, target_y, bubble_bounds.width(),
+                     bubble_bounds.height());
   }
 
   // views::BubbleDialogDelegateView:
@@ -125,6 +129,7 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
 
  private:
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
+  const gfx::Rect context_bounds_in_screen_;
 };
 
 // Renders the WebUI contents and asks for camera permission so that
@@ -161,7 +166,8 @@ class SelfieCamBubbleContentsWrapper
 SelfieCamBubbleManager::SelfieCamBubbleManager() = default;
 SelfieCamBubbleManager::~SelfieCamBubbleManager() = default;
 
-void SelfieCamBubbleManager::Show(Profile* profile) {
+void SelfieCamBubbleManager::Show(Profile* profile,
+                                  const gfx::Rect& context_bounds_in_screen) {
   if (IsVisible())
     return;
 
@@ -173,8 +179,8 @@ void SelfieCamBubbleManager::Show(Profile* profile) {
   // eventually call ShowUI().
   contents_wrapper->ReloadWebContents();
 
-  auto bubble_view =
-      std::make_unique<SelfieCamBubbleDialogView>(std::move(contents_wrapper));
+  auto bubble_view = std::make_unique<SelfieCamBubbleDialogView>(
+      std::move(contents_wrapper), context_bounds_in_screen);
 
   bubble_view_ = bubble_view->GetWeakPtr();
   auto* bubble_widget =

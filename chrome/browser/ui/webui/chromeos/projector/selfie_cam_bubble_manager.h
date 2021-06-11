@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_PROJECTOR_SELFIE_CAM_BUBBLE_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/geometry/rect.h"
 
 class Profile;
 class WebUIBubbleDialogView;
@@ -20,7 +21,7 @@ class SelfieCamBubbleManager {
   SelfieCamBubbleManager& operator=(const SelfieCamBubbleManager&) = delete;
   ~SelfieCamBubbleManager();
 
-  void Show(Profile* profile);
+  void Show(Profile* profile, const gfx::Rect& context_bounds_in_screen);
   void Close();
   bool IsVisible() const;
 
