@@ -85,7 +85,8 @@ void DemoWindow::OnCloseRequest() {
 
 void DemoWindow::OnClosed() {}
 
-void DemoWindow::OnWindowStateChanged(PlatformWindowState new_state) {}
+void DemoWindow::OnWindowStateChanged(PlatformWindowState old_state,
+                                      PlatformWindowState new_state) {}
 
 void DemoWindow::OnLostCapture() {}
 

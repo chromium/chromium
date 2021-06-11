@@ -23,7 +23,9 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD1(DispatchEvent, void(Event* event));
   MOCK_METHOD0(OnCloseRequest, void());
   MOCK_METHOD0(OnClosed, void());
-  MOCK_METHOD1(OnWindowStateChanged, void(PlatformWindowState new_state));
+  MOCK_METHOD2(OnWindowStateChanged,
+               void(PlatformWindowState old_state,
+                    PlatformWindowState new_state));
   MOCK_METHOD0(OnLostCapture, void());
   MOCK_METHOD1(OnAcceleratedWidgetAvailable,
                void(gfx::AcceleratedWidget widget));

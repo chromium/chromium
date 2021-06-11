@@ -86,6 +86,7 @@ void FrameWindowTreeHost::OnActivationChanged(bool active) {
 }
 
 void FrameWindowTreeHost::OnWindowStateChanged(
+    ui::PlatformWindowState old_state,
     ui::PlatformWindowState new_state) {
   // Tell the root aura::Window whether it is shown or hidden.
   if (new_state == ui::PlatformWindowState::kMinimized) {

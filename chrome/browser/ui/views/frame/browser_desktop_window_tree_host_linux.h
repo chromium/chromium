@@ -51,7 +51,8 @@ class BrowserDesktopWindowTreeHostLinux
   bool IsOverrideRedirect(bool is_tiling_wm) const override;
 
   // ui::PlatformWindowDelegate
-  void OnWindowStateChanged(ui::PlatformWindowState new_state) override;
+  void OnWindowStateChanged(ui::PlatformWindowState old_state,
+                            ui::PlatformWindowState new_state) override;
 
   BrowserView* browser_view_ = nullptr;
   BrowserFrame* browser_frame_ = nullptr;

@@ -77,7 +77,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnCloseRequest() = 0;
   virtual void OnClosed() = 0;
 
-  virtual void OnWindowStateChanged(PlatformWindowState new_state) = 0;
+  virtual void OnWindowStateChanged(PlatformWindowState old_state,
+                                    PlatformWindowState new_state) = 0;
 
   virtual void OnLostCapture() = 0;
 

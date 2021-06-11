@@ -1250,8 +1250,9 @@ void X11Window::OnXWindowStateChanged() {
   }
 
   if (new_state != state_) {
+    auto old_state = state_;
     state_ = new_state;
-    platform_window_delegate_->OnWindowStateChanged(state_);
+    platform_window_delegate_->OnWindowStateChanged(old_state, state_);
   }
 }
 

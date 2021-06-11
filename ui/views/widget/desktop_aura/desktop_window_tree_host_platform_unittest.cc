@@ -162,12 +162,14 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
   EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
 
   // Pretend a PlatformWindow enters the minimized state.
-  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kMinimized);
+  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kUnknown,
+                                      ui::PlatformWindowState::kMinimized);
 
   EXPECT_FALSE(widget->GetNativeWindow()->IsVisible());
 
   // Pretend a PlatformWindow exits the minimized state.
-  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kNormal);
+  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kMinimized,
+                                      ui::PlatformWindowState::kNormal);
   EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
 }
 

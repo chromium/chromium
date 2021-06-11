@@ -748,8 +748,9 @@ void DesktopWindowTreeHostPlatform::OnClosed() {
 }
 
 void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
+    ui::PlatformWindowState old_state,
     ui::PlatformWindowState new_state) {
-  bool was_minimized = old_state_ == ui::PlatformWindowState::kMinimized;
+  bool was_minimized = old_state == ui::PlatformWindowState::kMinimized;
   bool is_minimized = new_state == ui::PlatformWindowState::kMinimized;
 
   // Propagate minimization/restore to compositor to avoid drawing 'blank'
@@ -764,8 +765,6 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
       SetVisible(true);
     }
   }
-
-  old_state_ = new_state;
 
   // Now that we have different window properties, we may need to relayout the
   // window. (The windows code doesn't need this because their window change is

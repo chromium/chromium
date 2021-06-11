@@ -40,7 +40,8 @@ class DemoWindow : public PlatformWindowDelegate {
   void DispatchEvent(Event* event) override;
   void OnCloseRequest() override;
   void OnClosed() override;
-  void OnWindowStateChanged(PlatformWindowState new_state) override;
+  void OnWindowStateChanged(PlatformWindowState old_state,
+                            PlatformWindowState new_state) override;
   void OnLostCapture() override;
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override;
   void OnWillDestroyAcceleratedWidget() override {}

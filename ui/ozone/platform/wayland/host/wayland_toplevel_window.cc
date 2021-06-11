@@ -321,7 +321,7 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
 
   if (did_window_show_state_change && !did_send_delegate_notification) {
     previous_state_ = old_state;
-    delegate()->OnWindowStateChanged(state_);
+    delegate()->OnWindowStateChanged(previous_state_, state_);
   }
 
   if (did_active_change)
@@ -524,7 +524,7 @@ void WaylandToplevelWindow::TriggerStateChanges() {
     shell_toplevel_->UnSetMaximized();
   }
 
-  delegate()->OnWindowStateChanged(state_);
+  delegate()->OnWindowStateChanged(previous_state_, state_);
 
   connection()->ScheduleFlush();
 }

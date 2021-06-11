@@ -133,10 +133,10 @@ bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
 }
 
 void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
+    ui::PlatformWindowState old_window_show_state,
     ui::PlatformWindowState new_window_show_state) {
-  ui::PlatformWindowState old_window_show_state = window_show_state();
-
-  DesktopWindowTreeHostLinux::OnWindowStateChanged(new_window_show_state);
+  DesktopWindowTreeHostLinux::OnWindowStateChanged(old_window_show_state,
+                                                   new_window_show_state);
 
   bool fullscreen_changed =
       new_window_show_state == ui::PlatformWindowState::kFullScreen ||

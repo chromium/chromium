@@ -348,9 +348,13 @@ void ScenicWindow::OnViewProperties(
 }
 
 void ScenicWindow::OnViewAttachedChanged(bool is_view_attached) {
-  delegate_->OnWindowStateChanged(is_view_attached
-                                      ? PlatformWindowState::kNormal
-                                      : PlatformWindowState::kMinimized);
+  if (is_view_attached) {
+    delegate_->OnWindowStateChanged(PlatformWindowState::kMinimized,
+                                    PlatformWindowState::kNormal);
+  } else {
+    delegate_->OnWindowStateChanged(PlatformWindowState::kNormal,
+                                    PlatformWindowState::kMinimized);
+  }
 }
 
 void ScenicWindow::OnInputEvent(const fuchsia::ui::input::InputEvent& event) {
