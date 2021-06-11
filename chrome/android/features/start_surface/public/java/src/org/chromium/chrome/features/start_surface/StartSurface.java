@@ -28,6 +28,11 @@ public interface StartSurface {
     void destroy();
 
     /**
+     * Called when the Start surface is hidden.
+     */
+    void onHide();
+
+    /**
      * An observer that is notified when the start surface internal state, excluding
      * the states notified in {@link OverviewModeObserver}, is changed.
      *

@@ -274,6 +274,7 @@ public class StartSurfaceLayout extends Layout {
     @Override
     public void doneHiding() {
         super.doneHiding();
+        mStartSurface.onHide();
         RecordUserAction.record("MobileExitStackView");
     }
 

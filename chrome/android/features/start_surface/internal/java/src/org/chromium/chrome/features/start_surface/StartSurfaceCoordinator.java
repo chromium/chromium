@@ -280,18 +280,38 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitPending = false;
         if (mTasksSurface != null) {
-            mTasksSurface.initialize();
+            mTasksSurface.initialize(shouldRefreshMVTilesOnInitialize());
         }
+    }
+
+    private boolean shouldRefreshMVTilesOnInitialize() {
+        // Only refreshes MV tiles when the Start surface homepage is showing or if the Tab switcher
+        // has a Home button.
+        @StartSurfaceState
+        int state = mStartSurfaceMediator.getStartSurfaceState();
+        return state == StartSurfaceState.SHOWN_HOMEPAGE
+                || state == StartSurfaceState.SHOWING_HOMEPAGE
+                || state == StartSurfaceState.SHOWING_START
+                || state == StartSurfaceState.SHOWING_PREVIOUS
+                || StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue();
     }
 
     @Override
     public void destroy() {
         if (mTasksSurface != null) {
             mTasksSurface.removeFakeSearchBoxShrinkAnimation();
+            mTasksSurface.onHide();
         }
         if (mOffsetChangedListenerToGenerateScrollEvents != null) {
             removeHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
             mOffsetChangedListenerToGenerateScrollEvents = null;
+        }
+    }
+
+    @Override
+    public void onHide() {
+        if (mTasksSurface != null) {
+            mTasksSurface.onHide();
         }
     }
 
@@ -376,7 +396,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             mIsSecondaryTaskInitPending = false;
             mSecondaryTasksSurface.onFinishNativeInitialization(
                     mActivity, mOmniboxStubSupplier.get());
-            mSecondaryTasksSurface.initialize();
+            mSecondaryTasksSurface.initialize(false);
         }
     }
 
@@ -450,6 +470,11 @@ public class StartSurfaceCoordinator implements StartSurface {
                                                                  : SurfaceMode.NO_START_SURFACE;
     }
 
+    @VisibleForTesting
+    public boolean isMVTilesCleanedUpForTesting() {
+        return mTasksSurface.isMVTilesCleanedUp();
+    }
+
     private void createAndSetStartSurface(boolean excludeMVTiles) {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(TasksSurfaceProperties.ALL_KEYS));
@@ -504,7 +529,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
                     mActivity, mOmniboxStubSupplier.get());
-            mSecondaryTasksSurface.initialize();
+            mSecondaryTasksSurface.initialize(false);
         } else {
             mIsSecondaryTaskInitPending = true;
         }

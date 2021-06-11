@@ -1797,6 +1797,34 @@ public class StartSurfaceTest {
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testCleanUpMVTilesAfterHiding() {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceCoordinator startSurfaceCoordinator =
+                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(startSurfaceCoordinator.isMVTilesCleanedUpForTesting());
+        });
+
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        Assert.assertEquals("The launched tab should have the launch type FROM_START_SURFACE",
+                TabLaunchType.FROM_START_SURFACE,
+                cta.getActivityTabProvider().get().getLaunchType());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(startSurfaceCoordinator.isMVTilesCleanedUpForTesting());
+        });
+    }
+
     private void backActionDeleteBlankTabForOmniboxFocusedOnNewTabSingleSurface(
             Runnable backAction) {
         if (!mImmediateReturn) {
