@@ -442,8 +442,11 @@ class WindowCycleView : public views::WidgetDelegateView,
             ->window_cycle_controller()
             ->IsInteractiveAltTabModeAllowed();
 
-    if (is_interactive_alt_tab_mode_allowed)
+    if (is_interactive_alt_tab_mode_allowed) {
+      DCHECK(no_recent_items_label_);
       no_recent_items_label_->SetVisible(no_windows);
+    }
+
     if (no_windows)
       return;
 
@@ -493,9 +496,8 @@ class WindowCycleView : public views::WidgetDelegateView,
     // |horizontal_distance_dragged_|.
     horizontal_distance_dragged_ = 0.f;
 
-    if (GetWidget()) {
+    if (GetWidget())
       Layout();
-    }
   }
 
   void SetTargetWindow(aura::Window* target) {
@@ -605,6 +607,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     if (Shell::Get()
             ->window_cycle_controller()
             ->IsInteractiveAltTabModeAllowed()) {
+      DCHECK(tab_slider_container_);
       // |mirror_container_| can have window list with width smaller the tab
       // slider's width. The padding should be 64px from the tab slider.
       const int min_width =
@@ -643,6 +646,7 @@ class WindowCycleView : public views::WidgetDelegateView,
       views::View::ConvertRectToTarget(target_view, mirror_container_,
                                        &target_bounds);
     } else {
+      DCHECK(no_recent_items_label_);
       target_bounds = gfx::RectF(no_recent_items_label_->bounds());
     }
 
@@ -682,6 +686,8 @@ class WindowCycleView : public views::WidgetDelegateView,
 
     // Layout a tab slider if Bento is enabled.
     if (is_interactive_alt_tab_mode_allowed) {
+      DCHECK(tab_slider_container_);
+      DCHECK(no_recent_items_label_);
       // Layout the tab slider.
       const gfx::Size tab_slider_size =
           tab_slider_container_->GetPreferredSize();
@@ -767,12 +773,17 @@ class WindowCycleView : public views::WidgetDelegateView,
   }
 
   const views::View::Views& GetTabSliderButtonsForTesting() const {
+    if (!tab_slider_container_) {
+      static const views::View::Views empty;
+      return empty;
+    }
     return tab_slider_container_->GetTabSliderButtonsForTesting();
   }
 
   const views::Label* GetNoRecentItemsLabelForTesting() const {
     return no_recent_items_label_;
   }
+
   const aura::Window* GetTargetWindowForTesting() const {
     return target_window_;
   }
@@ -804,14 +815,9 @@ class WindowCycleView : public views::WidgetDelegateView,
   // label when there is no window to be shown.
   gfx::Rect GetContentContainerBounds() const {
     const bool empty_mirror_container = mirror_container_->children().empty();
-    // Check that mirror container can only be empty when alt-tab mode is
-    // enabled.
-    DCHECK(!empty_mirror_container || Shell::Get()
-                                          ->window_cycle_controller()
-                                          ->IsInteractiveAltTabModeAllowed());
-    return empty_mirror_container
-               ? gfx::Rect(no_recent_items_label_->GetPreferredSize())
-               : gfx::Rect(mirror_container_->GetPreferredSize());
+    if (empty_mirror_container && no_recent_items_label_)
+      return gfx::Rect(no_recent_items_label_->GetPreferredSize());
+    return gfx::Rect(mirror_container_->GetPreferredSize());
   }
 
   aura::Window* const root_window_;

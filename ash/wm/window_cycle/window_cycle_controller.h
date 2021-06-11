@@ -10,8 +10,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -35,7 +37,8 @@ class WindowCycleList;
 // until the cycling ends.  Thus we maintain the state of the windows
 // at the beginning of the gesture so you can cycle through in a consistent
 // order.
-class ASH_EXPORT WindowCycleController : public SessionObserver {
+class ASH_EXPORT WindowCycleController : public SessionObserver,
+                                         public DesksController::Observer {
  public:
   using WindowList = std::vector<aura::Window*>;
 
@@ -143,6 +146,15 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
   // user switches the alt-tab mode via keyboard navigation or button clicking.
   void OnModeChanged(bool per_desk, ModeSwitchSource source);
 
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk) override;
+  void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override {}
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override {}
+  void OnDeskSwitchAnimationLaunching() override {}
+  void OnDeskSwitchAnimationFinished() override {}
+
  private:
   // Gets a list of windows from the currently open windows, removing windows
   // with transient roots already in the list. The returned list of windows
@@ -194,6 +206,9 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
 
   // The pref change registrar to observe changes in prefs value.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  base::ScopedObservation<DesksController, DesksController::Observer>
+      desks_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowCycleController);
 };

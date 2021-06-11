@@ -253,6 +253,8 @@ void WindowCycleController::StartCycling() {
                                       ? AltTabMode::kCurrentDesk
                                       : AltTabMode::kAllDesks);
   }
+
+  desks_observation_.Observe(DesksController::Get());
 }
 
 void WindowCycleController::CompleteCycling() {
@@ -381,6 +383,14 @@ void WindowCycleController::OnModeChanged(bool per_desk,
   }
 }
 
+void WindowCycleController::OnDeskAdded(const Desk* desk) {
+  CancelCycling();
+}
+
+void WindowCycleController::OnDeskRemoved(const Desk* desk) {
+  CancelCycling();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // WindowCycleController, private:
 
@@ -410,6 +420,8 @@ void WindowCycleController::Step(WindowCyclingDirection direction,
 }
 
 void WindowCycleController::StopCycling() {
+  desks_observation_.Reset();
+
   window_cycle_list_.reset();
 
   // We can't use the MRU window list here to get the active window, since
