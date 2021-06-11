@@ -180,6 +180,20 @@ suite('DiscoveryPageTest', function() {
         discoveryPageElement.$$('#errorDescription').textContent.trim());
   });
 
+  test('error state with unavailable connections error', async function() {
+    discoveryManager.startDiscoveryResult =
+        nearbyShare.mojom.StartDiscoveryResult.kNoConnectionMedium;
+    discoveryPageElement.fire('view-enter-start');
+    await discoveryManager.whenCalled('startDiscovery');
+    flush();
+
+    const expectedMessage = 'To use Nearby Share, turn on Bluetooth' +
+        ' and Wi-Fi';
+    assertEquals(
+        expectedMessage,
+        discoveryPageElement.$$('#errorDescription').textContent.trim());
+  });
+
   test('selects share target with success', async function() {
     const created = await setupShareTarget();
     discoveryPageElement.selectedShareTarget = created;

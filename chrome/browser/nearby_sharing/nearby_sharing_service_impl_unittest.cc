@@ -1210,7 +1210,7 @@ TEST_F(NearbySharingServiceImplTest,
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
+      NearbySharingService::StatusCodes::kNoAvailableConnectionMedium,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
 }
@@ -1222,7 +1222,7 @@ TEST_F(NearbySharingServiceImplTest,
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
+      NearbySharingService::StatusCodes::kNoAvailableConnectionMedium,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
 }
@@ -1277,7 +1277,7 @@ TEST_F(NearbySharingServiceImplTest, RegisterSendSurface_BluetoothNotPresent) {
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
+      NearbySharingService::StatusCodes::kNoAvailableConnectionMedium,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
@@ -1289,7 +1289,7 @@ TEST_F(NearbySharingServiceImplTest, RegisterSendSurface_BluetoothNotPowered) {
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
+      NearbySharingService::StatusCodes::kNoAvailableConnectionMedium,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
@@ -1562,10 +1562,16 @@ TEST_P(NearbySharingServiceImplInvalidSendTest,
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
-      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
-                                    SendSurfaceState::kForeground));
+
+  NearbySharingService::StatusCodes expected_status =
+      is_bluetooth_present_
+          ? NearbySharingService::StatusCodes::kOk
+          : NearbySharingService::StatusCodes::kNoAvailableConnectionMedium;
+
+  EXPECT_EQ(expected_status, service_->RegisterSendSurface(
+                                 &transfer_callback, &discovery_callback,
+                                 SendSurfaceState::kForeground));
+
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 }

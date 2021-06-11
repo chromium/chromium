@@ -232,7 +232,7 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_ErrorInProgress) {
   manager().StartDiscovery(listener.Bind(), callback.Get());
 }
 
-TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_Error) {
+TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_GenericError) {
   EXPECT_CALL(sharing_service(), IsTransferring()).Times(1);
   MockStartDiscoveryCallback callback;
   EXPECT_CALL(
@@ -245,6 +245,26 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_Error) {
       RegisterSendSurface(&manager(), &manager(),
                           NearbySharingService::SendSurfaceState::kForeground))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kError));
+  EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
+      .Times(0);
+
+  MockShareTargetListener listener;
+  manager().StartDiscovery(listener.Bind(), callback.Get());
+}
+
+TEST_F(NearbyPerSessionDiscoveryManagerTest,
+       StartDiscovery_NoConnectionMedium) {
+  EXPECT_CALL(sharing_service(), IsTransferring()).Times(1);
+  MockStartDiscoveryCallback callback;
+  EXPECT_CALL(callback, Run(/*result=*/nearby_share::mojom::
+                                StartDiscoveryResult ::kNoConnectionMedium));
+
+  EXPECT_CALL(
+      sharing_service(),
+      RegisterSendSurface(&manager(), &manager(),
+                          NearbySharingService::SendSurfaceState::kForeground))
+      .WillOnce(testing::Return(
+          NearbySharingService::StatusCodes ::kNoAvailableConnectionMedium));
   EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
       .Times(0);
 

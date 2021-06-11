@@ -247,6 +247,13 @@ Polymer({
               this.errorDescription_ =
                   this.i18n('nearbyShareErrorTransferInProgress');
               return;
+            case nearbyShare.mojom.StartDiscoveryResult
+                .kNoConnectionMedium:
+              this.errorTitle_ =
+                  this.i18n('nearbyShareErrorNoConnectionMedium');
+              this.errorDescription_ =
+                  this.i18n('nearbyShareErrorNoConnectionMediumDescription');
+              return;
           }
         });
   },

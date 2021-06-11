@@ -244,8 +244,18 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
     UpdateFurthestDiscoveryProgressIfNecessary(
         DiscoveryProgress::kFailedToStartDiscovery);
     share_target_listener_.reset();
-    std::move(callback).Run(
-        nearby_share::mojom::StartDiscoveryResult::kErrorGeneric);
+
+    nearby_share::mojom::StartDiscoveryResult errorStatus;
+    switch (status) {
+      case NearbySharingService::StatusCodes::kNoAvailableConnectionMedium:
+        errorStatus =
+            nearby_share::mojom::StartDiscoveryResult::kNoConnectionMedium;
+        break;
+      default:
+        errorStatus = nearby_share::mojom::StartDiscoveryResult::kErrorGeneric;
+    }
+    std::move(callback).Run(errorStatus);
+
     return;
   }
 

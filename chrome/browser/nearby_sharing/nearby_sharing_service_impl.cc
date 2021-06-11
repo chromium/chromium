@@ -425,6 +425,12 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
   }
 
   if (state == SendSurfaceState::kForeground) {
+    // Only check this error case for foreground senders
+    if (!HasAvailableConnectionMediums()) {
+      NS_LOG(VERBOSE) << __func__ << ": No available connection medium.";
+      return StatusCodes::kNoAvailableConnectionMedium;
+    }
+
     foreground_send_transfer_callbacks_.AddObserver(transfer_callback);
     foreground_send_discovery_callbacks_.AddObserver(discovery_callback);
   } else {

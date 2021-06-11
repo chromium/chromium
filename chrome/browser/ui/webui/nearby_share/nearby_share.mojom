@@ -151,6 +151,9 @@ enum StartDiscoveryResult {
   // Nearby cannot start discovery because there is an existing file transfer
   // in progress.
   kErrorInProgressTransferring,
+  // No supported discovery medium (i.e. Bluetooth, Wi-Fi, etc) is available.
+  // This usually means the user does not have Bluetooth enabled/powered.
+  kNoConnectionMedium,
   // Generic error for failing to start the nearby discovery process.
   kErrorGeneric,
 };
@@ -162,7 +165,8 @@ enum RegisterReceiveSurfaceResult {
   kSuccess,
   // Failed.
   kFailure,
-  // Bluetooth and Wi-Fi are unavailable.
+  // No supported discovery medium (i.e. Bluetooth, Wi-Fi, etc) is available.
+  // This usually means the user does not have Bluetooth enabled/powered.
   kNoConnectionMedium,
   // There is already a transfer in progress.
   kTransferInProgress,
