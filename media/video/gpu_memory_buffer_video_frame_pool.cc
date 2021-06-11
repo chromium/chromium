@@ -120,7 +120,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // and prone to leakage. Switch this to pass around std::unique_ptr
   // such that callers own resources explicitly.
   struct FrameResources {
-    explicit FrameResources(const gfx::Size& size) : size(size) {}
+    explicit FrameResources(const gfx::Size& size, gfx::BufferUsage usage)
+        : size(size), usage(usage) {}
     void MarkUsed() {
       is_used_ = true;
       last_use_time_ = base::TimeTicks();
@@ -133,6 +134,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     base::TimeTicks last_use_time() const { return last_use_time_; }
 
     const gfx::Size size;
+    const gfx::BufferUsage usage;
     PlaneResource plane_resources[VideoFrame::kMaxPlanes];
     // The sync token used to recycle or destroy the resources. It is set when
     // the resources are returned from the VideoFrame (via
@@ -192,8 +194,9 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // Return true if |resources| can be used to represent a frame for
   // specific |format| and |size|.
   static bool AreFrameResourcesCompatible(const FrameResources* resources,
-                                          const gfx::Size& size) {
-    return size == resources->size;
+                                          const gfx::Size& size,
+                                          gfx::BufferUsage usage) {
+    return size == resources->size && usage == resources->usage;
   }
 
   // Get the resources needed for a frame out of the pool, or create them if
@@ -201,7 +204,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // This also drops the LRU resources that can't be reuse for this frame.
   FrameResources* GetOrCreateFrameResources(
       const gfx::Size& size,
-      GpuVideoAcceleratorFactories::OutputFormat format);
+      GpuVideoAcceleratorFactories::OutputFormat format,
+      gfx::BufferUsage usage);
 
   // Calls the FrameReadyCB of the first entry in |frame_copy_requests_|, with
   // the provided |video_frame|, then deletes the entry from
@@ -865,7 +869,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
             ? nullptr
             : GetOrCreateFrameResources(
                   CodedSize(request.video_frame.get(), output_format_),
-                  output_format_);
+                  output_format_, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
     if (!frame_resources) {
       std::move(request.frame_ready_cb).Run(std::move(request.video_frame));
       frame_copy_requests_.pop_front();
@@ -1214,14 +1218,15 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::SetTickClockForTesting(
 GpuMemoryBufferVideoFramePool::PoolImpl::FrameResources*
 GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResources(
     const gfx::Size& size,
-    GpuVideoAcceleratorFactories::OutputFormat format) {
+    GpuVideoAcceleratorFactories::OutputFormat format,
+    gfx::BufferUsage usage) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   auto it = resources_pool_.begin();
   while (it != resources_pool_.end()) {
     FrameResources* frame_resources = *it;
     if (!frame_resources->is_used()) {
-      if (AreFrameResourcesCompatible(frame_resources, size)) {
+      if (AreFrameResourcesCompatible(frame_resources, size, usage)) {
         frame_resources->MarkUsed();
         return frame_resources;
       } else {
@@ -1235,7 +1240,7 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResources(
   }
 
   // Create the resources.
-  FrameResources* frame_resources = new FrameResources(size);
+  FrameResources* frame_resources = new FrameResources(size, usage);
   resources_pool_.push_back(frame_resources);
   for (size_t i = 0; i < NumGpuMemoryBuffers(output_format_); i++) {
     PlaneResource& plane_resource = frame_resources->plane_resources[i];
@@ -1247,8 +1252,7 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResources(
 
     const gfx::BufferFormat buffer_format = GpuMemoryBufferFormat(format, i);
     plane_resource.gpu_memory_buffer = gpu_factories_->CreateGpuMemoryBuffer(
-        plane_resource.size, buffer_format,
-        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+        plane_resource.size, buffer_format, usage);
   }
   return frame_resources;
 }
