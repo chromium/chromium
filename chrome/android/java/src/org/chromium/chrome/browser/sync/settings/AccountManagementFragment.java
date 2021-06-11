@@ -175,7 +175,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         configureSignOutSwitch();
         configureChildAccountPreferences();
 
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
     }
 
     private boolean canAddAccounts() {
@@ -368,7 +368,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     // ProfileDataCache.Observer implementation:
     @Override
     public void onProfileDataUpdated(String accountEmail) {
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
     }
 
     // SignOutDialogListener implementation:
