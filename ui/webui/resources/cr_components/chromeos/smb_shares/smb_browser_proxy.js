@@ -12,7 +12,7 @@
 /**
  *  @enum {number}
  *  These values must be kept in sync with the SmbMountResult enum in
- *  chrome/browser/chromeos/smb_client/smb_errors.h.
+ *  chrome/browser/ash/smb_client/smb_errors.h.
  */
 /* #export */ const SmbMountResult = {
   SUCCESS: 0,

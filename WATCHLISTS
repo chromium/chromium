@@ -1704,7 +1704,7 @@
     },
     'smb': {
       'filepath': 'chrome/browser/ash/file_system_provider' \
-                  '|chrome/browser/chromeos/smb_client'\
+                  '|chrome/browser/ash/smb_client'\
                   '|chromeos/dbus/fake_smb_provider_client'\
                   '|chromeos/dbus/smb_provider_client',
     },

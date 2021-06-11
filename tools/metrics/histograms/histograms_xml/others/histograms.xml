@@ -10334,7 +10334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeSmbFileShare.AuthenticationMethod"
     enum="NativeSmbFileShare_AuthMethod" expires_after="M94">
   <owner>simmonsjosh@google.com</owner>
-  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
+  <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
     The method used to authenticate to a share. This is called on each attempted
     mount.
@@ -10344,7 +10344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeSmbFileShare.GetSharesResult"
     enum="NativeSmbFileShare_MountResult" expires_after="M94">
   <owner>simmonsjosh@google.com</owner>
-  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
+  <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
     The result of the GetShares operation for Native SMB File Share. This is
     recorded after the D-Bus call to GetShares returns.
@@ -10354,7 +10354,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeSmbFileShare.MountCount" units="units"
     expires_after="M94">
   <owner>simmonsjosh@google.com</owner>
-  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
+  <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
     The number of active mounts that a user has. This is recorded after a share
     has been successfully mounted.
@@ -10364,7 +10364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeSmbFileShare.MountResult"
     enum="NativeSmbFileShare_MountResult" expires_after="M94">
   <owner>simmonsjosh@google.com</owner>
-  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
+  <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
     The result of the mount operation for Native SMB File Share. This is
     recorded after the D-Bus call to Mount returns.
@@ -10398,7 +10398,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="NativeSmbFileShare.RemountResult"
     enum="NativeSmbFileShare_MountResult" expires_after="M94">
   <owner>simmonsjosh@google.com</owner>
-  <owner>src/chrome/browser/chromeos/smb_client/OWNERS</owner>
+  <owner>src/chrome/browser/ash/smb_client/OWNERS</owner>
   <summary>
     The result of the Remount operation during startup. This is recorded after
     the D-Bus call to Remount returns.

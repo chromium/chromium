@@ -294,7 +294,7 @@ source_set("dns_client") {
     # TODO(crbug.com/874662): Remove once migrated to network service.
     "//chrome/browser",
 
-    # chrome/browser/chromeos/smb_client/discovery/mdns_host_locator.cc
+    # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Result parsing for results read through MdnsClient.
     # TODO(crbug.com/902531): Remove once migrated to network service.
     "//chrome/browser/chromeos",
@@ -353,8 +353,8 @@ source_set("mdns_client") {
     # TODO(crbug.com/874662): Remove once discovery client migrated.
     "//chrome/tools/service_discovery_sniffer",
 
-    # chrome/browser/chromeos/smb_client/discovery/mdns_host_locator.h
-    # chrome/browser/chromeos/smb_client/discovery/mdns_host_locator.cc
+    # chrome/browser/ash/smb_client/discovery/mdns_host_locator.h
+    # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Makes MDNS queries using MDnsClient.
     # TODO(crbug.com/902531): Remove once migrated to network service.
     "//chrome/browser/chromeos",
