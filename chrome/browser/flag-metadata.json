@@ -478,7 +478,7 @@
   {
     "name": "calculate-native-win-occlusion",
     "owners": [ "davidbienvenu", "fdoray" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 96
   },
   {
     "name": "camera-system-web-app",
