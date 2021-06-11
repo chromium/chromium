@@ -39,6 +39,8 @@ class SelfUnregisteringObserver
   }
   bool IsCalled() const { return called_; }
 
+  void Reset() { called_ = false; }
+
  private:
   bool called_ = false;
 };
@@ -148,6 +150,11 @@ TEST_F(LongTaskDetectorTest, SelfUnregisteringObserver) {
   SimulateTask(LongTaskDetector::kLongTaskThreshold +
                base::TimeDelta::FromMilliseconds(10));
   EXPECT_TRUE(observer->IsCalled());
+  observer->Reset();
+
+  SimulateTask(LongTaskDetector::kLongTaskThreshold +
+               base::TimeDelta::FromMilliseconds(10));
+  EXPECT_FALSE(observer->IsCalled());
 }
 
 }  // namespace blink
