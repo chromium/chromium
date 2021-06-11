@@ -582,15 +582,12 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
-  // Ensure the caption button container receives events before the browser view
-  // by placing it higher in the z-order.
-  // [0] - FrameAnimatorView
-  // [1] - BrowserView
-  // [2] - FrameCaptionButtonContainerView
-  const int kCaptionButtonContainerIndex = 2;
-  AddChildViewAt(caption_button_container_, kCaptionButtonContainerIndex);
+  // Ensure the WebAppFrameToolbarView and FrameCaptionButtonContainerView
+  // receive events before the BrowserView by appending instead of inserting
+  // the child views.
   if (web_app_frame_toolbar())
-    AddChildViewAt(web_app_frame_toolbar(), 0);
+    AddChildView(web_app_frame_toolbar());
+  AddChildView(caption_button_container_);
   Layout();
 }
 
