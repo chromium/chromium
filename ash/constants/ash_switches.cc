@@ -81,12 +81,6 @@ const char kArcDisableAppSync[] = "arc-disable-app-sync";
 // downloaded and installed in context of Play Store and GMS Core.
 const char kArcDisableDownloadProvider[] = "arc-disable-download-provider";
 
-// Flag to enables an experiment to allow users to turn on 64-bit support in
-// native bridge on systems that have such support available but not yet enabled
-// by default.
-const char kArcEnableNativeBridge64BitSupportExperiment[] =
-    "arc-enable-native-bridge-64bit-support-experiment";
-
 // Used in autotest to disable GMS-core caches which is on by default.
 const char kArcDisableGmsCoreCache[] = "arc-disable-gms-core-cache";
 
@@ -110,6 +104,12 @@ const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 // Used for development of Android app that are included into ARC as system
 // default apps in order to be able to install them via adb.
 const char kArcDisableSystemDefaultApps[] = "arc-disable-system-default-apps";
+
+// Flag to enables an experiment to allow users to turn on 64-bit support in
+// native bridge on systems that have such support available but not yet enabled
+// by default.
+const char kArcEnableNativeBridge64BitSupportExperiment[] =
+    "arc-enable-native-bridge-64bit-support-experiment";
 
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
@@ -156,6 +156,9 @@ const char kArcTosHostForTests[] = "arc-tos-host-for-tests";
 //            and upload to Google Cloud as build artifact for CrOS build image.
 // disabled - used for test purpose to disable ureadahead during ARCVM boot.
 const char kArcVmUreadaheadMode[] = "arcvm-ureadahead-mode";
+
+// Madvises the kernel to use Huge Pages for guest memory.
+const char kArcVmUseHugePages[] = "arcvm-use-hugepages";
 
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
@@ -214,6 +217,11 @@ const char kDerelictDetectionTimeout[] = "derelict-detection-timeout";
 // Time in seconds before a derelict machines starts demo mode.
 const char kDerelictIdleTimeout[] = "derelict-idle-timeout";
 
+// Prevents any CPU restrictions being set on the ARC container. Only meant to
+// be used by tests as some tests may time out if the ARC container is
+// throttled.
+const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
+
 // Disables android user data wipe on opt out.
 const char kDisableArcDataWipe[] = "disable-arc-data-wipe";
 
@@ -249,14 +257,6 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
     "disable-oobe-chromevox-hint-timer-for-testing";
 
-// Enables the ChromeVox hint in OOBE for dev mode. This flag is used
-// to override the default dev mode behavior of disabling the feature.
-// If both kEnableOOBEChromeVoxHintForDevMode and
-// kDisableOOBEChromeVoxHintTimerForTesting are present, the ChromeVox hint
-// will be disabled, since the latter flag takes precedence over the former.
-const char kEnableOOBEChromeVoxHintForDevMode[] =
-    "enable-oobe-chromevox-hint-timer-for-dev-mode";
-
 // Disables per-user timezone.
 const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
 
@@ -283,9 +283,6 @@ const char kEnableArcVm[] = "enable-arcvm";
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 
-// Madvises the kernel to use Huge Pages for guest memory.
-const char kArcVmUseHugePages[] = "arcvm-use-hugepages";
-
 // Enables the Cast Receiver.
 const char kEnableCastReceiver[] = "enable-cast-receiver";
 
@@ -307,8 +304,22 @@ const char kEnableNdkTranslation[] = "enable-ndk-translation";
 // Enables the use of 64-bit NDK translation library for ARM binary translation.
 const char kEnableNdkTranslation64[] = "enable-ndk-translation64";
 
+// Enables the ChromeVox hint in OOBE for dev mode. This flag is used
+// to override the default dev mode behavior of disabling the feature.
+// If both kEnableOOBEChromeVoxHintForDevMode and
+// kDisableOOBEChromeVoxHintTimerForTesting are present, the ChromeVox hint
+// will be disabled, since the latter flag takes precedence over the former.
+const char kEnableOOBEChromeVoxHintForDevMode[] =
+    "enable-oobe-chromevox-hint-timer-for-dev-mode";
+
+// Enables OOBE testing API for tast tests.
+const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
+
 // Enables request of tablet site (via user agent override).
 const char kEnableRequestTabletSite[] = "enable-request-tablet-site";
+
+// Enables configuring the OEM Device Requsition in the OOBE.
+const char kEnableRequisitionEdits[] = "enable-requisition-edits";
 
 // Enables tablet form factor.
 const char kEnableTabletFormFactor[] = "enable-tablet-form-factor";
@@ -360,6 +371,12 @@ const char kExternalMetricsCollectionInterval[] =
 // device-specific web apps.
 const char kExtraWebAppsDir[] = "extra-web-apps-dir";
 
+// Specifies number of recommended (fake) ARC apps during user onboarding.
+// App descriptions are generated locally instead of being fetched from server.
+// Limited to ChromeOS-on-linux and test images only.
+const char kFakeArcRecommendedAppsForTesting[] =
+    "fake-arc-recommended-apps-for-testing";
+
 // An absolute path to the chroot hosting the DriveFS to use. This is only used
 // when running on Linux, i.e. when IsRunningOnChromeOS() returns false.
 const char kFakeDriveFsLauncherChrootPath[] =
@@ -371,21 +388,10 @@ const char kFakeDriveFsLauncherChrootPath[] =
 const char kFakeDriveFsLauncherSocketPath[] =
     "fake-drivefs-launcher-socket-path";
 
-// Specifies number of recommended (fake) ARC apps during user onboarding.
-// App descriptions are generated locally instead of being fetched from server.
-// Limited to ChromeOS-on-linux and test images only.
-const char kFakeArcRecommendedAppsForTesting[] =
-    "fake-arc-recommended-apps-for-testing";
-
 // Fingerprint sensor location indicates the physical sensor's location. The
 // value is a string with possible values: "power-button-top-left",
 // "keyboard-bottom-left", keyboard-bottom-right", "keyboard-top-right".
 const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
-
-// Specifies the device's form factor. If provided, this flag overrides the
-// value from the LSB release info. Possible values are: "CHROMEBASE",
-// "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"
-const char kFormFactor[] = "form-factor";
 
 // Passed to Chrome the first time that it's run after the system boots.
 // Not passed on restart after sign out.
@@ -398,15 +404,15 @@ const char kForceDevToolsAvailable[] = "force-devtools-available";
 // Forces first-run UI to be shown for every login.
 const char kForceFirstRunUI[] = "force-first-run-ui";
 
-// Force enables the Happiness Tracking System for the device. This ignores
-// user profile check and time limits and shows the notification every time
-// for any type of user. Should be used only for testing.
-const char kForceHappinessTrackingSystem[] = "force-happiness-tracking-system";
-
 // Forces Hardware ID check (happens during OOBE) to fail. Should be used only
 // for testing.
 const char kForceHWIDCheckFailureForTest[] =
     "force-hwid-check-failure-for-test";
+
+// Force enables the Happiness Tracking System for the device. This ignores
+// user profile check and time limits and shows the notification every time
+// for any type of user. Should be used only for testing.
+const char kForceHappinessTrackingSystem[] = "force-happiness-tracking-system";
 
 // Forces FullRestoreService to launch browser for telemetry tests.
 const char kForceLaunchBrowser[] = "force-launch-browser";
@@ -417,6 +423,11 @@ const char kForceLoginManagerInTests[] = "force-login-manager-in-tests";
 
 // Force system compositor mode when set.
 const char kForceSystemCompositorMode[] = "force-system-compositor-mode";
+
+// Specifies the device's form factor. If provided, this flag overrides the
+// value from the LSB release info. Possible values are: "CHROMEBASE",
+// "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"
+const char kFormFactor[] = "form-factor";
 
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
@@ -512,6 +523,12 @@ const char kNaturalScrollDefault[] = "enable-natural-scroll-default";
 // notes. If unset, a hardcoded list is used instead.
 const char kNoteTakingAppIds[] = "note-taking-app-ids";
 
+// Used for overriding the time limit imposed by the policies
+// SAMLOfflineSigninTimeLimit & GaiaOfflineSigninTimeLimitDays when testing.
+// TODO(crbug.com/1177416): Clean up once testing is complete
+const char kOfflineSignInTimeLimitInSecondsOverrideForTesting[] =
+    "offline-signin-timelimit-in-seconds-override-for-testing";
+
 // Allows the eula url to be overridden for tests.
 const char kOobeEulaUrlForTests[] = "oobe-eula-url-for-tests";
 
@@ -526,6 +543,9 @@ const char kOobeForceTabletFirstRun[] = "oobe-force-tablet-first-run";
 const char kOobeLargeScreenSpecialScaling[] =
     "oobe-large-screen-special-scaling";
 
+// Specifies directory for screenshots taken with OOBE UI Debugger.
+const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
+
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
@@ -538,14 +558,20 @@ const char kOobeTimerInterval[] = "oobe-timer-interval";
 // Allows the timezone to be overridden on the marketing opt-in screen.
 const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 
+// If set to "true", the profile requires policy during restart (policy load
+// must succeed, otherwise session restart should fail).
+const char kProfileRequiresPolicy[] = "profile-requires-policy";
+
 // SAML assertion consumer URL, used to detect when Gaia-less SAML flows end
 // (e.g. for SAML managed guest sessions)
 // TODO(984021): Remove when URL is sent by DMServer.
 const char kPublicAccountsSamlAclUrl[] = "public-accounts-saml-acl-url";
 
-// If set to "true", the profile requires policy during restart (policy load
-// must succeed, otherwise session restart should fail).
-const char kProfileRequiresPolicy[] = "profile-requires-policy";
+// The name of the per-model directory which contains per-region
+// subdirectories with regulatory label files for this model.
+// The per-model directories (if there are any) are located under
+// "/usr/share/chromeos-assets/regulatory_labels/".
+const char kRegulatoryLabelDir[] = "regulatory-label-dir";
 
 // The rlz ping delay (in seconds) that overwrites the default value.
 const char kRlzPingDelay[] = "rlz-ping-delay";
@@ -555,26 +581,15 @@ const char kRlzPingDelay[] = "rlz-ping-delay";
 // See BrowserJob::ExportArgv in platform2/login_manager/browser_job.cc.
 const char kSafeMode[] = "safe-mode";
 
-// Password change url for SAML users.
-// TODO(941489): Remove when the bug is fixed.
-const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
-
-// Used for overriding the time limit imposed by the policies
-// SAMLOfflineSigninTimeLimit & GaiaOfflineSigninTimeLimitDays when testing.
-// TODO(crbug.com/1177416): Clean up once testing is complete
-const char kOfflineSignInTimeLimitInSecondsOverrideForTesting[] =
-    "offline-signin-timelimit-in-seconds-override-for-testing";
-
-// Used for overriding the required user activity time before running the
-// onboarding survey.
-const char kTimeBeforeOnboardingSurveyInSecondsForTesting[] =
-    "time-before-onboarding-survey-in-seconds-for-testing";
-
 // Used for overriding the preference set by the policy
 // kSamlLockScreenReauthenticationEnabled to true.
 // TODO(crbug.com/1177416): Clean up once testing is complete
 const char kSamlLockScreenReauthenticationEnabledOverrideForTesting[] =
     "saml-lockscreen-reauthentication-enabled-override-for-testing";
+
+// Password change url for SAML users.
+// TODO(941489): Remove when the bug is fixed.
+const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 
 // New modular design for the shelf with apps separated into a hotseat UI and
 // smaller shelf in clamshell mode.
@@ -583,12 +598,6 @@ const char kShelfHotseat[] = "shelf-hotseat";
 // App window previews when hovering over the shelf.
 const char kShelfHoverPreviews[] = "shelf-hover-previews";
 
-// The name of the per-model directory which contains per-region
-// subdirectories with regulatory label files for this model.
-// The per-model directories (if there are any) are located under
-// "/usr/share/chromeos-assets/regulatory_labels/".
-const char kRegulatoryLabelDir[] = "regulatory-label-dir";
-
 // If true, the developer tool overlay will be shown for the login/lock screen.
 // This makes it easier to test layout logic.
 const char kShowLoginDevOverlay[] = "show-login-dev-overlay";
@@ -596,12 +605,6 @@ const char kShowLoginDevOverlay[] = "show-login-dev-overlay";
 // Enables OOBE UI Debugger for ease of navigation between screens during manual
 // testing. Limited to ChromeOS-on-linux and test images only.
 const char kShowOobeDevOverlay[] = "show-oobe-dev-overlay";
-
-// Enables OOBE testing API for tast tests.
-const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
-
-// Specifies directory for screenshots taken with OOBE UI Debugger.
-const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 
 // Disables online sign-in enforcement in tast tests.
 const char kSkipForceOnlineSignInForTesting[] =
@@ -616,10 +619,6 @@ const char kTestEncryptionMigrationUI[] = "test-encryption-migration-ui";
 // Enables the wallpaper picker to fetch images from the test server.
 const char kTestWallpaperServer[] = "test-wallpaper-server";
 
-// Overrides Tether with stub service. Provide integer arguments for the number
-// of fake networks desired, e.g. 'tether-stub=2'.
-const char kTetherStub[] = "tether-stub";
-
 // Tells the Chromebook to scan for a tethering host even if there is already a
 // wired connection. This allows end-to-end tests to be deployed over ethernet
 // without that connection preventing scans and thereby blocking the testing of
@@ -627,8 +626,22 @@ const char kTetherStub[] = "tether-stub";
 const char kTetherHostScansIgnoreWiredConnections[] =
     "tether-host-scans-ignore-wired-connections";
 
+// Overrides Tether with stub service. Provide integer arguments for the number
+// of fake networks desired, e.g. 'tether-stub=2'.
+const char kTetherStub[] = "tether-stub";
+
+// Used for overriding the required user activity time before running the
+// onboarding survey.
+const char kTimeBeforeOnboardingSurveyInSecondsForTesting[] =
+    "time-before-onboarding-survey-in-seconds-for-testing";
+
 // Shows all Bluetooth devices in UI (System Tray/Settings Page.)
 const char kUnfilteredBluetoothDevices[] = "unfiltered-bluetooth-devices";
+
+// If this switch is passed, the device policy DeviceMinimumVersion
+// assumes that the device has reached Auto Update Expiration. This is useful
+// for testing the policy behaviour on the DUT.
+const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 
 // Used to tell the policy infrastructure to not let profile initialization
 // complete until policy is manually set by a test. This is used to provide
@@ -637,19 +650,6 @@ const char kUnfilteredBluetoothDevices[] = "unfiltered-bluetooth-devices";
 // uses of this flag.
 const char kWaitForInitialPolicyFetchForTest[] =
     "wait-for-initial-policy-fetch-for-test";
-
-// Prevents any CPU restrictions being set on the ARC container. Only meant to
-// be used by tests as some tests may time out if the ARC container is
-// throttled.
-const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
-
-// If this switch is passed, the device policy DeviceMinimumVersion
-// assumes that the device has reached Auto Update Expiration. This is useful
-// for testing the policy behaviour on the DUT.
-const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
-
-// Enables configuring the OEM Device Requsition in the OOBE.
-const char kEnableRequisitionEdits[] = "enable-requisition-edits";
 
 bool MemoryPressureHandlingEnabled() {
   if (base::FieldTrialList::FindFullName(kMemoryPressureExperimentName) ==
