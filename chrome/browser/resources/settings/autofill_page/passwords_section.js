@@ -116,6 +116,19 @@ Polymer({
     filter: {
       type: String,
       value: '',
+      observer: 'announceSearchResults_',
+    },
+
+    /** @private */
+    shownPasswordsCount_: {
+      type: Number,
+      value: 0,
+    },
+
+    /** @private */
+    shownExceptionsCount_: {
+      type: Number,
+      value: 0,
     },
 
     // <if expr="not chromeos">
@@ -537,7 +550,8 @@ Polymer({
    */
   passwordFilter_() {
     return password => [password.urls.shown, password.username].some(
-               term => term.toLowerCase().includes(this.filter.toLowerCase()));
+               term => term.toLowerCase().includes(
+                   this.filter.trim().toLowerCase()));
   },
 
   /**
@@ -546,7 +560,7 @@ Polymer({
    */
   passwordExceptionFilter_() {
     return exception => exception.urls.shown.toLowerCase().includes(
-               this.filter.toLowerCase());
+               this.filter.trim().toLowerCase());
   },
 
   /**
@@ -673,5 +687,35 @@ Polymer({
     this.focusConfig.set(assert(routes.CHECK_PASSWORDS).path, () => {
       focusWithoutInk(assert(this.$$('#icon')));
     });
+  },
+
+  /** @private */
+  announceSearchResults_() {
+    if (!this.filter.trim()) {
+      return;
+    }
+    setTimeout(() => {  // Async to allow list to update.
+      IronA11yAnnouncer.requestAvailability();
+      const total = this.shownPasswordsCount_ + this.shownExceptionsCount_;
+      let text;
+      switch (total) {
+        case 0:
+          text = this.i18n('noSearchResults');
+          break;
+        case 1:
+          text = this.i18n('searchResultsSingular', this.filter);
+          break;
+        default:
+          text =
+              this.i18n('searchResultsPlural', total.toString(), this.filter);
+      }
+      this.dispatchEvent(new CustomEvent('iron-announce', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          text: text,
+        }
+      }));
+    }, 0);
   },
 });

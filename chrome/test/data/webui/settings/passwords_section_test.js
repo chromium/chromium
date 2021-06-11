@@ -29,12 +29,17 @@ const PasswordCheckState = chrome.passwordsPrivate.PasswordCheckState;
  * @private
  */
 function validateMultiStorePasswordList(passwordsSection, expectedPasswords) {
-  // `passwordList.items` will always contain all items, even when there is a
-  // filter to be applied. Thus apply `passwordList.filter` to obtain the list
-  // of items that are user visible.
   const passwordList = passwordsSection.$.passwordList;
-  assertDeepEquals(
-      expectedPasswords, passwordList.items.filter(passwordList.filter));
+  if (passwordList.filter) {
+    // `passwordList.items` will always contain all items, even when there is a
+    // filter to be applied. Thus apply `passwordList.filter` to obtain the list
+    // of items that are user visible.
+    assertDeepEquals(
+        expectedPasswords, passwordList.items.filter(passwordList.filter));
+  } else {
+    assertDeepEquals(expectedPasswords, passwordList.items);
+  }
+
   const listItems =
       passwordsSection.shadowRoot.querySelectorAll('password-list-item');
   for (let index = 0; index < expectedPasswords.length; ++index) {
