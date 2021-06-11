@@ -7,7 +7,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,11 +14,10 @@ namespace safe_browsing {
 
 class SafeBrowsingPrimaryAccountTokenFetcherTest : public ::testing::Test {
  public:
-  SafeBrowsingPrimaryAccountTokenFetcherTest()
-      : task_environment_(CreateTestTaskEnvironment()) {}
+  SafeBrowsingPrimaryAccountTokenFetcherTest() {}
 
  protected:
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
 };
 

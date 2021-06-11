@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -21,7 +20,6 @@ SafeBrowsingPrimaryAccountTokenFetcher::SafeBrowsingPrimaryAccountTokenFetcher(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager),
       weak_ptr_factory_(this) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
 }
 
 SafeBrowsingPrimaryAccountTokenFetcher::
@@ -29,7 +27,7 @@ SafeBrowsingPrimaryAccountTokenFetcher::
 
 void SafeBrowsingPrimaryAccountTokenFetcher::Start(
     Callback callback) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // NOTE: base::Unretained() is safe below as this object owns
   // |token_fetch_tracker_|, and the callback will not be invoked after

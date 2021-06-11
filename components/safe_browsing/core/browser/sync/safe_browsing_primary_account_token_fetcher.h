@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetch_tracker.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -42,6 +43,8 @@ class SafeBrowsingPrimaryAccountTokenFetcher : public SafeBrowsingTokenFetcher {
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);
   void OnTokenTimeout(int request_id);
+
+  THREAD_CHECKER(thread_checker_);
 
   // Reference to the identity manager to fetch from.
   signin::IdentityManager* identity_manager_;
