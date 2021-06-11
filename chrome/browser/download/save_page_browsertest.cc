@@ -819,6 +819,41 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SavePageAsMHTML) {
   EXPECT_THAT(contents, HasSubstr("content: \"\\e003 \\e004 b\""));
 }
 
+// Tests that if we default our file picker to MHTML due to user preference we
+// update the suggested file name to end with .mhtml.
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
+                       SavePageAsMHTMLByPrefUpdatesExtension) {
+  SavePackageFilePicker::SetShouldPromptUser(false);
+  DownloadPrefs* download_prefs =
+      DownloadPrefs::FromDownloadManager(GetDownloadManager());
+  base::FilePath download_dir = download_prefs->DownloadPath();
+  base::FilePath full_file_name = download_dir.AppendASCII("test_page");
+  download_prefs->SetSaveFileType(content::SAVE_PAGE_TYPE_AS_MHTML);
+
+  base::FilePath received_path;
+  content::SavePageType received_type;
+  content::SavePackagePathPickedCallback callback = base::BindOnce(
+      [](base::FilePath* received_path, content::SavePageType* received_type,
+         const base::FilePath& path, content::SavePageType type,
+         content::SavePackageDownloadCreatedCallback cb) {
+        *received_path = path;
+        *received_type = type;
+      },
+      &received_path, &received_type);
+
+  // Deletes itself.
+  new SavePackageFilePicker(
+      /* web_contents */ GetCurrentTab(browser()),
+      /* suggested_path */ full_file_name,
+      /* default_extension */ FILE_PATH_LITERAL(".html"),
+      /* can_save_as_complete */ true,
+      /* download_prefs */ download_prefs,
+      /* callback */ std::move(callback));
+
+  EXPECT_TRUE(received_path.MatchesExtension(FILE_PATH_LITERAL(".mhtml")));
+  EXPECT_EQ(received_type, content::SAVE_PAGE_TYPE_AS_MHTML);
+}
+
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SavePageBrowserTest_NonMHTML) {
   SavePackageFilePicker::SetShouldPromptUser(false);
   GURL url("data:text/plain,foo");
