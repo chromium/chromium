@@ -412,16 +412,19 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, CancelDuringBody) {
 
 IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        InterruptedBeforeHeaders) {
+  TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
 
   // Stop navigation to record histograms.
   active_web_contents()->Stop();
+  navigation_observer.Wait();
 
   CheckHistogramsAfterMainFrameInterruption();
 }
 
 IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        InterruptedCancelDuringBody) {
+  TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
   SendHeadersPartialBody();
 
@@ -435,6 +438,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
 
   // Stop navigation to record histograms.
   active_web_contents()->Stop();
+  navigation_observer.Wait();
 
   CheckHistogramsAfterMainFrameInterruption();
 }
