@@ -102,7 +102,10 @@ TEST_F(MessagePortTlsConnectionTest, OnMessage) {
   connection_as_receiver_->OnMessage(message, {});
 
   // Setting the client checks the Task runner.
-  EXPECT_CALL(task_runner_, IsRunningOnTaskRunner()).WillOnce(Return(true));
+  // NOTE: The IsRunningOnTaskRunner() call is DCHECK'd, so it will only run on
+  // debug builds - so it may be called zero or one times.
+  EXPECT_CALL(task_runner_, IsRunningOnTaskRunner())
+      .WillRepeatedly(Return(true));
   connection_->SetClient(&client_);
 
   // Once the client is set, a callback is made when OnMessage*() is called on
@@ -133,7 +136,10 @@ TEST_F(MessagePortTlsConnectionTest, OnPipeError) {
   connection_as_receiver_->OnPipeError();
 
   // Setting the client checks the Task runner.
-  EXPECT_CALL(task_runner_, IsRunningOnTaskRunner()).WillOnce(Return(true));
+  // NOTE: The IsRunningOnTaskRunner() call is DCHECK'd, so it will only run on
+  // debug builds - so it may be called zero or one times.
+  EXPECT_CALL(task_runner_, IsRunningOnTaskRunner())
+      .WillRepeatedly(Return(true));
   connection_->SetClient(&client_);
 
   // Once the client is set, a callback is made when OnPipeError() is called on
