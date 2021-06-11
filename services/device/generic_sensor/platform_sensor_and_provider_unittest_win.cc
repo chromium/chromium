@@ -727,8 +727,10 @@ TEST_F(PlatformSensorAndProviderTestWin,
   // Create the unit quaternion manually.
   const double theta = 2.0943951023931953;  // 120 degrees in radians.
   const float quat_elements[4] = {
-      axis[0] * std::sin(theta / 2.0), axis[1] * std::sin(theta / 2.0),
-      axis[2] * std::sin(theta / 2.0), std::cos(theta / 2.0)};
+      static_cast<float>(axis[0] * std::sin(theta / 2.0)),
+      static_cast<float>(axis[1] * std::sin(theta / 2.0)),
+      static_cast<float>(axis[2] * std::sin(theta / 2.0)),
+      static_cast<float>(std::cos(theta / 2.0))};
 
   base::win::ScopedPropVariant pvQuat;
 

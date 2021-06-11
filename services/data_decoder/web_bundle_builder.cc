@@ -84,7 +84,8 @@ void WebBundleBuilder::SetExchanges(
     Headers headers = {{":status", "200"}, {"content-type", info->mime_type}};
     uint64_t response_length =
         GetEncodedByteSizeOfResponse(headers, body ? body->size() : 0);
-    ResponseLocation location = {responses_offset, response_length};
+    ResponseLocation location = {responses_offset,
+                                 static_cast<int64_t>(response_length)};
     responses_offset += response_length;
     cbor::Value::ArrayValue response_array;
     response_array.emplace_back(Encode(CreateHeaderMap(headers)));
