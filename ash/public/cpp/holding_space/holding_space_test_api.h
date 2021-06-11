@@ -14,6 +14,10 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace views {
 class View;
 }  // namespace views
@@ -47,7 +51,11 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // otherwise.
   bool IsShowingInShelf();
 
-  // Returns the `item_id` associated with the given `item_view`.
+  // Returns the item file path associated with the given `item_view`.
+  const base::FilePath& GetHoldingSpaceItemFilePath(
+      const views::View* item_view) const;
+
+  // Returns the item ID associated with the given `item_view`.
   const std::string& GetHoldingSpaceItemId(const views::View* item_view) const;
 
   // Returns the holding space item view within `item_views` associated with the

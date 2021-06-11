@@ -851,6 +851,85 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
   ASSERT_FALSE(test_api().IsShowingInShelf());
 }
 
+// Verifies that pinning and unpinning holding space items works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, PinAndUnpinItems) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Add an item of every type. For downloads, also add an in-progress item.
+  for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
+    AddItem(GetProfile(), type, CreateFile());
+  AddItem(GetProfile(), HoldingSpaceItem::Type::kDownload, CreateFile(),
+          /*progress=*/0.f);
+
+  // Show holding space UI.
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
+
+  // Verify existence of views for pinned files, screen captures, and downloads.
+  using ViewList = std::vector<views::View*>;
+  ViewList pinned_file_chips = test_api().GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 1u);
+  ViewList screen_capture_views = test_api().GetScreenCaptureViews();
+  ASSERT_GE(screen_capture_views.size(), 1u);
+  ViewList download_chips = test_api().GetDownloadChips();
+  ASSERT_GE(download_chips.size(), 2u);
+
+  // Attempt to pin a screen capture via context menu.
+  RightClick(screen_capture_views.front());
+  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kPinItem));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  pinned_file_chips = test_api().GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 2u);
+  ASSERT_EQ(
+      test_api().GetHoldingSpaceItemFilePath(pinned_file_chips.front()),
+      test_api().GetHoldingSpaceItemFilePath(screen_capture_views.front()));
+
+  // Attempt to pin a completed download via context menu. Note that the first
+  // download is the in-progress download, so don't select that one.
+  RightClick(download_chips.at(1));
+  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kPinItem));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  pinned_file_chips = test_api().GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 3u);
+  ASSERT_EQ(test_api().GetHoldingSpaceItemFilePath(pinned_file_chips.front()),
+            test_api().GetHoldingSpaceItemFilePath(download_chips.at(1)));
+
+  // Attempt to pin an in-progress download via context menu. Because the
+  // download is in-progress, it should neither be pin- or unpin-able.
+  RightClick(download_chips.front());
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+  ASSERT_FALSE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kPinItem));
+  ASSERT_FALSE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kUnpinItem));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+
+  // Attempt to unpin the pinned download via context menu without de-selecting
+  // the in-progress download. Because the selection contains items which are
+  // not in-progress and all of those items are pinned, the selection should be
+  // unpin-able.
+  RightClick(download_chips.at(1), ui::EF_CONTROL_DOWN);
+  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kUnpinItem));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  pinned_file_chips = test_api().GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 2u);
+  ASSERT_EQ(
+      test_api().GetHoldingSpaceItemFilePath(pinned_file_chips.front()),
+      test_api().GetHoldingSpaceItemFilePath(screen_capture_views.front()));
+
+  // Select the pinned file and again attempt to pin the completed download via
+  // context menu, still without de-selecting the in-progress download. Because
+  // the selection contains items which are not in-progress and at least one of
+  // those items are unpinned, the selection should be pin-able.
+  Click(pinned_file_chips.front(), ui::EF_CONTROL_DOWN);
+  RightClick(download_chips.front());
+  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kPinItem));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  pinned_file_chips = test_api().GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 3u);
+  ASSERT_EQ(test_api().GetHoldingSpaceItemFilePath(pinned_file_chips.front()),
+            test_api().GetHoldingSpaceItemFilePath(download_chips.at(1)));
+}
+
 // Verifies that opening holding space items works.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
   // Install the Media App, which we expect to open holding space items.

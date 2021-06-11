@@ -58,10 +58,12 @@ class HoldingSpaceBrowserTestBase
   HoldingSpaceItem* AddScreenRecordingFile();
 
   // Adds and returns a holding space item of the specified `type` backed by the
-  // file at the specified `file_path`.
+  // file at the specified `file_path` with optional `progress`.
+  // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   HoldingSpaceItem* AddItem(Profile* profile,
                             HoldingSpaceItem::Type type,
-                            const base::FilePath& file_path);
+                            const base::FilePath& file_path,
+                            const absl::optional<float>& progress = 1.f);
 
   // Removes the specified holding space `item`.
   void RemoveItem(const HoldingSpaceItem* item);

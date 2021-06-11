@@ -176,10 +176,11 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddScreenRecordingFile() {
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
     Profile* profile,
     HoldingSpaceItem::Type type,
-    const base::FilePath& file_path) {
+    const base::FilePath& file_path,
+    const absl::optional<float>& progress) {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       type, file_path,
-      holding_space_util::ResolveFileSystemUrl(profile, file_path),
+      holding_space_util::ResolveFileSystemUrl(profile, file_path), progress,
       base::BindLambdaForTesting(
           [&](HoldingSpaceItem::Type type, const base::FilePath& path) {
             return std::make_unique<HoldingSpaceImage>(

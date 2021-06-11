@@ -97,6 +97,11 @@ bool HoldingSpaceTestApi::IsShowingInShelf() {
   return holding_space_tray_ && holding_space_tray_->GetVisible();
 }
 
+const base::FilePath& HoldingSpaceTestApi::GetHoldingSpaceItemFilePath(
+    const views::View* item_view) const {
+  return HoldingSpaceItemView::Cast(item_view)->item()->file_path();
+}
+
 const std::string& HoldingSpaceTestApi::GetHoldingSpaceItemId(
     const views::View* item_view) const {
   return HoldingSpaceItemView::Cast(item_view)->item_id();

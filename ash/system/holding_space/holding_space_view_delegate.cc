@@ -543,8 +543,12 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   bool is_pausable = true;
   bool is_resumable = true;
   bool is_cancelable = true;
-  bool is_pinnable = false;
   bool is_removable = true;
+
+  // A value for `is_pinnable` will only be present if the `selection` contains
+  // at least one holding space item which is *not* in-progress. In-progress
+  // items are ignored with respect to pin-/unpin-ability.
+  absl::optional<bool> is_pinnable;
 
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   for (const HoldingSpaceItemView* view : selection) {
@@ -562,15 +566,21 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     // holding space items are cancelable.
     is_cancelable &= item->IsInProgress();
 
-    // The "Pin" command should be present if *any* selected holding space item
-    // is unpinned. When executing this command, any holding space items that
-    // are already pinned will be ignored.
-    is_pinnable |= !model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
-                                        item->file_path());
-
     // The "Remove" command should only be present if *all* of the selected
     // holding space items are removable.
     is_removable &= item->type() != HoldingSpaceItem::Type::kPinnedFile;
+
+    // In-progress holding space items are ignored with respect to the pin-/
+    // unpin-ability of the `selection`.
+    if (item->IsInProgress())
+      continue;
+
+    // The "Pin" command should be present if *any* selected holding space item
+    // is unpinned. When executing this command, any holding space items that
+    // are already pinned will be ignored.
+    is_pinnable = is_pinnable.value_or(false) ||
+                  !model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
+                                       item->file_path());
   }
 
   if (is_pausable) {
@@ -629,18 +639,20 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     }
   }
 
-  if (is_pinnable) {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kPinItem),
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
-        ui::ImageModel::FromVectorIcon(views::kPinIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
-  } else {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kUnpinItem),
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
-        ui::ImageModel::FromVectorIcon(views::kUnpinIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
+  if (is_pinnable.has_value()) {
+    if (is_pinnable.value()) {
+      context_menu_model_->AddItemWithIcon(
+          static_cast<int>(HoldingSpaceCommandId::kPinItem),
+          l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
+          ui::ImageModel::FromVectorIcon(views::kPinIcon, /*color_id=*/-1,
+                                         kHoldingSpaceIconSize));
+    } else {
+      context_menu_model_->AddItemWithIcon(
+          static_cast<int>(HoldingSpaceCommandId::kUnpinItem),
+          l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
+          ui::ImageModel::FromVectorIcon(views::kUnpinIcon, /*color_id=*/-1,
+                                         kHoldingSpaceIconSize));
+    }
   }
 
   if (is_removable) {

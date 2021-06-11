@@ -256,8 +256,11 @@ void HoldingSpaceClientImpl::PinItems(
     const std::vector<const HoldingSpaceItem*>& items) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
+  // NOTE: In-progress holding space items are neither pin- nor unpin-able.
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
+    if (item->IsInProgress())
+      continue;
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
             item->file_system_url());
@@ -301,8 +304,11 @@ void HoldingSpaceClientImpl::UnpinItems(
     const std::vector<const HoldingSpaceItem*>& items) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
+  // NOTE: In-progress holding space items are neither pin- nor unpin-able.
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
+    if (item->IsInProgress())
+      continue;
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
             item->file_system_url());
