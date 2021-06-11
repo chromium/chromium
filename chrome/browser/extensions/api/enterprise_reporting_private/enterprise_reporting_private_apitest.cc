@@ -131,8 +131,6 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetPersistentSecret) {
 #if defined(OS_WIN) || defined(OS_MAC)
       "chrome.test.assertNoLastError();"
       "chrome.test.assertTrue(secret instanceof ArrayBuffer);";
-#elif defined(OS_LINUX)
-      "chrome.test.assertLastError('-1');";
 #else
       "chrome.test.assertLastError('Access to extension API denied.');";
 #endif

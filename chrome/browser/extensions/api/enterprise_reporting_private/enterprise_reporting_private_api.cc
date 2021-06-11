@@ -110,6 +110,9 @@ EnterpriseReportingPrivateGetDeviceIdFunction::
     ~EnterpriseReportingPrivateGetDeviceIdFunction() = default;
 
 // getPersistentSecret
+
+#if !defined(OS_LINUX)
+
 EnterpriseReportingPrivateGetPersistentSecretFunction::
     EnterpriseReportingPrivateGetPersistentSecretFunction() = default;
 EnterpriseReportingPrivateGetPersistentSecretFunction::
@@ -159,6 +162,8 @@ void EnterpriseReportingPrivateGetPersistentSecretFunction::SendResponse(
     Respond(Error(base::StringPrintf("%ld", static_cast<long int>(status))));
   }
 }
+
+#endif  // !defined(OS_LINUX)
 
 // getDeviceData
 

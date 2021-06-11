@@ -41,6 +41,8 @@ class EnterpriseReportingPrivateGetDeviceIdFunction : public ExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(EnterpriseReportingPrivateGetDeviceIdFunction);
 };
 
+#if !defined(OS_LINUX)
+
 class EnterpriseReportingPrivateGetPersistentSecretFunction
     : public ExtensionFunction {
  public:
@@ -66,6 +68,8 @@ class EnterpriseReportingPrivateGetPersistentSecretFunction
 
   void SendResponse(const std::string& data, long int status);
 };
+
+#endif  // !defined(OS_LINUX)
 
 class EnterpriseReportingPrivateGetDeviceDataFunction
     : public ExtensionFunction {

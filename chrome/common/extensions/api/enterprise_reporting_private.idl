@@ -16,7 +16,7 @@ namespace enterprise.reportingPrivate {
   callback GetDeviceIdCallback = void(DOMString id);
 
   // Invoked by <code>getPersistentSecret</code> to return the secret.
-  [platforms = ("win", "mac", "linux")]
+  [platforms = ("win", "mac")]
   callback GetPersistentSecretCallback = void(ArrayBuffer secret);
 
   // Invoked by <code>getDeviceDataCallback</code> to return the device data.
@@ -93,7 +93,7 @@ namespace enterprise.reportingPrivate {
     // optional parameter |forceCreation| is set to true the secret is recreated
     // in case of any failure to retrieve the currently stored one. Sets
     // $(ref:runtime.lastError) on failure.
-    [platforms = ("win", "mac", "linux")]
+    [platforms = ("win", "mac")]
     static void getPersistentSecret(optional boolean resetSecret,
         GetPersistentSecretCallback callback);
 
