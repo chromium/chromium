@@ -273,7 +273,7 @@ class ScopedDisableTimerTracking {
 }
 
 - (void)openShareMenu {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShareButton()]
       performAction:grey_tap()];
 }
 
