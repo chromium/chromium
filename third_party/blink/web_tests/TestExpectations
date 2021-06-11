@@ -1716,6 +1716,9 @@ crbug.com/381684 [ Win ] fonts/family-fallback-gardiner.html [ Skip ]
 
 crbug.com/377696 printing/setPrinting.html [ Failure ]
 
+# crbug.com/1218723 This test fails when SplitCacheByNetworkIsolationKey is enabled.
+crbug.com/1218723 http/tests/devtools/network/network-prefetch.js [ Failure ]
+
 # No support for WPT print-reftests:
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match-print.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match_fail-print.html [ Failure ]
