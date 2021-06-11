@@ -65,6 +65,25 @@ source_set("openscreen_platform_network_service") {
   ]
 }
 
+if (!is_win && !is_ios) {
+  source_set("message_port_tls_connection") {
+    sources = [
+      "message_port_tls_connection.cc",
+      "message_port_tls_connection.h",
+    ]
+
+    public_deps = [
+      "//components/cast/message_port",
+      "//third_party/openscreen/src/platform",
+    ]
+
+    deps = [
+      "//base",
+      "//net",
+    ]
+  }
+}
+
 source_set("unittests") {
   testonly = true
 
@@ -80,4 +99,9 @@ source_set("unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_win && !is_ios) {
+    sources += [ "message_port_tls_connection_unittest.cc" ]
+    deps += [ ":message_port_tls_connection" ]
+  }
 }
