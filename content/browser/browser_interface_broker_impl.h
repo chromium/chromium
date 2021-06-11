@@ -33,6 +33,14 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
  public:
   explicit BrowserInterfaceBrokerImpl(ExecutionContextHost* host)
       : host_(host) {
+    // The populate functions here define all the interfaces that will be
+    // exposed through the broker.
+    //
+    // The `host` is a templated type (one of RenderFrameHostImpl,
+    // ServiceWorkerHost, etc.). which allows the populate steps here to call a
+    // set of overloaded functions based on that type. Thus each type of `host`
+    // can expose a different set of interfaces, which is determined statically
+    // at compile time.
     internal::PopulateBinderMap(host, &binder_map_);
     internal::PopulateBinderMapWithContext(host, &binder_map_with_context_);
   }

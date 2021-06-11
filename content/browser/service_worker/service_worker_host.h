@@ -88,10 +88,18 @@ class CONTENT_EXPORT ServiceWorkerHost {
   // owns |this|.
   ServiceWorkerVersion* const version_;
 
+  // BrowserInterfaceBroker implementation through which this
+  // ServiceWorkerHost exposes worker-scoped Mojo services to the corresponding
+  // service worker in the renderer.
+  //
+  // The interfaces that can be requested from this broker are defined in the
+  // content/browser/browser_interface_binders.cc file, in the functions which
+  // take a `ServiceWorkerHost*` parameter.
   BrowserInterfaceBrokerImpl<ServiceWorkerHost,
                              const ServiceWorkerVersionBaseInfo&>
       broker_;
-  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_;
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
+      &broker_};
 
   std::unique_ptr<ServiceWorkerContainerHost> container_host_;
 

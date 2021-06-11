@@ -263,6 +263,13 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
+  // BrowserInterfaceBroker implementation through which this
+  // DedicatedWorkerHost exposes worker-scoped Mojo services to the
+  // corresponding worker in the renderer.
+  //
+  // The interfaces that can be requested from this broker are defined in the
+  // content/browser/browser_interface_binders.cc file, in the functions which
+  // take a `DedicatedWorkerHost*` parameter.
   BrowserInterfaceBrokerImpl<DedicatedWorkerHost, const url::Origin&> broker_{
       this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{

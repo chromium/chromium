@@ -3378,6 +3378,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
   // active document in the corresponding RenderFrame.
+  //
+  // The interfaces that can be requested from this broker are defined in the
+  // content/browser/browser_interface_binders.cc file, in the functions which
+  // take a `RenderFrameHostImpl*` parameter.
   BrowserInterfaceBrokerImpl<RenderFrameHostImpl, RenderFrameHost*> broker_{
       this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
