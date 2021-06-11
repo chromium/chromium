@@ -286,6 +286,7 @@ crbug.com/871352 [ fuchsia ] conformance/uniforms/uniform-samplers-test.html [ S
 crbug.com/1143424 [ fuchsia ] deqp/data/gles2/shaders/conversions.html [ Skip ]
 crbug.com/478572 [ fuchsia ] deqp/data/gles2/shaders/functions.html [ Skip ]
 crbug.com/angleproject/3111 [ fuchsia ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
+crbug.com/1218708 [ fuchsia ] conformance/rendering/many-draw-calls.html [ Skip ]
 
 # Video not supported on Fuchsia qemu boards.
 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
