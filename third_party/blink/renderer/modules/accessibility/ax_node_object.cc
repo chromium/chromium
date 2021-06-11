@@ -3839,18 +3839,16 @@ void AXNodeObject::InsertChild(AXObject* child,
     wtf_size_t length = children.size();
     int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
+      if (children[i]->IsDetached()) {
+        CHECK(false) << "Cannot add a detached child: "
+                     << "\n* Child: " << children[i]->ToString(true, true)
+                     << "\n* Parent: " << child->ToString(true, true)
+                     << "\n* Grandparent: " << ToString(true, true);
+      }
       // If the child was owned, it will be added elsewhere as a direct
       // child of the object owning it.
-      if (!AXObjectCache().IsAriaOwned(children[i])) {
-        SANITIZER_CHECK(!children[i]->IsDetached())
-            << "Cannot add a detached child: "
-            << "\n* Child: " << children[i]->ToString(true, true)
-            << "\n* Parent: " << child->ToString(true, true)
-            << "\n* Grandparent: " << ToString(true, true)
-            << "\n* Included ancestor: "
-            << child->ParentObjectIncludedInTree()->ToString(true, true);
+      if (!AXObjectCache().IsAriaOwned(children[i]))
         children_.insert(new_index++, children[i]);
-      }
     }
   } else {
     children_.insert(index, child);

@@ -511,6 +511,32 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   return true;
 }
 
+void DetachAndRemoveFromChildrenOfAncestors(AXObject* obj) {
+  DCHECK(obj);
+
+  bool is_included = obj->LastKnownIsIncludedInTreeValue();
+
+  AXObject* parent = obj->CachedParentObject();
+
+  obj->Detach();
+
+  // If |obj| is not included, it cannot be in any ancestor's cached children.
+  // This rule improves performance when removing an entire of unincluded nodes.
+  if (!is_included)
+    return;
+
+  // Clear children of ancestors in order to ensure this detached object is not
+  // cached an ancestor's list of children:
+  // Any ancestor up to the first included ancestor can contain the now-detached
+  // child in it's cached children, and therefore must update children.
+  while (parent && !parent->LastKnownIsIncludedInTreeValue()) {
+    if (parent->NeedsToUpdateChildren() || parent->IsDetached())
+      break;  // Processing has already occurred for this ancestor.
+    parent->SetNeedsToUpdateChildren();
+    parent = parent->CachedParentObject();
+  }
+}
+
 }  // namespace
 
 // static
@@ -1315,7 +1341,8 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
 
   AXObject* parent = obj->CachedParentObject();
 
-  obj->Detach();
+  DetachAndRemoveFromChildrenOfAncestors(obj);
+
   RemoveAXID(obj);
 
   // Finally, remove the object.
@@ -1324,12 +1351,13 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!objects_.Take(ax_id))
     return;
 
+  DCHECK_GE(objects_.size(), ids_in_use_.size());
+
   // This will clear the children of |parent| immediately, and therefore must
   // come after obj->Detach(), which accesses the children in order
   // to detach all of them from |parent|.
+  // It will also fire a children changed event.
   ChildrenChanged(parent);
-
-  DCHECK_GE(objects_.size(), ids_in_use_.size());
 }
 
 void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node) {
@@ -1868,8 +1896,6 @@ void AXObjectCacheImpl::ChildrenChanged(AXObject* obj) {
   if (!obj || obj->IsDetached())
     return;
 
-  obj->SetNeedsToUpdateChildren();
-
   Node* node = obj->GetNode();
   if (node && !nodes_with_pending_children_changed_.insert(node).is_new_entry)
     return;
@@ -2067,7 +2093,9 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
       DCHECK(!layout_object_mapping_.at(node->GetLayoutObject()))
           << node << " " << node->GetLayoutObject();
     }
-    current->Detach();
+
+    DetachAndRemoveFromChildrenOfAncestors(current);
+
     // TODO(accessibility) We don't use the return value, can we use .erase()
     // and it will still make sure that the object is cleaned up?
     objects_.Take(retained_axid);
