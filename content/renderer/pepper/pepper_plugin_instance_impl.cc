@@ -2370,9 +2370,7 @@ void PepperPluginInstanceImpl::SetPluginToHandleFindRequests(
     PP_Instance instance) {
   if (!LoadFindInterface())
     return;
-  bool is_main_frame =
-      render_frame_ &&
-      render_frame_->GetRenderView()->GetMainRenderFrame() == render_frame_;
+  bool is_main_frame = render_frame_ && render_frame_->IsMainFrame();
   if (!is_main_frame)
     return;
   container_->UsePluginAsFindHandler();

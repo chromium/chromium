@@ -32,10 +32,10 @@ std::unique_ptr<blink::URLLoaderThrottle>
 NoStatePrefetchHelper::MaybeCreateThrottle(int render_frame_id) {
   content::RenderFrame* render_frame =
       content::RenderFrame::FromRoutingID(render_frame_id);
-  auto* helper = render_frame
-                     ? NoStatePrefetchHelper::Get(
-                           render_frame->GetRenderView()->GetMainRenderFrame())
-                     : nullptr;
+  auto* helper =
+      render_frame
+          ? NoStatePrefetchHelper::Get(render_frame->GetMainRenderFrame())
+          : nullptr;
   if (!helper)
     return nullptr;
 

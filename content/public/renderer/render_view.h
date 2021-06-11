@@ -43,9 +43,6 @@ class CONTENT_EXPORT RenderView {
   // been closed but not yet destroyed are excluded).
   static void ForEach(RenderViewVisitor* visitor);
 
-  // Returns the main RenderFrame.
-  virtual RenderFrame* GetMainRenderFrame() = 0;
-
   // Get the routing ID of the view.
   virtual int GetRoutingID() = 0;
 

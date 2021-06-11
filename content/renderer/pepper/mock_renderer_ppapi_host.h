@@ -20,9 +20,11 @@ class FakePepperPluginInstance;
 // resources through this will get added to the test sink.
 class MockRendererPpapiHost : public RendererPpapiHost {
  public:
-  // This function takes the RenderView and instance that the mock resource
-  // host will be associated with.
-  MockRendererPpapiHost(RenderView* render_view, PP_Instance instance);
+  // This function takes the RenderView, RenderFrame and instance that the mock
+  // resource host will be associated with.
+  MockRendererPpapiHost(RenderView* render_view,
+                        RenderFrame* render_frame,
+                        PP_Instance instance);
   ~MockRendererPpapiHost() override;
 
   ppapi::proxy::ResourceMessageTestSink& sink() { return sink_; }

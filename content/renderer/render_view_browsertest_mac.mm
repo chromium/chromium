@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/test/render_view_test.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -77,8 +78,11 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   prefs.enable_scroll_animator = false;
 
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  blink::WebFrameWidget* blink_widget =
-      view->GetMainRenderFrame()->GetLocalRootWebFrameWidget();
+  blink::WebFrameWidget* blink_widget = view->GetWebView()
+                                            ->MainFrame()
+                                            ->ToWebLocalFrame()
+                                            ->LocalRoot()
+                                            ->FrameWidget();
 
   view->GetWebView()->SetWebPreferences(prefs);
 
@@ -89,7 +93,9 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   NSEvent* arrowUpKeyDown = CmdDeadKeyEvent(NSKeyDown, kVK_UpArrow);
 
   // First test when javascript does not eat keypresses -- should scroll.
-  view->GetMainRenderFrame()->set_send_content_state_immediately(true);
+  RenderFrameImpl::FromWebFrame(
+      view->GetWebView()->MainFrame()->ToWebLocalFrame())
+      ->set_send_content_state_immediately(true);
   LoadHTML(kRawHtml);
   render_thread_->sink().ClearMessages();
 

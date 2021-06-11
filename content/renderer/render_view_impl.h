@@ -117,7 +117,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // RenderView implementation -------------------------------------------------
 
-  RenderFrameImpl* GetMainRenderFrame() override;
   int GetRoutingID() override;
   blink::WebView* GetWebView() override;
 
@@ -184,8 +183,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // The `AgentSchedulingGroup` this view is associated with.
   AgentSchedulingGroup& agent_scheduling_group_;
-
-  RenderFrameImpl* main_render_frame_ = nullptr;
 
 #if defined(OS_ANDROID)
   // Android Specific ----------------------------------------------------------

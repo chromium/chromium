@@ -119,7 +119,6 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
-#include "content/public/renderer/render_view.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/base/media_switches.h"
@@ -579,7 +578,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (!render_frame->IsMainFrame()) {
     auto* main_frame_no_state_prefetch_helper =
         prerender::NoStatePrefetchHelper::Get(
-            render_frame->GetRenderView()->GetMainRenderFrame());
+            render_frame->GetMainRenderFrame());
     if (main_frame_no_state_prefetch_helper) {
       // Avoid any race conditions from having the browser tell subframes that
       // they're no-state prefetching.

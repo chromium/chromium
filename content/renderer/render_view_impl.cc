@@ -130,7 +130,7 @@ void RenderViewImpl::Initialize(
   webview_->SetWebPreferences(params->web_preferences);
 
   if (local_main_frame) {
-    main_render_frame_ = RenderFrameImpl::CreateMainFrame(
+    RenderFrameImpl::CreateMainFrame(
         agent_scheduling_group_, this, opener_frame,
         params->type != mojom::ViewWidgetType::kTopLevel,
         std::move(params->replication_state), params->devtools_main_frame_token,
@@ -372,8 +372,11 @@ WebView* RenderViewImpl::CreateView(
       creator->GetTaskRunner(blink::TaskType::kInternalDefault));
 
   if (reply->wait_for_debugger) {
-    blink::WebFrameWidget* frame_widget =
-        view->GetMainRenderFrame()->GetLocalRootWebFrameWidget();
+    blink::WebFrameWidget* frame_widget = view->GetWebView()
+                                              ->MainFrame()
+                                              ->ToWebLocalFrame()
+                                              ->LocalRoot()
+                                              ->FrameWidget();
     frame_widget->WaitForDebuggerWhenShown();
   }
 
@@ -381,10 +384,6 @@ WebView* RenderViewImpl::CreateView(
 }
 
 // RenderView implementation ---------------------------------------------------
-
-RenderFrameImpl* RenderViewImpl::GetMainRenderFrame() {
-  return main_render_frame_;
-}
 
 int RenderViewImpl::GetRoutingID() {
   return routing_id_;

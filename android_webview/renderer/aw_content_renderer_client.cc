@@ -151,14 +151,11 @@ void AwContentRendererClient::RenderFrameCreated(
   new js_injection::JsCommunication(render_frame);
   new AwSafeBrowsingErrorPageControllerDelegateImpl(render_frame);
 
-  // TODO(jam): when the frame tree moves into content and parent() works at
-  // RenderFrame construction, simplify this by just checking parent().
-  content::RenderFrame* parent_frame =
-      render_frame->GetRenderView()->GetMainRenderFrame();
-  if (parent_frame && parent_frame != render_frame) {
+  content::RenderFrame* main_frame = render_frame->GetMainRenderFrame();
+  if (main_frame && main_frame != render_frame) {
     // Avoid any race conditions from having the browser's UI thread tell the IO
     // thread that a subframe was created.
-    GetRenderMessageFilter()->SubFrameCreated(parent_frame->GetRoutingID(),
+    GetRenderMessageFilter()->SubFrameCreated(main_frame->GetRoutingID(),
                                               render_frame->GetRoutingID());
   }
 

@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "chrome/common/ssl_insecure_content.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -25,8 +24,7 @@ ChromeContentSettingsAgentDelegate::ChromeContentSettingsAgentDelegate(
       RenderFrameObserverTracker<ChromeContentSettingsAgentDelegate>(
           render_frame),
       render_frame_(render_frame) {
-  content::RenderFrame* main_frame =
-      render_frame->GetRenderView()->GetMainRenderFrame();
+  content::RenderFrame* main_frame = render_frame->GetMainRenderFrame();
   // TODO(nasko): The main frame is not guaranteed to be in the same process
   // with this frame with --site-per-process. This code needs to be updated
   // to handle this case. See https://crbug.com/496670.

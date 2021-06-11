@@ -140,6 +140,11 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   // Returns the RenderView associated with this frame.
   virtual RenderView* GetRenderView() = 0;
 
+  // Returns the RenderFrame associated with the main frame of the WebView.
+  // See `blink::WebView::MainFrame()`. Note that this will be null when
+  // the main frame in this process is a remote frame.
+  virtual RenderFrame* GetMainRenderFrame() = 0;
+
   // Return the RenderAccessibility associated with this frame.
   virtual RenderAccessibility* GetRenderAccessibility() = 0;
 

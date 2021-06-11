@@ -20,7 +20,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -112,8 +111,7 @@ ContentSettingsAgentImpl::ContentSettingsAgentImpl(
           &ContentSettingsAgentImpl::OnContentSettingsAgentRequest,
           base::Unretained(this)));
 
-  content::RenderFrame* main_frame =
-      render_frame->GetRenderView()->GetMainRenderFrame();
+  content::RenderFrame* main_frame = render_frame->GetMainRenderFrame();
   // TODO(nasko): The main frame is not guaranteed to be in the same process
   // with this frame with --site-per-process. This code needs to be updated
   // to handle this case. See https://crbug.com/496670.
