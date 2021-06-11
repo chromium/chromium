@@ -593,7 +593,7 @@ void PdfViewWebPlugin::SetAccessibilityViewportInfo(
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
-  NOTIMPLEMENTED();
+  GetPdfService()->UpdateContentRestrictions(content_restrictions);
 }
 
 void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
