@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) SelfDeletingURLLoaderFactory
 
   ~SelfDeletingURLLoaderFactory() override;
 
+  // The override below is marked as |final| to make sure derived classes do not
+  // accidentally side-step lifetime management.
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> loader) final;
+
   // Sometimes a derived class can no longer function, even when the set of
   // |receivers_| is still non-empty.  This should be rare (typically the
   // lifetime of users of mojo::Remote<mojom::URLLoaderFactory> should
@@ -44,10 +48,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SelfDeletingURLLoaderFactory
   THREAD_CHECKER(thread_checker_);
 
  private:
-  // The override below is marked as |final| to make sure derived classes do not
-  // accidentally side-step lifetime management.
-  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> loader) final;
-
   void OnDisconnect();
 
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
