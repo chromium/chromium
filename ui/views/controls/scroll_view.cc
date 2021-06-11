@@ -1077,6 +1077,9 @@ void ScrollView::OnScrolled(const gfx::ScrollOffset& offset) {
 
   for (auto& observer : observers_)
     observer.OnContentsScrolled();
+
+  NotifyAccessibilityEvent(ax::mojom::Event::kScrollPositionChanged,
+                           /*send_native_event=*/true);
 }
 
 void ScrollView::ScrollHeader() {

@@ -70,7 +70,7 @@ ui::AXTreeID GetAXTreeIDFromRenderFrameHost(content::RenderFrameHost* rfh) {
 
 // A class that installs itself as the sink to handle automation event bundles
 // from AutomationManagerAura, then waits until an automation event indicates
-// that a given node ID is focused.
+// that a given node ID is focused or an AX event is sent.
 class AutomationEventWaiter
     : public extensions::AutomationEventRouterInterface {
  public:
@@ -293,6 +293,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
   auto* cache_ptr = cache.get();
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
+  AutomationEventWaiter waiter;
   manager->Enable();
   auto* tree = manager->tree_.get();
 
@@ -346,17 +347,25 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
               node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollYMax),
               kAllowedError);
 
-  // Scroll right and check the X position.
+  // Scroll right and check a scroll event occurred and the X position.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kScrollRight;
   scroll_view_wrapper->HandleAccessibleAction(action_data);
+  auto event_from_views =
+      waiter.WaitForEvent(ax::mojom::Event::kScrollPositionChanged);
+  ASSERT_NE(nullptr, event_from_views.get());
+  EXPECT_EQ(ax::mojom::EventFrom::kNone, event_from_views->event_from);
   tree->SerializeNode(scroll_view_wrapper, &node_data);
   EXPECT_NEAR(200, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX),
               kAllowedError);
 
-  // Scroll down and check the Y position.
+  // Scroll down and check a scroll event occurred and the Y position.
   action_data.action = ax::mojom::Action::kScrollDown;
   scroll_view_wrapper->HandleAccessibleAction(action_data);
+  event_from_views =
+      waiter.WaitForEvent(ax::mojom::Event::kScrollPositionChanged);
+  ASSERT_NE(nullptr, event_from_views.get());
+  EXPECT_EQ(ax::mojom::EventFrom::kNone, event_from_views->event_from);
   tree->SerializeNode(scroll_view_wrapper, &node_data);
   EXPECT_NEAR(200, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollY),
               kAllowedError);
@@ -365,6 +374,10 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
   action_data.action = ax::mojom::Action::kSetScrollOffset;
   action_data.target_point.SetPoint(50, 315);
   scroll_view_wrapper->HandleAccessibleAction(action_data);
+  event_from_views =
+      waiter.WaitForEvent(ax::mojom::Event::kScrollPositionChanged);
+  ASSERT_NE(nullptr, event_from_views.get());
+  EXPECT_EQ(ax::mojom::EventFrom::kNone, event_from_views->event_from);
   tree->SerializeNode(scroll_view_wrapper, &node_data);
   EXPECT_EQ(50, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX));
   EXPECT_EQ(315, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollY));
