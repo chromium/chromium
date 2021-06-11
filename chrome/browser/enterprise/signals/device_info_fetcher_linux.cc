@@ -30,8 +30,17 @@ namespace enterprise_signals {
 
 namespace {
 
+std::string ReadFile(std::string path_str) {
+  base::FilePath path(path_str);
+  std::string output;
+  if (base::PathExists(path) && base::ReadFileToString(path, &output))
+    base::TrimWhitespaceASCII(output, base::TrimPositions::TRIM_ALL, &output);
+
+  return output;
+}
+
 std::string GetDeviceModel() {
-  return base::SysInfo::HardwareModelName();
+  return ReadFile("/sys/class/dmi/id/product_name");
 }
 
 std::string GetOsVersion() {
@@ -57,15 +66,7 @@ std::string GetDeviceHostName() {
 }
 
 std::string GetSerialNumber() {
-  base::FilePath product_serial_path("/sys/class/dmi/id/product_serial");
-  std::string serial_number;
-  if (base::PathExists(product_serial_path) &&
-      base::ReadFileToString(product_serial_path, &serial_number)) {
-    base::TrimWhitespaceASCII(serial_number, base::TrimPositions::TRIM_ALL,
-                              &serial_number);
-  }
-
-  return serial_number;
+  return ReadFile("/sys/class/dmi/id/product_serial");
 }
 
 // Implements the logic from the native client setup script. It reads the
