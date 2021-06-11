@@ -40,21 +40,21 @@ void SharingHubModel::PopulateFirstPartyActions() {
   action_list_.push_back(
       {IDC_COPY_URL, IDS_SHARING_HUB_COPY_LINK_LABEL, kCopyIcon, true});
 
-  action_list_.push_back({IDC_QRCODE_GENERATOR,
-                          IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL,
-                          kQrcodeGeneratorIcon, true});
-
   action_list_.push_back({IDC_SEND_TAB_TO_SELF,
                           IDS_CONTEXT_MENU_SEND_TAB_TO_SELF, kSendTabToSelfIcon,
                           true});
 
-  action_list_.push_back(
-      {IDC_SAVE_PAGE, IDS_SHARING_HUB_SAVE_PAGE_LABEL, kSavePageIcon, true});
+  action_list_.push_back({IDC_QRCODE_GENERATOR,
+                          IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL,
+                          kQrcodeGeneratorIcon, true});
 
   if (media_router::MediaRouterEnabled(context_)) {
     action_list_.push_back({IDC_ROUTE_MEDIA, IDS_SHARING_HUB_MEDIA_ROUTER_LABEL,
                             vector_icons::kMediaRouterIdleIcon, true});
   }
+
+  action_list_.push_back(
+      {IDC_SAVE_PAGE, IDS_SHARING_HUB_SAVE_PAGE_LABEL, kSavePageIcon, true});
 }
 
 void SharingHubModel::PopulateThirdPartyActions() {
