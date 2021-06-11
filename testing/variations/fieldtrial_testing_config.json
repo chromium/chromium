@@ -2527,30 +2527,6 @@
             ]
         }
     ],
-    "DelayAsyncScriptExecution": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "delay_type": "first_paint_or_finished_parsing"
-                    },
-                    "enable_features": [
-                        "DelayAsyncScriptExecution"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeleteOverwrittenDownloads": [
         {
             "platforms": [
