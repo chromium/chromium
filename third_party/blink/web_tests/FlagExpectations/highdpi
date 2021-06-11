@@ -358,9 +358,6 @@ crbug.com/1179572 transforms/combine-transforms-properties-transform.html [ Fail
 crbug.com/1179572 transforms/perspective-fixed-pos-descendant.html [ Failure ]
 
 crbug.com/1179570 virtual/composite-after-paint/compositing/gestures/gesture-tapHighlight-simple-scaledY.html [ Failure ]
-crbug.com/1179570 virtual/container-queries/wpt_internal/css/css-conditional/container-queries/at-container-001.html [ Failure ]
-crbug.com/1179570 virtual/container-queries/wpt_internal/css/css-conditional/container-queries/at-container-002.html [ Failure ]
-crbug.com/1179570 virtual/container-queries/wpt_internal/css/css-conditional/container-queries/body-background-propagation.html [ Failure ]
 crbug.com/1179570 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-10.html [ Failure ]
 crbug.com/1179570 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-04.html [ Failure ]
 crbug.com/1179570 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-32.html [ Failure ]
