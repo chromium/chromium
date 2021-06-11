@@ -2157,8 +2157,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             gfx::Range(0, 4));
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Flaky on Mac10.14 and Linux: https://crbug.com/1213345
 #define MAYBE_DragGroupHeaderToSeparateWindow \
   DISABLED_DragGroupHeaderToSeparateWindow
 #else
