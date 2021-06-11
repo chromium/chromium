@@ -79,3 +79,33 @@ TEST_F('SwitchAccessPointScanManagerTest', 'PointScanRightClick', function() {
     await new Promise(menuItemLoaded());
   });
 });
+
+// Verifies that chrome.accessibilityPrivate.setFocusRings() is not called when
+// point scanning is running.
+TEST_F('SwitchAccessPointScanManagerTest', 'PointScanNoFocusRings', function() {
+  const sleep = () => {
+    return new Promise(resolve => setTimeout(resolve, 2 * 1000));
+  };
+
+  const site = '<button>Test</button>';
+  this.runWithLoadedTree(site, async (root) => {
+    let setFocusRingsCallCount = 0;
+    // Mock this API to track how many times it's called.
+    chrome.accessibilityPrivate.setFocusRings = (focusRings) => {
+      setFocusRingsCallCount += 1;
+    };
+    assertEquals(0, setFocusRingsCallCount);
+    Navigator.byPoint.start();
+    // When point scanning starts, setFocusRings() gets called once to clear
+    // the focus rings.
+    assertEquals(1, setFocusRingsCallCount);
+    // Simulate the page focusing the button.
+    const button = root.find({role: chrome.automation.RoleType.BUTTON});
+    assertNotNullNorUndefined(button);
+    button.focus();
+    // Allow point scanning to run for 2 seconds and ensure no extra calls to
+    // setFocusRings().
+    await sleep();
+    assertEquals(1, setFocusRingsCallCount);
+  });
+});
