@@ -74,7 +74,7 @@ WebMClusterParser::WebMClusterParser(
 WebMClusterParser::~WebMClusterParser() = default;
 
 void WebMClusterParser::Reset() {
-  last_block_timecode_ = -1;
+  last_block_timecode_.reset();
   cluster_timecode_ = -1;
   cluster_start_time_ = kNoTimestamp;
   cluster_ended_ = false;
@@ -117,7 +117,7 @@ int WebMClusterParser::Parse(const uint8_t* buf, int size) {
     // call.
     parser_.Reset();
 
-    last_block_timecode_ = -1;
+    last_block_timecode_.reset();
     cluster_timecode_ = -1;
   }
 
@@ -458,15 +458,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     return false;
   }
 
-  // TODO(acolwell): Should relative negative timecode offsets be rejected?  Or
-  // only when the absolute timecode is negative?  See http://crbug.com/271794
-  if (timecode < 0) {
-    MEDIA_LOG(ERROR, media_log_) << "Got a block with negative timecode offset "
-                                 << timecode;
-    return false;
-  }
-
-  if (last_block_timecode_ != -1 && timecode < last_block_timecode_) {
+  if (last_block_timecode_.has_value() && timecode < *last_block_timecode_) {
     MEDIA_LOG(ERROR, media_log_)
         << "Got a block with a timecode before the previous block.";
     return false;

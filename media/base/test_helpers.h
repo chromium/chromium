@@ -415,11 +415,6 @@ MATCHER_P(WebMSimpleBlockDurationEstimated, estimated_duration_ms, "") {
                                   base::NumberToString(estimated_duration_ms));
 }
 
-MATCHER_P(WebMNegativeTimecodeOffset, timecode_string, "") {
-  return CONTAINS_STRING(arg, "Got a block with negative timecode offset " +
-                                  std::string(timecode_string));
-}
-
 MATCHER(WebMOutOfOrderTimecode, "") {
   return CONTAINS_STRING(
       arg, "Got a block with a timecode before the previous block.");

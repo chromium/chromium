@@ -21,6 +21,7 @@
 #include "media/base/stream_parser_buffer.h"
 #include "media/formats/webm/webm_parser.h"
 #include "media/formats/webm/webm_tracks_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -279,7 +280,11 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
 
   WebMListParser parser_;
 
-  int64_t last_block_timecode_ = -1;
+  // A |last_block_timecode_| value of -1 is not enough to indicate it is unset
+  // now that negative block timecodes are allowed, so we explicitly use
+  // absl::optional to know if it is currently set.
+  absl::optional<int64_t> last_block_timecode_ = absl::nullopt;
+
   std::unique_ptr<uint8_t[]> block_data_;
   int block_data_size_ = -1;
   int64_t block_duration_ = -1;
