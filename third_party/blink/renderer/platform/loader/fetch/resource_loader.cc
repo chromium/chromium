@@ -240,7 +240,6 @@ class ResourceLoader::CodeCacheRequest {
   // Request data from code cache.
   bool FetchFromCodeCache(WebURLLoader* url_loader,
                           ResourceLoader* resource_loader);
-  bool FetchFromCodeCacheSynchronously(ResourceLoader* resource_loader);
 
   // Notifies about the response from webURLLoader. Stores the
   // resource_response_time that is used to validate responses from
@@ -307,21 +306,6 @@ bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
                      weak_ptr_factory_.GetWeakPtr(), resource_loader);
   auto cache_type = resource_loader->GetCodeCacheType();
   code_cache_loader_->FetchFromCodeCache(cache_type, url_, std::move(callback));
-  return true;
-}
-
-bool ResourceLoader::CodeCacheRequest::FetchFromCodeCacheSynchronously(
-    ResourceLoader* resource_loader) {
-  if (!code_cache_loader_)
-    return false;
-  DCHECK_EQ(status_, kNoRequestSent);
-  status_ = kPendingResponse;
-
-  base::Time response_time;
-  mojo_base::BigBuffer data;
-  code_cache_loader_->FetchFromCodeCacheSynchronously(url_, &response_time,
-                                                      &data);
-  ProcessCodeCacheResponse(response_time, std::move(data), resource_loader);
   return true;
 }
 
