@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -250,6 +251,34 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     const AggregatedRenderPassId render_pass_id_;
   };
 
+  // Tracks damage across at most `number_of_buffers`. Note this implementation
+  // only assumes buffers are used in a circular order, and does not require a
+  // fixed number of frame buffers to be allocated.
+  class FrameBufferDamageTracker {
+   public:
+    explicit FrameBufferDamageTracker(size_t number_of_buffers);
+    ~FrameBufferDamageTracker();
+
+    void ReallocatedFrameBuffers(const gfx::Size& frame_buffer_size);
+    void SwappedWithDamage(const gfx::Rect& damage);
+    void SkippedSwapWithDamage(const gfx::Rect& damage);
+    gfx::Rect GetCurrentFrameBufferDamage() const;
+
+   private:
+    gfx::Rect ComputeCurrentFrameBufferDamage() const;
+
+    const size_t number_of_buffers_;
+    gfx::Size frame_buffer_size_;
+    // This deque should contains the incremental damage of the last N swapped
+    // frames where N is at most `capabilities_.number_of_buffers - 1`. Each
+    // rect represents from the incremental damage from the previous frame; note
+    // if there is no previous frame (eg first swap after a `Reshape`), the
+    // damage should be the full frame buffer.
+    base::circular_deque<gfx::Rect> damage_between_frames_;
+    // Result of `GetCurrentFramebufferDamage` to optimize consecutive calls.
+    mutable absl::optional<gfx::Rect> cached_current_damage_;
+  };
+
   // This holds current paint info
   absl::optional<ScopedPaint> current_paint_;
 
@@ -321,11 +350,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   bool use_damage_area_from_skia_output_device_ = false;
   // Damage area of the current buffer. Differ to the last submit buffer.
   absl::optional<gfx::Rect> damage_of_current_buffer_;
-  // Current buffer index.
-  size_t current_buffer_ = 0;
-  // Accumulates framebuffer damage since last drawing to a particular buffer.
-  // There is one gfx::Rect per framebuffer.
-  std::vector<gfx::Rect> accumulated_buffer_damage_;
+
+  // Used when `use_damage_area_from_skia_output_device_` is false and keeps
+  // track of across multiple frame buffers. Can be nullptr.
+  absl::optional<FrameBufferDamageTracker> frame_buffer_damage_tracker_;
+
   // Track if the current buffer content is changed.
   bool current_buffer_modified_ = false;
 

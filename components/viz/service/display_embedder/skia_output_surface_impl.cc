@@ -90,6 +90,64 @@ SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
 
 SkiaOutputSurfaceImpl::ScopedPaint::~ScopedPaint() = default;
 
+SkiaOutputSurfaceImpl::FrameBufferDamageTracker::FrameBufferDamageTracker(
+    size_t number_of_buffers)
+    : number_of_buffers_(number_of_buffers) {}
+
+SkiaOutputSurfaceImpl::FrameBufferDamageTracker::~FrameBufferDamageTracker() =
+    default;
+
+void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::ReallocatedFrameBuffers(
+    const gfx::Size& frame_buffer_size) {
+  frame_buffer_size_ = frame_buffer_size;
+  damage_between_frames_.clear();
+  cached_current_damage_.reset();
+}
+
+void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::SwappedWithDamage(
+    const gfx::Rect& damage) {
+  damage_between_frames_.push_back(damage);
+  // Keep at most `number_of_buffers_` frames.
+  if (damage_between_frames_.size() >= number_of_buffers_) {
+    damage_between_frames_.pop_front();
+  }
+  cached_current_damage_.reset();
+}
+
+void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::SkippedSwapWithDamage(
+    const gfx::Rect& damage) {
+  if (!damage_between_frames_.empty()) {
+    damage_between_frames_.back().Union(damage);
+    cached_current_damage_.reset();
+  } else {
+    // First frame after `ReallocatedFrameBuffers already has full damage.
+    // So no need to keep track of it with another entry, which would violate
+    // the condition the deque size is at most `number_of_buffers_ - 1`.
+  }
+}
+
+gfx::Rect
+SkiaOutputSurfaceImpl::FrameBufferDamageTracker::GetCurrentFrameBufferDamage()
+    const {
+  if (!cached_current_damage_)
+    cached_current_damage_ = ComputeCurrentFrameBufferDamage();
+  return *cached_current_damage_;
+}
+
+gfx::Rect SkiaOutputSurfaceImpl::FrameBufferDamageTracker::
+    ComputeCurrentFrameBufferDamage() const {
+  // First few frames after `ReallocatedFrameBuffers`.
+  if (damage_between_frames_.size() < number_of_buffers_ - 1) {
+    return gfx::Rect(frame_buffer_size_);
+  }
+
+  gfx::Rect result;
+  for (auto& damage : damage_between_frames_) {
+    result.Union(damage);
+  }
+  return result;
+}
+
 // static
 std::unique_ptr<SkiaOutputSurface> SkiaOutputSurfaceImpl::Create(
     DisplayCompositorMemoryAndTaskController* display_controller,
@@ -224,11 +282,8 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
 
   if (use_damage_area_from_skia_output_device_) {
     damage_of_current_buffer_ = gfx::Rect(size);
-  } else {
-    // Reshape will damage all buffers.
-    current_buffer_ = 0u;
-    for (auto& damage : accumulated_buffer_damage_)
-      damage = gfx::Rect(size);
+  } else if (frame_buffer_damage_tracker_) {
+    frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size);
   }
 
   // impl_on_gpu_ is released on the GPU thread by a posted task from
@@ -427,20 +482,10 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   // If current_buffer_modified_ is false, it means SkiaRenderer doesn't draw
   // anything for current frame. So this SwapBuffer() must be a empty swap, so
   // the previous buffer will be used for this frame.
-  if (!accumulated_buffer_damage_.empty() && current_buffer_modified_) {
+  if (frame_buffer_damage_tracker_ && current_buffer_modified_) {
     gfx::Rect damage_rect =
         frame.sub_buffer_rect ? *frame.sub_buffer_rect : gfx::Rect(size_);
-    // Calculate damage area for every buffer.
-    for (size_t i = 0u; i < accumulated_buffer_damage_.size(); ++i) {
-      if (i == current_buffer_) {
-        accumulated_buffer_damage_[i] = gfx::Rect();
-      } else {
-        accumulated_buffer_damage_[i].Union(damage_rect);
-      }
-    }
-    // change the current buffer index to the next buffer in the queue.
-    if (++current_buffer_ == accumulated_buffer_damage_.size())
-      current_buffer_ = 0u;
+    frame_buffer_damage_tracker_->SwappedWithDamage(damage_rect);
   }
   current_buffer_modified_ = false;
 
@@ -461,14 +506,12 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
 
 void SkiaOutputSurfaceImpl::SwapBuffersSkipped(
     const gfx::Rect root_pass_damage_rect) {
-  if (current_buffer_modified_ && !accumulated_buffer_damage_.empty()) {
+  if (current_buffer_modified_ && frame_buffer_damage_tracker_) {
     // If |current_buffer_modified_| is true but we skipped swap there is still
     // damage to the current framebuffer to account for. Unlike SwapBuffers()
     // don't reset current buffers rect, since that damage still need to be
     // taken into account when the buffer is swapped later.
-    for (auto& frame_buffer_damage_rect : accumulated_buffer_damage_) {
-      frame_buffer_damage_rect.Union(root_pass_damage_rect);
-    }
+    frame_buffer_damage_tracker_->SkippedSwapWithDamage(root_pass_damage_rect);
   }
   current_buffer_modified_ = false;
 
@@ -765,14 +808,14 @@ bool SkiaOutputSurfaceImpl::Initialize() {
       capabilities_.supports_post_sub_buffer) {
     capabilities_.only_invalidates_damage_rect = false;
     // If there is only one pending frame, then we can use damage area hint from
-    // SkiaOutputDevice, otherwise we have to track damage area in
-    // SkiaOutputSurfaceImpl.
+    // SkiaOutputDevice, otherwise we have to track damage area with
+    // FrameBufferDamageTracker.
     if (capabilities_.max_frames_pending == 1 &&
         capabilities_.damage_area_from_skia_output_device) {
       use_damage_area_from_skia_output_device_ = true;
       damage_of_current_buffer_ = gfx::Rect();
     } else {
-      accumulated_buffer_damage_.resize(capabilities_.number_of_buffers);
+      frame_buffer_damage_tracker_.emplace(capabilities_.number_of_buffers);
     }
   }
   return result;
@@ -890,12 +933,11 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
   DCHECK(client_);
   last_swapped_mailbox_ = params.primary_plane_mailbox;
 
-  // Reset |accumulated_buffer_damage_|, if buffers are new created.
   if (params.swap_response.result ==
       gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
     client_->SetNeedsRedrawRect(gfx::Rect(size_));
-    for (auto& damage : accumulated_buffer_damage_)
-      damage = gfx::Rect(size_);
+    if (frame_buffer_damage_tracker_)
+      frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size_);
   }
 
   if (use_damage_area_from_skia_output_device_) {
@@ -1148,12 +1190,10 @@ gfx::Rect SkiaOutputSurfaceImpl::GetCurrentFramebufferDamage() const {
     DCHECK(damage_of_current_buffer_);
     return *damage_of_current_buffer_;
   }
-
-  if (accumulated_buffer_damage_.empty())
+  if (!frame_buffer_damage_tracker_) {
     return gfx::Rect();
-
-  DCHECK_LT(current_buffer_, accumulated_buffer_damage_.size());
-  return accumulated_buffer_damage_[current_buffer_];
+  }
+  return frame_buffer_damage_tracker_->GetCurrentFrameBufferDamage();
 }
 
 void SkiaOutputSurfaceImpl::SetNeedsMeasureNextDrawLatency() {
