@@ -287,6 +287,9 @@ int DedicatedWebTransportHttp3Client::DoInit() {
   if (url_.scheme_piece() != url::kHttpsScheme)
     return ERR_DISALLOWED_URL_SCHEME;
 
+  if (!IsPortAllowedForScheme(url_.EffectiveIntPort(), url_.scheme_piece()))
+    return ERR_UNSAFE_PORT;
+
   // TODO(vasilvv): check if QUIC is disabled by policy.
 
   // Ensure that for the duration of the origin trial, a fixed QUIC transport

@@ -125,6 +125,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   void OnHandshakeFailed(
       const absl::optional<net::WebTransportError>& error) override {
     has_seen_handshake_failure_ = true;
+    handshake_error_ = error;
     receiver_.reset();
     std::move(callback_).Run();
   }
@@ -149,6 +150,9 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   bool has_seen_mojo_connection_error() const {
     return has_seen_mojo_connection_error_;
   }
+  absl::optional<net::WebTransportError> handshake_error() const {
+    return handshake_error_;
+  }
 
  private:
   mojo::Receiver<mojom::WebTransportHandshakeClient> receiver_;
@@ -159,6 +163,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   bool has_seen_connection_establishment_ = false;
   bool has_seen_handshake_failure_ = false;
   bool has_seen_mojo_connection_error_ = false;
+  absl::optional<net::WebTransportError> handshake_error_;
 };
 
 class TestClient final : public mojom::WebTransportClient {
@@ -428,6 +433,33 @@ TEST_P(WebTransportTest, ConnectHandles404) {
   EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
 
   EXPECT_EQ(0u, network_context().NumOpenWebTransports());
+}
+
+TEST_P(WebTransportTest, ConnectToBannedPort) {
+  if (GetParam() == "quic-transport") {
+    return;
+  }
+
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  CreateWebTransport(GURL("https://test.example.com:5060/echo"), origin(),
+                     std::move(handshake_client));
+
+  run_loop_for_handshake.Run();
+
+  EXPECT_FALSE(test_handshake_client.has_seen_connection_establishment());
+  EXPECT_TRUE(test_handshake_client.has_seen_handshake_failure());
+  EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
+
+  EXPECT_EQ(0u, network_context().NumOpenWebTransports());
+
+  ASSERT_TRUE(test_handshake_client.handshake_error().has_value());
+  EXPECT_EQ(test_handshake_client.handshake_error()->net_error,
+            net::ERR_UNSAFE_PORT);
 }
 
 TEST_P(WebTransportTest, SendDatagram) {
