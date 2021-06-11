@@ -1990,8 +1990,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Apps.OpenedAppListSearchResultFromSearchBox.
-          {AnyNonAppBrowserWindowOpenAndNotMinimized}"
+    name="Apps.OpenedAppListSearchResultFromSearchBox.{AnyNonAppBrowserWindowOpenAndNotMinimized}"
     enum="AppListSearchResult" expires_after="M99">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
