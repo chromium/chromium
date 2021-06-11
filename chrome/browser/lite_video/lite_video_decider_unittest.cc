@@ -401,8 +401,12 @@ TEST_F(LiteVideoDeciderTest, CanApplyLiteVideo) {
       "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", true, 1);
 }
 
-TEST_F(LiteVideoDeciderTest, LiteVideoDisabled) {
-  DisableLiteVideo();
+class LiteVideoDeciderDisabledTest : public LiteVideoDeciderTest {
+ public:
+  LiteVideoDeciderDisabledTest() { DisableLiteVideo(); }
+};
+
+TEST_F(LiteVideoDeciderDisabledTest, LiteVideoDisabled) {
   base::HistogramTester histogram_tester;
   SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
   GURL url("https://LiteVideo.com");
