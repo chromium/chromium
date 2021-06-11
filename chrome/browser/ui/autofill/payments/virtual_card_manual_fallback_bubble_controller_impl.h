@@ -35,14 +35,16 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   // Show the bubble view.
   void ShowBubble(const CreditCard* virtual_card,
-                  const std::u16string& virtual_card_cvc);
+                  const std::u16string& virtual_card_cvc,
+                  const gfx::Image& virtual_card_image);
 
   // Invoked when the omnibox icon is clicked.
   void ReshowBubble();
 
   // VirtualCardManualFallbackBubbleController:
   AutofillBubbleBase* GetBubble() const override;
-  std::u16string GetBubbleTitle() const override;
+  const gfx::Image& GetBubbleTitleIcon() const override;
+  std::u16string GetBubbleTitleText() const override;
   std::u16string GetVirtualCardNumberFieldLabel() const override;
   std::u16string GetExpirationDateFieldLabel() const override;
   std::u16string GetCardholderNameFieldLabel() const override;
@@ -75,6 +77,9 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   // The virtual card to be displayed to the user in the bubble.
   CreditCard virtual_card_;
+
+  // The virtual card image to be displayed as the title icon of the bubble.
+  gfx::Image virtual_card_image_;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.

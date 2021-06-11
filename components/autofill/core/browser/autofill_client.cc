@@ -66,7 +66,8 @@ void AutofillClient::ShowOfferNotificationIfApplicable(
 }
 
 void AutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
-                                          const std::u16string& cvc) {
+                                          const std::u16string& cvc,
+                                          const gfx::Image& card_image) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }

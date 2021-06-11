@@ -96,6 +96,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 #if defined(OS_IOS)
@@ -1480,8 +1481,11 @@ void BrowserAutofillManager::OnCreditCardFetched(bool did_succeed,
 
   // If synced down card is a virtual card, let the client know so that it can
   // show the UI to help user to manually fill the form, if needed.
-  if (credit_card->record_type() == CreditCard::VIRTUAL_CARD)
-    client()->OnVirtualCardFetched(credit_card, cvc);
+  if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
+    // TODO(crbug.com/1196021): Pass in real card image.
+    client()->OnVirtualCardFetched(credit_card, cvc,
+                                   /* card_image */ gfx::Image());
+  }
 
   FillCreditCardForm(credit_card_query_id_, credit_card_form_,
                      credit_card_field_, *credit_card, cvc);

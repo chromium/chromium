@@ -150,7 +150,8 @@ class ChromeAutofillClient
   void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer) override;
   void OnVirtualCardFetched(const CreditCard* card,
-                            const std::u16string& cvc) override;
+                            const std::u16string& cvc,
+                            const gfx::Image& card_image) override;
   bool IsAutofillAssistantShowing() override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(

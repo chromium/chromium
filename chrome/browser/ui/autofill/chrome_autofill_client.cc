@@ -685,7 +685,8 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
 }
 
 void ChromeAutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
-                                                const std::u16string& cvc) {
+                                                const std::u16string& cvc,
+                                                const gfx::Image& card_image) {
   GetFormDataImporter()->CacheFetchedVirtualCard(credit_card->LastFourDigits());
 #if defined(OS_ANDROID)
   (new AutofillSnackbarControllerImpl(web_contents()))->Show();
@@ -695,7 +696,7 @@ void ChromeAutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
   VirtualCardManualFallbackBubbleControllerImpl* controller =
       VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
           web_contents());
-  controller->ShowBubble(credit_card, cvc);
+  controller->ShowBubble(credit_card, cvc, card_image);
 #endif
 }
 

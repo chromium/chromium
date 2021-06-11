@@ -42,7 +42,7 @@ class VirtualCardManualFallbackBubbleViews
 
   // LocationBarBubbleDelegateView:
   void Init() override;
-  void AddedToWidget() override;
+  ui::ImageModel GetWindowIcon() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void OnWidgetClosing(views::Widget* widget) override;

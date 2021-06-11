@@ -26,6 +26,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 #if !defined(OS_IOS)
@@ -563,8 +564,10 @@ class AutofillClient : public RiskDataLoader {
 
   // Indicates that the virtual card was fetched in order to allow the user to
   // manually fill payment form with the fetched |credit_card| and |cvc|.
+  // |card_image| is used for manual fallback bubble.
   virtual void OnVirtualCardFetched(const CreditCard* credit_card,
-                                    const std::u16string& cvc);
+                                    const std::u16string& cvc,
+                                    const gfx::Image& card_image);
 
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();

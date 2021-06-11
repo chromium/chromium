@@ -57,8 +57,10 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
   void ShowBubble() {
     CreditCard card = test::GetFullServerCard();
     ResetEventWaiterForSequence({BubbleEvent::BUBBLE_SHOWN});
+    // Passing in empty image will fall back to use card network icon.
     GetController()->ShowBubble(&card,
-                                /*virtual_card_cvc=*/u"123");
+                                /*virtual_card_cvc=*/u"123",
+                                /*card_image=*/gfx::Image());
     event_waiter_->Wait();
   }
 

@@ -40,6 +40,7 @@ VirtualCardManualFallbackBubbleViews::VirtualCardManualFallbackBubbleViews(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller_);
+  SetShowIcon(true);
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 }
@@ -124,13 +125,22 @@ void VirtualCardManualFallbackBubbleViews::Init() {
   layout->AddView(CreateRowItemButton(controller_->GetCvc()));
 }
 
-void VirtualCardManualFallbackBubbleViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(GetWindowTitle()));
+ui::ImageModel VirtualCardManualFallbackBubbleViews::GetWindowIcon() {
+  // Fall back to network icon if no specific icon is provided.
+  // TODO(crbug.com/1218628): Fallback logic might be put inside
+  // BrowserAutofillManager or PDM.
+  if (controller_->GetBubbleTitleIcon().IsEmpty()) {
+    gfx::Image card_image =
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+            CreditCard::IconResourceId(
+                controller_->GetVirtualCard()->network()));
+    return ui::ImageModel::FromImage(card_image);
+  }
+  return ui::ImageModel::FromImage(controller_->GetBubbleTitleIcon());
 }
 
 std::u16string VirtualCardManualFallbackBubbleViews::GetWindowTitle() const {
-  return controller_ ? controller_->GetBubbleTitle() : std::u16string();
+  return controller_ ? controller_->GetBubbleTitleText() : std::u16string();
 }
 
 void VirtualCardManualFallbackBubbleViews::WindowClosing() {

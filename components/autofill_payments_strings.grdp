@@ -502,7 +502,7 @@
       Virtual number:
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EXP_DATE_LABEL" desc="Text shown next to the virtual card expiration date in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
-      Month/Year:
+      Expiration date:
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARDHOLDER_NAME_LABEL" desc="Text shown next to the virtual card name on card field in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Name on card:

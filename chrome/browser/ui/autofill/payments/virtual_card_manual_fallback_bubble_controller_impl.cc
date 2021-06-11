@@ -45,7 +45,8 @@ VirtualCardManualFallbackBubbleControllerImpl::
 
 void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
     const CreditCard* virtual_card,
-    const std::u16string& virtual_card_cvc) {
+    const std::u16string& virtual_card_cvc,
+    const gfx::Image& virtual_card_image) {
   // If another bubble is visible, dismiss it and show a new one since the card
   // information can be different.
   if (bubble_view())
@@ -53,6 +54,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
 
   virtual_card_ = *virtual_card;
   virtual_card_cvc_ = virtual_card_cvc;
+  virtual_card_image_ = virtual_card_image;
   is_user_gesture_ = false;
   should_icon_be_visible_ = true;
   Show();
@@ -73,8 +75,13 @@ AutofillBubbleBase* VirtualCardManualFallbackBubbleControllerImpl::GetBubble()
   return bubble_view();
 }
 
-std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitle()
-    const {
+const gfx::Image&
+VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleIcon() const {
+  return virtual_card_image_;
+}
+
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleText() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE);
 }
