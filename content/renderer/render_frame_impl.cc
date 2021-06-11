@@ -1891,10 +1891,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   initialized_ = true;
   is_main_frame_ = !parent;
 
-  WebFrame* local_root = frame_;
-  if (parent && parent->IsWebLocalFrame()) {
-    local_root = parent->ToWebLocalFrame()->LocalRoot();
-  }
   bool is_tracing_rail = false;
   bool is_tracing_navigation = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("navigation", &is_tracing_navigation);
