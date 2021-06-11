@@ -7,7 +7,9 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/aura/test/test_screen.h"
 #include "ui/aura/window.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/views/test/test_views_delegate.h"
 
 namespace views {
@@ -75,6 +77,10 @@ void ViewsTestHelperAura::SetUp() {
 
 gfx::NativeWindow ViewsTestHelperAura::GetContext() {
   return aura_test_helper_->GetContext();
+}
+
+display::test::TestScreen* ViewsTestHelperAura::GetTestScreen() const {
+  return aura_test_helper_->GetTestScreen();
 }
 
 // static

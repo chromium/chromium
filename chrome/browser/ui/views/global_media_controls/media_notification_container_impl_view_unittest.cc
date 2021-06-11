@@ -21,7 +21,6 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -102,7 +101,7 @@ class MockMediaNotificationController
 
 class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
  public:
-  MediaNotificationContainerImplViewTest() : screen_override_(&fake_screen_) {}
+  MediaNotificationContainerImplViewTest() = default;
   ~MediaNotificationContainerImplViewTest() override = default;
 
   // ViewsTestBase:
@@ -144,7 +143,7 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   bool IsDismissButtonVisible() { return GetDismissButton()->IsDrawn(); }
 
   void SimulateHoverOverContainer() {
-    fake_screen_.set_cursor_screen_point(
+    GetTestScreen()->SetCursorScreenPointForTesting(
         notification_container_->GetBoundsInScreen().CenterPoint());
 
     ui::MouseEvent event(ui::ET_MOUSE_ENTERED, gfx::Point(), gfx::Point(),
@@ -156,7 +155,7 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     gfx::Rect container_bounds = notification_container_->GetBoundsInScreen();
     gfx::Point point_outside_container =
         container_bounds.bottom_right() + gfx::Vector2d(1, 1);
-    fake_screen_.set_cursor_screen_point(point_outside_container);
+    GetTestScreen()->SetCursorScreenPointForTesting(point_outside_container);
 
     ui::MouseEvent event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
                          ui::EventTimeForNow(), 0, 0);
@@ -294,9 +293,6 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
 
   // Set of actions currently enabled.
   base::flat_set<MediaSessionAction> actions_;
-
-  display::test::TestScreen fake_screen_;
-  display::test::ScopedScreenOverride screen_override_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationContainerImplViewTest);
 };

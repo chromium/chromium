@@ -30,6 +30,8 @@
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/scoped_screen_override.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
@@ -200,6 +202,31 @@ class NativeWidgetMacTest : public WidgetTest {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NativeWidgetMacTest);
+};
+
+// Uses the native screen instance to match test expectations when
+// display::Screen is compared with values from direct OS API calls.
+class NativeWidgetMacWithNativeScreenTest : public WidgetTest {
+ public:
+  NativeWidgetMacWithNativeScreenTest() = default;
+  NativeWidgetMacWithNativeScreenTest(
+      const NativeWidgetMacWithNativeScreenTest&) = delete;
+  NativeWidgetMacWithNativeScreenTest& operator=(
+      const NativeWidgetMacWithNativeScreenTest&) = delete;
+  ~NativeWidgetMacWithNativeScreenTest() override = default;
+
+  void SetUp() override {
+    WidgetTest::SetUp();
+
+    native_screen_ = base::WrapUnique(display::CreateNativeScreen());
+    scoped_screen_override_ =
+        std::make_unique<display::test::ScopedScreenOverride>(
+            native_screen_.get());
+  }
+
+ private:
+  std::unique_ptr<display::Screen> native_screen_;
+  std::unique_ptr<display::test::ScopedScreenOverride> scoped_screen_override_;
 };
 
 class WidgetChangeObserver : public TestWidgetObserver {
@@ -1886,7 +1913,7 @@ TEST_F(NativeWidgetMacTest, ContentOpacity) {
 }
 
 // Test the expected result of GetWorkAreaBoundsInScreen().
-TEST_F(NativeWidgetMacTest, GetWorkAreaBoundsInScreen) {
+TEST_F(NativeWidgetMacWithNativeScreenTest, GetWorkAreaBoundsInScreen) {
   Widget widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;

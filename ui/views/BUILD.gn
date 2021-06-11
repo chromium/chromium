@@ -978,20 +978,6 @@ source_set("test_support") {
     "views_test_suite.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "test/desktop_test_views_delegate_mac.mm",
-      "test/event_generator_delegate_mac.h",
-      "test/event_generator_delegate_mac.mm",
-      "test/scoped_views_test_helper_cocoa.mm",
-      "test/test_views_delegate_mac.mm",
-      "test/views_test_base_mac.mm",
-      "test/views_test_helper_mac.h",
-      "test/views_test_helper_mac.mm",
-      "test/widget_test_mac.mm",
-    ]
-  }
-
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
@@ -1011,6 +997,7 @@ source_set("test_support") {
     "//ui/base/ime/init",
     "//ui/compositor",
     "//ui/compositor:test_support",
+    "//ui/display:test_support",
     "//ui/events",
     "//ui/events:events_base",
     "//ui/events:test_support",
@@ -1027,8 +1014,24 @@ source_set("test_support") {
       "test/desktop_window_tree_host_win_test_api.h",
     ]
   }
+
   if (is_mac) {
-    deps += [ "//components/remote_cocoa/app_shim" ]
+    sources += [
+      "test/desktop_test_views_delegate_mac.mm",
+      "test/event_generator_delegate_mac.h",
+      "test/event_generator_delegate_mac.mm",
+      "test/scoped_views_test_helper_cocoa.mm",
+      "test/test_views_delegate_mac.mm",
+      "test/views_test_base_mac.mm",
+      "test/views_test_helper_mac.h",
+      "test/views_test_helper_mac.mm",
+      "test/widget_test_mac.mm",
+    ]
+
+    deps += [
+      "//components/remote_cocoa/app_shim",
+      "//ui/display:test_support",
+    ]
   }
 
   if (use_aura) {
@@ -1299,6 +1302,10 @@ test("views_unittests") {
 
     # views_unittests not yet compiling on Mac. http://crbug.com/378134
     sources -= [ "controls/native/native_view_host_unittest.cc" ]
+
+    deps += [
+      "//ui/display",  # native_widget_mac_unittest.mm uses display::Screen.
+    ]
 
     public_deps = [
       "//components/remote_cocoa/app_shim",

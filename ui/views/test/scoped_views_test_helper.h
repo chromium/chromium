@@ -13,6 +13,12 @@
 #include "ui/views/test/views_test_helper.h"
 #include "ui/views/views_delegate.h"
 
+namespace display {
+namespace test {
+class TestScreen;
+}  // namespace test
+}  // namespace display
+
 namespace views {
 
 class TestViewsDelegate;
@@ -36,6 +42,9 @@ class ScopedViewsTestHelper {
   // Returns the context for creating new windows. In Aura builds, this will be
   // the RootWindow. Everywhere else, null.
   gfx::NativeWindow GetContext();
+
+  // Returns the test screen created by |test_helper_|.
+  display::test::TestScreen* GetTestScreen() const;
 
   // Simulate an OS-level destruction of the native window held by |widget|.
   void SimulateNativeDestroy(Widget* widget);

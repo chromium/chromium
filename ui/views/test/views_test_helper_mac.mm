@@ -10,6 +10,8 @@
 #include "ui/base/test/scoped_fake_nswindow_focus.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/display/mac/test/test_screen_mac.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/event_generator_delegate_mac.h"
 #include "ui/views/test/test_views_delegate.h"
@@ -40,6 +42,11 @@ ViewsTestHelperMac::ViewsTestHelperMac() {
     faked_fullscreen_ =
         std::make_unique<ui::test::ScopedFakeNSWindowFullscreen>();
   }
+
+  test_screen_ = std::make_unique<display::test::TestScreenMac>(gfx::Size());
+  // Purposely not use ScopedScreenOverride, in which GetScreen() will
+  // create a native screen.
+  display::Screen::SetScreenInstance(test_screen_.get());
 }
 
 ViewsTestHelperMac::~ViewsTestHelperMac() {
@@ -57,6 +64,7 @@ ViewsTestHelperMac::~ViewsTestHelperMac() {
     ui::test::EventGeneratorDelegate::SetFactoryFunction(
         ui::test::EventGeneratorDelegate::FactoryFunction());
   }
+  display::Screen::SetScreenInstance(nullptr);
 }
 
 void ViewsTestHelperMac::SetUpTestViewsDelegate(
@@ -64,6 +72,10 @@ void ViewsTestHelperMac::SetUpTestViewsDelegate(
     absl::optional<ViewsDelegate::NativeWidgetFactory> factory) {
   ViewsTestHelper::SetUpTestViewsDelegate(delegate, std::move(factory));
   delegate->set_context_factory(context_factories_.GetContextFactory());
+}
+
+display::test::TestScreen* ViewsTestHelperMac::GetTestScreen() const {
+  return test_screen_.get();
 }
 
 }  // namespace views

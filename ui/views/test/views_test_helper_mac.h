@@ -12,6 +12,13 @@
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/views/test/views_test_helper.h"
 
+namespace display {
+namespace test {
+class TestScreen;
+class TestScreenMac;
+}  // namespace test
+}  // namespace display
+
 namespace ui {
 namespace test {
 class ScopedFakeNSWindowFocus;
@@ -32,6 +39,7 @@ class ViewsTestHelperMac : public ViewsTestHelper {
   void SetUpTestViewsDelegate(
       TestViewsDelegate* delegate,
       absl::optional<ViewsDelegate::NativeWidgetFactory> factory) override;
+  display::test::TestScreen* GetTestScreen() const override;
 
  private:
   ui::TestContextFactories context_factories_{false};
@@ -58,6 +66,8 @@ class ViewsTestHelperMac : public ViewsTestHelper {
   // more consistent with other platforms, where most views are focusable by
   // default.
   ui::test::ScopedFakeFullKeyboardAccess faked_full_keyboard_access_;
+
+  std::unique_ptr<display::test::TestScreenMac> test_screen_;
 };
 
 }  // namespace views

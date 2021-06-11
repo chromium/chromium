@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -657,8 +656,7 @@ TEST_F(BubbleDialogDelegateViewTest, GetThemeProvider_FromAnchorWidget) {
             anchor_widget->GetThemeProvider());
 }
 
-const int kScreenWidth = 1024;
-const int kScreenHeight = 768;
+static constexpr gfx::Rect kScreenBounds = gfx::Rect(0, 0, 1024, 768);
 
 struct ArrowTestParameters {
   views::BubbleBorder::Arrow arrow;
@@ -670,10 +668,9 @@ struct ArrowTestParameters {
     gfx::Rect adjusted_anchor_rect = anchor_rect;
     adjusted_anchor_rect.Offset(
         0, ViewsTestBase::GetSystemReservedHeightAtTopOfScreen());
-    gfx::Rect screen_rect = gfx::Rect(0, 0, kScreenWidth, kScreenHeight);
 
     return BubbleDialogDelegate::GetAvailableSpaceToPlaceBubble(
-        expected_arrow, adjusted_anchor_rect, screen_rect);
+        expected_arrow, adjusted_anchor_rect, kScreenBounds);
   }
 };
 
@@ -681,26 +678,26 @@ class BubbleDialogDelegateViewArrowTest
     : public BubbleDialogDelegateViewTest,
       public testing::WithParamInterface<ArrowTestParameters> {
  public:
-  BubbleDialogDelegateViewArrowTest() : screen_override_(SetUpTestScreen()) {}
+  BubbleDialogDelegateViewArrowTest() = default;
+  BubbleDialogDelegateViewArrowTest(const BubbleDialogDelegateViewArrowTest&) =
+      delete;
+  BubbleDialogDelegateViewArrowTest& operator=(
+      const BubbleDialogDelegateViewArrowTest&) = delete;
   ~BubbleDialogDelegateViewArrowTest() override = default;
 
- private:
-  display::Screen* SetUpTestScreen() {
-    const display::Display test_display = test_screen_.GetPrimaryDisplay();
-    display::Display display(test_display);
-    display.set_id(0x2);
-    display.set_bounds(gfx::Rect(0, 0, kScreenWidth, kScreenHeight));
-    display.set_work_area(gfx::Rect(0, 0, kScreenWidth, kScreenHeight));
-    test_screen_.display_list().RemoveDisplay(test_display.id());
-    test_screen_.display_list().AddDisplay(display,
-                                           display::DisplayList::Type::PRIMARY);
-    return &test_screen_;
+  void SetUp() override {
+    BubbleDialogDelegateViewTest::SetUp();
+    SetUpTestScreen();
   }
 
-  display::test::TestScreen test_screen_;
-  display::test::ScopedScreenOverride screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleDialogDelegateViewArrowTest);
+ private:
+  void SetUpTestScreen() {
+    display::test::TestScreen* screen = GetTestScreen();
+    display::Display test_display = screen->GetPrimaryDisplay();
+    test_display.set_bounds(kScreenBounds);
+    test_display.set_work_area(kScreenBounds);
+    screen->display_list().UpdateDisplay(test_display);
+  }
 };
 
 TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {

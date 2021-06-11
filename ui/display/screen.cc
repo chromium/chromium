@@ -29,7 +29,6 @@ Screen::~Screen() = default;
 // static
 Screen* Screen::GetScreen() {
 #if defined(OS_APPLE)
-  // TODO(scottmg): https://crbug.com/558054
   if (!g_screen)
     g_screen = CreateNativeScreen();
 #endif
@@ -39,6 +38,10 @@ Screen* Screen::GetScreen() {
 // static
 Screen* Screen::SetScreenInstance(Screen* instance) {
   return std::exchange(g_screen, instance);
+}
+
+void Screen::SetCursorScreenPointForTesting(const gfx::Point& point) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 Display Screen::GetDisplayNearestView(gfx::NativeView view) const {

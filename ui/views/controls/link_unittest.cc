@@ -87,8 +87,6 @@ TEST_F(LinkTest, TestLinkTap) {
   EXPECT_TRUE(link_clicked);
 }
 
-// This test doesn't work on Mac due to crbug.com/1071633.
-#if !defined(OS_MAC)
 // Tests that hovering and unhovering a link adds and removes an underline.
 TEST_F(LinkTest, TestUnderlineOnHover) {
   // A non-hovered link should not be underlined.
@@ -111,6 +109,5 @@ TEST_F(LinkTest, TestUnderlineOnHover) {
   EXPECT_FALSE(link()->IsMouseHovered());
   EXPECT_FALSE(link_underlined());
 }
-#endif  // !defined(OS_MAC)
 
 }  // namespace views

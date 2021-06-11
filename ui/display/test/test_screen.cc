@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/display/test/test_screen.h"
+
 #include <vector>
 
-#include "ui/display/test/test_screen.h"
+#include "ui/display/display.h"
 
 namespace display {
 namespace test {
 
-TestScreen::TestScreen() {
-  Display display(1, gfx::Rect(0, 0, 100, 100));
-  ProcessDisplayChanged(display, true /* is_primary */);
+// static
+constexpr gfx::Rect TestScreen::kDefaultScreenBounds;
+
+TestScreen::TestScreen(bool create_display) {
+  if (!create_display)
+    return;
+  Display display(1, kDefaultScreenBounds);
+  ProcessDisplayChanged(display, /* is_primary = */ true);
 }
 
 TestScreen::~TestScreen() {}
-
-void TestScreen::set_cursor_screen_point(const gfx::Point& point) {
-  cursor_screen_point_ = point;
-}
 
 gfx::Point TestScreen::GetCursorScreenPoint() {
   return cursor_screen_point_;
@@ -34,6 +37,14 @@ gfx::NativeWindow TestScreen::GetWindowAtScreenPoint(const gfx::Point& point) {
 
 Display TestScreen::GetDisplayNearestWindow(gfx::NativeWindow window) const {
   return GetPrimaryDisplay();
+}
+
+Display TestScreen::GetDisplayMatching(const gfx::Rect& match_rect) const {
+  return GetPrimaryDisplay();
+}
+
+void TestScreen::SetCursorScreenPointForTesting(const gfx::Point& point) {
+  cursor_screen_point_ = point;
 }
 
 }  // namespace test

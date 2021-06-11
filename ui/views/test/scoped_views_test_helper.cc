@@ -8,6 +8,7 @@
 
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/views/test/test_views_delegate.h"
 
 #if defined(USE_AURA)
@@ -37,6 +38,10 @@ ScopedViewsTestHelper::~ScopedViewsTestHelper() {
 
 gfx::NativeWindow ScopedViewsTestHelper::GetContext() {
   return test_helper_->GetContext();
+}
+
+display::test::TestScreen* ScopedViewsTestHelper::GetTestScreen() const {
+  return test_helper_->GetTestScreen();
 }
 
 #if defined(USE_AURA)
