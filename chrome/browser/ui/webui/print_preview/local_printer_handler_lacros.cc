@@ -168,18 +168,29 @@ void LocalPrinterHandlerLacros::StartPrint(
     PrintCallback callback) {
   size_t size_in_kb = print_data->size() / 1024;
   base::UmaHistogramMemoryKB("Printing.CUPS.PrintDocumentSize", size_in_kb);
+  crosapi::mojom::LocalPrinter::GetUsernamePerPolicyCallback cb =
+      base::BindOnce(&LocalPrinterHandlerLacros::OnProfileUsernameReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(settings),
+                     std::move(print_data), std::move(callback));
+
   if (!service_->IsAvailable<crosapi::mojom::LocalPrinter>()) {
     LOG(ERROR) << "Local printer not available";
-    OnProfileUsernameReady(std::move(settings), std::move(print_data),
-                           std::move(callback), absl::nullopt);
+    std::move(cb).Run(absl::nullopt);
     return;
   }
 
-  service_->GetRemote<crosapi::mojom::LocalPrinter>()
-      ->IsSendUsernameFilenameEnabled(
-          base::BindOnce(&LocalPrinterHandlerLacros::OnProfileUsernameReady,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(settings),
-                         std::move(print_data), std::move(callback)));
+  int version =
+      service_->GetInterfaceVersion(crosapi::mojom::LocalPrinter::Uuid_);
+  if (version < int{crosapi::mojom::LocalPrinter::MethodMinVersions::
+                        kGetUsernamePerPolicyMinVersion}) {
+    LOG(WARNING) << "Ash LocalPrinter version " << version
+                 << " does not support GetUsernamePerPolicy().";
+    std::move(cb).Run(absl::nullopt);
+    return;
+  }
+
+  service_->GetRemote<crosapi::mojom::LocalPrinter>()->GetUsernamePerPolicy(
+      std::move(cb));
 }
 
 void LocalPrinterHandlerLacros::OnProfileUsernameReady(

@@ -55,8 +55,7 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
   void AddObserver(mojo::PendingRemote<mojom::PrintServerObserver> remote,
                    AddObserverCallback callback) override;
   void GetPolicies(GetPoliciesCallback callback) override;
-  void IsSendUsernameFilenameEnabled(
-      IsSendUsernameFilenameEnabledCallback callback) override;
+  void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
 
  private:
   // Exposed so that unit tests can override them.

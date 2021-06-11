@@ -346,8 +346,8 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
   std::move(callback).Run(std::move(policies));
 }
 
-void LocalPrinterAsh::IsSendUsernameFilenameEnabled(
-    IsSendUsernameFilenameEnabledCallback callback) {
+void LocalPrinterAsh::GetUsernamePerPolicy(
+    GetUsernamePerPolicyCallback callback) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   PrefService* prefs = profile->GetPrefs();
   const std::string username = chromeos::ProfileHelper::Get()

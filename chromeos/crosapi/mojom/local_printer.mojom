@@ -280,5 +280,5 @@ interface LocalPrinter {
   // current Ash profile. Returns the profile's corresponding username if pref
   // enabled.
   [MinVersion=1]
-  IsSendUsernameFilenameEnabled@10() => (string? username);
+  GetUsernamePerPolicy@10() => (string? username);
 };

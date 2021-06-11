@@ -56,7 +56,7 @@ void FakeLocalPrinter::GetPolicies(GetPoliciesCallback callback) {
   FAIL();
 }
 
-void FakeLocalPrinter::IsSendUsernameFilenameEnabled(
-    IsSendUsernameFilenameEnabledCallback callback) {
+void FakeLocalPrinter::GetUsernamePerPolicy(
+    GetUsernamePerPolicyCallback callback) {
   FAIL();
 }

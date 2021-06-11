@@ -33,8 +33,7 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
       mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
       AddObserverCallback callback) override;
   void GetPolicies(GetPoliciesCallback callback) override;
-  void IsSendUsernameFilenameEnabled(
-      IsSendUsernameFilenameEnabledCallback callback) override;
+  void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
 };
 
 #endif  // CHROME_TEST_CHROMEOS_PRINTING_FAKE_LOCAL_PRINTER_CHROMEOS_H_

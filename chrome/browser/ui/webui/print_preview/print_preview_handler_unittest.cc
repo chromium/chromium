@@ -311,8 +311,7 @@ class TestLocalPrinter : public FakeLocalPrinter {
     std::move(callback).Run(policies_->Clone());
     policies_.reset();
   }
-  void IsSendUsernameFilenameEnabled(
-      IsSendUsernameFilenameEnabledCallback callback) override {
+  void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override {
     FAIL();
   }
 
