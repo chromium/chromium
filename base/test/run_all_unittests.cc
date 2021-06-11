@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/time/time.h"
@@ -22,6 +23,14 @@ class ComLeakCheck : public testing::EmptyTestEventListener {
   void OnTestEnd(const testing::TestInfo& test) override {
     // Verify that COM has been reset to defaults by the test.
     EXPECT_EQ(win::GetComApartmentTypeForThread(), win::ComApartmentType::NONE);
+  }
+};
+
+class HistogramAllocatorCheck : public testing::EmptyTestEventListener {
+ public:
+  void OnTestEnd(const testing::TestInfo& test) override {
+    // Verify that the histogram allocator was released by the test.
+    CHECK(!GlobalHistogramAllocator::Get());
   }
 };
 
@@ -46,6 +55,7 @@ class BaseUnittestSuite : public TestSuite {
     testing::TestEventListeners& listeners =
         testing::UnitTest::GetInstance()->listeners();
     listeners.Append(new ComLeakCheck);
+    listeners.Append(new HistogramAllocatorCheck);
     listeners.Append(new TimerCheck);
 #endif  // defined(OS_WIN)
   }
