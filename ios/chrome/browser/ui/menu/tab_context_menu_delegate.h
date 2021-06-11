@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 class GURL;
+@class ShareToData;
 
 namespace synced_sessions {
 class DistantSession;
@@ -31,6 +32,11 @@ class DistantSession;
     (NSInteger)sectionIdentifier;
 
 @optional
+// Tells the delegate to trigger the URL sharing flow for the given |data|, with
+// the origin |view| representing the UI component for that URL.
+// TODO(crbug.com/1196956): Investigate removing |view| as a parameter.
+- (void)shareWithShareToData:(ShareToData*)data fromView:(UIView*)view;
+
 // Tells the delegate to add |URL| and |title| to the reading list.
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title;
 

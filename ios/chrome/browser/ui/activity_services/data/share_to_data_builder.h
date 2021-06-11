@@ -19,10 +19,13 @@ namespace activity_services {
 
 // Returns a ShareToData object using data from |web_state|. |share_url| is the
 // URL to be shared with share extensions. If |share_url| is empty, the visible
-// URL associated with |web_state| will be used instead. |web_state| must not be
-// nil. Function may return nil.
+// URL associated with |web_state| will be used instead. If
+// |disallow_find_in_page| is true, the resulting ShareToData is guarenteed
+// to return false for |isPageSearchable|.
+//|web_state| must not be nil. Function may return nil.
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
-                                    const GURL& share_url);
+                                    const GURL& share_url,
+                                    bool disallow_find_in_page);
 
 // Returns a ShareToData object for a single |URL|, and its page's |title|,
 // which is not associated to a WebState. Will also add |additionalText|, if

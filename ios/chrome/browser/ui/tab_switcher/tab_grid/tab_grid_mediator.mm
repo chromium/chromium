@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#include "ios/chrome/browser/ui/activity_services/data/share_to_data_builder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -630,6 +631,13 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
       [[GridItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
                                   url:webState->GetVisibleURL()];
   return item;
+}
+
+- (ShareToData*)shareToDataForCellIdentifier:(NSString*)identifier {
+  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  // Do not allow Find in Page from the Tab Grid.
+  return activity_services::ShareToDataForWebState(
+      webState, webState->GetVisibleURL(), /*disallow_find_in_page=*/true);
 }
 
 - (BOOL)isGridItemBookmarked:(GridItem*)item {

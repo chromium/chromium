@@ -86,7 +86,7 @@ class ShareToDataBuilderTest : public PlatformTest {
 TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNpShareUrl) {
   const char* kExpectedShareUrl = "http://www.testurl.com/";
   ShareToData* actual_data = activity_services::ShareToDataForWebState(
-      web_state(), GURL(kExpectedShareUrl));
+      web_state(), GURL(kExpectedShareUrl), /*disallow_find_in_page=*/false);
 
   ASSERT_TRUE(actual_data);
   EXPECT_EQ(kExpectedShareUrl, actual_data.shareURL);
@@ -104,8 +104,8 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNpShareUrl) {
 // Verifies that ShareToData is constructed properly for a given Tab when the
 // URL designated for share extensions is empty.
 TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
-  ShareToData* actual_data =
-      activity_services::ShareToDataForWebState(web_state(), GURL());
+  ShareToData* actual_data = activity_services::ShareToDataForWebState(
+      web_state(), GURL(), /*disallow_find_in_page=*/false);
 
   ASSERT_TRUE(actual_data);
   EXPECT_EQ(kExpectedUrl, actual_data.shareURL);
@@ -123,7 +123,8 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
 // Verifies that |ShareToDataForWebState()| returns nil if the WebState passed
 // is nullptr.
 TEST_F(ShareToDataBuilderTest, TestReturnsNilWhenClosing) {
-  EXPECT_EQ(nil, activity_services::ShareToDataForWebState(nullptr, GURL()));
+  EXPECT_EQ(nil, activity_services::ShareToDataForWebState(
+                     nullptr, GURL(), /*disallow_find_in_page=*/false));
 }
 
 // Tests that the ShareToDataForURL function creates a ShareToData instance with

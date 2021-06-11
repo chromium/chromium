@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/activity_services/activity_scenario.h"
 
+@class ShareToData;
 class GURL;
 
 // Parameter object used to configure the activity service scenario.
@@ -31,6 +32,11 @@ class GURL;
                       title:(NSString*)title
                    scenario:(ActivityScenario)scenario;
 
+// Initializes an instance configured to share |data|, for the metrics
+// |scenario|.
+- (instancetype)initWithShareToData:(ShareToData*)data
+                           scenario:(ActivityScenario)scenario;
+
 // Initializes an instance configured to share an |URL|, along
 // with its |title| and |additionalText|, for the metrics |scenario|.
 - (instancetype)initWithURL:(const GURL&)URL
@@ -49,6 +55,10 @@ class GURL;
 // Title of the content that will be shared. Must be set if |image| or |URL| are
 // set.
 @property(nonatomic, readonly, copy) NSString* title;
+
+// The content to share. ShareToData encapsulates the URL and title along with
+// additional information about the content to share.
+@property(nonatomic, readonly) ShareToData* shareToData;
 
 // Any additional text to be shared along with the page's details. May be nil.
 @property(nonatomic, readonly, copy) NSString* additionalText;

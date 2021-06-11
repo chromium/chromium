@@ -942,6 +942,18 @@
   [self.sharingCoordinator start];
 }
 
+- (void)shareWithShareToData:(ShareToData*)data fromView:(UIView*)view {
+  ActivityParams* params = [[ActivityParams alloc]
+      initWithShareToData:data
+                 scenario:ActivityScenario::TabGridItem];
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.regularBrowser
+                          params:params
+                      originView:view];
+  [self.sharingCoordinator start];
+}
+
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
   // protocol clean up.

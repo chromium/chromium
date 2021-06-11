@@ -72,11 +72,17 @@
             [[NSMutableArray alloc] init];
 
         if (!IsURLNewTabPage(item.URL)) {
-          [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                          [weakSelf.contextMenuDelegate shareURL:item.URL
-                                                           title:item.title
-                                                        fromView:gridCell];
-                        }]];
+          if ([weakSelf.contextMenuDelegate respondsToSelector:@selector
+                                            (shareWithShareToData:fromView:)]) {
+            ShareToData* data = [weakSelf.actionsDataSource
+                shareToDataForCellIdentifier:gridCell.itemIdentifier];
+
+            [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                            [weakSelf.contextMenuDelegate
+                                shareWithShareToData:data
+                                            fromView:gridCell];
+                          }]];
+          }
 
           if (item.URL.SchemeIsHTTPOrHTTPS() &&
               [weakSelf.contextMenuDelegate
