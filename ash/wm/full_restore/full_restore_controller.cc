@@ -477,6 +477,7 @@ void FullRestoreController::SaveWindowImpl(
       auto extra = full_restore::WindowInfo::ArcExtraInfo();
       extra.maximum_size = widget->GetMaximumSize();
       extra.minimum_size = widget->GetMinimumSize();
+      extra.title = window->GetTitle();
       window_info.arc_extra_info = extra;
     }
   }
