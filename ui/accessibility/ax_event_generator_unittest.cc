@@ -2685,4 +2685,24 @@ TEST(AXEventGeneratorTest, EditableTextChanged) {
                          text_field.id)));
 }
 
+TEST(AXEventGeneratorTest, CheckedStateDescriptionChanged) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(1);
+  initial_state.nodes[0].id = 1;
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update = initial_state;
+  update.nodes[0].AddStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription, "Checked");
+  EXPECT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(HasEventAtNode(
+          AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED, 1)));
+}
+
 }  // namespace ui

@@ -364,6 +364,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case ui::AXEventGenerator::Event::BUSY_CHANGED:
+    case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
     case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
     case ui::AXEventGenerator::Event::CLASS_NAME_CHANGED:

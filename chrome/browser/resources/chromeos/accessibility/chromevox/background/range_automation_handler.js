@@ -79,6 +79,9 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     this.addListener_(EventType.AUTOCORRECTION_OCCURED, this.onEventIfInRange);
     this.addListener_(
         EventType.CHECKED_STATE_CHANGED, this.onCheckedStateChanged);
+    this.addListener_(
+        EventType.CHECKED_STATE_DESCRIPTION_CHANGED,
+        this.onCheckedStateChanged);
     this.addListener_(EventType.COLLAPSED, this.onEventIfInRange);
     this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);

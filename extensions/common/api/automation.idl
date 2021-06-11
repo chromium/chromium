@@ -24,6 +24,7 @@
     blur,
     busyChanged,
     checkedStateChanged,
+    checkedStateDescriptionChanged,
     childrenChanged,
     classNameChanged,
     clicked,

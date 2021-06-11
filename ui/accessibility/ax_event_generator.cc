@@ -379,6 +379,9 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
     case ax::mojom::StringAttribute::kAutoComplete:
       AddEvent(node, Event::AUTO_COMPLETE_CHANGED);
       break;
+    case ax::mojom::StringAttribute::kCheckedStateDescription:
+      AddEvent(node, Event::CHECKED_STATE_DESCRIPTION_CHANGED);
+      break;
     case ax::mojom::StringAttribute::kClassName:
       AddEvent(node, Event::CLASS_NAME_CHANGED);
       break;
@@ -1136,6 +1139,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "busyChanged";
     case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       return "checkedStateChanged";
+    case AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
+      return "checkedStateDescriptionChanged";
     case AXEventGenerator::Event::CHILDREN_CHANGED:
       return "childrenChanged";
     case AXEventGenerator::Event::CLASS_NAME_CHANGED:
