@@ -182,7 +182,7 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   // This will be removed once we phase out kDesktopPWAsTabStripLinkCapturing in
   // favor of kWebAppEnableLinkCapturing.
   bool app_in_tabbed_mode =
-      provider->registrar().IsInExperimentalTabbedWindowMode(*app_id);
+      provider->registrar().IsTabbedWindowModeEnabled(*app_id);
   bool tabbed_link_capturing =
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
   bool web_apps_integrated_into_intent_handling =

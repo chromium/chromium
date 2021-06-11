@@ -176,7 +176,7 @@ AppBrowserController::AppBrowserController(
            HasAppId() &&
            WebAppProvider::Get(browser->profile())
                ->registrar()
-               .IsInExperimentalTabbedWindowMode(GetAppId()))) {
+               .IsTabbedWindowModeEnabled(GetAppId()))) {
   browser->tab_strip_model()->AddObserver(this);
 }
 

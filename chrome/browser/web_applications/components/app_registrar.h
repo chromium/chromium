@@ -211,9 +211,8 @@ class AppRegistrar {
   // entries in the web app manifest.
   DisplayMode GetEffectiveDisplayModeFromManifest(const AppId& app_id) const;
 
-  // TODO(crbug.com/897314): Finish experiment by legitimising it as a
-  // DisplayMode or removing entirely.
-  bool IsInExperimentalTabbedWindowMode(const AppId& app_id) const;
+  // Returns whether the app should be opened in tabbed window mode.
+  bool IsTabbedWindowModeEnabled(const AppId& app_id) const;
 
   void AddObserver(AppRegistrarObserver* observer);
   void RemoveObserver(AppRegistrarObserver* observer);
@@ -255,6 +254,9 @@ class AppRegistrar {
 
   base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
   OsIntegrationManager* os_integration_manager_ = nullptr;
+
+  // TODO(crbug.com/897314): This can be removed once feature has launched.
+  bool IsInExperimentalTabbedWindowMode(const AppId& app_id) const;
 };
 
 }  // namespace web_app

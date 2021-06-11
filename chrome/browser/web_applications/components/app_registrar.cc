@@ -192,7 +192,7 @@ GURL AppRegistrar::GetAppScope(const AppId& app_id) const {
     return *scope;
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsTabStripLinkCapturing) &&
-      IsInExperimentalTabbedWindowMode(app_id)) {
+      IsTabbedWindowModeEnabled(app_id)) {
     return GetAppStartUrl(app_id).GetOrigin();
   }
   return GetAppStartUrl(app_id).GetWithoutFilename();
@@ -339,6 +339,16 @@ bool AppRegistrar::IsInExperimentalTabbedWindowMode(const AppId& app_id) const {
   return base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
          GetBoolWebAppPref(profile()->GetPrefs(), app_id,
                            kExperimentalTabbedWindowMode);
+}
+
+bool AppRegistrar::IsTabbedWindowModeEnabled(const AppId& app_id) const {
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
+    return false;
+
+  DisplayMode display = GetAppEffectiveDisplayMode(app_id);
+
+  return IsInExperimentalTabbedWindowMode(app_id) ||
+         display == DisplayMode::kTabbed;
 }
 
 }  // namespace web_app

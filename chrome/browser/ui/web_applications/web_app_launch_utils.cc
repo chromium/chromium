@@ -143,7 +143,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
     PrunePreScopeNavigationHistory(*app_scope, contents);
   }
 
-  if (registrar.IsInExperimentalTabbedWindowMode(app_id)) {
+  if (registrar.IsTabbedWindowModeEnabled(app_id)) {
     for (Browser* browser : *BrowserList::GetInstance()) {
       if (AppBrowserController::IsForWebApp(browser, app_id))
         return ::ReparentWebContentsIntoAppBrowser(contents, browser);

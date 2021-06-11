@@ -219,8 +219,7 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   auto display_mode = registrar().GetAppUserDisplayMode(web_app->app_id());
   app->window_mode = ConvertDisplayModeToWindowMode(
-      display_mode,
-      registrar().IsInExperimentalTabbedWindowMode(web_app->app_id()));
+      display_mode, registrar().IsTabbedWindowModeEnabled(web_app->app_id()));
 
   // app->version is left empty here.
   PopulateWebAppPermissions(web_app, &app->permissions);
@@ -656,7 +655,7 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
     const AppId& app_id,
     DisplayMode user_display_mode) {
   PublishWindowModeUpdate(app_id, user_display_mode,
-                          registrar().IsInExperimentalTabbedWindowMode(app_id));
+                          registrar().IsTabbedWindowModeEnabled(app_id));
 }
 
 void WebAppPublisherHelper::OnWebAppExperimentalTabbedWindowModeChanged(

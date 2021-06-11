@@ -193,6 +193,17 @@ class WebAppBrowserTest_WindowControlsOverlay : public WebAppBrowserTest {
       features::kWebAppWindowControlsOverlay};
 };
 
+// A dedicated test fixture for tabbed display override, which requires a
+// command line switch to enable manifest parsing.
+class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_Tabbed() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsTabStrip};
+};
+
 using WebAppTabRestoreBrowserTest = WebAppBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
@@ -1280,6 +1291,23 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(true,
             app_browser->app_controller()->AppUsesWindowControlsOverlay());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Tabbed, TabbedDisplayOverride) {
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
+  NavigateToURLAndWait(browser(), test_url);
+
+  const AppId app_id = InstallPwaForCurrentUrl();
+  auto* provider = WebAppProvider::Get(profile());
+
+  std::vector<DisplayMode> app_display_mode_override =
+      provider->registrar().GetAppDisplayModeOverride(app_id);
+
+  ASSERT_EQ(1u, app_display_mode_override.size());
+  EXPECT_EQ(DisplayMode::kTabbed, app_display_mode_override[0]);
+  EXPECT_EQ(true, provider->registrar().IsTabbedWindowModeEnabled(app_id));
 }
 
 class WebAppBrowserTest_RemoveStatusBar : public WebAppBrowserTest {
