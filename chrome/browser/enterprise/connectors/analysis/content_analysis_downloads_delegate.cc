@@ -31,4 +31,14 @@ void ContentAnalysisDownloadsDelegate::ResetCallbacks() {
   open_file_callback_.Reset();
 }
 
+absl::optional<std::u16string>
+ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
+  return absl::nullopt;
+}
+
+absl::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
+    const {
+  return absl::nullopt;
+}
+
 }  // namespace enterprise_connectors

@@ -164,6 +164,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // "CancelledByUser" metrics should not be recorded.
   void Cancel(bool warning) override;
 
+  absl::optional<std::u16string> GetCustomMessage() const override;
+
+  absl::optional<GURL> GetCustomLearnMoreUrl() const override;
+
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies
   // are not set this feature is not enabled.

@@ -105,9 +105,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
-  void ShowResult(ContentAnalysisDelegateBase::FinalResult result,
-                  const std::u16string& custom_message,
-                  const GURL& learn_more_url);
+  void ShowResult(ContentAnalysisDelegateBase::FinalResult result);
 
   // Accessors to simplify |dialog_state_| checking.
   inline bool is_success() const { return dialog_state_ == State::SUCCESS; }
@@ -120,11 +118,12 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   inline bool is_pending() const { return dialog_state_ == State::PENDING; }
 
-  bool has_custom_message() const { return !final_custom_message_.empty(); }
+  bool has_custom_message() const {
+    return delegate_->GetCustomMessage().has_value();
+  }
 
   bool has_learn_more_url() const {
-    return !final_learn_more_url_.is_empty() &&
-           final_learn_more_url_.is_valid();
+    return delegate_->GetCustomLearnMoreUrl().has_value();
   }
 
   // Returns the side image's logo color depending on |dialog_state_|.
@@ -250,8 +249,6 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // Used to show the appropriate message.
   ContentAnalysisDelegateBase::FinalResult final_result_;
-  std::u16string final_custom_message_;
-  GURL final_learn_more_url_;
 
   // Used to animate dialog height changes.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;

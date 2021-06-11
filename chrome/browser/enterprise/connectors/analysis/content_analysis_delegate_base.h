@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
 namespace enterprise_connectors {
 
 class ContentAnalysisDelegateBase {
@@ -36,6 +39,10 @@ class ContentAnalysisDelegateBase {
   // Called when the user hits "cancel" on the dialog, typically cancelling a
   // pending file transfer.
   virtual void Cancel(bool warning) = 0;
+
+  virtual absl::optional<std::u16string> GetCustomMessage() const = 0;
+
+  virtual absl::optional<GURL> GetCustomLearnMoreUrl() const = 0;
 };
 
 }  // namespace enterprise_connectors

@@ -28,6 +28,10 @@ class ContentAnalysisDownloadsDelegate : public ContentAnalysisDelegateBase {
   // Called when the user opts to delete the downloaded file and not open it.
   void Cancel(bool warning) override;
 
+  absl::optional<std::u16string> GetCustomMessage() const override;
+
+  absl::optional<GURL> GetCustomLearnMoreUrl() const override;
+
  private:
   // Resets |open_file_callback_| and |discard_file_callback_|, ensuring actions
   // can't be attempted on a file that has already been opened or discarded

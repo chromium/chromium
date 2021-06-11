@@ -232,6 +232,24 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
   RunCallback();
 }
 
+absl::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
+    const {
+  if (!data_.settings.custom_message_text.empty()) {
+    return data_.settings.custom_message_text;
+  }
+
+  return absl::nullopt;
+}
+
+absl::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
+  if (data_.settings.custom_message_learn_more_url.is_valid() &&
+      !data_.settings.custom_message_learn_more_url.is_empty()) {
+    return data_.settings.custom_message_learn_more_url;
+  }
+
+  return absl::nullopt;
+}
+
 // static
 bool ContentAnalysisDelegate::ResultShouldAllowDataUse(
     BinaryUploadService::Result result,
@@ -587,8 +605,7 @@ bool ContentAnalysisDelegate::UpdateDialog() {
   if (!dialog_)
     return false;
 
-  dialog_->ShowResult(final_result_, data_.settings.custom_message_text,
-                      data_.settings.custom_message_learn_more_url);
+  dialog_->ShowResult(final_result_);
   return true;
 }
 

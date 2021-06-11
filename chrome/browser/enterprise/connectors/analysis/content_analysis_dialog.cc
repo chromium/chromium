@@ -215,6 +215,7 @@ ContentAnalysisDialog::ContentAnalysisDialog(
       final_result_(final_result),
       access_point_(std::move(access_point)),
       files_count_(files_count) {
+  DCHECK(delegate_);
   SetOwnedByWidget(true);
 
   if (observer_for_testing)
@@ -250,10 +251,11 @@ void ContentAnalysisDialog::CancelButtonCallback() {
 
 void ContentAnalysisDialog::LearnMoreLinkClickedCallback(
     const ui::Event& event) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(final_learn_more_url_, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK, false));
+  DCHECK(has_learn_more_url());
+  web_contents_->OpenURL(content::OpenURLParams(
+      (*delegate_->GetCustomLearnMoreUrl()), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      false));
 }
 
 void ContentAnalysisDialog::SuccessCallback() {
@@ -376,12 +378,8 @@ void ContentAnalysisDialog::WebContentsDestroyed() {
 }
 
 void ContentAnalysisDialog::ShowResult(
-    ContentAnalysisDelegateBase::FinalResult result,
-    const std::u16string& custom_message,
-    const GURL& learn_more_url) {
+    ContentAnalysisDelegateBase::FinalResult result) {
   DCHECK(is_pending());
-  final_custom_message_ = custom_message;
-  final_learn_more_url_ = learn_more_url;
 
   UpdateStateFromFinalResult(result);
 
@@ -448,9 +446,8 @@ void ContentAnalysisDialog::UpdateViews() {
   // Update the visibility of the Learn More link, which should only be visible
   // if the dialog is in the warning or failure state, and there's a link to
   // display.
-  learn_more_link_->SetVisible(
-      (is_failure() || is_warning()) &&
-      (final_learn_more_url_.is_valid() && !final_learn_more_url_.is_empty()));
+  learn_more_link_->SetVisible((is_failure() || is_warning()) &&
+                               has_learn_more_url());
 }
 
 void ContentAnalysisDialog::UpdateDialog() {
@@ -708,7 +705,7 @@ std::u16string ContentAnalysisDialog::GetCustomMessage() const {
   DCHECK(is_warning() || is_failure());
   DCHECK(has_custom_message());
   return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                                    final_custom_message_);
+                                    *(delegate_->GetCustomMessage()));
 }
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {

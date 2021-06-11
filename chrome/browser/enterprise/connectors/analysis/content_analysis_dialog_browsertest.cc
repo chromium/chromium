@@ -750,12 +750,50 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
   void DiscardCallback() { ++times_discard_called_; }
 
  protected:
+  class MockDelegate : public ContentAnalysisDelegateBase {
+   public:
+    ~MockDelegate() override = default;
+    void BypassWarnings() override {}
+    void Cancel(bool warning) override {}
+
+    absl::optional<std::u16string> GetCustomMessage() const override {
+      return absl::nullopt;
+    }
+
+    absl::optional<GURL> GetCustomLearnMoreUrl() const override {
+      return absl::nullopt;
+    }
+  };
+
+  class MockCustomMessageDelegate : public ContentAnalysisDelegateBase {
+   public:
+    MockCustomMessageDelegate(const std::u16string& message, const GURL& url)
+        : custom_message_(message), learn_more_url_(url) {}
+
+    ~MockCustomMessageDelegate() override = default;
+
+    void BypassWarnings() override {}
+    void Cancel(bool warning) override {}
+
+    absl::optional<std::u16string> GetCustomMessage() const override {
+      return custom_message_;
+    }
+
+    absl::optional<GURL> GetCustomLearnMoreUrl() const override {
+      return learn_more_url_;
+    }
+
+   private:
+    std::u16string custom_message_;
+    GURL learn_more_url_;
+  };
+
   ContentAnalysisDialog* dialog() { return dialog_; }
 
   ContentAnalysisDialog* CreateContentAnalysisDialog(
+      std::unique_ptr<ContentAnalysisDelegateBase> delegate,
       ContentAnalysisDelegateBase::FinalResult result =
-          ContentAnalysisDelegateBase::FinalResult::SUCCESS,
-      std::unique_ptr<ContentAnalysisDelegateBase> delegate = nullptr) {
+          ContentAnalysisDelegateBase::FinalResult::SUCCESS) {
     // This ctor ends up calling into constrained_window to show itself, in a
     // way that relinquishes its ownership. Because of this, new it here and
     // let it be deleted by the constrained_window code.
@@ -779,9 +817,12 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
       SetMinimumPendingDialogTimeForTesting(
           base::TimeDelta::FromMilliseconds(0));
 
-  ContentAnalysisDialog* dialog = CreateContentAnalysisDialog();
-  dialog->ShowResult(ContentAnalysisDelegateBase::FinalResult::WARNING, u"Test",
-                     GURL("http://www.example.com"));
+  std::unique_ptr<MockCustomMessageDelegate> delegate =
+      std::make_unique<MockCustomMessageDelegate>(
+          u"Test", GURL("https://www.example.com"));
+  ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::move(delegate), ContentAnalysisDelegateBase::FinalResult::SUCCESS);
+  dialog->ShowResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
 
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
             u"Your administrator says \"Test\".");
@@ -789,7 +830,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestOpenInDefaultPendingState) {
-  ContentAnalysisDialog* dialog = CreateContentAnalysisDialog();
+  ContentAnalysisDialog* dialog =
+      CreateContentAnalysisDialog(std::make_unique<MockDelegate>());
   EXPECT_TRUE(dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(
       dialog->GetMessageForTesting()->GetText(),
@@ -799,6 +841,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestOpenInWarningState) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::make_unique<MockDelegate>(),
       ContentAnalysisDelegateBase::FinalResult::WARNING);
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
@@ -807,6 +850,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestOpenInBlockState) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::make_unique<MockDelegate>(),
       ContentAnalysisDelegateBase::FinalResult::FAILURE);
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
@@ -817,6 +861,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestOpenInBlockState) {
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestOpenInLargeFilesState) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::make_unique<MockDelegate>(),
       ContentAnalysisDelegateBase::FinalResult::LARGE_FILES);
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
@@ -827,6 +872,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestOpenInEncryptedFilesState) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
+      std::make_unique<MockDelegate>(),
       ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES);
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
@@ -836,12 +882,12 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateBypassWarning) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
-      ContentAnalysisDelegateBase::FinalResult::WARNING,
       std::make_unique<ContentAnalysisDownloadsDelegate>(
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
-                         base::Unretained(this))));
+                         base::Unretained(this))),
+      ContentAnalysisDelegateBase::FinalResult::WARNING);
 
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
@@ -854,12 +900,12 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateDiscardWarning) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
-      ContentAnalysisDelegateBase::FinalResult::WARNING,
       std::make_unique<ContentAnalysisDownloadsDelegate>(
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
-                         base::Unretained(this))));
+                         base::Unretained(this))),
+      ContentAnalysisDelegateBase::FinalResult::WARNING);
 
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
@@ -872,12 +918,12 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateDiscardBlock) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
-      ContentAnalysisDelegateBase::FinalResult::FAILURE,
       std::make_unique<ContentAnalysisDownloadsDelegate>(
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
-                         base::Unretained(this))));
+                         base::Unretained(this))),
+      ContentAnalysisDelegateBase::FinalResult::FAILURE);
 
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
