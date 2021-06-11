@@ -43,7 +43,10 @@ void LongTaskDetector::DidProcessTask(base::TimeTicks start_time,
   if ((end_time - start_time) < LongTaskDetector::kLongTaskThreshold)
     return;
 
-  for (auto& observer : observers_) {
+  // We copy `observers_` because it might be mutated in OnLongTaskDetected,
+  // and container mutation is not allowed during iteration.
+  const HeapHashSet<Member<LongTaskObserver>> observers = observers_;
+  for (auto& observer : observers) {
     observer->OnLongTaskDetected(start_time, end_time);
   }
 }
