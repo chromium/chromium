@@ -125,7 +125,7 @@ void MediaLog::InvalidateLog() {
 }
 
 MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log)
-    : id(g_media_log_count.GetNext()), media_log(log) {}
+    : id(g_media_log_count.GetNext()), lock("ParentLogRecord.lock"), media_log(log) {}
 MediaLog::ParentLogRecord::~ParentLogRecord() = default;
 
 LogHelper::LogHelper(MediaLogMessageLevel level, MediaLog* media_log)
