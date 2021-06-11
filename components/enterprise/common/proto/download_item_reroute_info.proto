@@ -1,0 +1,37 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.  Use
+// of this source code is governed by a BSD-style license that can
+// be found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package enterprise_connectors;
+
+// Enum for file system connector's service provider.
+enum FileSystemServiceProvider {
+  BOX = 0;
+  GOOGLE_DRIVE = 1;
+};
+
+// Metadata from the service provider to recover its state / open the
+// corresponding file.
+//
+// Next ID: 2.
+message BoxInfo {
+  optional string file_id = 1;
+}
+
+message GoogleDriveInfo {}
+
+// Metadata associated with each DownloadItem if it was rerouted to a service
+// provider.
+message DownloadItemRerouteInfo {
+  // Each DownloadItem should only be rerouted to one of the providers.
+  optional FileSystemServiceProvider service_provider = 1;
+
+  oneof upload {
+    BoxInfo box = 100;
+    GoogleDriveInfo google_drive = 101;
+  }
+}

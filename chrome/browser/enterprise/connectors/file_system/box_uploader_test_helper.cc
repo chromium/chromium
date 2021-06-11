@@ -63,6 +63,8 @@ void BoxUploaderTestBase::InitUploader(BoxUploader* uploader) {
   ASSERT_TRUE(prefs_);
   uploader->Init(base::BindRepeating(&BoxUploaderTestBase::AuthenticationRetry,
                                      base::Unretained(this)),
+                 base::BindRepeating(&BoxUploaderTestBase::OnProgressUpdate,
+                                     base::Unretained(this)),
                  base::BindOnce(&BoxUploaderTestBase::OnUploaderFinished,
                                 base::Unretained(this)),
                  prefs_);
@@ -114,9 +116,18 @@ void BoxUploaderTestBase::AuthenticationRetry() {
   Quit();
 }
 
-void BoxUploaderTestBase::OnUploaderFinished(bool success) {
+void BoxUploaderTestBase::OnProgressUpdate(
+    const download::DownloadItemRenameProgressUpdate& update) {
+  ++progress_update_cb_called_;
+  validated_file_name_ = update.target_file_name;
+}
+
+void BoxUploaderTestBase::OnUploaderFinished(bool success,
+                                             const base::FilePath& final_name) {
   download_thread_cb_called_ = true;
   upload_success_ = success;
+  if (success)
+    validated_file_name_ = final_name;
   Quit();
 }
 

@@ -101,19 +101,20 @@ FileSystemRenameHandler::FileSystemRenameHandler(
     download::DownloadItem* download_item,
     FileSystemSettings settings)
     : download::DownloadItemRenameHandler(download_item),
-      target_path_(download_item->GetTargetFilePath()),
       settings_(std::move(settings)),
       uploader_(BoxUploader::Create(download_item)) {
-  DCHECK_EQ(BoxUploader::kServiceProviderName, settings_.service_provider);
+  DCHECK_EQ(settings_.service_provider, kBoxProviderName);
 }
 
 FileSystemRenameHandler::~FileSystemRenameHandler() = default;
 
-void FileSystemRenameHandler::Start(Callback callback) {
-  upload_complete_cb_ = std::move(callback);
+void FileSystemRenameHandler::Start(ProgressUpdateCallback progress_update_cb,
+                                    DownloadCallback upload_complete_cb) {
+  upload_complete_cb_ = std::move(upload_complete_cb);
   uploader_->Init(
       base::BindRepeating(&FileSystemRenameHandler::OnApiAuthenticationError,
                           weak_factory_.GetWeakPtr()),
+      std::move(progress_update_cb),
       base::BindOnce(&FileSystemRenameHandler::NotifyResultToDownloadThread,
                      weak_factory_.GetWeakPtr()),
       GetPrefs());
@@ -293,14 +294,13 @@ void FileSystemRenameHandler::OnApiAuthenticationError() {
               CREDENTIALS_REJECTED_BY_SERVER));
 }
 
-void FileSystemRenameHandler::NotifyResultToDownloadThread(bool success) {
+void FileSystemRenameHandler::NotifyResultToDownloadThread(
+    bool success,
+    const base::FilePath& final_name) {
   // TODO(https://crbug.com/1168815): Define required error messages.
   auto reason = success ? download::DOWNLOAD_INTERRUPT_REASON_NONE
                         : download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
-  // Make sure target_path_ has been initialized.
-  DCHECK(!target_path_.empty());
-  // TODO(https://crbug.com/1203753): Returns the final file name here.
-  std::move(upload_complete_cb_).Run(reason, target_path_);
+  std::move(upload_complete_cb_).Run(reason, final_name);
 }
 
 PrefService* FileSystemRenameHandler::GetPrefs() {

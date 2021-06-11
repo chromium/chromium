@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_TEST_HELPER_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "content/public/test/fake_download_item.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,11 +20,20 @@ class DownloadItemForTest : public content::FakeDownloadItem {
  public:
   explicit DownloadItemForTest(base::FilePath::StringPieceType file_name,
                                base::Time::Exploded start_time = kTestDateTime);
+  ~DownloadItemForTest() override;
+
   const base::FilePath& GetFullPath() const override;
+  DownloadState GetState() const override;
+  const DownloadItemRerouteInfo& GetRerouteInfo() const override;
+
+  void SetState(DownloadState state);
+  void SetRerouteInfo(DownloadItemRerouteInfo info);
 
  protected:
   base::ScopedTempDir tmp_dir_;
   base::FilePath path_;
+  DownloadState state_ = DownloadState::IN_PROGRESS;
+  DownloadItemRerouteInfo rerouted_info_;
 };
 
 class MockApiCallFlow : public OAuth2ApiCallFlow {

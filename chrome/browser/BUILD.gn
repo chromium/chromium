@@ -4233,6 +4233,7 @@ static_library("browser") {
       "//components/accuracy_tips",
       "//components/constrained_window",
       "//components/enterprise/common/proto:device_trust_report_event_proto",
+      "//components/enterprise/common/proto:download_item_reroute_info_proto",
       "//components/feedback",
       "//components/feedback/content:factory",
       "//components/image_fetcher/core",

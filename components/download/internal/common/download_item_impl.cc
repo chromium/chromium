@@ -55,6 +55,7 @@
 #include "components/download/public/common/download_ukm_helper.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
+#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -987,7 +988,14 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
 }
 
 DownloadItemRenameHandler* DownloadItemImpl::GetRenameHandler() {
+  if (reroute_info_.IsInitialized() && !rename_handler_) {
+    rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
+  }
   return rename_handler_.get();
+}
+
+const DownloadItemRerouteInfo& DownloadItemImpl::GetRerouteInfo() const {
+  return reroute_info_;
 }
 
 bool DownloadItemImpl::IsDangerous() const {
@@ -1947,14 +1955,16 @@ void DownloadItemImpl::OnDownloadCompleting() {
 
   // Unilaterally rename; even if it already has the right name,
   // we need the annotation.
-  DownloadFile::RenameCompletionCallback callback =
+  DownloadFile::RenameCompletionCallback rename_callback =
       base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToFinalName,
                      weak_ptr_factory_.GetWeakPtr());
 
   // If an alternate rename handler is specified, use it instead.
-  rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
-  if (rename_handler_) {
-    rename_handler_->Start(std::move(callback));
+  if (GetRenameHandler()) {
+    auto update_callback =
+        base::BindRepeating(&DownloadItemImpl::OnRenameHandlerUpdate,
+                            weak_ptr_factory_.GetWeakPtr());
+    GetRenameHandler()->Start(update_callback, std::move(rename_callback));
     return;
   }
 
@@ -1965,7 +1975,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
         base::BindOnce(&DownloadFile::PublishDownload,
                        // Safe because we control download file lifetime.
                        base::Unretained(download_file_.get()),
-                       std::move(callback)));
+                       std::move(rename_callback)));
     return;
   }
 #endif  // defined(OS_ANDROID)
@@ -1983,7 +1993,18 @@ void DownloadItemImpl::OnDownloadCompleting() {
                      delegate_->GetApplicationClientIdForFileScanning(),
                      delegate_->IsOffTheRecord() ? GURL() : GetURL(),
                      delegate_->IsOffTheRecord() ? GURL() : GetReferrerUrl(),
-                     std::move(quarantine), std::move(callback)));
+                     std::move(quarantine), std::move(rename_callback)));
+}
+
+void DownloadItemImpl::OnRenameHandlerUpdate(
+    const DownloadItemRenameProgressUpdate& update) {
+  TRACE_EVENT_INSTANT1("download", "DownloadItemRenameProgressUpdated",
+                       TRACE_EVENT_SCOPE_THREAD, "new_file_name",
+                       update.target_file_name);
+  DCHECK_EQ(state_, IN_PROGRESS_INTERNAL);
+  destination_info_.target_path = update.target_file_name;
+  reroute_info_ = update.reroute_info;
+  UpdateObservers();
 }
 
 void DownloadItemImpl::OnDownloadRenamedToFinalName(
@@ -2010,7 +2031,7 @@ void DownloadItemImpl::OnDownloadRenamedToFinalName(
     return;
   }
 
-  DCHECK(GetTargetFilePath() == full_path);
+  DCHECK_EQ(GetTargetFilePath(), full_path);
 
   if (full_path != GetFullPath()) {
     // full_path is now the current and target file path.

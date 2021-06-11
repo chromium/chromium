@@ -24,6 +24,7 @@
 #include "components/download/public/common/download_destination_observer.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_job.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/resume_mode.h"
@@ -275,6 +276,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   DownloadFile* GetDownloadFile() override;
   DownloadItemRenameHandler* GetRenameHandler() override;
+  const DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
   DownloadDangerType GetDangerType() const override;
@@ -597,6 +599,15 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // DownloadItem::Completed().
   void OnDownloadCompleting();
 
+  // Called by |rename_handler_| to update state variables when necessary.
+  // This may update |destination_info_.target_file_path| as confirmed by
+  // rerouted location to be reflected in the UI/UX, and attach other reroute
+  // specific metadata into |reroute_info_| to be persisted into the databases.
+  // However, this will not transition the internal |state_|, because the
+  // |rename_handler_| will eventually run OnDownloadRenamedToFinalName() on
+  // completion.
+  void OnRenameHandlerUpdate(const DownloadItemRenameProgressUpdate& update);
+
   void OnDownloadRenamedToFinalName(DownloadInterruptReason reason,
                                     const base::FilePath& full_path);
 
@@ -865,6 +876,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // A handler for renaming and helping with display the item.
   std::unique_ptr<DownloadItemRenameHandler> rename_handler_;
+  // Metadata specific to the rename handler.
+  DownloadItemRerouteInfo reroute_info_;
 
   THREAD_CHECKER(thread_checker_);
 

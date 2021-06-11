@@ -15,6 +15,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
+#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -90,6 +91,7 @@ class FakeDownloadItem : public download::DownloadItem {
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   download::DownloadFile* GetDownloadFile() override;
   download::DownloadItemRenameHandler* GetRenameHandler() override;
+  const download::DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
   download::DownloadDangerType GetDangerType() const override;
@@ -192,6 +194,7 @@ class FakeDownloadItem : public download::DownloadItem {
   std::string hash_;
   absl::optional<download::DownloadSchedule> download_schedule_;
   int percent_complete_ = 0;
+  download::DownloadItemRerouteInfo reroute_info_;
 
   // The members below are to be returned by methods, which return by reference.
   std::string dummy_string;

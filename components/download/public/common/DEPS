@@ -2,6 +2,7 @@ include_rules = [
   "+crypto",
   "+components/keyed_service/core",
   "+components/services/quarantine/public/mojom/quarantine.mojom.h",
+  "+components/enterprise/common/proto",
   "+mojo/public/cpp/bindings",
   "+mojo/public/cpp/system",
   "+net/base/io_buffer.h",

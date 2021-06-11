@@ -47,9 +47,14 @@ namespace net {
 class HttpResponseHeaders;
 }
 
+namespace enterprise_connectors {
+class DownloadItemRerouteInfo;
+}
+
 namespace download {
 class DownloadFile;
 class DownloadItemRenameHandler;
+using enterprise_connectors::DownloadItemRerouteInfo;
 
 // One DownloadItem per download. This is the model class that stores all the
 // state for a download.
@@ -436,6 +441,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // rename handling is performed.  The caller does not own the returned
   // pointer.
   virtual DownloadItemRenameHandler* GetRenameHandler() = 0;
+
+  // Gets the metadata needed to recover rename handler state.
+  virtual const DownloadItemRerouteInfo& GetRerouteInfo() const = 0;
 
   //    Progress State accessors -----------------------------------------------
 

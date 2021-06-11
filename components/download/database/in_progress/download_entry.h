@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

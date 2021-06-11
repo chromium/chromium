@@ -44,7 +44,8 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
 
  protected:
   // download::DownloadItemRenameHandler interface.
-  void Start(Callback callback) override;
+  void Start(ProgressUpdateCallback progress_update_cb,
+             DownloadCallback upload_complete_cb) override;
   void OpenDownload() override;
   void ShowDownloadInContext() override;
 
@@ -91,17 +92,15 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   // Callback for uploader_ upon API requests returning authentication error.
   void OnApiAuthenticationError();
   // Notify upload success or failure back to the download thread.
-  void NotifyResultToDownloadThread(bool success);
+  void NotifyResultToDownloadThread(bool success, const base::FilePath& path);
 
   PrefService* GetPrefs();
 
-  // Fields copied from |download_item| or policy settings. Constant for the
-  // life of the rename handler.
-  const base::FilePath target_path_;
+  // Copied from policy settings. Constant for the life of the rename handler.
   const FileSystemSettings settings_;
 
   // Invoked to tell the download system when the rename has completed.
-  Callback upload_complete_cb_;
+  DownloadCallback upload_complete_cb_;
 
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;
   // Main uploader that manages the entire API call flow of file upload.

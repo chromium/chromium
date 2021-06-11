@@ -46,8 +46,26 @@ DownloadItemForTest::DownloadItemForTest(
                     start_time_exploded.millisecond);
 }
 
+DownloadItemForTest::~DownloadItemForTest() = default;
+
 const base::FilePath& DownloadItemForTest::GetFullPath() const {
   return path_;
+}
+
+DownloadItemForTest::DownloadState DownloadItemForTest::GetState() const {
+  return state_;
+}
+
+const DownloadItemRerouteInfo& DownloadItemForTest::GetRerouteInfo() const {
+  return rerouted_info_;
+}
+
+void DownloadItemForTest::SetRerouteInfo(DownloadItemRerouteInfo info) {
+  rerouted_info_ = info;
+}
+
+void DownloadItemForTest::SetState(DownloadState state) {
+  state_ = state;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

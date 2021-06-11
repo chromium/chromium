@@ -73,7 +73,12 @@ class MockDownloadItemRenameHandler : public DownloadItemRenameHandler {
       : DownloadItemRenameHandler(item) {}
   ~MockDownloadItemRenameHandler() override = default;
 
-  MOCK_METHOD1(Start, void(Callback));
+  MOCK_METHOD(void,
+              Start,
+              (ProgressUpdateCallback, DownloadCallback),
+              (override));
+  MOCK_METHOD(void, OpenDownload, (), (override));
+  MOCK_METHOD(void, ShowDownloadInContext, (), (override));
 
   void VerifyAndClearExpectations() {
     ::testing::Mock::VerifyAndClearExpectations(this);
@@ -2800,6 +2805,11 @@ TEST_F(DownloadItemTest, CancelWithDownloadSchedule) {
 }
 
 TEST_F(DownloadItemTest, ExternalRenameHandler) {
+  using ProgressUpdate = DownloadItemRenameProgressUpdate;
+  using UpdateCallback = DownloadItemRenameHandler::ProgressUpdateCallback;
+  using DownloadCallback = DownloadItemRenameHandler::DownloadCallback;
+  using RerouteProvider = enterprise_connectors::FileSystemServiceProvider;
+
   // Start a download.
   DownloadItemImpl* item = CreateDownloadItem();
   MockDownloadFile* download_file =
@@ -2807,13 +2817,21 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   EXPECT_CALL(*download_file, Detach());
 
   // Create a rename handler and make sure the delegate returns it.
-  DownloadItemRenameHandler::Callback callback;
+  DownloadCallback callback;
+  UpdateCallback update_callback;
   auto rename_handler = std::make_unique<MockDownloadItemRenameHandler>(item);
   MockDownloadItemRenameHandler* rename_handler_ptr = rename_handler.get();
 
   ASSERT_EQ(item, rename_handler->download_item());
 
-  EXPECT_CALL(*rename_handler, Start(_)).WillOnce(MoveArg<0>(&callback));
+  EXPECT_CALL(*rename_handler, Start(_, _))
+      .WillOnce(Invoke([&](UpdateCallback update_cb, DownloadCallback cb) {
+        callback = std::move(cb);
+        update_callback = update_cb;
+      }));
+  // Cannot use DoAll(MoveArg<0>(), MoveArg<1>()): DoAll() only gets a const ref
+  // of the arguments, but const T& is just T& if T itself is a reference.
+
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
@@ -2827,11 +2845,32 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
   ASSERT_FALSE(callback.is_null());
 
+  ASSERT_NE(nullptr, item->GetRenameHandler());
+
+  TestDownloadItemObserver observer(item);
+
+  // Invoke the update callback. This should update the target name and stored
+  // reroute info, regardless of |update_observers|.
+  base::FilePath file_name(FILE_PATH_LITERAL("foo.txt"));
+  DownloadItemRerouteInfo reroute_info;
+  reroute_info.set_service_provider(RerouteProvider::GOOGLE_DRIVE);
+
+  update_callback.Run(ProgressUpdate{file_name, reroute_info});
+  EXPECT_EQ(item->GetFileNameToReportUser(), file_name);
+  EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+  ASSERT_TRUE(item->GetRerouteInfo().IsInitialized());
+  EXPECT_EQ(reroute_info.SerializeAsString(),
+            item->GetRerouteInfo().SerializeAsString());
+  // Check that observers are updated.
+  ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
+
   // Invoke the rename callback.  This should complete the download.
-  std::move(callback).Run(DOWNLOAD_INTERRUPT_REASON_NONE,
-                          base::FilePath(kDummyTargetPath));
+  std::move(callback).Run(DOWNLOAD_INTERRUPT_REASON_NONE, file_name);
   task_environment_.RunUntilIdle();
+  EXPECT_EQ(item->GetTargetFilePath(), file_name);
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+  // Check that observers are updated.
+  ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
 
   ASSERT_NE(nullptr, item->GetRenameHandler());
   rename_handler_ptr->VerifyAndClearExpectations();

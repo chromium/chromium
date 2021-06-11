@@ -256,6 +256,7 @@ class MockUploader : public BoxUploader {
   }
 
   void TryTaskSuccess() {
+    // For invoking progress update in StartUpload().
     EXPECT_CALL(*this, StartCurrentApiCall()).WillOnce(Invoke([this]() {
       SetUploadApiCallFlowDoneForTesting(true, kUploadedFileId);
     }));
@@ -360,8 +361,11 @@ class RenameHandlerOAuth2Test : public testing::Test,
   void RunHandler() {
     run_loop_ = std::make_unique<base::RunLoop>();
     download::DownloadItemRenameHandler* download_handler_ = handler();
-    download_handler_->Start(base::BindOnce(
-        &RenameHandlerOAuth2Test::OnUploadComplete, base::Unretained(this)));
+    download_handler_->Start(
+        base::BindRepeating(&RenameHandlerOAuth2Test::OnProgressUpdate,
+                            base::Unretained(this)),
+        base::BindOnce(&RenameHandlerOAuth2Test::OnUploadComplete,
+                       base::Unretained(this)));
     run_loop_->Run();
   }
 
@@ -397,12 +401,19 @@ class RenameHandlerOAuth2Test : public testing::Test,
   base::FilePath uploaded_file_name_;
 
  private:
+  void OnProgressUpdate(
+      const download::DownloadItemRenameProgressUpdate& update) {
+    uploaded_file_name_ = update.target_file_name;
+  }
+
   void OnUploadComplete(DownloadInterruptReason reason,
-                        const base::FilePath& file_name) {
+                        const base::FilePath& final_name) {
     ++download_cb_count_;
     download_cb_reason_ = reason;
     uploaded_file_url_ = uploader()->GetUploadedFileUrl();
-    uploaded_file_name_ = file_name;
+    if (!uploaded_file_name_.empty()) {
+      EXPECT_EQ(uploaded_file_name_, final_name);
+    }
     run_loop_->Quit();
   }
 
@@ -457,6 +468,7 @@ TEST_F(RenameHandlerOAuth2Test, SignInCancellationSoAbort) {
   ASSERT_EQ(download_cb_reason_,
             download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
+  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   VerifyBothTokensClear();
 }
 
@@ -492,6 +504,7 @@ TEST_F(RenameHandlerOAuth2Test, SignInFailureSoRetry) {
   ASSERT_EQ(download_cb_reason_,
             download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());  // Notified failure to terminate.
+  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   VerifyBothTokensClear();
 }
 
@@ -569,6 +582,7 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenThenUploaderFailure) {
   ASSERT_EQ(download_cb_reason_,
             download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
+  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   // Verify that uploader failure did not affect stored credentials.
   VerifyBothTokensSetByFetcher();
 }
@@ -618,6 +632,7 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenButUploaderOAuth2Error) {
   ASSERT_EQ(download_cb_reason_,
             download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
+  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   // Verify that access token stored is cleared.
   std::string atoken, rtoken;
   ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), kBox, &atoken, &rtoken));

@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 
@@ -23,19 +24,26 @@ extern const char kUniquifierUmaLabel[];
 // file.
 class BoxUploader {
  public:
-  static const char kServiceProviderName[];
+  static const FileSystemServiceProvider kServiceProvider;
 
   static std::unique_ptr<BoxUploader> Create(
       download::DownloadItem* download_item);
 
   virtual ~BoxUploader();
 
-  using UploadCompleteCallback = base::OnceCallback<void(bool)>;
+  // Callback to update the DownloadItem and send BoxInfo into databases.
+  using ProgressUpdateCallback = base::RepeatingCallback<void(
+      const download::DownloadItemRenameProgressUpdate&)>;
+  // Callback when upload completes. Args indicate result to be updated to UX,
+  // and the final file name validated on Box.
+  using UploadCompleteCallback =
+      base::OnceCallback<void(bool, const base::FilePath&)>;
 
   // Initialize with callbacks from FileSystemRenameHandler, set
   // current_api_call_ to be the first step of the whole API call workflow. Must
   // be called before calling TryTask() for the first time.
   void Init(base::RepeatingCallback<void(void)> authen_retry_callback,
+            ProgressUpdateCallback progress_update_cb,
             UploadCompleteCallback upload_complete_cb,
             PrefService* prefs);
 
@@ -74,6 +82,7 @@ class BoxUploader {
   void TryCurrentApiCall();
   bool EnsureSuccessResponse(bool success, int response_code);
   void OnApiCallFlowDone(bool upload_success, std::string uploaded_file_id);
+  void SendProgressUpdate() const;
   void NotifyResult(bool success);
 
   // To be overridden to test API calls flow and file delete separately.
@@ -96,6 +105,8 @@ class BoxUploader {
   const std::string GetFolderId() const;
   void SetFolderId(std::string folder_id);
   void SetCurrentApiCall(std::unique_ptr<OAuth2ApiCallFlow> api_call);
+  BoxInfo& reroute_info() { return *(reroute_info_.mutable_box()); }
+  const BoxInfo& reroute_info() const { return reroute_info_.box(); }
 
  private:
   // Box API call pre-upload steps:
@@ -123,11 +134,14 @@ class BoxUploader {
 
   // File details.
   const base::FilePath local_file_path_;   // Path of the local temporary file.
-  const base::FilePath
-      target_file_name_;  // File name to be used for the upload.
+  const base::FilePath target_file_name_;  // File name to be used for upload.
   const base::Time download_start_time_;   // Start time of the download.
   uint32_t uniquifier_;  // Number suffix for the filename to uniquify.
 
+  // Reroute info loaded from / to be stored into download databases.
+  DownloadItemRerouteInfo reroute_info_;
+  // Callback when there's an update for DownloadItem's observers.
+  ProgressUpdateCallback progress_update_cb_;
   // Callback when the entire flow is completed to notify the download thread.
   UploadCompleteCallback upload_complete_cb_;
   // Callback when API call gives Authenetication Error.
@@ -144,8 +158,6 @@ class BoxUploader {
   std::unique_ptr<OAuth2ApiCallFlow> current_api_call_;
   // Folder id used to specify the destination folder for the Service Provider.
   std::string folder_id_;
-  // File id used to open a tab to show the item on Box.
-  std::string file_id_;
   // PrefService used to store folder_id.
   PrefService* prefs_ =
       nullptr;  // Has to be initialized to nullptr for DCHECKs.

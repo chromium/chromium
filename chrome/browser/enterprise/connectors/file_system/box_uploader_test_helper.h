@@ -35,13 +35,17 @@ class BoxUploaderTestBase : public testing::Test {
   base::FilePath GetFilePath() const;
 
  protected:
+  using State = download::DownloadItem::DownloadState;
+
   virtual void CreateTemporaryFile();
   void CreateTemporaryFileWithContent(std::string content);
   void InitFolderIdInPrefs(std::string folder_id);
   void InitUploader(BoxUploader* uploader);
 
   void AuthenticationRetry();
-  void OnUploaderFinished(bool success);
+  void OnProgressUpdate(
+      const download::DownloadItemRenameProgressUpdate& update);
+  void OnUploaderFinished(bool success, const base::FilePath& final_name);
 
   // Add a mock response to http requests made to the url. Only the last
   // response added is used.
@@ -69,8 +73,10 @@ class BoxUploaderTestBase : public testing::Test {
 
   // Updated/used in callbacks & checked in tests.
   int authentication_retry_{0};
+  int progress_update_cb_called_{0};
   bool download_thread_cb_called_{false};
   bool upload_success_{false};
+  base::FilePath validated_file_name_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

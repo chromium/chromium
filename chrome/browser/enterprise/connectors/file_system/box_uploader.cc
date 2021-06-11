@@ -22,6 +22,7 @@
 namespace {
 
 bool DeleteIfExists(base::FilePath file_path) {
+  DCHECK(!file_path.empty());
   if (!base::PathExists(file_path)) {
     // If the file is deleted by some other thread, how can we be sure what we
     // read and uploaded was correct?! So report as error. Otherwise, it is
@@ -39,12 +40,14 @@ namespace enterprise_connectors {
 
 const char kUniquifierUmaLabel[] = "Enterprise.FileSystem.Uniquifier";
 
+using download::DownloadItemRenameProgressUpdate;
+
 ////////////////////////////////////////////////////////////////////////////////
 // BoxUploader
 ////////////////////////////////////////////////////////////////////////////////
 
 // static
-const char BoxUploader::kServiceProviderName[] = "box";
+const FileSystemServiceProvider BoxUploader::kServiceProvider = BOX;
 
 // static
 std::unique_ptr<BoxUploader> BoxUploader::Create(
@@ -58,21 +61,52 @@ std::unique_ptr<BoxUploader> BoxUploader::Create(
 }
 
 BoxUploader::BoxUploader(download::DownloadItem* download_item)
-    : local_file_path_(download_item->GetFullPath()),
+    : local_file_path_(
+          // State would be COMPLETE iff it was already uploaded and had its
+          // local file deleted successfully.
+          (download_item->GetState() == download::DownloadItem::COMPLETE)
+              ? base::FilePath()
+              : download_item->GetFullPath()),
       target_file_name_(download_item->GetTargetFilePath().BaseName()),
       download_start_time_(download_item->GetStartTime()),
-      uniquifier_(0) {}
+      uniquifier_(0) {
+  bool is_completed =
+      download_item->GetState() == download::DownloadItem::COMPLETE;
+  const auto& reroute_info = download_item->GetRerouteInfo();
+
+  if (reroute_info.IsInitialized()) {
+    // If |reroute_info| is initialized, that means it was loaded from
+    // databases, because the item was previously uploaded, or in the middle of
+    // uploading. Therefore, as long as the state is consistent with file_id and
+    // URL, |reroute_info| is valid.
+    DCHECK_EQ(reroute_info.service_provider(), kServiceProvider);
+    DCHECK_EQ(is_completed, reroute_info.box().has_file_id());
+    reroute_info_ = reroute_info;
+    DCHECK_EQ(is_completed, GetUploadedFileUrl().is_valid());
+    // TODO(https://crbug.com/1213761) If |is_completed| == false, load info to
+    // resume upload from where it left off.
+  } else {
+    // If |reroute_info| is not initialized, that means the item is either a new
+    // download to be uploaded now, or the previous upload attempt didn't go
+    // very far to have any information to recover from, therefore we start the
+    // upload workflow from scratch.
+    DCHECK(!is_completed) << download_item->GetState();
+    reroute_info_.set_service_provider(kServiceProvider);
+  }
+}
 
 BoxUploader::~BoxUploader() = default;
 // TODO(https://crbug.com/1213761) May need to TerminateTask() to resume later.
 
 void BoxUploader::Init(
     base::RepeatingCallback<void(void)> authen_retry_callback,
+    ProgressUpdateCallback progress_update_cb,
     UploadCompleteCallback upload_complete_cb,
     PrefService* prefs) {
-  DCHECK(file_id_.empty());
+  DCHECK(reroute_info().file_id().empty());
   prefs_ = prefs;
-  authentication_retry_callback_ = authen_retry_callback;
+  authentication_retry_callback_ = std::move(authen_retry_callback);
+  progress_update_cb_ = std::move(progress_update_cb);
   upload_complete_cb_ = std::move(upload_complete_cb);
   SetCurrentApiCall(GetFolderId().empty() ? MakeFindUpstreamFolderApiCall()
                                           : MakePreflightCheckApiCall());
@@ -125,6 +159,7 @@ void BoxUploader::StartCurrentApiCall() {
 
 void BoxUploader::StartUpload() {
   LogUniquifierCountToUma();
+  SendProgressUpdate();
   SetCurrentApiCall(MakeFileUploadApiCall());
   TryCurrentApiCall();
 }
@@ -141,16 +176,22 @@ void BoxUploader::OnApiCallFlowDone(bool upload_success, std::string file_id) {
     // for trusted testers (TT), deleting as usual for now. Need to determine
     // how to communicate the failure/error to user.
   } else {
-    DCHECK(file_id_.empty());
+    DCHECK(reroute_info().file_id().empty());
     DCHECK(!file_id.empty());
-    file_id_ = file_id;
+    reroute_info().set_file_id(file_id);
+    SendProgressUpdate();
   }
 
   PostDeleteFileTask(upload_success);
 }
 
 void BoxUploader::NotifyResult(bool success) {
-  std::move(upload_complete_cb_).Run(success);
+  std::move(upload_complete_cb_).Run(success, GetUploadFileName());
+}
+
+void BoxUploader::SendProgressUpdate() const {
+  progress_update_cb_.Run(
+      DownloadItemRenameProgressUpdate{GetUploadFileName(), reroute_info_});
 }
 
 void BoxUploader::OnFindUpstreamFolderResponse(bool success,
@@ -258,7 +299,7 @@ BoxUploader::MakeCreateUpstreamFolderApiCall() {
 // Getters & Setters ///////////////////////////////////////////////////////////
 
 GURL BoxUploader::GetUploadedFileUrl() const {
-  return BoxApiCallFlow::MakeUrlToShowFile(file_id_);
+  return BoxApiCallFlow::MakeUrlToShowFile(reroute_info().file_id());
 }
 
 GURL BoxUploader::GetDestinationFolderUrl() const {

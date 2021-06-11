@@ -722,6 +722,7 @@ void DownloadManagerImpl::CheckForFileRemoval(
     download::DownloadItemImpl* download_item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if ((download_item->GetState() != download::DownloadItem::COMPLETE) ||
+      download_item->GetRenameHandler() ||
       download_item->GetFileExternallyRemoved()) {
     return;
   }
