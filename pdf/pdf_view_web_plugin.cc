@@ -30,6 +30,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/parsed_params.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -59,7 +60,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/cursor/cursor.h"
@@ -188,42 +188,23 @@ bool PdfViewWebPlugin::InitializeCommon(
     std::unique_ptr<ContainerWrapper> container_wrapper) {
   container_wrapper_ = std::move(container_wrapper);
 
-  std::string original_url;
-  std::string stream_url;
-  // TODO(https://crbug.com/1199558): Make a helper method to parse
-  // `initial_params_` without processing the results, and add a unit test for
-  // it.
-  for (size_t i = 0; i < initial_params_.attribute_names.size(); ++i) {
-    if (initial_params_.attribute_names[i] == "src") {
-      original_url = initial_params_.attribute_values[i].Utf8();
-    } else if (initial_params_.attribute_names[i] == "stream-url") {
-      stream_url = initial_params_.attribute_values[i].Utf8();
-    } else if (initial_params_.attribute_names[i] == "full-frame") {
-      set_full_frame(true);
-    } else if (initial_params_.attribute_names[i] == "background-color") {
-      SkColor background_color;
-      if (!base::StringToUint(initial_params_.attribute_values[i].Utf8(),
-                              &background_color)) {
-        return false;
-      }
-      SetBackgroundColor(background_color);
-    }
-  }
+  absl::optional<ParsedParams> params = ParseWebPluginParams(initial_params_);
 
-  // Contents of `initial_params_` no longer needed.
+  // The contents of `initial_params_` are no longer needed.
   initial_params_ = {};
 
-  if (original_url.empty())
+  if (!params.has_value())
     return false;
 
-  if (stream_url.empty())
-    stream_url = original_url;
+  set_full_frame(params->full_frame);
+  if (params->background_color.has_value())
+    SetBackgroundColor(params->background_color.value());
 
   PerProcessInitializer::GetInstance().Acquire();
   InitializeEngine(std::make_unique<PDFiumEngine>(
       this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
-  LoadUrl(stream_url, /*is_print_preview=*/false);
-  set_url(original_url);
+  LoadUrl(params->stream_url, /*is_print_preview=*/false);
+  set_url(params->original_url);
   post_message_sender_.set_container(Container());
   return true;
 }
