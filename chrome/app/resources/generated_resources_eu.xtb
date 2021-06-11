@@ -788,7 +788,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1818007989243628752">Ezabatu <ph name="USERNAME" /> erabiltzailearen pasahitza</translation>
 <translation id="1818913467757368489">Kargatzen ari da erregistroa.</translation>
 <translation id="1819443852740954262">Ireki guztiak ezkutuko moduko leiho batean</translation>
-<translation id="1819721979226826163">Sakatu Aplikazioen jakinarazpenak &gt; Google Play-ren zerbitzuak.</translation>
+<translation id="1819721979226826163">Sakatu Aplikazioen jakinarazpenak &gt; Google Play Services.</translation>
 <translation id="1820028137326691631">Idatzi administratzaileak emandako pasahitza</translation>
 <translation id="182139138257690338">deskarga automatikoak</translation>
 <translation id="1822140782238030981">Chrome erabiltzen duzu dagoeneko? Hasi saioa</translation>
@@ -6201,7 +6201,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="778330624322499012">Ezin izan da kargatu <ph name="PLUGIN_NAME" /></translation>
 <translation id="7784067724422331729">Fitxategia blokeatu da ordenagailuan dituzun segurtasun-ezarpenen ondorioz</translation>
 <translation id="7784796923038949829">Ezin dira irakurri edo aldatu webguneko datuak</translation>
-<translation id="778480864305029524">Konexioa bizkor partekatzeko eginbidea erabiltzeko, aktibatu Google Play-ren zerbitzuen jakinarazpenak.</translation>
+<translation id="778480864305029524">Konexioa bizkor partekatzeko eginbidea erabiltzeko, aktibatu Google Play Services-en jakinarazpenak.</translation>
 <translation id="7786889348652477777">Kar&amp;gatu berriro aplikazioa</translation>
 <translation id="7787308148023287649">Erakutsi beste pantaila batean</translation>
 <translation id="7788298548579301890">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen aplikazio bat gehitu du.
@@ -7577,7 +7577,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="965211523698323809">Bidali eta jaso testu-mezuak <ph name="DEVICE_TYPE" /> gailua erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Ez eman HID gailuak atzitzeko baimena inongo webguneri</translation>
 <translation id="967624055006145463">Gordetako datuak</translation>
-<translation id="968000525894980488">Aktibatu Google Play-ren zerbitzuak.</translation>
+<translation id="968000525894980488">Aktibatu Google Play Services.</translation>
 <translation id="968037381421390582">It&amp;satsi eta bilatu "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Aplikazioen cachea</translation>
 <translation id="969096075394517431">Aldatu hizkuntza</translation>

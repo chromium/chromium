@@ -355,6 +355,7 @@
 <translation id="380165613292957338">はい、どんなご用でしょう？</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
+<translation id="3835880383832568924">変更点を確認するには、ショートカット アプリを開きます</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
 <translation id="3846214748874656680">全画面表示を終了</translation>
 <translation id="3846575436967432996">利用可能なネットワーク情報がありません</translation>
@@ -733,6 +734,7 @@
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6910714959251846841">このアップデートを適用するにはデバイスで Powerwash を実行する必要があります。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
+<translation id="6921188888306725546">キーボード ショートカットが改善されました</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>

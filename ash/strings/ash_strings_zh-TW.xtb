@@ -109,7 +109,7 @@
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1804572139604454141">磁碟空間嚴重不足，因此已停止錄製</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
-<translation id="1812997170047690955">我的畫面內容有什麼資訊？</translation>
+<translation id="1812997170047690955">我的畫面上有哪些內容？</translation>
 <translation id="1823873187264960516">乙太網路：<ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">小幫手 (載入中…)</translation>
 <translation id="1838895407229022812">夜燈模式已關閉。</translation>
@@ -355,6 +355,7 @@
 <translation id="380165613292957338">你好，需要什麼協助嗎？</translation>
 <translation id="3826099427150913765">切換為密碼</translation>
 <translation id="383058930331066723">省電模式已開啟</translation>
+<translation id="3835880383832568924">如要查看相關更新，請開啟「捷徑」應用程式</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="3846214748874656680">結束全螢幕</translation>
 <translation id="3846575436967432996">沒有可用的網路資訊</translation>
@@ -733,6 +734,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6910714959251846841">必須對你的裝置執行 Powerwash 才能安裝這項更新。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" />更新內容。</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
+<translation id="6921188888306725546">我們已改善鍵盤快速鍵功能</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>

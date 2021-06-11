@@ -355,6 +355,7 @@
 <translation id="380165613292957338">嗨，有什么我可以帮你的吗？</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383058930331066723">省电模式已开启</translation>
+<translation id="3835880383832568924">若要查看更新，请打开“快捷键”应用</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
 <translation id="3846214748874656680">退出全屏模式</translation>
 <translation id="3846575436967432996">没有可用的网络信息</translation>
@@ -733,6 +734,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6910714959251846841">必须对您的设备执行 Powerwash 才能安装这项更新。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
+<translation id="6921188888306725546">改进了键盘快捷键</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
