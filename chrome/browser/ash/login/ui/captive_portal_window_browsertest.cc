@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -211,13 +212,14 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+  // Use fake GAIA to avoid potential flakiness when real GAIA would not
+  // load and Error screen would be shown instead of Login screen.
+  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalWindowCtorDtorTest);
 };
 
-// TODO(https://crbug.com/1213549): Flaky on linux-chromeos-rel.
-IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
-                       DISABLED_OpenPortalDialog) {
+IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   ASSERT_TRUE(host);
   OobeUI* oobe = host->GetOobeUI();
