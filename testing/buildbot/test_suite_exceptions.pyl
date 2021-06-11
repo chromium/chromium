@@ -160,6 +160,12 @@
       'lacros-amd64-generic-rel',
     ]
   },
+  'aura_unittests_eve': {
+    'remove_from': [
+      # TODO(crbug.com/1204231): Re-enable.
+      'lacros-amd64-generic-rel',
+    ]
+  },
   'base_unittests': {
     'modifications': {
       'android-11-x86-fyi-rel': {
@@ -1777,6 +1783,12 @@
     },
   },
   'interactive_ui_tests_amd64-generic': {
+    'remove_from': [
+      # TODO(crbug.com/1204231): Re-enable.
+      'lacros-amd64-generic-rel',
+    ]
+  },
+  'interactive_ui_tests_eve': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',

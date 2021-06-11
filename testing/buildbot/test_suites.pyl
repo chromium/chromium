@@ -7263,6 +7263,7 @@
       'lacros_device_or_vm_gtests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
+          'LACROS_EVE',
         ]
       },
     },
