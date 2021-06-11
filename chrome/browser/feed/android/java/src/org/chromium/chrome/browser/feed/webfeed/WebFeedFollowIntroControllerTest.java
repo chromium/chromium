@@ -17,9 +17,11 @@ import static org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroControl
 import static org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController.PARAM_DAILY_VISIT_MIN;
 import static org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController.PARAM_NUM_VISIT_MIN;
 
+import android.app.Activity;
 import android.util.Base64;
+import android.view.View;
 
-import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,43 +31,49 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+
+import java.util.HashMap;
 
 /**
  * Tests {@link WebFeedFollowIntroController}.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public final class WebFeedFollowIntroControllerTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final byte[] sWebFeedId = "webFeedId".getBytes();
+    private static final SharedPreferencesManager sSharedPreferencesManager =
+            SharedPreferencesManager.getInstance();
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+
     @Mock
     FeedLauncher mFeedLauncher;
     @Mock
@@ -76,30 +84,43 @@ public final class WebFeedFollowIntroControllerTest {
     private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock
     private Tab mTab;
+    @Mock
+    private AppMenuHandler mAppMenuHandler;
+    @Mock
+    private SnackbarManager mSnackbarManager;
+    @Mock
+    private ModalDialogManager mDialogManager;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private PrefService mPrefService;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
     @Captor
     private ArgumentCaptor<WebFeedBridge.WebFeedPageInformation> mPageInformationCaptor;
 
-    private static final GURL sTestUrl = new GURL("https://www.example.com");
-    private static final byte[] sWebFeedId = "webFeedId".getBytes();
-    private static final SharedPreferencesManager sSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
-
     private int mNumVisitMin;
     private int mDailyVisitMin;
-    private AppMenuHandler mAppMenuHandler;
-    private ChromeTabbedActivity mActivity;
+    private Activity mActivity;
     private EmptyTabObserver mEmptyTabObserver;
     private FakeClock mClock;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
 
     @Before
     public void setUp() {
-        // TODO(harringtond): See if we can make this a robolectric test.
+        FeatureList.setTestFeatures(new HashMap<String, Boolean>());
+
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
-        mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+
+        Profile.setLastUsedProfileForTesting(mProfile);
+        Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
+        Profile.setLastUsedProfileForTesting(mProfile);
+        mActivity = Robolectric.setupActivity(Activity.class);
+        // Required for resolving an attribute used in AppMenuItemText.
+        mActivity.setTheme(R.style.Theme_BrowserUI);
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
@@ -110,13 +131,8 @@ public final class WebFeedFollowIntroControllerTest {
                 ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
         mDailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWebFeedFollowIntroController =
-                    new WebFeedFollowIntroController(mActivity, mAppMenuHandler, mTabSupplier,
-                            mActivity.getToolbarManager().getMenuButtonView(), mFeedLauncher,
-                            mActivity.getModalDialogManager(), mActivity.getSnackbarManager());
-        });
+        mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity, mAppMenuHandler,
+                mTabSupplier, new View(mActivity), mFeedLauncher, mDialogManager, mSnackbarManager);
 
         mEmptyTabObserver = mWebFeedFollowIntroController.getEmptyTabObserverForTesting();
         mWebFeedFollowIntroController.setClockForTesting(mClock);
@@ -128,8 +144,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void meetsShowingRequirements_showsIntro() {
         prepareForMeetingIntroRequirements();
         performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
@@ -148,8 +163,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void notRecommended_doesNotShowIntro() {
         performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
         invokePageLoad(new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl,
@@ -161,8 +175,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void subscribed_doesNotShowIntro() {
         performScrollUpAfterDelay(WebFeedFollowIntroController.INTRO_WAIT_TIME_MS + 1);
         invokePageLoad(new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl,
@@ -174,8 +187,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void scrollUpWithoutDelay_doesNotShowIntro() {
         performScrollUpAfterDelay(0);
 
@@ -184,8 +196,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void doesNotMeetVisitRequirements_doesNotShowIntro() {
         setRecommendableVisitCount(
                 new WebFeedBridge.VisitCounts(mNumVisitMin - 1, mDailyVisitMin - 1));
@@ -196,8 +207,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void lastShownTimeTooClose_doesNotShowIntro() {
         setSharedPreferences(/*webFeedIntroLastShownTimeMs=*/mClock.currentTimeMillis(),
                 /*webFeedIntroWebFeedIdShownTimeMs=*/0);
@@ -208,8 +218,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void lastShownForWebFeedIdTimeTooClose_doesNotShowIntro() {
         setSharedPreferences(/*webFeedIntroLastShownTimeMs=*/0,
                 /*webFeedIntroWebFeedIdShownTimeMs=*/mClock.currentTimeMillis());
@@ -220,8 +229,7 @@ public final class WebFeedFollowIntroControllerTest {
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
+    @SmallTest
     public void featureEngagementTrackerSaysDoNotShow_doesNotShowIntro() {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(false);
