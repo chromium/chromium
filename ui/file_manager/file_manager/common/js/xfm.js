@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // #import {power} from './power.m.js';
+// #import {notifications} from './notifications_browser_proxy.js';
 // #import {storage} from './storage_adapter.m.js';
 
 // namespace
 /* #export */ const xfm = {
-  storage,
+  notifications,
   power,
+  storage,
 };

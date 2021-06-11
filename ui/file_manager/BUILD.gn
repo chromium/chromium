@@ -94,6 +94,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/js/deferred_elements.m.js",
     "file_manager/foreground/js/elements_importer.m.js",
     "file_manager/foreground/js/main.m.js",
+    "file_manager/common/js/notifications_browser_proxy.js",
 
     # Image Loader:
     "image_loader/background.m.js",
@@ -120,6 +121,7 @@ preprocess_if_expr("preprocess_static") {
   deps = [
     "//ui/file_manager/audio_player/js:js_modules",
     "//ui/file_manager/file_manager/background/js:main_background.m",
+    "//ui/file_manager/file_manager/common/js:js_modules",
     "//ui/file_manager/file_manager/foreground/js:deferred_elements.m",
     "//ui/file_manager/file_manager/foreground/js:main.m",
     "//ui/file_manager/image_loader:background.m",

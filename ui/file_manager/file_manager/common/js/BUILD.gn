@@ -13,6 +13,10 @@ visibility = [
   "//ui/file_manager/*",
 ]
 
+group("js_modules") {
+  deps = [ ":notifications_browser_proxy" ]
+}
+
 group("closure_compile") {
   testonly = true
   deps = [
@@ -36,6 +40,7 @@ js_type_check("closure_compile_jsmodules") {
     ":metrics.m",
     ":metrics_base.m",
     ":mock_entry.m",
+    ":notifications_browser_proxy",
     ":power.m",
     ":progress_center_common.m",
     ":storage_adapter.m",
@@ -371,6 +376,9 @@ js_library("mock_entry.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("notifications_browser_proxy") {
+}
+
 js_library("progress_center_common") {
 }
 
@@ -427,6 +435,7 @@ js_library("xfm") {
 js_library("xfm.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/xfm.m.js" ]
   deps = [
+    ":notifications_browser_proxy",
     ":power.m",
     ":storage_adapter.m",
   ]

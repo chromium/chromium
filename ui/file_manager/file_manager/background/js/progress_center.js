@@ -6,6 +6,7 @@
 // #import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.m.js';
 // #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 // #import {str} from '../../common/js/util.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';
 // #import {ProgressItemState, ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
 // clang-format on
@@ -240,9 +241,9 @@ ProgressCenterImpl.Notifications_ = class {
      */
     this.dismissCallback_ = dismissCallback;
 
-    chrome.notifications.onButtonClicked.addListener(
+    xfm.notifications.onButtonClicked.addListener(
         this.onButtonClicked_.bind(this));
-    chrome.notifications.onClosed.addListener(this.onClosed_.bind(this));
+    xfm.notifications.onClosed.addListener(this.onClosed_.bind(this));
   }
 
   /**
@@ -278,7 +279,7 @@ ProgressCenterImpl.Notifications_ = class {
           item.state === ProgressItemState.COMPLETED) {
         if (previousState === NotificationState.VISIBLE) {
           this.queue_.run(proceed => {
-            chrome.notifications.clear(item.id, proceed);
+            xfm.notifications.clear(item.id, proceed);
           });
         }
         return;
@@ -302,9 +303,9 @@ ProgressCenterImpl.Notifications_ = class {
       };
 
       if (newlyAdded) {
-        chrome.notifications.create(item.id, params, proceed);
+        xfm.notifications.create(item.id, params, proceed);
       } else {
-        chrome.notifications.update(item.id, params, proceed);
+        xfm.notifications.update(item.id, params, proceed);
       }
     });
   }
@@ -321,7 +322,7 @@ ProgressCenterImpl.Notifications_ = class {
     delete this.ids_[id];
 
     this.queue_.run(proceed => {
-      chrome.notifications.clear(id, proceed);
+      xfm.notifications.clear(id, proceed);
     });
   }
 

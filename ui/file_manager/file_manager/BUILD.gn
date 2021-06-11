@@ -26,6 +26,9 @@ generate_grd("build_static_grdp") {
   input_files = [
     "main.html",
 
+    # For video player unittest:
+    "common/js/notifications_browser_proxy.js",
+
     # CSS:
     "foreground/css/combobutton.css",
     "foreground/css/common.css",

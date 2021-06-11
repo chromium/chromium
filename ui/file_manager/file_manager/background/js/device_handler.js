@@ -9,6 +9,7 @@
 // #import {volumeManagerFactory} from './volume_manager_factory.m.js';
 // #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {util, strf, str} from '../../common/js/util.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 // #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
@@ -39,9 +40,9 @@
         this.onDeviceChanged_.bind(this));
     chrome.fileManagerPrivate.onMountCompleted.addListener(
         this.onMountCompleted_.bind(this));
-    chrome.notifications.onClicked.addListener(
+    xfm.notifications.onClicked.addListener(
         this.onNotificationClicked_.bind(this));
-    chrome.notifications.onButtonClicked.addListener(
+    xfm.notifications.onButtonClicked.addListener(
         this.onNotificationButtonClicked_.bind(this));
   }
 
@@ -416,7 +417,7 @@
     const prefix = id.substr(0, pos);
     const devicePath = id.substr(pos + 1);
     if (prefix === 'deviceNavigation' || prefix === 'deviceFail') {
-      chrome.notifications.clear(id, () => {});
+      xfm.notifications.clear(id, () => {});
       this.openMediaDirectory_(null, devicePath, null);
       metrics.recordEnum(
           'Notification.UserAction',
@@ -428,7 +429,7 @@
       return;
     }
     if (prefix === 'deviceImport') {
-      chrome.notifications.clear(id, () => {});
+      xfm.notifications.clear(id, () => {});
       this.openMediaDirectory_(null, devicePath, 'DCIM');
       metrics.recordEnum(
           'Notification.UserAction',
@@ -437,7 +438,7 @@
       return;
     }
     if (prefix === 'deviceNavigationAppAccess') {
-      chrome.notifications.clear(id, () => {});
+      xfm.notifications.clear(id, () => {});
       const secondButtonIndex = 1;
       if (index === secondButtonIndex) {
         chrome.fileManagerPrivate.openSettingsSubpage(
@@ -609,7 +610,7 @@ DeviceHandler.Notification = class {
   showOnce(devicePath) {
     const notificationId = this.makeId_(devicePath);
     this.queue_.run(function(callback) {
-      chrome.notifications.getAll(idList => {
+      xfm.notifications.getAll(idList => {
         if (idList.indexOf(notificationId) !== -1) {
           callback();
           return;
@@ -635,7 +636,7 @@ DeviceHandler.Notification = class {
     }
     const additionalMessage =
         this.additionalMessage ? (' ' + str(this.additionalMessage)) : '';
-    chrome.notifications.create(
+    xfm.notifications.create(
         notificationId, {
           type: 'basic',
           title: str(this.title),
@@ -655,7 +656,7 @@ DeviceHandler.Notification = class {
    */
   hide(devicePath) {
     this.queue_.run(callback => {
-      chrome.notifications.clear(this.makeId_(devicePath), callback);
+      xfm.notifications.clear(this.makeId_(devicePath), callback);
     });
   }
 
