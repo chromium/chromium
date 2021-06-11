@@ -7178,6 +7178,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionWorkflowJustificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kExtensionWorkflowJustification)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"arc-web-app-share", flag_descriptions::kArcWebAppShareName,
+     flag_descriptions::kArcWebAppShareDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(arc::kEnableWebAppShareFeature)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

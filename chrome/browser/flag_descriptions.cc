@@ -3889,6 +3889,12 @@ const char kArcUseHighMemoryDalvikProfileDesc[] =
     "Allow Android to use high-memory dalvik profile when applicable for "
     "high-memory devices.";
 
+const char kArcWebAppShareName[] = "Enable sharing to Web Apps from ARC";
+const char kArcWebAppShareDescription[] =
+    "Allow Android apps to send shared text and files to web apps. When "
+    "disabled, web apps may still appear in share sheets, but will not "
+    "receive any shared content.";
+
 const char kArcEnableUsapName[] =
     "Enable ARC Unspecialized Application Processes";
 const char kArcEnableUsapDesc[] =

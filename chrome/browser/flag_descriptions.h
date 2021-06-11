@@ -2238,6 +2238,9 @@ extern const char kArcRtVcpuQuadCoreDesc[];
 extern const char kArcUseHighMemoryDalvikProfileName[];
 extern const char kArcUseHighMemoryDalvikProfileDesc[];
 
+extern const char kArcWebAppShareName[];
+extern const char kArcWebAppShareDescription[];
+
 extern const char kArcEnableUsapName[];
 extern const char kArcEnableUsapDesc[];
 

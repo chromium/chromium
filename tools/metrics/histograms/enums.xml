@@ -48785,6 +48785,7 @@ from previous Chrome versions.
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>
+  <int value="1079302639" label="ArcEnableWebAppShare:disabled"/>
   <int value="1081546525" label="ash-enable-docked-windows"/>
   <int value="1082054180" label="PersistentWindowBounds:disabled"/>
   <int value="1082840061" label="LinkDoctorDeprecationAndroid:disabled"/>
@@ -49517,6 +49518,7 @@ from previous Chrome versions.
   <int value="1690248203" label="HelpAppV2:enabled"/>
   <int value="1690837904" label="save-previous-document-resources"/>
   <int value="1691568199" label="AndroidSpellCheckerNonLowEnd:disabled"/>
+  <int value="1692847616" label="ArcEnableWebAppShare:enabled"/>
   <int value="1693094211" label="FilesNG:disabled"/>
   <int value="1694766748"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:enabled"/>
