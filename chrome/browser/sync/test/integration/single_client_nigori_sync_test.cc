@@ -1148,6 +1148,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   // Verify the profile-menu error string is empty.
   EXPECT_FALSE(sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)).has_value());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // TODO(crbug.com/1201659): Verify the recovery method hint added to the fake
+  // server.
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,

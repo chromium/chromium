@@ -4,6 +4,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_connection_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/base64url.h"
@@ -168,6 +169,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
       connection()->RegisterAuthenticationFactor(
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeyAndVersion,
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*authentication_factor_type_hint=*/absl::nullopt,
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
 
@@ -225,6 +227,7 @@ TEST_F(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           /*last_trusted_vault_key_and_version=*/absl::nullopt,
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*authentication_factor_type_hint=*/absl::nullopt,
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
 
@@ -241,6 +244,7 @@ TEST_F(TrustedVaultConnectionImplTest,
       network::GetUploadData(resource_request)));
   EXPECT_THAT(deserialized_body.security_domain().name(),
               Eq(kSyncSecurityDomainName));
+  EXPECT_THAT(deserialized_body.member_type_hint(), Eq(0));
 
   std::string public_key_string;
   AssignBytesToProtoString(key_pair->public_key().ExportToBytes(),
@@ -273,6 +277,36 @@ TEST_F(TrustedVaultConnectionImplTest,
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
+       ShouldSendJoinSecurityDomainsRequestTypeHint) {
+  const int kTypeHint = 19;
+  const TrustedVaultKeyAndVersion kTrustedVaultKeyAndVersion(kTrustedVaultKey,
+                                                             /*version=*/1234);
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterAuthenticationFactor(
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeyAndVersion,
+          key_pair->public_key(), AuthenticationFactorType::kUnspecified,
+          /*authentication_factor_type_hint=*/kTypeHint,
+          TrustedVaultConnection::RegisterAuthenticationFactorCallback());
+  EXPECT_THAT(request, NotNull());
+
+  const network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_request, NotNull());
+  const network::ResourceRequest& resource_request = pending_request->request;
+  EXPECT_THAT(resource_request.method, Eq("POST"));
+  EXPECT_THAT(resource_request.url,
+              Eq(GetFullJoinSecurityDomainsURLForTesting(kTestURL)));
+
+  sync_pb::JoinSecurityDomainsRequest deserialized_body;
+  ASSERT_TRUE(deserialized_body.ParseFromString(
+      network::GetUploadData(resource_request)));
+  EXPECT_THAT(deserialized_body.member_type_hint(), Eq(kTypeHint));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
        ShouldHandleSuccessfulJoinSecurityDomainsRequest) {
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
@@ -286,7 +320,7 @@ TEST_F(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
-          callback.Get());
+          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kSuccess)));
@@ -307,7 +341,7 @@ TEST_F(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
-          callback.Get());
+          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
@@ -329,7 +363,7 @@ TEST_F(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
-          callback.Get());
+          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_NOT_FOUND indicates that security domain was removed.
@@ -353,7 +387,7 @@ TEST_F(
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
-          callback.Get());
+          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_PRECONDITION_FAILED indicates that
@@ -387,7 +421,7 @@ TEST_F(
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
-          callback.Get());
+          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // No requests should be sent to the network.
@@ -407,7 +441,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
           key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
-          callback.Get());
+          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run).Times(0);

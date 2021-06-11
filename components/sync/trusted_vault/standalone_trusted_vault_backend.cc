@@ -298,7 +298,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
       connection_->RegisterAuthenticationFactor(
           *primary_account_, last_trusted_vault_key_and_version,
           SecureBoxKeyPair::GenerateRandom()->public_key(),
-          AuthenticationFactorType::kUnspecified,
+          AuthenticationFactorType::kUnspecified, method_type_hint,
           base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
               base::Unretained(this), std::move(cb)));
@@ -406,6 +406,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
       *primary_account_, last_trusted_vault_key_and_version,
       key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+      /*authentication_factor_type_hint=*/absl::nullopt,
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                      base::Unretained(this), gaia_id));
   DCHECK(ongoing_connection_request_);

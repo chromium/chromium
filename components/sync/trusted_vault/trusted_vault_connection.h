@@ -103,6 +103,7 @@ class TrustedVaultConnection {
           last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
+      absl::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) WARN_UNUSED_RESULT = 0;
 
   // Asynchronously attempts to download new vault keys (e.g. keys with version
