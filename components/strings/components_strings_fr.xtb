@@ -217,7 +217,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1682696192498422849">Bord court en premier</translation>
 <translation id="168693727862418163">La valeur de la règle n'a pas été validée par rapport à son schéma et sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
-<translation id="1696290444144917273">Afficher les informations relatives à la carte virtuelle</translation>
 <translation id="1697532407822776718">Vous êtes prêt !</translation>
 <translation id="1699570257714336246">Informations manquantes</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -1208,7 +1207,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5314967030527622926">Créateur de brochures</translation>
 <translation id="5316812925700871227">Faire pivoter vers la gauche</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
-<translation id="5321288445143113935">Taille maximale</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> sur <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Sélectionner les coordonnées</translation>
 <translation id="5327248766486351172">Nom</translation>

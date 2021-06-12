@@ -217,7 +217,6 @@
 <translation id="1682696192498422849">Bord court en premier</translation>
 <translation id="168693727862418163">La validation de la valeur de cette politique par rapport à son schéma a échoué. La politique sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
-<translation id="1696290444144917273">Afficher les renseignements de la carte virtuelle</translation>
 <translation id="1697532407822776718">Vous êtes prêt!</translation>
 <translation id="1699570257714336246">Renseignements manquants</translation>
 <translation id="1703835215927279855">Lettre</translation>
@@ -308,6 +307,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les jours.}=1{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les jours.}one{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour chaque {NUM_DAYS} jour.}other{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les {NUM_DAYS} jours.}}</translation>
 <translation id="2053553514270667976">Code postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}one{# suggestion}other{# suggestions}}</translation>
+<translation id="2071156619270205202">Cette carte n'est pas compatible avec un numéro de carte virtuelle.</translation>
 <translation id="2071692954027939183">Les notifications ont été bloquées automatiquement parce que vous ne les autorisez généralement pas</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="20817612488360358">Les paramètres de mandataire du système sont configurés pour être utilisés, mais une configuration de mandataire explicite est également spécifiée.</translation>
@@ -436,9 +436,11 @@
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2523886232349826891">Carte enregistrée sur cet appareil uniquement</translation>
 <translation id="2524461107774643265">Ajouter plus de renseignements</translation>
+<translation id="2529899080962247600">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront ignorées.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
 <translation id="2536110899380797252">Ajouter une adresse</translation>
 <translation id="2539524384386349900">Détecter</translation>
+<translation id="2540701853218677861">Historique de connexion et de déconnexion de l'appareil, y compris les estampilles temporelles et les tentatives infructueuses</translation>
 <translation id="2541219929084442027">Les pages que vous consultez dans des onglets de navigation privée ne sont pas enregistrées dans l'historique du navigateur, ni dans le dossier des témoins, ni dans l'historique des recherches, une fois que vous avez fermé tous les onglets de navigation privée. Les fichiers téléchargés et vos favoris sont toutefois conservés.</translation>
 <translation id="2544644783021658368">Document simple</translation>
 <translation id="254947805923345898">La valeur attribuée à la politique n'est pas valide.</translation>
@@ -629,6 +631,7 @@
 <translation id="3320021301628644560">Ajouter l'adresse de facturation</translation>
 <translation id="3324983252691184275">Cramoisi</translation>
 <translation id="3329013043687509092">Saturation</translation>
+<translation id="3333762389743153920">Non admissible pour carte virtuelle</translation>
 <translation id="3338095232262050444">Sécuritaire</translation>
 <translation id="3355823806454867987">Modifier les paramètres du mandataire...</translation>
 <translation id="3360103848165129075">Feuille du module de traitement du paiement</translation>
@@ -762,6 +765,7 @@
 <translation id="3754210790023674521">Quitter le mode d'incrustation d'image</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
 <translation id="3760561303380396507">Utiliser Windows Hello au lieu du code CVC?</translation>
+<translation id="3761171036307311438">Nom figurant sur la carte :</translation>
 <translation id="3761718714832595332">Masquer l'état</translation>
 <translation id="3765032636089507299">La page de navigation sécurisée est en construction.</translation>
 <translation id="3765588406864124894">Boîte aux lettres 9</translation>
@@ -1136,6 +1140,7 @@
 <translation id="5125394840236832993">B plus</translation>
 <translation id="5126510351761255129">Vérifier votre carte</translation>
 <translation id="5135404736266831032">Gérer les adresses</translation>
+<translation id="5138014172396933048">Votre carte virtuelle n'est pas accessible pour le moment, veuillez communiquer avec votre banque</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
 <translation id="514010763713772514">Payer plus rapidement la prochaine fois</translation>
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la politique</translation>
@@ -1182,6 +1187,7 @@
 <translation id="5287240709317226393">Afficher les témoins</translation>
 <translation id="5287456746628258573">Ce site utilise une configuration de sécurité obsolète qui pourrait exposer vos données personnelles (par exemple, vos mots de passe ou vos numéros de carte de crédit) lorsqu'elles sont envoyées à ce site.</translation>
 <translation id="5288108484102287882">La validation des valeurs de politique a déclenché des avertissements</translation>
+<translation id="5288808348893593856">La connexion du site est sécuritaire, à moins que Chrome vous indique le contraire.</translation>
 <translation id="5289384342738547352">Gestion de plusieurs documents</translation>
 <translation id="5299298092464848405">Erreur d'analyse de politique</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -1192,7 +1198,6 @@
 <translation id="5314967030527622926">Créateur de brochures</translation>
 <translation id="5316812925700871227">Faire pivoter dans le sens antihoraire</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
-<translation id="5321288445143113935">Affichée en taille maximale</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> sur <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Choisir des coordonnées</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -1544,9 +1549,11 @@
 <translation id="6685834062052613830">Déconnectez-vous et terminez la configuration</translation>
 <translation id="6687335167692595844">Taille de police demandée</translation>
 <translation id="6688743156324860098">Mettre à jour…</translation>
+<translation id="6688775486821967877">La carte virtuelle n'est pas accessible en ce moment, veuillez réessayer plus tard</translation>
 <translation id="6689249931105087298">Valeur relative avec compression des points noirs</translation>
 <translation id="6689271823431384964">Chrome vous propose d'enregistrer vos cartes dans votre compte Google parce que vous y êtes connecté. Vous pouvez modifier ce comportement dans les paramètres. Le nom du détenteur de la carte provient de votre compte.</translation>
 <translation id="6698381487523150993">Créé :</translation>
+<translation id="6699188552522342100">S'agit-il du bon site Web?</translation>
 <translation id="6702919718839027939">Présentation</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6710594484020273272">&lt;Entrez un terme de recherche&gt;</translation>
@@ -2051,6 +2058,7 @@ Détails supplémentaires :
           <ph name="LIST_ITEM" />Les témoins et les données relatives aux sites
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Utiliser Touch ID pour vérifier les cartes plus rapidement</translation>
+<translation id="8577348305244205642">Votre carte virtuelle n'est plus valide</translation>
 <translation id="858637041960032120">Ajouter un numéro de téléphone</translation>
 <translation id="8589998999637048520">Meilleure qualité</translation>
 <translation id="8600271352425265729">Uniquement cette fois-ci</translation>

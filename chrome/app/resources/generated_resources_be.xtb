@@ -167,7 +167,6 @@
 <translation id="117445914942805388">Каб ачысціць даныя прагляду з усіх сінхранізаваных прылад і Уліковага запісу Google, <ph name="BEGIN_LINK" />перайдзіце ў налады сінхранізацыі<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1176471985365269981">Не маюць дазволу змяняць файлы або папкі на прыладзе</translation>
-<translation id="1177138678118607465">Google можа выкарыстоўваць вашу гісторыю прагляду сайтаў, каб персаналізаваць Пошук, паказ рэкламы і іншыя сэрвісы Google. Вы можаце змяніць гэта ў любы час тут: myaccount.google.com/activitycontrols/search</translation>
 <translation id="1177863135347784049">Карыстальніцкая</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="117916940443676133">Ключ бяспекі не абаронены PIN-кодам. Каб кіраваць данымі для ўваходу, спачатку стварыце PIN-код.</translation>
@@ -555,7 +554,6 @@
 <translation id="1602085790802918092">Ідзе запуск віртуальнай машыны</translation>
 <translation id="1603914832182249871">(інкогніта)</translation>
 <translation id="1604432177629086300">Не ўдалося надрукаваць. Праверце прынтар і паўтарыце спробу.</translation>
-<translation id="1605544918554600534"><ph name="PROFILE_NAME" />: сінхранізацыя пароляў не працуе</translation>
 <translation id="1607139524282324606">Выдаліць запіс</translation>
 <translation id="1607499585984539560">Карыстальнік не звязаны з даменам</translation>
 <translation id="1608626060424371292">Выдаліць карыстальніка</translation>
@@ -1759,6 +1757,7 @@
 <translation id="2889064240420137087">Адкрыць спасылку з дапамогай...</translation>
 <translation id="2891922230654533301">Выкарыстоўваць гэту прыладу для ўваходу на вэб-сайт <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Стандартны браўзер</translation>
+<translation id="2893180576842394309">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google</translation>
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
 <translation id="289695669188700754">Ідэнтыфікатар ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Гэта карыстальніцкая налада будзе выдалена, калі вы закрыеце ўсе вокны, адкрытыя ў рэжыме інкогніта</translation>
@@ -2639,7 +2638,6 @@
 <translation id="3856096718352044181">Праверце, ці сапраўдны гэта аператар, або паўтарыце спробу</translation>
 <translation id="3856800405688283469">Выберыце часавы пояс</translation>
 <translation id="3857807444929313943">Адніміце палец і дакраніцеся зноў</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />: сінхранізацыя прыпынена</translation>
 <translation id="3861638017150647085">Імя карыстальніка "<ph name="USERNAME" />" недаступнае</translation>
 <translation id="3861977424605124250">Паказваць пры запуску</translation>
 <translation id="3862788408946266506">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS</translation>
@@ -3530,7 +3528,6 @@
 <translation id="4881685975363383806">У наступны раз не напамінаць</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="4882312758060467256">Мае доступ да гэтага сайта</translation>
-<translation id="4882831918239250449">Кіраванне тым, як гісторыя прагляду сайтаў выкарыстоўваецца для персаналізацыі пошуку, рэкламы і інш.</translation>
 <translation id="4882919381756638075">Сайты звычайна выкарыстоўваюць мікрафон для функцый сувязі (напрыклад, для відэачата)</translation>
 <translation id="4883436287898674711">Усе сайты <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Менеджар заданняў</translation>
@@ -4327,7 +4324,6 @@
 <translation id="5794414402486823030">Заўсёды адкрываць з дапамогай стандартнага сродку прагляду</translation>
 <translation id="5794700615121138172">Абагуленыя папкі Linux</translation>
 <translation id="5794786537412027208">Выйсці з усіх праграм Chrome</translation>
-<translation id="5797070761912323120">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук, паказ рэкламы і іншыя сэрвісы Google</translation>
 <translation id="5798079537501238810">Сайты могуць усталёўваць апрацоўшчыкі плацяжоў</translation>
 <translation id="579907812742603813">абароненае змесціва</translation>
 <translation id="579915268381781820">Ключ бяспекі адключаны.</translation>
@@ -4688,7 +4684,6 @@
 <translation id="6208521041562685716">Ідзе актывацыя мабільнай перадачы даных</translation>
 <translation id="6209838773933913227">Абнаўленне кампанента</translation>
 <translation id="6209908325007204267">Прылада ўключае ў сябе ліцэнзію Chrome Enterprise, але ваша імя карыстальніка не звязана з карпаратыўным уліковым запісам. Стварыце карпаратыўны ўліковы запіс, наведаўшы старонку g.co/ChromeEnterpriseAccount з іншай прылады.</translation>
-<translation id="6211495400987308581"><ph name="PROFILE_NAME" />: сінхранізацыя не працуе</translation>
 <translation id="6212039847102026977">Паказаць пашыраныя параметры сеткі</translation>
 <translation id="6212168817037875041">Выключыць дысплэй</translation>
 <translation id="6212752530110374741">Адправіць спасылку па пошце</translation>
@@ -5774,6 +5769,7 @@
 <translation id="7427348830195639090">Фонавая старонка: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Выклік з прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Прылады HID не знойдзены</translation>
+<translation id="7431991332293347422">Кіраванне тым, як ваша гісторыя прагляду сайтаў выкарыстоўваецца для персаналізацыі пошуку і ў іншых мэтах</translation>
 <translation id="7433708794692032816">Каб працягваць карыстацца прыладай <ph name="DEVICE_TYPE" />, устаўце разумную картку</translation>
 <translation id="7433957986129316853">Пакінуць</translation>
 <translation id="7434509671034404296">Для распрацоўшчыкаў</translation>

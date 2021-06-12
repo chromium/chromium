@@ -169,7 +169,6 @@
 <translation id="117445914942805388">За да ги избришете податоците од прелистувањето од сите ваши синхронизирани уреди и од сметката на Google, <ph name="BEGIN_LINK" />одете на поставките за синхронизација<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Печати...</translation>
 <translation id="1176471985365269981">Не им е дозволено да ги изменуваат датотеките или папките на уредот</translation>
-<translation id="1177138678118607465">Google може да ја користи историјата на прелистување за да ги персонализира „Пребарување“, рекламите и другите услуги на Google. Ова може да го промените во секое време наmyaccount.google.com/activitycontrols/search</translation>
 <translation id="1177863135347784049">Приспособено</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="117916940443676133">Вашиот безбедносен клуч не е заштитен со PIN. За да управувате со податоците за најавување, прво создајте PIN.</translation>
@@ -556,7 +555,6 @@
 <translation id="1602085790802918092">Се стартува виртуелната машина</translation>
 <translation id="1603914832182249871">(Инкогнито)</translation>
 <translation id="1604432177629086300">Не може да се отпечати. Проверете го печатачот и обидете се повторно.</translation>
-<translation id="1605544918554600534"><ph name="PROFILE_NAME" />: синхронизацијата на лозинките не работи</translation>
 <translation id="1607139524282324606">Исчисти го записот</translation>
 <translation id="1607499585984539560">Корисникот не е поврзан со доменот</translation>
 <translation id="1608626060424371292">Отстрани го овој корисник</translation>
@@ -1773,6 +1771,7 @@
 <translation id="2889064240420137087">Отвори ја врската со…</translation>
 <translation id="2891922230654533301">Дали сакате да го користите вашиот уред за најавување на <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Стандарден прелистувач</translation>
+<translation id="2893180576842394309">Google може да ја користи вашата историја за да го персонализира „Пребарувањето“ и другите услуги на Google</translation>
 <translation id="2894757982205307093">Нова картичка во групата</translation>
 <translation id="289695669188700754">ИД на клуч: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Оваа приспособена поставка ќе биде отстранета кога ќе ги затворите сите ваши прозорци „Инкогнито“</translation>
@@ -2653,7 +2652,6 @@
 <translation id="3856096718352044181">Потврдете дека ова е вистински давател на услуги или обидете се повторно подоцна</translation>
 <translation id="3856800405688283469">Изберете временска зона</translation>
 <translation id="3857807444929313943">Подигнете и допрете повторно</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронизацијата е паузирана</translation>
 <translation id="3861638017150647085">Корисничкото име „<ph name="USERNAME" />“ не е достапно</translation>
 <translation id="3861977424605124250">Прикажувај при стартување</translation>
 <translation id="3862788408946266506">Апликацијата со атрибут на манифестот „kiosk_only“ мора да се инсталира во режим на киоск на Chrome OS</translation>
@@ -3545,7 +3543,6 @@
 <translation id="4881685975363383806">Не потсетувај ме следниот пат</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4882312758060467256">Има пристап до сајтов</translation>
-<translation id="4882831918239250449">Контролирајте како вашата историја на прелистување се користи за персонализирање на „Пребарувањето“, рекламите и друго</translation>
 <translation id="4882919381756638075">Сајтовите обично го користат микрофонот за функциите за комуникација како што е видеоразговорот</translation>
 <translation id="4883436287898674711">Сите локации на <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Управник со &amp;задачи</translation>
@@ -4344,7 +4341,6 @@
 <translation id="5794414402486823030">Секогаш отворај со прегледувачот на системот</translation>
 <translation id="5794700615121138172">Споделени папки на Linux</translation>
 <translation id="5794786537412027208">Затвори ги сите апликации на Chrome</translation>
-<translation id="5797070761912323120">Google може да ја користи вашата историја за да го персонализира „Пребарувањето“, рекламите и другите услуги на Google</translation>
 <translation id="5798079537501238810">Сајтовите може да инсталираат ракувачи со плаќања</translation>
 <translation id="579907812742603813">заштитени содржини</translation>
 <translation id="579915268381781820">Вашиот безбедносен клуч е отстранет.</translation>
@@ -4705,7 +4701,6 @@
 <translation id="6208521041562685716">Мобилниот интернет се активира</translation>
 <translation id="6209838773933913227">Ажурирање компонента</translation>
 <translation id="6209908325007204267">Вашиот уред содржи Chrome Enterprise Upgrade, но вашето корисничко име не е поврзано со сметка на организација. Создајте сметка на организација така што ќе отидете на g.co/ChromeEnterpriseAccount на втор уред.</translation>
-<translation id="6211495400987308581"><ph name="PROFILE_NAME" />: синхронизацијата не функционира</translation>
 <translation id="6212039847102026977">Покажи ги напредните својства на мрежата</translation>
 <translation id="6212168817037875041">Исклучи го екранот</translation>
 <translation id="6212752530110374741">Испрати е-порака со линк</translation>
@@ -5794,6 +5789,7 @@
 <translation id="7427348830195639090">Страница во заднина: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Јавете се од <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Не се најдени HID-уреди</translation>
+<translation id="7431991332293347422">Контролирајте како вашата историја на прелистување се користи за персонализирање на „Пребарувањето“ и друго</translation>
 <translation id="7433708794692032816">Вметнете паметна картичка за да продолжите да го користите вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Задржи</translation>
 <translation id="7434509671034404296">Програмер</translation>

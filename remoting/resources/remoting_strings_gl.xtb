@@ -67,6 +67,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="4176825807642096119">Código de acceso</translation>
 <translation id="4227991223508142681">Utilidade de abastecemento de host</translation>
 <translation id="4240294130679914010">Desinstalador do host de Chromoting</translation>
+<translation id="4257751272692708833">Aplicación de envío de URL de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">O código de acceso non é válido. Téntao de novo.</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
@@ -121,6 +122,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Supr</translation>
 <translation id="6654753848497929428">Compartir</translation>
 <translation id="677755392401385740">Host iniciado para o usuario: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplicación de asistencia para abrir os URL no cliente de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostrar/ocultar teclado.</translation>
 <translation id="6963936880795878952">As conexións co ordenador remoto bloqueáronse temporalmente debido a que alguén estaba tentando conectarse a el cun PIN non válido. Téntao de novo máis tarde.</translation>
 <translation id="6965382102122355670">Aceptar</translation>

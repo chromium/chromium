@@ -169,7 +169,6 @@
 <translation id="117445914942805388">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />동기화 설정을 방문<ph name="END_LINK" />하세요.</translation>
 <translation id="1175364870820465910">인쇄(&amp;P)</translation>
 <translation id="1176471985365269981">기기의 파일 또는 폴더 수정이 허용되지 않음</translation>
-<translation id="1177138678118607465">검색, 광고 및 다른 Google 서비스를 맞춤설정하기 위하여 Google에서 인터넷 사용 기록을 사용할 수 있습니다. 이 설정은 언제든지 myaccount.google.com/activitycontrols/search에서 변경할 수 있습니다.</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="117916940443676133">보안 키가 PIN으로 보호되어 있지 않습니다. 로그인 데이터를 관리하려면 PIN을 만드세요.</translation>
@@ -555,7 +554,6 @@
 <translation id="1602085790802918092">가상 머신 시작 중</translation>
 <translation id="1603914832182249871">(시크릿 모드)</translation>
 <translation id="1604432177629086300">인쇄할 수 없음: 프린터를 확인하고 다시 시도해 보세요</translation>
-<translation id="1605544918554600534"><ph name="PROFILE_NAME" />: 비밀번호 동기화가 작동하지 않음</translation>
 <translation id="1607139524282324606">항목 삭제</translation>
 <translation id="1607499585984539560">사용자가 도메인과 연결되어 있지 않습니다.</translation>
 <translation id="1608626060424371292">이 사용자 삭제</translation>
@@ -1772,6 +1770,7 @@
 <translation id="2889064240420137087">다음으로 링크 열기...</translation>
 <translation id="2891922230654533301">기기를 사용하여 <ph name="APP_NAME" />에 로그인하시겠습니까?</translation>
 <translation id="2893168226686371498">기본 브라우저</translation>
+<translation id="2893180576842394309">Google에서 내 방문 기록을 사용하여 Google 검색 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2894757982205307093">그룹에 새 탭 추가</translation>
 <translation id="289695669188700754">키 ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">시크릿 창을 모두 닫으면 맞춤 설정이 삭제됩니다.</translation>
@@ -2652,7 +2651,6 @@
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3856800405688283469">시간대 선택</translation>
 <translation id="3857807444929313943">손가락을 뗀 후 다시 터치</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />: 동기화 중지됨</translation>
 <translation id="3861638017150647085">사용자 이름 ‘<ph name="USERNAME" />’은(는) 사용할 수 없습니다.</translation>
 <translation id="3861977424605124250">시작 시 표시</translation>
 <translation id="3862788408946266506">'kiosk_only' 매니페스트 속성을 사용하는 앱은 Chrome OS 키오스크 모드에 설치해야 합니다</translation>
@@ -3541,7 +3539,6 @@
 <translation id="4881685975363383806">다음번에 알리지 않음</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4882312758060467256">이 사이트의 액세스 권한이 있습니다.</translation>
-<translation id="4882831918239250449">검색, 광고 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="4882919381756638075">사이트에서는 일반적으로 영상 채팅 같은 커뮤니케이션 기능에 마이크를 사용합니다.</translation>
 <translation id="4883436287898674711">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="48838266408104654">작업 관리자(&amp;T)</translation>
@@ -4340,7 +4337,6 @@
 <translation id="5794414402486823030">항상 시스템 뷰어로 열기</translation>
 <translation id="5794700615121138172">Linux 공유 폴더</translation>
 <translation id="5794786537412027208">모든 Chrome 앱 종료</translation>
-<translation id="5797070761912323120">Google에서 내 방문 기록을 사용하여 Google 검색, 광고 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="5798079537501238810">사이트에서 결제 핸들러를 설치할 수 있음</translation>
 <translation id="579907812742603813">보호된 콘텐츠</translation>
 <translation id="579915268381781820">보안 키가 삭제되었습니다.</translation>
@@ -4701,7 +4697,6 @@
 <translation id="6208521041562685716">모바일 데이터가 활성화됨</translation>
 <translation id="6209838773933913227">구성요소 업데이트 중</translation>
 <translation id="6209908325007204267">기기에 Chrome Enterprise 업그레이드가 있지만 사용자 이름이 엔터프라이즈 계정에 연결되어 있지 않았습니다. 다른 기기에서 다음 페이지를 방문하여 엔터프라이즈 계정을 만드세요. g.co/ChromeEnterpriseAccount</translation>
-<translation id="6211495400987308581"><ph name="PROFILE_NAME" />: 동기화가 작동하지 않음</translation>
 <translation id="6212039847102026977">고급 네트워크 속성 표시</translation>
 <translation id="6212168817037875041">디스플레이 사용 중지</translation>
 <translation id="6212752530110374741">이메일 링크</translation>
@@ -5790,6 +5785,7 @@
 <translation id="7427348830195639090">백그라운드 페이지: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />에서 전화 걸기</translation>
 <translation id="7431719494109538750">HID 기기를 찾을 수 없음</translation>
+<translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> 기기를 계속 사용하려면 스마트 카드 삽입</translation>
 <translation id="7433957986129316853">유지</translation>
 <translation id="7434509671034404296">개발자 정보</translation>

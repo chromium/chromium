@@ -317,6 +317,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
+<translation id="3560866052109807830">Công cụ đánh dấu</translation>
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
 <translation id="3573179567135747900">Thay đổi lại thành "<ph name="FROM_LOCALE" />" (yêu cầu khởi động lại)</translation>
@@ -411,6 +412,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4274537685965975248">Phím tắt Ctrl + Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím End, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên phải.</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
+<translation id="429402653707266969">Bật/tắt vị trí thanh công cụ</translation>
 <translation id="4294319844246081198">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Xóa tất cả <ph name="COUNT" /> thông báo</translation>
 <translation id="4302592941791324970">Không dùng được</translation>

@@ -217,7 +217,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1682696192498422849">Kortsiden først</translation>
 <translation id="168693727862418163">Denne regelverdien kunne ikke valideres mot oppsettet og blir derfor ignorert.</translation>
 <translation id="168841957122794586">Tjenersertifikatet inneholder en svak kryptografisk nøkkel.</translation>
-<translation id="1696290444144917273">Se virtuelle kortopplysninger</translation>
 <translation id="1697532407822776718">Da er alt klart!</translation>
 <translation id="1699570257714336246">Informasjon mangler</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -1210,7 +1209,6 @@ brukere av denne nettleseren.</translation>
 <translation id="5314967030527622926">Heftemaker</translation>
 <translation id="5316812925700871227">Rotér mot klokken</translation>
 <translation id="5317780077021120954">Lagre</translation>
-<translation id="5321288445143113935">Maksimert</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> av <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Velg kontaktinformasjon</translation>
 <translation id="5327248766486351172">Navn</translation>

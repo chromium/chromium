@@ -67,6 +67,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="4176825807642096119">Code d'accès</translation>
 <translation id="4227991223508142681">Utilitaire d'approvisionnement de l'hôte</translation>
 <translation id="4240294130679914010">Programme de désinstallation de l'hôte de Google Chromoting</translation>
+<translation id="4257751272692708833">Transfert d'URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Le code d'accès n'est pas valide. Veuillez réessayer.</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4405930547258349619">Bibliothèque principale</translation>
@@ -121,6 +122,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="6612717000975622067">Envoyer Ctrl-Alt-Suppr</translation>
 <translation id="6654753848497929428">Partager</translation>
 <translation id="677755392401385740">Hôte démarré pour l'utilisateur : <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Application d'aide pour ouvrir une URL du client <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Afficher et masquer le clavier.</translation>
 <translation id="6963936880795878952">Les connexions à l'ordinateur distant sont momentanément bloquées, car un utilisateur a tenté de s'y connecter en utilisant un NIP erroné. Veuillez réessayer plus tard.</translation>
 <translation id="6965382102122355670">OK</translation>

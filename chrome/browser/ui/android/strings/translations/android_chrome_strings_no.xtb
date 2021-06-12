@@ -590,7 +590,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4880127995492972015">Oversett</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="488187801263602086">Endre navnet på filen</translation>
-<translation id="4882831918239250449">Kontrollér hvordan nettleserloggen din brukes til personlig tilpasning av søk, annonser med mer</translation>
 <translation id="4885273946141277891">For mange Chrome-forekomster.</translation>
 <translation id="4905269543817054577">Loggen lagres ikke i Inkognito</translation>
 <translation id="4908869848243824489">Discover fra Google</translation>
@@ -731,7 +730,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5780792035410621042">For å kopiere passord må du først angi en skjermlås på enheten</translation>
 <translation id="5793665092639000975">Bruker <ph name="SPACE_USED" /> av <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Søk etter og bla gjennom</translation>
-<translation id="5797070761912323120">Google kan bruke loggen din for å gi Søk, annonser og andre Google-tjenester et personlig preg</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{for # time siden}other{for # timer siden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="5810864297166300463">Netthjelp</translation>

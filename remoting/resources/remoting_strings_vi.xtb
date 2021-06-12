@@ -67,6 +67,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="4176825807642096119">Mã truy cập</translation>
 <translation id="4227991223508142681">Tiện ích cấp phép máy chủ</translation>
 <translation id="4240294130679914010">Trình gỡ cài đặt máy chủ kết nối từ xa trên Chrome</translation>
+<translation id="4257751272692708833">Trình chuyển tiếp URL của <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Mã truy cập không hợp lệ. Vui lòng thử lại.</translation>
 <translation id="4281844954008187215">Điều khoản dịch vụ</translation>
 <translation id="4405930547258349619">Thư viện trung tâm</translation>
@@ -121,6 +122,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="6612717000975622067">Gửi Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Chia sẻ</translation>
 <translation id="677755392401385740">Máy chủ đã khởi động cho người dùng: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Ứng dụng trợ giúp để mở một URL trên máy khách của <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Hiển thị / ẩn bàn phím.</translation>
 <translation id="6963936880795878952">Kết nối với máy tính từ xa tạm thời bị chặn vì ai đó đang cố gắng kết nối với máy tính đó bằng mã PIN không hợp lệ. Vui lòng thử lại sau.</translation>
 <translation id="6965382102122355670">OK</translation>

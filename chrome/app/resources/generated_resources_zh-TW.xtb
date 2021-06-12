@@ -167,7 +167,6 @@
 <translation id="117445914942805388">如要從所有同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />前往同步處理設定<ph name="END_LINK" />。</translation>
 <translation id="1175364870820465910">列印(&amp;P)...</translation>
 <translation id="1176471985365269981">不得編輯裝置上的檔案或資料夾</translation>
-<translation id="1177138678118607465">Google 可能會使用你的瀏覽記錄，為你提供個人化的搜尋服務、廣告內容和其他各項 Google 服務。你隨時可以前往 myaccount.google.com/activitycontrols/search 變更這項設定</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="117916940443676133">你的安全金鑰未受 PIN 碼保護。如要管理登入資料，請先建立 PIN 碼。</translation>
@@ -552,7 +551,6 @@
 <translation id="1602085790802918092">正在啟動虛擬機器</translation>
 <translation id="1603914832182249871">(無痕模式)</translation>
 <translation id="1604432177629086300">無法列印。請檢查印表機，然後再試一次。</translation>
-<translation id="1605544918554600534"><ph name="PROFILE_NAME" />：密碼同步功能無法正常運作</translation>
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
 <translation id="1608626060424371292">移除這位使用者</translation>
@@ -1757,6 +1755,7 @@
 <translation id="2889064240420137087">使用其他程式開啟連結...</translation>
 <translation id="2891922230654533301">要從這部裝置登入「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
+<translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">所有無痕式視窗關閉後，這項自訂設定將會移除</translation>
@@ -2090,7 +2089,7 @@
 <translation id="3275778913554317645">在視窗中開啟</translation>
 <translation id="3277691515294482687">先將我的應用程式和檔案備份至「我的檔案」資料夾，再升級 Linux。</translation>
 <translation id="3278001907972365362">你的 Google 帳戶有狀況需處理</translation>
-<translation id="3279092821516760512">所選聯絡人在附近時可與你分享內容。傳輸作業會等到你接受後才開始。</translation>
+<translation id="3279092821516760512">指定聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="3279230909244266691">正在啟動虛擬機器，過程可能需要幾分鐘。</translation>
 <translation id="3280237271814976245">另存新檔(&amp;A)...</translation>
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
@@ -2637,7 +2636,6 @@
 <translation id="3856096718352044181">請驗證供應商是否有效，或稍後再試</translation>
 <translation id="3856800405688283469">選取時區</translation>
 <translation id="3857807444929313943">移開手指，然後再次輕觸感應器</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />：已暫停同步處理</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
 <translation id="3861977424605124250">啟動時顯示</translation>
 <translation id="3862788408946266506">含有「kiosk_only」資訊清單屬性的應用程式只能在 Chrome 作業系統 Kiosk 模式中安裝</translation>
@@ -3527,7 +3525,6 @@
 <translation id="4881685975363383806">下次不要提醒我</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4882312758060467256">有權存取這個網站</translation>
-<translation id="4882831918239250449">控制 Google 使用瀏覽記錄提供個人化搜尋服務、廣告和其他內容的方式</translation>
 <translation id="4882919381756638075">網站通常會使用你的麥克風，以提供視訊通訊等通訊功能</translation>
 <translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="48838266408104654">工作管理員(&amp;T)</translation>
@@ -4326,7 +4323,6 @@
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
-<translation id="5797070761912323120">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務、廣告內容和其他各項 Google 服務</translation>
 <translation id="5798079537501238810">網站可以安裝付款處理常式</translation>
 <translation id="579907812742603813">受保護內容</translation>
 <translation id="579915268381781820">你的安全金鑰已移除。</translation>
@@ -4687,7 +4683,6 @@
 <translation id="6208521041562685716">正在啟用行動數據</translation>
 <translation id="6209838773933913227">正在更新元件</translation>
 <translation id="6209908325007204267">你的裝置包含 Chrome Enterprise 升級版，但你的使用者名稱未申請企業版帳戶。請透過其他裝置前往 g.co/ChromeEnterpriseAccount 建立企業版帳戶。</translation>
-<translation id="6211495400987308581"><ph name="PROFILE_NAME" />：同步處理功能無法正常運作</translation>
 <translation id="6212039847102026977">顯示進階網路屬性</translation>
 <translation id="6212168817037875041">關閉螢幕</translation>
 <translation id="6212752530110374741">透過電子郵件傳送連結</translation>
@@ -5699,7 +5694,7 @@
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7349010927677336670">視訊流暢度</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
-<translation id="7353261921908507769">聯絡人在附近時可與你分享內容。傳輸作業會等到你接受後才開始。</translation>
+<translation id="7353261921908507769">聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="735361434055555355">正在安裝 Linux...</translation>
 <translation id="7354341762311560488">指紋感應器位於鍵盤左下方，請單指輕觸這個按鍵。</translation>
 <translation id="7356908624372060336">網路記錄</translation>
@@ -5776,6 +5771,7 @@
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">用「<ph name="DEVICE_NAME" />」撥打電話</translation>
 <translation id="7431719494109538750">找不到 HID 裝置</translation>
+<translation id="7431991332293347422">控制 Google 使用瀏覽記錄提供個人化搜尋服務和其他內容的方式</translation>
 <translation id="7433708794692032816">插入智慧型卡片才能繼續使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">保留</translation>
 <translation id="7434509671034404296">開發人員選項</translation>

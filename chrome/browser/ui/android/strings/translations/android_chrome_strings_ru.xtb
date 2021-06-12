@@ -590,7 +590,6 @@
 <translation id="4880127995492972015">Перевести…</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="488187801263602086">Необходимо переименовать файл</translation>
-<translation id="4882831918239250449">Использование данных о посещенных страницах для персонализации Поиска, рекламы и т. д.</translation>
 <translation id="4885273946141277891">Конфликт версий Chrome</translation>
 <translation id="4905269543817054577">История не сохраняется</translation>
 <translation id="4908869848243824489">Рекомендации от Google</translation>
@@ -731,7 +730,6 @@
 <translation id="5780792035410621042">Чтобы копировать пароли, включите на устройстве блокировку экрана.</translation>
 <translation id="5793665092639000975">Использовано: <ph name="SPACE_USED" /> из <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Просмотр страниц и поиск</translation>
-<translation id="5797070761912323120">Google может использовать вашу историю, чтобы персонализировать рекламу, а также Поиск и другие сервисы.</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# час назад}one{# час назад}few{# часа назад}many{# часов назад}other{# часа назад}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
 <translation id="5810864297166300463">Помощь при работе в Интернете</translation>

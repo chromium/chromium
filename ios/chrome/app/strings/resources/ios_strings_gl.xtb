@@ -117,7 +117,6 @@
 <translation id="214201757571129614">Iniciar sesión…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2175927920773552910">Código QR</translation>
-<translation id="2198757192731523470">Google pode utilizar o teu historial para personalizar a Busca, os anuncios e outros servizos seus.</translation>
 <translation id="2218443599109088993">Afastar</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
@@ -298,7 +297,6 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
 <translation id="4079195788735381731">A túa organización pechou a túa sesión</translation>
-<translation id="4082688844002261427">Controla como se utiliza o historial de navegación para personalizar a Busca, os anuncios e moito máis</translation>
 <translation id="408404951701638773">Agora é máis fácil acceder á barra de busca</translation>
 <translation id="411254640334432676">Erro na descarga.</translation>
 <translation id="4112644173421521737">Buscar</translation>
@@ -407,6 +405,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
+<translation id="5232485538978018676">Iniciar sesión cunha conta xestionada</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5245322853195994030">Cancelar sincronización</translation>
 <translation id="5271549068863921519">Gardar contrasinal</translation>
@@ -452,7 +451,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5738887413654608789">Así poderás descubrir páxinas web relevantes en función do que te rodea.</translation>
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
-<translation id="5797070761912323120">Google pode utilizar o teu historial para personalizar a Busca, os anuncios e outros servizos seus.</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
 <translation id="5812974770859303494">Engadir a…</translation>
 <translation id="5816228676161003208">Permite que busques de forma máis rápida usando a voz.</translation>
@@ -649,6 +647,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos non lidos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="7425346204213733349">Os cambios nos marcadores, no historial, nos contrasinais e noutras opcións de configuración deixarán de sincronizarse coa túa conta de Google. Non obstante, os teus datos actuais permanecerán almacenados na túa conta de Google.</translation>
+<translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7454057999980797137">Estado/provin.</translation>
 <translation id="7456847797759667638">Abrir localización...</translation>
@@ -723,6 +722,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8206354486702514201">O administrador aplica esta configuración.</translation>
 <translation id="8225985093977202398">Imaxes e ficheiros en caché</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8271720166617117963">Aceptar e iniciar sesión</translation>
 <translation id="8281781826761538115">Idioma predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8283172974887967105">Definir…</translation>
@@ -765,6 +765,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8668210798914567634">Gardouse esta páxina na túa lista de lectura.</translation>
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
+<translation id="8691262314411702087">Seleccionar que sincronizar</translation>
 <translation id="8693663554456874301">{count,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
 <translation id="8706588385081740091">Contrasinais</translation>
 <translation id="8717864919010420084">Copiar ligazón</translation>

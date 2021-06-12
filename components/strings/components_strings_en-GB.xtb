@@ -217,7 +217,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1682696192498422849">Short edge first</translation>
 <translation id="168693727862418163">This policy value failed to validate against its schema and will be ignored.</translation>
 <translation id="168841957122794586">The server certificate contains a weak cryptographic key.</translation>
-<translation id="1696290444144917273">View virtual card details</translation>
 <translation id="1697532407822776718">You're all set!</translation>
 <translation id="1699570257714336246">Information missing</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -1209,7 +1208,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5314967030527622926">Booklet maker</translation>
 <translation id="5316812925700871227">Rotate Anti-clockwise</translation>
 <translation id="5317780077021120954">Save</translation>
-<translation id="5321288445143113935">Maximised</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> of <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Choose contact info</translation>
 <translation id="5327248766486351172">Name</translation>

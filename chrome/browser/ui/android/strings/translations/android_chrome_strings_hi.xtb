@@ -590,7 +590,6 @@
 <translation id="4880127995492972015">अनुवाद करें…</translation>
 <translation id="4881695831933465202">खोलें</translation>
 <translation id="488187801263602086">फ़ाइल का नाम बदलें</translation>
-<translation id="4882831918239250449">यह नियंत्रित करें कि खोज, विज्ञापनों वगैरह को मनमुताबिक बनाने के लिए आपके ब्राउज़िंग इतिहास का इस्तेमाल कैसे किया जाए</translation>
 <translation id="4885273946141277891">Chrome इंस्टेंस की असमर्थित संख्या.</translation>
 <translation id="4905269543817054577">गुप्त मोड में इतिहास सेव नहीं होता</translation>
 <translation id="4908869848243824489">Google का 'डिस्कवर'</translation>
@@ -731,7 +730,6 @@
 <translation id="5780792035410621042">पासवर्ड कॉपी करने के लिए, पहले अपने डिवाइस पर एक स्क्रीन लॉक सेट करें</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> में से <ph name="SPACE_USED" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="5795872532621730126">खोजें और ब्राउज़ करें</translation>
-<translation id="5797070761912323120">खोज, विज्ञापन, और दूसरी Google सेवाओं को मनमुताबिक बनाने के लिए, Google आपके इतिहास का इस्तेमाल कर सकता है</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# घंटा पहले}one{# घंटे पहले}other{# घंटे पहले}}</translation>
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="5810864297166300463">वेब सहायता</translation>

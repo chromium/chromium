@@ -217,7 +217,6 @@
 <translation id="1682696192498422849">Спочатку по ширині</translation>
 <translation id="168693727862418163">Не вдалося перевірити значення цього правила в схемі, тому воно ігноруватиметься.</translation>
 <translation id="168841957122794586">Сертифікат сервера містить слабкий криптографічний ключ.</translation>
-<translation id="1696290444144917273">Переглянути дані віртуальної картки</translation>
 <translation id="1697532407822776718">Готово!</translation>
 <translation id="1699570257714336246">Немає інформації</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -1208,7 +1207,6 @@
 <translation id="5314967030527622926">Виробник буклетів</translation>
 <translation id="5316812925700871227">Обернути проти годинникової стрілки</translation>
 <translation id="5317780077021120954">Зберегти</translation>
-<translation id="5321288445143113935">Розгорнуто</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Вибрати контактну інформацію</translation>
 <translation id="5327248766486351172">Ім’я</translation>

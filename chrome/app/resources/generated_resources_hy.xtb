@@ -167,7 +167,6 @@
 <translation id="117445914942805388">Այցելությունների պատմությունը բոլոր համաժամացված սարքերից և Google հաշվից ջնջելու համար <ph name="BEGIN_LINK" />անցեք համաժամացման կարգավորումներ<ph name="END_LINK" />:</translation>
 <translation id="1175364870820465910">&amp;Տպել…</translation>
 <translation id="1176471985365269981">Չի թույլատրվում ձեր սարքում խմբագրել ֆայլեր և պանակներ</translation>
-<translation id="1177138678118607465">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել Որոնումն ու Google-ի այլ ծառայություններն անհատականացնելու համար: Այդ գործառույթը կարող եք կառավարել myaccount.google.com էջում:</translation>
 <translation id="1177863135347784049">Անհատականացված</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="117916940443676133">Անվտանգության բանալին պաշտպանված չէ PIN-ով: Մուտքի տվյալները կառավարելու համար նախ ստեղծեք PIN կոդ:</translation>
@@ -554,7 +553,6 @@
 <translation id="1602085790802918092">Վիրտուալ մեքենան գործարկվում է</translation>
 <translation id="1603914832182249871">(Ինկոգնիտո)</translation>
 <translation id="1604432177629086300">Չհաջողվեց տպել: Ստուգեք տպիչը և նորից փորձեք:</translation>
-<translation id="1605544918554600534"><ph name="PROFILE_NAME" />՝ գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="1607139524282324606">Մաքրել հաղորդագրությունը</translation>
 <translation id="1607499585984539560">Օգտատերը կապված չէ տիրույթի հետ</translation>
 <translation id="1608626060424371292">Հեռացնել այս պրոֆիլը</translation>
@@ -1758,6 +1756,7 @@
 <translation id="2889064240420137087">Բացել հղումը` օգտագործելով…</translation>
 <translation id="2891922230654533301">Օգտագործե՞լ ձեր սարքը՝ <ph name="APP_NAME" /> հավելվածում հաշիվ մտնելու համար</translation>
 <translation id="2893168226686371498">Կանխադրված դիտարկիչ</translation>
+<translation id="2893180576842394309">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել` Որոնումն ու Google-ի մյուս ծառայություններն անհատականացնելու համար:</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
 <translation id="289695669188700754">Բանալու ID` <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Այս հատուկ կարգավորումը կհեռացվի, երբ դուք փակեք ձեր բոլոր ինկոգնիտո պատուհանները</translation>
@@ -2638,7 +2637,6 @@
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3856800405688283469">Ընտրեք ժամային գոտին</translation>
 <translation id="3857807444929313943">Բարձրացրեք մատը և նորից փորձեք</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />․ համաժամացումը դադարեցված է</translation>
 <translation id="3861638017150647085">«<ph name="USERNAME" />» օգտանունը հասանելի չէ</translation>
 <translation id="3861977424605124250">Ցույց տալ գործարկման ժամանակ</translation>
 <translation id="3862788408946266506">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի Chrome OS-ի կրպակի ռեժիմում</translation>
@@ -3530,7 +3528,6 @@
 <translation id="4881685975363383806">Այլևս չհիշեցնել</translation>
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="4882312758060467256">Այս կայքը հասանելի է ընդլայնմանը</translation>
-<translation id="4882831918239250449">Կառավարեք ձեր այցելությունների պատմության օգտագործումը՝ Որոնումը, գովազդն ու Google-ի մյուս ծառայություններն անհատականացնելու համար</translation>
 <translation id="4882919381756638075">Կայքերը սովորաբար խոսափողն օգտագործում են հաղորդակցման գործառույթների, օրինակ՝ տեսազրույցների համար</translation>
 <translation id="4883436287898674711">Բոլոր <ph name="WEBSITE_1" /> կայքերը</translation>
 <translation id="48838266408104654">&amp;Խնդիրների կառավարիչ</translation>
@@ -4331,7 +4328,6 @@
 <translation id="5794414402486823030">Միշտ բացել համակարգի դիտման ծրագրի միջոցով</translation>
 <translation id="5794700615121138172">Լինուքսի ընդհանուր պանակներ</translation>
 <translation id="5794786537412027208">Դուրս գալ Chrome-ի բոլոր հավելվածներից</translation>
-<translation id="5797070761912323120">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել` Որոնումը, գովազդն ու Google-ի մյուս ծառայություններն անհատականացնելու համար</translation>
 <translation id="5798079537501238810">Կայքերը կարող են տեղադրել վճարումների մշակիչներ</translation>
 <translation id="579907812742603813">պաշտպանված բովանդակություն</translation>
 <translation id="579915268381781820">Անվտանգության բանալին հեռացվել է:</translation>
@@ -4692,7 +4688,6 @@
 <translation id="6208521041562685716">Բջջային ինտերնետն ակտիվացվեց</translation>
 <translation id="6209838773933913227">Բաղադրիչի թարմացում</translation>
 <translation id="6209908325007204267">Ձեր սարքում առկա է Chrome Enterprise-ի արտոնագիր, բայց ձեր օգտանունը կապված չէ կազմակերպության հաշվի հետ։ Մեկ այլ սարքով անցեք g.co/ChromeEnterpriseAccount էջ և ստեղծեք կազմակերպության հաշիվ։</translation>
-<translation id="6211495400987308581"><ph name="PROFILE_NAME" />. համաժամացումը չի աշխատում</translation>
 <translation id="6212039847102026977">Ցուցադրել ցանցի լրացուցիչ հատկությունները</translation>
 <translation id="6212168817037875041">Անջատել էկրանը</translation>
 <translation id="6212752530110374741">Ուղարկել հղումը էլփոստով</translation>
@@ -5781,6 +5776,7 @@
 <translation id="7427348830195639090">Հետնաշերտի էջ՝ <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Զանգել <ph name="DEVICE_NAME" />-ից</translation>
 <translation id="7431719494109538750">HID սարքեր չեն գտնվել</translation>
+<translation id="7431991332293347422">Կառավարեք ձեր այցելությունների պատմության օգտագործումը՝ Որոնումը և այլ ծառայություններ անհատականացնելու համար</translation>
 <translation id="7433708794692032816">Տեղադրեք խելացի քարտը, որպեսզի շարունակեք օգտվել <ph name="DEVICE_TYPE" /> սարքից</translation>
 <translation id="7433957986129316853">Պահպանել</translation>
 <translation id="7434509671034404296">Մշակողների համար</translation>
@@ -7079,14 +7075,14 @@
 <translation id="8846746259444262774">Չհաջողվեց տեղադրել</translation>
 <translation id="8847523528195140327">Դուրս գալ հաշվից, երբ պատյանի շապիկը փակ է</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8849001918648564819">Թաքցված է</translation>
+<translation id="8849001918648564819">Ոչ ոք</translation>
 <translation id="8849219423513870962">Չեղարկել eSIM պրոֆիլի (<ph name="PROFILE_NAME" />) հեռացումը</translation>
 <translation id="8850251000316748990">Ավելին…</translation>
 <translation id="885246833287407341">API-ի ֆունկցիայի փոփոխականներ</translation>
 <translation id="8853586775156634952">Այս քարտը կպահվի միայն այս սարքում</translation>
 <translation id="8855977033756560989">Այս Chromebook Enterprise սարքի համար տրամադրվում է Chrome Enterprise-ի արտոնագիր։ Որպեսզի կարողանաք օգտվել բոլոր կորպորատիվ գործառույթներից, գրանցեք սարքը Google-ի ադմինիստրատորի հաշվի օգտագործմամբ։</translation>
 <translation id="8856028055086294840">Վերականգնել հավելվածներն ու էջերը</translation>
-<translation id="885701979325669005">Պահեստ</translation>
+<translation id="885701979325669005">Պահոց</translation>
 <translation id="8859057652521303089">Ընտրեք լեզուն`</translation>
 <translation id="8859174528519900719">Ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Չհաջողվեց բեռնել օգտագործման պայմանները</translation>

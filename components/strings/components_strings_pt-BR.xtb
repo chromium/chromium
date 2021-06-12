@@ -217,7 +217,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1682696192498422849">Borda menor primeiro</translation>
 <translation id="168693727862418163">Houve uma falha na validação do valor da política em relação ao esquema, e ele será ignorado.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave de criptografia fraca.</translation>
-<translation id="1696290444144917273">Ver detalhes do cartão virtual</translation>
 <translation id="1697532407822776718">Pronto.</translation>
 <translation id="1699570257714336246">Faltam algumas informações</translation>
 <translation id="1703835215927279855">Carta</translation>
@@ -1199,7 +1198,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5314967030527622926">Criador de folhetos</translation>
 <translation id="5316812925700871227">Girar no sentido anti-horário</translation>
 <translation id="5317780077021120954">Salvar</translation>
-<translation id="5321288445143113935">Maximizado</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Escolher informações de contato</translation>
 <translation id="5327248766486351172">Nome</translation>

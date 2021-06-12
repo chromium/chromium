@@ -169,7 +169,6 @@
 <translation id="117445914942805388">To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />visit sync settings<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Print...</translation>
 <translation id="1176471985365269981">Not allowed to edit files or folders on your device</translation>
-<translation id="1177138678118607465">Google may use your browsing history to personalise Search, ads and other Google services. You can change this at any time at myaccount.google.com/activitycontrols/search</translation>
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="117916940443676133">Your security key is not protected with a PIN. To manage sign-in data, first create a PIN.</translation>
@@ -555,7 +554,6 @@
 <translation id="1602085790802918092">Starting the virtual machine</translation>
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Couldn't print. Check printer and try again.</translation>
-<translation id="1605544918554600534"><ph name="PROFILE_NAME" />: Password sync isn't working</translation>
 <translation id="1607139524282324606">Clear entry</translation>
 <translation id="1607499585984539560">User is not affiliated with domain</translation>
 <translation id="1608626060424371292">Remove this user</translation>
@@ -1772,6 +1770,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2889064240420137087">Open link with...</translation>
 <translation id="2891922230654533301">Use your device to sign in to <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Default browser</translation>
+<translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2894757982205307093">New tab in group</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">This custom setting will be removed when you close all your incognito windows</translation>
@@ -2652,7 +2651,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3857807444929313943">Lift, then touch again</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sync paused</translation>
 <translation id="3861638017150647085">Username '<ph name="USERNAME" />' is not available</translation>
 <translation id="3861977424605124250">Show on startup</translation>
 <translation id="3862788408946266506">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
@@ -3544,7 +3542,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4881685975363383806">Don't remind me next time</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4882312758060467256">Has access to this site</translation>
-<translation id="4882831918239250449">Control how your browsing history is used to personalise Search, ads and more</translation>
 <translation id="4882919381756638075">Sites usually use your microphone for communication features like video chatting</translation>
 <translation id="4883436287898674711">All <ph name="WEBSITE_1" /> sites</translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>
@@ -4343,7 +4340,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5794414402486823030">Always open with system viewer</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
 <translation id="5794786537412027208">Quit all Chrome Apps</translation>
-<translation id="5797070761912323120">Google may use your history to personalise Search, ads and other Google services</translation>
 <translation id="5798079537501238810">Sites can install payment handlers</translation>
 <translation id="579907812742603813">protected content</translation>
 <translation id="579915268381781820">Your security key was removed.</translation>
@@ -4704,7 +4700,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6208521041562685716">Mobile data being activated</translation>
 <translation id="6209838773933913227">Component updating</translation>
 <translation id="6209908325007204267">Your device includes a Chrome Enterprise Upgrade, but your username is not associated with an enterprise account. Please create an enterprise account by visiting g.co/ChromeEnterpriseAccount on a secondary device.</translation>
-<translation id="6211495400987308581"><ph name="PROFILE_NAME" />: Sync isn't working</translation>
 <translation id="6212039847102026977">Show advanced network properties</translation>
 <translation id="6212168817037875041">Turn off display</translation>
 <translation id="6212752530110374741">Email Link</translation>
@@ -5793,6 +5788,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7427348830195639090">Background Page: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Call from <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">No HID devices found</translation>
+<translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7433708794692032816">Insert smart card to keep using your <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Keep it</translation>
 <translation id="7434509671034404296">Developer</translation>

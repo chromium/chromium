@@ -217,7 +217,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
 <translation id="168693727862418163">Non puido cotexarse o valor desta política co seu esquema para levar a cabo a súa validación, así que se ignorará.</translation>
 <translation id="168841957122794586">O certificado do servidor contén unha clave criptográfica non segura.</translation>
-<translation id="1696290444144917273">Ver detalles da tarxeta virtual</translation>
 <translation id="1697532407822776718">Listo!</translation>
 <translation id="1699570257714336246">Falta información</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -311,6 +310,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Cando este control está habilitado e co estado activo, Chrome determina con que grupo grande de persoas ou "cohorte" concorda máis a túa actividade de navegación recente. Os anunciantes poden seleccionar anuncios para o grupo, e a túa actividade de navegación mantense privada no dispositivo. O teu grupo actualízase a diario.}=1{Cando este control está habilitado e co estado activo, Chrome determina con que grupo grande de persoas ou "cohorte" concorda máis a túa actividade de navegación recente. Os anunciantes poden seleccionar anuncios para o grupo, e a túa actividade de navegación mantense privada no dispositivo. O teu grupo actualízase a diario.}other{Cando este control está habilitado e co estado activo, Chrome determina con que grupo grande de persoas ou "cohorte" concorda máis a túa actividade de navegación recente. Os anunciantes poden seleccionar anuncios para o grupo, e a túa actividade de navegación mantense privada no dispositivo. O teu grupo actualízase cada {NUM_DAYS} días.}}</translation>
 <translation id="2053553514270667976">Código postal</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
+<translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
 <translation id="2071692954027939183">As notificacións bloqueáronse automaticamente porque non adoitas permitilas</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="20817612488360358">Estableceuse a configuración do proxy do sistema que debe utilizarse, pero tamén se especificou unha configuración de proxy explícita.</translation>
@@ -439,9 +439,11 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2521385132275182522">Grampa na parte inferior dereita</translation>
 <translation id="2523886232349826891">Gardada só neste dispositivo</translation>
 <translation id="2524461107774643265">Engadir máis información</translation>
+<translation id="2529899080962247600">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Unha vez alcanzada esa cantidade, ignoraranse as demais entradas.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
 <translation id="2536110899380797252">Engadir enderezo</translation>
 <translation id="2539524384386349900">Detectar</translation>
+<translation id="2540701853218677861">Historial de inicios e peches de sesión (por exemplo, marcas de tempo e intentos sen éxito)</translation>
 <translation id="2541219929084442027">As páxinas que ves nas pestanas do modo de incógnito non se conservarán no historial do teu navegador, no almacenamento de cookies nin no historial de busca unha vez pechadas todas as pestanas do modo de incógnito. Conservaranse todos os ficheiros que descargues ou os marcadores que crees.</translation>
 <translation id="2544644783021658368">Documento individual</translation>
 <translation id="254947805923345898">O valor da política non é válido.</translation>
@@ -632,6 +634,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3320021301628644560">Engade un enderezo de facturación</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3329013043687509092">Saturación</translation>
+<translation id="3333762389743153920">Non apta para asociarlle unha tarxeta virtual</translation>
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="3355823806454867987">Cambiar configuración do proxy...</translation>
 <translation id="3360103848165129075">Folla do controlador de pagos</translation>
@@ -765,6 +768,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3754210790023674521">Saír do modo de pantalla superposta</translation>
 <translation id="3759461132968374835">Non informaches de ningún erro recentemente. Os erros producidos mentres estaban desactivados os informes de erros non aparecerán aquí.</translation>
 <translation id="3760561303380396507">Queres usar Windows Hello en lugar do CVC?</translation>
+<translation id="3761171036307311438">Nome na tarxeta:</translation>
 <translation id="3761718714832595332">Ocultar estado</translation>
 <translation id="3765032636089507299">A páxina de navegación segura está en construción.</translation>
 <translation id="3765588406864124894">Caixa de correo 9</translation>
@@ -1144,6 +1148,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verificar a túa tarxeta</translation>
 <translation id="5135404736266831032">Xestiona os enderezos…</translation>
+<translation id="5138014172396933048">A tarxeta virtual non está dispoñible neste intres. Ponte en contacto co teu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="514010763713772514">Procesa a compra máis rápido a próxima vez</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
@@ -1190,6 +1195,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5287240709317226393">Mostrar cookies</translation>
 <translation id="5287456746628258573">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais ou números de tarxetas de crédito) cando se lle envía.</translation>
 <translation id="5288108484102287882">A validación dos valores da política xerou advertencias</translation>
+<translation id="5288808348893593856">A menos que Chrome indique o contrario, a conexión deste sitio é segura.</translation>
 <translation id="5289384342738547352">Manipulación de varios documentos</translation>
 <translation id="5299298092464848405">Erro ao analizar a política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1200,7 +1206,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5314967030527622926">Creador de folletos</translation>
 <translation id="5316812925700871227">Xirar á esquerda</translation>
 <translation id="5317780077021120954">Gardar</translation>
-<translation id="5321288445143113935">Aplicación maximizada</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Escoller información de contacto</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -1552,9 +1557,11 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6685834062052613830">Pecha sesión e finaliza o proceso de configuración</translation>
 <translation id="6687335167692595844">Tamaño do tipo de letra solicitado</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
+<translation id="6688775486821967877">A tarxeta virtual non está dispoñible nestes intres. Téntao de novo máis tarde</translation>
 <translation id="6689249931105087298">Relativo con compresión de puntos negros</translation>
 <translation id="6689271823431384964">Chrome permíteche gardar as túas tarxetas na túa Conta de Google porque tes a sesión iniciada. Podes cambiar esta opción na configuración cando queiras. O nome do titular da tarxeta procede da túa conta.</translation>
 <translation id="6698381487523150993">Creada:</translation>
+<translation id="6699188552522342100">Este sitio web é exacto?</translation>
 <translation id="6702919718839027939">Presentar</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Escribe un termo de busca&gt;</translation>
@@ -2059,6 +2066,7 @@ Detalles adicionais:
           <ph name="LIST_ITEM" />As cookies e os datos dos sitios
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Usar Touch ID para confirmar as tarxetas máis rápido</translation>
+<translation id="8577348305244205642">A tarxeta virtual non está dispoñible</translation>
 <translation id="858637041960032120">Engadir número de teléfono</translation>
 <translation id="8589998999637048520">Calidade máxima</translation>
 <translation id="8600271352425265729">Só esta vez</translation>

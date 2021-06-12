@@ -169,7 +169,6 @@
 <translation id="117445914942805388">Щоб очистити дані веб-перегляду на всіх синхронізованих пристроях і в обліковому записі Google, <ph name="BEGIN_LINK" />перейдіть у налаштування синхронізації<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1176471985365269981">Заборонено змінювати файли або папки на пристрої</translation>
-<translation id="1177138678118607465">Google може використовувати вашу історію веб-перегляду, щоб персоналізувати Пошук, рекламні оголошення й інші сервіси Google. Це налаштування можна змінити на сторінці myaccount.google.com/activitycontrols/search</translation>
 <translation id="1177863135347784049">Спеціальне</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="117916940443676133">Ваш ключ безпеки не захищено PIN-кодом. Щоб керувати даними для входу, спершу створіть PIN-код.</translation>
@@ -558,7 +557,6 @@
 <translation id="1602085790802918092">Запуск віртуальної машини</translation>
 <translation id="1603914832182249871">(Анонімний перегляд)</translation>
 <translation id="1604432177629086300">Не вдається роздрукувати. Перевірте принтер і повторіть спробу.</translation>
-<translation id="1605544918554600534"><ph name="PROFILE_NAME" />: синхронізація паролів не працює</translation>
 <translation id="1607139524282324606">Очистити введені дані</translation>
 <translation id="1607499585984539560">Користувач не зв’язаний із цим доменом</translation>
 <translation id="1608626060424371292">Вилучити цього користувача</translation>
@@ -1775,6 +1773,7 @@
 <translation id="2889064240420137087">Відкрити посилання за допомогою...</translation>
 <translation id="2891922230654533301">Увійти в додаток <ph name="APP_NAME" /> за допомогою пристрою?</translation>
 <translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
+<translation id="2893180576842394309">Google може використовувати вашу історію, щоб персоналізувати Пошук та інші сервіси Google</translation>
 <translation id="2894757982205307093">Нова вкладка в групі</translation>
 <translation id="289695669188700754">Ідентифікатор ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Це спеціальне налаштування буде вилучено, коли ви закриєте всі вікна в режимі анонімного перегляду</translation>
@@ -2655,7 +2654,6 @@
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="3856800405688283469">Виберіть часовий пояс</translation>
 <translation id="3857807444929313943">Підніміть і опустіть палець</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронізацію призупинено</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
 <translation id="3861977424605124250">Показувати під час запуску</translation>
 <translation id="3862788408946266506">Додаток з атрибутом маніфесту "kiosk_only" потрібно встановлювати в режимі термінала ОС Chrome</translation>
@@ -3547,7 +3545,6 @@
 <translation id="4881685975363383806">Більше не нагадувати</translation>
 <translation id="4881695831933465202">Відкрити</translation>
 <translation id="4882312758060467256">Може запускатися на цьому сайті</translation>
-<translation id="4882831918239250449">Указуйте, як використовувати історію веб-перегляду для персоналізації Пошуку, оголошень тощо</translation>
 <translation id="4882919381756638075">Сайти зазвичай використовують мікрофон для роботи функцій спілкування, як-от відеочати</translation>
 <translation id="4883436287898674711">Усі сайти <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Диспетчер завдань</translation>
@@ -4346,7 +4343,6 @@
 <translation id="5794414402486823030">Завжди відкривати за допомогою системного переглядача</translation>
 <translation id="5794700615121138172">Спільні папки Linux</translation>
 <translation id="5794786537412027208">Вийти з усіх додатків Chrome</translation>
-<translation id="5797070761912323120">Google може використовувати вашу історію, щоб персоналізувати Пошук, оголошення й інші сервіси Google</translation>
 <translation id="5798079537501238810">Сайти можуть установлювати обробники платежів</translation>
 <translation id="579907812742603813">захищений контент</translation>
 <translation id="579915268381781820">Ключ безпеки вилучено.</translation>
@@ -4707,7 +4703,6 @@
 <translation id="6208521041562685716">Мобільне передавання даних активується</translation>
 <translation id="6209838773933913227">Оновлення компонента</translation>
 <translation id="6209908325007204267">На цьому пристрої є ліцензія Chrome Enterprise Upgrade, але ваше ім'я користувача не зв'язане з жодним корпоративним обліковим записом. Створіть його, перейшовши на додатковому пристрої на сторінку g.co/ChromeEnterpriseAccount.</translation>
-<translation id="6211495400987308581"><ph name="PROFILE_NAME" />: синхронізація не працює</translation>
 <translation id="6212039847102026977">Показати розширені параметри мережі</translation>
 <translation id="6212168817037875041">Вимкнути дисплей</translation>
 <translation id="6212752530110374741">Надіслати посилання електронною поштою</translation>
@@ -5796,6 +5791,7 @@
 <translation id="7427348830195639090">Фонова сторінка: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Телефонувати з пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Пристроїв HID не знайдено</translation>
+<translation id="7431991332293347422">Указуйте, як використовувати історію веб-перегляду для персоналізації Пошуку тощо</translation>
 <translation id="7433708794692032816">Щоб далі використовувати <ph name="DEVICE_TYPE" />, вставте розумну картку</translation>
 <translation id="7433957986129316853">Залишити</translation>
 <translation id="7434509671034404296">Для розробників</translation>
