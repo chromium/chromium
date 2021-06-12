@@ -305,7 +305,6 @@ public class JniProcessor extends AbstractProcessor {
         TypeName nativeInterfaceType = TypeName.get(nativeInterface.asType());
         TypeSpec.Builder builder = TypeSpec.classBuilder(name)
                                            .addSuperinterface(nativeInterfaceType)
-                                           .addModifiers(Modifier.FINAL)
                                            .addAnnotation(createAnnotationWithValue(Generated.class,
                                                    JniProcessor.class.getCanonicalName()));
         if (isPublic) {
