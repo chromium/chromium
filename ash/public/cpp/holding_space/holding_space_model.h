@@ -59,6 +59,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     // NOTE: Once set to `1.f`, holding space item progress becomes read-only.
     ScopedItemUpdate& SetProgress(const absl::optional<float>& progress);
 
+    // Sets the current size (in bytes) of the file backing the item and returns
+    // a reference to `this`.
+    // NOTE: If present, the `current_size_in_bytes` must be >= `0`.
+    ScopedItemUpdate& SetCurrentSizeInBytes(
+        const absl::optional<int64_t>& current_size_in_bytes);
+
    private:
     friend class HoldingSpaceModel;
     ScopedItemUpdate(HoldingSpaceModel* model, HoldingSpaceItem* item);
@@ -70,6 +76,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     absl::optional<GURL> file_system_url_;
     absl::optional<bool> paused_;
     absl::optional<absl::optional<float>> progress_;
+    absl::optional<absl::optional<int64_t>> current_size_in_bytes_;
   };
 
   HoldingSpaceModel();

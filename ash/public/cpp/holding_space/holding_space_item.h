@@ -134,6 +134,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // NOTE: Only in-progress items can be paused.
   bool SetPaused(bool paused);
 
+  // Sets the current size (in bytes) of the file backing this item.
+  // NOTE: If present, the `current_size_in_bytes` must be >= `0`.
+  bool SetCurrentSizeInBytes(
+      const absl::optional<int64_t>& current_size_in_bytes);
+
   const std::string& id() const { return id_; }
 
   Type type() const { return type_; }
@@ -147,6 +152,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   const GURL& file_system_url() const { return file_system_url_; }
 
   const absl::optional<float>& progress() const { return progress_; }
+
+  const absl::optional<int64_t>& current_size_in_bytes() const {
+    return current_size_in_bytes_;
+  }
 
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
@@ -185,6 +194,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Whether or not progress of this item is paused.
   // NOTE: Only in-progress items can be paused.
   bool paused_ = false;
+
+  // The current size (in bytes) of the file backing this item.
+  // NOTE: If present, the `current_size_in_bytes` is >= `0`.
+  // NOTE: This is currently set only in response to updates of in-progress
+  // downloads and only used when `progress_` != `1.f`.
+  absl::optional<int64_t> current_size_in_bytes_;
 
   // Mutable to allow const access from `AddDeletionCallback()`.
   mutable base::RepeatingClosureList deletion_callback_list_;

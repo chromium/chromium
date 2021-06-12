@@ -33,6 +33,10 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   if (progress_)
     did_update |= item_->SetProgress(progress_.value());
 
+  // Update current size.
+  if (current_size_in_bytes_)
+    did_update |= item_->SetCurrentSizeInBytes(current_size_in_bytes_.value());
+
   // Notify observers if and only if an update occurred.
   if (did_update) {
     for (auto& observer : model_->observers_)
@@ -59,6 +63,14 @@ HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetProgress(
     const absl::optional<float>& progress) {
   progress_ = progress;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetCurrentSizeInBytes(
+    const absl::optional<int64_t>& current_size_in_bytes) {
+  DCHECK(!current_size_in_bytes || current_size_in_bytes >= 0);
+  current_size_in_bytes_ = current_size_in_bytes;
   return *this;
 }
 

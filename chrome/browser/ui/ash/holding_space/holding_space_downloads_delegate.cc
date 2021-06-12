@@ -73,6 +73,12 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   // invoked in direct response to an explicit user action.
   void Resume() { download_item_->Resume(/*from_user=*/true); }
 
+  // Returns the number of bytes received from the underlying `download_item`.
+  absl::optional<int64_t> GetBytesReceived() const {
+    const int64_t bytes = download_item_->GetReceivedBytes();
+    return bytes >= 0 ? absl::make_optional(bytes) : absl::nullopt;
+  }
+
   // Returns the file path associated with the underlying `download_item_`.
   // NOTE: The file path may be empty before a target file path has been picked.
   const base::FilePath& GetFilePath() const {
@@ -386,6 +392,7 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       ->SetBackingFile(in_progress_download->GetFilePath(),
                        holding_space_util::ResolveFileSystemUrl(
                            profile(), in_progress_download->GetFilePath()))
+      .SetCurrentSizeInBytes(in_progress_download->GetBytesReceived())
       .SetPaused(in_progress_download->IsPaused())
       .SetProgress(in_progress_download->GetProgress());
 }

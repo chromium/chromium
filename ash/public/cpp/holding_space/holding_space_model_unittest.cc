@@ -150,12 +150,19 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->progress(), 0.5f);
 
+  // Update current size
+  model().UpdateItem(item_ptr->id())->SetCurrentSizeInBytes(100);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->current_size_in_bytes(), 100);
+
   // Update all attributes.
   updated_file_path = base::FilePath("again_updated_file_path");
   updated_file_system_url = GURL("filesystem::again_updated_file_system_url");
   model()
       .UpdateItem(item_ptr->id())
       ->SetBackingFile(updated_file_path, updated_file_system_url)
+      .SetCurrentSizeInBytes(200)
       .SetPaused(false)
       .SetProgress(0.75f);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
@@ -164,6 +171,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
   EXPECT_FALSE(item_ptr->IsPaused());
   EXPECT_EQ(item_ptr->progress(), 0.75f);
+  EXPECT_EQ(item_ptr->current_size_in_bytes(), 200);
 }
 
 // Verifies that updating items will no-op appropriately.
@@ -194,6 +202,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   model()
       .UpdateItem(item_ptr->id())
       ->SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
+      .SetCurrentSizeInBytes(absl::nullopt)
       .SetPaused(item_ptr->IsPaused())
       .SetProgress(item_ptr->progress());
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 0);

@@ -228,6 +228,16 @@ bool HoldingSpaceItem::SetPaused(bool paused) {
   return true;
 }
 
+bool HoldingSpaceItem::SetCurrentSizeInBytes(
+    const absl::optional<int64_t>& current_size_in_bytes) {
+  if (current_size_in_bytes_ == current_size_in_bytes)
+    return false;
+
+  DCHECK(!current_size_in_bytes || current_size_in_bytes >= 0);
+  current_size_in_bytes_ = current_size_in_bytes;
+  return true;
+}
+
 HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,

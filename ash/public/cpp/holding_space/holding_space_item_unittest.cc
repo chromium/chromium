@@ -153,6 +153,31 @@ TEST_P(HoldingSpaceItemTest, Progress) {
   EXPECT_EQ(holding_space_item->progress(), 1.f);
 }
 
+// Tests setting the current size (in bytes) for each holding space item type.
+TEST_P(HoldingSpaceItemTest, CurrentSizeInBytes) {
+  // Create a `holding_space_item`.
+  auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/GetParam(), base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"),
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
+
+  // Initially the current size should be absent.
+  EXPECT_FALSE(holding_space_item->current_size_in_bytes());
+  EXPECT_FALSE(holding_space_item->current_size_in_bytes());
+
+  // It should be possible to update current size to a new value.
+  EXPECT_TRUE(holding_space_item->SetCurrentSizeInBytes(100));
+  EXPECT_EQ(holding_space_item->current_size_in_bytes(), 100);
+
+  // It should no-op to try to update current size to its existing value.
+  EXPECT_FALSE(holding_space_item->SetCurrentSizeInBytes(100));
+  EXPECT_EQ(holding_space_item->current_size_in_bytes(), 100);
+
+  // It should be possible to unset current size.
+  EXPECT_TRUE(holding_space_item->SetCurrentSizeInBytes(absl::nullopt));
+  EXPECT_FALSE(holding_space_item->current_size_in_bytes());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceItemTest,
                          testing::ValuesIn(GetHoldingSpaceItemTypes()));
