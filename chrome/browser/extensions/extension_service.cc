@@ -907,7 +907,8 @@ void ExtensionService::MaybeEnableRemotelyDisabledExtension(
   unchanged.erase(extension_id);
   // Remove the extension from the blocklist.
   UpdateBlocklistedExtensions({}, unchanged);
-  OmahaAttributesHandler::ReportReenableExtensionFromMalware();
+  OmahaAttributesHandler::ReportReenableExtension(
+      ExtensionUpdateCheckDataKey::kMalware);
 }
 
 void ExtensionService::ClearGreylistedAcknowledgedStateAndMaybeReenable(
