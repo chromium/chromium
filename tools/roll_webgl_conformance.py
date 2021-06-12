@@ -81,6 +81,7 @@ def _ParseGitCommitHash(description):
 
 
 def _ParseDepsFile(filename):
+  logging.debug('Parsing deps file %s', filename)
   with open(filename, 'rb') as f:
     deps_content = f.read()
   return _ParseDepsDict(deps_content)
@@ -167,14 +168,17 @@ class AutoRoller(object):
   def _GetCommitInfo(self, path_below_src, git_hash=None, git_repo_url=None):
     working_dir = os.path.join(self._chromium_src, path_below_src)
     self._RunCommand(['git', 'fetch', 'origin'], working_dir=working_dir)
-    revision_range = git_hash or 'origin'
+    revision_range = git_hash or 'origin/main'
     ret = self._RunCommand(
         ['git', '--no-pager', 'log', revision_range,
          '--no-abbrev-commit', '--pretty=full', '-1'],
         working_dir=working_dir)
-    return CommitInfo(_ParseGitCommitHash(ret), git_repo_url)
+    parsed_hash = _ParseGitCommitHash(ret)
+    logging.debug('parsed Git commit hash: %s', parsed_hash)
+    return CommitInfo(parsed_hash, git_repo_url)
 
   def _GetDepsCommitInfo(self, deps_dict, path_below_src):
+    logging.debug('Getting deps commit info for %s', path_below_src)
     entry = deps_dict['deps'][_PosixPath('src/%s' % path_below_src)]
     at_index = entry.find('@')
     git_repo_url = entry[:at_index]
@@ -248,8 +252,8 @@ class AutoRoller(object):
     # cross platform compatibility.
 
     if not ignore_checks:
-      if self._GetCurrentBranchName() != 'master':
-        logging.error('Please checkout the master branch.')
+      if self._GetCurrentBranchName() != 'main':
+        logging.error('Please checkout the main branch.')
         return -1
       if not self._IsTreeClean():
         logging.error('Please make sure you don\'t have any modified files.')
@@ -303,8 +307,8 @@ class AutoRoller(object):
       cl_info = self._GetCLInfo()
       print('Issue: %d URL: %s' % (cl_info.issue, cl_info.url))
 
-    # Checkout master again.
-    self._RunCommand(['git', 'checkout', 'master'])
+    # Checkout main again.
+    self._RunCommand(['git', 'checkout', 'main'])
     print('Roll branch left as ' + ROLL_BRANCH_NAME)
     return 0
 
@@ -329,7 +333,7 @@ class AutoRoller(object):
       print('Current webgl revision %s' % commit_info.git_commit, file=fh)
 
   def _DeleteRollBranch(self):
-    self._RunCommand(['git', 'checkout', 'master'])
+    self._RunCommand(['git', 'checkout', 'main'])
     self._RunCommand(['git', 'branch', '-D', ROLL_BRANCH_NAME])
     logging.debug('Deleted the local roll branch (%s)', ROLL_BRANCH_NAME)
 
@@ -357,7 +361,7 @@ class AutoRoller(object):
   def Abort(self):
     active_branch, branches = self._GetBranches()
     if active_branch == ROLL_BRANCH_NAME:
-      active_branch = 'master'
+      active_branch = 'main'
     if ROLL_BRANCH_NAME in branches:
       print('Aborting pending roll.')
       self._RunCommand(['git', 'checkout', ROLL_BRANCH_NAME])
@@ -375,8 +379,11 @@ def main():
     help=('Aborts a previously prepared roll. '
           'Closes any associated issues and deletes the roll branches'),
     action='store_true')
-  parser.add_argument('--ignore-checks', action='store_true', default=False,
-      help=('Skips checks for being on the master branch, dirty workspaces and '
+  parser.add_argument(
+      '--ignore-checks',
+      action='store_true',
+      default=False,
+      help=('Skips checks for being on the main branch, dirty workspaces and '
             'the updating of the checkout. Will still delete and create local '
             'Git branches.'))
   parser.add_argument('--run-tryjobs', action='store_true', default=False,

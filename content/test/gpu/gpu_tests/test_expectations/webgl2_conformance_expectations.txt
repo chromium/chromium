@@ -116,6 +116,7 @@ crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_multi_draw_inst
 # ========================
 
 # Failing new updated tests
+crbug.com/891861 conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
@@ -179,6 +180,8 @@ crbug.com/1198658 [ android android-pixel-2 ] deqp/functional/gles3/shaderoperat
 ####################
 # Win failures     #
 ####################
+
+crbug.com/1219015 [ win intel ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/video/* [ RetryOnFailure ]
 crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
@@ -634,6 +637,9 @@ crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/inte
 [ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
+
+# Until Qualcomm devices on the waterfall and CQ are updated to Android S, skip this new test.
+crbug.com/1076188 [ android qualcomm ] conformance2/glsl3/fragment-shader-loop-crash.html [ Skip ]
 
 # Video tests are flaky. Sometimes the video is black.
 crbug.com/948894 [ android ] conformance/textures/video/* [ RetryOnFailure ]

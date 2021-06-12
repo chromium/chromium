@@ -317,6 +317,7 @@ crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/mat/mat_009_to_016.html [ Fai
 # Intel flaky issues
 crbug.com/929009 [ win intel ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 crbug.com/1111652 [ win intel angle-vulkan passthrough ] conformance/context/context-size-change.html [ Failure ]
+crbug.com/1219015 [ win angle-d3d11 intel ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 # Intel driver issues
 crbug.com/854100 [ win intel angle-opengl passthrough intel_lt_25.20.100.6577 ] conformance/glsl/variables/gl-pointcoord.html [ Failure ]

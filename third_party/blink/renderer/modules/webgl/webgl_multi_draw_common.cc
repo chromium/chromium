@@ -48,7 +48,7 @@ base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
     case V8UnionInt32ArrayAllowSharedOrLongSequence::ContentType::
         kInt32ArrayAllowShared:
       return base::span<const int32_t>(
-          array->GetAsInt32ArrayAllowShared()->Data(),
+          array->GetAsInt32ArrayAllowShared()->DataMaybeShared(),
           array->GetAsInt32ArrayAllowShared()->length());
     case V8UnionInt32ArrayAllowSharedOrLongSequence::ContentType::kLongSequence:
       return base::span<const int32_t>(array->GetAsLongSequence().data(),
@@ -66,7 +66,7 @@ base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
     case V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence::ContentType::
         kUint32ArrayAllowShared:
       return base::span<const uint32_t>(
-          array->GetAsUint32ArrayAllowShared()->Data(),
+          array->GetAsUint32ArrayAllowShared()->DataMaybeShared(),
           array->GetAsUint32ArrayAllowShared()->length());
     case V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence::ContentType::
         kUnsignedLongSequence:
