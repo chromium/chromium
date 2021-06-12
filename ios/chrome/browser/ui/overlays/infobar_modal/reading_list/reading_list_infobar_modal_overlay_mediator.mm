@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/reading_list/reading_list_infobar_modal_overlay_mediator.h"
 
 #import "ios/chrome/browser/overlays/public/infobar_modal/reading_list_modal_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/infobar_modal/reading_list_modal_overlay_responses.h"
+#import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,6 +33,15 @@
 
 + (const OverlayRequestSupport*)requestSupport {
   return ReadingListInfobarModalOverlayRequestConfig::RequestSupport();
+}
+
+#pragma mark - InfobarReadingListModalDelegate
+
+- (void)neverAskToAddToReadingList {
+  [self dispatchResponse:OverlayResponse::CreateWithInfo<
+                             reading_list_infobar_modal_responses::NeverAsk>()];
+
+  [self dismissOverlay];
 }
 
 @end

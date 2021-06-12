@@ -6,8 +6,11 @@
 
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/reading_list_modal_overlay_request_config.h"
+#import "ios/chrome/browser/ui/infobars/modals/infobar_reading_list_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/reading_list/reading_list_infobar_modal_overlay_mediator.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,12 +61,20 @@
   ReadingListInfobarModalOverlayMediator* modalMediator =
       [[ReadingListInfobarModalOverlayMediator alloc]
           initWithRequest:self.request];
+  InfobarReadingListTableViewController* modalViewController =
+      [[InfobarReadingListTableViewController alloc]
+          initWithDelegate:modalMediator];
+  modalViewController.title =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
   self.modalMediator = modalMediator;
+  self.modalViewController = modalViewController;
 }
 
 - (void)resetModal {
   DCHECK(self.modalMediator);
+  DCHECK(self.modalViewController);
   self.modalMediator = nil;
+  self.modalViewController = nil;
 }
 
 @end

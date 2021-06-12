@@ -48,6 +48,7 @@ using reading_list_infobar_overlay::ReadingListBannerRequestConfig;
   [self.consumer setTitleText:config->title_text()];
   [self.consumer setSubtitleText:config->message_text()];
   [self.consumer setButtonText:config->button_text()];
+  [self.consumer setPresentsModal:YES];
 }
 
 @end

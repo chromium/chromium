@@ -9,6 +9,10 @@
 
 // Delegate to handle Reading List Infobar Modal actions.
 @protocol InfobarReadingListModalDelegate <InfobarModalDelegate>
+
+// Indicates the user chose to be never asked to save to Reading List.
+- (void)neverAskToAddToReadingList;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_READING_LIST_MODAL_DELEGATE_H_
