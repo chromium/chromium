@@ -277,10 +277,8 @@ void LocalPrinterHandlerDefault::StartGetCapability(
     VLOG(1) << "Getting printer capabilities via service for " << device_name;
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
-    auto& service = service_mgr.GetService(
-        g_browser_process->GetApplicationLocale(), device_name);
-    service->FetchCapabilities(
-        device_name,
+    service_mgr.FetchCapabilities(
+        g_browser_process->GetApplicationLocale(), device_name,
         base::BindOnce(
             &OnDidFetchCapabilities, device_name,
             service_mgr.PrinterDriverRequiresElevatedPrivilege(device_name),

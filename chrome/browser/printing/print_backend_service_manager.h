@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/unguessable_token.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -30,6 +31,12 @@ class PrintBackendServiceManager {
   const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
       const std::string& locale,
       const std::string& printer_name);
+
+  // Wrapper around mojom::PrintBackendService call.
+  void FetchCapabilities(
+      const std::string& locale,
+      const std::string& printer_name,
+      mojom::PrintBackendService::FetchCapabilitiesCallback callback);
 
   // Query if printer driver has been found to require elevated privilege in
   // order to have print queries/commands succeed.
@@ -61,8 +68,30 @@ class PrintBackendServiceManager {
  private:
   friend base::NoDestructor<PrintBackendServiceManager>;
 
+  // Types to track saved callbacks associated with currently executing mojom
+  // service calls.  These will be run either after a Mojom call finishes
+  // executing or if the service should disconnect before the mojom service
+  // calls complete.
+  // These need to be able to be found as a group for a particular remote that
+  // might become disconnected, and so a map-per-remote is used as a container.
+  // Use of a map allows for an ID key to be used to easily find any individual
+  // callback that can be discarded once a service call succeeds normally.
+
+  // Key is a callback ID.
+  using SavedFetchCapabilitiesCallbacks =
+      base::flat_map<base::UnguessableToken,
+                     mojom::PrintBackendService::FetchCapabilitiesCallback>;
+
+  // Key is the remote ID that enables finding the correct remote.  Note that
+  // the remote ID does not necessarily mean the printer name.
+  using RemoteSavedFetchCapabilitiesCallbacks =
+      base::flat_map<std::string, SavedFetchCapabilitiesCallbacks>;
+
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
+
+  // Determine the remote ID that is used for the specified `printer_name`.
+  std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
 
   // Callback when predetermined idle timeout occurs indicating no in-flight
   // messages for a short period of time.  `sandboxed` is used to distinguish
@@ -74,6 +103,28 @@ class PrintBackendServiceManager {
   // disconnection applies to.
   void OnRemoteDisconnected(bool sandboxed, const std::string& remote_id);
 
+  // Helper function to choose correct saved callbacks mapping.
+  RemoteSavedFetchCapabilitiesCallbacks&
+  GetRemoteSavedFetchCapabilitiesCallbacks(bool sandboxed);
+
+  // Helper function to save outstanding callbacks.
+  void SaveFetchCapabilitiesCallback(
+      const std::string& remote_id,
+      const base::UnguessableToken& saved_callback_id,
+      mojom::PrintBackendService::FetchCapabilitiesCallback callback);
+
+  // Local callback wrapper for mojom calls.
+  void FetchCapabilitiesDone(
+      bool sandboxed,
+      const std::string& remote_id,
+      const base::UnguessableToken& saved_callback_id,
+      mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info);
+
+  // Helper function to run outstanding callbacks when a remote has become
+  // disconnected.
+  void RunSavedFetchCapabilitiesCallbacks(bool sandboxed,
+                                          const std::string& remote_id);
+
   using RemotesMap =
       base::flat_map<std::string,
                      mojo::Remote<printing::mojom::PrintBackendService>>;
@@ -81,6 +132,12 @@ class PrintBackendServiceManager {
   // Keep separate mapping of remotes for sandboxed vs. unsandboxed services.
   RemotesMap sandboxed_remotes_;
   RemotesMap unsandboxed_remotes_;
+
+  // Track the saved callbacks for each remote.
+  RemoteSavedFetchCapabilitiesCallbacks
+      sandboxed_saved_fetch_capabilities_callbacks_;
+  RemoteSavedFetchCapabilitiesCallbacks
+      unsandboxed_saved_fetch_capabilities_callbacks_;
 
   // Track if next service started should be sandboxed.
   bool is_sandboxed_service_ = true;

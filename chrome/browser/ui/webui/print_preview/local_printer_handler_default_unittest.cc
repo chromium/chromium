@@ -331,6 +331,35 @@ TEST_P(LocalPrinterHandlerDefaultTestProcess, GetPrintersNoneRegistered) {
   EXPECT_FALSE(printers);
 }
 
+// Tests that enumerating printers fails when there is invalid printer data.
+TEST_F(LocalPrinterHandlerDefaultTestService,
+       GetPrintersInvalidPrinterDataFails) {
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+  AddInvalidDataPrinter("printer2");
+
+  size_t call_count = 0;
+  std::unique_ptr<base::ListValue> printers;
+  bool is_done = false;
+
+  local_printer_handler()->StartGetPrinters(
+      base::BindRepeating(&RecordPrinterList, std::ref(call_count),
+                          std::ref(printers)),
+      base::BindOnce(&RecordPrintersDone, std::ref(is_done)));
+
+  RunUntilIdle();
+
+  // Invalid data in even one printer causes entire list to be dropped.
+  // TODO(crbug.com/1214139) Invalid data causes the Mojom message to fail
+  // validation and thus be dropped, resulting in no callback for
+  // `EnumeratePrinters()` being made.  Testing infrastructure automatically
+  // recovers so control returns here, with `printers` unchanged.
+  // This test should be updated to show that there were no printers
+  // provided once service disconnects are better handled and a proper callback
+  // occurs.
+  EXPECT_FALSE(is_done);
+}
+
 // Tests that fetching capabilities for an existing installed printer is
 // successful.
 TEST_P(LocalPrinterHandlerDefaultTestProcess, StartGetCapabilityValidPrinter) {
@@ -415,14 +444,7 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
 
   RunUntilIdle();
 
-  // TODO(crbug.com/1214139) Invalid data causes the Mojom message to fail
-  // validation and thus be dropped, resulting in no callback for
-  // `FetchCapabilities()` being made.  Testing infrastructure automatically
-  // recovers so control returns here, with `fetch_capped` unchanged.
-  // This test should be updated to show that there were no capabilities
-  // provided once service disconnects are better handled and a proper callback
-  // occurs.
-  EXPECT_EQ(fetched_caps.GetString(), "dummy");
+  EXPECT_TRUE(fetched_caps.is_none());
 }
 
 }  // namespace printing
