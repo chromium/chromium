@@ -6,9 +6,10 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
-#include "third_party/blink/renderer/core/app_history/app_history_navigate_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
@@ -255,8 +256,16 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state));
   base::AutoReset<bool> did_react(&did_react_to_promise_, false);
   goto_promise_resolver_ = nullptr;
-  base::AutoReset<ScriptValue> event_info(&navigate_event_info_,
-                                          options->navigateInfo());
+  base::AutoReset<ScriptValue> event_info(
+      &navigate_event_info_,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      options->getNavigateInfoOr(
+          ScriptValue(script_state->GetIsolate(),
+                      v8::Undefined(script_state->GetIsolate())))
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      options->navigateInfo()
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  );
   WebFrameLoadType frame_load_type = options->replace()
                                          ? WebFrameLoadType::kReplaceCurrentItem
                                          : WebFrameLoadType::kStandard;
@@ -323,8 +332,16 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
       &navigate_method_call_promise_resolver_,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state));
   goto_promise_resolver_ = nullptr;
-  base::AutoReset<ScriptValue> event_info(&navigate_event_info_,
-                                          options->navigateInfo());
+  base::AutoReset<ScriptValue> event_info(
+      &navigate_event_info_,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      options->getNavigateInfoOr(
+          ScriptValue(script_state->GetIsolate(),
+                      v8::Undefined(script_state->GetIsolate())))
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      options->navigateInfo()
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  );
   AppHistoryEntry* destination = entries_[keys_to_indices_.at(key)];
   // TODO(japhet): Right now this is the only kind of back/forward navigation
   // that fires the navigate event. This should probably move to a more central
@@ -422,7 +439,8 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
   init->setFormData(form ? FormData::Create(form, ASSERT_NO_EXCEPTION)
                          : nullptr);
-  init->setInfo(navigate_event_info_);
+  if (!(navigate_event_info_.IsEmpty() || navigate_event_info_.IsUndefined()))
+    init->setInfo(navigate_event_info_);
   auto* navigate_event = AppHistoryNavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);

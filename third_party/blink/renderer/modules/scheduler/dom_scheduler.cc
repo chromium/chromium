@@ -65,7 +65,7 @@ ScriptPromise DOMScheduler::postTask(
                                       "Current window is detached");
     return ScriptPromise();
   }
-  if (options->signal() && options->signal()->aborted()) {
+  if (options->hasSignal() && options->signal()->aborted()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "The task was aborted");
     return ScriptPromise();
@@ -73,7 +73,8 @@ ScriptPromise DOMScheduler::postTask(
 
   // Always honor the priority and the task signal if given.
   DOMTaskSignal* task_signal = nullptr;
-  if (!options->hasPriority() && IsA<DOMTaskSignal>(options->signal())) {
+  if (!options->hasPriority() && options->hasSignal() &&
+      IsA<DOMTaskSignal>(options->signal())) {
     // If only a signal is given, and it is a TaskSignal rather than an
     // basic AbortSignal, use it.
     task_signal = To<DOMTaskSignal>(options->signal());
@@ -95,7 +96,7 @@ ScriptPromise DOMScheduler::postTask(
                                      IDLEnumAsString(options->priority())))
                                : kDefaultPriority;
     task_signal = CreateTaskSignalFor(priority);
-    if (options->signal())
+    if (options->hasSignal())
       task_signal->Follow(options->signal());
   }
 

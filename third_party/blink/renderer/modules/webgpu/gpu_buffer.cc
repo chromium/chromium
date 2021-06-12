@@ -73,7 +73,8 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   GPUBuffer* buffer = MakeGarbageCollected<GPUBuffer>(
       device, dawn_desc.size,
       device->GetProcs().deviceCreateBuffer(device->GetHandle(), &dawn_desc));
-  buffer->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    buffer->setLabel(webgpu_desc->label());
   return buffer;
 }
 

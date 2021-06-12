@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_result.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_component.h"
@@ -417,69 +418,85 @@ bool URLPattern::Match(
   String search(g_empty_string);
   String hash(g_empty_string);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  HeapVector<Member<V8URLPatternInput>> inputs;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   HeapVector<USVStringOrURLPatternInit> inputs;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
-  if (input->GetContentType() ==
-      V8URLPatternInput::ContentType::kURLPatternInit) {
-    if (base_url) {
-      exception_state.ThrowTypeError(
-          "Invalid second argument baseURL '" + base_url +
-          "' provided with a URLPatternInit input. Use the "
-          "URLPatternInit.baseURL property instead.");
-      return false;
+  switch (input->GetContentType()) {
+    case V8URLPatternInput::ContentType::kURLPatternInit: {
+      if (base_url) {
+        exception_state.ThrowTypeError(
+            "Invalid second argument baseURL '" + base_url +
+            "' provided with a URLPatternInit input. Use the "
+            "URLPatternInit.baseURL property instead.");
+        return false;
+      }
+
+      URLPatternInit* init = input->GetAsURLPatternInit();
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(init));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      inputs.push_back(USVStringOrURLPatternInit::FromURLPatternInit(init));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+
+      // Layer the URLPatternInit values on top of the default empty strings.
+      ApplyInit(init, ValueType::kURL, protocol, username, password, hostname,
+                port, pathname, search, hash, exception_state);
+      if (exception_state.HadException()) {
+        // Treat exceptions simply as a failure to match.
+        exception_state.ClearException();
+        return false;
+      }
+      break;
     }
+    case V8URLPatternInput::ContentType::kUSVString: {
+      KURL parsed_base_url(base_url);
+      if (base_url && !parsed_base_url.IsValid()) {
+        // Treat as failure to match, but don't throw an exception.
+        return false;
+      }
 
-    URLPatternInit* init =
-        input->GetAsURLPatternInit();
+      const String& input_string = input->GetAsUSVString();
 
-    inputs.push_back(USVStringOrURLPatternInit::FromURLPatternInit(init));
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(input_string));
+      if (base_url)
+        inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(base_url));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      inputs.push_back(USVStringOrURLPatternInit::FromUSVString(input_string));
+      if (base_url)
+        inputs.push_back(USVStringOrURLPatternInit::FromUSVString(base_url));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
-    // Layer the URLPatternInit values on top of the default empty strings.
-    ApplyInit(init, ValueType::kURL, protocol, username, password, hostname,
-              port, pathname, search, hash, exception_state);
-    if (exception_state.HadException()) {
-      // Treat exceptions simply as a failure to match.
-      exception_state.ClearException();
-      return false;
+      // The compile the input string as a fully resolved URL.
+      KURL url(parsed_base_url, input_string);
+      if (!url.IsValid() || url.IsEmpty()) {
+        // Treat as failure to match, but don't throw an exception.
+        return false;
+      }
+
+      // Apply the parsed URL components on top of our defaults.
+      if (url.Protocol())
+        protocol = url.Protocol();
+      if (url.User())
+        username = url.User();
+      if (url.Pass())
+        password = url.Pass();
+      if (url.Host())
+        hostname = url.Host();
+      if (url.Port() > 0)
+        port = String::Number(url.Port());
+      if (url.GetPath())
+        pathname = url.GetPath();
+      if (url.Query())
+        search = url.Query();
+      if (url.FragmentIdentifier())
+        hash = url.FragmentIdentifier();
+      break;
     }
-  } else {
-    KURL parsed_base_url(base_url);
-    if (base_url && !parsed_base_url.IsValid()) {
-      // Treat as failure to match, but don't throw an exception.
-      return false;
-    }
-
-    const String& input_string =
-        input->GetAsUSVString();
-
-    inputs.push_back(USVStringOrURLPatternInit::FromUSVString(input_string));
-    if (base_url)
-      inputs.push_back(USVStringOrURLPatternInit::FromUSVString(base_url));
-
-    // The compile the input string as a fully resolved URL.
-    KURL url(parsed_base_url, input_string);
-    if (!url.IsValid() || url.IsEmpty()) {
-      // Treat as failure to match, but don't throw an exception.
-      return false;
-    }
-
-    // Apply the parsed URL components on top of our defaults.
-    if (url.Protocol())
-      protocol = url.Protocol();
-    if (url.User())
-      username = url.User();
-    if (url.Pass())
-      password = url.Pass();
-    if (url.Host())
-      hostname = url.Host();
-    if (url.Port() > 0)
-      port = String::Number(url.Port());
-    if (url.GetPath())
-      pathname = url.GetPath();
-    if (url.Query())
-      search = url.Query();
-    if (url.FragmentIdentifier())
-      hash = url.FragmentIdentifier();
   }
 
   Vector<String> protocol_group_list;

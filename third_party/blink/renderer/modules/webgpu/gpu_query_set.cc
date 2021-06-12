@@ -40,7 +40,8 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
   GPUQuerySet* query_set = MakeGarbageCollected<GPUQuerySet>(
       device,
       device->GetProcs().deviceCreateQuerySet(device->GetHandle(), &dawn_desc));
-  query_set->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    query_set->setLabel(webgpu_desc->label());
   return query_set;
 }
 

@@ -61,8 +61,14 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setScrollSource(scroller);
   const double time_range = 100;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  options->setTimeRange(
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
+          time_range));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(
       DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setOrientation("block");
   options->setScrollOffsets({OffsetFromString(GetDocument(), "50px"),
                              OffsetFromString(GetDocument(), "auto")});
@@ -116,8 +122,13 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
   ASSERT_FALSE(div->GetLayoutBox());
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(div);
   ScrollTimeline* timeline =

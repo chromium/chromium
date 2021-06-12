@@ -292,8 +292,13 @@ void HTMLMarqueeElement::ContinueAnimation() {
   Timing timing;
   OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
   effect_timing->setFill("forwards");
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  effect_timing->setDuration(
+      MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(duration));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDuration(
       UnrestrictedDoubleOrString::FromUnrestrictedDouble(duration));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   TimingInput::Update(timing, effect_timing, nullptr, ASSERT_NO_EXCEPTION);
 
   auto* keyframe_effect =

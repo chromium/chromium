@@ -31,11 +31,11 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_request_impl.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_init.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 
 namespace blink {
@@ -74,7 +74,8 @@ void RTCSessionDescriptionRequestImpl::RequestSucceeded(
     requester_->NoteSessionDescriptionRequestCompleted(operation_, true);
     RTCSessionDescriptionInit* description =
         RTCSessionDescriptionInit::Create();
-    description->setType(description_platform->GetType());
+    if (description_platform->GetType())
+      description->setType(description_platform->GetType());
     description->setSdp(description_platform->Sdp());
 
     requester_->NoteSdpCreated(

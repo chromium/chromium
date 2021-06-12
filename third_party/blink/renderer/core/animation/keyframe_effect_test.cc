@@ -304,10 +304,17 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedDurationGetter) {
                                 timing_input_dictionary_with_duration);
 
   EffectTiming* specified_with_duration = animation_with_duration->getTiming();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* duration = specified_with_duration->duration();
+  EXPECT_TRUE(duration->IsUnrestrictedDouble());
+  EXPECT_EQ(2.5, duration->GetAsUnrestrictedDouble());
+  EXPECT_FALSE(duration->IsString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   UnrestrictedDoubleOrString duration = specified_with_duration->duration();
   EXPECT_TRUE(duration.IsUnrestrictedDouble());
   EXPECT_EQ(2.5, duration.GetAsUnrestrictedDouble());
   EXPECT_FALSE(duration.IsString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   v8::Local<v8::Object> timing_input_no_duration =
       v8::Object::New(scope.GetIsolate());
@@ -321,10 +328,17 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedDurationGetter) {
                                 timing_input_dictionary_no_duration);
 
   EffectTiming* specified_no_duration = animation_no_duration->getTiming();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* duration2 = specified_no_duration->duration();
+  EXPECT_FALSE(duration2->IsUnrestrictedDouble());
+  EXPECT_TRUE(duration2->IsString());
+  EXPECT_EQ("auto", duration2->GetAsString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   UnrestrictedDoubleOrString duration2 = specified_no_duration->duration();
   EXPECT_FALSE(duration2.IsUnrestrictedDouble());
   EXPECT_TRUE(duration2.IsString());
   EXPECT_EQ("auto", duration2.GetAsString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
 TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {

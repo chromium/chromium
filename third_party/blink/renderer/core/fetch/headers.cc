@@ -275,8 +275,7 @@ void Headers::FillWith(const V8HeadersInit* init,
   NOTREACHED();
 }
 
-// TODO(crbug.com/1181288): Remove the old IDL union version.
-// Old IDL dictionaries still use old IDL unions.
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Headers::FillWith(const HeadersInit& init,
                        ExceptionState& exception_state) {
   DCHECK_EQ(header_list_->size(), 0U);
@@ -288,6 +287,7 @@ void Headers::FillWith(const HeadersInit& init,
     NOTREACHED();
   }
 }
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 void Headers::FillWith(const Vector<Vector<String>>& object,
                        ExceptionState& exception_state) {

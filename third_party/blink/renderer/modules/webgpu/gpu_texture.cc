@@ -38,7 +38,11 @@ WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
   dawn_desc.usage = static_cast<WGPUTextureUsage>(webgpu_desc->usage());
   dawn_desc.dimension =
       AsDawnEnum<WGPUTextureDimension>(webgpu_desc->dimension());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  dawn_desc.size = AsDawnType(webgpu_desc->size());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   dawn_desc.size = AsDawnType(&webgpu_desc->size(), device);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
   dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
@@ -59,9 +63,13 @@ WGPUTextureViewDescriptor AsDawnType(
 
   WGPUTextureViewDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
-  dawn_desc.dimension =
-      AsDawnEnum<WGPUTextureViewDimension>(webgpu_desc->dimension());
+  if (webgpu_desc->hasFormat()) {
+    dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
+  }
+  if (webgpu_desc->hasDimension()) {
+    dawn_desc.dimension =
+        AsDawnEnum<WGPUTextureViewDimension>(webgpu_desc->dimension());
+  }
   dawn_desc.baseMipLevel = webgpu_desc->baseMipLevel();
   dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   dawn_desc.baseArrayLayer = webgpu_desc->baseArrayLayer();
@@ -112,7 +120,8 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
       device,
       device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
       dawn_desc.format, static_cast<WGPUTextureUsage>(dawn_desc.usage));
-  texture->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    texture->setLabel(webgpu_desc->label());
   return texture;
 }
 
@@ -329,7 +338,8 @@ GPUTextureView* GPUTexture::createView(
   WGPUTextureViewDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
   GPUTextureView* view = MakeGarbageCollected<GPUTextureView>(
       device_, GetProcs().textureCreateView(GetHandle(), &dawn_desc));
-  view->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    view->setLabel(webgpu_desc->label());
   return view;
 }
 

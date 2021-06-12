@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_plane_init.h"
@@ -29,7 +30,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/modules/webcodecs/parsed_read_into_options.h"
-#include "third_party/blink/renderer/modules/webcodecs/plane_layout.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -546,7 +546,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         DOMExceptionCode::kConstraintError,
         String::Format("Invalid number of planes for format %s; expected %zu, "
                        "received %u.",
-                       init->format().Ascii().c_str(),
+                       IDLEnumAsString(init->format()).Ascii().c_str(),
                        media::VideoFrame::NumPlanes(media_fmt), planes.size()));
     return nullptr;
   }

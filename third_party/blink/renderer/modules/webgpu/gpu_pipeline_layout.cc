@@ -38,7 +38,8 @@ GPUPipelineLayout* GPUPipelineLayout::Create(
   GPUPipelineLayout* layout = MakeGarbageCollected<GPUPipelineLayout>(
       device, device->GetProcs().deviceCreatePipelineLayout(device->GetHandle(),
                                                             &dawn_desc));
-  layout->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    layout->setLabel(webgpu_desc->label());
   return layout;
 }
 

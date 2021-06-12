@@ -64,6 +64,30 @@ namespace {
 
 // Converts the composite property of a BasePropertyIndexedKeyframe into a
 // vector of absl::optional<EffectModel::CompositeOperation> enums.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+Vector<absl::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
+    const BasePropertyIndexedKeyframe* keyframe) {
+  const auto* composite = keyframe->composite();
+  switch (composite->GetContentType()) {
+    case V8UnionCompositeOperationOrAutoOrCompositeOperationOrAutoSequence::
+        ContentType::kCompositeOperationOrAuto:
+      return {EffectModel::StringToCompositeOperation(
+          composite->GetAsCompositeOperationOrAuto().AsString())};
+    case V8UnionCompositeOperationOrAutoOrCompositeOperationOrAutoSequence::
+        ContentType::kCompositeOperationOrAutoSequence: {
+      Vector<absl::optional<EffectModel::CompositeOperation>> result;
+      for (const auto& composite_operation :
+           composite->GetAsCompositeOperationOrAutoSequence()) {
+        result.push_back(EffectModel::StringToCompositeOperation(
+            composite_operation.AsString()));
+      }
+      return result;
+    }
+  }
+  NOTREACHED();
+  return {};
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 Vector<absl::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
     const BasePropertyIndexedKeyframe* keyframe) {
   const CompositeOperationOrAutoOrCompositeOperationOrAutoSequence& composite =
@@ -82,6 +106,7 @@ Vector<absl::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
   }
   return result;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 void SetKeyframeValue(Element* element,
                       Document& document,
@@ -454,20 +479,36 @@ StringKeyframeVector ConvertObjectForm(Element* element,
     return {};
 
   Vector<absl::optional<double>> offsets;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  if (property_indexed_keyframe->offset()->IsNull())
+    offsets.push_back(absl::nullopt);
+  else if (property_indexed_keyframe->offset()->IsDouble())
+    offsets.push_back(property_indexed_keyframe->offset()->GetAsDouble());
+  else
+    offsets = property_indexed_keyframe->offset()->GetAsDoubleOrNullSequence();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (property_indexed_keyframe->offset().IsNull())
     offsets.push_back(absl::nullopt);
   else if (property_indexed_keyframe->offset().IsDouble())
     offsets.push_back(property_indexed_keyframe->offset().GetAsDouble());
   else
     offsets = property_indexed_keyframe->offset().GetAsDoubleOrNullSequence();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // The web-animations spec explicitly states that easings should be kept as
   // DOMStrings here and not parsed into timing functions until later.
   Vector<String> easings;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  if (property_indexed_keyframe->easing()->IsString())
+    easings.push_back(property_indexed_keyframe->easing()->GetAsString());
+  else
+    easings = property_indexed_keyframe->easing()->GetAsStringSequence();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (property_indexed_keyframe->easing().IsString())
     easings.push_back(property_indexed_keyframe->easing().GetAsString());
   else
     easings = property_indexed_keyframe->easing().GetAsStringSequence();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   Vector<absl::optional<EffectModel::CompositeOperation>> composite_operations =
       ParseCompositeProperty(property_indexed_keyframe);

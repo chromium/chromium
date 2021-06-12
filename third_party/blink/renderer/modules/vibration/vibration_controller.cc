@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_unsignedlong_unsignedlongsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_or_unsigned_long_sequence.h"
 #include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -102,6 +103,26 @@ void CollectHistogramMetrics(LocalDOMWindow* window) {
 }
 
 // static
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+VibrationController::VibrationPattern
+VibrationController::SanitizeVibrationPattern(
+    const V8UnionUnsignedLongOrUnsignedLongSequence* input) {
+  switch (input->GetContentType()) {
+    case V8UnionUnsignedLongOrUnsignedLongSequence::ContentType::
+        kUnsignedLong: {
+      VibrationPattern pattern;
+      pattern.push_back(input->GetAsUnsignedLong());
+      return sanitizeVibrationPatternInternal(pattern);
+    }
+    case V8UnionUnsignedLongOrUnsignedLongSequence::ContentType::
+        kUnsignedLongSequence:
+      return sanitizeVibrationPatternInternal(
+          input->GetAsUnsignedLongSequence());
+  }
+  NOTREACHED();
+  return {};
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 VibrationController::VibrationPattern
 VibrationController::SanitizeVibrationPattern(
     const UnsignedLongOrUnsignedLongSequence& input) {
@@ -114,6 +135,7 @@ VibrationController::SanitizeVibrationPattern(
 
   return sanitizeVibrationPatternInternal(pattern);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 // static
 VibrationController& VibrationController::From(Navigator& navigator) {

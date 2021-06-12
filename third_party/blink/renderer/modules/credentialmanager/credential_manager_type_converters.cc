@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
@@ -22,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/password_credential.h"
@@ -180,6 +183,15 @@ TypeConverter<CredentialManagerError, AuthenticatorStatus>::Convert(
 }
 
 // static helper method.
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+Vector<uint8_t> ConvertFixedSizeArray(const blink::V8BufferSource* buffer,
+                                      unsigned length) {
+  if (blink::DOMArrayPiece(buffer).ByteLength() != length)
+    return {};
+
+  return ConvertTo<Vector<uint8_t>>(buffer);
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 Vector<uint8_t> ConvertFixedSizeArray(
     const blink::ArrayBufferOrArrayBufferView& buffer,
     unsigned length) {
@@ -195,7 +207,32 @@ Vector<uint8_t> ConvertFixedSizeArray(
 
   return ConvertTo<Vector<uint8_t>>(buffer);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+// static
+Vector<uint8_t>
+TypeConverter<Vector<uint8_t>, blink::V8UnionArrayBufferOrArrayBufferView*>::
+    Convert(const blink::V8UnionArrayBufferOrArrayBufferView* buffer) {
+  DCHECK(buffer);
+  Vector<uint8_t> vector;
+  switch (buffer->GetContentType()) {
+    case blink::V8UnionArrayBufferOrArrayBufferView::ContentType::kArrayBuffer:
+      vector.Append(static_cast<uint8_t*>(buffer->GetAsArrayBuffer()->Data()),
+                    base::checked_cast<wtf_size_t>(
+                        buffer->GetAsArrayBuffer()->ByteLength()));
+      break;
+    case blink::V8UnionArrayBufferOrArrayBufferView::ContentType::
+        kArrayBufferView:
+      vector.Append(
+          static_cast<uint8_t*>(buffer->GetAsArrayBufferView()->BaseAddress()),
+          base::checked_cast<wtf_size_t>(
+              buffer->GetAsArrayBufferView()->byteLength()));
+      break;
+  }
+  return vector;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 // static
 Vector<uint8_t>
 TypeConverter<Vector<uint8_t>, blink::ArrayBufferOrArrayBufferView>::Convert(
@@ -215,6 +252,7 @@ TypeConverter<Vector<uint8_t>, blink::ArrayBufferOrArrayBufferView>::Convert(
   }
   return vector;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 // static
 PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(

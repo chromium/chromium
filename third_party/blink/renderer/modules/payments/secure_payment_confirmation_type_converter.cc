@@ -4,15 +4,32 @@
 
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace mojo {
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+template <>
+struct TypeConverter<Vector<Vector<uint8_t>>,
+                     blink::HeapVector<blink::Member<
+                         blink::V8UnionArrayBufferOrArrayBufferView>>> {
+  static Vector<Vector<uint8_t>> Convert(
+      const blink::HeapVector<
+          blink::Member<blink::V8UnionArrayBufferOrArrayBufferView>>& input) {
+    Vector<Vector<uint8_t>> result;
+    for (const auto& item : input) {
+      result.push_back(mojo::ConvertTo<Vector<uint8_t>>(item.Get()));
+    }
+    return result;
+  }
+};
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 template <>
 struct TypeConverter<Vector<Vector<uint8_t>>,
                      blink::HeapVector<blink::ArrayBufferOrArrayBufferView>> {
@@ -25,6 +42,7 @@ struct TypeConverter<Vector<Vector<uint8_t>>,
     return result;
   }
 };
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 payments::mojom::blink::SecurePaymentConfirmationRequestPtr
 TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,

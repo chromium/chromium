@@ -237,7 +237,9 @@ MemoryAttribution* ConvertAttribution(
     result->setUrl(kCrossOriginUrl);
   }
   result->setScope(ConvertScope(attribution->scope));
-  result->setContainer(ConvertContainer(attribution));
+  if (auto* container = ConvertContainer(attribution)) {
+    result->setContainer(container);
+  }
   return result;
 }
 

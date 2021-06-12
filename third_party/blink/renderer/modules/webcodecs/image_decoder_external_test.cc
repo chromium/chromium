@@ -45,8 +45,14 @@ class ImageDecoderTest : public testing::Test {
 
     auto data = ReadFile(file_name);
     DCHECK(!data->IsEmpty()) << "Missing file: " << file_name;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    init->setData(MakeGarbageCollected<
+                  V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+        DOMArrayBuffer::Create(std::move(data))));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     init->setData(ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(
         DOMArrayBuffer::Create(std::move(data))));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     return ImageDecoderExternal::Create(v8_scope->GetScriptState(), init,
                                         v8_scope->GetExceptionState());
   }
@@ -119,8 +125,14 @@ TEST_F(ImageDecoderTest, DecodeEmpty) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType("image/png");
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          DOMArrayBuffer::Create(SharedBuffer::Create())));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(
       DOMArrayBuffer::Create(SharedBuffer::Create())));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
   EXPECT_FALSE(decoder);
@@ -134,8 +146,14 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtConstruction) {
   auto* buffer = DOMArrayBuffer::Create(SharedBuffer::Create());
 
   init->setType("image/png");
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          buffer));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(
       ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(buffer));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   ArrayBufferContents contents;
   ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents));
@@ -161,8 +179,14 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
 
   auto* buffer = DOMArrayBuffer::Create(std::move(data));
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          buffer));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(
       ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(buffer));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
@@ -449,8 +473,14 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          stream));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(
       ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(stream));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -550,8 +580,14 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          stream));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(
       ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(stream));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -618,8 +654,14 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          stream));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(
       ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(stream));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -685,8 +727,14 @@ TEST_F(ImageDecoderTest, DecodePartialImage) {
   auto* array_buffer = DOMArrayBuffer::Create(128, 1);
   ASSERT_TRUE(data->GetBytes(array_buffer->Data(), array_buffer->ByteLength()));
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          array_buffer));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(
       array_buffer));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
   ASSERT_TRUE(decoder);
@@ -731,8 +779,14 @@ TEST_F(ImageDecoderTest, DecodeClosedDuringReadableStream) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          stream));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(
       ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(stream));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -779,8 +833,14 @@ TEST_F(ImageDecoderTest, DecodeInvalidFileViaReadableStream) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  init->setData(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+          stream));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   init->setData(
       ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(stream));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);

@@ -34,13 +34,16 @@ class UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict;
 WGPUColor AsDawnColor(const Vector<double>&);
 WGPUColor AsDawnType(const GPUColorDict*);
 WGPUColor AsDawnType(const V8GPUColor* webgpu_color);
-WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device);
-// TODO(crbug.com/1181288): Remove the old IDL union version.
+WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_extent);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 WGPUExtent3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict*,
     GPUDevice* device);
 WGPUOrigin3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict*);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
                                GPUDevice* device);
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,

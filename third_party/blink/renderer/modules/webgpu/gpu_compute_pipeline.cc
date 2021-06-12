@@ -60,7 +60,8 @@ GPUComputePipeline* GPUComputePipeline::Create(
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
       device, device->GetProcs().deviceCreateComputePipeline(
                   device->GetHandle(), &dawn_desc));
-  pipeline->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    pipeline->setLabel(webgpu_desc->label());
   return pipeline;
 }
 

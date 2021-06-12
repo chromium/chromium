@@ -25,6 +25,11 @@ BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
       rssi_(initializer->hasRssi() ? initializer->rssi() : 0),
       manufacturer_data_map_(initializer->manufacturerData()),
       service_data_map_(initializer->serviceData()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  if (initializer->hasUuids()) {
+    uuids_ = initializer->uuids();
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   for (const auto& uuid : initializer->uuids()) {
     if (uuid.IsString()) {
       uuids_.push_back(
@@ -36,6 +41,7 @@ BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
       NOTREACHED();
     }
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
 BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(

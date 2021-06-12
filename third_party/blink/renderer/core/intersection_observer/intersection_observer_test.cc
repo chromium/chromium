@@ -87,7 +87,11 @@ TEST_F(IntersectionObserverTest, NotificationSentWhenRootRemoved) {
   Element* root = GetDocument().getElementById("root");
   ASSERT_TRUE(root);
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   observer_init->setRoot(ElementOrDocument::FromElement(root));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DummyExceptionStateForTesting exception_state;
   TestIntersectionObserverDelegate* observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
@@ -133,7 +137,12 @@ TEST_F(IntersectionObserverTest, DocumentRootClips) {
                                   ->GetFrame()
                                   ->GetDocument();
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  observer_init->setRoot(
+      MakeGarbageCollected<V8UnionDocumentOrElement>(iframe_document));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   observer_init->setRoot(ElementOrDocument::FromDocument(iframe_document));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DummyExceptionStateForTesting exception_state;
   TestIntersectionObserverDelegate* observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
@@ -545,7 +554,11 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
   Persistent<Element> target = GetDocument().getElementById("target1");
   Persistent<IntersectionObserverInit> observer_init =
       IntersectionObserverInit::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   observer_init->setRoot(ElementOrDocument::FromElement(root));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   Persistent<TestIntersectionObserverDelegate> observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   Persistent<IntersectionObserver> observer =
@@ -707,7 +720,11 @@ TEST_F(IntersectionObserverTest, CachedRectsTest) {
   Element* target2 = GetDocument().getElementById("target2");
 
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   observer_init->setRoot(ElementOrDocument::FromElement(root));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DummyExceptionStateForTesting exception_state;
   TestIntersectionObserverDelegate* observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());

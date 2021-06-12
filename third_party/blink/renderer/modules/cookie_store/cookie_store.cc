@@ -12,6 +12,7 @@
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"

@@ -64,8 +64,10 @@ PaymentMethodData* ToPaymentMethodData(
   DCHECK(data);
   PaymentMethodData* method_data = PaymentMethodData::Create();
   method_data->setSupportedMethod(data->supported_method);
-  method_data->setData(
-      StringDataToScriptValue(script_state, data->stringified_data));
+  ScriptValue v8_data =
+      StringDataToScriptValue(script_state, data->stringified_data);
+  if (!v8_data.IsEmpty())
+    method_data->setData(std::move(v8_data));
   return method_data;
 }
 

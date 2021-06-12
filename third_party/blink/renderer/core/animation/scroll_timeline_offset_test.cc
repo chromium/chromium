@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -27,8 +28,12 @@ class ScrollTimelineOffsetTest : public PageTestBase {
     auto* inner = CreateElementBasedOffset(target, edge, threshold);
     if (!inner)
       return nullptr;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    auto* param = MakeGarbageCollected<V8ScrollTimelineOffset>(inner);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     ScrollTimelineOffsetValue param;
     param.SetScrollTimelineElementBasedOffset(inner);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     return ScrollTimelineOffset::Create(param);
   }
 

@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 
 namespace blink {
@@ -162,8 +165,13 @@ TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {
   MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
   ASSERT_TRUE(output->hasFacingMode());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  ASSERT_TRUE(output->facingMode()->IsString());
+  EXPECT_EQ("foo", output->facingMode()->GetAsString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ASSERT_TRUE(output->facingMode().IsString());
   EXPECT_EQ("foo", output->facingMode().GetAsString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebDoubleStringConstraint) {
@@ -181,8 +189,13 @@ TEST(MediaTrackConstraintsTest, ConvertWebDoubleStringConstraint) {
   MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
   ASSERT_TRUE(output->hasFacingMode());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  ASSERT_TRUE(output->facingMode()->IsStringSequence());
+  const auto& out_buffer = output->facingMode()->GetAsStringSequence();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ASSERT_TRUE(output->facingMode().IsStringSequence());
   auto out_buffer = output->facingMode().GetAsStringSequence();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ("foo", out_buffer[0]);
   EXPECT_EQ("bar", out_buffer[1]);
 }
@@ -190,8 +203,12 @@ TEST(MediaTrackConstraintsTest, ConvertWebDoubleStringConstraint) {
 TEST(MediaTrackConstraintsTest, ConvertBlinkStringConstraint) {
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   MediaConstraints output;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>("foo");
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   StringOrStringSequenceOrConstrainDOMStringParameters parameter;
   parameter.SetString("foo");
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   input->setFacingMode(parameter);
   output =
       media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(input);
@@ -203,13 +220,19 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkStringConstraint) {
 TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   MediaConstraints output;
-  StringOrStringSequenceOrConstrainDOMStringParameters parameter;
   ConstrainDOMStringParameters* subparameter =
       ConstrainDOMStringParameters::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  subparameter->setIdeal(
+      MakeGarbageCollected<V8UnionStringOrStringSequence>("foo"));
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>(subparameter);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   StringOrStringSequence inner_string;
   inner_string.SetString("foo");
   subparameter->setIdeal(inner_string);
+  StringOrStringSequenceOrConstrainDOMStringParameters parameter;
   parameter.SetConstrainDOMStringParameters(subparameter);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   input->setFacingMode(parameter);
   output =
       media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(input);
@@ -221,14 +244,23 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
   MediaTrackConstraints* recycled =
       media_constraints_impl::ConvertConstraints(output);
   ASSERT_TRUE(recycled->hasFacingMode());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  ASSERT_TRUE(recycled->facingMode()->IsString());
+  ASSERT_EQ("foo", recycled->facingMode()->GetAsString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ASSERT_TRUE(recycled->facingMode().IsString());
   ASSERT_EQ("foo", recycled->facingMode().GetAsString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
 TEST(MediaTrackConstraintsTest, NakedIsExactInAdvanced) {
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>("foo");
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   StringOrStringSequenceOrConstrainDOMStringParameters parameter;
   parameter.SetString("foo");
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   input->setFacingMode(parameter);
   HeapVector<Member<MediaTrackConstraintSet>> advanced(
       1, MediaTrackConstraintSet::Create());
@@ -277,19 +309,37 @@ TEST(MediaTrackConstraintsTest, IdealAndExactConvertToNaked) {
   MediaTrackConstraintSet* element2 = output->advanced()[1];
 
   ASSERT_TRUE(output->hasFacingMode());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  ASSERT_TRUE(output->facingMode()->IsString());
+  EXPECT_EQ("ideal", output->facingMode()->GetAsString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ASSERT_TRUE(output->facingMode().IsString());
   EXPECT_EQ("ideal", output->facingMode().GetAsString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   ASSERT_TRUE(element1->hasFacingMode());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  ASSERT_TRUE(element1->facingMode()->IsConstrainDOMStringParameters());
+  EXPECT_EQ("ideal", element1->facingMode()
+                         ->GetAsConstrainDOMStringParameters()
+                         ->ideal()
+                         ->GetAsString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ASSERT_TRUE(element1->facingMode().IsConstrainDOMStringParameters());
   EXPECT_EQ("ideal", element1->facingMode()
                          .GetAsConstrainDOMStringParameters()
                          ->ideal()
                          .GetAsString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   ASSERT_TRUE(element2->hasFacingMode());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  ASSERT_TRUE(element2->facingMode()->IsString());
+  EXPECT_EQ("exact", element2->facingMode()->GetAsString());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ASSERT_TRUE(element2->facingMode().IsString());
   EXPECT_EQ("exact", element2->facingMode().GetAsString());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
 }  // namespace blink

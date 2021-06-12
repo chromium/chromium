@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/capture_handle_change_event.h"
 
-#include "third_party/blink/renderer/modules/mediastream/capture_handle.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
 
 namespace blink {
 

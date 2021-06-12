@@ -56,8 +56,12 @@ VideoDecoderConfig* MakeVideoDecoderConfig(
   config->setCodec(proto.codec().c_str());
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
       proto.description().data(), proto.description().size());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  config->setDescription(MakeGarbageCollected<V8BufferSource>(data_copy));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   config->setDescription(
       ArrayBufferOrArrayBufferView::FromArrayBuffer(data_copy));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   return config;
 }
 
@@ -70,8 +74,12 @@ AudioDecoderConfig* MakeAudioDecoderConfig(
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
       proto.description().data(), proto.description().size());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  config->setDescription(MakeGarbageCollected<V8BufferSource>(data_copy));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   config->setDescription(
       ArrayBufferOrArrayBufferView::FromArrayBuffer(data_copy));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   return config;
 }
@@ -126,9 +134,14 @@ String ToChunkType(wc_fuzzer::EncodedChunkType type) {
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
     const wc_fuzzer::EncodedVideoChunk& proto) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* data = MakeGarbageCollected<V8BufferSource>(
+      DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ArrayBufferOrArrayBufferView data;
   data.SetArrayBuffer(
       DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(proto.timestamp());
@@ -140,9 +153,14 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
     const wc_fuzzer::EncodedAudioChunk& proto) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* data = MakeGarbageCollected<V8BufferSource>(
+      DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ArrayBufferOrArrayBufferView data;
   data.SetArrayBuffer(
       DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   auto* init = EncodedAudioChunkInit::Create();
   init->setTimestamp(proto.timestamp());

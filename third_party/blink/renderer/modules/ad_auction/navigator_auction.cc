@@ -256,6 +256,40 @@ bool CopyInterestGroupBuyersFromIdlToMojo(
   if (!input.hasInterestGroupBuyers())
     return true;
   output.interest_group_buyers = mojom::blink::InterestGroupBuyers::New();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  switch (input.interestGroupBuyers()->GetContentType()) {
+    case V8UnionUSVStringOrUSVStringSequence::ContentType::kUSVString: {
+      const String& maybe_wildcard =
+          input.interestGroupBuyers()->GetAsUSVString();
+      if (maybe_wildcard != "*") {
+        exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+            input, "interestGroupBuyers", maybe_wildcard,
+            "must be \"*\" (wildcard) or a list of buyer https origin "
+            "strings."));
+        return false;
+      }
+      output.interest_group_buyers->set_all_buyers(
+          mojom::blink::AllBuyers::New());
+      break;
+    }
+    case V8UnionUSVStringOrUSVStringSequence::ContentType::kUSVStringSequence: {
+      Vector<scoped_refptr<const SecurityOrigin>> buyers;
+      for (const auto& buyer_str :
+           input.interestGroupBuyers()->GetAsUSVStringSequence()) {
+        scoped_refptr<const SecurityOrigin> buyer = ParseOrigin(buyer_str);
+        if (!buyer) {
+          exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+              input, "interestGroupBuyers buyer", buyer_str,
+              "must be a valid https origin."));
+          return false;
+        }
+        buyers.push_back(buyer);
+      }
+      output.interest_group_buyers->set_buyers(std::move(buyers));
+      break;
+    }
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (input.interestGroupBuyers().IsUSVString()) {
     String maybe_wildcard = input.interestGroupBuyers().GetAsUSVString();
     if (maybe_wildcard != "*") {
@@ -282,6 +316,7 @@ bool CopyInterestGroupBuyersFromIdlToMojo(
     }
     output.interest_group_buyers->set_buyers(std::move(buyers));
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   return true;
 }

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/array_buffer_or_array_buffer_view_or_usv_string.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -26,10 +27,50 @@ PushMessageData* PushMessageData::Create(const String& message_string) {
   // be set in the PushEvent.
   if (message_string.IsNull())
     return nullptr;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  return PushMessageData::Create(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrUSVString>(
+          message_string));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   return PushMessageData::Create(
       ArrayBufferOrArrayBufferViewOrUSVString::FromUSVString(message_string));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+PushMessageData* PushMessageData::Create(
+    const V8UnionArrayBufferOrArrayBufferViewOrUSVString* message_data) {
+  if (!message_data)
+    return nullptr;
+  switch (message_data->GetContentType()) {
+    case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
+        kArrayBuffer: {
+      DOMArrayBuffer* buffer = message_data->GetAsArrayBuffer();
+      return MakeGarbageCollected<PushMessageData>(
+          static_cast<const char*>(buffer->Data()),
+          base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+    }
+    case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
+        kArrayBufferView: {
+      DOMArrayBufferView* buffer_view =
+          message_data->GetAsArrayBufferView().Get();
+      return MakeGarbageCollected<PushMessageData>(
+          static_cast<const char*>(buffer_view->BaseAddress()),
+          base::checked_cast<wtf_size_t>(buffer_view->byteLength()));
+    }
+    case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
+        kUSVString: {
+      std::string encoded_string = UTF8Encoding().Encode(
+          message_data->GetAsUSVString(), WTF::kNoUnencodables);
+      return MakeGarbageCollected<PushMessageData>(
+          encoded_string.c_str(),
+          static_cast<unsigned>(encoded_string.length()));
+    }
+  }
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 PushMessageData* PushMessageData::Create(
     const ArrayBufferOrArrayBufferViewOrUSVString& message_data) {
   if (message_data.IsArrayBuffer()) {
@@ -56,6 +97,7 @@ PushMessageData* PushMessageData::Create(
   DCHECK(message_data.IsNull());
   return nullptr;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 PushMessageData::PushMessageData(const char* data, unsigned bytes_size) {
   data_.Append(data, bytes_size);

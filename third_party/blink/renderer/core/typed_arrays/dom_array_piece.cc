@@ -39,7 +39,7 @@ DOMArrayPiece::DOMArrayPiece(
   InitNull();
 }
 
-// TODO(crbug.com/1181288): Remove the old IDL union version.
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 DOMArrayPiece::DOMArrayPiece(
     const ArrayBufferOrArrayBufferView& array_buffer_or_view) {
   if (array_buffer_or_view.IsArrayBuffer()) {
@@ -51,6 +51,7 @@ DOMArrayPiece::DOMArrayPiece(
     InitWithArrayBufferView(array_buffer_view);
   }
 }
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 bool DOMArrayPiece::IsNull() const {
   return is_null_;

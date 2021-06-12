@@ -22,7 +22,8 @@ namespace blink {
 
 namespace {
 
-bool ValidateElementBasedOffset(ScrollTimelineElementBasedOffset* offset) {
+bool ValidateElementBasedOffset(
+    const ScrollTimelineElementBasedOffset* offset) {
   if (!offset->hasTarget())
     return false;
 
@@ -66,6 +67,7 @@ bool ElementBasedOffsetsEqual(ScrollTimelineElementBasedOffset* o1,
          o1->threshold() == o2->threshold();
 }
 
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 CSSKeywordValue* GetCSSKeywordValue(const ScrollTimelineOffsetValue& offset) {
   if (offset.IsCSSKeywordValue())
     return offset.GetAsCSSKeywordValue();
@@ -74,9 +76,51 @@ CSSKeywordValue* GetCSSKeywordValue(const ScrollTimelineOffsetValue& offset) {
     return CSSKeywordValue::Create(offset.GetAsString());
   return nullptr;
 }
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+// static
+ScrollTimelineOffset* ScrollTimelineOffset::Create(
+    const V8ScrollTimelineOffset* offset) {
+  switch (offset->GetContentType()) {
+    case V8ScrollTimelineOffset::ContentType::kCSSKeywordValue: {
+      const auto* keyword = offset->GetAsCSSKeywordValue();
+      if (keyword->KeywordValueID() != CSSValueID::kAuto)
+        return nullptr;
+      return MakeGarbageCollected<ScrollTimelineOffset>();
+    }
+    case V8ScrollTimelineOffset::ContentType::kCSSNumericValue: {
+      const auto* value =
+          To<CSSPrimitiveValue>(offset->GetAsCSSNumericValue()->ToCSSValue());
+      bool matches_length_percentage =
+          value->IsLength() || value->IsPercentage() ||
+          value->IsCalculatedPercentageWithLength();
+      if (!matches_length_percentage)
+        return nullptr;
+      return MakeGarbageCollected<ScrollTimelineOffset>(value);
+    }
+    case V8ScrollTimelineOffset::ContentType::
+        kScrollTimelineElementBasedOffset: {
+      auto* value = offset->GetAsScrollTimelineElementBasedOffset();
+      if (!ValidateElementBasedOffset(value))
+        return nullptr;
+      return MakeGarbageCollected<ScrollTimelineOffset>(value);
+    }
+    case V8ScrollTimelineOffset::ContentType::kString: {
+      if (offset->GetAsString().IsEmpty())
+        return nullptr;
+      const auto* keyword = CSSKeywordValue::Create(offset->GetAsString());
+      if (keyword->KeywordValueID() != CSSValueID::kAuto)
+        return nullptr;
+      return MakeGarbageCollected<ScrollTimelineOffset>();
+    }
+  }
+  NOTREACHED();
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 // static
 ScrollTimelineOffset* ScrollTimelineOffset::Create(
     const ScrollTimelineOffsetValue& input_offset) {
@@ -107,6 +151,7 @@ ScrollTimelineOffset* ScrollTimelineOffset::Create(
 
   return nullptr;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 absl::optional<double> ScrollTimelineOffset::ResolveOffset(
     Node* scroll_source,

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_entry.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
@@ -21,6 +22,26 @@ WGPUBindGroupEntry AsDawnType(const GPUBindGroupEntry* webgpu_binding) {
 
   dawn_binding.binding = webgpu_binding->binding();
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  switch (webgpu_binding->resource()->GetContentType()) {
+    case V8GPUBindingResource::ContentType::kGPUBufferBinding: {
+      GPUBufferBinding* buffer =
+          webgpu_binding->resource()->GetAsGPUBufferBinding();
+      dawn_binding.offset = buffer->offset();
+      dawn_binding.size = buffer->hasSize() ? buffer->size() : WGPU_WHOLE_SIZE;
+      dawn_binding.buffer = AsDawnType(buffer->buffer());
+      break;
+    }
+    case V8GPUBindingResource::ContentType::kGPUSampler:
+      dawn_binding.sampler =
+          AsDawnType(webgpu_binding->resource()->GetAsGPUSampler());
+      break;
+    case V8GPUBindingResource::ContentType::kGPUTextureView:
+      dawn_binding.textureView =
+          AsDawnType(webgpu_binding->resource()->GetAsGPUTextureView());
+      break;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (webgpu_binding->resource().IsGPUBufferBinding()) {
     GPUBufferBinding* buffer =
         webgpu_binding->resource().GetAsGPUBufferBinding();
@@ -40,6 +61,7 @@ WGPUBindGroupEntry AsDawnType(const GPUBindGroupEntry* webgpu_binding) {
   } else {
     NOTREACHED();
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   return dawn_binding;
 }
@@ -72,7 +94,8 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
   GPUBindGroup* bind_group = MakeGarbageCollected<GPUBindGroup>(
       device, device->GetProcs().deviceCreateBindGroup(device->GetHandle(),
                                                        &dawn_desc));
-  bind_group->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    bind_group->setLabel(webgpu_desc->label());
   return bind_group;
 }
 

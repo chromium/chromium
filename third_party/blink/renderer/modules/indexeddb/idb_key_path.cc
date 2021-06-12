@@ -138,6 +138,7 @@ IDBKeyPath::IDBKeyPath(const V8UnionStringOrStringSequence* key_path) {
   }
 }
 
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 IDBKeyPath::IDBKeyPath(const StringOrStringSequence& key_path) {
   if (key_path.IsNull()) {
     type_ = mojom::IDBKeyPathType::Null;
@@ -155,6 +156,7 @@ IDBKeyPath::IDBKeyPath(const StringOrStringSequence& key_path) {
 #endif
   }
 }
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 bool IDBKeyPath::IsValid() const {
   switch (type_) {

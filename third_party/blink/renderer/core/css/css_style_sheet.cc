@@ -110,12 +110,24 @@ CSSStyleSheet* CSSStyleSheet::Create(Document& document,
   sheet->ClearOwnerRule();
   contents->RegisterClient(sheet);
   scoped_refptr<MediaQuerySet> media_query_set;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  switch (options->media()->GetContentType()) {
+    case V8UnionMediaListOrString::ContentType::kMediaList:
+      media_query_set = options->media()->GetAsMediaList()->Queries()->Copy();
+      break;
+    case V8UnionMediaListOrString::ContentType::kString:
+      media_query_set = MediaQuerySet::Create(options->media()->GetAsString(),
+                                              document.GetExecutionContext());
+      break;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (options->media().IsString()) {
     media_query_set = MediaQuerySet::Create(options->media().GetAsString(),
                                             document.GetExecutionContext());
   } else {
     media_query_set = options->media().GetAsMediaList()->Queries()->Copy();
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* media_list = MakeGarbageCollected<MediaList>(
       media_query_set, const_cast<CSSStyleSheet*>(sheet));
   sheet->SetMedia(media_list);

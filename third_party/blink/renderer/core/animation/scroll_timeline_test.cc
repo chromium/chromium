@@ -91,9 +91,15 @@ class ScrollTimelineTest : public RenderingTest {
     return count;
   }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  V8ScrollTimelineOffset* OffsetFromString(const String& value) {
+    return animation_test_helpers::OffsetFromString(GetDocument(), value);
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ScrollTimelineOffsetValue OffsetFromString(const String& value) {
     return animation_test_helpers::OffsetFromString(GetDocument(), value);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 };
 
 class TestScrollTimeline : public ScrollTimeline {
@@ -134,8 +140,13 @@ TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfScrollSourceIsNotScrollable) {
   ASSERT_TRUE(scroller);
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -164,8 +175,13 @@ TEST_F(ScrollTimelineTest,
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   options->setScrollOffsets(
@@ -200,16 +216,26 @@ TEST_F(ScrollTimelineTest,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 90),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  EXPECT_EQ(scroll_timeline->CurrentTimeMilliseconds(),
+            time_range->GetAsDouble());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ(scroll_timeline->CurrentTimeMilliseconds(),
             time_range.GetAsDouble());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ("after", scroll_timeline->phase());
 
   current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  EXPECT_EQ(scroll_timeline->CurrentTimeMilliseconds(),
+            time_range->GetAsDouble());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ(scroll_timeline->CurrentTimeMilliseconds(),
             time_range.GetAsDouble());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ("after", scroll_timeline->phase());
   EXPECT_TRUE(scroll_timeline->IsActive());
 }
@@ -233,8 +259,13 @@ TEST_F(ScrollTimelineTest,
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   options->setScrollOffsets(
@@ -262,8 +293,13 @@ TEST_F(ScrollTimelineTest,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  EXPECT_EQ(time_range->GetAsDouble(),
+            scroll_timeline->CurrentTimeMilliseconds());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ(time_range.GetAsDouble(),
             scroll_timeline->CurrentTimeMilliseconds());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ("after", scroll_timeline->phase());
   EXPECT_TRUE(scroll_timeline->IsActive());
 }
@@ -286,8 +322,13 @@ TEST_F(ScrollTimelineTest, PhasesAreCorrectWhenUsingOffsets) {
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   options->setScrollOffsets(
@@ -333,8 +374,13 @@ TEST_F(ScrollTimelineTest,
   // Create the ScrollTimeline with Document.scrollingElement() as source. The
   // resolved scroll source should be the Document.
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetDocument().scrollingElement());
   ScrollTimeline* scroll_timeline =
@@ -359,8 +405,13 @@ TEST_F(ScrollTimelineTest,
   // Create the ScrollTimeline with Document.scrollingElement() as source. The
   // resolved scroll source should be the Document.
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetDocument().scrollingElement());
   ScrollTimeline* scroll_timeline =
@@ -724,8 +775,13 @@ TEST_F(ScrollTimelineTest, CurrentTimeUpdateAfterNewAnimationFrame) {
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  auto* time_range =
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DoubleOrScrollTimelineAutoKeyword time_range =
       DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
 
@@ -933,11 +989,21 @@ TEST_F(ScrollTimelineTest, ResolveScrollOffsets) {
   ASSERT_TRUE(scrollable_area);
   double time_range = 100.0;
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  options->setTimeRange(
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
+          time_range));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(
       DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setScrollSource(GetElementById("scroller"));
   // Empty scroll offsets resolve into [0, 100%].
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  HeapVector<Member<V8ScrollTimelineOffset>> scroll_offsets = {};
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   HeapVector<ScrollTimelineOffsetValue> scroll_offsets = {};
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setScrollOffsets(scroll_offsets);
 
   ScrollTimeline* scroll_timeline =
@@ -1000,10 +1066,20 @@ TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
   ASSERT_TRUE(scrollable_area);
   double time_range = 100.0;
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  options->setTimeRange(
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
+          time_range));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(
       DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setScrollSource(GetElementById("scroller"));
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  HeapVector<Member<V8ScrollTimelineOffset>> scroll_offsets;
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   HeapVector<ScrollTimelineOffsetValue> scroll_offsets;
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   scroll_offsets.push_back(OffsetFromString("10px"));
   scroll_offsets.push_back(OffsetFromString("20px"));
   scroll_offsets.push_back(OffsetFromString("40px"));
@@ -1091,12 +1167,24 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
   ASSERT_TRUE(scrollable_area);
   double time_range = 100.0;
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  options->setTimeRange(
+      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
+          time_range));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(
       DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setScrollSource(GetElementById("scroller"));
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  HeapVector<Member<V8ScrollTimelineOffset>> scroll_offsets = {
+      OffsetFromString("90px"), OffsetFromString("40px"),
+      OffsetFromString("10px")};
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   HeapVector<ScrollTimelineOffsetValue> scroll_offsets = {
       OffsetFromString("90px"), OffsetFromString("40px"),
       OffsetFromString("10px")};
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setScrollOffsets(scroll_offsets);
 
   ScrollTimeline* scroll_timeline =

@@ -30,12 +30,20 @@ BluetoothLEScan::BluetoothLEScan(
         filter_init->setNamePrefix(filter->name_prefix);
 
       if (filter->services && filter->services.has_value()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+        HeapVector<Member<V8UnionStringOrUnsignedLong>> services;
+        for (const auto& uuid : filter->services.value()) {
+          services.push_back(
+              MakeGarbageCollected<V8UnionStringOrUnsignedLong>(uuid));
+        }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
         HeapVector<blink::StringOrUnsignedLong> services;
         for (const auto& uuid : filter->services.value()) {
           blink::StringOrUnsignedLong uuid_string;
           uuid_string.SetString(uuid);
           services.push_back(uuid_string);
         }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
         filter_init->setServices(services);
       }
       filters_.push_back(std::move(filter_init));

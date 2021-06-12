@@ -7,9 +7,9 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_read_into_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_region.h"
-#include "third_party/blink/renderer/modules/webcodecs/plane_layout.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_frame_read_into_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {

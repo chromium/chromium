@@ -58,6 +58,7 @@ const char kHandleGestureForPermissionRequest[] =
 
 namespace {
 
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 // TODO(crbug.com/1181288): Remove the old IDL union version.
 V8BluetoothServiceUUID* ToV8BluetoothServiceUUID(
     const StringOrUnsignedLong& uuid) {
@@ -70,6 +71,7 @@ V8BluetoothServiceUUID* ToV8BluetoothServiceUUID(
   NOTREACHED();
   return nullptr;
 }
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace
 
@@ -106,6 +108,15 @@ static void CanonicalizeFilter(
       return;
     }
     canonicalized_filter->services.emplace();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    for (const V8UnionStringOrUnsignedLong* service : filter->services()) {
+      const String& validated_service =
+          BluetoothUUID::getService(service, exception_state);
+      if (exception_state.HadException())
+        return;
+      canonicalized_filter->services->push_back(validated_service);
+    }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     for (const StringOrUnsignedLong& service : filter->services()) {
       const String& validated_service = BluetoothUUID::getService(
           ToV8BluetoothServiceUUID(service), exception_state);
@@ -113,6 +124,7 @@ static void CanonicalizeFilter(
         return;
       canonicalized_filter->services->push_back(validated_service);
     }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   if (filter->hasName()) {
@@ -146,8 +158,14 @@ static void CanonicalizeFilter(
     }
     canonicalized_filter->manufacturer_data.emplace();
     for (const auto& manufacturer_data : filter->manufacturerData()) {
-      DOMArrayPiece mask_buffer = manufacturer_data->mask();
-      DOMArrayPiece data_prefix_buffer = manufacturer_data->dataPrefix();
+      DOMArrayPiece mask_buffer = manufacturer_data->hasMask()
+                                      ? DOMArrayPiece(manufacturer_data->mask())
+                                      : DOMArrayPiece();
+      DOMArrayPiece data_prefix_buffer =
+          manufacturer_data->hasDataPrefix()
+              ? DOMArrayPiece(manufacturer_data->dataPrefix())
+              : DOMArrayPiece();
+
       if (manufacturer_data->hasMask()) {
         if (mask_buffer.IsDetached()) {
           exception_state.ThrowDOMException(
@@ -247,6 +265,16 @@ static void ConvertRequestDeviceOptions(
   }
 
   if (options->hasOptionalServices()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    for (const V8UnionStringOrUnsignedLong* optional_service :
+         options->optionalServices()) {
+      const String& validated_optional_service =
+          BluetoothUUID::getService(optional_service, exception_state);
+      if (exception_state.HadException())
+        return;
+      result->optional_services.push_back(validated_optional_service);
+    }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     for (const StringOrUnsignedLong& optional_service :
          options->optionalServices()) {
       const String& validated_optional_service = BluetoothUUID::getService(
@@ -255,6 +283,7 @@ static void ConvertRequestDeviceOptions(
         return;
       result->optional_services.push_back(validated_optional_service);
     }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   if (options->hasOptionalManufacturerData()) {

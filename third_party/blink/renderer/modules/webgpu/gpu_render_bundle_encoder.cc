@@ -48,7 +48,8 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
       MakeGarbageCollected<GPURenderBundleEncoder>(
           device, device->GetProcs().deviceCreateRenderBundleEncoder(
                       device->GetHandle(), &dawn_desc));
-  encoder->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    encoder->setLabel(webgpu_desc->label());
   return encoder;
 }
 

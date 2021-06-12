@@ -98,7 +98,8 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
                                          lost_callback_->UnboundCallback(),
                                          lost_callback_->AsUserdata());
 
-  setLabel(descriptor->label());
+  if (descriptor->hasLabel())
+    setLabel(descriptor->label());
 }
 
 void GPUDevice::InjectError(WGPUErrorType type, const char* message) {
@@ -134,14 +135,26 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == WGPUErrorType_Validation) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    init->setError(
+        MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
+            MakeGarbageCollected<GPUValidationError>(message)));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     auto* error = MakeGarbageCollected<GPUValidationError>(message);
     init->setError(
         GPUOutOfMemoryErrorOrGPUValidationError::FromGPUValidationError(error));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   } else if (errorType == WGPUErrorType_OutOfMemory) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    init->setError(
+        MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
+            GPUOutOfMemoryError::Create()));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     GPUOutOfMemoryError* error = GPUOutOfMemoryError::Create();
     init->setError(
         GPUOutOfMemoryErrorOrGPUValidationError::FromGPUOutOfMemoryError(
             error));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   } else {
     return;
   }

@@ -126,8 +126,10 @@ void GPUPrimitiveStateAsWGPUPrimitiveState(
   dawn_state->dawn_desc.nextInChain = nullptr;
   dawn_state->dawn_desc.topology =
       AsDawnEnum<WGPUPrimitiveTopology>(webgpu_desc->topology());
-  dawn_state->dawn_desc.stripIndexFormat =
-      AsDawnEnum<WGPUIndexFormat>(webgpu_desc->stripIndexFormat());
+  if (webgpu_desc->hasStripIndexFormat()) {
+    dawn_state->dawn_desc.stripIndexFormat =
+        AsDawnEnum<WGPUIndexFormat>(webgpu_desc->stripIndexFormat());
+  }
   dawn_state->dawn_desc.frontFace =
       AsDawnEnum<WGPUFrontFace>(webgpu_desc->frontFace());
   dawn_state->dawn_desc.cullMode =
@@ -136,7 +138,12 @@ void GPUPrimitiveStateAsWGPUPrimitiveState(
   if (webgpu_desc->hasClampDepth()) {
     auto* clamp_state = &dawn_state->depth_clamping_state;
     clamp_state->chain.sType = WGPUSType_PrimitiveDepthClampingState;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    clamp_state->clampDepth = webgpu_desc->clampDepth().has_value() &&
+                              webgpu_desc->clampDepth().value();
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     clamp_state->clampDepth = webgpu_desc->clampDepth();
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     dawn_state->dawn_desc.nextInChain =
         reinterpret_cast<WGPUChainedStruct*>(clamp_state);
   }
@@ -375,7 +382,8 @@ GPURenderPipeline* GPURenderPipeline::Create(
   pipeline = MakeGarbageCollected<GPURenderPipeline>(
       device, device->GetProcs().deviceCreateRenderPipeline2(
                   device->GetHandle(), &dawn_desc_info.dawn_desc));
-  pipeline->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    pipeline->setLabel(webgpu_desc->label());
   return pipeline;
 }
 

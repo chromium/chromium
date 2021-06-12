@@ -102,7 +102,8 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
   GPUBindGroupLayout* layout = MakeGarbageCollected<GPUBindGroupLayout>(
       device, device->GetProcs().deviceCreateBindGroupLayout(
                   device->GetHandle(), &dawn_desc));
-  layout->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    layout->setLabel(webgpu_desc->label());
   return layout;
 }
 

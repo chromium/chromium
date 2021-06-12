@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -33,7 +34,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
-#include "third_party/blink/renderer/core/html/focus_options.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -137,11 +137,11 @@ void HTMLDialogElement::close(const String& return_value) {
   // modify this element.
   if (RuntimeEnabledFeatures::DialogFocusNewSpecBehaviorEnabled() &&
       previously_focused_element_) {
-    FocusOptions focus_options;
-    focus_options.setPreventScroll(true);
+    FocusOptions* focus_options = FocusOptions::Create();
+    focus_options->setPreventScroll(true);
     Element* previously_focused_element = previously_focused_element_;
     previously_focused_element_ = nullptr;
-    previously_focused_element->focus(&focus_options);
+    previously_focused_element->focus(focus_options);
   }
 }
 

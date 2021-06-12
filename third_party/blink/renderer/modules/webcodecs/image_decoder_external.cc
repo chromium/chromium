@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
@@ -122,7 +123,11 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
 
   // |data| is a required field.
   DCHECK(init->hasData());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  DCHECK(init->data());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DCHECK(!init->data().IsNull());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   constexpr char kNoneOption[] = "none";
   auto color_behavior = ColorBehavior::Tag();
@@ -152,9 +157,22 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
-  if (init->data().IsReadableStream()) {
-    if (init->data().GetAsReadableStream()->IsLocked() ||
-        init->data().GetAsReadableStream()->IsDisturbed()) {
+  if (
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      init->data()->IsReadableStream()
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      init->data().IsReadableStream()
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  ) {
+    if (
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+        init->data()->GetAsReadableStream()->IsLocked() ||
+        init->data()->GetAsReadableStream()->IsDisturbed()
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+        init->data().GetAsReadableStream()->IsLocked() ||
+        init->data().GetAsReadableStream()->IsDisturbed()
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    ) {
       exception_state.ThrowTypeError(
           "ImageDecoder can only accept readable streams that are not yet "
           "locked to a reader");
@@ -166,8 +184,13 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
         /*data_complete=*/false, alpha_option, color_behavior, desired_size,
         animation_option_);
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
+        script_state, init->data()->GetAsReadableStream());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
         script_state, init->data().GetAsReadableStream());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
     construction_succeeded_ = true;
 
@@ -179,6 +202,19 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   }
 
   DOMArrayPiece buffer;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  switch (init->data()->GetContentType()) {
+    case V8ImageBufferSource::ContentType::kArrayBuffer:
+      buffer = DOMArrayPiece(init->data()->GetAsArrayBuffer());
+      break;
+    case V8ImageBufferSource::ContentType::kArrayBufferView:
+      buffer = DOMArrayPiece(init->data()->GetAsArrayBufferView().Get());
+      break;
+    case V8ImageBufferSource::ContentType::kReadableStream:
+      NOTREACHED();
+      return;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (init->data().IsArrayBuffer()) {
     buffer = DOMArrayPiece(init->data().GetAsArrayBuffer());
   } else if (init->data().IsArrayBufferView()) {
@@ -187,6 +223,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     NOTREACHED();
     return;
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   if (!buffer.ByteLength()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,

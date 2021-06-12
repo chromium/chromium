@@ -17,6 +17,7 @@
 #include "media/base/mime_util.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_metadata.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -328,8 +330,13 @@ void AudioEncoder::CallOutputCallback(
     if (codec_desc.has_value()) {
       auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
                                                     codec_desc.value().size());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      decoder_config->setDescription(
+          MakeGarbageCollected<V8BufferSource>(desc_array_buf));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       decoder_config->setDescription(
           ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     }
     metadata->setDecoderConfig(decoder_config);
   }

@@ -16,7 +16,7 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   boolean test(URLPatternInput input, optional USVString baseURL);
 
   [RaisesException]
-  URLPatternResult exec(URLPatternInput input, optional USVString baseURL);
+  URLPatternResult? exec(URLPatternInput input, optional USVString baseURL);
 
   readonly attribute USVString protocol;
   readonly attribute USVString username;

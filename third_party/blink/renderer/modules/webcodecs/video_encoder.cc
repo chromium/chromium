@@ -331,7 +331,7 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
   if (config.hasHardwareAcceleration())
     result->setHardwareAcceleration(config.hardwareAcceleration());
 
-  if (config.hasAvc() && config.avc()->format()) {
+  if (config.hasAvc() && config.avc()->hasFormat()) {
     auto* avc = AvcEncoderConfig::Create();
     avc->setFormat(config.avc()->format());
     result->setAvc(avc);
@@ -718,8 +718,13 @@ void VideoEncoder::CallOutputCallback(
     if (codec_desc.has_value()) {
       auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
                                                     codec_desc.value().size());
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+      decoder_config->setDescription(
+          MakeGarbageCollected<V8BufferSource>(desc_array_buf));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       decoder_config->setDescription(
           ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     }
     metadata->setDecoderConfig(decoder_config);
   }

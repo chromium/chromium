@@ -23,7 +23,10 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
       user_initiated_(init->userInitiated()),
       hash_change_(init->hashChange()),
       form_data_(init->formData()),
-      info_(init->info()) {
+      info_(init->hasInfo()
+                ? init->info()
+                : ScriptValue(context->GetIsolate(),
+                              v8::Undefined(context->GetIsolate()))) {
   DCHECK(IsA<LocalDOMWindow>(context));
 }
 

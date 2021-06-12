@@ -54,8 +54,9 @@ class MODULES_EXPORT IDBKeyPath {
   explicit IDBKeyPath(const String&);
   explicit IDBKeyPath(const Vector<String>& array);
   explicit IDBKeyPath(const V8UnionStringOrStringSequence* key_path);
-  // TODO(crbug.com/1181288): Remove the old IDL union version.
+#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   explicit IDBKeyPath(const StringOrStringSequence& key_path);
+#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   mojom::IDBKeyPathType GetType() const { return type_; }
 

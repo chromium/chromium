@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_programmable_stage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuextent3ddict_unsignedlongenforcerangesequence.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 
@@ -59,7 +58,7 @@ WGPUColor AsDawnType(const V8GPUColor* webgpu_color) {
   return WGPUColor{};
 }
 
-WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device) {
+WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent) {
   DCHECK(webgpu_extent);
 
   // Set all extents to their default value of 1.
@@ -107,6 +106,50 @@ WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent, GPUDevice* device) {
 
   return dawn_extent;
 }
+
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+
+WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_origin) {
+  DCHECK(webgpu_origin);
+
+  WGPUOrigin3D dawn_origin = {0, 0, 0};
+
+  switch (webgpu_origin->GetContentType()) {
+    case V8GPUOrigin3D::ContentType::kGPUOrigin3DDict: {
+      const GPUOrigin3DDict* webgpu_origin_3d_dict =
+          webgpu_origin->GetAsGPUOrigin3DDict();
+      dawn_origin.x = webgpu_origin_3d_dict->x();
+      dawn_origin.y = webgpu_origin_3d_dict->y();
+      dawn_origin.z = webgpu_origin_3d_dict->z();
+      break;
+    }
+    case V8GPUOrigin3D::ContentType::kUnsignedLongEnforceRangeSequence: {
+      const Vector<uint32_t>& webgpu_origin_sequence =
+          webgpu_origin->GetAsUnsignedLongEnforceRangeSequence();
+
+      // The WebGPU spec states that if the sequence isn't big enough then the
+      // default values of 0 are used (which are set above).
+      switch (webgpu_origin_sequence.size()) {
+        default:
+          dawn_origin.z = webgpu_origin_sequence[2];
+          FALLTHROUGH;
+        case 2:
+          dawn_origin.y = webgpu_origin_sequence[1];
+          FALLTHROUGH;
+        case 1:
+          dawn_origin.x = webgpu_origin_sequence[0];
+          FALLTHROUGH;
+        case 0:
+          break;
+      }
+      break;
+    }
+  }
+
+  return dawn_origin;
+}
+
+#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 WGPUExtent3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict* webgpu_extent,
@@ -197,6 +240,8 @@ WGPUOrigin3D AsDawnType(
   return dawn_origin;
 }
 
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+
 WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
                                GPUDevice* device) {
   DCHECK(webgpu_view);
@@ -205,7 +250,11 @@ WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
   WGPUTextureCopyView dawn_view = {};
   dawn_view.texture = webgpu_view->texture()->GetHandle();
   dawn_view.mipLevel = webgpu_view->mipLevel();
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  dawn_view.origin = AsDawnType(webgpu_view->origin());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   dawn_view.origin = AsDawnType(&webgpu_view->origin());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   dawn_view.aspect = AsDawnEnum<WGPUTextureAspect>(webgpu_view->aspect());
 
   return dawn_view;

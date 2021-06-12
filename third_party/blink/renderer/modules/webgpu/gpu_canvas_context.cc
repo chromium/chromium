@@ -198,8 +198,12 @@ void GPUCanvasContext::ConfigureInternal(
     // deprecated behavior of resizing to match the canvas size each frame.
     size = IntSize(-1, -1);
   } else if (descriptor->hasSize()) {
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    WGPUExtent3D dawn_extent = AsDawnType(descriptor->size());
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     WGPUExtent3D dawn_extent =
         AsDawnType(&descriptor->size(), descriptor->device());
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     size = IntSize(dawn_extent.width, dawn_extent.height);
 
     if (dawn_extent.depthOrArrayLayers != 1) {
@@ -215,7 +219,8 @@ void GPUCanvasContext::ConfigureInternal(
   swapchain_ = MakeGarbageCollected<GPUSwapChain>(
       this, descriptor->device(), usage, format, filter_quality_, size);
   swapchain_->CcLayer()->SetContentsOpaque(!CreationAttributes().alpha);
-  swapchain_->setLabel(descriptor->label());
+  if (descriptor->hasLabel())
+    swapchain_->setLabel(descriptor->label());
 
   // If we don't notify the host that something has changed it may never check
   // for the new cc::Layer.

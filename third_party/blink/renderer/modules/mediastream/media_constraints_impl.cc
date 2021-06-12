@@ -33,11 +33,17 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_double_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -47,7 +53,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
 namespace media_constraints_impl {
 
 // A naked value is treated as an "ideal" value in the basic constraints,
@@ -493,6 +498,41 @@ MediaConstraints Create(ExecutionContext* context,
   return CreateFromNamedConstraints(context, mandatory, optional, error_state);
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+void CopyLongConstraint(const V8ConstrainLong* blink_union_form,
+                        NakedValueDisposition naked_treatment,
+                        LongConstraint& web_form) {
+  web_form.SetIsPresent(true);
+  switch (blink_union_form->GetContentType()) {
+    case V8ConstrainLong::ContentType::kConstrainLongRange: {
+      const auto* blink_form = blink_union_form->GetAsConstrainLongRange();
+      if (blink_form->hasMin()) {
+        web_form.SetMin(blink_form->min());
+      }
+      if (blink_form->hasMax()) {
+        web_form.SetMax(blink_form->max());
+      }
+      if (blink_form->hasIdeal()) {
+        web_form.SetIdeal(blink_form->ideal());
+      }
+      if (blink_form->hasExact()) {
+        web_form.SetExact(blink_form->exact());
+      }
+      break;
+    }
+    case V8ConstrainLong::ContentType::kLong:
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdeal(blink_union_form->GetAsLong());
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExact(blink_union_form->GetAsLong());
+          break;
+      }
+      break;
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void CopyLongConstraint(const LongOrConstrainLongRange& blink_union_form,
                         NakedValueDisposition naked_treatment,
                         LongConstraint& web_form) {
@@ -522,7 +562,43 @@ void CopyLongConstraint(const LongOrConstrainLongRange& blink_union_form,
     web_form.SetExact(blink_form->exact());
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+void CopyDoubleConstraint(const V8ConstrainDouble* blink_union_form,
+                          NakedValueDisposition naked_treatment,
+                          DoubleConstraint& web_form) {
+  web_form.SetIsPresent(true);
+  switch (blink_union_form->GetContentType()) {
+    case V8ConstrainDouble::ContentType::kConstrainDoubleRange: {
+      const auto* blink_form = blink_union_form->GetAsConstrainDoubleRange();
+      if (blink_form->hasMin()) {
+        web_form.SetMin(blink_form->min());
+      }
+      if (blink_form->hasMax()) {
+        web_form.SetMax(blink_form->max());
+      }
+      if (blink_form->hasIdeal()) {
+        web_form.SetIdeal(blink_form->ideal());
+      }
+      if (blink_form->hasExact()) {
+        web_form.SetExact(blink_form->exact());
+      }
+      break;
+    }
+    case V8ConstrainDouble::ContentType::kDouble:
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdeal(blink_union_form->GetAsDouble());
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExact(blink_union_form->GetAsDouble());
+          break;
+      }
+      break;
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void CopyDoubleConstraint(const DoubleOrConstrainDoubleRange& blink_union_form,
                           NakedValueDisposition naked_treatment,
                           DoubleConstraint& web_form) {
@@ -552,7 +628,25 @@ void CopyDoubleConstraint(const DoubleOrConstrainDoubleRange& blink_union_form,
     web_form.SetExact(blink_form->exact());
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+void CopyBooleanOrDoubleConstraint(
+    const V8UnionBooleanOrConstrainDouble* blink_union_form,
+    NakedValueDisposition naked_treatment,
+    DoubleConstraint& web_form) {
+  switch (blink_union_form->GetContentType()) {
+    case V8UnionBooleanOrConstrainDouble::ContentType::kBoolean:
+      web_form.SetIsPresent(blink_union_form->GetAsBoolean());
+      break;
+    case V8UnionBooleanOrConstrainDouble::ContentType::kConstrainDoubleRange:
+    case V8UnionBooleanOrConstrainDouble::ContentType::kDouble:
+      CopyDoubleConstraint(blink_union_form->GetAsV8ConstrainDouble(),
+                           naked_treatment, web_form);
+      break;
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void CopyBooleanOrDoubleConstraint(
     const BooleanOrDoubleOrConstrainDoubleRange& blink_union_form,
     NakedValueDisposition naked_treatment,
@@ -571,7 +665,64 @@ void CopyBooleanOrDoubleConstraint(
   }
   CopyDoubleConstraint(double_constraint, naked_treatment, web_form);
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+void CopyStringConstraint(const V8ConstrainDOMString* blink_union_form,
+                          NakedValueDisposition naked_treatment,
+                          StringConstraint& web_form) {
+  web_form.SetIsPresent(true);
+  switch (blink_union_form->GetContentType()) {
+    case V8ConstrainDOMString::ContentType::kConstrainDOMStringParameters: {
+      const auto* blink_form =
+          blink_union_form->GetAsConstrainDOMStringParameters();
+      if (blink_form->hasIdeal()) {
+        switch (blink_form->ideal()->GetContentType()) {
+          case V8UnionStringOrStringSequence::ContentType::kString:
+            web_form.SetIdeal(
+                Vector<String>(1, blink_form->ideal()->GetAsString()));
+            break;
+          case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+            web_form.SetIdeal(blink_form->ideal()->GetAsStringSequence());
+            break;
+        }
+      }
+      if (blink_form->hasExact()) {
+        switch (blink_form->exact()->GetContentType()) {
+          case V8UnionStringOrStringSequence::ContentType::kString:
+            web_form.SetExact(
+                Vector<String>(1, blink_form->exact()->GetAsString()));
+            break;
+          case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+            web_form.SetExact(blink_form->exact()->GetAsStringSequence());
+            break;
+        }
+      }
+      break;
+    }
+    case V8ConstrainDOMString::ContentType::kString:
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdeal(Vector<String>(1, blink_union_form->GetAsString()));
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExact(Vector<String>(1, blink_union_form->GetAsString()));
+          break;
+      }
+      break;
+    case V8ConstrainDOMString::ContentType::kStringSequence:
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdeal(blink_union_form->GetAsStringSequence());
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExact(blink_union_form->GetAsStringSequence());
+          break;
+      }
+      break;
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void CopyStringConstraint(
     const StringOrStringSequenceOrConstrainDOMStringParameters&
         blink_union_form,
@@ -617,7 +768,38 @@ void CopyStringConstraint(
     }
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+void CopyBooleanConstraint(const V8ConstrainBoolean* blink_union_form,
+                           NakedValueDisposition naked_treatment,
+                           BooleanConstraint& web_form) {
+  web_form.SetIsPresent(true);
+  switch (blink_union_form->GetContentType()) {
+    case V8ConstrainBoolean::ContentType::kBoolean:
+      switch (naked_treatment) {
+        case NakedValueDisposition::kTreatAsIdeal:
+          web_form.SetIdeal(blink_union_form->GetAsBoolean());
+          break;
+        case NakedValueDisposition::kTreatAsExact:
+          web_form.SetExact(blink_union_form->GetAsBoolean());
+          break;
+      }
+      break;
+    case V8ConstrainBoolean::ContentType::kConstrainBooleanParameters: {
+      const auto* blink_form =
+          blink_union_form->GetAsConstrainBooleanParameters();
+      if (blink_form->hasIdeal()) {
+        web_form.SetIdeal(blink_form->ideal());
+      }
+      if (blink_form->hasExact()) {
+        web_form.SetExact(blink_form->exact());
+      }
+      break;
+    }
+  }
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void CopyBooleanConstraint(
     const BooleanOrConstrainBooleanParameters& blink_union_form,
     NakedValueDisposition naked_treatment,
@@ -642,6 +824,7 @@ void CopyBooleanConstraint(
     web_form.SetExact(blink_form->exact());
   }
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
                        NakedValueDisposition naked_treatment,
@@ -820,6 +1003,27 @@ U GetNakedValue(T input, NakedValueDisposition which) {
   return input.Exact();
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+V8ConstrainLong* ConvertLong(const LongConstraint& input,
+                             NakedValueDisposition naked_treatment) {
+  if (UseNakedNumeric(input, naked_treatment)) {
+    return MakeGarbageCollected<V8ConstrainLong>(
+        GetNakedValue<uint32_t>(input, naked_treatment));
+  } else if (!input.IsUnconstrained()) {
+    ConstrainLongRange* output = ConstrainLongRange::Create();
+    if (input.HasExact())
+      output->setExact(input.Exact());
+    if (input.HasMin())
+      output->setMin(input.Min());
+    if (input.HasMax())
+      output->setMax(input.Max());
+    if (input.HasIdeal())
+      output->setIdeal(input.Ideal());
+    return MakeGarbageCollected<V8ConstrainLong>(output);
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 LongOrConstrainLongRange ConvertLong(const LongConstraint& input,
                                      NakedValueDisposition naked_treatment) {
   LongOrConstrainLongRange output_union;
@@ -839,7 +1043,29 @@ LongOrConstrainLongRange ConvertLong(const LongConstraint& input,
   }
   return output_union;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+V8ConstrainDouble* ConvertDouble(const DoubleConstraint& input,
+                                 NakedValueDisposition naked_treatment) {
+  if (UseNakedNumeric(input, naked_treatment)) {
+    return MakeGarbageCollected<V8ConstrainDouble>(
+        GetNakedValue<double>(input, naked_treatment));
+  } else if (!input.IsUnconstrained()) {
+    ConstrainDoubleRange* output = ConstrainDoubleRange::Create();
+    if (input.HasExact())
+      output->setExact(input.Exact());
+    if (input.HasIdeal())
+      output->setIdeal(input.Ideal());
+    if (input.HasMin())
+      output->setMin(input.Min());
+    if (input.HasMax())
+      output->setMax(input.Max());
+    return MakeGarbageCollected<V8ConstrainDouble>(output);
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 DoubleOrConstrainDoubleRange ConvertDouble(
     const DoubleConstraint& input,
     NakedValueDisposition naked_treatment) {
@@ -860,7 +1086,30 @@ DoubleOrConstrainDoubleRange ConvertDouble(
   }
   return output_union;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+V8UnionBooleanOrConstrainDouble* ConvertBooleanOrDouble(
+    const DoubleConstraint& input,
+    NakedValueDisposition naked_treatment) {
+  if (UseNakedNumeric(input, naked_treatment)) {
+    return MakeGarbageCollected<V8UnionBooleanOrConstrainDouble>(
+        GetNakedValue<double>(input, naked_treatment));
+  } else if (!input.IsUnconstrained()) {
+    ConstrainDoubleRange* output = ConstrainDoubleRange::Create();
+    if (input.HasExact())
+      output->setExact(input.Exact());
+    if (input.HasIdeal())
+      output->setIdeal(input.Ideal());
+    if (input.HasMin())
+      output->setMin(input.Min());
+    if (input.HasMax())
+      output->setMax(input.Max());
+    return MakeGarbageCollected<V8UnionBooleanOrConstrainDouble>(output);
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 BooleanOrDoubleOrConstrainDoubleRange ConvertBooleanOrDouble(
     const DoubleConstraint& input,
     NakedValueDisposition naked_treatment) {
@@ -881,7 +1130,23 @@ BooleanOrDoubleOrConstrainDoubleRange ConvertBooleanOrDouble(
   }
   return output_union;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+V8UnionStringOrStringSequence* ConvertStringSequence(
+    const WebVector<WebString>& input) {
+  if (input.size() > 1) {
+    Vector<String> buffer;
+    for (const auto& scanner : input)
+      buffer.push_back(scanner);
+    return MakeGarbageCollected<V8UnionStringOrStringSequence>(
+        std::move(buffer));
+  } else if (!input.empty()) {
+    return MakeGarbageCollected<V8UnionStringOrStringSequence>(input[0]);
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 StringOrStringSequence ConvertStringSequence(
     const WebVector<WebString>& input) {
   StringOrStringSequence the_strings;
@@ -895,7 +1160,35 @@ StringOrStringSequence ConvertStringSequence(
   }
   return the_strings;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+V8ConstrainDOMString* ConvertString(const StringConstraint& input,
+                                    NakedValueDisposition naked_treatment) {
+  if (UseNakedNonNumeric(input, naked_treatment)) {
+    WebVector<WebString> input_buffer(
+        GetNakedValue<WebVector<WebString>>(input, naked_treatment));
+    if (input_buffer.size() > 1) {
+      Vector<String> buffer;
+      for (const auto& scanner : input_buffer)
+        buffer.push_back(scanner);
+      return MakeGarbageCollected<V8ConstrainDOMString>(std::move(buffer));
+    } else if (!input_buffer.empty()) {
+      return MakeGarbageCollected<V8ConstrainDOMString>(input_buffer[0]);
+    }
+    return nullptr;
+  } else if (!input.IsUnconstrained()) {
+    ConstrainDOMStringParameters* output =
+        ConstrainDOMStringParameters::Create();
+    if (input.HasExact())
+      output->setExact(ConvertStringSequence(input.Exact()));
+    if (input.HasIdeal())
+      output->setIdeal(ConvertStringSequence(input.Ideal()));
+    return MakeGarbageCollected<V8ConstrainDOMString>(output);
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 StringOrStringSequenceOrConstrainDOMStringParameters ConvertString(
     const StringConstraint& input,
     NakedValueDisposition naked_treatment) {
@@ -922,7 +1215,25 @@ StringOrStringSequenceOrConstrainDOMStringParameters ConvertString(
   }
   return output_union;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+V8ConstrainBoolean* ConvertBoolean(const BooleanConstraint& input,
+                                   NakedValueDisposition naked_treatment) {
+  if (UseNakedNonNumeric(input, naked_treatment)) {
+    return MakeGarbageCollected<V8ConstrainBoolean>(
+        GetNakedValue<bool>(input, naked_treatment));
+  } else if (!input.IsUnconstrained()) {
+    ConstrainBooleanParameters* output = ConstrainBooleanParameters::Create();
+    if (input.HasExact())
+      output->setExact(input.Exact());
+    if (input.HasIdeal())
+      output->setIdeal(input.Ideal());
+    return MakeGarbageCollected<V8ConstrainBoolean>(output);
+  }
+  return nullptr;
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 BooleanOrConstrainBooleanParameters ConvertBoolean(
     const BooleanConstraint& input,
     NakedValueDisposition naked_treatment) {
@@ -939,6 +1250,7 @@ BooleanOrConstrainBooleanParameters ConvertBoolean(
   }
   return output_union;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
                           NakedValueDisposition naked_treatment,

@@ -55,7 +55,8 @@ GPUSampler* GPUSampler::Create(GPUDevice* device,
   GPUSampler* sampler = MakeGarbageCollected<GPUSampler>(
       device,
       device->GetProcs().deviceCreateSampler(device->GetHandle(), &dawn_desc));
-  sampler->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    sampler->setLabel(webgpu_desc->label());
   return sampler;
 }
 

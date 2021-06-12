@@ -32,6 +32,34 @@ GPUShaderModule* GPUShaderModule::Create(
   std::string label;
   WGPUShaderModuleDescriptor dawn_desc = {};
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  const auto* wgsl_or_spirv = webgpu_desc->code();
+  switch (wgsl_or_spirv->GetContentType()) {
+    case V8UnionUSVStringOrUint32Array::ContentType::kUSVString: {
+      wgsl_code = wgsl_or_spirv->GetAsUSVString().Utf8();
+      wgsl_desc.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
+      wgsl_desc.source = wgsl_code.c_str();
+      dawn_desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&wgsl_desc);
+      break;
+    }
+    case V8UnionUSVStringOrUint32Array::ContentType::kUint32Array: {
+      NotShared<DOMUint32Array> code = wgsl_or_spirv->GetAsUint32Array();
+      uint32_t length_words = 0;
+      if (!base::CheckedNumeric<uint32_t>(code->length())
+               .AssignIfValid(&length_words)) {
+        exception_state.ThrowRangeError(
+            "The provided ArrayBuffer exceeds the maximum supported size "
+            "(4294967295)");
+        return nullptr;
+      }
+      spirv_desc.chain.sType = WGPUSType_ShaderModuleSPIRVDescriptor;
+      spirv_desc.code = code->Data();
+      spirv_desc.codeSize = length_words;
+      dawn_desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&spirv_desc);
+      break;
+    }
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto wgsl_or_spirv = webgpu_desc->code();
   if (wgsl_or_spirv.IsUSVString()) {
     wgsl_code = wgsl_or_spirv.GetAsUSVString().Utf8();
@@ -57,6 +85,7 @@ GPUShaderModule* GPUShaderModule::Create(
     spirv_desc.codeSize = length_words;
     dawn_desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&spirv_desc);
   }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   if (webgpu_desc->hasLabel()) {
     label = webgpu_desc->label().Utf8();
@@ -66,7 +95,8 @@ GPUShaderModule* GPUShaderModule::Create(
   GPUShaderModule* shader = MakeGarbageCollected<GPUShaderModule>(
       device, device->GetProcs().deviceCreateShaderModule(device->GetHandle(),
                                                           &dawn_desc));
-  shader->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    shader->setLabel(webgpu_desc->label());
   return shader;
 }
 

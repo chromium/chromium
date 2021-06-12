@@ -46,6 +46,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
@@ -75,6 +76,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_event.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
@@ -386,6 +388,16 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
       Vector<String> url_strings;
       if (ice_server->hasUrls()) {
         UseCounter::Count(context, WebFeature::kRTCIceServerURLs);
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+        switch (ice_server->urls()->GetContentType()) {
+          case V8UnionStringOrStringSequence::ContentType::kString:
+            url_strings.push_back(ice_server->urls()->GetAsString());
+            break;
+          case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+            url_strings = ice_server->urls()->GetAsStringSequence();
+            break;
+        }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
         const StringOrStringSequence& urls = ice_server->urls();
         if (urls.IsString()) {
           url_strings.push_back(urls.GetAsString());
@@ -393,6 +405,7 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
           DCHECK(urls.IsStringSequence());
           url_strings = urls.GetAsStringSequence();
         }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       } else if (ice_server->hasUrl()) {
         UseCounter::Count(context, WebFeature::kRTCIceServerURL);
         url_strings.push_back(ice_server->url());
@@ -1723,13 +1736,18 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
   for (const auto& webrtc_server : webrtc_configuration.servers) {
     auto* ice_server = RTCIceServer::Create();
 
-    StringOrStringSequence urls;
     Vector<String> url_vector;
     url_vector.ReserveCapacity(SafeCast<wtf_size_t>(webrtc_server.urls.size()));
     for (const auto& url : webrtc_server.urls) {
       url_vector.emplace_back(url.c_str());
     }
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    auto* urls = MakeGarbageCollected<V8UnionStringOrStringSequence>(
+        std::move(url_vector));
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    StringOrStringSequence urls;
     urls.SetStringSequence(std::move(url_vector));
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
     ice_server->setUrls(urls);
     ice_server->setUsername(webrtc_server.username.c_str());

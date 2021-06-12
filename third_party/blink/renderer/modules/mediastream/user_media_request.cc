@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
@@ -279,6 +280,29 @@ void CountVideoConstraintUses(ExecutionContext* context,
   }
 }
 
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+MediaConstraints ParseOptions(
+    ExecutionContext* execution_context,
+    const V8UnionBooleanOrMediaTrackConstraints* options,
+    MediaErrorState& error_state) {
+  if (!options)
+    return MediaConstraints();
+  switch (options->GetContentType()) {
+    case V8UnionBooleanOrMediaTrackConstraints::ContentType::kBoolean:
+      if (options->GetAsBoolean())
+        return media_constraints_impl::Create();
+      else
+        return MediaConstraints();
+    case V8UnionBooleanOrMediaTrackConstraints::ContentType::
+        kMediaTrackConstraints:
+      return media_constraints_impl::Create(
+          execution_context, options->GetAsMediaTrackConstraints(),
+          error_state);
+  }
+  NOTREACHED();
+  return MediaConstraints();
+}
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 MediaConstraints ParseOptions(ExecutionContext* context,
                               const BooleanOrMediaTrackConstraints& options,
                               MediaErrorState& error_state) {
@@ -298,6 +322,7 @@ MediaConstraints ParseOptions(ExecutionContext* context,
 
   return constraints;
 }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace
 
@@ -396,9 +421,14 @@ UserMediaRequest* UserMediaRequest::Create(
       return nullptr;
     }
     if (audio.IsNull() && video.IsNull()) {
-      video = ParseOptions(context,
-                           BooleanOrMediaTrackConstraints::FromBoolean(true),
-                           error_state);
+      video = ParseOptions(
+          context,
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+          MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true),
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+          BooleanOrMediaTrackConstraints::FromBoolean(true),
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+          error_state);
       if (error_state.HadException())
         return nullptr;
     }
