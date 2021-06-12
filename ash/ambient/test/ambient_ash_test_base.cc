@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
+#include "ash/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_container_view.h"
@@ -53,12 +54,12 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   ~TestAmbientPhotoCacheImpl() override = default;
 
   // AmbientPhotoCache:
-  void DownloadPhoto(const std::string& url,
-                     base::OnceCallback<void(std::unique_ptr<std::string>)>
-                         callback) override {
+  void DownloadPhoto(
+      const std::string& url,
+      base::OnceCallback<void(std::string&&)> callback) override {
     // Reply with a unique string each time to avoid check to skip loading
     // duplicate images.
-    std::unique_ptr<std::string> data = std::make_unique<std::string>(
+    std::string data = std::string(
         download_data_ ? *download_data_
                        : base::StringPrintf("test_image_%i", download_count_));
     download_count_++;
@@ -70,7 +71,6 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
 
   void DownloadPhotoToFile(const std::string& url,
                            int cache_index,
-                           bool is_related,
                            base::OnceCallback<void(bool)> callback) override {
     if (!download_data_) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -78,21 +78,18 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
       return;
     }
 
-    files_.insert(std::pair<int, PhotoCacheEntry>(
-        cache_index,
-        PhotoCacheEntry(
-            is_related ? nullptr
-                       : std::make_unique<std::string>(*download_data_),
-            /*details=*/nullptr,
-            is_related ? std::make_unique<std::string>(*download_data_)
-                       : nullptr)));
+    ::ambient::PhotoCacheEntry cache_entry;
+    cache_entry.mutable_primary_photo()->set_image(*download_data_);
+
+    files_.insert(
+        std::pair<int, ::ambient::PhotoCacheEntry>(cache_index, cache_entry));
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
   }
 
   void DecodePhoto(
-      std::unique_ptr<std::string> data,
+      const std::string& data,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) override {
     gfx::ImageSkia image =
         decoded_image_ ? *decoded_image_
@@ -106,39 +103,27 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
         FROM_HERE, base::BindOnce(std::move(callback), image));
   }
 
-  void WriteFiles(int cache_index,
-                  const std::string* const image,
-                  const std::string* const details,
-                  const std::string* const related_image,
-                  base::OnceClosure callback) override {
-    files_.insert(std::pair<int, PhotoCacheEntry>(
-        cache_index,
-        PhotoCacheEntry(
-            image ? std::make_unique<std::string>(*image) : nullptr,
-            details ? std::make_unique<std::string>(*details) : nullptr,
-            related_image ? std::make_unique<std::string>(*related_image)
-                          : nullptr)));
+  void WritePhotoCache(int cache_index,
+                       const ::ambient::PhotoCacheEntry& cache_entry,
+                       base::OnceClosure callback) override {
+    files_.insert(
+        std::pair<int, ::ambient::PhotoCacheEntry>(cache_index, cache_entry));
     std::move(callback).Run();
   }
 
-  void ReadFiles(int cache_index,
-                 base::OnceCallback<void(PhotoCacheEntry)> callback) override {
+  void ReadPhotoCache(int cache_index,
+                      ::ambient::PhotoCacheEntry* cache_entry,
+                      base::OnceCallback<void()> callback) override {
     auto it = files_.find(cache_index);
     if (it == files_.end()) {
-      std::move(callback).Run(PhotoCacheEntry());
+      std::move(callback).Run();
       return;
     }
 
-    std::move(callback).Run(PhotoCacheEntry(
-        it->second.image ? std::make_unique<std::string>(*(it->second.image))
-                         : nullptr,
-        it->second.details
-            ? std::make_unique<std::string>(*(it->second.details))
-            : nullptr,
-        it->second.related_image
-            ? std::make_unique<std::string>(*(it->second.related_image))
-            : nullptr));
+    *cache_entry = it->second;
+    std::move(callback).Run();
   }
+
   void Clear() override {
     download_count_ = 0;
     download_data_.reset();
@@ -158,7 +143,9 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
 
   void SetDecodedPhoto(const gfx::ImageSkia& image) { decoded_image_ = image; }
 
-  const std::map<int, PhotoCacheEntry>& get_files() { return files_; }
+  const std::map<int, ::ambient::PhotoCacheEntry>& get_files() {
+    return files_;
+  }
 
  private:
   int download_count_ = 0;
@@ -171,7 +158,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   // If set, will replay this image.
   absl::optional<gfx::ImageSkia> decoded_image_;
 
-  std::map<int, PhotoCacheEntry> files_;
+  std::map<int, ::ambient::PhotoCacheEntry> files_;
 };
 
 AmbientAshTestBase::AmbientAshTestBase()
@@ -307,6 +294,10 @@ void AmbientAshTestBase::SetDecodedPhotoSize(int width, int height) {
       photo_controller()->get_photo_cache_for_testing());
 
   photo_cache->SetDecodedPhotoSize(width, height);
+}
+
+void AmbientAshTestBase::SetPhotoOrientation(bool portrait) {
+  backend_controller()->SetPhotoOrientation(portrait);
 }
 
 std::vector<AmbientBackgroundImageView*>
@@ -447,14 +438,15 @@ base::TimeDelta AmbientAshTestBase::GetRefreshTokenDelay() {
   return token_controller()->GetTimeUntilReleaseForTesting();
 }
 
-const std::map<int, PhotoCacheEntry>& AmbientAshTestBase::GetCachedFiles() {
+const std::map<int, ::ambient::PhotoCacheEntry>&
+AmbientAshTestBase::GetCachedFiles() {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
       photo_controller()->get_photo_cache_for_testing());
 
   return photo_cache->get_files();
 }
 
-const std::map<int, PhotoCacheEntry>&
+const std::map<int, ::ambient::PhotoCacheEntry>&
 AmbientAshTestBase::GetBackupCachedFiles() {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
       photo_controller()->get_backup_photo_cache_for_testing());

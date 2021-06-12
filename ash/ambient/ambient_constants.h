@@ -42,9 +42,7 @@ constexpr int kMaxReservedAvailableDiskSpaceByte = 200 * 1024 * 1024;
 // from disk.
 constexpr int kMaxConsecutiveReadPhotoFailures = 3;
 
-constexpr char kPhotoFileExt[] = ".img";
-constexpr char kPhotoDetailsFileExt[] = ".txt";
-constexpr char kRelatedPhotoSuffix[] = "_r";
+constexpr char kPhotoCacheExt[] = ".cache";
 
 // Directory name of ambient mode.
 constexpr char kAmbientModeDirectoryName[] = "ambient-mode";

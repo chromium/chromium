@@ -90,6 +90,7 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
     ash::AmbientModeTopic topic;
     topic.url = kFakeUrl;
     topic.details = kFakeDetails;
+    topic.is_portrait = is_portrait_;
     topic.related_image_url = kFakeUrl;
     topic.topic_type = AmbientModeTopicType::kCulturalInstitute;
 
@@ -197,6 +198,10 @@ bool FakeAmbientBackendControllerImpl::IsUpdateSettingsPending() const {
 void FakeAmbientBackendControllerImpl::SetWeatherInfo(
     absl::optional<WeatherInfo> info) {
   weather_info_ = std::move(info);
+}
+
+void FakeAmbientBackendControllerImpl::SetPhotoOrientation(bool portrait) {
+  is_portrait_ = portrait;
 }
 
 }  // namespace ash

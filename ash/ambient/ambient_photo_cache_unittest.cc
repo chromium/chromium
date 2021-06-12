@@ -4,7 +4,11 @@
 
 #include "ash/ambient/ambient_photo_cache.h"
 
+#include <fstream>
+#include <iostream>
+
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/proto/photo_cache_entry.pb.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -50,68 +54,40 @@ TEST_F(AmbientPhotoCacheTest, ReadsBackWrittenFiles) {
   std::string image("image");
   std::string details("details");
   std::string related_image("related image");
+  std::string related_details("related details");
+  bool is_portrait = true;
 
   {
+    ambient::PhotoCacheEntry cache;
+    cache.mutable_primary_photo()->set_image(image);
+    cache.mutable_primary_photo()->set_details(details);
+    cache.mutable_primary_photo()->set_is_portrait(is_portrait);
+    cache.mutable_related_photo()->set_image(related_image);
+    cache.mutable_related_photo()->set_details(related_details);
+    cache.mutable_related_photo()->set_is_portrait(is_portrait);
+
     base::RunLoop loop;
-    photo_cache()->WriteFiles(cache_index, &image, &details, &related_image,
-                              loop.QuitClosure());
+    photo_cache()->WritePhotoCache(cache_index, cache, loop.QuitClosure());
     loop.Run();
   }
 
   {
     base::RunLoop loop;
     // Read the files back using photo cache.
-    photo_cache()->ReadFiles(
-        cache_index,
-        base::BindOnce(
-            [](base::OnceClosure done, PhotoCacheEntry cache_read) {
-              EXPECT_EQ(*cache_read.image, "image");
-              EXPECT_EQ(*cache_read.details, "details");
-              EXPECT_EQ(*cache_read.related_image, "related image");
-              std::move(done).Run();
-            },
-            loop.QuitClosure()));
+    ambient::PhotoCacheEntry cache_read;
+    photo_cache()->ReadPhotoCache(
+        cache_index, &cache_read,
+        base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
+                       loop.QuitClosure()));
     loop.Run();
+
+    EXPECT_EQ(cache_read.primary_photo().image(), "image");
+    EXPECT_EQ(cache_read.primary_photo().details(), "details");
+    EXPECT_TRUE(cache_read.primary_photo().is_portrait());
+    EXPECT_EQ(cache_read.related_photo().image(), "related image");
+    EXPECT_EQ(cache_read.related_photo().details(), "related details");
+    EXPECT_TRUE(cache_read.related_photo().is_portrait());
   }
-}
-
-TEST_F(AmbientPhotoCacheTest, WritesFileToDisk) {
-  base::FilePath test_path = GetTestPath();
-
-  int cache_index = 5;
-  std::string image("image 5");
-  std::string details("details 5");
-  std::string related_image("related image 5");
-
-  // Make sure files are not on disk.
-  EXPECT_FALSE(base::PathExists(test_path.Append(FILE_PATH_LITERAL("5.img"))));
-  EXPECT_FALSE(base::PathExists(test_path.Append(FILE_PATH_LITERAL("5.txt"))));
-  EXPECT_FALSE(
-      base::PathExists(test_path.Append(FILE_PATH_LITERAL("5_r.img"))));
-
-  // Write the data to the cache.
-  {
-    base::RunLoop loop;
-    photo_cache()->WriteFiles(cache_index, &image, &details, &related_image,
-                              loop.QuitClosure());
-    loop.Run();
-  }
-
-  // Verify that expected files are written to disk.
-  std::string actual_image;
-  EXPECT_TRUE(base::ReadFileToString(
-      test_path.Append(FILE_PATH_LITERAL("5.img")), &actual_image));
-  EXPECT_EQ(actual_image, image);
-
-  std::string actual_details;
-  EXPECT_TRUE(base::ReadFileToString(
-      test_path.Append(FILE_PATH_LITERAL("5.txt")), &actual_details));
-  EXPECT_EQ(actual_details, details);
-
-  std::string actual_related_image;
-  EXPECT_TRUE(base::ReadFileToString(
-      test_path.Append(FILE_PATH_LITERAL("5_r.img")), &actual_related_image));
-  EXPECT_EQ(actual_related_image, related_image);
 }
 
 TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
@@ -119,16 +95,19 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
   EXPECT_FALSE(base::DirectoryExists(test_path));
   {
     base::RunLoop loop;
-    photo_cache()->ReadFiles(
-        /*cache_index=*/1,
-        base::BindOnce(
-            [](base::OnceClosure done, PhotoCacheEntry cache_read) {
-              EXPECT_TRUE(cache_read.image->empty());
-              EXPECT_TRUE(cache_read.details->empty());
-              EXPECT_TRUE(cache_read.related_image->empty());
-              std::move(done).Run();
-            },
-            loop.QuitClosure()));
+    ambient::PhotoCacheEntry cache_read;
+    photo_cache()->ReadPhotoCache(
+        /*cache_index=*/1, &cache_read,
+        base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
+                       loop.QuitClosure()));
+    loop.Run();
+
+    EXPECT_TRUE(cache_read.primary_photo().image().empty());
+    EXPECT_TRUE(cache_read.primary_photo().details().empty());
+    EXPECT_FALSE(cache_read.primary_photo().is_portrait());
+    EXPECT_TRUE(cache_read.related_photo().image().empty());
+    EXPECT_TRUE(cache_read.related_photo().details().empty());
+    EXPECT_FALSE(cache_read.related_photo().is_portrait());
   }
 }
 

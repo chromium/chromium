@@ -8,9 +8,72 @@
 
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 
 namespace ash {
+
+namespace {
+int TypeToIndex(AmbientModeTopicType topic_type) {
+  int index = static_cast<int>(topic_type);
+  DCHECK_GE(index, 0);
+  return index;
+}
+
+AmbientModeTopicType IndexToType(int index) {
+  AmbientModeTopicType topic_type = static_cast<AmbientModeTopicType>(index);
+  return topic_type;
+}
+
+std::vector<AmbientModeTopic> CreatePairedTopics(
+    const std::vector<AmbientModeTopic>& topics) {
+  // We pair two topics if:
+  // 1. They are in the landscape orientation.
+  // 2. They are in the same category;
+  base::flat_map<int, std::vector<int>> topics_by_type;
+  std::vector<AmbientModeTopic> paired_topics;
+  int topic_idx = -1;
+  for (const auto& topic : topics) {
+    topic_idx++;
+
+    // If a photo is portrait, it is from Google Photos and should have a paired
+    // photo already.
+    if (topic.is_portrait) {
+      paired_topics.emplace_back(topic);
+      continue;
+    }
+
+    int type_index = TypeToIndex(topic.topic_type);
+    auto it = topics_by_type.find(type_index);
+    if (it == topics_by_type.end()) {
+      topics_by_type.insert({type_index, {topic_idx}});
+    } else {
+      it->second.emplace_back(topic_idx);
+    }
+  }
+
+  // We merge two unpaired topics to create a new topic with related images.
+  for (auto it = topics_by_type.begin(); it < topics_by_type.end(); ++it) {
+    size_t idx = 0;
+    while (idx < it->second.size() - 1) {
+      AmbientModeTopic paired_topic;
+      const auto& topic_1 = topics[it->second[idx]];
+      const auto& topic_2 = topics[it->second[idx + 1]];
+      paired_topic.url = topic_1.url;
+      paired_topic.related_image_url = topic_2.url;
+
+      paired_topic.details = topic_1.details;
+      paired_topic.related_details = topic_2.details;
+      paired_topic.topic_type = IndexToType(it->first);
+      paired_topic.is_portrait = topic_1.is_portrait;
+      paired_topics.emplace_back(paired_topic);
+
+      idx += 2;
+    }
+  }
+  return paired_topics;
+}
+}  // namespace
 
 // PhotoWithDetails------------------------------------------------------------
 PhotoWithDetails::PhotoWithDetails() = default;
@@ -29,6 +92,9 @@ PhotoWithDetails::~PhotoWithDetails() = default;
 void PhotoWithDetails::Clear() {
   photo = gfx::ImageSkia();
   details = std::string();
+  related_photo = gfx::ImageSkia();
+  related_details = std::string();
+  is_portrait = false;
 }
 
 bool PhotoWithDetails::IsNull() const {
@@ -50,7 +116,8 @@ void AmbientBackendModel::RemoveObserver(
 
 void AmbientBackendModel::AppendTopics(
     const std::vector<AmbientModeTopic>& topics) {
-  topics_.insert(topics_.end(), topics.begin(), topics.end());
+  std::vector<AmbientModeTopic> related_topics = CreatePairedTopics(topics);
+  topics_.insert(topics_.end(), related_topics.begin(), related_topics.end());
   NotifyTopicsChanged();
 }
 

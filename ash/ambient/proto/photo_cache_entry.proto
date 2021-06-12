@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ambient;
+
+// Contains image and attributes.
+message Photo {
+  // Content of the photo.
+  optional bytes image = 1;
+
+  // Details of the photo.
+  optional string details = 2;
+
+  // Whether the uncropped photo is portrait.
+  optional bool is_portrait = 3 [default = false];
+}
+
+// Contains two of ambient photos.
+message PhotoCacheEntry {
+  optional Photo primary_photo = 1;
+
+  optional Photo related_photo = 2;
+}

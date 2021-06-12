@@ -95,6 +95,8 @@ class AmbientAshTestBase : public AshTestBase {
   // Set the size of the next image that will be loaded.
   void SetDecodedPhotoSize(int width, int height);
 
+  void SetPhotoOrientation(bool portrait);
+
   // Advance the task environment timer to expire the lock screen inactivity
   // timer.
   void FastForwardToLockScreenTimeout();
@@ -141,8 +143,8 @@ class AmbientAshTestBase : public AshTestBase {
   // Returns the media string view for the default display.
   MediaStringView* GetMediaStringView();
 
-  const std::map<int, PhotoCacheEntry>& GetCachedFiles();
-  const std::map<int, PhotoCacheEntry>& GetBackupCachedFiles();
+  const std::map<int, ::ambient::PhotoCacheEntry>& GetCachedFiles();
+  const std::map<int, ::ambient::PhotoCacheEntry>& GetBackupCachedFiles();
 
   AmbientController* ambient_controller();
 

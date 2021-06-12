@@ -66,12 +66,16 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   // `FetchWeather`.
   void SetWeatherInfo(absl::optional<WeatherInfo> info);
 
+  void SetPhotoOrientation(bool portrait);
+
  private:
   OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
 
   UpdateSettingsCallback pending_update_callback_;
 
   absl::optional<WeatherInfo> weather_info_;
+
+  bool is_portrait_ = false;
 };
 
 }  // namespace ash

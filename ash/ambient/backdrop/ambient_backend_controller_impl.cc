@@ -209,10 +209,15 @@ ScreenUpdate ToScreenUpdate(
 
       AmbientModeTopic ambient_topic;
       ambient_topic.topic_type = topic_type;
-      if (backdrop_topic.has_portrait_image_url())
+
+      // If the |portrait_image_url| field is not empty, we assume the image is
+      // portrait.
+      if (backdrop_topic.has_portrait_image_url()) {
         ambient_topic.url = backdrop_topic.portrait_image_url();
-      else
+        ambient_topic.is_portrait = true;
+      } else {
         ambient_topic.url = backdrop_topic.url();
+      }
 
       if (backdrop_topic.has_related_topic()) {
         if (backdrop_topic.related_topic().has_portrait_image_url()) {
@@ -224,6 +229,8 @@ ScreenUpdate ToScreenUpdate(
         }
       }
       ambient_topic.details = BuildBackdropTopicDetails(backdrop_topic);
+      ambient_topic.related_details =
+          BuildBackdropTopicDetails(backdrop_topic.related_topic());
       screen_update.next_topics.emplace_back(ambient_topic);
     }
   }
@@ -474,7 +481,6 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
   // When the device is in portrait mode, where only shows one portrait photo,
   // it will cause unnecessary scaling. To reduce this effect, always requesting
   // the landscape display size.
-  // TODO(b/172075868): Support tiling in portrait mode.
   gfx::Size display_size_px = GetDisplaySizeInPixel();
   const int width = std::max(display_size_px.width(), display_size_px.height());
   const int height =

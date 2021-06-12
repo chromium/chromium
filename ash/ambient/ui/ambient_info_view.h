@@ -34,7 +34,8 @@ class ASH_EXPORT AmbientInfoView : public views::View {
   // views::View
   void OnThemeChanged() override;
 
-  void UpdateImageDetails(const std::u16string& details);
+  void UpdateImageDetails(const std::u16string& details,
+                          const std::u16string& related_details);
 
   void SetTextTransform(const gfx::Transform& transform);
 
@@ -46,6 +47,7 @@ class ASH_EXPORT AmbientInfoView : public views::View {
 
   GlanceableInfoView* glanceable_info_view_ = nullptr;
   views::Label* details_label_ = nullptr;
+  views::Label* related_details_label_ = nullptr;
 };
 
 }  // namespace ash

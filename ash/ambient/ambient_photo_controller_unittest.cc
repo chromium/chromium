@@ -11,6 +11,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -59,8 +60,8 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
     return result;
   }
 
-  const PhotoCacheEntry* GetCacheEntryAtIndex(int cache_index,
-                                              bool backup = false) {
+  const ambient::PhotoCacheEntry* GetCacheEntryAtIndex(int cache_index,
+                                                       bool backup = false) {
     const auto& files = backup ? GetBackupCachedFiles() : GetCachedFiles();
     auto it = files.find(cache_index);
     if (it == files.end())
@@ -72,12 +73,28 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
   void WriteCacheDataBlocking(int cache_index,
                               const std::string* image = nullptr,
                               const std::string* details = nullptr,
-                              const std::string* related_image = nullptr) {
+                              const std::string* related_image = nullptr,
+                              const std::string* related_details = nullptr,
+                              bool is_portrait = false) {
+    ambient::PhotoCacheEntry cache_entry;
+    cache_entry.mutable_primary_photo()->set_image(*image);
+
+    if (details)
+      cache_entry.mutable_primary_photo()->set_details(*details);
+
+    cache_entry.mutable_primary_photo()->set_is_portrait(is_portrait);
+
+    if (related_image) {
+      cache_entry.mutable_related_photo()->set_image(*related_image);
+      cache_entry.mutable_related_photo()->set_is_portrait(is_portrait);
+    }
+
+    if (related_details)
+      cache_entry.mutable_related_photo()->set_details(*related_details);
+
     base::RunLoop loop;
-    photo_cache()->WriteFiles(/*cache_index=*/cache_index, /*image=*/image,
-                              /*details=*/details,
-                              /*related_image=*/related_image,
-                              loop.QuitClosure());
+    photo_cache()->WritePhotoCache(/*cache_index=*/cache_index, cache_entry,
+                                   loop.QuitClosure());
     loop.Run();
   }
 
@@ -156,6 +173,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldUpdatePhotoPeriodically) {
 
 // Tests that image details is correctly set.
 TEST_F(AmbientPhotoControllerTest, ShouldSetDetailsCorrectly) {
+  SetPhotoOrientation(/*portrait=*/true);
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
@@ -236,7 +254,7 @@ TEST_F(AmbientPhotoControllerTest,
   auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_TRUE(image.IsNull());
 
-  // The initial file name to be read is 0. Save a file with 99.img to check
+  // The initial file name to be read is 0. Save a file with index 99 to check
   // if it gets read for display.
   std::string data("cached image");
   WriteCacheDataBlocking(/*cache_index=*/99, &data);
@@ -345,9 +363,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
   EXPECT_TRUE(base::Contains(backup_data, 0));
   EXPECT_TRUE(base::Contains(backup_data, 1));
   for (const auto& i : backup_data) {
-    EXPECT_EQ(*(i.second.image), expected_data);
-    EXPECT_FALSE(i.second.details);
-    EXPECT_FALSE(i.second.related_image);
+    EXPECT_EQ(i.second.primary_photo().image(), expected_data);
+    EXPECT_TRUE(i.second.primary_photo().details().empty());
+    EXPECT_TRUE(i.second.related_photo().image().empty());
+    EXPECT_TRUE(i.second.related_photo().details().empty());
   }
 }
 
@@ -392,9 +411,10 @@ TEST_F(AmbientPhotoControllerTest,
   EXPECT_TRUE(base::Contains(backup_data, 0));
   EXPECT_TRUE(base::Contains(backup_data, 1));
   for (const auto& i : backup_data) {
-    EXPECT_EQ(*(i.second.image), "image data");
-    EXPECT_FALSE(i.second.details);
-    EXPECT_FALSE(i.second.related_image);
+    EXPECT_EQ(i.second.primary_photo().image(), "image data");
+    EXPECT_TRUE(i.second.primary_photo().details().empty());
+    EXPECT_TRUE(i.second.related_photo().image().empty());
+    EXPECT_TRUE(i.second.related_photo().details().empty());
   }
 }
 

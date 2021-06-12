@@ -37,8 +37,11 @@ struct ASH_EXPORT PhotoWithDetails {
   gfx::ImageSkia photo;
   gfx::ImageSkia related_photo;
   std::string details;
+  std::string related_details;
   // Hash of this image data. Used for de-duping images.
   std::string hash;
+  // Whether the image is portrait or not.
+  bool is_portrait = false;
 };
 
 // Stores necessary information fetched from the backdrop server to render

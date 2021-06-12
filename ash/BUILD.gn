@@ -1820,6 +1820,7 @@ component("ash") {
     "//ui/wm",
   ]
   deps = [
+    "//ash/ambient/proto",
     "//ash/app_list",
     "//ash/app_menu",
     "//ash/assistant/model",
@@ -2452,6 +2453,7 @@ test("ash_unittests") {
   deps = [
     ":ash",
     ":test_support",
+    "//ash/ambient/proto",
     "//ash/app_list",
     "//ash/app_list:test_support",
     "//ash/app_list:unit_tests",
@@ -2833,6 +2835,7 @@ static_library("test_support") {
   ]
   deps = [
     "//ash",
+    "//ash/ambient/proto",
     "//ash/app_list",
     "//ash/app_list:test_support",
     "//ash/app_menu",

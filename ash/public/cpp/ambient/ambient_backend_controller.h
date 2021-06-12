@@ -17,7 +17,7 @@
 namespace ash {
 
 enum class AmbientModeTopicType {
-  kCurated,
+  kCurated = 0,
   kPersonal,
   kFeatured,
   kGeo,
@@ -42,10 +42,16 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   // Image url.
   std::string url;
 
-  // Only support portrait image tiling in landscape orientation.
-  absl::optional<std::string> related_image_url;
+  std::string related_image_url;
+
+  std::string related_details;
 
   AmbientModeTopicType topic_type = AmbientModeTopicType::kOther;
+
+  // Whether the original image is portrait or not. Cannot use aspect ratio of
+  // the fetched image to determine it because the fetched image could be
+  // cropped.
+  bool is_portrait = false;
 };
 
 // WeatherInfo contains the weather information we need for rendering a
