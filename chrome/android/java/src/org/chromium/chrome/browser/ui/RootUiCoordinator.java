@@ -101,6 +101,7 @@ import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageContainer;
@@ -673,10 +674,17 @@ public class RootUiCoordinator
                 mOmniboxFocusStateSupplier.set(hasFocus);
             };
 
+            Supplier<Tracker> trackerSupplier = () -> {
+                Profile profile = mProfileSupplier.get();
+                return profile == null ? null : TrackerFactory.getTrackerForProfile(profile);
+            };
+
             mIdentityDiscController = new IdentityDiscController(
                     mActivity, mActivity.getLifecycleDispatcher(), mProfileSupplier);
             ShareButtonController shareButtonController = new ShareButtonController(mActivity,
-                    mActivityTabProvider, mShareDelegateSupplier, new ShareUtils(),
+                    AppCompatResources.getDrawable(
+                            mActivity, R.drawable.ic_toolbar_share_offset_24dp),
+                    mActivityTabProvider, mShareDelegateSupplier, trackerSupplier, new ShareUtils(),
                     mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager(),
                     () -> mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS));
             VoiceToolbarButtonController.VoiceSearchDelegate voiceSearchDelegate =
@@ -701,15 +709,17 @@ public class RootUiCoordinator
             VoiceToolbarButtonController voiceToolbarButtonController =
                     new VoiceToolbarButtonController(mActivity,
                             AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
-                            mActivityTabProvider, mActivity.getLifecycleDispatcher(),
-                            mActivity.getModalDialogManager(), voiceSearchDelegate);
+                            mActivityTabProvider, trackerSupplier,
+                            mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager(),
+                            voiceSearchDelegate);
             // TODO(shaktisahu): Add async mechanism for handling segmentation.
             if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
                 OptionalNewTabButtonController newTabButtonController =
                         new OptionalNewTabButtonController(mActivity,
+                                AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
                                 mActivity.getLifecycleDispatcher(),
-                                mActivity.getTabCreatorManagerSupplier(),
-                                mTabModelSelectorSupplier);
+                                mActivity.getTabCreatorManagerSupplier(), mTabModelSelectorSupplier,
+                                trackerSupplier);
                 AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                         new AdaptiveToolbarButtonController();
                 adaptiveToolbarButtonController.addButtonVariant(

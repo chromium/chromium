@@ -238,6 +238,18 @@ public final class EventConstants {
     /** Mic toolbar IPH event */
     public static final String SUCCESSFUL_VOICE_SEARCH = "successful_voice_search";
 
+    /** AdaptiveButtonInTopToolbarCustomization new tab events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED =
+            "adaptive_toolbar_customization_new_tab_opened";
+
+    /** AdaptiveButtonInTopToolbarCustomization share events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED =
+            "adaptive_toolbar_customization_share_opened";
+
+    /** AdaptiveButtonInTopToolbarCustomization voice search events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED =
+            "adaptive_toolbar_customization_voice_search_opened";
+
     /** WebFeed events. */
     public static final String WEB_FEED_FOLLOW_INTRO_CLICKED = "web_feed_follow_intro_clicked";
 

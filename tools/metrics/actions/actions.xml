@@ -28496,6 +28496,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action-suffix separator="_" ordering="suffix">
+  <suffix name="AdaptiveButtonInTopToolbarCustomization_NewTab"
+      label="For AdaptiveButtonInTopToolbarCustomization new tab feature."/>
+  <suffix name="AdaptiveButtonInTopToolbarCustomization_Share"
+      label="For AdaptiveButtonInTopToolbarCustomization share feature."/>
+  <suffix name="AdaptiveButtonInTopToolbarCustomization_VoiceSearch"
+      label="For AdaptiveButtonInTopToolbarCustomization voice search
+             feature."/>
   <suffix name="AddToHomescreenMessage"
       label="For AddToHomescreen IPH feature."/>
   <suffix name="AddToHomescreenTextBubble"

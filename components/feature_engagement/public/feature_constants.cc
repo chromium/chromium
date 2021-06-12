@@ -46,6 +46,16 @@ const base::Feature kIPHUpdatedConnectionSecurityIndicatorsFeature{
         // defined(OS_CHROMEOS)
 
 #if defined(OS_ANDROID)
+const base::Feature kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature{
+    "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature{
+    "IPH_AdaptiveButtonInTopToolbarCustomization_Share",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature
+    kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature{
+        "IPH_AdaptiveButtonInTopToolbarCustomization_VoiceSearch",
+        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHAddToHomescreenMessageFeature{
     "IPH_AddToHomescreenMessage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAddToHomescreenTextBubbleFeature{

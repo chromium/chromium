@@ -25,7 +25,9 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -47,6 +49,7 @@ public class VoiceToolbarButtonController
     private static final String IPH_PROMO_PARAM = "generic_message";
 
     private final Supplier<Tab> mActiveTabSupplier;
+    private final Supplier<Tracker> mTrackerSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private final ModalDialogManager mModalDialogManager;
@@ -78,17 +81,20 @@ public class VoiceToolbarButtonController
     /**
      * Creates a VoiceToolbarButtonController object.
      * @param context The Context for retrieving resources, etc.
+     * @param buttonDrawable Drawable for the voice button.
      * @param activeTabSupplier Provides the currently displayed {@link Tab}.
+     * @param trackerSupplier  Supplier for the current profile tracker.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g.
      *                                    configuration changes.
      * @param modalDialogManager Dispatcher for modal lifecycle events
      * @param voiceSearchDelegate Provides interaction with voice search.
      */
     public VoiceToolbarButtonController(Context context, Drawable buttonDrawable,
-            Supplier<Tab> activeTabSupplier,
+            Supplier<Tab> activeTabSupplier, Supplier<Tracker> trackerSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ModalDialogManager modalDialogManager, VoiceSearchDelegate voiceSearchDelegate) {
         mActiveTabSupplier = activeTabSupplier;
+        mTrackerSupplier = trackerSupplier;
 
         // Register for onConfigurationChanged events, which notify on changes to screen width.
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -115,6 +121,11 @@ public class VoiceToolbarButtonController
         OnClickListener onClickListener = (view) -> {
             RecordUserAction.record("MobileTopToolbarVoiceButton");
             mVoiceSearchDelegate.startVoiceRecognition();
+
+            if (mTrackerSupplier.hasValue()) {
+                mTrackerSupplier.get().notifyEvent(
+                        EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);
+            }
         };
 
         mButtonData = new ButtonDataImpl(/*canShow=*/false, buttonDrawable, onClickListener,
@@ -172,32 +183,26 @@ public class VoiceToolbarButtonController
      */
     private void maybeSetIphCommandBuilder(Tab tab) {
         if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null || tab == null
-                || !FeatureList.isInitialized()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID)) {
+                || !FeatureList.isInitialized()) {
             return;
         }
 
-        boolean useGenericMessage = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID, IPH_PROMO_PARAM, true);
-        @StringRes
-        int text = useGenericMessage ? R.string.iph_mic_toolbar_generic_message_text
-                                     : R.string.iph_mic_toolbar_example_query_text;
-        @StringRes
-        int accessibilityText =
-                useGenericMessage ? R.string.iph_mic_toolbar_generic_message_accessibility_text
-                                  : R.string.iph_mic_toolbar_example_query_accessibility_text;
-
-        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
-        params.setBoundsRespectPadding(true);
-        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
-                FeatureConstants.IPH_MIC_TOOLBAR_FEATURE, text, accessibilityText)
-                                                      .setHighlightParams(params);
+        IPHCommandBuilder iphCommandBuilder = null;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID)) {
+            iphCommandBuilder = createVoiceButtonIPHCommandBuilder(tab);
+        } else if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+            iphCommandBuilder = createCustomizationIPHCommandBuilder(tab);
+        } else {
+            // No IPH features enabled.
+            return;
+        }
 
         ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
         ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
                 currentSpec.getOnClickListener(), currentSpec.getContentDescriptionResId(),
-                currentSpec.getSupportsTinting(), iphCommandBuilder);
+                currentSpec.getSupportsTinting(), iphCommandBuilder,
+                currentSpec.getButtonVariant());
 
         mButtonData.setButtonSpec(newSpec);
     }
@@ -235,5 +240,37 @@ public class VoiceToolbarButtonController
         for (ButtonDataObserver observer : mObservers) {
             observer.buttonDataChanged(hint);
         }
+    }
+
+    private IPHCommandBuilder createVoiceButtonIPHCommandBuilder(Tab tab) {
+        boolean useGenericMessage = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID, IPH_PROMO_PARAM, true);
+        @StringRes
+        int text = useGenericMessage ? R.string.iph_mic_toolbar_generic_message_text
+                                     : R.string.iph_mic_toolbar_example_query_text;
+        @StringRes
+        int accessibilityText =
+                useGenericMessage ? R.string.iph_mic_toolbar_generic_message_accessibility_text
+                                  : R.string.iph_mic_toolbar_example_query_accessibility_text;
+
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
+        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
+                FeatureConstants.IPH_MIC_TOOLBAR_FEATURE, text, accessibilityText)
+                                                      .setHighlightParams(params);
+
+        return iphCommandBuilder;
+    }
+
+    private IPHCommandBuilder createCustomizationIPHCommandBuilder(Tab tab) {
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
+        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
+                FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
+                /* stringId = */ R.string.adaptive_toolbar_button_voice_search_iph,
+                /* accessibilityStringId = */ R.string.adaptive_toolbar_button_voice_search_iph)
+                                                      .setHighlightParams(params);
+
+        return iphCommandBuilder;
     }
 }

@@ -8124,6 +8124,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="IPHFeatures" separator=".">
+  <suffix name="IPH_AdaptiveButtonInTopToolbarCustomization_NewTab"
+      label="In product help for the new tab adaptive button in the top
+             toolbar."/>
+  <suffix name="IPH_AdaptiveButtonInTopToolbarCustomization_Share"
+      label="In product help for the share adaptive button in the top
+             toolbar."/>
+  <suffix name="IPH_AdaptiveButtonInTopToolbarCustomization_VoiceSearch"
+      label="In product help for the voice search adaptive button in the top
+             toolbar."/>
   <suffix name="IPH_AddToHomescreenMessage"
       label="In product help using a message UI that educates users about
              adding website shortcuts to their home screen."/>
