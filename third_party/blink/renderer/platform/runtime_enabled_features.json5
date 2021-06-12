@@ -844,6 +844,10 @@
       status: "stable",
     },
     {
+      name: "EncryptedMediaSessionClosedReason",
+      status: "test",
+    },
+    {
       name: "EnterKeyHintAttribute",
       status: "stable",
     },

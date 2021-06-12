@@ -25,6 +25,14 @@
 
 // https://w3c.github.io/encrypted-media/#mediakeysession-interface
 
+enum MediaKeySessionClosedReason {
+    "internal-error",
+    "closed-by-application",
+    "release-acknowledged",
+    "hardware-context-reset",
+    "resource-evicted"
+};
+
 [
     Exposed=Window,
     ActiveScriptWrappable,
@@ -33,7 +41,10 @@
     // session properties
     readonly attribute DOMString sessionId;
     readonly attribute unrestricted double expiration;
-    [CallWith=ScriptState] readonly attribute Promise<void> closed;
+    // When runtime feature EncryptedMediaSessionClosedReason is enabled, the
+    // promise is resolved with "MediaKeySessionClosedReason". Otherwise, it's
+    // resolved with "undefined".
+    [CallWith=ScriptState] readonly attribute Promise<MediaKeySessionClosedReason> closed;
     readonly attribute MediaKeyStatusMap keyStatuses;
     attribute EventHandler onkeystatuseschange;
     attribute EventHandler onmessage;

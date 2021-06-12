@@ -57,7 +57,7 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   void OnSessionKeysChange(bool has_additional_usable_key,
                            CdmKeysInfo keys_info);
   void OnSessionExpirationUpdate(base::Time new_expiry_time);
-  void OnSessionClosed();
+  void OnSessionClosed(CdmSessionClosedReason reason);
 
  private:
   // Called when a new session is created or loaded. |status| is set as

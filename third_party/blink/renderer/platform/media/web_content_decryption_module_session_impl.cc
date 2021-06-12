@@ -44,7 +44,7 @@ const char kUpdateSessionUMAName[] = "UpdateSession";
 const char kKeyStatusSystemCodeUMAName[] = "KeyStatusSystemCode";
 
 blink::WebContentDecryptionModuleSession::Client::MessageType
-convertMessageType(CdmMessageType message_type) {
+ConvertMessageType(CdmMessageType message_type) {
   switch (message_type) {
     case CdmMessageType::LICENSE_REQUEST:
       return blink::WebContentDecryptionModuleSession::Client::MessageType::
@@ -65,7 +65,7 @@ convertMessageType(CdmMessageType message_type) {
       kLicenseRequest;
 }
 
-CdmSessionType convertSessionType(
+CdmSessionType ConvertSessionType(
     blink::WebEncryptedMediaSessionType session_type) {
   switch (session_type) {
     case blink::WebEncryptedMediaSessionType::kTemporary:
@@ -210,7 +210,7 @@ WebContentDecryptionModuleSessionImpl::WebContentDecryptionModuleSessionImpl(
     const scoped_refptr<CdmSessionAdapter>& adapter,
     blink::WebEncryptedMediaSessionType session_type)
     : adapter_(adapter),
-      session_type_(convertSessionType(session_type)),
+      session_type_(ConvertSessionType(session_type)),
       has_close_been_called_(false),
       is_closed_(false) {}
 
@@ -430,7 +430,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionMessage(
     const std::vector<uint8_t>& message) {
   DCHECK(client_) << "Client not set before message event";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->OnSessionMessage(convertMessageType(message_type), message.data(),
+  client_->OnSessionMessage(ConvertMessageType(message_type), message.data(),
                             message.size());
 }
 
@@ -466,7 +466,8 @@ void WebContentDecryptionModuleSessionImpl::OnSessionExpirationUpdate(
                                 : new_expiry_time.ToJsTime());
 }
 
-void WebContentDecryptionModuleSessionImpl::OnSessionClosed() {
+void WebContentDecryptionModuleSessionImpl::OnSessionClosed(
+    CdmSessionClosedReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Only send one closed event to blink.
@@ -474,7 +475,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionClosed() {
     return;
 
   is_closed_ = true;
-  client_->OnSessionClosed();
+  client_->OnSessionClosed(reason);
 }
 
 void WebContentDecryptionModuleSessionImpl::OnSessionInitialized(

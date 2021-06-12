@@ -1154,6 +1154,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_encoding_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_key_message_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_key_message_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_closed_reason.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_closed_reason.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_key_status.cc",

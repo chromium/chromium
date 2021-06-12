@@ -1,5 +1,6 @@
 include_rules = [
     "-third_party/blink/renderer/modules",
+    "+media/base/content_decryption_module.h",
     "+media/base/eme_constants.h",
     "+services/metrics/public/cpp/ukm_builders.h",
     "+services/metrics/public/cpp/ukm_recorder.h",

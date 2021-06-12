@@ -27,10 +27,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_SESSION_H_
 
 #include <memory>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_closed_reason.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_status_map.h"
@@ -40,6 +43,7 @@
 
 namespace media {
 enum class EmeInitDataType;
+enum class CdmSessionClosedReason;
 }
 
 namespace blink {
@@ -133,7 +137,7 @@ class MediaKeySession final
   void OnSessionMessage(MessageType,
                         const unsigned char* message,
                         size_t message_length) override;
-  void OnSessionClosed() override;
+  void OnSessionClosed(media::CdmSessionClosedReason reason) override;
   void OnSessionExpirationUpdate(double updated_expiry_time_in_ms) override;
   void OnSessionKeysChange(const WebVector<WebEncryptedMediaKeyInformation>&,
                            bool has_additional_usable_key) override;
@@ -156,7 +160,10 @@ class MediaKeySession final
   bool is_closing_or_closed_;
 
   // Keep track of the closed promise.
-  typedef ScriptPromiseProperty<ToV8UndefinedGenerator, Member<DOMException>>
+  // absl::optional<> is needed because V8MediaKeySessionClosedReason's default
+  // constructor is private.
+  typedef ScriptPromiseProperty<absl::optional<V8MediaKeySessionClosedReason>,
+                                Member<DOMException>>
       ClosedPromise;
   Member<ClosedPromise> closed_promise_;
 

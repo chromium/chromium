@@ -39,6 +39,7 @@
 
 namespace media {
 enum class EmeInitDataType;
+enum class CdmSessionClosedReason;
 }
 
 namespace blink {
@@ -60,7 +61,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
     virtual void OnSessionMessage(MessageType,
                                   const unsigned char* message,
                                   size_t message_length) = 0;
-    virtual void OnSessionClosed() = 0;
+    virtual void OnSessionClosed(media::CdmSessionClosedReason reason) = 0;
 
     // Called when the expiration time for the session changes.
     // |updated_expiry_time_in_ms| is specified as the number of milliseconds

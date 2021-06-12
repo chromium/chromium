@@ -246,14 +246,14 @@ void CdmSessionAdapter::OnSessionExpirationUpdate(const std::string& session_id,
 }
 
 void CdmSessionAdapter::OnSessionClosed(const std::string& session_id,
-                                        CdmSessionClosedReason /*reason*/) {
+                                        CdmSessionClosedReason reason) {
   WebContentDecryptionModuleSessionImpl* session = GetSession(session_id);
-  DLOG_IF(WARNING, !session) << __func__ << " for unknown session "
-                             << session_id;
+  DLOG_IF(WARNING, !session)
+      << __func__ << " for unknown session " << session_id;
   if (session) {
-    DVLOG(2) << __func__ << ": session_id = " << session_id;
-    // TODO(crbug.com/1208618): Plumb `reason` to blink.
-    session->OnSessionClosed();
+    DVLOG(2) << __func__ << ": session_id = " << session_id
+             << ", reason = " << static_cast<int>(reason);
+    session->OnSessionClosed(reason);
   }
 }
 
