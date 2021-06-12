@@ -1216,10 +1216,6 @@
       status: "stable",
     },
     {
-      name: "ManagedInterface",
-      "implied_by": ["DeviceAttributes", "ManagedConfiguration"],
-    },
-    {
       name: "MathMLCore",
       status:"experimental",
       depends_on: ["LayoutNG"],

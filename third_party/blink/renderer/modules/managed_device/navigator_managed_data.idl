@@ -5,7 +5,6 @@
 [
   ActiveScriptWrappable,
   Exposed=Window,
-  RuntimeEnabled=ManagedInterface,
   SecureContext
 ] interface NavigatorManagedData : EventTarget {
   // Managed Configuration API.

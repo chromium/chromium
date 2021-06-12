@@ -4,7 +4,6 @@
 //
 [
   ImplementedAs=NavigatorManagedData,
-  RuntimeEnabled=ManagedInterface,
   SecureContext
 ] partial interface Navigator {
   [SameObject]
