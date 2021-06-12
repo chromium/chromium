@@ -22,8 +22,11 @@ class CORE_EXPORT ScrollingCoordinatorContext final {
   USING_FAST_MALLOC(ScrollingCoordinatorContext);
 
  public:
-  ScrollingCoordinatorContext() {}
-  virtual ~ScrollingCoordinatorContext() {}
+  ScrollingCoordinatorContext() = default;
+  ScrollingCoordinatorContext(const ScrollingCoordinatorContext&) = delete;
+  ScrollingCoordinatorContext& operator=(const ScrollingCoordinatorContext&) =
+      delete;
+  virtual ~ScrollingCoordinatorContext() = default;
 
   void SetAnimationTimeline(
       std::unique_ptr<CompositorAnimationTimeline> timeline) {
@@ -39,8 +42,6 @@ class CORE_EXPORT ScrollingCoordinatorContext final {
  private:
   std::unique_ptr<CompositorAnimationTimeline> animation_timeline_;
   cc::AnimationHost* animation_host_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollingCoordinatorContext);
 };
 
 }  // namespace blink

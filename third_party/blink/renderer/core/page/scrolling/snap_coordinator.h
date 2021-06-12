@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SNAP_COORDINATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SNAP_COORDINATOR_H_
 
-#include "base/macros.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -35,6 +34,8 @@ class CORE_EXPORT SnapCoordinator final
     : public GarbageCollected<SnapCoordinator> {
  public:
   explicit SnapCoordinator();
+  SnapCoordinator(const SnapCoordinator&) = delete;
+  SnapCoordinator& operator=(const SnapCoordinator&) = delete;
   ~SnapCoordinator();
   void Trace(Visitor* visitor) const {}
 
@@ -82,8 +83,6 @@ class CORE_EXPORT SnapCoordinator final
   // Used for reporting to UMA when snapping on the initial layout affects the
   // initial scroll position.
   bool did_first_resnap_all_containers_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapCoordinator);
 };
 
 }  // namespace blink

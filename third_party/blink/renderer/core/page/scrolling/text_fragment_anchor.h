@@ -61,6 +61,8 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
       const Vector<TextFragmentSelector>& text_fragment_selectors,
       LocalFrame& frame,
       bool should_scroll);
+  TextFragmentAnchor(const TextFragmentAnchor&) = delete;
+  TextFragmentAnchor& operator=(const TextFragmentAnchor&) = delete;
   ~TextFragmentAnchor() override = default;
 
   bool Invoke() override;
@@ -148,8 +150,6 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   } beforematch_state_ = kNoMatchFound;
 
   Member<TextFragmentAnchorMetrics> metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextFragmentAnchor);
 };
 
 }  // namespace blink

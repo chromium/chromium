@@ -37,6 +37,9 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
  public:
   explicit TextFragmentSelectorGenerator(LocalFrame* main_frame);
+  TextFragmentSelectorGenerator(const TextFragmentSelectorGenerator&) = delete;
+  TextFragmentSelectorGenerator& operator=(
+      const TextFragmentSelectorGenerator&) = delete;
 
   // Requests a TextFragmentSelector be generated for the selection of DOM
   // specified by |range|. Will be generated asynchronously and returned by
@@ -170,8 +173,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   base::TimeTicks generation_start_time_;
 
   Member<TextFragmentFinder> finder_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextFragmentSelectorGenerator);
 };
 
 }  // namespace blink

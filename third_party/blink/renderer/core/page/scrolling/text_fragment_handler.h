@@ -25,6 +25,8 @@ class CORE_EXPORT TextFragmentHandler final
       public blink::mojom::blink::TextFragmentReceiver {
  public:
   explicit TextFragmentHandler(LocalFrame* main_frame);
+  TextFragmentHandler(const TextFragmentHandler&) = delete;
+  TextFragmentHandler& operator=(const TextFragmentHandler&) = delete;
 
   // Determine if |result| represents a click on an existing highlight.
   static bool IsOverTextFragment(HitTestResult result);
@@ -103,8 +105,6 @@ class CORE_EXPORT TextFragmentHandler final
   HeapMojoReceiver<blink::mojom::blink::TextFragmentReceiver,
                    TextFragmentHandler>
       selector_producer_{this, nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(TextFragmentHandler);
 };
 
 }  // namespace blink
