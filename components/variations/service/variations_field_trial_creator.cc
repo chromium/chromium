@@ -9,15 +9,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <memory>
 #include <set>
 #include <utility>
-#include <vector>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
@@ -25,7 +24,6 @@
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/locale_util.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -186,6 +184,10 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManager* safe_seed_manager,
     absl::optional<int> low_entropy_source_value) {
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  MaybeExtendVariationsSafeMode(metrics_state_manager);
+#endif
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableBenchmarking) ||
@@ -581,5 +583,40 @@ Study::Platform VariationsFieldTrialCreator::GetPlatform() {
     return platform_override_;
   return ClientFilterableState::GetCurrentPlatform();
 }
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
+    metrics::MetricsStateManager* metrics_state_manager) const {
+  version_info::Channel channel = client_->GetChannelForVariations();
+  if (channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::DEV) {
+    return;
+  }
+
+  int default_group;
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          "ExtendedVariationsSafeMode", 100, "Default",
+          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
+
+  const int control_group = trial->AppendGroup("Control", 33);
+  trial->AppendGroup("WritePrefs", 33);
+  const int signal_early_and_write_prefs_group =
+      trial->AppendGroup("SignalEarlyAndWritePrefs", 33);
+  const int assigned_group = trial->group();
+
+  if (assigned_group == default_group || assigned_group == control_group)
+    return;
+
+  if (assigned_group == signal_early_and_write_prefs_group)
+    metrics_state_manager->LogHasSessionShutdownCleanly(false);
+
+  // Time the write for two experiment groups: the group which only writes prefs
+  // and the group which updates and writes prefs.
+  SCOPED_UMA_HISTOGRAM_SHORT_TIMER(
+      "Variations.ExtendedSafeMode.WritePrefsTime");
+  seed_store_->local_state()->CommitPendingWriteSynchronously();
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 }  // namespace variations

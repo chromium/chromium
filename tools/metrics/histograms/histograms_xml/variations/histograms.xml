@@ -62,6 +62,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Variations.ExtendedSafeMode.WritePrefsTime" units="ms"
+    expires_after="2021-11-22">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <component>Internals&gt;Metrics&gt;Variations</component>
+  <summary>
+    The time it takes to write prefs to disk. The time is capped at 1s. The
+    metric is emitted before field trials are set up. Only clients on canary or
+    dev channels in the ExtendedVariationsSafeMode experiment's WritePrefs and
+    SignalEarlyAndWritePrefs groups emit the metric.
+  </summary>
+</histogram>
+
 <histogram name="Variations.FirstRun.SeedConnectTime" units="ms"
     expires_after="2022-04-22">
   <owner>asvitkine@chromium.org</owner>

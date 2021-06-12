@@ -10,15 +10,24 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_entropy_provider.h"
+#include "base/test/scoped_field_trial_list_resetter.h"
+#include "base/test/task_environment.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
+#include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
@@ -39,6 +48,7 @@
 
 using testing::_;
 using testing::Ge;
+using ::testing::NiceMock;
 using testing::Return;
 
 namespace variations {
@@ -54,6 +64,21 @@ const char kTestSeedSerialNumber[] = "123";
 // Constants used to mock the serialized seed state.
 const char kTestSeedData[] = "a serialized seed, 100% realistic";
 const char kTestSeedSignature[] = "a totally valid signature, I swear!";
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+// Trial and group names for the extended variations safe mode experiment.
+const char kExtendedSafeMode[] = "ExtendedVariationsSafeMode";
+const char kDefaultGroup[] = "Default";
+const char kControlGroup[] = "Control";
+const char kWritePrefsGroup[] = "WritePrefs";
+const char kSignalEarlyAndWritePrefsGroup[] = "SignalEarlyAndWritePrefs";
+
+// The content of an empty prefs file.
+const char kEmptyPrefsFile[] = "{}";
+
+// The suffix of the |kStabilityExitedCleanly| pref.
+const char kExitedCleanly[] = "exited_cleanly";
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 // No-op functions used to create a MetricsStateManager.
 void NoOpStoreClientInfoBackup(const metrics::ClientInfo&) {}
@@ -198,6 +223,11 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   DISALLOW_COPY_AND_ASSIGN(TestVariationsServiceClient);
 };
 
+class MockVariationsServiceClient : public TestVariationsServiceClient {
+ public:
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (override));
+};
+
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(PrefService* local_state)
@@ -288,8 +318,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 class FieldTrialCreatorTest : public ::testing::Test {
  protected:
   FieldTrialCreatorTest() {
-    metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
-    metrics::MetricsStateManager::RegisterPrefs(prefs_.registry());
+    metrics::MetricsService::RegisterPrefs(prefs_.registry());
     VariationsService::RegisterPrefs(prefs_.registry());
     global_feature_list_ = base::FeatureList::ClearInstanceForTesting();
   }
@@ -321,7 +350,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed) {
   // seed state.
   const base::Time now = base::Time::Now();
   const base::Time recent_time = now - base::TimeDelta::FromMinutes(17);
-  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
   EXPECT_CALL(
@@ -355,7 +384,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_NoLastFetchTime) {
   // With a valid seed on first run, the safe seed manager should be informed of
   // the active seed state. The last fetch time in this case is expected to be
   // inferred to be recent.
-  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
   const base::Time start_time = base::Time::Now();
@@ -390,7 +419,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
 
   // With an expired seed, there should be no field trials created, and hence no
   // active state should be passed to the safe seed manager.
-  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
   EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _)).Times(0);
@@ -422,7 +451,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed) {
   // With a valid safe seed, the safe seed manager should *not* be informed of
   // the active seed state. This is an optimization to avoid saving a safe seed
   // when already running in safe mode.
-  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
   EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _)).Times(0);
 
@@ -457,7 +486,7 @@ TEST_F(FieldTrialCreatorTest,
   // active seed state.
   const base::Time now = base::Time::Now();
   const base::Time recent_time = now - base::TimeDelta::FromMinutes(17);
-  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
   EXPECT_CALL(
       safe_seed_manager,
@@ -503,7 +532,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
 
   TestVariationsServiceClient variations_service_client;
   TestPlatformFieldTrials platform_field_trials;
-  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
@@ -539,7 +568,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
 
 // Tests that the hardware class is set on Android.
 TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
-  ::testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
@@ -555,5 +584,245 @@ TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
   EXPECT_NE(client_filterable_state->hardware_class, std::string());
 }
 #endif  // OS_ANDROID
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
+ public:
+  FieldTrialCreatorSafeModeExperimentTest()
+      : field_trial_list_(std::make_unique<base::MockEntropyProvider>(0.1)) {}
+  ~FieldTrialCreatorSafeModeExperimentTest() override = default;
+
+  void SetUp() override {
+    DisableTestingConfig();
+
+    // Create a temp prefs file with no prefs.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    prefs_file_ = temp_dir_.GetPath().AppendASCII("write.json");
+    ASSERT_LT(0, base::WriteFile(prefs_file_, kEmptyPrefsFile));
+    ASSERT_TRUE(PathExists(prefs_file_));
+  }
+
+  void TearDown() override { ASSERT_TRUE(base::DeleteFile(prefs_file_)); }
+
+  // Creates and returns a PrefService that uses a real JsonPrefStore rather
+  // than a TestingPrefStore.
+  std::unique_ptr<PrefService> CreatePrefService() {
+    auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+    metrics::MetricsService::RegisterPrefs(pref_registry.get());
+    VariationsService::RegisterPrefs(pref_registry.get());
+
+    auto pref_store = base::MakeRefCounted<JsonPrefStore>(prefs_file_);
+    PrefServiceFactory pref_service_factory;
+    pref_service_factory.set_user_prefs(pref_store);
+    return pref_service_factory.Create(pref_registry);
+  }
+
+  // Sets up the extended safe mode experiment such that |group_name| is the
+  // active group. Returns the numeric value that denotes the active group.
+  int SetUpExtendedSafeModeExperiment(const std::string& group_name) {
+    int default_group;
+    scoped_refptr<base::FieldTrial> trial(
+        base::FieldTrialList::FactoryGetFieldTrial(
+            kExtendedSafeMode, 100, kDefaultGroup,
+            base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
+
+    int active_group = group_name == kDefaultGroup
+                           ? default_group
+                           : trial->AppendGroup(group_name, 100);
+    trial->SetForced();
+    return active_group;
+  }
+
+  const base::FilePath file_path() const { return prefs_file_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath prefs_file_;
+  base::test::ScopedFieldTrialListResetter trial_list_resetter_;
+  base::FieldTrialList field_trial_list_;
+};
+
+// TODO(b/184937096): Update this test if and when the extended variations safe
+// mode experiment is rolled out to beta or stable.
+TEST_F(FieldTrialCreatorSafeModeExperimentTest, DisableExperiment) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  std::vector<version_info::Channel> channels = {
+      version_info::Channel::BETA, version_info::Channel::STABLE,
+      version_info::Channel::UNKNOWN};
+  for (const version_info::Channel channel : channels) {
+    NiceMock<MockVariationsServiceClient> variations_service_client;
+    ON_CALL(variations_service_client, GetChannel())
+        .WillByDefault(Return(channel));
+
+    TestVariationsFieldTrialCreator field_trial_creator(
+        pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+    // Verify that the experiment is not active.
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+
+    // Check that no prefs were written and that the WritePrefsTime metric was
+    // not recorded.
+    std::string pref_file_contents;
+    ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
+    EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
+    histogram_tester.ExpectTotalCount(
+        "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+
+    base::FeatureList::ClearInstanceForTesting();
+  }
+}
+
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       EnableExperimentOnCanary_DefaultGroup) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::CANARY));
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+  int active_group = SetUpExtendedSafeModeExperiment(kDefaultGroup);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+  // Verify that the field trial is active and that the client is in the
+  // default group.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
+
+  // Check that no prefs were written and that the WritePrefsTime metric was
+  // not recorded.
+  std::string pref_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
+  EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
+  histogram_tester.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+}
+
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       EnableExperimentOnCanary_ControlGroup) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::CANARY));
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+  int active_group = SetUpExtendedSafeModeExperiment(kControlGroup);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+  // Verify that the field trial is active and that the client is in the
+  // control group.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
+
+  // Check that no prefs were written and that the WritePrefsTime metric was
+  // not recorded.
+  std::string pref_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
+  EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
+  histogram_tester.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+}
+
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       EnableExperimentOnDev_WritePrefsGroup) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::DEV));
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+  int active_group = SetUpExtendedSafeModeExperiment(kWritePrefsGroup);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+  // Verify that the field trial is active and that the client is in the
+  // WritePrefs group.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
+
+  // Check that prefs were written and do not contain |kStabilityExitedCleanly|.
+  // Also, check that the WritePrefsTime metric was recorded.
+  std::string pref_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
+  EXPECT_NE(kEmptyPrefsFile, pref_file_contents);
+  EXPECT_FALSE(base::Contains(pref_file_contents, kExitedCleanly));
+  histogram_tester.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.WritePrefsTime", 1);
+}
+
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       EnableExperimentOnDev_SignalEarlyAndWritePrefsGroup) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::DEV));
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+  int active_group =
+      SetUpExtendedSafeModeExperiment(kSignalEarlyAndWritePrefsGroup);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+  // Verify that the field trial is active and that the client is in the
+  // SignalEarlyAndWritePrefs group.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+  EXPECT_EQ(active_group, base::FieldTrialList::FindValue(kExtendedSafeMode));
+
+  // Check that prefs were written and contain |kStabilityExitedCleanly|. Also,
+  // check that the WritePrefsTime metric was recorded.
+  std::string pref_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(file_path(), &pref_file_contents));
+  EXPECT_TRUE(base::Contains(pref_file_contents, kExitedCleanly));
+  histogram_tester.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.WritePrefsTime", 1);
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 }  // namespace variations

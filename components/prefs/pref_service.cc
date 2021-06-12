@@ -711,3 +711,8 @@ const base::Value* PrefService::GetPreferenceValueChecked(
   DCHECK(value) << "Trying to read an unregistered pref: " << path;
   return value;
 }
+
+void PrefService::CommitPendingWriteSynchronously() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  user_pref_store_->CommitPendingWriteSynchronously();
+}

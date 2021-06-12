@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
+#include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
@@ -173,6 +174,14 @@ class VariationsFieldTrialCreator {
 
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   Study::Platform GetPlatform();
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // On channels that support the ExtendedVariationsSafeMode experiment, (a)
+  // assigns the client to an experiment group and (b) applies group-specific
+  // behavior. Does nothing if the channel does not support the experiment.
+  void MaybeExtendVariationsSafeMode(
+      metrics::MetricsStateManager* metrics_state_manager) const;
+#endif
 
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }

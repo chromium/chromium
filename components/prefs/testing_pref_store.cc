@@ -111,6 +111,12 @@ void TestingPrefStore::CommitPendingWrite(
                                           std::move(synchronous_done_callback));
 }
 
+void TestingPrefStore::CommitPendingWriteSynchronously() {
+  // This function was added for one very specific use case and is intentionally
+  // not implemented for other pref stores.
+  NOTREACHED();
+}
+
 void TestingPrefStore::SchedulePendingLossyWrites() {}
 
 void TestingPrefStore::SetInitializationCompleted() {

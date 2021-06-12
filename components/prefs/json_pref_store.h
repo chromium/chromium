@@ -101,6 +101,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
       base::OnceClosure reply_callback = base::OnceClosure(),
       base::OnceClosure synchronous_done_callback =
           base::OnceClosure()) override;
+  void CommitPendingWriteSynchronously() override;
   void SchedulePendingLossyWrites() override;
   void ReportValueChanged(const std::string& key, uint32_t flags) override;
 

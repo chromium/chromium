@@ -321,6 +321,28 @@ void JsonPrefStore::CommitPendingWrite(
   }
 }
 
+void JsonPrefStore::CommitPendingWriteSynchronously() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Schedule a write for any lossy writes that are outstanding to ensure that
+  // they get flushed when this function is called.
+  SchedulePendingLossyWrites();
+  if (!writer_.HasPendingWrite() || read_only_)
+    return;
+
+  const base::FilePath path = writer_.path();
+  std::string data;
+  if (!SerializeData(&data)) {
+    DVLOG(1) << "Failed to serialize data to be saved in " << path.value();
+    return;
+  }
+
+  const std::string suffix = GetHistogramSuffix(path);
+  if (!base::ImportantFileWriter::WriteFileAtomically(path, data, suffix)) {
+    DVLOG(1) << "Could not write " << suffix << " into " << path.value();
+  }
+}
+
 void JsonPrefStore::SchedulePendingLossyWrites() {
   if (pending_lossy_write_)
     writer_.ScheduleWrite(this);
