@@ -38,8 +38,9 @@
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace media {
-enum class EmeInitDataType;
+enum class CdmMessageType;
 enum class CdmSessionClosedReason;
+enum class EmeInitDataType;
 }
 
 namespace blink {
@@ -51,14 +52,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
  public:
   class BLINK_PLATFORM_EXPORT Client {
    public:
-    enum class MessageType {
-      kLicenseRequest,
-      kLicenseRenewal,
-      kLicenseRelease,
-      kIndividualizationRequest
-    };
-
-    virtual void OnSessionMessage(MessageType,
+    virtual void OnSessionMessage(media::CdmMessageType,
                                   const unsigned char* message,
                                   size_t message_length) = 0;
     virtual void OnSessionClosed(media::CdmSessionClosedReason reason) = 0;

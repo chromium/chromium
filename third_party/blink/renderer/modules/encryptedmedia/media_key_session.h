@@ -134,7 +134,7 @@ class MediaKeySession final
   void RemoveTask(ContentDecryptionModuleResult*);
 
   // WebContentDecryptionModuleSession::Client
-  void OnSessionMessage(MessageType,
+  void OnSessionMessage(media::CdmMessageType message_type,
                         const unsigned char* message,
                         size_t message_length) override;
   void OnSessionClosed(media::CdmSessionClosedReason reason) override;

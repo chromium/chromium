@@ -864,7 +864,7 @@ void MediaKeySession::ActionTimerFired(TimerBase*) {
 }
 
 // Queue a task to fire a simple event named keymessage at the new object.
-void MediaKeySession::OnSessionMessage(MessageType message_type,
+void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
                                        const unsigned char* message,
                                        size_t message_length) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
@@ -882,20 +882,16 @@ void MediaKeySession::OnSessionMessage(MessageType message_type,
 
   MediaKeyMessageEventInit* init = MediaKeyMessageEventInit::Create();
   switch (message_type) {
-    case WebContentDecryptionModuleSession::Client::MessageType::
-        kLicenseRequest:
+    case media::CdmMessageType::LICENSE_REQUEST:
       init->setMessageType("license-request");
       break;
-    case WebContentDecryptionModuleSession::Client::MessageType::
-        kLicenseRenewal:
+    case media::CdmMessageType::LICENSE_RENEWAL:
       init->setMessageType("license-renewal");
       break;
-    case WebContentDecryptionModuleSession::Client::MessageType::
-        kLicenseRelease:
+    case media::CdmMessageType::LICENSE_RELEASE:
       init->setMessageType("license-release");
       break;
-    case WebContentDecryptionModuleSession::Client::MessageType::
-        kIndividualizationRequest:
+    case media::CdmMessageType::INDIVIDUALIZATION_REQUEST:
       init->setMessageType("individualization-request");
       break;
   }

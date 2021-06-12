@@ -43,28 +43,6 @@ const char kRemoveSessionUMAName[] = "RemoveSession";
 const char kUpdateSessionUMAName[] = "UpdateSession";
 const char kKeyStatusSystemCodeUMAName[] = "KeyStatusSystemCode";
 
-blink::WebContentDecryptionModuleSession::Client::MessageType
-ConvertMessageType(CdmMessageType message_type) {
-  switch (message_type) {
-    case CdmMessageType::LICENSE_REQUEST:
-      return blink::WebContentDecryptionModuleSession::Client::MessageType::
-          kLicenseRequest;
-    case CdmMessageType::LICENSE_RENEWAL:
-      return blink::WebContentDecryptionModuleSession::Client::MessageType::
-          kLicenseRenewal;
-    case CdmMessageType::LICENSE_RELEASE:
-      return blink::WebContentDecryptionModuleSession::Client::MessageType::
-          kLicenseRelease;
-    case CdmMessageType::INDIVIDUALIZATION_REQUEST:
-      return blink::WebContentDecryptionModuleSession::Client::MessageType::
-          kIndividualizationRequest;
-  }
-
-  NOTREACHED();
-  return blink::WebContentDecryptionModuleSession::Client::MessageType::
-      kLicenseRequest;
-}
-
 CdmSessionType ConvertSessionType(
     blink::WebEncryptedMediaSessionType session_type) {
   switch (session_type) {
@@ -430,8 +408,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionMessage(
     const std::vector<uint8_t>& message) {
   DCHECK(client_) << "Client not set before message event";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->OnSessionMessage(ConvertMessageType(message_type), message.data(),
-                            message.size());
+  client_->OnSessionMessage(message_type, message.data(), message.size());
 }
 
 void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
