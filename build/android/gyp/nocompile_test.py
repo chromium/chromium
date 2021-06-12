@@ -18,6 +18,9 @@ _NINJA_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'ninja')
 # Relative to _CHROMIUM_SRC
 _GN_SRC_REL_PATH = os.path.join('third_party', 'depot_tools', 'gn')
 
+# Regex for determining whether compile failed because 'gn gen' needs to be run.
+_GN_GEN_REGEX = re.compile(r'ninja: (error|fatal):')
+
 
 def _raise_command_exception(args, returncode, output):
   """Raises an exception whose message describes a command failure.
@@ -98,10 +101,13 @@ def _find_regex_in_test_failure_output(test_output, regex):
   if regex.find('\n') >= 0:
     return re.search(regex, failure_message)
 
-  for line in failure_message.split('\n')[:5]:
+  return _search_regex_in_list(failure_message.split('\n')[:5], regex)
+
+
+def _search_regex_in_list(value, regex):
+  for line in value:
     if re.search(regex, line):
       return True
-
   return False
 
 
@@ -138,14 +144,15 @@ def main():
   _copy_and_append_gn_args(options.gn_args_path, out_gn_args_path,
                            extra_gn_args)
 
-  # As all of the test targets are declared in the same BUILD.gn file, it does
-  # not matter which test target is used as the root target.
+  # Extract directory from test target. As all of the test targets are declared
+  # in the same BUILD.gn file, it does not matter which test target is used.
+  target0_dir = test_configs[0]['target'].rsplit(':', 1)[0]
   gn_args = [
-      _GN_SRC_REL_PATH, '--root-target=' + test_configs[0]['target'], 'gen',
+      _GN_SRC_REL_PATH, '--root-target=' + target0_dir, 'gen',
       os.path.relpath(options.out_dir, _CHROMIUM_SRC)
   ]
-  _run_command(gn_args, cwd=_CHROMIUM_SRC)
 
+  ran_gn_gen = False
   error_messages = []
   for config in test_configs:
     # Strip leading '//'
@@ -156,6 +163,16 @@ def main():
     # Purpose of quotes at beginning of message is to make it clear that
     # "Compile successful." is not a compiler log message.
     test_output = _run_command_get_output(ninja_args, '""\nCompile successful.')
+
+    # 'gn gen' takes > 1s to run. Only run 'gn gen' if it is needed for compile.
+    if _search_regex_in_list(test_output.split('\n'), _GN_GEN_REGEX):
+      assert not ran_gn_gen
+      ran_gn_gen = True
+      _run_command(gn_args, cwd=_CHROMIUM_SRC)
+
+      # Redo compile.
+      test_output = _run_command_get_output(ninja_args,
+                                            '""\nCompile successful.')
 
     if not _find_regex_in_test_failure_output(test_output, expect_regex):
       error_message = '//{} failed.\nExpected compile output pattern:\n'\

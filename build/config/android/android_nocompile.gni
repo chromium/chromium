@@ -38,6 +38,7 @@ template("android_nocompile_test_suite") {
     _tests = invoker.tests
     _test0 = _tests[0]
     _test0_dir = get_label_info(_test0["target"], "dir")
+    _test0_target_out_dir = get_label_info(_test0["target"], "target_out_dir")
     foreach(_test_config, _tests) {
       assert(
           _test0_dir == get_label_info(_test_config["target"], "dir"),
@@ -84,13 +85,18 @@ template("android_nocompile_test_suite") {
     _config_path = "$target_gen_dir/${target_name}.nocompile_config"
     write_file(_config_path, _json_test_configs, "json")
 
+    # Compute output directory for no-compile tests based on the directory containing test
+    # targets instead of based on the test suite target name. This avoids calling 'gn gen' for each
+    # android_nocompile_test_suite() for test suites whose tests are declared in the same BUILD.gn
+    # file.
+    _out_dir = "${_test0_target_out_dir}/nocompile_out"
+
     _stamp_path = "${target_gen_dir}/${target_name}.stamp"
     args = [
       "--gn-args-path",
       "args.gn",
       "--out-dir",
-      rebase_path("${target_out_dir}/${target_name}/nocompile_out",
-                  root_build_dir),
+      rebase_path(_out_dir, root_build_dir),
       "--test-configs-path",
       rebase_path(_config_path, root_build_dir),
       "--stamp",
