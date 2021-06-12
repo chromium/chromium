@@ -25,10 +25,10 @@ if (is_chromeos_ash && !is_chromeos_device) {
 # supported via Android MediaDrm API.
 library_widevine_cdm_available =
     (is_chromeos_ash && (target_cpu == "x64" || target_cpu == "arm")) ||
-    ((is_linux || is_chromeos_lacros) &&
+    ((target_os == "linux" || is_chromeos_lacros) &&
      (target_cpu == "x86" || target_cpu == "x64")) ||
-    (is_mac && (target_cpu == "x64" || target_cpu == "arm64")) ||
-    (is_win && (target_cpu == "x86" || target_cpu == "x64"))
+    (target_os == "mac" && (target_cpu == "x64" || target_cpu == "arm64")) ||
+    (target_os == "win" && (target_cpu == "x86" || target_cpu == "x64"))
 
 # Widevine CDM is available as a library CDM and it's supported by Chromium.
 # This does not define how the CDM will be deployed. It can be bundled or
