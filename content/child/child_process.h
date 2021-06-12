@@ -54,7 +54,10 @@ class CONTENT_EXPORT ChildProcess {
   // Takes ownership of the pointer.
   void set_main_thread(ChildThreadImpl* thread);
 
-  void FlushIOThreadForTesting() { io_thread_.FlushForTesting(); }
+  // We need to stop the IO thread here instead of just flushing it, so that it
+  // can no longer post tasks back to the main thread.
+  void StopIOThreadForTesting() { io_thread_.Stop(); }
+
   base::SingleThreadTaskRunner* io_task_runner() {
     return io_thread_.task_runner().get();
   }
