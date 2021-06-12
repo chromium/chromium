@@ -10,6 +10,9 @@ for more details about the presubmit API built into depot_tools.
 
 import os.path
 
+USE_PYTHON3 = True
+
+
 def CheckChangeOnUpload(input_api, output_api):
   # Additional python module paths (we're in src/mojo/); not everyone needs
   # them, but it's easiest to add them to everyone's path.
