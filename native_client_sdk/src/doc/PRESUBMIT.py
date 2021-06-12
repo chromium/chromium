@@ -4,6 +4,9 @@
 
 import subprocess
 
+USE_PYTHON3 = True
+
+
 def _CheckSphinxBuild(input_api, output_api):
   """Check that the docs are buildable without any warnings.
 
@@ -18,7 +21,7 @@ def _CheckSphinxBuild(input_api, output_api):
                             stderr=subprocess.STDOUT)
   except subprocess.CalledProcessError as e:
     return [output_api.PresubmitNotifyResult('sphinx_build failed:\n' +
-            e.output)]
+                                             e.output.decode('utf-8'))]
 
   return []
 
