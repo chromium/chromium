@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 76 tests; 75 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 78 tests; 77 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL Basic check assert_unreached: Reached unreachable code
 PASS WebSocket blocked port test 1
 PASS WebSocket blocked port test 7
@@ -59,6 +59,8 @@ PASS WebSocket blocked port test 563
 PASS WebSocket blocked port test 587
 PASS WebSocket blocked port test 601
 PASS WebSocket blocked port test 636
+PASS WebSocket blocked port test 989
+PASS WebSocket blocked port test 990
 PASS WebSocket blocked port test 993
 PASS WebSocket blocked port test 995
 PASS WebSocket blocked port test 1719
