@@ -23,7 +23,7 @@ namespace {
 std::unique_ptr<NativeMessageHost> CreateIt2MeHost(
     content::BrowserContext* browser_context) {
   return remoting::CreateIt2MeNativeMessagingHostForLacros(
-      content::GetIOThreadTaskRunner({}), content::GetUIThreadTaskRunner({}));
+      content::GetUIThreadTaskRunner({}));
 }
 
 }  // namespace

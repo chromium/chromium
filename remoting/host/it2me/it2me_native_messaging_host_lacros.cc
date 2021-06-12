@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
@@ -117,7 +118,7 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
 
 It2MeNativeMessagingHostLacros::It2MeNativeMessagingHostLacros(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(task_runner) {}
+    : task_runner_(std::move(task_runner)) {}
 
 It2MeNativeMessagingHostLacros::~It2MeNativeMessagingHostLacros() = default;
 
@@ -420,10 +421,9 @@ void It2MeNativeMessagingHostLacros::SendErrorAndExit(
 
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForLacros(
-    scoped_refptr<base::SingleThreadTaskRunner> io_runnner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_runnner) {
-  // TODO(joedow): Verify |io_runner| is not required then remove it.
-  return std::make_unique<It2MeNativeMessagingHostLacros>(ui_runnner);
+  return std::make_unique<It2MeNativeMessagingHostLacros>(
+      std::move(ui_runnner));
 }
 
 }  // namespace remoting

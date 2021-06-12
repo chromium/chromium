@@ -20,7 +20,6 @@ namespace remoting {
 
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForLacros(
-    scoped_refptr<base::SingleThreadTaskRunner> io_runnner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_runnner);
 
 }  // namespace remoting
