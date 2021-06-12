@@ -12,8 +12,8 @@ PASS new MediaEncryptedEvent('eventType', { bubbles: true, cancelable: true }).i
 PASS new MediaEncryptedEvent('eventType', { bubbles: true, cancelable: true }).initData is null
 PASS new MediaEncryptedEvent('eventType', { initDataType: 'foo' }).initDataType is "foo"
 PASS new MediaEncryptedEvent('eventType', { initData: initData }).initData is initData
-PASS new MediaEncryptedEvent('eventType', { initData: 'foo' }).initData threw exception TypeError: Failed to construct 'MediaEncryptedEvent': member initData is not of type ArrayBuffer..
-PASS new MediaEncryptedEvent('eventType', { initData: 1 }).initData threw exception TypeError: Failed to construct 'MediaEncryptedEvent': member initData is not of type ArrayBuffer..
+PASS new MediaEncryptedEvent('eventType', { initData: 'foo' }).initData threw exception TypeError: Failed to construct 'MediaEncryptedEvent': Failed to read the 'initData' property from 'MediaEncryptedEventInit': Failed to convert value to 'ArrayBuffer'..
+PASS new MediaEncryptedEvent('eventType', { initData: 1 }).initData threw exception TypeError: Failed to construct 'MediaEncryptedEvent': Failed to read the 'initData' property from 'MediaEncryptedEventInit': Failed to convert value to 'ArrayBuffer'..
 PASS successfullyParsed is true
 
 TEST COMPLETE

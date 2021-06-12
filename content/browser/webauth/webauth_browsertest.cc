@@ -83,8 +83,10 @@ using TestGetCallbackReceiver = ::device::test::StatusAndValueCallbackReceiver<
 constexpr char kOkMessage[] = "webauth: OK";
 
 constexpr char kPublicKeyErrorMessage[] =
-    "webauth: NotSupportedError: Required parameters missing in "
-    "`options.publicKey`.";
+    "webauth: TypeError: Failed to execute 'create' on 'CredentialsContainer': "
+    "Failed to read the 'publicKey' property from 'CredentialCreationOptions': "
+    "Failed to read the 'rp' property from 'PublicKeyCredentialCreationOptions'"
+    ": The provided value is not of type 'PublicKeyCredentialRpEntity'.";
 
 constexpr char kNotAllowedErrorMessage[] =
     "webauth: NotAllowedError: The operation either timed out or was not "

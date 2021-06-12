@@ -11,9 +11,9 @@ PASS sessionDescription.type is "offer"
 PASS sessionDescription.sdp is "foobar"
 PASS new RTCSessionDescription(); did not throw exception.
 PASS new RTCSessionDescription({}); did not throw exception.
-PASS new RTCSessionDescription(5); threw exception TypeError: Failed to construct 'RTCSessionDescription': cannot convert to dictionary..
-PASS new RTCSessionDescription('foobar'); threw exception TypeError: Failed to construct 'RTCSessionDescription': cannot convert to dictionary..
-PASS new RTCSessionDescription({type:'foobar', sdp:'x'}); threw exception TypeError: Failed to construct 'RTCSessionDescription': The provided value 'foobar' is not a valid enum value of type RTCSdpType..
+PASS new RTCSessionDescription(5); threw exception TypeError: Failed to construct 'RTCSessionDescription': The provided value is not of type 'RTCSessionDescriptionInit'..
+PASS new RTCSessionDescription('foobar'); threw exception TypeError: Failed to construct 'RTCSessionDescription': The provided value is not of type 'RTCSessionDescriptionInit'..
+PASS new RTCSessionDescription({type:'foobar', sdp:'x'}); threw exception TypeError: Failed to construct 'RTCSessionDescription': Failed to read the 'type' property from 'RTCSessionDescriptionInit': The provided value 'foobar' is not a valid enum value of type RTCSdpType..
 PASS new RTCSessionDescription({type:'offer', sdp:''}); did not throw exception.
 PASS new RTCSessionDescription({type:'offer', sdp:'x'}); did not throw exception.
 PASS new RTCSessionDescription({type:'answer', sdp:'x'}); did not throw exception.

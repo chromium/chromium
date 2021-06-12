@@ -14,15 +14,15 @@ PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true }).cancelabl
 PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true }).track is null
 
 *** Bubbles and cancelable true, invalid track ***
-PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true, track: HTMLTrackElement }).bubbles threw exception TypeError: Failed to construct 'TrackEvent': The provided value is not of type '(VideoTrack or AudioTrack or TextTrack)'.
-PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true, track: HTMLTrackElement }).cancelable threw exception TypeError: Failed to construct 'TrackEvent': The provided value is not of type '(VideoTrack or AudioTrack or TextTrack)'.
-PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true, track: HTMLTrackElement }).track threw exception TypeError: Failed to construct 'TrackEvent': The provided value is not of type '(VideoTrack or AudioTrack or TextTrack)'.
+PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true, track: HTMLTrackElement }).bubbles threw exception TypeError: Failed to construct 'TrackEvent': Failed to read the 'track' property from 'TrackEventInit': The provided value is not of type '(AudioTrack or TextTrack or VideoTrack)'..
+PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true, track: HTMLTrackElement }).cancelable threw exception TypeError: Failed to construct 'TrackEvent': Failed to read the 'track' property from 'TrackEventInit': The provided value is not of type '(AudioTrack or TextTrack or VideoTrack)'..
+PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true, track: HTMLTrackElement }).track threw exception TypeError: Failed to construct 'TrackEvent': Failed to read the 'track' property from 'TrackEventInit': The provided value is not of type '(AudioTrack or TextTrack or VideoTrack)'..
 
 *** Initialize 'track' with a invalid values ***
-PASS new TrackEvent('TrackEvent', { track: 10 }).track threw exception TypeError: Failed to construct 'TrackEvent': The provided value is not of type '(VideoTrack or AudioTrack or TextTrack)'.
-PASS new TrackEvent('TrackEvent', { track: 'string' }).track threw exception TypeError: Failed to construct 'TrackEvent': The provided value is not of type '(VideoTrack or AudioTrack or TextTrack)'.
-PASS new TrackEvent('TrackEvent', { track: emptyObject }).track threw exception TypeError: Failed to construct 'TrackEvent': The provided value is not of type '(VideoTrack or AudioTrack or TextTrack)'.
-PASS new TrackEvent('TrackEvent', { track: document }).track threw exception TypeError: Failed to construct 'TrackEvent': The provided value is not of type '(VideoTrack or AudioTrack or TextTrack)'.
+PASS new TrackEvent('TrackEvent', { track: 10 }).track threw exception TypeError: Failed to construct 'TrackEvent': Failed to read the 'track' property from 'TrackEventInit': The provided value is not of type '(AudioTrack or TextTrack or VideoTrack)'..
+PASS new TrackEvent('TrackEvent', { track: 'string' }).track threw exception TypeError: Failed to construct 'TrackEvent': Failed to read the 'track' property from 'TrackEventInit': The provided value is not of type '(AudioTrack or TextTrack or VideoTrack)'..
+PASS new TrackEvent('TrackEvent', { track: emptyObject }).track threw exception TypeError: Failed to construct 'TrackEvent': Failed to read the 'track' property from 'TrackEventInit': The provided value is not of type '(AudioTrack or TextTrack or VideoTrack)'..
+PASS new TrackEvent('TrackEvent', { track: document }).track threw exception TypeError: Failed to construct 'TrackEvent': Failed to read the 'track' property from 'TrackEventInit': The provided value is not of type '(AudioTrack or TextTrack or VideoTrack)'..
 
 *** Bubbles and cancelable true, valid track ***
 PASS new TrackEvent('TrackEvent', { bubbles: true, cancelable: true, track: trackElement.track }).bubbles is true

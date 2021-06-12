@@ -17,10 +17,10 @@ PASS indexObject2.unique is false
 PASS indexObject3.unique is true
 Expecting TypeError exception from store.createIndex('failureIndex', 'zzz', true)
 PASS Exception was thrown.
-PASS store.createIndex('failureIndex', 'zzz', true) threw TypeError: Failed to execute 'createIndex' on 'IDBObjectStore': cannot convert to dictionary.
+PASS store.createIndex('failureIndex', 'zzz', true) threw TypeError: Failed to execute 'createIndex' on 'IDBObjectStore': The provided value is not of type 'IDBIndexParameters'.
 Expecting TypeError exception from store.createIndex('failureIndex', 'zzz', 'string')
 PASS Exception was thrown.
-PASS store.createIndex('failureIndex', 'zzz', 'string') threw TypeError: Failed to execute 'createIndex' on 'IDBObjectStore': cannot convert to dictionary.
+PASS store.createIndex('failureIndex', 'zzz', 'string') threw TypeError: Failed to execute 'createIndex' on 'IDBObjectStore': The provided value is not of type 'IDBIndexParameters'.
 PASS 'name' in indexObject is true
 PASS indexObject.name is "indexName"
 PASS 'objectStore' in indexObject is true

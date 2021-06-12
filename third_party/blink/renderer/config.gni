@@ -52,7 +52,7 @@ declare_args() {
 
   # If true, the new implementation (experimental) of Blink-V8 bindings
   # (of IDL dictionary) is used.
-  use_blink_v8_binding_new_idl_dictionary = false
+  use_blink_v8_binding_new_idl_dictionary = true
 
   # If true, the new implementation (experimental) of Blink-V8 bindings
   # (of IDL interface) is used.

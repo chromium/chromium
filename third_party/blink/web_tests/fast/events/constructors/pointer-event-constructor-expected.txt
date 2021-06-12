@@ -108,17 +108,17 @@ PASS new PointerEvent('eventType', { width: -1.2e-3 }).width is within 0.00001 o
 PASS new PointerEvent('eventType', { width: 16777215 }).width is 16777215
 PASS new PointerEvent('eventType', { width: -16777216 }).width is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { width: '123abc' }).width threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { width: 'dummy' }).width threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { width: NaN }).width threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { width: '123abc' }).width threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'width' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { width: 'dummy' }).width threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'width' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { width: NaN }).width threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'width' property from 'PointerEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { width: null }).width is 0
 PASS new PointerEvent('eventType', { width: undefined }).width is 1
 PASS new PointerEvent('eventType', { width: [] }).width is 0
 PASS new PointerEvent('eventType', { width: [12] }).width is 12
-PASS new PointerEvent('eventType', { width: [12, 34] }).width threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { width: {} }).width threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { width: {abc:1} }).width threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { width: {} }).width threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { width: [12, 34] }).width threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'width' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { width: {} }).width threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'width' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { width: {abc:1} }).width threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'width' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { width: {} }).width threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'width' property from 'PointerEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { width: {valueOf: function () { return 123; }} }).width is 123
 -- no init --
 PASS new PointerEvent('eventType').height is 1
@@ -133,17 +133,17 @@ PASS new PointerEvent('eventType', { height: -1.2e-3 }).height is within 0.00001
 PASS new PointerEvent('eventType', { height: 16777215 }).height is 16777215
 PASS new PointerEvent('eventType', { height: -16777216 }).height is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { height: '123abc' }).height threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { height: 'dummy' }).height threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { height: NaN }).height threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { height: '123abc' }).height threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'height' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { height: 'dummy' }).height threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'height' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { height: NaN }).height threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'height' property from 'PointerEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { height: null }).height is 0
 PASS new PointerEvent('eventType', { height: undefined }).height is 1
 PASS new PointerEvent('eventType', { height: [] }).height is 0
 PASS new PointerEvent('eventType', { height: [12] }).height is 12
-PASS new PointerEvent('eventType', { height: [12, 34] }).height threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { height: {} }).height threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { height: {abc:1} }).height threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { height: {} }).height threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { height: [12, 34] }).height threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'height' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { height: {} }).height threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'height' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { height: {abc:1} }).height threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'height' property from 'PointerEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { height: {} }).height threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'height' property from 'PointerEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { height: {valueOf: function () { return 123; }} }).height is 123
 -- no init --
 PASS new PointerEvent('eventType').pressure is 0
@@ -158,17 +158,17 @@ PASS new PointerEvent('eventType', { pressure: -1.2e-3 }).pressure is within 0.0
 PASS new PointerEvent('eventType', { pressure: 16777215 }).pressure is 16777215
 PASS new PointerEvent('eventType', { pressure: -16777216 }).pressure is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { pressure: '123abc' }).pressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { pressure: 'dummy' }).pressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { pressure: NaN }).pressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { pressure: '123abc' }).pressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'pressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { pressure: 'dummy' }).pressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'pressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { pressure: NaN }).pressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'pressure' property from 'PointerEventInit': The provided float value is non-finite..
 PASS new PointerEvent('eventType', { pressure: null }).pressure is 0
 PASS new PointerEvent('eventType', { pressure: undefined }).pressure is 0
 PASS new PointerEvent('eventType', { pressure: [] }).pressure is 0
 PASS new PointerEvent('eventType', { pressure: [12] }).pressure is 12
-PASS new PointerEvent('eventType', { pressure: [12, 34] }).pressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { pressure: {} }).pressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { pressure: {abc:1} }).pressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { pressure: {} }).pressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { pressure: [12, 34] }).pressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'pressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { pressure: {} }).pressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'pressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { pressure: {abc:1} }).pressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'pressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { pressure: {} }).pressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'pressure' property from 'PointerEventInit': The provided float value is non-finite..
 PASS new PointerEvent('eventType', { pressure: {valueOf: function () { return 123; }} }).pressure is 123
 -- no init --
 PASS new PointerEvent('eventType').tangentialPressure is 0
@@ -183,17 +183,17 @@ PASS new PointerEvent('eventType', { tangentialPressure: -1.2e-3 }).tangentialPr
 PASS new PointerEvent('eventType', { tangentialPressure: 16777215 }).tangentialPressure is 16777215
 PASS new PointerEvent('eventType', { tangentialPressure: -16777216 }).tangentialPressure is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { tangentialPressure: '123abc' }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { tangentialPressure: 'dummy' }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { tangentialPressure: NaN }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { tangentialPressure: '123abc' }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'tangentialPressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { tangentialPressure: 'dummy' }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'tangentialPressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { tangentialPressure: NaN }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'tangentialPressure' property from 'PointerEventInit': The provided float value is non-finite..
 PASS new PointerEvent('eventType', { tangentialPressure: null }).tangentialPressure is 0
 PASS new PointerEvent('eventType', { tangentialPressure: undefined }).tangentialPressure is 0
 PASS new PointerEvent('eventType', { tangentialPressure: [] }).tangentialPressure is 0
 PASS new PointerEvent('eventType', { tangentialPressure: [12] }).tangentialPressure is 12
-PASS new PointerEvent('eventType', { tangentialPressure: [12, 34] }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { tangentialPressure: {} }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { tangentialPressure: {abc:1} }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
-PASS new PointerEvent('eventType', { tangentialPressure: {} }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { tangentialPressure: [12, 34] }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'tangentialPressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { tangentialPressure: {} }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'tangentialPressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { tangentialPressure: {abc:1} }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'tangentialPressure' property from 'PointerEventInit': The provided float value is non-finite..
+PASS new PointerEvent('eventType', { tangentialPressure: {} }).tangentialPressure threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'tangentialPressure' property from 'PointerEventInit': The provided float value is non-finite..
 PASS new PointerEvent('eventType', { tangentialPressure: {valueOf: function () { return 123; }} }).tangentialPressure is 123
 -- no init --
 PASS new PointerEvent('eventType').screenX is 0
@@ -208,17 +208,17 @@ PASS new PointerEvent('eventType', { screenX: -1.2e-3 }).screenX is within 0.000
 PASS new PointerEvent('eventType', { screenX: 16777215 }).screenX is 16777215
 PASS new PointerEvent('eventType', { screenX: -16777216 }).screenX is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { screenX: '123abc' }).screenX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenX: 'dummy' }).screenX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenX: NaN }).screenX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenX: '123abc' }).screenX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenX: 'dummy' }).screenX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenX: NaN }).screenX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenX' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { screenX: null }).screenX is 0
 PASS new PointerEvent('eventType', { screenX: undefined }).screenX is 0
 PASS new PointerEvent('eventType', { screenX: [] }).screenX is 0
 PASS new PointerEvent('eventType', { screenX: [12] }).screenX is 12
-PASS new PointerEvent('eventType', { screenX: [12, 34] }).screenX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenX: {} }).screenX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenX: {abc:1} }).screenX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenX: {} }).screenX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenX: [12, 34] }).screenX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenX: {} }).screenX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenX: {abc:1} }).screenX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenX: {} }).screenX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenX' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { screenX: {valueOf: function () { return 123; }} }).screenX is 123
 -- no init --
 PASS new PointerEvent('eventType').screenY is 0
@@ -233,17 +233,17 @@ PASS new PointerEvent('eventType', { screenY: -1.2e-3 }).screenY is within 0.000
 PASS new PointerEvent('eventType', { screenY: 16777215 }).screenY is 16777215
 PASS new PointerEvent('eventType', { screenY: -16777216 }).screenY is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { screenY: '123abc' }).screenY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenY: 'dummy' }).screenY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenY: NaN }).screenY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenY: '123abc' }).screenY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenY: 'dummy' }).screenY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenY: NaN }).screenY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenY' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { screenY: null }).screenY is 0
 PASS new PointerEvent('eventType', { screenY: undefined }).screenY is 0
 PASS new PointerEvent('eventType', { screenY: [] }).screenY is 0
 PASS new PointerEvent('eventType', { screenY: [12] }).screenY is 12
-PASS new PointerEvent('eventType', { screenY: [12, 34] }).screenY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenY: {} }).screenY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenY: {abc:1} }).screenY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { screenY: {} }).screenY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenY: [12, 34] }).screenY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenY: {} }).screenY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenY: {abc:1} }).screenY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { screenY: {} }).screenY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'screenY' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { screenY: {valueOf: function () { return 123; }} }).screenY is 123
 -- no init --
 PASS new PointerEvent('eventType').clientX is 0
@@ -258,17 +258,17 @@ PASS new PointerEvent('eventType', { clientX: -1.2e-3 }).clientX is within 0.000
 PASS new PointerEvent('eventType', { clientX: 16777215 }).clientX is 16777215
 PASS new PointerEvent('eventType', { clientX: -16777216 }).clientX is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { clientX: '123abc' }).clientX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientX: 'dummy' }).clientX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientX: NaN }).clientX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientX: '123abc' }).clientX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientX: 'dummy' }).clientX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientX: NaN }).clientX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientX' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { clientX: null }).clientX is 0
 PASS new PointerEvent('eventType', { clientX: undefined }).clientX is 0
 PASS new PointerEvent('eventType', { clientX: [] }).clientX is 0
 PASS new PointerEvent('eventType', { clientX: [12] }).clientX is 12
-PASS new PointerEvent('eventType', { clientX: [12, 34] }).clientX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientX: {} }).clientX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientX: {abc:1} }).clientX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientX: {} }).clientX threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientX: [12, 34] }).clientX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientX: {} }).clientX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientX: {abc:1} }).clientX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientX' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientX: {} }).clientX threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientX' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { clientX: {valueOf: function () { return 123; }} }).clientX is 123
 -- no init --
 PASS new PointerEvent('eventType').clientY is 0
@@ -283,17 +283,17 @@ PASS new PointerEvent('eventType', { clientY: -1.2e-3 }).clientY is within 0.000
 PASS new PointerEvent('eventType', { clientY: 16777215 }).clientY is 16777215
 PASS new PointerEvent('eventType', { clientY: -16777216 }).clientY is -16777216
 -- init with non-float/double values --
-PASS new PointerEvent('eventType', { clientY: '123abc' }).clientY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientY: 'dummy' }).clientY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientY: NaN }).clientY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientY: '123abc' }).clientY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientY: 'dummy' }).clientY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientY: NaN }).clientY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientY' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { clientY: null }).clientY is 0
 PASS new PointerEvent('eventType', { clientY: undefined }).clientY is 0
 PASS new PointerEvent('eventType', { clientY: [] }).clientY is 0
 PASS new PointerEvent('eventType', { clientY: [12] }).clientY is 12
-PASS new PointerEvent('eventType', { clientY: [12, 34] }).clientY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientY: {} }).clientY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientY: {abc:1} }).clientY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
-PASS new PointerEvent('eventType', { clientY: {} }).clientY threw exception TypeError: Failed to construct 'PointerEvent': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientY: [12, 34] }).clientY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientY: {} }).clientY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientY: {abc:1} }).clientY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientY' property from 'MouseEventInit': The provided double value is non-finite..
+PASS new PointerEvent('eventType', { clientY: {} }).clientY threw exception TypeError: Failed to construct 'PointerEvent': Failed to read the 'clientY' property from 'MouseEventInit': The provided double value is non-finite..
 PASS new PointerEvent('eventType', { clientY: {valueOf: function () { return 123; }} }).clientY is 123
 --- tests for inherited attributes (other than screen & client coordinates) ---
 PASS new PointerEvent('eventType').bubbles is false
