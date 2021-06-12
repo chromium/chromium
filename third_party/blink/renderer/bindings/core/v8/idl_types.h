@@ -335,7 +335,7 @@ struct IDLOnErrorEventHandler final : public IDLBaseHelper<EventListener*> {};
 // member.
 template <typename T>
 struct IDLOptional final : public IDLBase {
-  using ImplType = void;
+  using ImplType = typename NativeValueTraits<T>::ImplType;
 };
 
 }  // namespace blink

@@ -67,7 +67,7 @@ struct NativeValueTraits<IDLNullable<IDLAny>>;
 
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLAny>>
-    : public NativeValueTraitsBase<IDLAny> {
+    : public NativeValueTraitsBase<IDLOptional<IDLAny>> {
   static ScriptValue NativeValue(v8::Isolate* isolate,
                                  v8::Local<v8::Value> value,
                                  ExceptionState& exception_state) {
@@ -88,7 +88,7 @@ struct CORE_EXPORT NativeValueTraits<IDLBoolean>
 
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLBoolean>>
-    : public NativeValueTraitsBase<IDLBoolean> {
+    : public NativeValueTraitsBase<IDLOptional<IDLBoolean>> {
   static bool NativeValue(v8::Isolate* isolate,
                           v8::Local<v8::Value> value,
                           ExceptionState& exception_state) {
@@ -412,7 +412,7 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLByteStringV2>>
 
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLByteStringV2>>
-    : public NativeValueTraitsBase<IDLByteStringV2> {
+    : public NativeValueTraitsBase<IDLOptional<IDLByteStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
@@ -471,7 +471,7 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLStringV2>>
 
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLStringV2>>
-    : public NativeValueTraitsBase<IDLStringV2> {
+    : public NativeValueTraitsBase<IDLOptional<IDLStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
@@ -514,7 +514,7 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLUSVStringV2>>
 
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLUSVStringV2>>
-    : public NativeValueTraitsBase<IDLUSVStringV2> {
+    : public NativeValueTraitsBase<IDLOptional<IDLUSVStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
@@ -965,7 +965,7 @@ struct NativeValueTraits<IDLSequence<T>>
 
 template <typename T>
 struct NativeValueTraits<IDLOptional<IDLSequence<T>>>
-    : public NativeValueTraitsBase<IDLSequence<T>> {
+    : public NativeValueTraitsBase<IDLOptional<IDLSequence<T>>> {
   static typename NativeValueTraits<IDLSequence<T>>::ImplType NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
@@ -974,6 +974,17 @@ struct NativeValueTraits<IDLOptional<IDLSequence<T>>>
       return {};
     return NativeValueTraits<IDLSequence<T>>::NativeValue(isolate, value,
                                                           exception_state);
+  }
+
+  static typename NativeValueTraits<IDLSequence<T>>::ImplType ArgumentValue(
+      v8::Isolate* isolate,
+      int argument_index,
+      v8::Local<v8::Value> value,
+      ExceptionState& exception_state) {
+    if (value->IsUndefined())
+      return {};
+    return NativeValueTraits<IDLSequence<T>>::ArgumentValue(
+        isolate, argument_index, value, exception_state);
   }
 };
 
@@ -1340,6 +1351,13 @@ struct NativeValueTraits<
   static T* NativeValue(v8::Isolate* isolate,
                         v8::Local<v8::Value> value,
                         ExceptionState& exception_state) {
+    return T::Create(isolate, value, exception_state);
+  }
+
+  static T* ArgumentValue(v8::Isolate* isolate,
+                          int argument_index,
+                          v8::Local<v8::Value> value,
+                          ExceptionState& exception_state) {
     return T::Create(isolate, value, exception_state);
   }
 };
