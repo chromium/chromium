@@ -91,6 +91,20 @@ class HoldingSpaceViewBuilder {
     return condition ? AddChild(std::move(callback).Run()) : *this;
   }
 
+  // Copies the address of `root_view_` to the specified `address_ptr`,
+  // returning a reference to `this` as a convenience.
+  HoldingSpaceViewBuilder<ViewType>& CopyAddressTo(ViewType** address_ptr) {
+    *address_ptr = root_view_;
+    return *this;
+  }
+
+  // Sets the `id` for `root_view_`, returning a reference to `this` as a
+  // convenience.
+  HoldingSpaceViewBuilder<ViewType>& SetID(int id) {
+    root_view_->SetID(id);
+    return *this;
+  }
+
   // Sets the `layout_manager` for `root_view_`, returning a reference to `this`
   // as a convenience.
   HoldingSpaceViewBuilder<ViewType>& SetLayoutManager(
