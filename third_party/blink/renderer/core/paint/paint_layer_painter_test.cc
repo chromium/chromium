@@ -82,8 +82,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
   auto* filler2 = GetLayoutObjectByElementId("filler2");
 
   auto* container1_layer = To<LayoutBoxModelObject>(container1)->Layer();
+  auto* content1_layer = To<LayoutBoxModelObject>(content1)->Layer();
   auto* filler1_layer = To<LayoutBoxModelObject>(filler1)->Layer();
   auto* container2_layer = To<LayoutBoxModelObject>(container2)->Layer();
+  auto* content2_layer = To<LayoutBoxModelObject>(content2)->Layer();
   auto* filler2_layer = To<LayoutBoxModelObject>(filler2)->Layer();
   auto chunk_state = GetLayoutView().FirstFragment().ContentsProperties();
 
@@ -106,26 +108,35 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
 
     // Check that new paint chunks were forced for the layers.
     auto chunks = ContentPaintChunks();
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container1_layer, chunks.begin() + 1, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler1_layer, chunks.begin() + 2, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container2_layer, chunks.begin() + 3, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler2_layer, chunks.begin() + 4, 1);
+    auto chunk_it = chunks.begin();
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container1_layer, chunk_it + 1, 2);
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content1_layer, chunk_it + 2, 1);
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler1_layer, chunk_it + 3, 1);
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container2_layer, chunk_it + 4, 2);
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content2_layer, chunk_it + 5, 1);
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler2_layer, chunk_it + 6, 1);
 
     EXPECT_THAT(
         chunks,
         ElementsAre(
             VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
             IsPaintChunk(
-                1, 3,
+                1, 2,
                 PaintChunk::Id(*container1_layer, DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 0, 200, 200)),
+            IsPaintChunk(
+                2, 3, PaintChunk::Id(*content1_layer, DisplayItem::kLayerChunk),
+                chunk_state, nullptr, IntRect(0, 0, 100, 100)),
             IsPaintChunk(
                 3, 4, PaintChunk::Id(*filler1_layer, DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 200, 20, 20)),
             IsPaintChunk(
-                4, 6,
+                4, 5,
                 PaintChunk::Id(*container2_layer, DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 220, 200, 200)),
+            IsPaintChunk(
+                5, 6, PaintChunk::Id(*content2_layer, DisplayItem::kLayerChunk),
+                chunk_state, nullptr, IntRect(0, 220, 100, 100)),
             IsPaintChunk(
                 6, 7, PaintChunk::Id(*filler2_layer, DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 420, 20, 20))));
@@ -140,7 +151,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
   CachedItemAndSubsequenceCounter counter;
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(6u, counter.NumNewCachedItems());
-  EXPECT_EQ(3u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(4u, counter.NumNewCachedSubsequences());
 
   // We should still have the paint chunks forced by the cached subsequences.
   check_results();
@@ -181,9 +192,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   auto* filler_layer = To<LayoutBoxModelObject>(filler)->Layer();
 
   auto chunks = ContentPaintChunks();
-  EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 4);
-  EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 3, 1);
-  EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 4, 1);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 5);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 3, 2);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 4, 1);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 5, 1);
 
   auto container_properties =
       container->FirstFragment().LocalBorderBoxProperties();
@@ -207,6 +219,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
                        PaintChunk::Id(*content_layer, DisplayItem::kLayerChunk),
                        content_properties, nullptr, IntRect(0, 0, 200, 100)),
           IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(*inner_content_layer, DisplayItem::kLayerChunk),
+              content_properties, nullptr, IntRect(0, 0, 100, 100)),
+          IsPaintChunk(
               1, 1, PaintChunk::Id(*filler_layer, DisplayItem::kLayerChunk),
               content_properties, nullptr, IntRect(0, 100, 300, 300))));
 
@@ -214,7 +230,11 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
       ->setAttribute(html_names::kStyleAttr,
                      "position: absolute; width: 100px; height: 100px; "
                      "top: 100px; background-color: green");
+  CachedItemAndSubsequenceCounter counter;
   UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(1u, counter.NumNewCachedItems());         // view background.
+  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());  // filler layer.
 
   EXPECT_THAT(
       ContentDisplayItems(),
@@ -225,6 +245,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   chunks = ContentPaintChunks();
   EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 5);
   EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 3, 2);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 4, 1);
   EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 5, 1);
 
   EXPECT_THAT(
@@ -250,12 +271,6 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
 }
 
 TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
-  // This test doesn't work in CompositeAfterPaint mode because we always paint
-  // from the local root frame view, and we always expand cull rect for
-  // scrolling.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <div id='container1' style='position: relative; z-index: 1;
        width: 200px; height: 200px; background-color: blue'>
@@ -318,7 +333,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
   // Content2b is out of the interest rect and outputs nothing;
   // Container3 becomes out of the interest rect and outputs nothing.
   EXPECT_EQ(5u, counter.NumNewCachedItems());
-  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(2u, counter.NumNewCachedSubsequences());
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -356,12 +371,12 @@ TEST_P(PaintLayerPainterTest,
   SetBodyInnerHTML(R"HTML(
     <div id='container1' style='position: relative; z-index: 1;
         width: 200px; height: 200px; background-color: blue'>
-      <div id='content1' style='position: absolute; width: 100px;
+      <div id='content1' style='overflow: hidden; width: 100px;
           height: 100px; background-color: red'></div>
     </div>
     <div id='container2' style='position: relative; z-index: 1;
         width: 200px; height: 200px; background-color: blue'>
-      <div id='content2' style='position: absolute; width: 100px;
+      <div id='content2' style='overflow: hidden; width: 100px;
           height: 100px; background-color: green'></div>
     </div>
   )HTML");
@@ -527,12 +542,13 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithBackgrounds) {
       div { background: blue }
     </style>
     <div id='container1' style='position: relative; height: 150px; z-index: 1'>
-      <div id='content1a' style='position: relative; height: 100px'></div>
-      <div id='content1b' style='position: relative; height: 100px'></div>
+      <div id='content1a' style='overflow: hidden; height: 100px'></div>
+      <div id='content1b' style='overflow: hidden; height: 100px'></div>
     </div>
     <div id='container2' style='position: relative; z-index: 1'>
-      <div id='content2a' style='position: relative; height: 100px'></div>
-      <div id='content2b' style='position: relative; z-index: -1; height: 100px'></div>
+      <div id='content2a' style='overflow: hidden; height: 100px'></div>
+      <div id='content2b'
+           style='position: relative; z-index: -1; height: 100px'></div>
     </div>
   )HTML");
 
@@ -559,14 +575,9 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithBackgrounds) {
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
           // Includes |container1| and |content1a|.
           IsPaintChunk(
-              1, 3,
+              1, 4,
               PaintChunk::Id(*container1->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 0, 800, 150)),
-          // Includes |content1b| which overflows |container1|.
-          IsPaintChunk(
-              3, 4,
-              PaintChunk::Id(*content1b->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 100, 800, 100)),
+              chunk_state, nullptr, IntRect(0, 0, 800, 200)),
           IsPaintChunk(
               4, 5,
               PaintChunk::Id(*container2->Layer(), DisplayItem::kLayerChunk),
@@ -575,10 +586,10 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithBackgrounds) {
               5, 6,
               PaintChunk::Id(*content2b->Layer(), DisplayItem::kLayerChunk),
               chunk_state, nullptr, IntRect(0, 250, 800, 100)),
-          IsPaintChunk(
-              6, 7,
-              PaintChunk::Id(*content2a->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 150, 800, 100))));
+          IsPaintChunk(6, 7,
+                       PaintChunk::Id(*container2->Layer(),
+                                      DisplayItem::kLayerChunkForeground),
+                       chunk_state, nullptr, IntRect(0, 150, 800, 100))));
 }
 
 TEST_P(PaintLayerPainterTest, HintedPaintChunksWithoutBackgrounds) {
@@ -588,20 +599,18 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithoutBackgrounds) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <div id='container1' style='position: relative; height: 150px; z-index: 1'>
-      <div id='content1a' style='position: relative; height: 100px'></div>
-      <div id='content1b' style='position: relative; height: 100px'></div>
+      <div id='content1a' style='overflow: hidden; height: 100px'></div>
+      <div id='content1b' style='overflow: hidden; height: 100px'></div>
     </div>
     <div id='container2' style='position: relative; z-index: 1'>
-      <div id='content2a' style='position: relative; height: 100px'></div>
+      <div id='content2a' style='overflow: hidden; height: 100px'></div>
       <div id='content2b'
            style='position: relative; z-index: -1; height: 100px'></div>
     </div>
   )HTML");
 
   auto* container1 = GetLayoutBoxByElementId("container1");
-  auto* content1b = GetLayoutBoxByElementId("content1b");
   auto* container2 = GetLayoutBoxByElementId("container2");
-  auto* content2a = GetLayoutBoxByElementId("content2a");
   auto* content2b = GetLayoutBoxByElementId("content2b");
   auto chunk_state = GetLayoutView().FirstFragment().ContentsProperties();
 
@@ -615,11 +624,7 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithoutBackgrounds) {
           IsPaintChunk(
               1, 1,
               PaintChunk::Id(*container1->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 0, 800, 150)),
-          IsPaintChunk(
-              1, 1,
-              PaintChunk::Id(*content1b->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 100, 800, 100)),
+              chunk_state, nullptr, IntRect(0, 0, 800, 200)),
           IsPaintChunk(
               1, 1,
               PaintChunk::Id(*container2->Layer(), DisplayItem::kLayerChunk),
@@ -628,10 +633,10 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithoutBackgrounds) {
               1, 1,
               PaintChunk::Id(*content2b->Layer(), DisplayItem::kLayerChunk),
               chunk_state, nullptr, IntRect(0, 250, 800, 100)),
-          IsPaintChunk(
-              1, 1,
-              PaintChunk::Id(*content2a->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 150, 800, 100))));
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(*container2->Layer(),
+                                      DisplayItem::kLayerChunkForeground),
+                       chunk_state, nullptr, IntRect(0, 150, 800, 100))));
 }
 
 TEST_P(PaintLayerPainterTest, PaintPhaseOutline) {

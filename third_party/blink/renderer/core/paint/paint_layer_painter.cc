@@ -404,21 +404,6 @@ PaintResult PaintLayerPainter::PaintLayerContents(
       !paint_layer_.IsUnderSVGHiddenContainer() && is_self_painting_layer &&
       !is_painting_overlay_overflow_controls;
 
-  bool should_create_subsequence =
-      should_paint_content &&
-      ShouldCreateSubsequence(paint_layer_, context, painting_info);
-
-  absl::optional<SubsequenceRecorder> subsequence_recorder;
-  if (should_create_subsequence) {
-    if (!ShouldRepaintSubsequence(paint_layer_, painting_info) &&
-        SubsequenceRecorder::UseCachedSubsequenceIfPossible(context,
-                                                            paint_layer_)) {
-      return paint_layer_.PreviousPaintResult();
-    }
-    DCHECK(paint_layer_.SupportsSubsequenceCaching());
-    subsequence_recorder.emplace(context, paint_layer_);
-  }
-
   // TODO(paint-dev): Become block fragmentation aware. Unconditionally using
   // the first fragment doesn't seem right.
   PhysicalOffset offset_from_root = object.FirstFragment().PaintOffset();
@@ -495,6 +480,20 @@ PaintResult PaintLayerPainter::PaintLayerContents(
           result = kMayBeClippedByCullRect;
       }
     }
+  }
+
+  bool should_create_subsequence =
+      should_paint_content &&
+      ShouldCreateSubsequence(paint_layer_, context, painting_info);
+  absl::optional<SubsequenceRecorder> subsequence_recorder;
+  if (should_create_subsequence) {
+    if (!ShouldRepaintSubsequence(paint_layer_, painting_info) &&
+        SubsequenceRecorder::UseCachedSubsequenceIfPossible(context,
+                                                            paint_layer_)) {
+      return paint_layer_.PreviousPaintResult();
+    }
+    DCHECK(paint_layer_.SupportsSubsequenceCaching());
+    subsequence_recorder.emplace(context, paint_layer_);
   }
 
   bool is_painting_root_layer = (&paint_layer_) == painting_info.root_layer;

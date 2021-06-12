@@ -12,7 +12,9 @@
       "bounds": [754, 210],
       "contentsOpaqueForText": true,
       "invalidations": [
-        [0, 0, 310, 210]
+        [0, 0, 120, 210],
+        [210, 20, 100, 100],
+        [200, 10, 100, 100]
       ],
       "transform": 1
     }

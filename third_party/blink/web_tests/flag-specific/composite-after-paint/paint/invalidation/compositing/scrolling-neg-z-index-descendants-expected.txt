@@ -10,6 +10,7 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='neg-z'",
       "position": [1, 11],
       "bounds": [100, 410],
+      "contentsOpaqueForText": true,
       "backfaceVisibility": "hidden",
       "transform": 2
     },

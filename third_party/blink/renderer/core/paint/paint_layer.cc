@@ -3127,8 +3127,8 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
   if (EnclosingPaginationLayer())
     return false;
 
-  // SVG paints atomically.
-  if (GetLayoutObject().IsSVGRoot())
+  // SVG root and SVG foreign object paint atomically.
+  if (GetLayoutObject().IsSVGRoot() || GetLayoutObject().IsSVGForeignObject())
     return true;
 
   // Don't create subsequence for the document element because the subsequence
@@ -3137,8 +3137,8 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
   if (GetLayoutObject().IsDocumentElement())
     return false;
 
-  // Create subsequence for only stacking contexts whose painting are atomic.
-  return GetLayoutObject().IsStackingContext();
+  // Create subsequence for only stacked objects whose paintings are atomic.
+  return GetLayoutObject().IsStacked();
 }
 
 ScrollingCoordinator* PaintLayer::GetScrollingCoordinator() {

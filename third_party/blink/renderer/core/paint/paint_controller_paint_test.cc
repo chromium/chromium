@@ -128,10 +128,10 @@ TEST_P(PaintControllerPaintTestForCAP, FrameScrollingContents) {
     <div id='div4' style='top: 9000px; left: 9000px'></div>
   )HTML");
 
-  const auto& div1 = *GetLayoutObjectByElementId("div1");
-  const auto& div2 = *GetLayoutObjectByElementId("div2");
-  const auto& div3 = *GetLayoutObjectByElementId("div3");
-  const auto& div4 = *GetLayoutObjectByElementId("div4");
+  const auto& div1 = To<LayoutBox>(*GetLayoutObjectByElementId("div1"));
+  const auto& div2 = To<LayoutBox>(*GetLayoutObjectByElementId("div2"));
+  const auto& div3 = To<LayoutBox>(*GetLayoutObjectByElementId("div3"));
+  const auto& div4 = To<LayoutBox>(*GetLayoutObjectByElementId("div4"));
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -147,8 +147,18 @@ TEST_P(PaintControllerPaintTestForCAP, FrameScrollingContents) {
                    PaintChunk::Id(GetLayoutView(), DisplayItem::kScrollHitTest),
                    GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
                    &view_scroll_hit_test, IntRect(0, 0, 800, 600)));
-  EXPECT_THAT(ContentPaintChunks(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(3, nullptr)));
+  auto contents_properties =
+      GetLayoutView().FirstFragment().ContentsProperties();
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(1, 2,
+                       PaintChunk::Id(*div1.Layer(), DisplayItem::kLayerChunk),
+                       contents_properties),
+          IsPaintChunk(2, 3,
+                       PaintChunk::Id(*div2.Layer(), DisplayItem::kLayerChunk),
+                       contents_properties)));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(5000, 5000), mojom::blink::ScrollType::kProgrammatic);
@@ -165,8 +175,20 @@ TEST_P(PaintControllerPaintTestForCAP, FrameScrollingContents) {
                    PaintChunk::Id(GetLayoutView(), DisplayItem::kScrollHitTest),
                    GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
                    &view_scroll_hit_test, IntRect(0, 0, 800, 600)));
-  EXPECT_THAT(ContentPaintChunks(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(4, nullptr)));
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          // html and div1 are out of the cull rect.
+          IsPaintChunk(1, 2,
+                       PaintChunk::Id(*div2.Layer(), DisplayItem::kLayerChunk),
+                       contents_properties),
+          IsPaintChunk(2, 3,
+                       PaintChunk::Id(*div3.Layer(), DisplayItem::kLayerChunk),
+                       contents_properties),
+          IsPaintChunk(3, 4,
+                       PaintChunk::Id(*div4.Layer(), DisplayItem::kLayerChunk),
+                       contents_properties)));
 }
 
 TEST_P(PaintControllerPaintTestForCAP, BlockScrollingNonLayeredContents) {
