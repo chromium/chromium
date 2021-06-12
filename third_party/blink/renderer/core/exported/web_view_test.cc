@@ -433,7 +433,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColor) {
   WebViewImpl* web_view = web_view_helper_.Initialize();
   EXPECT_EQ(SK_ColorWHITE, web_view->BackgroundColor());
 
-  web_view->SetBaseBackgroundColor(SK_ColorBLUE);
+  web_view->SetPageBaseBackgroundColor(SK_ColorBLUE);
   EXPECT_EQ(SK_ColorBLUE, web_view->BackgroundColor());
 
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
@@ -453,11 +453,11 @@ TEST_F(WebViewTest, SetBaseBackgroundColor) {
   // Expected: red (50% alpha) blended atop base of SK_ColorBLUE.
   EXPECT_EQ(0xFF80007F, web_view->BackgroundColor());
 
-  web_view->SetBaseBackgroundColor(kTranslucentPutty);
+  web_view->SetPageBaseBackgroundColor(kTranslucentPutty);
   // Expected: red (50% alpha) blended atop kTranslucentPutty. Note the alpha.
   EXPECT_EQ(0xBFE93A31, web_view->BackgroundColor());
 
-  web_view->SetBaseBackgroundColor(SK_ColorTRANSPARENT);
+  web_view->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
                                      "<html><head><style>body "
                                      "{background-color:transparent}</style></"
@@ -494,13 +494,15 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
                       /*widgets_never_composited=*/false,
                       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
                       web_view_helper_.GetAgentGroupScheduler(),
-                      /*session_storage_namespace_id=*/base::EmptyString()));
+                      /*session_storage_namespace_id=*/base::EmptyString(),
+                      /*page_base_background_color=*/absl::nullopt));
 
   EXPECT_NE(SK_ColorBLUE, web_view->BackgroundColor());
-  // WebView does not have a frame yet, but we should still be able to set the
-  // background color.
-  web_view->SetBaseBackgroundColor(SK_ColorBLUE);
-  EXPECT_EQ(SK_ColorBLUE, web_view->BackgroundColor());
+  // WebView does not have a frame yet; while it's possible to set the page
+  // background color, it won't have any effect until a local main frame is
+  // attached.
+  web_view->SetPageBaseBackgroundColor(SK_ColorBLUE);
+  EXPECT_NE(SK_ColorBLUE, web_view->BackgroundColor());
 
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
@@ -528,7 +530,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
   WebViewImpl* web_view = web_view_helper_.Initialize();
 
   // Set WebView background to green with alpha.
-  web_view->SetBaseBackgroundColor(kAlphaGreen);
+  web_view->SetPageBaseBackgroundColor(kAlphaGreen);
   web_view->GetSettings()->SetShouldClearDocumentBackground(false);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(kWidth, kHeight));
   UpdateAllLifecyclePhases();
@@ -569,7 +571,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorWithColorScheme) {
   ColorSchemeHelper color_scheme_helper(*(web_view->GetPage()));
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kLight);
-  web_view->SetBaseBackgroundColor(SK_ColorBLUE);
+  web_view->SetPageBaseBackgroundColor(SK_ColorBLUE);
 
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(
@@ -586,9 +588,9 @@ TEST_F(WebViewTest, SetBaseBackgroundColorWithColorScheme) {
   EXPECT_EQ(Color(0x12, 0x12, 0x12), frame_view->BaseBackgroundColor());
 
   // Don't let dark color-scheme override a transparent background.
-  web_view->SetBaseBackgroundColor(SK_ColorTRANSPARENT);
+  web_view->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   EXPECT_EQ(Color::kTransparent, frame_view->BaseBackgroundColor());
-  web_view->SetBaseBackgroundColor(SK_ColorBLUE);
+  web_view->SetPageBaseBackgroundColor(SK_ColorBLUE);
   EXPECT_EQ(Color(0x12, 0x12, 0x12), frame_view->BaseBackgroundColor());
 
   color_scheme_helper.SetForcedColors(*(web_view->GetPage()),
@@ -2740,7 +2742,8 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       web_view_helper_.GetAgentGroupScheduler(),
-      /*session_storage_namespace_id=*/base::EmptyString()));
+      /*session_storage_namespace_id=*/base::EmptyString(),
+      /*page_base_background_color=*/absl::nullopt));
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* local_frame = WebLocalFrame::CreateMainFrame(
       web_view, &web_frame_client, nullptr, LocalFrameToken(), nullptr);

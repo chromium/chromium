@@ -13,6 +13,8 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 namespace web_pref {
@@ -142,6 +144,11 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // Called when the CSS background color for the underlying document has
   // changed.
   virtual void OnBackgroundColorChanged(RenderViewHostImpl* source) {}
+
+  // Called on RenderView creation to get the initial base background color
+  // for this RenderView. Nullopt means a color is not set, and the blink
+  // default color should be used.
+  virtual absl::optional<SkColor> GetBaseBackgroundColor();
 
  protected:
   virtual ~RenderViewHostDelegate() {}

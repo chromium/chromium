@@ -1502,6 +1502,21 @@ absl::optional<SkColor> WebContentsImpl::GetBackgroundColor() {
   return GetRenderViewHost()->background_color();
 }
 
+void WebContentsImpl::SetPageBaseBackgroundColor(
+    absl::optional<SkColor> color) {
+  if (page_base_background_color_ == color)
+    return;
+  page_base_background_color_ = color;
+  ExecutePageBroadcastMethod(base::BindRepeating(
+      [](absl::optional<SkColor> color, RenderViewHostImpl* rvh) {
+        // Null `broadcast` can happen before view is created on the renderer
+        // side, in which case this color will be sent in CreateView.
+        if (auto& broadcast = rvh->GetAssociatedPageBroadcast())
+          broadcast->SetPageBaseBackgroundColor(color);
+      },
+      page_base_background_color_));
+}
+
 void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetAccessibilityMode",
                         "mode", mode.ToString(), "previous_mode",
@@ -5856,6 +5871,10 @@ void WebContentsImpl::RecomputeWebPreferencesSlow() {
   // them).
   web_preferences_.reset();
   OnWebPreferencesChanged();
+}
+
+absl::optional<SkColor> WebContentsImpl::GetBaseBackgroundColor() {
+  return page_base_background_color_;
 }
 
 void WebContentsImpl::PrintCrossProcessSubframe(

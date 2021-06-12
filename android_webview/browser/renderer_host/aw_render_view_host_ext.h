@@ -70,7 +70,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   // Sets the initial page scale. This overrides initial scale set by
   // the meta viewport tag.
   void SetInitialPageScale(double page_scale_factor);
-  void SetBackgroundColor(SkColor c);
   void SetWillSuppressErrorPage(bool suppress);
 
   void SmoothScroll(int target_x, int target_y, base::TimeDelta duration);
@@ -102,8 +101,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   void ResetLocalMainFrameRemote(content::RenderFrameHost* frame_host);
 
   AwRenderViewHostExtClient* client_;
-
-  SkColor background_color_;
 
   // Authoritative copy of hit test data on the browser side. This is updated
   // as a result of DoHitTest called explicitly or when the FocusedNodeChanged

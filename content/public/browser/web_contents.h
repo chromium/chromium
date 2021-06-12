@@ -413,6 +413,19 @@ class WebContents : public PageNavigator,
   // any.
   virtual absl::optional<SkColor> GetBackgroundColor() = 0;
 
+  // Sets the renderer-side default background color of the page. This is used
+  // when the page has not loaded enough to know a background color or if the
+  // page does not set a background color.
+  // Pass in nullopt to reset back to the default.
+  // Note there are situations where the base background color is not used, such
+  // as fullscreen.
+  // Note currently this is sent directly to the renderer, so does not interact
+  // directly with `RenderWidgetHostView::SetBackgroundColor`. There is pending
+  // refactor to remove `RenderWidgetHostView::SetBackgroundColor` and merge its
+  // functionality here, which will be more consistent and simpler to
+  // understand.
+  virtual void SetPageBaseBackgroundColor(absl::optional<SkColor> color) = 0;
+
   // Returns the committed WebUI if one exists, otherwise the pending one.
   virtual WebUI* GetWebUI() = 0;
   virtual WebUI* GetCommittedWebUI() = 0;

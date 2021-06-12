@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -35,67 +36,6 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace weblayer {
-
-namespace {
-
-// Setting the page's various background color is convoluted and brittle and
-// buggy. This is code inspired from chromeos views and should be considered
-// temporary until content API can be fixed to be more robust. This is
-// effectively only passing 1 bit of information, whether the background color
-// is fully transparent or not, as the actual color isn't used by anything.
-class WebContentsSetBackgroundColor
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<WebContentsSetBackgroundColor> {
- public:
-  static void Set(content::WebContents* web_contents,
-                  SkColor background_color) {
-    if (auto* set = FromWebContents(web_contents)) {
-      set->SetBackgroundColor(background_color);
-      return;
-    }
-
-    // SupportsUserData::Data takes ownership over the
-    // WebContentsSetBackgroundColor instance and will destroy it when the
-    // WebContents instance is destroyed.
-    web_contents->SetUserData(
-        UserDataKey(), base::WrapUnique(new WebContentsSetBackgroundColor(
-                           web_contents, background_color)));
-  }
-
-  ~WebContentsSetBackgroundColor() override = default;
-
- private:
-  friend class content::WebContentsUserData<WebContentsSetBackgroundColor>;
-  WebContentsSetBackgroundColor(content::WebContents* web_contents,
-                                SkColor color)
-      : content::WebContentsObserver(web_contents), color_(color) {}
-
-  // content::WebContentsObserver:
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override {
-    new_host->GetWidget()->GetView()->SetBackgroundColor(color_);
-  }
-
-  void SetBackgroundColor(SkColor background_color) {
-    if (color_ == background_color)
-      return;
-
-    color_ = background_color;
-    web_contents()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->GetView()
-        ->SetBackgroundColor(color_);
-  }
-
-  SkColor color_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsSetBackgroundColor)
-
-}  // namespace
 
 ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
                                              jobject obj,
@@ -136,11 +76,8 @@ void ContentViewRenderView::SetCurrentWebContents(
   InitCompositor();
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  if (web_contents_) {
-    WebContentsSetBackgroundColor::Set(
-        web_contents_,
-        Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
-  }
+  if (web_contents_)
+    web_contents_->SetPageBaseBackgroundColor(absl::nullopt);
   if (web_contents_layer_)
     web_contents_layer_->RemoveFromParent();
 
@@ -271,12 +208,9 @@ void ContentViewRenderView::InitCompositor() {
 void ContentViewRenderView::UpdateWebContentsBaseBackgroundColor() {
   if (!web_contents_)
     return;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  WebContentsSetBackgroundColor::Set(
-      web_contents_,
-      use_transparent_background_
-          ? SK_ColorTRANSPARENT
-          : Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
+  web_contents_->SetPageBaseBackgroundColor(
+      use_transparent_background_ ? absl::make_optional(SK_ColorTRANSPARENT)
+                                  : absl::nullopt);
 }
 
 }  // namespace weblayer

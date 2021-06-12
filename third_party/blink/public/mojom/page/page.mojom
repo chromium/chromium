@@ -4,6 +4,7 @@
 
 module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
@@ -73,4 +74,7 @@ interface PageBroadcast {
 
   // Set history offset and length.
   SetHistoryOffsetAndLength(int32 offset, int32 length);
+
+  // Sent to whole page, but should only be used by the main frame.
+  SetPageBaseBackgroundColor(skia.mojom.SkColor? color);
 };

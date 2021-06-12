@@ -56,7 +56,6 @@ AwRenderViewHostExt::AwRenderViewHostExt(AwRenderViewHostExtClient* client,
                                          content::WebContents* contents)
     : content::WebContentsObserver(contents),
       client_(client),
-      background_color_(SK_ColorWHITE),
       has_new_hit_test_data_(false),
       frame_host_receivers_(contents, this) {
   DCHECK(client_);
@@ -124,15 +123,6 @@ void AwRenderViewHostExt::SetInitialPageScale(double page_scale_factor) {
     local_main_frame_remote_->SetInitialPageScale(page_scale_factor);
 }
 
-void AwRenderViewHostExt::SetBackgroundColor(SkColor c) {
-  if (background_color_ == c)
-    return;
-  background_color_ = c;
-  if (local_main_frame_remote_) {
-    local_main_frame_remote_->SetBackgroundColor(background_color_);
-  }
-}
-
 void AwRenderViewHostExt::SetWillSuppressErrorPage(bool suppress) {
   will_suppress_error_page_ = suppress;
 }
@@ -149,8 +139,6 @@ void AwRenderViewHostExt::ResetLocalMainFrameRemote(
   local_main_frame_remote_.reset();
   frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       local_main_frame_remote_.BindNewEndpointAndPassReceiver());
-
-  local_main_frame_remote_->SetBackgroundColor(background_color_);
 }
 
 void AwRenderViewHostExt::RenderFrameCreated(

@@ -286,14 +286,6 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   GetFrameHost()->UpdateHitTestData(std::move(data));
 }
 
-void AwRenderFrameExt::SetBackgroundColor(SkColor c) {
-  blink::WebView* webview = GetWebView();
-  if (!webview)
-    return;
-
-  webview->SetBaseBackgroundColor(c);
-}
-
 void AwRenderFrameExt::SetInitialPageScale(double page_scale_factor) {
   blink::WebView* webview = GetWebView();
   if (!webview)

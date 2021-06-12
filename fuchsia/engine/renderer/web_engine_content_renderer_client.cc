@@ -137,13 +137,6 @@ void WebEngineContentRendererClient::RenderThreadStarted() {
 
 void WebEngineContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
-  // If this is a top-level frame then it should have a transparent background.
-  // Both the RenderView and WebView should be guaranteed to be non-null, since
-  // the |render_frame| was only just created.
-  if (render_frame->IsMainFrame()) {
-    render_frame->GetWebView()->SetBaseBackgroundColor(SK_AlphaTRANSPARENT);
-  }
-
   // Add WebEngine services to the new RenderFrame.
   // The objects' lifetimes are bound to the RenderFrame's lifetime.
   new on_load_script_injector::OnLoadScriptInjector(render_frame);

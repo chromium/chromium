@@ -293,6 +293,7 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
   WebContentsToFrameImplMap()[web_contents_.get()] = this;
 
   web_contents_->SetDelegate(this);
+  web_contents_->SetPageBaseBackgroundColor(SK_AlphaTRANSPARENT);
   Observe(web_contents_.get());
 
   binding_.set_error_handler([this](zx_status_t status) {

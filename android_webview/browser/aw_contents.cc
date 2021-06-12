@@ -1131,7 +1131,7 @@ void AwContents::SetBackgroundColor(JNIEnv* env,
                                     const JavaParamRef<jobject>& obj,
                                     jint color) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  render_view_host_ext_->SetBackgroundColor(color);
+  web_contents_->SetPageBaseBackgroundColor(color);
 }
 
 void AwContents::ZoomBy(JNIEnv* env,

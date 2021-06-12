@@ -120,6 +120,10 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               SetHistoryOffsetAndLength,
               (int32_t offset, int32_t length),
               (override));
+  MOCK_METHOD(void,
+              SetPageBaseBackgroundColor,
+              (absl::optional<SkColor> color),
+              (override));
 
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> GetRemote() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();

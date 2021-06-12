@@ -114,6 +114,9 @@ class WebView {
   // to inform blink it is in the foreground or background. Whereas this bit
   // refers to user-visibility and whether the tab needs to produce pixels to
   // put on the screen at some point or not.
+  // |page_base_background_color| initial base background color used by the main
+  // frame. Set on create to avoid races. Passing in nullopt indicates the
+  // default base background color should be used.
   // TODO(yuzus): Remove |is_hidden| and start using |PageVisibilityState|.
   BLINK_EXPORT static WebView* Create(
       WebViewClient*,
@@ -125,7 +128,8 @@ class WebView {
       CrossVariantMojoAssociatedReceiver<mojom::PageBroadcastInterfaceBase>
           page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      const SessionStorageNamespaceId& session_storage_namespace_id);
+      const SessionStorageNamespaceId& session_storage_namespace_id,
+      absl::optional<SkColor> page_base_background_color);
 
   // Destroys the WebView.
   virtual void Close() = 0;
@@ -352,11 +356,6 @@ class WebView {
       bool invalidate_visited_link_hashes);
 
   // Custom colors -------------------------------------------------------
-
-  // Sets the default background color when the page has not loaded enough to
-  // know a background colour. This can be overridden by the methods below as
-  // well.
-  virtual void SetBaseBackgroundColor(SkColor) {}
 
   virtual void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) = 0;

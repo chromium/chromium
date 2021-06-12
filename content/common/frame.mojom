@@ -17,6 +17,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
@@ -127,6 +128,9 @@ struct CreateViewParams {
 
   // Endpoint for any messages that are broadcast to all views in a WebContents.
   pending_associated_receiver<blink.mojom.PageBroadcast> blink_page_broadcast;
+
+  // Base background color of this view. Only used by a local main frame.
+  skia.mojom.SkColor? base_background_color;
 };
 
 // A union to distinguish between parameters specific to local main frame

@@ -364,6 +364,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ClosePage() override;
   absl::optional<SkColor> GetThemeColor() override;
   absl::optional<SkColor> GetBackgroundColor() override;
+  void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
   WebUI* GetWebUI() override;
   WebUI* GetCommittedWebUI() override;
   void SetUserAgentOverride(const blink::UserAgentOverride& ua_override,
@@ -858,6 +859,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnThemeColorChanged(RenderViewHostImpl* source) override;
   void OnBackgroundColorChanged(RenderViewHostImpl* source) override;
   void RecomputeWebPreferencesSlow() override;
+  absl::optional<SkColor> GetBaseBackgroundColor() override;
 
   // NavigatorDelegate ---------------------------------------------------------
 
@@ -2207,6 +2209,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Allows the app in the current WebContents to opt-in to exposing
   // information to apps that capture it.
   blink::mojom::CaptureHandleConfig capture_handle_config_;
+
+  // Background color of the page set by the embedder to be passed to all
+  // renderers attached to this WebContents, for use in the main frame.
+  // It is used when the page has not loaded enough to know a background
+  // color or if the page does not set a background color.
+  absl::optional<SkColor> page_base_background_color_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

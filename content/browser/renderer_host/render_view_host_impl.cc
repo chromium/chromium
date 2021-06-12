@@ -476,6 +476,7 @@ bool RenderViewHostImpl::CreateRenderView(
   params->hidden = frame_tree_->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_created_with_opener = window_was_created_with_opener;
+  params->base_background_color = delegate_->GetBaseBackgroundColor();
 
   bool is_portal = delegate_->IsPortal();
   bool is_guest_view = delegate_->IsGuest();

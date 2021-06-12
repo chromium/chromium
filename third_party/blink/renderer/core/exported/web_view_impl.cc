@@ -464,14 +464,16 @@ WebView* WebView::Create(
     CrossVariantMojoAssociatedReceiver<mojom::PageBroadcastInterfaceBase>
         page_handle,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    const SessionStorageNamespaceId& session_storage_namespace_id) {
+    const SessionStorageNamespaceId& session_storage_namespace_id,
+    absl::optional<SkColor> page_base_background_color) {
   return WebViewImpl::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
       is_inside_portal, compositing_enabled, widgets_never_composited,
       static_cast<WebViewImpl*>(opener), std::move(page_handle),
-      agent_group_scheduler, session_storage_namespace_id);
+      agent_group_scheduler, session_storage_namespace_id,
+      std::move(page_base_background_color));
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -483,13 +485,15 @@ WebViewImpl* WebViewImpl::Create(
     WebViewImpl* opener,
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    const SessionStorageNamespaceId& session_storage_namespace_id) {
+    const SessionStorageNamespaceId& session_storage_namespace_id,
+    absl::optional<SkColor> page_base_background_color) {
   // Take a self-reference for WebViewImpl that is released by calling Close(),
   // then return a raw pointer to the caller.
   auto web_view = base::AdoptRef(
       new WebViewImpl(client, visibility, is_inside_portal, compositing_enabled,
                       widgets_never_composited, opener, std::move(page_handle),
-                      agent_group_scheduler, session_storage_namespace_id));
+                      agent_group_scheduler, session_storage_namespace_id,
+                      std::move(page_base_background_color)));
   web_view->AddRef();
   return web_view.get();
 }
@@ -553,7 +557,8 @@ WebViewImpl::WebViewImpl(
     WebViewImpl* opener,
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    const SessionStorageNamespaceId& session_storage_namespace_id)
+    const SessionStorageNamespaceId& session_storage_namespace_id,
+    absl::optional<SkColor> page_base_background_color)
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
@@ -561,6 +566,8 @@ WebViewImpl::WebViewImpl(
       maximum_zoom_level_(PageZoomFactorToZoomLevel(kMaximumPageZoomFactor)),
       does_composite_(does_composite),
       fullscreen_controller_(std::make_unique<FullscreenController>(this)),
+      page_base_background_color_(
+          page_base_background_color.value_or(SK_ColorWHITE)),
       receiver_(this,
                 std::move(page_handle),
                 agent_group_scheduler.DefaultTaskRunner()),
@@ -3042,14 +3049,17 @@ Color WebViewImpl::BaseBackgroundColor() const {
     return SK_ColorTRANSPARENT;
   if (base_background_color_override_for_inspector_)
     return base_background_color_override_for_inspector_.value();
-  return base_background_color_;
+  // Use the page background color if this is the WebView of the main frame.
+  if (MainFrameImpl())
+    return page_base_background_color_;
+  return Color::kWhite;
 }
 
-void WebViewImpl::SetBaseBackgroundColor(SkColor color) {
-  if (base_background_color_ == color)
+void WebViewImpl::SetPageBaseBackgroundColor(absl::optional<SkColor> color) {
+  SkColor new_color = color.value_or(SK_ColorWHITE);
+  if (page_base_background_color_ == new_color)
     return;
-
-  base_background_color_ = color;
+  page_base_background_color_ = new_color;
   UpdateBaseBackgroundColor();
 }
 

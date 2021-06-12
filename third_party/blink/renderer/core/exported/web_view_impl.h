@@ -120,7 +120,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       WebViewImpl* opener,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      const SessionStorageNamespaceId& session_storage_namespace_id);
+      const SessionStorageNamespaceId& session_storage_namespace_id,
+      absl::optional<SkColor> page_base_background_color);
 
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
@@ -198,7 +199,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebPagePopupImpl* GetPagePopup() const override { return page_popup_.get(); }
   void SetPageFrozen(bool frozen) override;
   WebFrameWidget* MainFrameWidget() override;
-  void SetBaseBackgroundColor(SkColor) override;
   void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) override;
   void PaintContent(cc::PaintCanvas*, const gfx::Rect&) override;
@@ -284,6 +284,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const RendererPreferences& preferences) override;
   void SetHistoryOffsetAndLength(int32_t history_offset,
                                  int32_t history_length) override;
+  void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
 
   void DispatchPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
@@ -637,7 +638,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       WebViewImpl* opener,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      const SessionStorageNamespaceId& session_storage_namespace_id);
+      const SessionStorageNamespaceId& session_storage_namespace_id,
+      absl::optional<SkColor> page_base_background_color);
   ~WebViewImpl() override;
 
   void ConfigureAutoResizeMode();
@@ -825,7 +827,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   absl::optional<SkColor> background_color_override_for_fullscreen_controller_;
   bool override_base_background_color_to_transparent_ = false;
   absl::optional<SkColor> base_background_color_override_for_inspector_;
-  SkColor base_background_color_ = Color::kWhite;
+  SkColor page_base_background_color_;  // Only applies to main frame.
 
   float zoom_factor_override_ = 0.f;
 
