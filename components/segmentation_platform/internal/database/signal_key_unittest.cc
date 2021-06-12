@@ -93,7 +93,7 @@ TEST_F(SignalKeyTest, TestValidity) {
 
 TEST_F(SignalKeyTest, TestUsesSafeBinaryFormat) {
   // By testing that the underlying format is the binary version of
-  // SignalKeyInternal, we can API guarantees based on SignalKeyInternal.
+  // SignalKeyInternal, we can ensure API guarantees based on SignalKeyInternal.
   SignalKey key(SignalKey::Kind::USER_ACTION, 42, test_clock_.Now(),
                 test_clock_.Now() + base::TimeDelta::FromSeconds(10));
 
@@ -104,6 +104,17 @@ TEST_F(SignalKeyTest, TestUsesSafeBinaryFormat) {
   EXPECT_EQ(42UL, internal_key.prefix.name_hash);
   EXPECT_EQ(11644502400, internal_key.time_range_start_sec);
   EXPECT_EQ(11644502410, internal_key.time_range_end_sec);
+}
+
+TEST_F(SignalKeyTest, TestGetPrefixInBinary) {
+  SignalKey key(SignalKey::Kind::USER_ACTION, 42, test_clock_.Now(),
+                test_clock_.Now() + base::TimeDelta::FromSeconds(10));
+
+  std::string binary_prefix = key.GetPrefixInBinary();
+  SignalKeyInternal::Prefix prefix;
+  SignalKeyInternalPrefixFromBinary(binary_prefix, &prefix);
+  EXPECT_EQ('u', prefix.kind);
+  EXPECT_EQ(42UL, prefix.name_hash);
 }
 
 TEST_F(SignalKeyTest, EarliestEndTimeComesFirst) {

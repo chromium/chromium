@@ -10,6 +10,7 @@ proto_library("proto") {
     "aggregation.proto",
     "model_metadata.proto",
     "model_prediction.proto",
+    "signal.proto",
   ]
 
   link_deps =
