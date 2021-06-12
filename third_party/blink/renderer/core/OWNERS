@@ -9,6 +9,7 @@
 # Reviewers (comments indicate areas of expertise):
 alexis.menard@intel.com
 almaher@microsoft.com
+andruud@chromium.org
 # bokan reviews changes around viewport behavior, scrolling, cc/blink interaction, co-ordinate spaces and input events
 bokan@chromium.org
 cbiesinger@chromium.org
