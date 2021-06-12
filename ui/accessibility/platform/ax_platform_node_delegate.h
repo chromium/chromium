@@ -70,14 +70,81 @@ class AX_EXPORT AXPlatformNodeDelegate {
  public:
   virtual ~AXPlatformNodeDelegate() = default;
 
-  // Get the accessibility data that should be exposed for this node.
-  // Virtually all of the information is obtained from this structure
-  // (role, state, name, cursor position, etc.) - the rest of this interface
-  // is mostly to implement support for walking the accessibility tree.
+  // Get the accessibility data that should be exposed for this node. This data
+  // is readonly and comes directly from the accessibility tree's source, e.g.
+  // Blink.
+  //
+  // Virtually all of the information could be obtained from this structure
+  // (role, state, name, cursor position, etc.) However, please prefer using
+  // specific accessor methods, such as `GetStringAttribute` or
+  // `GetTableCellRowIndex`, instead of directly accessing this structure,
+  // because any attributes that could automatically be computed in the browser
+  // process would also be returned. The browser process would try to correct
+  // missing or erroneous information too.
   virtual const AXNodeData& GetData() const = 0;
 
   // Get the accessibility tree data for this node.
   virtual const AXTreeData& GetTreeData() const = 0;
+
+  // Accessing accessibility attributes:
+  //
+  // There are dozens of possible attributes for an accessibility node,
+  // but only a few tend to apply to any one object, so we store them
+  // in sparse arrays of <attribute id, attribute value> pairs, organized
+  // by type (bool, int, float, string, int list).
+  //
+  // There are three accessors for each type of attribute: one that returns
+  // true if the attribute is present and false if not, one that takes a
+  // pointer argument and returns true if the attribute is present (if you
+  // need to distinguish between the default value and a missing attribute),
+  // and another that returns the default value for that type if the
+  // attribute is not present. In addition, strings can be returned as
+  // either std::string or std::u16string, for convenience.
+
+  virtual bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const = 0;
+  virtual bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const = 0;
+  virtual bool GetBoolAttribute(ax::mojom::BoolAttribute attribute,
+                                bool* value) const = 0;
+  virtual bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const = 0;
+  virtual float GetFloatAttribute(
+      ax::mojom::FloatAttribute attribute) const = 0;
+  virtual bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
+                                 float* value) const = 0;
+  virtual bool HasIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
+  virtual int GetIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
+  virtual bool GetIntAttribute(ax::mojom::IntAttribute attribute,
+                               int* value) const = 0;
+  virtual bool HasStringAttribute(
+      ax::mojom::StringAttribute attribute) const = 0;
+  virtual const std::string& GetStringAttribute(
+      ax::mojom::StringAttribute attribute) const = 0;
+  virtual bool GetStringAttribute(ax::mojom::StringAttribute attribute,
+                                  std::string* value) const = 0;
+  virtual std::u16string GetString16Attribute(
+      ax::mojom::StringAttribute attribute) const = 0;
+  virtual bool GetString16Attribute(ax::mojom::StringAttribute attribute,
+                                    std::u16string* value) const = 0;
+  virtual const std::string& GetInheritedStringAttribute(
+      ax::mojom::StringAttribute attribute) const = 0;
+  virtual std::u16string GetInheritedString16Attribute(
+      ax::mojom::StringAttribute attribute) const = 0;
+  virtual bool HasIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const = 0;
+  virtual const std::vector<int32_t>& GetIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const = 0;
+  virtual bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
+                                   std::vector<int32_t>* value) const = 0;
+  virtual bool HasStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const = 0;
+  virtual const std::vector<std::string>& GetStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const = 0;
+  virtual bool GetStringListAttribute(
+      ax::mojom::StringListAttribute attribute,
+      std::vector<std::string>* value) const = 0;
+  virtual bool GetHtmlAttribute(const char* attribute,
+                                std::string* value) const = 0;
+  virtual bool GetHtmlAttribute(const char* attribute,
+                                std::u16string* value) const = 0;
 
   // Returns the text of this node and all descendant nodes; including text
   // found in embedded objects.

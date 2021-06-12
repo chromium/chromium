@@ -386,77 +386,77 @@ bool AXPlatformNodeBase::HasBoolAttribute(
     ax::mojom::BoolAttribute attribute) const {
   if (!delegate_)
     return false;
-  return GetData().HasBoolAttribute(attribute);
+  return delegate_->HasBoolAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetBoolAttribute(
     ax::mojom::BoolAttribute attribute) const {
   if (!delegate_)
     return false;
-  return GetData().GetBoolAttribute(attribute);
+  return delegate_->GetBoolAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetBoolAttribute(ax::mojom::BoolAttribute attribute,
                                           bool* value) const {
   if (!delegate_)
     return false;
-  return GetData().GetBoolAttribute(attribute, value);
+  return delegate_->GetBoolAttribute(attribute, value);
 }
 
 bool AXPlatformNodeBase::HasFloatAttribute(
     ax::mojom::FloatAttribute attribute) const {
   if (!delegate_)
     return false;
-  return GetData().HasFloatAttribute(attribute);
+  return delegate_->HasFloatAttribute(attribute);
 }
 
 float AXPlatformNodeBase::GetFloatAttribute(
     ax::mojom::FloatAttribute attribute) const {
   if (!delegate_)
     return false;
-  return GetData().GetFloatAttribute(attribute);
+  return delegate_->GetFloatAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                                            float* value) const {
   if (!delegate_)
     return false;
-  return GetData().GetFloatAttribute(attribute, value);
+  return delegate_->GetFloatAttribute(attribute, value);
 }
 
 bool AXPlatformNodeBase::HasIntAttribute(
     ax::mojom::IntAttribute attribute) const {
   if (!delegate_)
     return false;
-  return GetData().HasIntAttribute(attribute);
+  return delegate_->HasIntAttribute(attribute);
 }
 
 int AXPlatformNodeBase::GetIntAttribute(
     ax::mojom::IntAttribute attribute) const {
   if (!delegate_)
     return 0;
-  return GetData().GetIntAttribute(attribute);
+  return delegate_->GetIntAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetIntAttribute(ax::mojom::IntAttribute attribute,
                                          int* value) const {
   if (!delegate_)
     return false;
-  return GetData().GetIntAttribute(attribute, value);
+  return delegate_->GetIntAttribute(attribute, value);
 }
 
 bool AXPlatformNodeBase::HasStringAttribute(
     ax::mojom::StringAttribute attribute) const {
   if (!delegate_)
     return false;
-  return GetData().HasStringAttribute(attribute);
+  return delegate_->HasStringAttribute(attribute);
 }
 
 const std::string& AXPlatformNodeBase::GetStringAttribute(
     ax::mojom::StringAttribute attribute) const {
   if (!delegate_)
     return base::EmptyString();
-  return GetData().GetStringAttribute(attribute);
+  return delegate_->GetStringAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetStringAttribute(
@@ -464,14 +464,14 @@ bool AXPlatformNodeBase::GetStringAttribute(
     std::string* value) const {
   if (!delegate_)
     return false;
-  return GetData().GetStringAttribute(attribute, value);
+  return delegate_->GetStringAttribute(attribute, value);
 }
 
 std::u16string AXPlatformNodeBase::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   if (!delegate_)
     return std::u16string();
-  return GetData().GetString16Attribute(attribute);
+  return delegate_->GetString16Attribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetString16Attribute(
@@ -479,7 +479,7 @@ bool AXPlatformNodeBase::GetString16Attribute(
     std::u16string* value) const {
   if (!delegate_)
     return false;
-  return GetData().GetString16Attribute(attribute, value);
+  return delegate_->GetString16Attribute(attribute, value);
 }
 
 bool AXPlatformNodeBase::HasInheritedStringAttribute(
@@ -491,7 +491,7 @@ bool AXPlatformNodeBase::HasInheritedStringAttribute(
       return false;
     }
 
-    if (current_node->GetData().HasStringAttribute(attribute)) {
+    if (current_node->HasStringAttribute(attribute)) {
       return true;
     }
 
@@ -503,6 +503,8 @@ bool AXPlatformNodeBase::HasInheritedStringAttribute(
 
 const std::string& AXPlatformNodeBase::GetInheritedStringAttribute(
     ax::mojom::StringAttribute attribute) const {
+  // TODO(nektar): Switch to using `AXNode::GetInheritedStringAttribute` after
+  // it has been modified to cross tree boundaries.
   const AXPlatformNodeBase* current_node = this;
 
   do {
@@ -510,8 +512,8 @@ const std::string& AXPlatformNodeBase::GetInheritedStringAttribute(
       return base::EmptyString();
     }
 
-    if (current_node->GetData().HasStringAttribute(attribute)) {
-      return current_node->GetData().GetStringAttribute(attribute);
+    if (current_node->HasStringAttribute(attribute)) {
+      return current_node->GetStringAttribute(attribute);
     }
 
     current_node = FromNativeViewAccessible(current_node->GetParent());
@@ -520,14 +522,11 @@ const std::string& AXPlatformNodeBase::GetInheritedStringAttribute(
   return base::EmptyString();
 }
 
-std::u16string AXPlatformNodeBase::GetInheritedString16Attribute(
-    ax::mojom::StringAttribute attribute) const {
-  return base::UTF8ToUTF16(GetInheritedStringAttribute(attribute));
-}
-
 bool AXPlatformNodeBase::GetInheritedStringAttribute(
     ax::mojom::StringAttribute attribute,
     std::string* value) const {
+  // TODO(nektar): Switch to using `AXNode::GetInheritedStringAttribute` after
+  // it has been modified to cross tree boundaries.
   const AXPlatformNodeBase* current_node = this;
 
   do {
@@ -535,7 +534,7 @@ bool AXPlatformNodeBase::GetInheritedStringAttribute(
       return false;
     }
 
-    if (current_node->GetData().GetStringAttribute(attribute, value)) {
+    if (current_node->GetStringAttribute(attribute, value)) {
       return true;
     }
 
@@ -545,9 +544,18 @@ bool AXPlatformNodeBase::GetInheritedStringAttribute(
   return false;
 }
 
+std::u16string AXPlatformNodeBase::GetInheritedString16Attribute(
+    ax::mojom::StringAttribute attribute) const {
+  // TODO(nektar): Switch to using `AXNode::GetInheritedString16Attribute` after
+  // it has been modified to cross tree boundaries.
+  return base::UTF8ToUTF16(GetInheritedStringAttribute(attribute));
+}
+
 bool AXPlatformNodeBase::GetInheritedString16Attribute(
     ax::mojom::StringAttribute attribute,
     std::u16string* value) const {
+  // TODO(nektar): Switch to using `AXNode::GetInheritedString16Attribute` after
+  // it has been modified to cross tree boundaries.
   std::string value_utf8;
   if (!GetInheritedStringAttribute(attribute, &value_utf8))
     return false;
@@ -559,7 +567,7 @@ bool AXPlatformNodeBase::HasIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
   if (!delegate_)
     return false;
-  return GetData().HasIntListAttribute(attribute);
+  return delegate_->HasIntListAttribute(attribute);
 }
 
 const std::vector<int32_t>& AXPlatformNodeBase::GetIntListAttribute(
@@ -567,7 +575,7 @@ const std::vector<int32_t>& AXPlatformNodeBase::GetIntListAttribute(
   static const base::NoDestructor<std::vector<int32_t>> empty_data;
   if (!delegate_)
     return *empty_data;
-  return GetData().GetIntListAttribute(attribute);
+  return delegate_->GetIntListAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetIntListAttribute(
@@ -575,7 +583,7 @@ bool AXPlatformNodeBase::GetIntListAttribute(
     std::vector<int32_t>* value) const {
   if (!delegate_)
     return false;
-  return GetData().GetIntListAttribute(attribute, value);
+  return delegate_->GetIntListAttribute(attribute, value);
 }
 
 // static
@@ -1252,7 +1260,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
   // Expose dropeffect attribute.
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  if (GetData().HasIntAttribute(ax::mojom::IntAttribute::kDropeffect)) {
+  if (delegate_->HasIntAttribute(ax::mojom::IntAttribute::kDropeffect)) {
     std::string dropeffect = GetData().DropeffectBitfieldToString();
     AddAttributeToList("dropeffect", dropeffect, attributes);
   }
@@ -1263,8 +1271,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
   // Expose class attribute.
   std::string class_attr;
-  if (GetData().GetStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                   &class_attr)) {
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kClassName,
+                                    &class_attr)) {
     AddAttributeToList("class", class_attr, attributes);
   }
 
@@ -1288,9 +1296,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("src", src, attributes);
   }
 
-  if (GetData().HasIntAttribute(ax::mojom::IntAttribute::kTextAlign)) {
+  if (delegate_->HasIntAttribute(ax::mojom::IntAttribute::kTextAlign)) {
     auto text_align = static_cast<ax::mojom::TextAlign>(
-        GetData().GetIntAttribute(ax::mojom::IntAttribute::kTextAlign));
+        delegate_->GetIntAttribute(ax::mojom::IntAttribute::kTextAlign));
     switch (text_align) {
       case ax::mojom::TextAlign::kNone:
         break;

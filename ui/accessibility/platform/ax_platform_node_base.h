@@ -132,24 +132,24 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
       ax::mojom::StringAttribute attribute) const;
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
                           std::string* value) const;
-  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            std::u16string* value) const;
   std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
+  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
+                            std::u16string* value) const;
+
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetInheritedStringAttribute(
       ax::mojom::StringAttribute attribute) const;
-  std::u16string GetInheritedString16Attribute(
-      ax::mojom::StringAttribute attribute) const;
   bool GetInheritedStringAttribute(ax::mojom::StringAttribute attribute,
                                    std::string* value) const;
+  std::u16string GetInheritedString16Attribute(
+      ax::mojom::StringAttribute attribute) const;
   bool GetInheritedString16Attribute(ax::mojom::StringAttribute attribute,
                                      std::u16string* value) const;
 
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
-
   bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
                            std::vector<int32_t>* value) const;
 

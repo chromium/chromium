@@ -303,61 +303,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   typedef base::StringPairs HtmlAttributes;
   const HtmlAttributes& GetHtmlAttributes() const;
 
-  // Accessing accessibility attributes:
-  //
-  // There are dozens of possible attributes for an accessibility node,
-  // but only a few tend to apply to any one object, so we store them
-  // in sparse arrays of <attribute id, attribute value> pairs, organized
-  // by type (bool, int, float, string, int list).
-  //
-  // There are three accessors for each type of attribute: one that returns
-  // true if the attribute is present and false if not, one that takes a
-  // pointer argument and returns true if the attribute is present (if you
-  // need to distinguish between the default value and a missing attribute),
-  // and another that returns the default value for that type if the
-  // attribute is not present. In addition, strings can be returned as
-  // either std::string or std::u16string, for convenience.
-
-  bool HasBoolAttribute(ax::mojom::BoolAttribute attr) const;
-  bool GetBoolAttribute(ax::mojom::BoolAttribute attr) const;
-  bool GetBoolAttribute(ax::mojom::BoolAttribute attr, bool* value) const;
-
-  bool HasFloatAttribute(ax::mojom::FloatAttribute attr) const;
-  float GetFloatAttribute(ax::mojom::FloatAttribute attr) const;
-  bool GetFloatAttribute(ax::mojom::FloatAttribute attr, float* value) const;
-
+  // TODO(nektar): Move this method to AXNode.
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
-  const std::string& GetInheritedStringAttribute(
-      ax::mojom::StringAttribute attribute) const;
-  std::u16string GetInheritedString16Attribute(
-      ax::mojom::StringAttribute attribute) const;
-
-  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
-  int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
-  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
-
-  bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
-  const std::string& GetStringAttribute(
-      ax::mojom::StringAttribute attribute) const;
-  bool GetStringAttribute(ax::mojom::StringAttribute attribute,
-                          std::string* value) const;
-
-  std::u16string GetString16Attribute(
-      ax::mojom::StringAttribute attribute) const;
-  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            std::u16string* value) const;
-
-  bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
-  const std::vector<int32_t>& GetIntListAttribute(
-      ax::mojom::IntListAttribute attribute) const;
-  bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                           std::vector<int32_t>* value) const;
-
-  // Retrieve the value of a html attribute from the attribute map and
-  // returns true if found.
-  bool GetHtmlAttribute(const char* attr, std::string* value) const;
-  bool GetHtmlAttribute(const char* attr, std::u16string* value) const;
-
   // Returns true if the bit corresponding to the given enum is 1.
   bool HasState(ax::mojom::State state_enum) const;
   bool HasAction(ax::mojom::Action action_enum) const;
@@ -407,10 +354,51 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   std::u16string GetNameAsString16() const;
 
-  // AXPlatformNodeDelegate.
+  // `AXPlatformNodeDelegate` implementation.
   std::u16string GetAuthorUniqueId() const override;
   const ui::AXNodeData& GetData() const override;
   const ui::AXTreeData& GetTreeData() const override;
+  bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
+  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
+  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute,
+                        bool* value) const override;
+  bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const override;
+  float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const override;
+  bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
+                         float* value) const override;
+  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const override;
+  int GetIntAttribute(ax::mojom::IntAttribute attribute) const override;
+  bool GetIntAttribute(ax::mojom::IntAttribute attribute,
+                       int* value) const override;
+  bool HasStringAttribute(ax::mojom::StringAttribute attribute) const override;
+  const std::string& GetStringAttribute(
+      ax::mojom::StringAttribute attribute) const override;
+  bool GetStringAttribute(ax::mojom::StringAttribute attribute,
+                          std::string* value) const override;
+  std::u16string GetString16Attribute(
+      ax::mojom::StringAttribute attribute) const override;
+  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
+                            std::u16string* value) const override;
+  const std::string& GetInheritedStringAttribute(
+      ax::mojom::StringAttribute attribute) const override;
+  std::u16string GetInheritedString16Attribute(
+      ax::mojom::StringAttribute attribute) const override;
+  bool HasIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const override;
+  const std::vector<int32_t>& GetIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const override;
+  bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
+                           std::vector<int32_t>* value) const override;
+  bool HasStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const override;
+  const std::vector<std::string>& GetStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const override;
+  bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
+                              std::vector<std::string>* value) const override;
+  bool GetHtmlAttribute(const char* attribute,
+                        std::string* value) const override;
+  bool GetHtmlAttribute(const char* attribute,
+                        std::u16string* value) const override;
   const ui::AXTree::Selection GetUnignoredSelection() const override;
   AXPosition CreateTextPositionAt(int offset) const override;
   gfx::NativeViewAccessible GetNSWindow() override;
@@ -423,7 +411,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetLastChild() override;
   gfx::NativeViewAccessible GetNextSibling() override;
   gfx::NativeViewAccessible GetPreviousSibling() override;
-
   bool IsChildOfLeaf() const override;
   bool IsDescendantOfAtomicTextField() const override;
   bool IsLeaf() const override;

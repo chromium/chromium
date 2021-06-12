@@ -325,6 +325,11 @@ class AX_EXPORT AXNode final {
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
                             std::u16string* value) const;
 
+  const std::string& GetInheritedStringAttribute(
+      ax::mojom::StringAttribute attribute) const;
+  std::u16string GetInheritedString16Attribute(
+      ax::mojom::StringAttribute attribute) const;
+
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
     return data().HasIntListAttribute(attribute);
   }
@@ -349,10 +354,10 @@ class AX_EXPORT AXNode final {
     return data().GetStringListAttribute(attribute, value);
   }
 
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const {
+  bool GetHtmlAttribute(const char* attribute, std::string* value) const {
     return data().GetHtmlAttribute(attribute, value);
   }
-  bool GetHtmlAttribute(const char* attribute, std::string* value) const {
+  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const {
     return data().GetHtmlAttribute(attribute, value);
   }
 
@@ -373,11 +378,6 @@ class AX_EXPORT AXNode final {
   // Container objects that should be ignored for computing PosInSet and SetSize
   // for ordered sets.
   bool IsIgnoredContainerForOrderedSet() const;
-
-  const std::string& GetInheritedStringAttribute(
-      ax::mojom::StringAttribute attribute) const;
-  std::u16string GetInheritedString16Attribute(
-      ax::mojom::StringAttribute attribute) const;
 
   // If this node is a leaf, returns the inner text of this node. This is
   // equivalent to its visible accessible name. Otherwise, if this node is not a

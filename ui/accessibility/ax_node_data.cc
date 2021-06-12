@@ -425,12 +425,12 @@ bool AXNodeData::GetStringListAttribute(
   return false;
 }
 
-bool AXNodeData::GetHtmlAttribute(const char* html_attr,
+bool AXNodeData::GetHtmlAttribute(const char* attribute,
                                   std::string* value) const {
   for (const std::pair<std::string, std::string>& html_attribute :
        html_attributes) {
     const std::string& attr = html_attribute.first;
-    if (base::LowerCaseEqualsASCII(attr, html_attr)) {
+    if (base::LowerCaseEqualsASCII(attr, attribute)) {
       *value = html_attribute.second;
       return true;
     }
@@ -439,23 +439,13 @@ bool AXNodeData::GetHtmlAttribute(const char* html_attr,
   return false;
 }
 
-bool AXNodeData::GetHtmlAttribute(const char* html_attr,
+bool AXNodeData::GetHtmlAttribute(const char* attribute,
                                   std::u16string* value) const {
   std::string value_utf8;
-  if (!GetHtmlAttribute(html_attr, &value_utf8))
+  if (!GetHtmlAttribute(attribute, &value_utf8))
     return false;
   *value = base::UTF8ToUTF16(value_utf8);
   return true;
-}
-
-void AXNodeData::AddStringAttribute(ax::mojom::StringAttribute attribute,
-                                    const std::string& value) {
-  DCHECK_NE(attribute, ax::mojom::StringAttribute::kNone);
-  DCHECK_NE(attribute, ax::mojom::StringAttribute::kChildTreeId)
-      << "Use AddChildTreeId.";
-  if (HasStringAttribute(attribute))
-    RemoveStringAttribute(attribute);
-  string_attributes.push_back(std::make_pair(attribute, value));
 }
 
 void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
@@ -464,6 +454,14 @@ void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
   if (HasStringAttribute(attribute))
     RemoveStringAttribute(attribute);
   string_attributes.push_back(std::make_pair(attribute, tree_id.ToString()));
+}
+
+void AXNodeData::AddBoolAttribute(ax::mojom::BoolAttribute attribute,
+                                  bool value) {
+  DCHECK_NE(attribute, ax::mojom::BoolAttribute::kNone);
+  if (HasBoolAttribute(attribute))
+    RemoveBoolAttribute(attribute);
+  bool_attributes.push_back(std::make_pair(attribute, value));
 }
 
 void AXNodeData::AddIntAttribute(ax::mojom::IntAttribute attribute, int value) {
@@ -481,12 +479,14 @@ void AXNodeData::AddFloatAttribute(ax::mojom::FloatAttribute attribute,
   float_attributes.push_back(std::make_pair(attribute, value));
 }
 
-void AXNodeData::AddBoolAttribute(ax::mojom::BoolAttribute attribute,
-                                  bool value) {
-  DCHECK_NE(attribute, ax::mojom::BoolAttribute::kNone);
-  if (HasBoolAttribute(attribute))
-    RemoveBoolAttribute(attribute);
-  bool_attributes.push_back(std::make_pair(attribute, value));
+void AXNodeData::AddStringAttribute(ax::mojom::StringAttribute attribute,
+                                    const std::string& value) {
+  DCHECK_NE(attribute, ax::mojom::StringAttribute::kNone);
+  DCHECK_NE(attribute, ax::mojom::StringAttribute::kChildTreeId)
+      << "Use AddChildTreeId.";
+  if (HasStringAttribute(attribute))
+    RemoveStringAttribute(attribute);
+  string_attributes.push_back(std::make_pair(attribute, value));
 }
 
 void AXNodeData::AddIntListAttribute(ax::mojom::IntListAttribute attribute,
@@ -506,10 +506,10 @@ void AXNodeData::AddStringListAttribute(
   stringlist_attributes.push_back(std::make_pair(attribute, value));
 }
 
-void AXNodeData::RemoveStringAttribute(ax::mojom::StringAttribute attribute) {
-  DCHECK_NE(attribute, ax::mojom::StringAttribute::kNone);
-  base::EraseIf(string_attributes, [attribute](const auto& string_attribute) {
-    return string_attribute.first == attribute;
+void AXNodeData::RemoveBoolAttribute(ax::mojom::BoolAttribute attribute) {
+  DCHECK_NE(attribute, ax::mojom::BoolAttribute::kNone);
+  base::EraseIf(bool_attributes, [attribute](const auto& bool_attribute) {
+    return bool_attribute.first == attribute;
   });
 }
 
@@ -527,10 +527,10 @@ void AXNodeData::RemoveFloatAttribute(ax::mojom::FloatAttribute attribute) {
   });
 }
 
-void AXNodeData::RemoveBoolAttribute(ax::mojom::BoolAttribute attribute) {
-  DCHECK_NE(attribute, ax::mojom::BoolAttribute::kNone);
-  base::EraseIf(bool_attributes, [attribute](const auto& bool_attribute) {
-    return bool_attribute.first == attribute;
+void AXNodeData::RemoveStringAttribute(ax::mojom::StringAttribute attribute) {
+  DCHECK_NE(attribute, ax::mojom::StringAttribute::kNone);
+  base::EraseIf(string_attributes, [attribute](const auto& string_attribute) {
+    return string_attribute.first == attribute;
   });
 }
 

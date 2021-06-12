@@ -1124,10 +1124,9 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       message_id = IDS_AX_ROLE_DATE;
       break;
     case ax::mojom::Role::kDateTime: {
-      const ui::AXNodeData& data = GetData();
       std::string type;
-      if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
-                                  &type)) {
+      if (node()->GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                     &type)) {
         // Returns a specific role to better aid users on the control type
         // they are interacting with. This differs from Android text input type
         // which has a more granular mapping that determines type of keyboard
@@ -1952,9 +1951,9 @@ int BrowserAccessibilityAndroid::AndroidInputType() const {
   if (html_tag != "input")
     return ANDROID_TEXT_INPUTTYPE_TYPE_NULL;
 
-  const ui::AXNodeData& data = GetData();
   std::string type;
-  if (!data.GetStringAttribute(ax::mojom::StringAttribute::kInputType, &type))
+  if (!node()->GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                  &type))
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT;
 
   if (type.empty() || type == "text" || type == "search")
@@ -2182,15 +2181,12 @@ void BrowserAccessibilityAndroid::GetSuggestions(
   while (node && node != this) {
     if (node->IsText()) {
       const std::vector<int32_t>& marker_types =
-          node->GetData().GetIntListAttribute(
-              ax::mojom::IntListAttribute::kMarkerTypes);
+          node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
       if (!marker_types.empty()) {
-        const std::vector<int>& marker_starts =
-            node->GetData().GetIntListAttribute(
-                ax::mojom::IntListAttribute::kMarkerStarts);
+        const std::vector<int>& marker_starts = node->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kMarkerStarts);
         const std::vector<int>& marker_ends =
-            node->GetData().GetIntListAttribute(
-                ax::mojom::IntListAttribute::kMarkerEnds);
+            node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
         for (size_t i = 0; i < marker_types.size(); ++i) {
           // On Android, both spelling errors and alternatives from dictation

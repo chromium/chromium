@@ -91,10 +91,10 @@ struct AX_BASE_EXPORT AXNodeData {
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
                           std::string* value) const;
 
-  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            std::u16string* value) const;
   std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
+  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
+                            std::u16string* value) const;
 
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
@@ -108,8 +108,8 @@ struct AX_BASE_EXPORT AXNodeData {
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
 
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;
+  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
 
   //
   // Setting accessibility attributes.
@@ -119,14 +119,14 @@ struct AX_BASE_EXPORT AXNodeData {
   // have wanted or what existing code already assumes.
   //
 
+  void AddBoolAttribute(ax::mojom::BoolAttribute attribute, bool value);
+  void AddChildTreeId(const ui::AXTreeID& tree_id);
+  void AddIntAttribute(ax::mojom::IntAttribute attribute, int32_t value);
+  void AddFloatAttribute(ax::mojom::FloatAttribute attribute, float value);
   // This method cannot be used to set kChildTreeId due to a common
   // misuse of base::UnguessableToken serialization. Use AddChildTreeId instead.
   void AddStringAttribute(ax::mojom::StringAttribute attribute,
                           const std::string& value);
-  void AddChildTreeId(const ui::AXTreeID& tree_id);
-  void AddIntAttribute(ax::mojom::IntAttribute attribute, int32_t value);
-  void AddFloatAttribute(ax::mojom::FloatAttribute attribute, float value);
-  void AddBoolAttribute(ax::mojom::BoolAttribute attribute, bool value);
   void AddIntListAttribute(ax::mojom::IntListAttribute attribute,
                            const std::vector<int32_t>& value);
   void AddStringListAttribute(ax::mojom::StringListAttribute attribute,
@@ -136,10 +136,10 @@ struct AX_BASE_EXPORT AXNodeData {
   // Removing accessibility attributes.
   //
 
-  void RemoveStringAttribute(ax::mojom::StringAttribute attribute);
+  void RemoveBoolAttribute(ax::mojom::BoolAttribute attribute);
   void RemoveIntAttribute(ax::mojom::IntAttribute attribute);
   void RemoveFloatAttribute(ax::mojom::FloatAttribute attribute);
-  void RemoveBoolAttribute(ax::mojom::BoolAttribute attribute);
+  void RemoveStringAttribute(ax::mojom::StringAttribute attribute);
   void RemoveIntListAttribute(ax::mojom::IntListAttribute attribute);
   void RemoveStringListAttribute(ax::mojom::StringListAttribute attribute);
 

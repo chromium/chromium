@@ -26,15 +26,50 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   AXPlatformNodeDelegateBase();
   ~AXPlatformNodeDelegateBase() override;
 
-  // Get the accessibility data that should be exposed for this node.
-  // Virtually all of the information is obtained from this structure
-  // (role, state, name, cursor position, etc.) - the rest of this interface
-  // is mostly to implement support for walking the accessibility tree.
+  // `AXPlatformNodeDelegate` implementation.
   const AXNodeData& GetData() const override;
-
-  // Get the accessibility tree data for this node.
   const AXTreeData& GetTreeData() const override;
-
+  bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
+  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
+  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute,
+                        bool* value) const override;
+  bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const override;
+  float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const override;
+  bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
+                         float* value) const override;
+  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const override;
+  int GetIntAttribute(ax::mojom::IntAttribute attribute) const override;
+  bool GetIntAttribute(ax::mojom::IntAttribute attribute,
+                       int* value) const override;
+  bool HasStringAttribute(ax::mojom::StringAttribute attribute) const override;
+  const std::string& GetStringAttribute(
+      ax::mojom::StringAttribute attribute) const override;
+  bool GetStringAttribute(ax::mojom::StringAttribute attribute,
+                          std::string* value) const override;
+  std::u16string GetString16Attribute(
+      ax::mojom::StringAttribute attribute) const override;
+  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
+                            std::u16string* value) const override;
+  const std::string& GetInheritedStringAttribute(
+      ax::mojom::StringAttribute attribute) const override;
+  std::u16string GetInheritedString16Attribute(
+      ax::mojom::StringAttribute attribute) const override;
+  bool HasIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const override;
+  const std::vector<int32_t>& GetIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const override;
+  bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
+                           std::vector<int32_t>* value) const override;
+  bool HasStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const override;
+  const std::vector<std::string>& GetStringListAttribute(
+      ax::mojom::StringListAttribute attribute) const override;
+  bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
+                              std::vector<std::string>* value) const override;
+  bool GetHtmlAttribute(const char* attribute,
+                        std::string* value) const override;
+  bool GetHtmlAttribute(const char* attribute,
+                        std::u16string* value) const override;
   std::u16string GetInnerText() const override;
   std::u16string GetValueForControl() const override;
   const AXTree::Selection GetUnignoredSelection() const override;

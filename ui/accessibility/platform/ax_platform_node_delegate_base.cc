@@ -31,6 +31,136 @@ const AXTreeData& AXPlatformNodeDelegateBase::GetTreeData() const {
   return *empty_data;
 }
 
+bool AXPlatformNodeDelegateBase::HasBoolAttribute(
+    ax::mojom::BoolAttribute attribute) const {
+  return GetData().HasBoolAttribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetBoolAttribute(
+    ax::mojom::BoolAttribute attribute) const {
+  return GetData().GetBoolAttribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetBoolAttribute(
+    ax::mojom::BoolAttribute attribute,
+    bool* value) const {
+  return GetData().GetBoolAttribute(attribute, value);
+}
+
+bool AXPlatformNodeDelegateBase::HasFloatAttribute(
+    ax::mojom::FloatAttribute attribute) const {
+  return GetData().HasFloatAttribute(attribute);
+}
+
+float AXPlatformNodeDelegateBase::GetFloatAttribute(
+    ax::mojom::FloatAttribute attribute) const {
+  return GetData().GetFloatAttribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetFloatAttribute(
+    ax::mojom::FloatAttribute attribute,
+    float* value) const {
+  return GetData().GetFloatAttribute(attribute, value);
+}
+
+bool AXPlatformNodeDelegateBase::HasIntAttribute(
+    ax::mojom::IntAttribute attribute) const {
+  return GetData().HasIntAttribute(attribute);
+}
+
+int AXPlatformNodeDelegateBase::GetIntAttribute(
+    ax::mojom::IntAttribute attribute) const {
+  return GetData().GetIntAttribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetIntAttribute(
+    ax::mojom::IntAttribute attribute,
+    int* value) const {
+  return GetData().GetIntAttribute(attribute, value);
+}
+
+bool AXPlatformNodeDelegateBase::HasStringAttribute(
+    ax::mojom::StringAttribute attribute) const {
+  return GetData().HasStringAttribute(attribute);
+}
+
+const std::string& AXPlatformNodeDelegateBase::GetStringAttribute(
+    ax::mojom::StringAttribute attribute) const {
+  return GetData().GetStringAttribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetStringAttribute(
+    ax::mojom::StringAttribute attribute,
+    std::string* value) const {
+  return GetData().GetStringAttribute(attribute, value);
+}
+
+std::u16string AXPlatformNodeDelegateBase::GetString16Attribute(
+    ax::mojom::StringAttribute attribute) const {
+  return GetData().GetString16Attribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetString16Attribute(
+    ax::mojom::StringAttribute attribute,
+    std::u16string* value) const {
+  return GetData().GetString16Attribute(attribute, value);
+}
+
+const std::string& AXPlatformNodeDelegateBase::GetInheritedStringAttribute(
+    ax::mojom::StringAttribute attribute) const {
+  NOTIMPLEMENTED();
+  return GetData().GetStringAttribute(attribute);
+}
+
+std::u16string AXPlatformNodeDelegateBase::GetInheritedString16Attribute(
+    ax::mojom::StringAttribute attribute) const {
+  NOTIMPLEMENTED();
+  return GetData().GetString16Attribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::HasIntListAttribute(
+    ax::mojom::IntListAttribute attribute) const {
+  return GetData().HasIntListAttribute(attribute);
+}
+
+const std::vector<int32_t>& AXPlatformNodeDelegateBase::GetIntListAttribute(
+    ax::mojom::IntListAttribute attribute) const {
+  return GetData().GetIntListAttribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetIntListAttribute(
+    ax::mojom::IntListAttribute attribute,
+    std::vector<int32_t>* value) const {
+  return GetData().GetIntListAttribute(attribute, value);
+}
+
+bool AXPlatformNodeDelegateBase::HasStringListAttribute(
+    ax::mojom::StringListAttribute attribute) const {
+  return GetData().HasStringListAttribute(attribute);
+}
+
+const std::vector<std::string>&
+AXPlatformNodeDelegateBase::GetStringListAttribute(
+    ax::mojom::StringListAttribute attribute) const {
+  return GetData().GetStringListAttribute(attribute);
+}
+
+bool AXPlatformNodeDelegateBase::GetStringListAttribute(
+    ax::mojom::StringListAttribute attribute,
+    std::vector<std::string>* value) const {
+  return GetData().GetStringListAttribute(attribute, value);
+}
+
+bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
+                                                  std::string* value) const {
+  return GetData().GetHtmlAttribute(attribute, value);
+}
+
+bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
+                                                  std::u16string* value) const {
+  return GetData().GetHtmlAttribute(attribute, value);
+}
+
 std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
   // Unlike in web content The "kValue" attribute always takes precedence,
   // because we assume that users of this base class, such as Views controls,
