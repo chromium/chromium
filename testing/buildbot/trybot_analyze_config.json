@@ -64,6 +64,7 @@
       "third_party/vulkan-deps/DEPS",
       "third_party/web-animations-js/.*(css|html|js)",
       "third_party/zlib/google/test/data/.*",
+      "tools/android/avd/proto/creation/.*",
       "tools/clang/scripts/update.py",
       "tools/grit/.*",
       "tools/mb/.*",
