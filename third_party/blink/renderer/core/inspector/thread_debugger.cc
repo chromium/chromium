@@ -486,6 +486,8 @@ void ThreadDebugger::GetAccessibleNameCallback(
   v8::Local<v8::Value> value = info[0];
 
   Node* node = V8Node::ToImplWithTypeCheck(isolate, value);
+  if (node && !node->GetLayoutObject())
+    return;
   if (auto* element = DynamicTo<Element>(node)) {
     V8SetReturnValueString(info, element->computedName(), isolate);
   }
@@ -501,6 +503,8 @@ void ThreadDebugger::GetAccessibleRoleCallback(
   v8::Local<v8::Value> value = info[0];
 
   Node* node = V8Node::ToImplWithTypeCheck(isolate, value);
+  if (node && !node->GetLayoutObject())
+    return;
   if (auto* element = DynamicTo<Element>(node)) {
     V8SetReturnValueString(info, element->computedRole(), isolate);
   }
