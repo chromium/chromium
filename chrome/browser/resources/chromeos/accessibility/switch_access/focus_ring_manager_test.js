@@ -17,6 +17,7 @@ FocusRingManagerTest = class extends SwitchAccessE2ETest {
       await importModule('Navigator', '/switch_access/navigator.js');
       await importModule(
           'SAConstants', '/switch_access/switch_access_constants.js');
+      await importModule('ActionManager', '/switch_access/action_manager.js');
       runTest();
     })();
   }
@@ -45,6 +46,31 @@ TEST_F('FocusRingManagerTest', 'BackButtonFocus', function() {
     // Primary focus should be empty, preview focus should contain one element.
     assertEquals(0, primary.rects.length);
     assertEquals(1, preview.rects.length);
+  });
+});
+
+TEST_F('FocusRingManagerTest', 'BackButtonForMenuFocus', function() {
+  const site = '<input type="text">';
+  this.runWithLoadedTree(site, async (root) => {
+    // Open the menu and focus the back button.
+    const input = root.find({role: chrome.automation.RoleType.TEXT_FIELD});
+    assertNotNullNorUndefined(input);
+    Navigator.byItem.moveTo_(input);
+    ActionManager.onSelect();
+    let found = false;
+    while (!found) {
+      Navigator.byItem.moveForward();
+      if (Navigator.byItem.node_ instanceof BackButtonNode) {
+        found = true;
+      }
+    }
+
+    const rings = FocusRingManager.instance.rings_;
+    const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
+    const preview = rings.get(SAConstants.Focus.ID.PREVIEW);
+    // Primary and preview focus should be empty.
+    assertEquals(0, primary.rects.length);
+    assertEquals(0, preview.rects.length);
   });
 });
 
