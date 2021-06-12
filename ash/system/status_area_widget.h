@@ -108,30 +108,24 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   StatusAreaWidgetDelegate* status_area_widget_delegate() {
     return status_area_widget_delegate_;
   }
-  UnifiedSystemTray* unified_system_tray() {
-    return unified_system_tray_.get();
-  }
+  UnifiedSystemTray* unified_system_tray() { return unified_system_tray_; }
   DictationButtonTray* dictation_button_tray() {
-    return dictation_button_tray_.get();
+    return dictation_button_tray_;
   }
-  MediaTray* media_tray() { return media_tray_.get(); }
+  MediaTray* media_tray() { return media_tray_; }
   StatusAreaOverflowButtonTray* overflow_button_tray() {
-    return overflow_button_tray_.get();
+    return overflow_button_tray_;
   }
-  OverviewButtonTray* overview_button_tray() {
-    return overview_button_tray_.get();
-  }
-  PaletteTray* palette_tray() { return palette_tray_.get(); }
+  OverviewButtonTray* overview_button_tray() { return overview_button_tray_; }
+  PaletteTray* palette_tray() { return palette_tray_; }
   StopRecordingButtonTray* stop_recording_button_tray() {
-    return stop_recording_button_tray_.get();
+    return stop_recording_button_tray_;
   }
-  ImeMenuTray* ime_menu_tray() { return ime_menu_tray_.get(); }
-  HoldingSpaceTray* holding_space_tray() { return holding_space_tray_.get(); }
-  PhoneHubTray* phone_hub_tray() { return phone_hub_tray_.get(); }
+  ImeMenuTray* ime_menu_tray() { return ime_menu_tray_; }
+  HoldingSpaceTray* holding_space_tray() { return holding_space_tray_; }
+  PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
 
-  SelectToSpeakTray* select_to_speak_tray() {
-    return select_to_speak_tray_.get();
-  }
+  SelectToSpeakTray* select_to_speak_tray() { return select_to_speak_tray_; }
 
   Shelf* shelf() { return shelf_; }
 
@@ -158,10 +152,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   // TODO(jamescook): Introduce a test API instead of these methods.
   LogoutButtonTray* logout_button_tray_for_testing() {
-    return logout_button_tray_.get();
+    return logout_button_tray_;
   }
   VirtualKeyboardTray* virtual_keyboard_tray_for_testing() {
-    return virtual_keyboard_tray_.get();
+    return virtual_keyboard_tray_;
   }
 
   CollapseState collapse_state() const { return collapse_state_; }
@@ -207,7 +201,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   void OnScrollEvent(ui::ScrollEvent* event) override;
 
   // Adds a new tray button to the status area.
-  void AddTrayButton(TrayBackgroundView* tray_button);
+  void AddTrayButton(std::unique_ptr<TrayBackgroundView> tray_button);
 
   // Called when in the collapsed state to calculate and update the visibility
   // of each tray button.
@@ -223,19 +217,19 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   StatusAreaWidgetDelegate* status_area_widget_delegate_;
 
-  std::unique_ptr<StatusAreaOverflowButtonTray> overflow_button_tray_;
-  std::unique_ptr<OverviewButtonTray> overview_button_tray_;
-  std::unique_ptr<DictationButtonTray> dictation_button_tray_;
-  std::unique_ptr<MediaTray> media_tray_;
-  std::unique_ptr<UnifiedSystemTray> unified_system_tray_;
-  std::unique_ptr<LogoutButtonTray> logout_button_tray_;
-  std::unique_ptr<PaletteTray> palette_tray_;
-  std::unique_ptr<PhoneHubTray> phone_hub_tray_;
-  std::unique_ptr<StopRecordingButtonTray> stop_recording_button_tray_;
-  std::unique_ptr<VirtualKeyboardTray> virtual_keyboard_tray_;
-  std::unique_ptr<ImeMenuTray> ime_menu_tray_;
-  std::unique_ptr<SelectToSpeakTray> select_to_speak_tray_;
-  std::unique_ptr<HoldingSpaceTray> holding_space_tray_;
+  StatusAreaOverflowButtonTray* overflow_button_tray_ = nullptr;
+  OverviewButtonTray* overview_button_tray_ = nullptr;
+  DictationButtonTray* dictation_button_tray_ = nullptr;
+  MediaTray* media_tray_ = nullptr;
+  UnifiedSystemTray* unified_system_tray_ = nullptr;
+  LogoutButtonTray* logout_button_tray_ = nullptr;
+  PaletteTray* palette_tray_ = nullptr;
+  PhoneHubTray* phone_hub_tray_ = nullptr;
+  StopRecordingButtonTray* stop_recording_button_tray_ = nullptr;
+  VirtualKeyboardTray* virtual_keyboard_tray_ = nullptr;
+  ImeMenuTray* ime_menu_tray_ = nullptr;
+  SelectToSpeakTray* select_to_speak_tray_ = nullptr;
+  HoldingSpaceTray* holding_space_tray_ = nullptr;
 
   // Vector of the tray buttons above. The ordering is used to determine which
   // tray buttons are hidden when they overflow the available width.

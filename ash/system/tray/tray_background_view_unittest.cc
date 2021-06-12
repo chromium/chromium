@@ -51,9 +51,11 @@ class TrayBackgroundViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    test_view = std::make_unique<TrayBackgroundViewTestView>(GetPrimaryShelf());
+    auto test_view =
+        std::make_unique<TrayBackgroundViewTestView>(GetPrimaryShelf());
+    test_view_ = test_view.get();
 
-    // Adds this `test_view` to the mock `StatusAreaWidget`. We need to remove
+    // Adds this `test_view_` to the mock `StatusAreaWidget`. We need to remove
     // the layout manager from the delegate before adding a new child, since
     // there's an DCHECK in the `GridLayout` to assert no more child can be
     // added.
@@ -61,7 +63,7 @@ class TrayBackgroundViewTest : public AshTestBase {
         ->status_area_widget_delegate()
         ->SetLayoutManager(nullptr);
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()->AddTrayButton(
-        test_view.get());
+        std::move(test_view));
 
     // Set Dictation button to be visible.
     AccessibilityControllerImpl* controller =
@@ -70,10 +72,7 @@ class TrayBackgroundViewTest : public AshTestBase {
     controller->dictation().SetEnabled(true);
   }
 
-  void TearDown() override {
-    test_view.reset();
-    AshTestBase::TearDown();
-  }
+  TrayBackgroundViewTestView* test_view() const { return test_view_; }
 
  protected:
   // Here we use dictation tray for testing secondary screen.
@@ -87,7 +86,8 @@ class TrayBackgroundViewTest : public AshTestBase {
         ->dictation_button_tray();
   }
 
-  std::unique_ptr<TrayBackgroundViewTestView> test_view;
+ private:
+  TrayBackgroundViewTestView* test_view_ = nullptr;
 };
 
 TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
@@ -95,26 +95,26 @@ TEST_F(TrayBackgroundViewTest, ShowingAnimationAbortedByHideAnimation) {
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Starts showing up animation.
-  test_view->SetVisiblePreferred(true);
-  EXPECT_TRUE(test_view->GetVisible());
-  EXPECT_TRUE(test_view->layer()->GetTargetVisibility());
-  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
+  test_view()->SetVisiblePreferred(true);
+  EXPECT_TRUE(test_view()->GetVisible());
+  EXPECT_TRUE(test_view()->layer()->GetTargetVisibility());
+  EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
 
   // Starts hide animation. The view is visible but the layer's target
   // visibility is false.
-  test_view->SetVisiblePreferred(false);
-  EXPECT_TRUE(test_view->GetVisible());
-  EXPECT_FALSE(test_view->layer()->GetTargetVisibility());
-  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
+  test_view()->SetVisiblePreferred(false);
+  EXPECT_TRUE(test_view()->GetVisible());
+  EXPECT_FALSE(test_view()->layer()->GetTargetVisibility());
+  EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
 
   // Here we wait until the animation is finished and we give it one more second
   // to finish the callbacks in `OnVisibilityAnimationFinished()`.
-  StatusAreaWidgetTestHelper::WaitForLayerAnimationEnd(test_view->layer());
+  StatusAreaWidgetTestHelper::WaitForLayerAnimationEnd(test_view()->layer());
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 
-  // After the hide animation is finished, `test_view` is not visible.
-  EXPECT_FALSE(test_view->GetVisible());
-  EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
+  // After the hide animation is finished, test_view() is not visible.
+  EXPECT_FALSE(test_view()->GetVisible());
+  EXPECT_FALSE(test_view()->layer()->GetAnimator()->is_animating());
 }
 
 TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
@@ -129,55 +129,55 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   // finish when this duration ends. The same for the other places below.
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
 
-  test_view->SetVisiblePreferred(false);
-  test_view->SetVisiblePreferred(true);
+  test_view()->SetVisiblePreferred(false);
+  test_view()->SetVisiblePreferred(true);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(test_view->GetVisible());
+  EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view()->GetVisible());
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-  EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(test_view->GetVisible());
+  EXPECT_FALSE(test_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view()->GetVisible());
 
   // Enable the animation after session state get changed.
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-  test_view->SetVisiblePreferred(false);
-  test_view->SetVisiblePreferred(true);
+  test_view()->SetVisiblePreferred(false);
+  test_view()->SetVisiblePreferred(true);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(test_view->GetVisible());
+  EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view()->GetVisible());
 
   // Not showing animation after unlocking screen.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
 
-  test_view->SetVisiblePreferred(false);
-  test_view->SetVisiblePreferred(true);
+  test_view()->SetVisiblePreferred(false);
+  test_view()->SetVisiblePreferred(true);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(test_view->GetVisible());
+  EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view()->GetVisible());
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-  EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(test_view->GetVisible());
+  EXPECT_FALSE(test_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view()->GetVisible());
 
   // Not showing animation when switching users.
   GetSessionControllerClient()->AddUserSession("a");
-  test_view->SetVisiblePreferred(false);
-  test_view->SetVisiblePreferred(true);
-  EXPECT_TRUE(test_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(test_view->GetVisible());
+  test_view()->SetVisiblePreferred(false);
+  test_view()->SetVisiblePreferred(true);
+  EXPECT_TRUE(test_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view()->GetVisible());
 
   // Simulates user switching by changing the order of session_ids.
   Shell::Get()->session_controller()->SetUserSessionOrder({2u, 1u});
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-  EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(test_view->GetVisible());
+  EXPECT_FALSE(test_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(test_view()->GetVisible());
 }
 
 TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {

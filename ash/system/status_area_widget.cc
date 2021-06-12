@@ -98,52 +98,65 @@ void StatusAreaWidget::Initialize() {
   DCHECK(!initialized_);
 
   // Create the child views, left to right.
-  overflow_button_tray_ =
+  auto overflow_button_tray =
       std::make_unique<StatusAreaOverflowButtonTray>(shelf_);
-  AddTrayButton(overflow_button_tray_.get());
+  overflow_button_tray_ = overflow_button_tray.get();
+  AddTrayButton(std::move(overflow_button_tray));
 
-  holding_space_tray_ = std::make_unique<HoldingSpaceTray>(shelf_);
-  AddTrayButton(holding_space_tray_.get());
+  auto holding_space_tray = std::make_unique<HoldingSpaceTray>(shelf_);
+  holding_space_tray_ = holding_space_tray.get();
+  AddTrayButton(std::move(holding_space_tray));
 
-  logout_button_tray_ = std::make_unique<LogoutButtonTray>(shelf_);
-  AddTrayButton(logout_button_tray_.get());
+  auto logout_button_tray = std::make_unique<LogoutButtonTray>(shelf_);
+  logout_button_tray_ = logout_button_tray.get();
+  AddTrayButton(std::move(logout_button_tray));
 
-  dictation_button_tray_ = std::make_unique<DictationButtonTray>(shelf_);
-  AddTrayButton(dictation_button_tray_.get());
+  auto dictation_button_tray = std::make_unique<DictationButtonTray>(shelf_);
+  dictation_button_tray_ = dictation_button_tray.get();
+  AddTrayButton(std::move(dictation_button_tray));
 
-  select_to_speak_tray_ = std::make_unique<SelectToSpeakTray>(shelf_);
-  AddTrayButton(select_to_speak_tray_.get());
+  auto select_to_speak_tray = std::make_unique<SelectToSpeakTray>(shelf_);
+  select_to_speak_tray_ = select_to_speak_tray.get();
+  AddTrayButton(std::move(select_to_speak_tray));
 
-  ime_menu_tray_ = std::make_unique<ImeMenuTray>(shelf_);
-  AddTrayButton(ime_menu_tray_.get());
+  auto ime_menu_tray = std::make_unique<ImeMenuTray>(shelf_);
+  ime_menu_tray_ = ime_menu_tray.get();
+  AddTrayButton(std::move(ime_menu_tray));
 
-  virtual_keyboard_tray_ = std::make_unique<VirtualKeyboardTray>(shelf_);
-  AddTrayButton(virtual_keyboard_tray_.get());
+  auto virtual_keyboard_tray = std::make_unique<VirtualKeyboardTray>(shelf_);
+  virtual_keyboard_tray_ = virtual_keyboard_tray.get();
+  AddTrayButton(std::move(virtual_keyboard_tray));
 
   if (features::IsCaptureModeEnabled()) {
-    stop_recording_button_tray_ =
+    auto stop_recording_button_tray =
         std::make_unique<StopRecordingButtonTray>(shelf_);
-    AddTrayButton(stop_recording_button_tray_.get());
+    stop_recording_button_tray_ = stop_recording_button_tray.get();
+    AddTrayButton(std::move(stop_recording_button_tray));
   }
 
-  palette_tray_ = std::make_unique<PaletteTray>(shelf_);
-  AddTrayButton(palette_tray_.get());
+  auto palette_tray = std::make_unique<PaletteTray>(shelf_);
+  palette_tray_ = palette_tray.get();
+  AddTrayButton(std::move(palette_tray));
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
-    media_tray_ = std::make_unique<MediaTray>(shelf_);
-    AddTrayButton(media_tray_.get());
+    auto media_tray = std::make_unique<MediaTray>(shelf_);
+    media_tray_ = media_tray.get();
+    AddTrayButton(std::move(media_tray));
   }
 
   if (chromeos::features::IsPhoneHubEnabled()) {
-    phone_hub_tray_ = std::make_unique<PhoneHubTray>(shelf_);
-    AddTrayButton(phone_hub_tray_.get());
+    auto phone_hub_tray = std::make_unique<PhoneHubTray>(shelf_);
+    phone_hub_tray_ = phone_hub_tray.get();
+    AddTrayButton(std::move(phone_hub_tray));
   }
 
-  unified_system_tray_ = std::make_unique<UnifiedSystemTray>(shelf_);
-  AddTrayButton(unified_system_tray_.get());
+  auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
+  unified_system_tray_ = unified_system_tray.get();
+  AddTrayButton(std::move(unified_system_tray));
 
-  overview_button_tray_ = std::make_unique<OverviewButtonTray>(shelf_);
-  AddTrayButton(overview_button_tray_.get());
+  auto overview_button_tray = std::make_unique<OverviewButtonTray>(shelf_);
+  overview_button_tray_ = overview_button_tray.get();
+  AddTrayButton(std::move(overview_button_tray));
 
   // Each tray_button's animation will be disabled for the life time of this
   // local `animation_disablers`, which means the closures to enable the
@@ -173,6 +186,10 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  // TODO(pbos): Investigate if this is necessary. This is a bit defensive but
+  // it's done to make sure that StatusAreaWidget isn't accessed by the View
+  // hierarchy during destruction.
+  status_area_widget_delegate_->RemoveAllChildViews(/*delete=*/true);
 }
 
 // static
@@ -190,7 +207,7 @@ void StatusAreaWidget::UpdateAfterLoginStatusChange(LoginStatus login_status) {
 }
 
 void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
-  TrayBackgroundView* tray = unified_system_tray_.get();
+  TrayBackgroundView* tray = unified_system_tray_;
   tray->SetVisiblePreferred(visible);
   if (visible) {
     Show();
@@ -230,9 +247,9 @@ void StatusAreaWidget::UpdateCollapseState() {
 void StatusAreaWidget::LogVisiblePodCountMetric() {
   int visible_pod_count = 0;
   for (auto* tray_button : tray_buttons_) {
-    if (tray_button == overflow_button_tray_.get() ||
-        tray_button == overview_button_tray_.get() ||
-        tray_button == unified_system_tray_.get() || !tray_button->GetVisible())
+    if (tray_button == overflow_button_tray_ ||
+        tray_button == overview_button_tray_ ||
+        tray_button == unified_system_tray_ || !tray_button->GetVisible())
       continue;
 
     visible_pod_count += 1;
@@ -371,7 +388,7 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
     if (!tray->visible_preferred())
       continue;
     // Skip |stop_recording_button_tray_| since it's always visible.
-    if (tray == stop_recording_button_tray_.get())
+    if (tray == stop_recording_button_tray_)
       continue;
 
     // Show overflow button once available width is exceeded.
@@ -404,8 +421,8 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
 
 void StatusAreaWidget::EnsureTrayOrder() {
   if (features::IsCaptureModeEnabled()) {
-    status_area_widget_delegate_->ReorderChildView(
-        stop_recording_button_tray_.get(), 1);
+    status_area_widget_delegate_->ReorderChildView(stop_recording_button_tray_,
+                                                   1);
   }
 }
 
@@ -451,7 +468,7 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
       // If we reach the final overflow tray button, then all the tray buttons
       // fit and there is no need for a collapse state.
-      if (tray == overflow_button_tray_.get())
+      if (tray == overflow_button_tray_)
         return CollapseState::NOT_COLLAPSIBLE;
 
       // Skip non-enabled tray buttons.
@@ -472,9 +489,9 @@ TrayBackgroundView* StatusAreaWidget::GetSystemTrayAnchor() const {
   // view because the view is still visible when fading away, but we do not want
   // to anchor to this element in that case.
   if (overview_button_tray_->layer()->GetTargetVisibility())
-    return overview_button_tray_.get();
+    return overview_button_tray_;
 
-  return unified_system_tray_.get();
+  return unified_system_tray_;
 }
 
 gfx::Rect StatusAreaWidget::GetMediaTrayAnchorRect() const {
@@ -489,7 +506,7 @@ gfx::Rect StatusAreaWidget::GetMediaTrayAnchorRect() const {
 
   // Accumulate the width/height of all visible tray buttons after media tray.
   for (views::View* tray_button : tray_buttons_) {
-    if (tray_button == media_tray_.get()) {
+    if (tray_button == media_tray_) {
       found_media_tray = true;
       continue;
     }
@@ -571,7 +588,7 @@ void StatusAreaWidget::OnMouseEvent(ui::MouseEvent* event) {
   // Clicking anywhere except the virtual keyboard tray icon should hide the
   // virtual keyboard.
   gfx::Point location = event->location();
-  views::View::ConvertPointFromWidget(virtual_keyboard_tray_.get(), &location);
+  views::View::ConvertPointFromWidget(virtual_keyboard_tray_, &location);
   if (event->type() == ui::ET_MOUSE_PRESSED &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
@@ -583,7 +600,7 @@ void StatusAreaWidget::OnGestureEvent(ui::GestureEvent* event) {
   // Tapping anywhere except the virtual keyboard tray icon should hide the
   // virtual keyboard.
   gfx::Point location = event->location();
-  views::View::ConvertPointFromWidget(virtual_keyboard_tray_.get(), &location);
+  views::View::ConvertPointFromWidget(virtual_keyboard_tray_, &location);
   if (event->type() == ui::ET_GESTURE_TAP_DOWN &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
@@ -597,9 +614,10 @@ void StatusAreaWidget::OnScrollEvent(ui::ScrollEvent* event) {
     views::Widget::OnScrollEvent(event);
 }
 
-void StatusAreaWidget::AddTrayButton(TrayBackgroundView* tray_button) {
-  status_area_widget_delegate_->AddChildView(tray_button);
-  tray_buttons_.push_back(tray_button);
+void StatusAreaWidget::AddTrayButton(
+    std::unique_ptr<TrayBackgroundView> tray_button) {
+  tray_buttons_.push_back(tray_button.get());
+  status_area_widget_delegate_->AddChildView(std::move(tray_button));
 }
 
 StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
