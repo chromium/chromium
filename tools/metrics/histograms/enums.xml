@@ -1421,6 +1421,13 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Warning canceled"/>
 </enum>
 
+<enum name="AlpacaPort">
+  <int value="0" label="26"/>
+  <int value="1" label="989"/>
+  <int value="2" label="990"/>
+  <int value="3" label="2525"/>
+</enum>
+
 <enum name="AlpsDecoderError">
   <int value="0" label="NoError"/>
   <int value="1" label="FramingError"/>
@@ -74309,6 +74316,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SlipstreamPort">
+  <obsolete>
+    Removed June 2021.
+  </obsolete>
   <int value="0" label="Other"/>
   <int value="1" label="69"/>
   <int value="2" label="137"/>

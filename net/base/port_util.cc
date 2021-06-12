@@ -20,45 +20,33 @@ namespace net {
 
 namespace {
 
-// Records ports newly blocked in https://github.com/whatwg/fetch/pull/1148 for
-// "NAT Slipstreaming v2.0" vulnerability, plus 10080, to measure the breakage
-// from blocking them. Every other port is logged as kOther to provide a
-// baseline. See also https://samy.pl/slipstream/. Ports are logged regardless
-// of protocol and whether they are blocked or not.
-// TODO(ricea): Remove this in April 2021.
-void LogSlipstreamRestrictedPort(int port) {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class SlipstreamPort {
-    kOther = 0,
-    k69 = 1,
-    k137 = 2,
-    k161 = 3,
-    k554 = 4,
-    k1719 = 5,
-    k1720 = 6,
-    k1723 = 7,
-    k6566 = 8,
-    k10080 = 9,
-    kMaxValue = k10080,
+// Records ports that may need blocking to mitigate the ALPACA vulnerability.
+// See https://alpaca-attack.com/ and https://github.com/whatwg/fetch/pull/1250.
+void LogAlpacaPort(int port) {
+  // Unlike the obsolete Net.Port.SlipStreamRestricted histogram, we don't
+  // record an "Other" category. Instead, historical data from
+  // Net.Port.SlipStreamRestricted can be used as a baseline for comparisons.
+  enum class AlpacaPort {
+    k26 = 0,
+    k989 = 1,
+    k990 = 2,
+    k2525 = 3,
+    kMaxValue = k2525,
   };
 
-  constexpr auto kMap = base::MakeFixedFlatMap<int, SlipstreamPort>({
-      {69, SlipstreamPort::k69},
-      {137, SlipstreamPort::k137},
-      {161, SlipstreamPort::k161},
-      {554, SlipstreamPort::k554},
-      {1719, SlipstreamPort::k1719},
-      {1720, SlipstreamPort::k1720},
-      {1723, SlipstreamPort::k1723},
-      {6566, SlipstreamPort::k6566},
-      {10080, SlipstreamPort::k10080},
-  });
+  constexpr std::pair<int, AlpacaPort> kMap[] = {
+      {26, AlpacaPort::k26},
+      {989, AlpacaPort::k989},
+      {990, AlpacaPort::k990},
+      {2525, AlpacaPort::k2525},
+  };
 
-  auto* it = kMap.find(port);
-  SlipstreamPort as_enum =
-      it == kMap.end() ? SlipstreamPort::kOther : it->second;
-  base::UmaHistogramEnumeration("Net.Port.SlipstreamRestricted", as_enum);
+  for (const auto& pair : kMap) {
+    if (pair.first == port) {
+      base::UmaHistogramEnumeration("Net.Port.Alpaca", pair.second);
+      return;
+    }
+  }
 }
 
 // The general list of blocked ports. Will be blocked unless a specific
@@ -181,7 +169,7 @@ bool IsPortAllowedForScheme(int port, base::StringPiece url_scheme) {
   if (!IsPortValid(port))
     return false;
 
-  LogSlipstreamRestrictedPort(port);
+  LogAlpacaPort(port);
 
   // Allow explicitly allowed ports for any scheme.
   if (g_explicitly_allowed_ports.Get().count(port) > 0)
