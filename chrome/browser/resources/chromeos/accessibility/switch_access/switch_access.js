@@ -20,12 +20,36 @@ export class SwitchAccess {
     SwitchAccess.instance = new SwitchAccess();
 
     chrome.automation.getDesktop((desktop) => {
-      // Navigator must be initialized first.
-      Navigator.initializeSingletonInstance(desktop);
+      chrome.automation.getFocus(focus => {
+        // Focus is available. Finish init without waiting for further events.
+        // Disallow web view nodes, which indicate a root web area is still
+        // loading and pending focus.
+        if (focus && focus.role !== chrome.automation.RoleType.WEB_VIEW) {
+          SwitchAccess.finishInit_(desktop);
+          return;
+        }
 
-      Commands.initialize();
-      KeyboardRootNode.startWatchingVisibility();
-      PreferenceManager.initialize();
+        // Wait for the focus to be sent. If |focus| was undefined, this is
+        // guaranteed. Otherwise, also set a timed callback to ensure we do
+        // eventually init.
+        let callbackId = 0;
+        const listener = maybeEvent => {
+          if (maybeEvent &&
+              maybeEvent.target.role === chrome.automation.RoleType.WEB_VIEW) {
+            return;
+          }
+
+          desktop.removeEventListener(
+              chrome.automation.EventType.FOCUS, listener, false);
+          window.clearTimeout(callbackId);
+
+          SwitchAccess.finishInit_(desktop);
+        };
+
+        desktop.addEventListener(
+            chrome.automation.EventType.FOCUS, listener, false);
+        callbackId = window.setTimeout(listener, 5000);
+      });
     });
   }
 
@@ -121,5 +145,18 @@ export class SwitchAccess {
         'Accessibility.CrosSwitchAccess.Error',
         /** @type {number} */ (errorType), errorTypeCountForUMA);
     return new Error(errorString);
+  }
+
+  /**
+   * @param {!chrome.automation.AutomationNode} desktop
+   * @private
+   */
+  static finishInit_(desktop) {
+    // Navigator must be initialized first.
+    Navigator.initializeSingletonInstance(desktop);
+
+    Commands.initialize();
+    KeyboardRootNode.startWatchingVisibility();
+    PreferenceManager.initialize();
   }
 }
