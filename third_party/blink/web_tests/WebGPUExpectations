@@ -284,8 +284,8 @@ crbug.com/dawn/721 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,query_set,create:count:* [ Failure Crash ]
 
 # Unimplemented validation in Tint. Skipped because it causes test timeouts
-crbug.com/tint/480 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0033:* [ Skip ]
-crbug.com/tint/481 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:* [ Skip ]
+crbug.com/tint/480 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:* [ Skip ]
+crbug.com/tint/481 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:* [ Skip ]
 
 # Validation rules and supported texture format changed for CopyExternalImageToTexture/CopyImageBitmapToTexture
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,ImageBitmap,* [ Skip ]

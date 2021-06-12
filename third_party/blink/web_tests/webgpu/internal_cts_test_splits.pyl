@@ -31,11 +31,11 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=false;indirect=false;*',
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=false;*',
 
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0033:variableOrConstant="var";lhsContainerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0033:variableOrConstant="const";lhsContainerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:storageClass="in";containerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:storageClass="out";containerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:storageClass="private";containerType="_undef_";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:variableOrConstant="var";lhsContainerType="_undef_";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:variableOrConstant="const";lhsContainerType="_undef_";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:storageClass="in";containerType="_undef_";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:storageClass="out";containerType="_undef_";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:storageClass="private";containerType="_undef_";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="1d";*',
 
