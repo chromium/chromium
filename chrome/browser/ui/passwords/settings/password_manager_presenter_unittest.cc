@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -26,9 +25,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/test_sync_service.h"
-#if !defined(OS_ANDROID)
-#include "base/test/metrics/histogram_tester.h"
-#endif
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -37,7 +33,6 @@
 #include "chrome/browser/ui/passwords/settings/password_ui_view_mock.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/plaintext_reason.h"
@@ -211,6 +206,10 @@ class PasswordManagerPresenterTest : public testing::Test {
     }
   }
 
+  PasswordManagerPresenterTest(const PasswordManagerPresenterTest&) = delete;
+  PasswordManagerPresenterTest& operator=(const PasswordManagerPresenterTest&) =
+      delete;
+
   ~PasswordManagerPresenterTest() override {
     store_->ShutdownOnUIThread();
     if (account_store_) {
@@ -240,7 +239,7 @@ class PasswordManagerPresenterTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  MockPasswordUIView& GetUIController() { return mock_controller_; }
+  NiceMock<MockPasswordUIView>& GetUIController() { return mock_controller_; }
 
   // TODO(victorvianna): Inline this.
   std::vector<password_manager::PasswordForm> GetStoredPasswordsForRealm(
@@ -256,13 +255,11 @@ class PasswordManagerPresenterTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  MockPasswordUIView mock_controller_{&profile_};
+  NiceMock<MockPasswordUIView> mock_controller_{&profile_};
   // TODO(victorvianna): Rename to profile_store_.
   scoped_refptr<password_manager::TestPasswordStore> store_;
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<password_manager::TestPasswordStore> account_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerPresenterTest);
 };
 
 namespace {
