@@ -125,6 +125,12 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
 std::string DetermineTextLanguage(const std::string& utf8_text,
                                   bool* is_model_reliable,
                                   float& model_reliability_score) {
+  // Don't bother with language detection when recording/replaying, as this has
+  // caused some crashes and isn't likely to be needed by anyone.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return translate::kUnknownLanguageCode;
+  }
+
   // Make a prediction.
   base::TimeTicks lang_id_start = base::TimeTicks::Now();
   chrome_lang_id::NNetLanguageIdentifier lang_id;
