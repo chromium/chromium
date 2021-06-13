@@ -242,7 +242,7 @@
 <translation id="3553048479571901246">கோப்புகளை <ph name="APP_NAME" /> ஆப்ஸில் திறக்க, முதலில் அவற்றை Windows கோப்புகள் கோப்புறைக்கு நகலெடுக்கவும்.</translation>
 <translation id="3556731189587832921">ஆங்கிலம் (யூஎஸ்) - சர்வதேச PC கீபோர்டு</translation>
 <translation id="357479282490346887">லிதுவேனியன்</translation>
-<translation id="3592251141500063301">ஆஃப்லைனில் அணுகும் வகையில் <ph name="FILE_NAME" /> கோப்பினை அமைக்க முடியவில்லை</translation>
+<translation id="3592251141500063301">ஆஃப்லைனில் அணுகும் வகையில் <ph name="FILE_NAME" /> ஃபைலை அமைக்க முடியவில்லை</translation>
 <translation id="3603385196401704894">கனடியன் ஃபிரெஞ்சு</translation>
 <translation id="3606220979431771195">டர்கிஷ்-F</translation>
 <translation id="3616113530831147358">ஆடியோ</translation>
@@ -451,7 +451,7 @@
 <translation id="5602622065581044566">பல்கேரியன் - ஒலிப்புமுறை கீபோர்டு</translation>
 <translation id="5605830556594064952">யு.எஸ். டிவாரக்</translation>
 <translation id="5625294776298156701">தமிழ் - Tamil99 கீபோர்டு</translation>
-<translation id="5633226425545095130">இந்தக் கோப்பினை நகர்த்தினால் '<ph name="DESTINATION_NAME" />' என்ற பகிரப்பட்ட கோப்புறையைப் பார்க்கக்கூடிய அனைவருடனும் இது பகிரப்படும்.</translation>
+<translation id="5633226425545095130">இந்த ஃபைலை நகர்த்தினால் '<ph name="DESTINATION_NAME" />' என்ற பகிரப்பட்ட கோப்புறையைப் பார்க்கக்கூடிய அனைவருடனும் இது பகிரப்படும்.</translation>
 <translation id="5649768706273821470">கேள்</translation>
 <translation id="5678784840044122290">இந்த Linux ஆப்ஸ் உங்கள் முனையத்திற்குள் இருக்கும், அத்துடன் உங்கள் தொடக்கியிலும் ஒரு ஐகான் காண்பிக்கப்படலாம்.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />காப்பகம் அல்லது விர்ச்சுவல் வட்டிலிருந்து இணைப்பை நீக்க முடியவில்லை<ph name="END_BOLD" />
@@ -632,7 +632,7 @@
 <translation id="7575645593344061397">"<ph name="FILENAME" />" மீட்டெடுக்கப்படுகிறது...</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ஒரு வினாடி காத்திருக்கவும்</translation>
-<translation id="7592775719802218421">ஆஃப்லைனில் பயன்படுத்த <ph name="FILE_NAME" /> கோப்பினைப் பதிவிறக்குகிறது</translation>
+<translation id="7592775719802218421">ஆஃப்லைனில் பயன்படுத்த <ph name="FILE_NAME" /> ஃபைலைப் பதிவிறக்குகிறது</translation>
 <translation id="7600126690270271294">செர்பியன்</translation>
 <translation id="7603724359189955920">கட்டங்கள்</translation>
 <translation id="7627790789328695202">அடடா, <ph name="FILE_NAME" /> ஏற்கனவே உள்ளது. இதற்கு மறுபெயரிட்டு மீண்டும் முயற்சிக்கவும்.</translation>
@@ -726,8 +726,8 @@
 <translation id="8395901698320285466">பரிமாணங்கள்</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>
 <translation id="8456681095658380701">தவறான பெயர்</translation>
-<translation id="8459404855768962328">இந்தக் கோப்பினை நகலெடுத்தால் '<ph name="DESTINATION_NAME" />' என்ற பகிரப்பட்ட கோப்புறையைப் பார்க்கக்கூடிய அனைவருடனும் இது பகிரப்படும்.</translation>
-<translation id="8461467696380332069">கோப்பினை வலது கிளிக் செய்து "ஷெல்ஃபில் பின் செய்" என்பதைத் தேர்ந்தெடுக்கவும், இதன் மூலம் ஷெல்ஃபிலுள்ள கோப்புகளுக்கான விரைவு அணுகலைப் பெறலாம்.</translation>
+<translation id="8459404855768962328">இந்த ஃபைலை நகலெடுத்தால் '<ph name="DESTINATION_NAME" />' என்ற பகிரப்பட்ட கோப்புறையைப் பார்க்கக்கூடிய அனைவருடனும் இது பகிரப்படும்.</translation>
+<translation id="8461467696380332069">ஃபைலை வலது கிளிக் செய்து "ஷெல்ஃபில் பின் செய்" என்பதைத் தேர்ந்தெடுக்கவும், இதன் மூலம் ஷெல்ஃபிலுள்ள கோப்புகளுக்கான விரைவு அணுகலைப் பெறலாம்.</translation>
 <translation id="8463494891489624050">வியட்நாமிஸ் (VIQR)</translation>
 <translation id="8466234950814670489">Tar archive</translation>
 <translation id="8475647382427415476">Google இயக்ககத்தால் "<ph name="FILENAME" />"ஐ இப்போது ஒத்திசைக்க முடியவில்லை. Google இயக்ககம் பிறகு முயற்சிக்கும்.</translation>
