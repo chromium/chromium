@@ -19,9 +19,9 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 namespace chromeos {
 namespace assistant {
@@ -80,12 +80,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantClient {
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver) = 0;
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   // Requests a connection to Libassistant service interface via the browser.
   virtual void RequestLibassistantService(
       mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
           receiver) = 0;
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 };
 
 }  // namespace assistant

@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_CLIENT_H_
 
 #include "base/macros.h"
+#include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -54,6 +55,11 @@ class ScopedAssistantClient : AssistantClient {
   void RequestNetworkConfig(
       mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver)
       override {}
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+  void RequestLibassistantService(
+      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+          receiver) override {}
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
  private:
   mojo::Receiver<media_session::mojom::MediaControllerManager>*

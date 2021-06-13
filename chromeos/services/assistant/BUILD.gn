@@ -75,11 +75,10 @@ component("lib") {
   ]
 
   if (enable_cros_libassistant) {
-    deps += [ "//chromeos/services/libassistant" ]
-
-    if (enable_libassistant_sandbox) {
-      deps += [ "//chromeos/services/assistant/public/cpp" ]
-    }
+    deps += [
+      "//chromeos/services/assistant/public/cpp",
+      "//chromeos/services/libassistant",
+    ]
   }
 
   public_deps = [
@@ -102,6 +101,7 @@ source_set("tests") {
     "//ash/public/cpp/assistant/test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/assistant:buildflags",
     "//chromeos/assistant/test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",

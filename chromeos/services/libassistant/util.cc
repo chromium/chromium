@@ -218,9 +218,12 @@ std::string CreateLibAssistantConfig(
     if (ShouldPutLogsInHomeDirectory()) {
       base::FilePath log_path =
           GetBaseAssistantDir().Append(FILE_PATH_LITERAL("log"));
-#if !BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
-      CHECK(base::CreateDirectory(log_path));
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+
+      // The directory will be created by LibassistantPreSandboxHook if sandbox
+      // is enabled.
+      if (!assistant::features::IsLibAssistantSandboxEnabled())
+        CHECK(base::CreateDirectory(log_path));
+
       log_dir = log_path.value();
     }
 

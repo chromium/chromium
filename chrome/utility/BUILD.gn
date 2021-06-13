@@ -175,14 +175,9 @@ static_library("utility") {
       deps += [
         "//chromeos/services/assistant/audio_decoder:lib",
         "//chromeos/services/assistant/public/mojom",
+        "//chromeos/services/libassistant",
+        "//chromeos/services/libassistant/public/mojom",
       ]
-
-      if (enable_libassistant_sandbox) {
-        deps += [
-          "//chromeos/services/libassistant",
-          "//chromeos/services/libassistant/public/mojom",
-        ]
-      }
     }
   }
 

@@ -2427,7 +2427,7 @@ static_library("browser") {
       ]
     }
 
-    if (enable_libassistant_sandbox) {
+    if (enable_cros_libassistant) {
       deps += [ "//chromeos/services/libassistant/public/mojom" ]
     }
   }

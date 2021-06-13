@@ -54,6 +54,9 @@ const base::Feature kEnableLibAssistantBetaBackend{
 const base::Feature kDisableVoiceMatch{"DisableVoiceMatch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableLibAssistantSandbox{
+    "LibAssistantSandbox", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
       assistant::features::kAssistantAppSupport);
@@ -111,6 +114,10 @@ bool IsVoiceMatchDisabled() {
 
 bool IsWaitSchedulingEnabled() {
   return base::FeatureList::IsEnabled(kAssistantWaitScheduling);
+}
+
+bool IsLibAssistantSandboxEnabled() {
+  return base::FeatureList::IsEnabled(kEnableLibAssistantSandbox);
 }
 
 }  // namespace features

@@ -107,10 +107,7 @@
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"  // nogncheck
-
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #include "chromeos/services/libassistant/libassistant_service.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -297,14 +294,12 @@ auto RunAssistantAudioDecoder(
       std::move(receiver));
 }
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 auto RunLibassistantService(
     mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
         receiver) {
   return std::make_unique<chromeos::libassistant::LibassistantService>(
       std::move(receiver));
 }
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -384,9 +379,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunLocalSearchService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunAssistantAudioDecoder);
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
   services.Add(RunLibassistantService);
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

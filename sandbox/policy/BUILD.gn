@@ -92,7 +92,7 @@ component("policy") {
     ]
     deps += [ "//chromeos/assistant:buildflags" ]
 
-    if (enable_libassistant_sandbox) {
+    if (enable_cros_libassistant) {
       sources += [
         "linux/bpf_libassistant_policy_linux.cc",
         "linux/bpf_libassistant_policy_linux.h",

@@ -79,11 +79,11 @@ class AssistantClientImpl : public ash::AssistantClient,
   void RequestNetworkConfig(
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver) override;
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
       mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
           receiver) override;
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
  private:
   // signin::IdentityManager::Observer:

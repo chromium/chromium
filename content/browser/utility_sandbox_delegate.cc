@@ -18,7 +18,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/assistant/buildflags.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 
@@ -60,9 +60,9 @@ UtilitySandboxedProcessLauncherDelegate::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kIme ||
       sandbox_type_ == sandbox::policy::SandboxType::kTts ||
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       sandbox_type_ == sandbox::policy::SandboxType::kLibassistant ||
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
 #if !defined(OS_MAC)
@@ -100,9 +100,9 @@ ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kIme ||
       sandbox_type_ == sandbox::policy::SandboxType::kTts ||
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       sandbox_type_ == sandbox::policy::SandboxType::kLibassistant ||
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
 #if BUILDFLAG(ENABLE_PRINTING)

@@ -33,9 +33,9 @@
 #include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 AssistantClientImpl::AssistantClientImpl() {
   auto* session_manager = session_manager::SessionManager::Get();
@@ -167,7 +167,7 @@ void AssistantClientImpl::RequestNetworkConfig(
   ash::GetNetworkConfigService(std::move(receiver));
 }
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 void AssistantClientImpl::RequestLibassistantService(
     mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
         receiver) {
@@ -177,7 +177,7 @@ void AssistantClientImpl::RequestLibassistantService(
                                .WithDisplayName("Libassistant Service")
                                .Pass());
 }
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 void AssistantClientImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {

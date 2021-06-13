@@ -1560,6 +1560,10 @@ test("content_browsertests") {
     }
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/assistant:buildflags" ]
+  }
+
   if (is_android) {
     if (is_component_build) {
       sources += [ "../browser/android/render_widget_host_connector.cc" ]

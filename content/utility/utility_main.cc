@@ -44,9 +44,9 @@
 #include "chromeos/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/libassistant/libassistant_sandbox_hook.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif
 
 #if defined(OS_MAC)
@@ -143,12 +143,12 @@ int UtilityMain(const MainFunctionParams& parameters) {
     case sandbox::policy::SandboxType::kTts:
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
       break;
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::policy::SandboxType::kLibassistant:
       pre_sandbox_hook =
           base::BindOnce(&chromeos::libassistant::LibassistantPreSandboxHook);
       break;
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
       break;

@@ -93,7 +93,7 @@ source_set("utility") {
     ]
   }
 
-  if (enable_libassistant_sandbox) {
+  if (enable_cros_libassistant) {
     deps += [ "//chromeos/services/libassistant:sandbox_hook" ]
   }
 

@@ -13,21 +13,6 @@
 // This file maps service classes to sandbox types. See
 // ServiceProcessHost::Launch() for how these templates are consumed.
 
-// chromeos::assistant::mojom::AssistantAudioDecoderFactory
-namespace chromeos {
-namespace assistant {
-namespace mojom {
-class AssistantAudioDecoderFactory;
-}  // namespace mojom
-}  // namespace assistant
-}  // namespace chromeos
-
-template <>
-inline sandbox::policy::SandboxType content::GetServiceSandboxType<
-    chromeos::assistant::mojom::AssistantAudioDecoderFactory>() {
-  return sandbox::policy::SandboxType::kUtility;
-}
-
 // chromeos::ime::mojom::ImeService
 namespace chromeos {
 namespace ime {
@@ -58,22 +43,6 @@ content::GetServiceSandboxType<chromeos::tts::mojom::TtsService>() {
   return sandbox::policy::SandboxType::kTts;
 }
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
-namespace chromeos {
-namespace libassistant {
-namespace mojom {
-class LibassistantService;
-}  // namespace mojom
-}  // namespace libassistant
-}  // namespace chromeos
-
-template <>
-inline sandbox::policy::SandboxType content::GetServiceSandboxType<
-    chromeos::libassistant::mojom::LibassistantService>() {
-  return sandbox::policy::SandboxType::kLibassistant;
-}
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // recording::mojom::RecordingService
 namespace recording {
@@ -90,6 +59,38 @@ inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<recording::mojom::RecordingService>() {
   return sandbox::policy::SandboxType::kVideoCapture;
 }
+
+// chromeos::assistant::mojom::AssistantAudioDecoderFactory
+namespace chromeos {
+namespace assistant {
+namespace mojom {
+class AssistantAudioDecoderFactory;
+}  // namespace mojom
+}  // namespace assistant
+}  // namespace chromeos
+
+template <>
+inline sandbox::policy::SandboxType content::GetServiceSandboxType<
+    chromeos::assistant::mojom::AssistantAudioDecoderFactory>() {
+  return sandbox::policy::SandboxType::kUtility;
+}
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+// chromeos::libassistant::mojom::LibassistantService
+namespace chromeos {
+namespace libassistant {
+namespace mojom {
+class LibassistantService;
+}  // namespace mojom
+}  // namespace libassistant
+}  // namespace chromeos
+
+template <>
+inline sandbox::policy::SandboxType content::GetServiceSandboxType<
+    chromeos::libassistant::mojom::LibassistantService>() {
+  return sandbox::policy::SandboxType::kLibassistant;
+}
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_

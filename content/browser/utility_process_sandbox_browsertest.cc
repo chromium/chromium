@@ -24,6 +24,10 @@
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/switches.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/assistant/buildflags.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using sandbox::policy::SandboxLinux;
 using sandbox::policy::SandboxType;
 
@@ -133,7 +137,10 @@ class UtilityProcessSandboxBrowserTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case SandboxType::kIme:
       case SandboxType::kTts:
-#endif
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+      case SandboxType::kLibassistant:
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       case SandboxType::kNetwork:
 #if BUILDFLAG(ENABLE_PRINTING)
       case SandboxType::kPrintBackend:

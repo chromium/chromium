@@ -59,10 +59,10 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
     case SandboxType::kTts:
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case SandboxType::kLibassistant:
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
-#endif
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#endif  // // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_MAC)
     case SandboxType::kService:
 #endif
@@ -130,9 +130,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
     case SandboxType::kTts:
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case SandboxType::kLibassistant:
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_MAC)
     case SandboxType::kMirroring:
@@ -271,10 +271,10 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
       return switches::kImeSandbox;
     case SandboxType::kTts:
       return switches::kTtsSandbox;
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case SandboxType::kLibassistant:
       return switches::kLibassistantSandbox;
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       // The following are not utility processes so should not occur.
     case SandboxType::kRenderer:
@@ -342,10 +342,10 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SandboxType::kIme;
   if (sandbox_string == switches::kTtsSandbox)
     return SandboxType::kTts;
-#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   if (sandbox_string == switches::kLibassistantSandbox)
     return SandboxType::kLibassistant;
-#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return SandboxType::kUtility;
 }

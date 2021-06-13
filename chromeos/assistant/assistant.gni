@@ -5,9 +5,6 @@ declare_args() {
   # Enable assistant implementation based on libassistant.
   enable_cros_libassistant = is_chromeos_ash && is_chrome_branded
 
-  # Enable sandboxing LibAssistant service.
-  enable_libassistant_sandbox = false
-
   # Enable a fake microphone, which can replay audio files as microphone input.
   # See chromeos/assistant/tools/send-audio.sh
   enable_fake_assistant_microphone = false
