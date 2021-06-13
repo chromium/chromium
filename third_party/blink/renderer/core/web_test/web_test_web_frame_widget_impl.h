@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 

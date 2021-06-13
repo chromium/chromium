@@ -41,7 +41,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"

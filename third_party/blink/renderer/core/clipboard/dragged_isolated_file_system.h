@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DRAGGED_ISOLATED_FILE_SYSTEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DRAGGED_ISOLATED_FILE_SYSTEM_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"

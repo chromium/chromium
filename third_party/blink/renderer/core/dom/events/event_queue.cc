@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SYNTAX_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SYNTAX_COMPONENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
