@@ -20,7 +20,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "snapshot/mac/process_types/internal.h"
 #include "util/process/process_memory_mac.h"
 

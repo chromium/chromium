@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/composite_mach_message_server.h"

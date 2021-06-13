@@ -22,10 +22,10 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "util/file/directory_reader.h"

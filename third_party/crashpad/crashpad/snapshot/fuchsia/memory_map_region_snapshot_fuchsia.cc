@@ -15,7 +15,7 @@
 #include "snapshot/fuchsia/memory_map_region_snapshot_fuchsia.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace crashpad {
 namespace internal {

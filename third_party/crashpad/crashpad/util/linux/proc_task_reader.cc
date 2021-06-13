@@ -16,9 +16,9 @@
 
 #include <stdio.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "util/file/directory_reader.h"
 #include "util/misc/as_underlying_type.h"

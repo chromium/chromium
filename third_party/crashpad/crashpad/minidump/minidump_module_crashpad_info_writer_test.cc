@@ -19,7 +19,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_annotation_writer.h"
 #include "minidump/minidump_simple_string_dictionary_writer.h"

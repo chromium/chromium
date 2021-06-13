@@ -19,8 +19,8 @@
 #include <sddl.h>
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "util/win/exception_handler_server.h"
 #include "util/win/loader_lock.h"
 #include "util/win/scoped_handle.h"

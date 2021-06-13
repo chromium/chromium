@@ -87,7 +87,7 @@ CrashReportDatabase::UploadReport::~UploadReport() {
   }
 }
 
-bool CrashReportDatabase::UploadReport::Initialize(const base::FilePath path,
+bool CrashReportDatabase::UploadReport::Initialize(const base::FilePath& path,
                                                    CrashReportDatabase* db) {
   database_ = db;
   InitializeAttachments();

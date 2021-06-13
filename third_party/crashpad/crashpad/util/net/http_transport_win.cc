@@ -22,10 +22,10 @@
 #include <wchar.h>
 #include <winhttp.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

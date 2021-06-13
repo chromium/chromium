@@ -17,7 +17,7 @@
 #include <windows.h>
 #include <string.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 #include "test/win/win_multiprocess.h"
 #include "util/misc/from_pointer_cast.h"

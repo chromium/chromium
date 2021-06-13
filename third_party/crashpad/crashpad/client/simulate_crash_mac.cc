@@ -18,10 +18,10 @@
 #include <sys/types.h>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "util/mach/exc_client_variants.h"
 #include "util/mach/exception_behaviors.h"

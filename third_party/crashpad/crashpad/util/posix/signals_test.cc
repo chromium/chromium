@@ -24,9 +24,9 @@
 #include <limits>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"

@@ -21,9 +21,9 @@
 
 #include <set>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "test/mac/mach_multiprocess.h"

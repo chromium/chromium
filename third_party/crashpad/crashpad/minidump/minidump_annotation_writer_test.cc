@@ -16,7 +16,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/test/minidump_byte_array_writer_test_util.h"

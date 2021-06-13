@@ -20,9 +20,9 @@
 #include <type_traits>
 
 #include "base/atomicops.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"

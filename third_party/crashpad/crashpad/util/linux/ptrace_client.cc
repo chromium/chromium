@@ -20,8 +20,8 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "util/file/file_io.h"
 #include "util/linux/ptrace_broker.h"

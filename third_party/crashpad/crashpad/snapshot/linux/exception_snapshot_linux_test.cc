@@ -22,8 +22,8 @@
 #include <unistd.h>
 
 #include "base/bit_cast.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_architecture.h"

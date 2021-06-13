@@ -18,8 +18,8 @@
 #include <shellapi.h>
 #include <sys/types.h>
 
+#include "base/cxx17_backports.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
 #include "util/win/scoped_local_alloc.h"

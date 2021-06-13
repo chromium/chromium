@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CRASHPAD_SNAPSHOT_IOS_SYSTEM_SNAPSHOT_IOS_H_
-#define CRASHPAD_SNAPSHOT_IOS_SYSTEM_SNAPSHOT_IOS_H_
+#ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_SYSTEM_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
+#define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_SYSTEM_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
 #include <stdint.h>
 
@@ -21,6 +21,7 @@
 
 #include "base/macros.h"
 #include "snapshot/system_snapshot.h"
+#include "util/ios/ios_intermediate_dump_map.h"
 #include "util/ios/ios_system_data_collector.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -29,15 +30,17 @@ namespace crashpad {
 namespace internal {
 
 //! \brief A SystemSnapshot of the running system, when the system runs iOS.
-class SystemSnapshotIOS final : public SystemSnapshot {
+class SystemSnapshotIOSIntermediateDump final : public SystemSnapshot {
  public:
-  SystemSnapshotIOS();
-  ~SystemSnapshotIOS() override;
+  SystemSnapshotIOSIntermediateDump();
+  ~SystemSnapshotIOSIntermediateDump() override;
 
   //! \brief Initializes the object.
   //!
-  //! \param[in] system_data A class containing various system data points.
-  void Initialize(const IOSSystemDataCollector& system_data);
+  //! \param[in] system_data An intermediate dump map containing various system
+  //!     data points.
+  //! \return `true` if the snapshot could be created.
+  void Initialize(const IOSIntermediateDumpMap* system_data);
 
   // SystemSnapshot:
 
@@ -72,10 +75,10 @@ class SystemSnapshotIOS final : public SystemSnapshot {
   int os_version_major_;
   int os_version_minor_;
   int os_version_bugfix_;
-  uint64_t active_;
-  uint64_t inactive_;
-  uint64_t wired_;
-  uint64_t free_;
+  uint32_t active_;
+  uint32_t inactive_;
+  uint32_t wired_;
+  uint32_t free_;
   int cpu_count_;
   std::string cpu_vendor_;
   DaylightSavingTimeStatus dst_status_;
@@ -85,10 +88,10 @@ class SystemSnapshotIOS final : public SystemSnapshot {
   std::string daylight_name_;
   InitializationStateDcheck initialized_;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotIOS);
+  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal
 }  // namespace crashpad
 
-#endif  // CRASHPAD_SNAPSHOT_IOS_SYSTEM_SNAPSHOT_IOS_H_
+#endif  // CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_SYSTEM_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_

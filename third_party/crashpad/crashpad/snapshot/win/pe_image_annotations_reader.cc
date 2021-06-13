@@ -17,8 +17,8 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/annotation.h"
 #include "client/simple_string_dictionary.h"

@@ -23,9 +23,9 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "snapshot/mac/process_types/internal.h"
 #include "util/mac/mac_util.h"

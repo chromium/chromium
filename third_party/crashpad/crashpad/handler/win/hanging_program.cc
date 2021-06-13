@@ -15,10 +15,10 @@
 #include <stdio.h>
 #include <windows.h>
 
+#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/crashpad_client.h"

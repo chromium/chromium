@@ -27,13 +27,13 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "util/file/file_io.h"
 #include "util/mach/bootstrap.h"

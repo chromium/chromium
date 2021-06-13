@@ -12,52 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "snapshot/ios/memory_snapshot_ios.h"
+#include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
 
 namespace crashpad {
 namespace internal {
 
-void MemorySnapshotIOS::Initialize(vm_address_t address, vm_size_t size) {
+void MemorySnapshotIOSIntermediateDump::Initialize(vm_address_t address,
+                                                   vm_address_t data,
+                                                   vm_size_t size) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   address_ = address;
+  data_ = data;
   size_ = base::checked_cast<size_t>(size);
-
-  // TODO(justincohen): This is temporary, as MemorySnapshotIOS will likely be
-  // able to point directly to the deserialized data dump rather than copying
-  // data around.
-  buffer_ = std::unique_ptr<uint8_t[]>(new uint8_t[size_]);
-  memcpy(buffer_.get(), reinterpret_cast<void*>(address_), size_);
   INITIALIZATION_STATE_SET_VALID(initialized_);
 }
 
-uint64_t MemorySnapshotIOS::Address() const {
+uint64_t MemorySnapshotIOSIntermediateDump::Address() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return address_;
 }
 
-size_t MemorySnapshotIOS::Size() const {
+size_t MemorySnapshotIOSIntermediateDump::Size() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return size_;
 }
 
-bool MemorySnapshotIOS::Read(Delegate* delegate) const {
+bool MemorySnapshotIOSIntermediateDump::Read(Delegate* delegate) const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
 
   if (size_ == 0) {
     return delegate->MemorySnapshotDelegateRead(nullptr, size_);
   }
 
-  return delegate->MemorySnapshotDelegateRead(buffer_.get(), size_);
+  return delegate->MemorySnapshotDelegateRead(reinterpret_cast<void*>(data_),
+                                              size_);
 }
 
-const MemorySnapshot* MemorySnapshotIOS::MergeWithOtherSnapshot(
+const MemorySnapshot* MemorySnapshotIOSIntermediateDump::MergeWithOtherSnapshot(
     const MemorySnapshot* other) const {
   CheckedRange<uint64_t, size_t> merged(0, 0);
   if (!LoggingDetermineMergedRange(this, other, &merged))
     return nullptr;
 
-  auto result = std::make_unique<MemorySnapshotIOS>();
-  result->Initialize(merged.base(), merged.size());
+  auto result = std::make_unique<MemorySnapshotIOSIntermediateDump>();
+  result->Initialize(merged.base(), data_, merged.size());
   return result.release();
 }
 

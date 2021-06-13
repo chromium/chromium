@@ -16,9 +16,9 @@
 
 #include <string.h>
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"

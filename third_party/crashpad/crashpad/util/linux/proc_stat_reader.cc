@@ -18,9 +18,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "util/file/file_io.h"
 #include "util/misc/lexing.h"
 #include "util/misc/time.h"

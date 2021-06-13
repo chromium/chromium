@@ -19,9 +19,9 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 

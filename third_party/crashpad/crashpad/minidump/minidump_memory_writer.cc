@@ -172,10 +172,10 @@ void MinidumpMemoryListWriter::AddNonOwnedMemory(
 }
 
 void MinidumpMemoryListWriter::CoalesceOwnedMemory() {
+  DropRangesThatOverlapNonOwned();
+
   if (children_.empty())
     return;
-
-  DropRangesThatOverlapNonOwned();
 
   std::sort(children_.begin(),
             children_.end(),

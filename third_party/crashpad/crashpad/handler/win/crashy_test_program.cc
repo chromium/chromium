@@ -24,9 +24,9 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "client/crashpad_client.h"
 #include "client/crashpad_info.h"

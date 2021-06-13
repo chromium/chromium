@@ -25,11 +25,11 @@
 #include <unistd.h>
 #include <uuid/uuid.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"

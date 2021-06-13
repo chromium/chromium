@@ -21,8 +21,8 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_context.h"

@@ -20,9 +20,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "util/misc/from_pointer_cast.h"

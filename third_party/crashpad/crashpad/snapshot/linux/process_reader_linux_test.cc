@@ -31,9 +31,9 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"

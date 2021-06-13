@@ -17,7 +17,7 @@
 #include <signal.h>
 #include <sys/types.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"

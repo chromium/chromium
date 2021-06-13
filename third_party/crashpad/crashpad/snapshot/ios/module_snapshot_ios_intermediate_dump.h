@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CRASHPAD_SNAPSHOT_IOS_MODULE_SNAPSHOT_IOS_H_
-#define CRASHPAD_SNAPSHOT_IOS_MODULE_SNAPSHOT_IOS_H_
+#ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MODULE_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
+#define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MODULE_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
 #include <mach-o/dyld_images.h>
 #include <stdint.h>
@@ -26,6 +26,7 @@
 #include "base/macros.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/module_snapshot.h"
+#include "util/ios/ios_intermediate_dump_map.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 namespace crashpad {
@@ -33,37 +34,18 @@ namespace internal {
 
 //! \brief A ModuleSnapshot of a code module (binary image) loaded into a
 //!     running (or crashed) process on an iOS system.
-class ModuleSnapshotIOS final : public ModuleSnapshot {
+class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
  public:
-  ModuleSnapshotIOS();
-  ~ModuleSnapshotIOS() override;
+  ModuleSnapshotIOSIntermediateDump();
+  ~ModuleSnapshotIOSIntermediateDump() override;
 
-  // TODO(justincohen): This function is temporary, and will be broken into two
-  // parts.  One to do an in-process dump of all the relevant information, and
-  // two to initialize the snapshot after the in-process dump is loaded.
-  //! \brief Initializes the object.
+  //! \brief Initialize the snapshot
   //!
-  //! \param[in] image The mach-o image to be loaded.
+  //! \param[in] exception_data The intermediate dump map used to initialize
+  //!     this object.
   //!
   //! \return `true` if the snapshot could be created.
-  bool Initialize(const dyld_image_info* image);
-
-  // TODO(justincohen): This function is temporary, and will be broken into two
-  // parts.  One to do an in-process dump of all the relevant information, and
-  // two to initialize the snapshot after the in-process dump is loaded.
-  //! \brief Initializes the object specifically for the dyld module.
-  //!
-  //! \param[in] images The structure containing the necessary dyld information.
-  //!
-  //! \return `true` if the snapshot could be created.
-  bool InitializeDyld(const dyld_all_image_infos* images);
-
-  //! \brief Returns options from the module’s CrashpadInfo structure.
-  //!
-  //! \param[out] options Options set in the module’s CrashpadInfo structure.
-  void GetCrashpadOptions(CrashpadInfoClientOptions* options);
-
-  static const dyld_all_image_infos* DyldAllImageInfo();
+  bool Initialize(const IOSIntermediateDumpMap* image_data);
 
   // ModuleSnapshot:
   std::string Name() const override;
@@ -89,9 +71,6 @@ class ModuleSnapshotIOS final : public ModuleSnapshot {
   std::vector<const UserMinidumpStream*> CustomMinidumpStreams() const override;
 
  private:
-  // Gather the the module information based off of a mach_header_64 |address_|.
-  bool FinishInitialization();
-
   std::string name_;
   uint64_t address_;
   uint64_t size_;
@@ -100,12 +79,16 @@ class ModuleSnapshotIOS final : public ModuleSnapshot {
   uint64_t source_version_;
   uint32_t filetype_;
   UUID uuid_;
+  std::vector<std::string> annotations_vector_;
+  std::map<std::string, std::string> annotations_simple_map_;
+  std::vector<AnnotationSnapshot> annotation_objects_;
+
   InitializationStateDcheck initialized_;
 
-  DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotIOS);
+  DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal
 }  // namespace crashpad
 
-#endif  // CRASHPAD_SNAPSHOT_IOS_MODULE_SNAPSHOT_IOS_H_
+#endif  // CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MODULE_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_

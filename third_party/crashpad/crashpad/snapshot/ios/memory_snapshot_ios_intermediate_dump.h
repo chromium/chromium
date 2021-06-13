@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CRASHPAD_SNAPSHOT_IOS_MEMORY_SNAPSHOT_IOS_H_
-#define CRASHPAD_SNAPSHOT_IOS_MEMORY_SNAPSHOT_IOS_H_
+#ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
+#define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
 #include "base/macros.h"
 #include "snapshot/memory_snapshot.h"
@@ -24,16 +24,16 @@ namespace crashpad {
 namespace internal {
 
 //! \brief A MemorySnapshot of a memory region.
-class MemorySnapshotIOS final : public MemorySnapshot {
+class MemorySnapshotIOSIntermediateDump final : public MemorySnapshot {
  public:
-  MemorySnapshotIOS() = default;
-  ~MemorySnapshotIOS() = default;
+  MemorySnapshotIOSIntermediateDump() = default;
+  ~MemorySnapshotIOSIntermediateDump() = default;
 
   //! \brief Initializes the object.
   //!
   //! \param[in] address The base address of the memory region to snapshot.
   //! \param[in] size The size of the memory region to snapshot.
-  void Initialize(vm_address_t address, vm_size_t size);
+  void Initialize(vm_address_t address, vm_address_t data, vm_size_t size);
 
   // MemorySnapshot:
   uint64_t Address() const override;
@@ -48,16 +48,15 @@ class MemorySnapshotIOS final : public MemorySnapshot {
       const T* self,
       const MemorySnapshot* other);
 
-  // TODO(justincohen): This is temporary until deserialization is worked out.
-  std::unique_ptr<uint8_t[]> buffer_;
   vm_address_t address_;
+  vm_address_t data_;
   vm_size_t size_;
   InitializationStateDcheck initialized_;
 
-  DISALLOW_COPY_AND_ASSIGN(MemorySnapshotIOS);
+  DISALLOW_COPY_AND_ASSIGN(MemorySnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal
 }  // namespace crashpad
 
-#endif  // CRASHPAD_SNAPSHOT_IOS_MEMORY_SNAPSHOT_IOS_H_
+#endif  // CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_

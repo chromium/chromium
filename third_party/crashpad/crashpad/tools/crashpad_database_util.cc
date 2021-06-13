@@ -27,9 +27,9 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "client/crash_report_database.h"

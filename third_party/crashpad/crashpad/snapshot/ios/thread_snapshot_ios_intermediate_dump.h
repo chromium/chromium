@@ -12,36 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CRASHPAD_SNAPSHOT_IOS_THREAD_SNAPSHOT_IOS_H_
-#define CRASHPAD_SNAPSHOT_IOS_THREAD_SNAPSHOT_IOS_H_
+#ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_THREAD_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
+#define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_THREAD_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
-#include "snapshot/ios/memory_snapshot_ios.h"
+#include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
 #include "snapshot/thread_snapshot.h"
+#include "util/ios/ios_intermediate_dump_map.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 namespace crashpad {
 namespace internal {
 
 //! \brief A ThreadSnapshot of a thread on an iOS system.
-class ThreadSnapshotIOS final : public ThreadSnapshot {
+class ThreadSnapshotIOSIntermediateDump final : public ThreadSnapshot {
  public:
-  ThreadSnapshotIOS();
-  ~ThreadSnapshotIOS() override;
+  ThreadSnapshotIOSIntermediateDump();
+  ~ThreadSnapshotIOSIntermediateDump() override;
 
   //! \brief Initializes the object.
   //!
-  //! \brief thread The Mach thread used to initialize this object.
-  bool Initialize(thread_t thread);
-
-  //! \brief Returns an array of thread_t threads.
+  //! \brief thread_data The intermediate dump map used to initialize this
+  //!     object.
   //!
-  //! \param[out] count The number of threads returned.
-  //!
-  //! \return An array of of size \a count threads.
-  static thread_act_array_t GetThreads(mach_msg_type_number_t* count);
+  //! \return `true` if the snapshot could be created.
+  bool Initialize(const IOSIntermediateDumpMap* thread_data);
 
   // ThreadSnapshot:
   const CPUContext* Context() const override;
@@ -61,17 +58,20 @@ class ThreadSnapshotIOS final : public ThreadSnapshot {
 #error Port.
 #endif  // ARCH_CPU_X86_64
   CPUContext context_;
-  MemorySnapshotIOS stack_;
+  std::vector<uint8_t> exception_stack_memory_;
+  MemorySnapshotIOSIntermediateDump stack_;
   uint64_t thread_id_;
   uint64_t thread_specific_data_address_;
   int suspend_count_;
   int priority_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
+      extra_memory_;
   InitializationStateDcheck initialized_;
 
-  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotIOS);
+  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal
 }  // namespace crashpad
 
-#endif  // CRASHPAD_SNAPSHOT_IOS_THREAD_SNAPSHOT_IOS_H_
+#endif  // CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_THREAD_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_

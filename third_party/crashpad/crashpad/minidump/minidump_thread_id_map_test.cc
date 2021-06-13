@@ -18,8 +18,8 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "gtest/gtest.h"
 #include "snapshot/test/test_thread_snapshot.h"
 

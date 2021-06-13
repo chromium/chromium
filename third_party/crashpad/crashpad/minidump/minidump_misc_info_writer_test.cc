@@ -20,8 +20,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
@@ -774,12 +774,12 @@ TEST(MinidumpMiscInfoWriter, InitializeFromSnapshot) {
           debug_build_string_utf16.c_str(),
           base::size(expect_misc_info.DbgBldStr));
 
-  const timeval kStartTime =
-      { static_cast<time_t>(expect_misc_info.ProcessCreateTime), 0 };
-  const timeval kUserCPUTime =
-      { static_cast<time_t>(expect_misc_info.ProcessUserTime), 0 };
-  const timeval kSystemCPUTime =
-      { static_cast<time_t>(expect_misc_info.ProcessKernelTime), 0 };
+  const timeval kStartTime = {
+      static_cast<long>(expect_misc_info.ProcessCreateTime), 0};
+  const timeval kUserCPUTime = {
+      static_cast<long>(expect_misc_info.ProcessUserTime), 0};
+  const timeval kSystemCPUTime = {
+      static_cast<long>(expect_misc_info.ProcessKernelTime), 0};
 
   TestProcessSnapshot process_snapshot;
   process_snapshot.SetProcessID(expect_misc_info.ProcessId);

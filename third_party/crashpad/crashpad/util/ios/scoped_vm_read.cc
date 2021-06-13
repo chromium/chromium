@@ -27,7 +27,7 @@ ScopedVMReadInternal::~ScopedVMReadInternal() {
     kern_return_t kr =
         vm_deallocate(mach_task_self(), vm_read_data_, vm_read_data_count_);
     if (kr != KERN_SUCCESS)
-      RAW_LOG_ERROR(kr, "vm_deallocate");
+      CRASHPAD_RAW_LOG_ERROR(kr, "vm_deallocate");
   }
 }
 
@@ -36,7 +36,7 @@ bool ScopedVMReadInternal::Read(const void* data, const size_t data_length) {
     kern_return_t kr =
         vm_deallocate(mach_task_self(), vm_read_data_, vm_read_data_count_);
     if (kr != KERN_SUCCESS)
-      RAW_LOG_ERROR(kr, "vm_deallocate");
+      CRASHPAD_RAW_LOG_ERROR(kr, "vm_deallocate");
     data_ = 0;
   }
   vm_address_t data_address = reinterpret_cast<vm_address_t>(data);
@@ -53,7 +53,7 @@ bool ScopedVMReadInternal::Read(const void* data, const size_t data_length) {
     data_ = vm_read_data_ + (data_address - page_region_address);
     return true;
   } else {
-    RAW_LOG_ERROR(kr, "vm_read");
+    CRASHPAD_RAW_LOG_ERROR(kr, "vm_read");
     return false;
   }
 }

@@ -28,10 +28,10 @@ void RawLog(const char* file, int line, const char* message, int error);
 }  // namespace internal
 }  // namespace crashpad
 
-#define RAW_LOG(message) \
+#define CRASHPAD_RAW_LOG(message) \
   ::crashpad::internal::RawLog(__FILE__, __LINE__, message, 0)
 
-#define RAW_LOG_ERROR(error, message) \
+#define CRASHPAD_RAW_LOG_ERROR(error, message) \
   ::crashpad::internal::RawLog(__FILE__, __LINE__, message, error)
 
 #endif  // CRASHPAD_UTIL_IOS_EXCEPTION_LOGGING_H_

@@ -181,7 +181,7 @@ class CrashReportDatabase {
     friend class CrashReportDatabaseMac;
     friend class CrashReportDatabaseWin;
 
-    bool Initialize(const base::FilePath path, CrashReportDatabase* database);
+    bool Initialize(const base::FilePath& path, CrashReportDatabase* database);
     void InitializeAttachments();
 
     std::unique_ptr<FileReader> reader_;

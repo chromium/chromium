@@ -19,8 +19,8 @@
 #include <limits>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "snapshot/memory_snapshot.h"
 
 namespace crashpad {

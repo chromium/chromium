@@ -17,8 +17,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "util/misc/arraysize.h"
 #include "util/misc/implicit_cast.h"
 

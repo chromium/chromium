@@ -18,8 +18,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "util/stream/test_output_stream.h"

@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_stream_writer.h"
