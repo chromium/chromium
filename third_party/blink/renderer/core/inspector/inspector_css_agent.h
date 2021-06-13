@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_CSS_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_CSS_AGENT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -114,6 +113,8 @@ class CORE_EXPORT InspectorCSSAgent final
                     InspectorNetworkAgent*,
                     InspectorResourceContentLoader*,
                     InspectorResourceContainer*);
+  InspectorCSSAgent(const InspectorCSSAgent&) = delete;
+  InspectorCSSAgent& operator=(const InspectorCSSAgent&) = delete;
   ~InspectorCSSAgent() override;
   void Trace(Visitor*) const override;
 
@@ -391,7 +392,6 @@ class CORE_EXPORT InspectorCSSAgent final
 
   friend class InspectorResourceContentLoaderCallback;
   friend class StyleSheetBinder;
-  DISALLOW_COPY_AND_ASSIGN(InspectorCSSAgent);
 };
 
 }  // namespace blink

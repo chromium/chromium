@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_CONSOLE_MESSAGE_STORAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_CONSOLE_MESSAGE_STORAGE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -19,6 +18,8 @@ class CORE_EXPORT ConsoleMessageStorage
     : public GarbageCollected<ConsoleMessageStorage> {
  public:
   ConsoleMessageStorage();
+  ConsoleMessageStorage(const ConsoleMessageStorage&) = delete;
+  ConsoleMessageStorage& operator=(const ConsoleMessageStorage&) = delete;
 
   // If |discard_duplicates| is set, the message will only be added if no
   // console message with the same text has exists in |messages_|. Returns
@@ -36,8 +37,6 @@ class CORE_EXPORT ConsoleMessageStorage
  private:
   int expired_count_;
   HeapDeque<Member<ConsoleMessage>> messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsoleMessageStorage);
 };
 
 }  // namespace blink

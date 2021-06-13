@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -26,6 +25,8 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
                                    public V8PerIsolateData::Data {
  public:
   explicit ThreadDebugger(v8::Isolate*);
+  ThreadDebugger(const ThreadDebugger&) = delete;
+  ThreadDebugger& operator=(const ThreadDebugger&) = delete;
   ~ThreadDebugger() override;
 
   static ThreadDebugger* From(v8::Isolate*);
@@ -120,7 +121,6 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
   Vector<std::unique_ptr<TaskRunnerTimer<ThreadDebugger>>> timers_;
   Vector<v8_inspector::V8InspectorClient::TimerCallback> timer_callbacks_;
   Vector<void*> timer_data_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadDebugger);
 };
 
 }  // namespace blink

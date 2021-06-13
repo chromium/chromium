@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_APPLICATION_CACHE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_APPLICATION_CACHE_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/ApplicationCache.h"
@@ -41,6 +40,10 @@ class CORE_EXPORT InspectorApplicationCacheAgent final
     : public InspectorBaseAgent<protocol::ApplicationCache::Metainfo> {
  public:
   explicit InspectorApplicationCacheAgent(InspectedFrames*);
+  InspectorApplicationCacheAgent(const InspectorApplicationCacheAgent&) =
+      delete;
+  InspectorApplicationCacheAgent& operator=(
+      const InspectorApplicationCacheAgent&) = delete;
   ~InspectorApplicationCacheAgent() override = default;
   void Trace(Visitor*) const override;
 
@@ -86,7 +89,6 @@ class CORE_EXPORT InspectorApplicationCacheAgent final
 
   Member<InspectedFrames> inspected_frames_;
   InspectorAgentState::Boolean enabled_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorApplicationCacheAgent);
 };
 
 }  // namespace blink

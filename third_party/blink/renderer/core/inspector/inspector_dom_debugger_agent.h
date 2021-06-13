@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_DEBUGGER_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_DEBUGGER_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_info.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -67,6 +66,9 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
   InspectorDOMDebuggerAgent(v8::Isolate*,
                             InspectorDOMAgent*,
                             v8_inspector::V8InspectorSession*);
+  InspectorDOMDebuggerAgent(const InspectorDOMDebuggerAgent&) = delete;
+  InspectorDOMDebuggerAgent& operator=(const InspectorDOMDebuggerAgent&) =
+      delete;
   ~InspectorDOMDebuggerAgent() override;
   void Trace(Visitor*) const override;
 
@@ -183,7 +185,6 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
   InspectorAgentState::BooleanMap xhr_breakpoints_;
   InspectorAgentState::BooleanMap event_listener_breakpoints_;
   InspectorAgentState::BooleanMap csp_violation_breakpoints_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorDOMDebuggerAgent);
 };
 
 }  // namespace blink

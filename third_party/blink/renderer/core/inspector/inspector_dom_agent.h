@@ -32,7 +32,6 @@
 
 #include <memory>
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -102,6 +101,8 @@ class CORE_EXPORT InspectorDOMAgent final
   InspectorDOMAgent(v8::Isolate*,
                     InspectedFrames*,
                     v8_inspector::V8InspectorSession*);
+  InspectorDOMAgent(const InspectorDOMAgent&) = delete;
+  InspectorDOMAgent& operator=(const InspectorDOMAgent&) = delete;
   ~InspectorDOMAgent() override;
   void Trace(Visitor*) const override;
 
@@ -397,7 +398,6 @@ class CORE_EXPORT InspectorDOMAgent final
   bool suppress_attribute_modified_event_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean capture_node_stack_traces_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorDOMAgent);
 };
 
 }  // namespace blink

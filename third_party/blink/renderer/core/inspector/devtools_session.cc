@@ -64,6 +64,9 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
                             CrossThreadUnretained(this), std::move(receiver)));
   }
 
+  IOSession(const IOSession&) = delete;
+  IOSession& operator=(const IOSession&) = delete;
+
   ~IOSession() override = default;
 
   void BindInterface(
@@ -104,8 +107,6 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   CrossThreadWeakPersistent<::blink::DevToolsSession> session_;
   mojo::Receiver<mojom::blink::DevToolsSession> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOSession);
 };
 
 DevToolsSession::DevToolsSession(

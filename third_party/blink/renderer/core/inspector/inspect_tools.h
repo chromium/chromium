@@ -8,7 +8,6 @@
 #include <vector>
 
 #include <v8-inspector.h>
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
 
@@ -26,6 +25,8 @@ class SearchingForNodeTool : public InspectTool {
                        InspectorDOMAgent* dom_agent,
                        bool ua_shadow,
                        const std::vector<uint8_t>& highlight_config);
+  SearchingForNodeTool(const SearchingForNodeTool&) = delete;
+  SearchingForNodeTool& operator=(const SearchingForNodeTool&) = delete;
 
   void Trace(Visitor* visitor) const override;
 
@@ -54,7 +55,6 @@ class SearchingForNodeTool : public InspectTool {
   std::unique_ptr<InspectorHighlightConfig> highlight_config_;
   InspectorHighlightContrastInfo contrast_info_;
   bool omit_tooltip_ = false;
-  DISALLOW_COPY_AND_ASSIGN(SearchingForNodeTool);
 };
 
 // -----------------------------------------------------------------------------
@@ -66,6 +66,8 @@ class QuadHighlightTool : public InspectTool {
                     std::unique_ptr<FloatQuad> quad,
                     Color color,
                     Color outline_color);
+  QuadHighlightTool(const QuadHighlightTool&) = delete;
+  QuadHighlightTool& operator=(const QuadHighlightTool&) = delete;
 
  private:
   bool ForwardEventsToOverlay() override;
@@ -75,7 +77,6 @@ class QuadHighlightTool : public InspectTool {
   std::unique_ptr<FloatQuad> quad_;
   Color color_;
   Color outline_color_;
-  DISALLOW_COPY_AND_ASSIGN(QuadHighlightTool);
 };
 
 // -----------------------------------------------------------------------------
@@ -87,6 +88,8 @@ class NodeHighlightTool : public InspectTool {
                     Member<Node> node,
                     String selector_list,
                     std::unique_ptr<InspectorHighlightConfig> highlight_config);
+  NodeHighlightTool(const NodeHighlightTool&) = delete;
+  NodeHighlightTool& operator=(const NodeHighlightTool&) = delete;
 
   std::unique_ptr<protocol::DictionaryValue> GetNodeInspectorHighlightAsJson(
       bool append_element_info,
@@ -110,7 +113,6 @@ class NodeHighlightTool : public InspectTool {
   String selector_list_;
   std::unique_ptr<InspectorHighlightConfig> highlight_config_;
   InspectorHighlightContrastInfo contrast_info_;
-  DISALLOW_COPY_AND_ASSIGN(NodeHighlightTool);
 };
 
 // -----------------------------------------------------------------------------
@@ -122,6 +124,8 @@ class SourceOrderTool : public InspectTool {
       OverlayFrontend* frontend,
       Node* node,
       std::unique_ptr<InspectorSourceOrderConfig> source_order_config);
+  SourceOrderTool(const SourceOrderTool&) = delete;
+  SourceOrderTool& operator=(const SourceOrderTool&) = delete;
   std::unique_ptr<protocol::DictionaryValue>
   GetNodeInspectorSourceOrderHighlightAsJson() const;
 
@@ -137,7 +141,6 @@ class SourceOrderTool : public InspectTool {
 
   Member<Node> node_;
   std::unique_ptr<InspectorSourceOrderConfig> source_order_config_;
-  DISALLOW_COPY_AND_ASSIGN(SourceOrderTool);
 };
 
 // -----------------------------------------------------------------------------
@@ -155,6 +158,9 @@ class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
 
  public:
+  PersistentTool(const PersistentTool&) = delete;
+  PersistentTool& operator=(const PersistentTool&) = delete;
+
   void Draw(float scale) override;
   bool IsEmpty();
   void SetGridConfigs(GridConfigs);
@@ -173,13 +179,14 @@ class PersistentTool : public InspectTool {
   GridConfigs grid_node_highlights_;
   FlexContainerConfigs flex_container_configs_;
   ScrollSnapConfigs scroll_snap_configs_;
-  DISALLOW_COPY_AND_ASSIGN(PersistentTool);
 };
 
 // -----------------------------------------------------------------------------
 
 class NearbyDistanceTool : public InspectTool {
  public:
+  NearbyDistanceTool(const NearbyDistanceTool&) = delete;
+  NearbyDistanceTool& operator=(const NearbyDistanceTool&) = delete;
   void Trace(Visitor* visitor) const override;
 
  private:
@@ -193,7 +200,6 @@ class NearbyDistanceTool : public InspectTool {
   String GetOverlayName() override;
 
   Member<Node> hovered_node_;
-  DISALLOW_COPY_AND_ASSIGN(NearbyDistanceTool);
 };
 
 // -----------------------------------------------------------------------------
@@ -201,11 +207,14 @@ class NearbyDistanceTool : public InspectTool {
 class ShowViewSizeTool : public InspectTool {
   using InspectTool::InspectTool;
 
+ public:
+  ShowViewSizeTool(const ShowViewSizeTool&) = delete;
+  ShowViewSizeTool& operator=(const ShowViewSizeTool&) = delete;
+
  private:
   bool ForwardEventsToOverlay() override;
   void Draw(float scale) override;
   String GetOverlayName() override;
-  DISALLOW_COPY_AND_ASSIGN(ShowViewSizeTool);
 };
 
 // -----------------------------------------------------------------------------
@@ -213,12 +222,12 @@ class ShowViewSizeTool : public InspectTool {
 class ScreenshotTool : public InspectTool {
  public:
   ScreenshotTool(InspectorOverlayAgent* overlay, OverlayFrontend* frontend);
+  ScreenshotTool(const ScreenshotTool&) = delete;
+  ScreenshotTool& operator=(const ScreenshotTool&) = delete;
 
  private:
   void Dispatch(const String& message) override;
   String GetOverlayName() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenshotTool);
 };
 
 // -----------------------------------------------------------------------------
@@ -232,6 +241,8 @@ class PausedInDebuggerTool : public InspectTool {
       : InspectTool(overlay, frontend),
         v8_session_(v8_session),
         message_(message) {}
+  PausedInDebuggerTool(const PausedInDebuggerTool&) = delete;
+  PausedInDebuggerTool& operator=(const PausedInDebuggerTool&) = delete;
 
  private:
   void Draw(float scale) override;
@@ -239,7 +250,6 @@ class PausedInDebuggerTool : public InspectTool {
   String GetOverlayName() override;
   v8_inspector::V8InspectorSession* v8_session_;
   String message_;
-  DISALLOW_COPY_AND_ASSIGN(PausedInDebuggerTool);
 };
 
 }  // namespace blink

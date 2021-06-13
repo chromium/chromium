@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
@@ -57,6 +56,8 @@ class PathBuilder {
 
  public:
   PathBuilder() : path_(protocol::ListValue::create()) {}
+  PathBuilder(const PathBuilder&) = delete;
+  PathBuilder& operator=(const PathBuilder&) = delete;
   virtual ~PathBuilder() = default;
 
   std::unique_ptr<protocol::ListValue> Release() { return std::move(path_); }
@@ -82,7 +83,6 @@ class PathBuilder {
                                   size_t length);
 
   std::unique_ptr<protocol::ListValue> path_;
-  DISALLOW_COPY_AND_ASSIGN(PathBuilder);
 };
 
 void PathBuilder::AppendPathCommandAndPoints(const char* command,

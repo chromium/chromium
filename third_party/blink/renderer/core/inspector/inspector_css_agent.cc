@@ -27,7 +27,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
@@ -231,13 +230,12 @@ static unsigned ComputePseudoClassMask(
 class InspectorCSSAgent::StyleSheetAction : public InspectorHistory::Action {
  public:
   StyleSheetAction(const String& name) : InspectorHistory::Action(name) {}
+  StyleSheetAction(const StyleSheetAction&) = delete;
+  StyleSheetAction& operator=(const StyleSheetAction&) = delete;
 
   virtual std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle() {
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StyleSheetAction);
 };
 
 class InspectorCSSAgent::SetStyleSheetTextAction final
@@ -248,6 +246,8 @@ class InspectorCSSAgent::SetStyleSheetTextAction final
       : InspectorCSSAgent::StyleSheetAction("SetStyleSheetText"),
         style_sheet_(style_sheet),
         text_(text) {}
+  SetStyleSheetTextAction(const SetStyleSheetTextAction&) = delete;
+  SetStyleSheetTextAction& operator=(const SetStyleSheetTextAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     if (!style_sheet_->GetText(&old_text_))
@@ -285,7 +285,6 @@ class InspectorCSSAgent::SetStyleSheetTextAction final
   Member<InspectorStyleSheetBase> style_sheet_;
   String text_;
   String old_text_;
-  DISALLOW_COPY_AND_ASSIGN(SetStyleSheetTextAction);
 };
 
 class InspectorCSSAgent::ModifyRuleAction final
@@ -309,6 +308,8 @@ class InspectorCSSAgent::ModifyRuleAction final
         new_text_(text),
         old_range_(range),
         css_rule_(nullptr) {}
+  ModifyRuleAction(const ModifyRuleAction&) = delete;
+  ModifyRuleAction& operator=(const ModifyRuleAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     return Redo(exception_state);
@@ -411,7 +412,6 @@ class InspectorCSSAgent::ModifyRuleAction final
   SourceRange old_range_;
   SourceRange new_range_;
   Member<CSSRule> css_rule_;
-  DISALLOW_COPY_AND_ASSIGN(ModifyRuleAction);
 };
 
 class InspectorCSSAgent::SetElementStyleAction final
@@ -422,6 +422,8 @@ class InspectorCSSAgent::SetElementStyleAction final
       : InspectorCSSAgent::StyleSheetAction("SetElementStyleAction"),
         style_sheet_(style_sheet),
         text_(text) {}
+  SetElementStyleAction(const SetElementStyleAction&) = delete;
+  SetElementStyleAction& operator=(const SetElementStyleAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     return Redo(exception_state);
@@ -462,7 +464,6 @@ class InspectorCSSAgent::SetElementStyleAction final
   Member<InspectorStyleSheetForInlineStyle> style_sheet_;
   String text_;
   String old_text_;
-  DISALLOW_COPY_AND_ASSIGN(SetElementStyleAction);
 };
 
 class InspectorCSSAgent::AddRuleAction final
@@ -475,6 +476,8 @@ class InspectorCSSAgent::AddRuleAction final
         style_sheet_(style_sheet),
         rule_text_(rule_text),
         location_(location) {}
+  AddRuleAction(const AddRuleAction&) = delete;
+  AddRuleAction& operator=(const AddRuleAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     return Redo(exception_state);
@@ -513,7 +516,6 @@ class InspectorCSSAgent::AddRuleAction final
   String old_text_;
   SourceRange location_;
   SourceRange added_range_;
-  DISALLOW_COPY_AND_ASSIGN(AddRuleAction);
 };
 
 // static

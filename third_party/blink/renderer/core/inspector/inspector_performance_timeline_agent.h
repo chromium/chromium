@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -24,6 +23,10 @@ class CORE_EXPORT InspectorPerformanceTimelineAgent final
     : public InspectorBaseAgent<protocol::PerformanceTimeline::Metainfo> {
  public:
   explicit InspectorPerformanceTimelineAgent(InspectedFrames*);
+  InspectorPerformanceTimelineAgent(const InspectorPerformanceTimelineAgent&) =
+      delete;
+  InspectorPerformanceTimelineAgent& operator=(
+      const InspectorPerformanceTimelineAgent&) = delete;
   ~InspectorPerformanceTimelineAgent() override;
 
   // PerformanceTimeline probes implementation.
@@ -47,7 +50,6 @@ class CORE_EXPORT InspectorPerformanceTimelineAgent final
 
   Member<InspectedFrames> inspected_frames_;
   InspectorAgentState::Integer enabled_types_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorPerformanceTimelineAgent);
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LEGACY_DOM_SNAPSHOT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LEGACY_DOM_SNAPSHOT_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -26,6 +25,8 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
  public:
   using OriginUrlMap = WTF::HashMap<DOMNodeId, String>;
   LegacyDOMSnapshotAgent(InspectorDOMDebuggerAgent*, OriginUrlMap*);
+  LegacyDOMSnapshotAgent(const LegacyDOMSnapshotAgent&) = delete;
+  LegacyDOMSnapshotAgent& operator=(const LegacyDOMSnapshotAgent&) = delete;
   ~LegacyDOMSnapshotAgent();
 
   void Restore();
@@ -99,7 +100,6 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
   OriginUrlMap* origin_url_map_;
   using DocumentOrderMap = HeapHashMap<Member<Document>, int>;
   InspectorDOMDebuggerAgent* dom_debugger_agent_;
-  DISALLOW_COPY_AND_ASSIGN(LegacyDOMSnapshotAgent);
 };
 
 }  // namespace blink

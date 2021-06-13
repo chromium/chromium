@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_SNAPSHOT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_SNAPSHOT_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -29,6 +28,9 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
     : public InspectorBaseAgent<protocol::DOMSnapshot::Metainfo> {
  public:
   InspectorDOMSnapshotAgent(InspectedFrames*, InspectorDOMDebuggerAgent*);
+  InspectorDOMSnapshotAgent(const InspectorDOMSnapshotAgent&) = delete;
+  InspectorDOMSnapshotAgent& operator=(const InspectorDOMSnapshotAgent&) =
+      delete;
   ~InspectorDOMSnapshotAgent() override;
   void Trace(Visitor*) const override;
 
@@ -135,8 +137,6 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
   Member<InspectedFrames> inspected_frames_;
   Member<InspectorDOMDebuggerAgent> dom_debugger_agent_;
   InspectorAgentState::Boolean enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorDOMSnapshotAgent);
 };
 
 }  // namespace blink

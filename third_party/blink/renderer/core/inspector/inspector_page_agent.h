@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -105,6 +104,8 @@ class CORE_EXPORT InspectorPageAgent final
                      Client*,
                      InspectorResourceContentLoader*,
                      v8_inspector::V8InspectorSession*);
+  InspectorPageAgent(const InspectorPageAgent&) = delete;
+  InspectorPageAgent& operator=(const InspectorPageAgent&) = delete;
 
   // Page API for frontend
   protocol::Response enable() override;
@@ -294,7 +295,6 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
   InspectorAgentState::Boolean produce_compilation_cache_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorPageAgent);
 };
 
 }  // namespace blink

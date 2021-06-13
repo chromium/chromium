@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DOM_EDITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DOM_EDITOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Forward.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -48,6 +47,8 @@ class Text;
 class DOMEditor final : public GarbageCollected<DOMEditor> {
  public:
   explicit DOMEditor(InspectorHistory*);
+  DOMEditor(const DOMEditor&) = delete;
+  DOMEditor& operator=(const DOMEditor&) = delete;
 
   void Trace(Visitor*) const;
 
@@ -95,8 +96,6 @@ class DOMEditor final : public GarbageCollected<DOMEditor> {
   class SetNodeValueAction;
 
   Member<InspectorHistory> history_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMEditor);
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_EMULATION_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_EMULATION_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -34,6 +33,8 @@ class CORE_EXPORT InspectorEmulationAgent final
     : public InspectorBaseAgent<protocol::Emulation::Metainfo> {
  public:
   explicit InspectorEmulationAgent(WebLocalFrameImpl*);
+  InspectorEmulationAgent(const InspectorEmulationAgent&) = delete;
+  InspectorEmulationAgent& operator=(const InspectorEmulationAgent&) = delete;
   ~InspectorEmulationAgent() override;
 
   // protocol::Dispatcher::EmulationCommandHandler implementation.
@@ -159,7 +160,6 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Boolean emulate_focus_;
   InspectorAgentState::String timezone_id_override_;
   InspectorAgentState::BooleanMap disabled_image_types_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorEmulationAgent);
 };
 
 }  // namespace blink

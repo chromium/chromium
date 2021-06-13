@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_RESOURCE_CONTENT_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_RESOURCE_CONTENT_LOADER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -23,6 +22,10 @@ class CORE_EXPORT InspectorResourceContentLoader final
     : public GarbageCollected<InspectorResourceContentLoader> {
  public:
   explicit InspectorResourceContentLoader(LocalFrame*);
+  InspectorResourceContentLoader(const InspectorResourceContentLoader&) =
+      delete;
+  InspectorResourceContentLoader& operator=(
+      const InspectorResourceContentLoader&) = delete;
   ~InspectorResourceContentLoader();
   void Dispose();
   void Trace(Visitor*) const;
@@ -53,7 +56,6 @@ class CORE_EXPORT InspectorResourceContentLoader final
   int last_client_id_;
 
   friend class ResourceClient;
-  DISALLOW_COPY_AND_ASSIGN(InspectorResourceContentLoader);
 };
 
 }  // namespace blink

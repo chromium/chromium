@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -34,6 +33,9 @@ class CORE_EXPORT InspectorTaskRunner final
       scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner) {
     return base::AdoptRef(new InspectorTaskRunner(isolate_task_runner));
   }
+
+  InspectorTaskRunner(const InspectorTaskRunner&) = delete;
+  InspectorTaskRunner& operator=(const InspectorTaskRunner&) = delete;
 
   // Must be called on the isolate's thread.
   void InitIsolate(v8::Isolate*) LOCKS_EXCLUDED(mutex_);
@@ -78,7 +80,6 @@ class CORE_EXPORT InspectorTaskRunner final
   v8::Isolate* isolate_ GUARDED_BY(mutex_) = nullptr;
   Deque<Task> interrupting_task_queue_;
   bool disposed_ GUARDED_BY(mutex_) = false;
-  DISALLOW_COPY_AND_ASSIGN(InspectorTaskRunner);
 };
 
 }  // namespace blink

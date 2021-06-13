@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -86,6 +85,8 @@ class CORE_EXPORT InspectorTraceEvents
     : public GarbageCollected<InspectorTraceEvents> {
  public:
   InspectorTraceEvents() = default;
+  InspectorTraceEvents(const InspectorTraceEvents&) = delete;
+  InspectorTraceEvents& operator=(const InspectorTraceEvents&) = delete;
 
   void WillSendRequest(DocumentLoader*,
                        const KURL& fetch_context_url,
@@ -136,9 +137,6 @@ class CORE_EXPORT InspectorTraceEvents
   void FrameStartedLoading(LocalFrame*);
 
   void Trace(Visitor*) const {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InspectorTraceEvents);
 };
 
 // Helper macros for emitting devtools.timeline events, taking the name of the

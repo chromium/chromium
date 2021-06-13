@@ -13,6 +13,9 @@ class LocaleController {
  public:
   static LocaleController& instance();
 
+  LocaleController(const LocaleController&) = delete;
+  LocaleController& operator=(const LocaleController&) = delete;
+
   String SetLocaleOverride(const String& locale);
   bool has_locale_override() const;
 
@@ -22,7 +25,6 @@ class LocaleController {
 
   String embedder_locale_;
   String locale_override_;
-  DISALLOW_COPY_AND_ASSIGN(LocaleController);
 };
 
 }  // namespace blink

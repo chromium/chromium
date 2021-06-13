@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_RESOURCE_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_RESOURCE_CONTAINER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -23,6 +22,9 @@ class CORE_EXPORT InspectorResourceContainer final
     : public GarbageCollected<InspectorResourceContainer> {
  public:
   explicit InspectorResourceContainer(InspectedFrames*);
+  InspectorResourceContainer(const InspectorResourceContainer&) = delete;
+  InspectorResourceContainer& operator=(const InspectorResourceContainer&) =
+      delete;
   ~InspectorResourceContainer();
   void Trace(Visitor*) const;
 
@@ -40,7 +42,6 @@ class CORE_EXPORT InspectorResourceContainer final
   Member<InspectedFrames> inspected_frames_;
   HashMap<String, String> style_sheet_contents_;
   HashMap<DOMNodeId, String> style_element_contents_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorResourceContainer);
 };
 
 }  // namespace blink

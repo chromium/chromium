@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_LAYER_TREE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_LAYER_TREE_AGENT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -58,6 +57,8 @@ class CORE_EXPORT InspectorLayerTreeAgent final
   };
 
   InspectorLayerTreeAgent(InspectedFrames*, Client*);
+  InspectorLayerTreeAgent(const InspectorLayerTreeAgent&) = delete;
+  InspectorLayerTreeAgent& operator=(const InspectorLayerTreeAgent&) = delete;
   ~InspectorLayerTreeAgent() override;
   void Trace(Visitor*) const override;
 
@@ -121,7 +122,6 @@ class CORE_EXPORT InspectorLayerTreeAgent final
   typedef HashMap<String, scoped_refptr<PictureSnapshot>> SnapshotById;
   SnapshotById snapshot_by_id_;
   bool suppress_layer_paint_events_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorLayerTreeAgent);
 };
 
 }  // namespace blink

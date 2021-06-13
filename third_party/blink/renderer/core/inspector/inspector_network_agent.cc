@@ -34,7 +34,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
@@ -190,6 +189,11 @@ class InspectorFileReaderLoaderClient final : public FileReaderLoaderClient {
         FileReaderLoader::kReadByClient, this, std::move(task_runner));
   }
 
+  InspectorFileReaderLoaderClient(const InspectorFileReaderLoaderClient&) =
+      delete;
+  InspectorFileReaderLoaderClient& operator=(
+      const InspectorFileReaderLoaderClient&) = delete;
+
   ~InspectorFileReaderLoaderClient() override = default;
 
   void Start() {
@@ -222,7 +226,6 @@ class InspectorFileReaderLoaderClient final : public FileReaderLoaderClient {
   base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback_;
   std::unique_ptr<FileReaderLoader> loader_;
   scoped_refptr<SharedBuffer> raw_data_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorFileReaderLoaderClient);
 };
 
 static void ResponseBodyFileReaderLoaderDone(
@@ -253,6 +256,9 @@ class InspectorPostBodyParser
       : callback_(std::move(callback)),
         task_runner_(std::move(task_runner)),
         error_(false) {}
+
+  InspectorPostBodyParser(const InspectorPostBodyParser&) = delete;
+  InspectorPostBodyParser& operator=(const InspectorPostBodyParser&) = delete;
 
   void Parse(EncodedFormData* request_body) {
     if (!request_body || request_body->IsEmpty())
@@ -314,7 +320,6 @@ class InspectorPostBodyParser
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool error_;
   Vector<String> parts_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorPostBodyParser);
 };
 
 KURL UrlWithoutFragment(const KURL& url) {

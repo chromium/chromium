@@ -86,6 +86,9 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
                             CrossThreadUnretained(this), std::move(receiver)));
   }
 
+  IOAgent(const IOAgent&) = delete;
+  IOAgent& operator=(const IOAgent&) = delete;
+
   void BindInterface(
       mojo::PendingReceiver<mojom::blink::DevToolsAgent> receiver) {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -154,8 +157,6 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   CrossThreadWeakPersistent<::blink::DevToolsAgent> agent_;
   mojo::Receiver<mojom::blink::DevToolsAgent> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOAgent);
 };
 
 DevToolsAgent::DevToolsAgent(
