@@ -32,7 +32,8 @@ def parse_options():
     ]
     for required_option_name in required_option_names:
         if getattr(options, required_option_name) is None:
-            parser.error("--{} is a required option.".format(opt_name))
+            parser.error(
+                "--{} is a required option.".format(required_option_name))
 
     return options, args
 
