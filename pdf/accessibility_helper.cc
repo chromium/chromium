@@ -38,7 +38,7 @@ AccessibilityTextRunRangeInfo GetEnclosingTextRunRangeForCharRange(
     return text_range;
   uint32_t end_char_index = checked_end_char_index.ValueOrDie();
   uint32_t current_char_index = 0;
-  absl::optional<uint32_t> start_text_run;
+  absl::optional<size_t> start_text_run;
   for (size_t i = 0; i < text_runs.size(); ++i) {
     if (!start_text_run.has_value() &&
         IsCharWithinTextRun(text_runs[i], current_char_index,

@@ -106,7 +106,7 @@ struct AccessibilityCharInfo {
 struct AccessibilityTextRunRangeInfo {
   // Index of the starting text run of the annotation in the collection of all
   // text runs in the page.
-  uint32_t index = 0;
+  size_t index = 0;
   // Count of the text runs spanning the annotation.
   uint32_t count = 0;
 };
