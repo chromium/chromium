@@ -124,8 +124,8 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
   d3d_device_->GetImmediateContext(&context);
 
-  size_t buffer_size = sizeof(device::SubmittedFrameData::raw_buffer);
-  size_t buffer_size_pixels = buffer_size / sizeof(device::Color);
+  constexpr size_t buffer_size = sizeof(device::SubmittedFrameData::raw_buffer);
+  constexpr size_t buffer_size_pixels = buffer_size / sizeof(device::Color);
 
   // We copy the submitted texture to a new texture, so we can map it, and
   // read back pixel data.
