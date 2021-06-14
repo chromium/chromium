@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -534,63 +533,32 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
                               0);
 }
 
-// Flaky on Mac. See https://crbug.com/1216086
-#if defined(OS_MAC)
-#define MAYBE_SearchQuery_ShouldNotUpgrade DISABLED_SearchQuery_ShouldNotUpgrade
-#else
-#define MAYBE_SearchQuery_ShouldNotUpgrade SearchQuery_ShouldNotUpgrade
-#endif
 // Test the case when the user types a search keyword. The keyword may or may
 // not be a non-unique hostname. The navigation should always result in a
 // search and we should never upgrade it to https.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       MAYBE_SearchQuery_ShouldNotUpgrade) {
+                       SearchQuery_ShouldNotUpgrade) {
   TypeUrlAndExpectNoUpgrade("testpage", /*expect_search_query=*/true);
 }
 
-// Flaky on Mac. See https://crbug.com/1216086
-#if defined(OS_MAC)
-#define MAYBE_SearchQuery_TwoWords_ShouldNotUpgrade \
-  DISABLED_SearchQuery_TwoWords_ShouldNotUpgrade
-#else
-#define MAYBE_SearchQuery_TwoWords_ShouldNotUpgrade \
-  SearchQuery_TwoWords_ShouldNotUpgrade
-#endif
 // Same as SearchQuery_ShouldNotUpgrade but with two words. This is a definite
 // search query, and can never be a hostname.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       MAYBE_SearchQuery_TwoWords_ShouldNotUpgrade) {
+                       SearchQuery_TwoWords_ShouldNotUpgrade) {
   TypeUrlAndExpectNoUpgrade("test page", /*expect_search_query=*/true);
 }
 
-// Flaky on Mac. See https://crbug.com/1216086
-#if defined(OS_MAC)
-#define MAYBE_NonUniqueHostnameTypedWithoutScheme_ShouldNotUpgrade \
-  DISABLED_NonUniqueHostnameTypedWithoutScheme_ShouldNotUpgrade
-#else
-#define MAYBE_NonUniqueHostnameTypedWithoutScheme_ShouldNotUpgrade \
-  NonUniqueHostnameTypedWithoutScheme_ShouldNotUpgrade
-#endif
 // Test the case when the user types a non-unique hostname. We shouldn't upgrade
 // it to https.
-IN_PROC_BROWSER_TEST_P(
-    TypedNavigationUpgradeThrottleBrowserTest,
-    MAYBE_NonUniqueHostnameTypedWithoutScheme_ShouldNotUpgrade) {
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       NonUniqueHostnameTypedWithoutScheme_ShouldNotUpgrade) {
   TypeUrlAndExpectNoUpgrade(kNonUniqueHostname2, /*expect_search_query=*/false);
 }
 
-// Flaky on Mac. See https://crbug.com/1216086
-#if defined(OS_MAC)
-#define MAYBE_IPAddressTypedWithoutScheme_ShouldNotUpgrade \
-  DISABLED_IPAddressTypedWithoutScheme_ShouldNotUpgrade
-#else
-#define MAYBE_IPAddressTypedWithoutScheme_ShouldNotUpgrade \
-  IPAddressTypedWithoutScheme_ShouldNotUpgrade
-#endif
 // Test the case when the user types an IP address. We shouldn't upgrade it to
 // https.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       MAYBE_IPAddressTypedWithoutScheme_ShouldNotUpgrade) {
+                       IPAddressTypedWithoutScheme_ShouldNotUpgrade) {
   TypeUrlAndExpectNoUpgrade("127.0.0.1", /*expect_search_query=*/false);
 }
 
