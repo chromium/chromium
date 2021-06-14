@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//ios/build/chrome_build.gni")
 import("//ios/chrome/features.gni")
 
 source_set("application_delegate") {
@@ -217,7 +218,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:agents",
     "//ios/chrome/browser/web_state_list:session_metrics",
-    "//ios/chrome/browser/widget_kit",
+    "//ios/chrome/browser/widget_kit:features",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",
     "//ios/net",
@@ -230,6 +231,10 @@ source_set("application_delegate_internal") {
     "//ui/base",
     "//url",
   ]
+
+  if (ios_enable_widget_kit_extension) {
+    deps += [ "//ios/chrome/browser/widget_kit" ]
+  }
 
   frameworks = [
     "CoreSpotlight.framework",
