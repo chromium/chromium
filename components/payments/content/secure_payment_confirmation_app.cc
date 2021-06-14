@@ -66,8 +66,15 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
   merchant_data.SetKey("total", std::move(total));
 
   base::Value transaction_data(base::Value::Type::DICTIONARY);
-  transaction_data.SetKey("networkData",
-                          base::Value(base::Base64Encode(network_data)));
+  // `challenge` is a renaming of `networkData` used if the
+  // SecurePaymentConfirmationAPIV2 flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
+    transaction_data.SetKey("challenge",
+                            base::Value(base::Base64Encode(network_data)));
+  } else {
+    transaction_data.SetKey("networkData",
+                            base::Value(base::Base64Encode(network_data)));
+  }
   transaction_data.SetKey("merchantData", std::move(merchant_data));
 
   bool success = base::JSONWriter::Write(transaction_data, challenge);
@@ -153,7 +160,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
 
   // Create a new challenge that is a hash of the transaction data.
   options->challenge = GetSecurePaymentConfirmationChallenge(
-      request_->network_data, merchant_origin_,
+      request_->challenge, merchant_origin_,
       spec_->GetTotal(/*selected_app=*/this)->amount, &challenge_);
 
   // We are nullifying the security check by design, and the origin that created

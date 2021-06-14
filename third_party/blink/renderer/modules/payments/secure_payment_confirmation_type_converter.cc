@@ -51,7 +51,14 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
   auto output = payments::mojom::blink::SecurePaymentConfirmationRequest::New();
   output->credential_ids =
       mojo::ConvertTo<Vector<Vector<uint8_t>>>(input->credentialIds());
-  output->network_data = mojo::ConvertTo<Vector<uint8_t>>(input->networkData());
+
+  // `challenge` is a renaming of `networkData` used when the
+  // SecurePaymentConfirmationAPIV2 flag is enabled.
+  if (blink::RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled()) {
+    output->challenge = mojo::ConvertTo<Vector<uint8_t>>(input->challenge());
+  } else {
+    output->challenge = mojo::ConvertTo<Vector<uint8_t>>(input->networkData());
+  }
 
   // If a timeout was not specified in JavaScript, then pass a null `timeout`
   // through mojo IPC, so the browser can set a default (e.g., 3 minutes).

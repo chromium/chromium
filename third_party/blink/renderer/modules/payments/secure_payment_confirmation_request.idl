@@ -14,6 +14,11 @@ dictionary SecurePaymentConfirmationRequest {
     // Opaque data about the current transaction provided by the issuer. As the
     // issuer is the RP of the credential, `networkData` provides protection
     // against replay attacks.
-    required BufferSource networkData;
+    BufferSource networkData;
+
+    // Equivalent to `networkData`. Used when the SecurePaymentConfirmationAPIV2
+    // flag is enabled.
+    [RuntimeEnabled=SecurePaymentConfirmationAPIV2] BufferSource challenge;
+
     unsigned long timeout;
 };

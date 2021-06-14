@@ -99,8 +99,8 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
 
   mojom::SecurePaymentConfirmationRequestPtr MakeRequest() {
     auto request = mojom::SecurePaymentConfirmationRequest::New();
-    request->network_data = std::vector<uint8_t>(network_data_bytes_.begin(),
-                                                 network_data_bytes_.end());
+    request->challenge = std::vector<uint8_t>(network_data_bytes_.begin(),
+                                              network_data_bytes_.end());
     return request;
   }
 

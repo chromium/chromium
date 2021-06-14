@@ -41,6 +41,22 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     return nullptr;
   }
 
+  // `challenge` is a renaming of `networkData` required when the
+  // SecurePaymentConfirmationAPIV2 flag is enabled.
+  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled() &&
+      !request->hasChallenge()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"challenge\" field.");
+    return nullptr;
+  } else if (!RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled() &&
+             !request->hasNetworkData()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"networkData\" field.");
+    return nullptr;
+  }
+
   if (request->hasTimeout() && request->timeout() > kMaxTimeoutInMilliseconds) {
     exception_state.ThrowRangeError(
         "The \"secure-payment-confirmation\" method requires at most 1 hour "
