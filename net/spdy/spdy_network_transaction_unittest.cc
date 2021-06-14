@@ -10506,14 +10506,14 @@ TEST_F(SpdyNetworkTransactionTest, GreaseFrameTypeWithGetRequest) {
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), DEFAULT_PRIORITY,
                                       /* fin = */ false));
 
-  const char kRawFrameData[] = {
+  uint8_t kRawFrameData[] = {
       0x00, 0x00, 0x03,        // length
       0x0b,                    // type
       0xcc,                    // flags
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(const_cast<char*>(kRawFrameData),
+  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
                                    base::size(kRawFrameData),
                                    /* owns_buffer = */ false);
   spdy::SpdySerializedFrame empty_body(
@@ -10565,14 +10565,14 @@ TEST_F(SpdyNetworkTransactionTest,
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
       kDefaultUrl, 1, kUploadDataSize, LOWEST, nullptr, 0));
 
-  const char kRawFrameData[] = {
+  uint8_t kRawFrameData[] = {
       0x00, 0x00, 0x03,        // length
       0x0b,                    // type
       0xcc,                    // flags
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(const_cast<char*>(kRawFrameData),
+  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
                                    base::size(kRawFrameData),
                                    /* owns_buffer = */ false);
   spdy::SpdySerializedFrame request_body(
@@ -10625,14 +10625,14 @@ TEST_F(SpdyNetworkTransactionTest,
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
       kDefaultUrl, 1, kUploadDataSize, LOWEST, nullptr, 0));
 
-  const char kRawFrameData[] = {
+  uint8_t kRawFrameData[] = {
       0x00, 0x00, 0x03,        // length
       0x0b,                    // type
       0xcc,                    // flags
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(const_cast<char*>(kRawFrameData),
+  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
                                    base::size(kRawFrameData),
                                    /* owns_buffer = */ false);
   spdy::SpdySerializedFrame request_body(
@@ -10771,14 +10771,14 @@ TEST_F(SpdyNetworkTransactionTest, OnDataSentDoesNotCrashWithGreasedFrameType) {
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), DEFAULT_PRIORITY,
                                       /* fin = */ false));
 
-  const char kRawFrameData[] = {
+  uint8_t kRawFrameData[] = {
       0x00, 0x00, 0x03,        // length
       0x0b,                    // type
       0xcc,                    // flags
       0x00, 0x00, 0x00, 0x01,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(const_cast<char*>(kRawFrameData),
+  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
                                    base::size(kRawFrameData),
                                    /* owns_buffer = */ false);
   spdy::SpdySerializedFrame empty_body(

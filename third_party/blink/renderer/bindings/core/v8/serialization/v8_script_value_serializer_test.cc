@@ -1953,11 +1953,12 @@ TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
   // The final 5 bytes is the offset of the two message ports inside the
   // transferred message port array. In order to trigger integer overflow this
   // is set to 0xffffffff, encoded as a varint.
-  char serialized_value[] = {0xff, 0x14, 0xff, 0x0d, 0x5c, 0x6d,
-                             0xff, 0xff, 0xff, 0xff, 0x0f};
+  uint8_t serialized_value[] = {0xff, 0x14, 0xff, 0x0d, 0x5c, 0x6d,
+                                0xff, 0xff, 0xff, 0xff, 0x0f};
 
-  auto corrupted_serialized_script_value =
-      SerializedScriptValue::Create(serialized_value, sizeof(serialized_value));
+  auto corrupted_serialized_script_value = SerializedScriptValue::Create(
+      reinterpret_cast<const char*>(serialized_value),
+      sizeof(serialized_value));
   corrupted_serialized_script_value->GetStreams() =
       std::move(serialized_script_value->GetStreams());
 

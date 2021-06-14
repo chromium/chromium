@@ -341,7 +341,7 @@ void ResourceBundle::AddDataPackFromFile(base::File file,
                             scale_factor);
 }
 
-void ResourceBundle::AddDataPackFromBuffer(base::StringPiece buffer,
+void ResourceBundle::AddDataPackFromBuffer(base::span<const uint8_t> buffer,
                                            ScaleFactor scale_factor) {
   std::unique_ptr<DataPack> data_pack(new DataPack(scale_factor));
   if (data_pack->LoadFromBuffer(buffer)) {

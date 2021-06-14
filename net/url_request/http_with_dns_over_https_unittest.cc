@@ -135,8 +135,8 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
       char header_data[kHeaderSize];
       base::BigEndianWriter header_writer(header_data, kHeaderSize);
       header_writer.WriteU16(query.id());  // Same ID as before
-      char flags[] = {0x81, 0x80};
-      header_writer.WriteBytes(flags, 2);
+      uint8_t flags[] = {0x81, 0x80};
+      header_writer.WriteBytes(reinterpret_cast<char*>(flags), 2);
       header_writer.WriteU16(1);  // 1 question
       header_writer.WriteU16(1);  // 1 answer
       header_writer.WriteU16(0);  // No authority records

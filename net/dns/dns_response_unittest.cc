@@ -1225,7 +1225,7 @@ TEST(DnsResponseTest, ParserLimitedToBufferSize) {
 }
 
 TEST(DnsResponseWriteTest, SingleARecordAnswer) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x34,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -1253,14 +1253,15 @@ TEST(DnsResponseWriteTest, SingleARecordAnswer) {
                        {} /* additional records */, absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
 }
 
 TEST(DnsResponseWriteTest, SingleARecordAnswerWithFinalDotInName) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x34,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -1288,14 +1289,15 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithFinalDotInName) {
                        {} /* additional records */, absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
 }
 
 TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x34,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x01,  // number of questions
@@ -1335,7 +1337,8 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
                        query);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
@@ -1343,7 +1346,7 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
 
 TEST(DnsResponseWriteTest,
      SingleAnswerWithQuestionConstructedFromSizeInflatedQuery) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x34,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x01,  // number of questions
@@ -1399,14 +1402,15 @@ TEST(DnsResponseWriteTest,
                        query);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
 }
 
 TEST(DnsResponseWriteTest, SingleQuadARecordAnswer) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x34,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -1436,7 +1440,8 @@ TEST(DnsResponseWriteTest, SingleQuadARecordAnswer) {
                        absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
@@ -1444,7 +1449,7 @@ TEST(DnsResponseWriteTest, SingleQuadARecordAnswer) {
 
 TEST(DnsResponseWriteTest,
      SingleARecordAnswerWithQuestionAndNsecAdditionalRecord) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x34,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x01,  // number of questions
@@ -1499,14 +1504,15 @@ TEST(DnsResponseWriteTest,
                        {} /* authority_records */, additional_records, query);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
 }
 
 TEST(DnsResponseWriteTest, TwoAnswersWithAAndQuadARecords) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x34,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -1551,14 +1557,15 @@ TEST(DnsResponseWriteTest, TwoAnswersWithAAndQuadARecords) {
                        absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
 }
 
 TEST(DnsResponseWriteTest, AnswerWithAuthorityRecord) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x35,  // ID
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -1586,14 +1593,15 @@ TEST(DnsResponseWriteTest, AnswerWithAuthorityRecord) {
                        {} /* additional records */, absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);
 }
 
 TEST(DnsResponseWriteTest, AnswerWithRcode) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x12, 0x12,  // ID
       0x80, 0x03,  // flags (response with non-existent domain)
       0x00, 0x00,  // number of questions
@@ -1607,7 +1615,8 @@ TEST(DnsResponseWriteTest, AnswerWithRcode) {
                        dns_protocol::kRcodeNXDOMAIN);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response(response.io_buffer()->data(),
                               response.io_buffer_size());
   EXPECT_EQ(expected_response, actual_response);

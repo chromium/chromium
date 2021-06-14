@@ -101,10 +101,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   }
 
  private:
-  static std::string ReplacementCharacterInUtf8() {
-    constexpr char kRawBytes[] = {0xEF, 0xBF, 0xBD};
-    return std::string(kRawBytes, sizeof(kRawBytes));
-  }
+  static std::string ReplacementCharacterInUtf8() { return "\ufffd"; }
 
   static DOMUint8Array* CreateDOMUint8ArrayFromTwoStdStringsConcatenated(
       const std::string& string1,

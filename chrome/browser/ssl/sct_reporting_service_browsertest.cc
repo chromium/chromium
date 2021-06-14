@@ -48,18 +48,18 @@ namespace {
 // log and one from a non-Google log.
 //
 // Google's "Argon2023" log ("6D7Q2j71BjUy51covIlryQPTy9ERa+zraeF3fW0GvW4="):
-const char kTestGoogleLogId[] = {
+const uint8_t kTestGoogleLogId[] = {
     0xe8, 0x3e, 0xd0, 0xda, 0x3e, 0xf5, 0x06, 0x35, 0x32, 0xe7, 0x57,
     0x28, 0xbc, 0x89, 0x6b, 0xc9, 0x03, 0xd3, 0xcb, 0xd1, 0x11, 0x6b,
     0xec, 0xeb, 0x69, 0xe1, 0x77, 0x7d, 0x6d, 0x06, 0xbd, 0x6e};
 // Cloudflare's "Nimbus2023" log
 // ("ejKMVNi3LbYg6jjgUh7phBZwMhOFTTvSK8E6V6NS61I="):
-const char kTestNonGoogleLogId1[] = {
+const uint8_t kTestNonGoogleLogId1[] = {
     0x7a, 0x32, 0x8c, 0x54, 0xd8, 0xb7, 0x2d, 0xb6, 0x20, 0xea, 0x38,
     0xe0, 0x52, 0x1e, 0xe9, 0x84, 0x16, 0x70, 0x32, 0x13, 0x85, 0x4d,
     0x3b, 0xd2, 0x2b, 0xc1, 0x3a, 0x57, 0xa3, 0x52, 0xeb, 0x52};
 // DigiCert's "Yeti2023" log ("Nc8ZG7+xbFe/D61MbULLu7YnICZR6j/hKu+oA8M71kw="):
-const char kTestNonGoogleLogId2[] = {
+const uint8_t kTestNonGoogleLogId2[] = {
     0x35, 0xcf, 0x19, 0x1b, 0xbf, 0xb1, 0x6c, 0x57, 0xbf, 0x0f, 0xad,
     0x4c, 0x6d, 0x42, 0xcb, 0xbb, 0xb6, 0x27, 0x20, 0x26, 0x51, 0xea,
     0x3f, 0xe1, 0x2a, 0xef, 0xa8, 0x03, 0xc3, 0x3b, 0xd6, 0x4c};
@@ -135,17 +135,20 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     MakeTestSCTAndStatus(
         net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
         "signature1", base::Time::Now(),
-        std::string(kTestGoogleLogId, base::size(kTestGoogleLogId)),
+        std::string(reinterpret_cast<const char*>(kTestGoogleLogId),
+                    base::size(kTestGoogleLogId)),
         net::ct::SCT_STATUS_OK, &verify_result.scts);
     MakeTestSCTAndStatus(
         net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
         "signature2", base::Time::Now(),
-        std::string(kTestNonGoogleLogId1, base::size(kTestNonGoogleLogId1)),
+        std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                    base::size(kTestNonGoogleLogId1)),
         net::ct::SCT_STATUS_OK, &verify_result.scts);
     MakeTestSCTAndStatus(
         net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
         "signature3", base::Time::Now(),
-        std::string(kTestNonGoogleLogId2, base::size(kTestNonGoogleLogId2)),
+        std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId2),
+                    base::size(kTestNonGoogleLogId2)),
         net::ct::SCT_STATUS_OK, &verify_result.scts);
 
     // Set up two test hosts as using publicly-issued certificates for testing.
@@ -398,17 +401,20 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
       "signature1", base::Time::Now(),
-      std::string(kTestGoogleLogId, base::size(kTestGoogleLogId)),
+      std::string(reinterpret_cast<const char*>(kTestGoogleLogId),
+                  base::size(kTestGoogleLogId)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
       "signature2", base::Time::Now(),
-      std::string(kTestNonGoogleLogId1, base::size(kTestNonGoogleLogId1)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                  base::size(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
       "signature3", base::Time::Now(),
-      std::string(kTestNonGoogleLogId2, base::size(kTestNonGoogleLogId2)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId2),
+                  base::size(kTestNonGoogleLogId2)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   mock_cert_verifier()->AddResultForCertAndHost(
       https_server()->GetCertificate().get(), "a.test", verify_result, net::OK);
@@ -435,24 +441,29 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   verify_result.is_issued_by_known_root = true;
   // Add three valid SCTs and one invalid SCT. The three valid SCTs meet the
   // Chrome CT policy.
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions1", "signature1", base::Time::Now(),
-                       std::string(kTestGoogleLogId, sizeof(kTestGoogleLogId)),
-                       net::ct::SCT_STATUS_OK, &verify_result.scts);
+  MakeTestSCTAndStatus(
+      net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
+      "signature1", base::Time::Now(),
+      std::string(reinterpret_cast<const char*>(kTestGoogleLogId),
+                  sizeof(kTestGoogleLogId)),
+      net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
       "signature2", base::Time::Now(),
-      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                  sizeof(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
       "signature3", base::Time::Now(),
-      std::string(kTestNonGoogleLogId2, sizeof(kTestNonGoogleLogId2)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId2),
+                  sizeof(kTestNonGoogleLogId2)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions4",
       "signature4", base::Time::Now(),
-      std::string(kTestNonGoogleLogId2, sizeof(kTestNonGoogleLogId2)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId2),
+                  sizeof(kTestNonGoogleLogId2)),
       net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
 
   mock_cert_verifier()->AddResultForCertAndHost(
@@ -482,17 +493,20 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
       "signature1", base::Time::Now(),
-      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                  sizeof(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
       "signature2", base::Time::Now(),
-      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                  sizeof(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
       "signature3", base::Time::Now(),
-      std::string(kTestNonGoogleLogId2, sizeof(kTestNonGoogleLogId2)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId2),
+                  sizeof(kTestNonGoogleLogId2)),
       net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
 
   mock_cert_verifier()->AddResultForCertAndHost(
@@ -517,17 +531,20 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, NoValidSCTsNoReport) {
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
       "signature1", base::Time::Now(),
-      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                  sizeof(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_INVALID_TIMESTAMP, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
       "signature2", base::Time::Now(),
-      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                  sizeof(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
       "signature3", base::Time::Now(),
-      std::string(kTestNonGoogleLogId1, sizeof(kTestNonGoogleLogId1)),
+      std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
+                  sizeof(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_INVALID_SIGNATURE, &verify_result.scts);
 
   mock_cert_verifier()->AddResultForCertAndHost(

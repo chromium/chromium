@@ -212,7 +212,7 @@ class MockFailingMdnsSocketFactory : public net::MDnsSocketFactory {
 // the NSEC records are placed in the Answer section with the address records in
 // the Answer section.
 TEST(CreateMdnsResponseTest, SingleARecordAnswer) {
-  const char response_data[]{
+  const uint8_t response_data[]{
       0x00, 0x00,  // mDNS response ID mus be zero.
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -240,7 +240,8 @@ TEST(CreateMdnsResponseTest, SingleARecordAnswer) {
                                // length 1, bitmap with bit 1 set
   };
 
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response = CreateResolutionResponse(
       kDefaultTtl,
       {{"www.example.com", net::IPAddress(0xc0, 0xa8, 0x00, 0x01)}});
@@ -248,7 +249,7 @@ TEST(CreateMdnsResponseTest, SingleARecordAnswer) {
 }
 
 TEST(CreateMdnsResponseTest, SingleARecordGoodbye) {
-  const char response_data[]{
+  const uint8_t response_data[]{
       0x00, 0x00,  // mDNS response ID mus be zero.
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -265,7 +266,8 @@ TEST(CreateMdnsResponseTest, SingleARecordGoodbye) {
       0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
   };
 
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response = CreateResolutionResponse(
       base::TimeDelta(),
       {{"www.example.com", net::IPAddress(0xc0, 0xa8, 0x00, 0x01)}});
@@ -273,7 +275,7 @@ TEST(CreateMdnsResponseTest, SingleARecordGoodbye) {
 }
 
 TEST(CreateMdnsResponseTest, SingleQuadARecordAnswer) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x00, 0x00,  // mDNS response ID mus be zero.
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -300,7 +302,8 @@ TEST(CreateMdnsResponseTest, SingleQuadARecordAnswer) {
       0x08,  // type bit map of type AAAA: window block 0, bitmap
              // length 4, bitmap with bit 28 set
   };
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response = CreateResolutionResponse(
       kDefaultTtl,
       {{"example.org",
@@ -310,7 +313,7 @@ TEST(CreateMdnsResponseTest, SingleQuadARecordAnswer) {
 }
 
 TEST(CreateMdnsResponseTest, SingleNsecRecordAnswer) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x00, 0x00,  // mDNS response ID mus be zero.
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -337,7 +340,8 @@ TEST(CreateMdnsResponseTest, SingleNsecRecordAnswer) {
       0x00, 0x04,              // rdlength, 32 bits
       0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
   };
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response = CreateNegativeResponse(
       {{"www.example.com", net::IPAddress(0xc0, 0xa8, 0x00, 0x01)}});
   EXPECT_EQ(expected_response, actual_response);
@@ -345,7 +349,7 @@ TEST(CreateMdnsResponseTest, SingleNsecRecordAnswer) {
 
 TEST(CreateMdnsResponseTest,
      SingleTxtRecordAnswerToMdnsNameGeneratorServiceQuery) {
-  const char response_data[] = {
+  const uint8_t response_data[] = {
       0x00, 0x00,  // mDNS response ID mus be zero.
       0x84, 0x00,  // flags, response with authoritative answer
       0x00, 0x00,  // number of questions
@@ -365,7 +369,8 @@ TEST(CreateMdnsResponseTest,
       'a',  'l',  0x15, 'n',  'a',  'm', 'e',  '1', '=', 'w', 'w', 'w',
       '.',  'e',  'x',  'a',  'm',  'p', 'l',  'e', '.', 'c', 'o', 'm',
       0x09, 't',  'x',  't',  'v',  'e', 'r',  's', '=', '1'};
-  std::string expected_response(response_data, sizeof(response_data));
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
   std::string actual_response = CreateResponseToMdnsNameGeneratorServiceQuery(
       kDefaultTtl, {"1.local", "www.example.com"});
   EXPECT_EQ(expected_response, actual_response);

@@ -246,18 +246,17 @@ class DataPack::StringDataSource : public DataPack::DataSource {
 
 class DataPack::BufferDataSource : public DataPack::DataSource {
  public:
-  explicit BufferDataSource(base::StringPiece buffer) : buffer_(buffer) {}
+  explicit BufferDataSource(base::span<const uint8_t> buffer)
+      : buffer_(buffer) {}
 
   ~BufferDataSource() override {}
 
   // DataPack::DataSource:
-  size_t GetLength() const override { return buffer_.length(); }
-  const uint8_t* GetData() const override {
-    return reinterpret_cast<const uint8_t*>(buffer_.data());
-  }
+  size_t GetLength() const override { return buffer_.size(); }
+  const uint8_t* GetData() const override { return buffer_.data(); }
 
  private:
-  base::StringPiece buffer_;
+  base::span<const uint8_t> buffer_;
 
   DISALLOW_COPY_AND_ASSIGN(BufferDataSource);
 };
@@ -329,7 +328,7 @@ bool DataPack::LoadFromFileRegion(
   return LoadImpl(std::make_unique<MemoryMappedDataSource>(std::move(mmap)));
 }
 
-bool DataPack::LoadFromBuffer(base::StringPiece buffer) {
+bool DataPack::LoadFromBuffer(base::span<const uint8_t> buffer) {
   return LoadImpl(std::make_unique<BufferDataSource>(buffer));
 }
 

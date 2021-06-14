@@ -14,7 +14,7 @@ namespace mojo_base {
 TEST(ByteStringTest, Test) {
   const std::string kCases[] = {
       "hello",                     // C-string
-      {0xEF, 0xB7, 0xAF},          // invalid UTF-8
+      {'\xEF', '\xB7', '\xAF'},    // invalid UTF-8
       {'h', '\0', 'w', 'd', 'y'},  // embedded null
   };
   for (size_t i = 0; i < base::size(kCases); ++i) {

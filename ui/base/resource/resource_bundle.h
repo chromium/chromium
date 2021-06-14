@@ -218,7 +218,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                                  ScaleFactor scale_factor);
 
   // Same as above but using contents of the given buffer.
-  void AddDataPackFromBuffer(base::StringPiece buffer,
+  void AddDataPackFromBuffer(base::span<const uint8_t> buffer,
                              ScaleFactor scale_factor);
 
   // Same as AddDataPackFromPath but does not log an error if the pack fails to

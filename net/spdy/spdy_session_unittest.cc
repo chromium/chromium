@@ -6033,14 +6033,14 @@ TEST_F(SpdySessionTest, GreaseFrameTypeAfterSettings) {
       CombineFrames({&preface, &settings_frame});
 
   // Greased frame sent on stream 0 after initial SETTINGS frame.
-  const char kRawFrameData[] = {
+  uint8_t kRawFrameData[] = {
       0x00, 0x00, 0x03,        // length
       0x0b,                    // type
       0xcc,                    // flags
       0x00, 0x00, 0x00, 0x00,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease(const_cast<char*>(kRawFrameData),
+  spdy::SpdySerializedFrame grease(reinterpret_cast<char*>(kRawFrameData),
                                    base::size(kRawFrameData),
                                    /* owns_buffer = */ false);
 

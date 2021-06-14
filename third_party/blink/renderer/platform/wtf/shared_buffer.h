@@ -139,6 +139,11 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
     AppendInternal(data, size);
   }
+  HAS_STRICTLY_TYPED_ARG
+  void Append(const unsigned char* data, STRICTLY_TYPED_ARG(size)) {
+    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
+    AppendInternal(reinterpret_cast<const char*>(data), size);
+  }
   void Append(const Vector<char>& data) { Append(data.data(), data.size()); }
 
   void Clear();

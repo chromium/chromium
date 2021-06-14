@@ -99,14 +99,15 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
   // "dummy") as PBKDF2_HMAC_SHA1(Ns("dummy") + Ns("localhost"), "saltsalt",
   // 1001, 128), where Ns(S) is the NigoriStream representation of S (32-bit
   // big-endian length of S followed by S itself).
-  const char kRawConstantSalt[] = {0xc7, 0xca, 0xfb, 0x23, 0xec, 0x2a,
-                                   0x9d, 0x4c, 0x03, 0x5a, 0x90, 0xae,
-                                   0xed, 0x8b, 0xa4, 0x98};
+  const uint8_t kRawConstantSalt[] = {0xc7, 0xca, 0xfb, 0x23, 0xec, 0x2a,
+                                      0x9d, 0x4c, 0x03, 0x5a, 0x90, 0xae,
+                                      0xed, 0x8b, 0xa4, 0x98};
   const size_t kUserIterations = 1002;
   const size_t kEncryptionIterations = 1003;
   const size_t kSigningIterations = 1004;
 
-  std::string salt(kRawConstantSalt, sizeof(kRawConstantSalt));
+  std::string salt(reinterpret_cast<const char*>(kRawConstantSalt),
+                   sizeof(kRawConstantSalt));
 
   // Kuser = PBKDF2(P, Suser, Nuser, 16)
   user_key = SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(

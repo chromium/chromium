@@ -54,7 +54,7 @@ class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
 
   // Loads a pack file from |buffer|, returning false on error.
   // Data is not copied, |buffer| should stay alive during |DataPack| lifetime.
-  bool LoadFromBuffer(base::StringPiece buffer);
+  bool LoadFromBuffer(base::span<const uint8_t> buffer);
 
   // Writes a pack file containing |resources| to |path|. If there are any
   // text resources to be written, their encoding must already agree to the

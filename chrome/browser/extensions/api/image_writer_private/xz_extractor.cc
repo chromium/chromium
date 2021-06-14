@@ -30,7 +30,7 @@ constexpr base::FilePath::StringPieceType kExtractedBinFileName =
     FILE_PATH_LITERAL("extracted.bin");
 
 // https://tukaani.org/xz/xz-file-format-1.0.4.txt
-constexpr char kExpectedMagic[6] = {0xfd, '7', 'z', 'X', 'Z', 0x00};
+constexpr uint8_t kExpectedMagic[6] = {0xfd, '7', 'z', 'X', 'Z', 0x00};
 
 }  // namespace
 
@@ -46,8 +46,10 @@ bool XzExtractor::IsXzFile(const base::FilePath& image_path) {
   if (infile.ReadAtCurrentPos(actual_magic, kExpectedSize) != kExpectedSize)
     return false;
 
-  return std::equal(kExpectedMagic, kExpectedMagic + kExpectedSize,
-                    actual_magic);
+  return std::equal(
+      reinterpret_cast<const char*>(kExpectedMagic),
+      reinterpret_cast<const char*>(kExpectedMagic + kExpectedSize),
+      actual_magic);
 }
 
 // static

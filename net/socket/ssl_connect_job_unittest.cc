@@ -760,13 +760,14 @@ TEST_F(SSLConnectJobTest, SOCKSHostResolutionFailure) {
 TEST_F(SSLConnectJobTest, SOCKSBasic) {
   for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
     SCOPED_TRACE(io_mode);
-    const char kSOCKS5Request[] = {0x05, 0x01, 0x00, 0x03, 0x09, 's',
-                                   'o',  'c',  'k',  's',  'h',  'o',
-                                   's',  't',  0x01, 0xBB};
+    const uint8_t kSOCKS5Request[] = {0x05, 0x01, 0x00, 0x03, 0x09, 's',
+                                      'o',  'c',  'k',  's',  'h',  'o',
+                                      's',  't',  0x01, 0xBB};
 
     MockWrite writes[] = {
         MockWrite(io_mode, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(io_mode, kSOCKS5Request, base::size(kSOCKS5Request)),
+        MockWrite(io_mode, reinterpret_cast<const char*>(kSOCKS5Request),
+                  base::size(kSOCKS5Request)),
     };
 
     MockRead reads[] = {
@@ -794,12 +795,14 @@ TEST_F(SSLConnectJobTest, SOCKSBasic) {
 }
 
 TEST_F(SSLConnectJobTest, SOCKSHasEstablishedConnection) {
-  const char kSOCKS5Request[] = {0x05, 0x01, 0x00, 0x03, 0x09, 's', 'o',  'c',
-                                 'k',  's',  'h',  'o',  's',  't', 0x01, 0xBB};
+  const uint8_t kSOCKS5Request[] = {0x05, 0x01, 0x00, 0x03, 0x09, 's',
+                                    'o',  'c',  'k',  's',  'h',  'o',
+                                    's',  't',  0x01, 0xBB};
 
   MockWrite writes[] = {
       MockWrite(SYNCHRONOUS, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength, 0),
-      MockWrite(SYNCHRONOUS, kSOCKS5Request, base::size(kSOCKS5Request), 3),
+      MockWrite(SYNCHRONOUS, reinterpret_cast<const char*>(kSOCKS5Request),
+                base::size(kSOCKS5Request), 3),
   };
 
   MockRead reads[] = {

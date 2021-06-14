@@ -364,7 +364,7 @@ TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {
   // Chimera-AV1-10bit-1280x720-2380kbps-100.avif. Since the major_brand is
   // not "avif" or "avis", we must parse the compatible_brands to determine if
   // this is an AVIF image.
-  constexpr char kData[] = {
+  constexpr uint8_t kData[] = {
       // A File Type Box.
       0x00, 0x00, 0x00, 0x1c,  // unsigned int(32) size; 0x1c = 28
       'f', 't', 'y', 'p',      // unsigned int(32) type = boxtype;
