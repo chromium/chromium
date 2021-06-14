@@ -496,6 +496,15 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   DCHECK_EQ(kNeedsNewCandidate, state_);
   EphemeralRangeInFlatTree ephemeral_range = range_->ToEphemeralRange();
 
+  // TODO(bokan): Another case where the range appears to not have valid nodes.
+  // Not sure how this happens. https://crbug.com/1216773.
+  if (!ephemeral_range.StartPosition().ComputeContainerNode() ||
+      !ephemeral_range.EndPosition().ComputeContainerNode()) {
+    state_ = kFailure;
+    error_ = LinkGenerationError::kEmptySelection;
+    return;
+  }
+
   // If not in same block, should use ranges.
   if (!TextFragmentFinder::IsInSameUninterruptedBlock(
           ephemeral_range.StartPosition(), ephemeral_range.EndPosition())) {
