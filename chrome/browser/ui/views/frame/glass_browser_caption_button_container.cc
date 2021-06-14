@@ -108,6 +108,14 @@ void GlassBrowserCaptionButtonContainer::
   }
 }
 
+void GlassBrowserCaptionButtonContainer::OnThemeChanged() {
+  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
+    SetBackground(
+        views::CreateSolidBackground(frame_view_->GetTitlebarColor()));
+  }
+  views::View::OnThemeChanged();
+}
+
 void GlassBrowserCaptionButtonContainer::ResetWindowControls() {
   minimize_button_->SetState(views::Button::STATE_NORMAL);
   maximize_button_->SetState(views::Button::STATE_NORMAL);

@@ -43,6 +43,7 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnThemeChanged() override;
 
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
