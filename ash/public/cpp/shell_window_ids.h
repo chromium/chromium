@@ -32,7 +32,9 @@ enum ShellWindowId {
 
   // A higher-level container that holds all of the containers stacked below
   // kShellWindowId_LockScreenContainer.  Only used by PowerButtonController for
-  // animating lower-level containers.
+  // animating lower-level containers and AccessibilityController for hiding
+  // non-lock screen windows from Accessibility when the user session is
+  // blocked.
   kShellWindowId_NonLockScreenContainersContainer,
 
   // A higher-level container that holds containers that hold lock-screen
