@@ -88,6 +88,13 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 #if defined(OS_ANDROID)
   using GeolocationPermissionContext =
       permissions::GeolocationPermissionContextAndroid;
+#elif defined(OS_MAC)
+  // TODO: macOS uses permissions::GeolocationPermissionContextMac which
+  // requires a GeolocationManager for construction. In Chrome this object is
+  // owned by the BrowserProcess. An equivalent object will need to be created
+  // in WebLayer and passed into the PermissionContext here before it supports
+  // macOS.
+  NOTREACHED();
 #else
   using GeolocationPermissionContext =
       permissions::GeolocationPermissionContext;

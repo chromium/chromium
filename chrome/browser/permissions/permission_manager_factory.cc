@@ -52,7 +52,13 @@
 #else
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 #include "chrome/browser/web_applications/components/file_handling_permission_context.h"
+#if defined(OS_MAC)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "components/permissions/contexts/geolocation_permission_context_mac.h"
+#else
 #include "components/permissions/contexts/geolocation_permission_context.h"
+#endif
 #include "components/permissions/contexts/nfc_permission_context.h"
 #endif
 
@@ -66,17 +72,23 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<permissions::MidiPermissionContext>(profile);
   permission_contexts[ContentSettingsType::NOTIFICATIONS] =
       std::make_unique<NotificationPermissionContext>(profile);
-#if !defined(OS_ANDROID)
-  permission_contexts[ContentSettingsType::GEOLOCATION] =
-      std::make_unique<permissions::GeolocationPermissionContext>(
-          profile,
-          std::make_unique<GeolocationPermissionContextDelegate>(profile));
-#else
+#if defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(
           profile,
           std::make_unique<GeolocationPermissionContextDelegateAndroid>(
               profile));
+#elif defined(OS_MAC)
+  permission_contexts[ContentSettingsType::GEOLOCATION] =
+      std::make_unique<permissions::GeolocationPermissionContextMac>(
+          profile,
+          std::make_unique<GeolocationPermissionContextDelegate>(profile),
+          g_browser_process->platform_part()->geolocation_manager());
+#else
+  permission_contexts[ContentSettingsType::GEOLOCATION] =
+      std::make_unique<permissions::GeolocationPermissionContext>(
+          profile,
+          std::make_unique<GeolocationPermissionContextDelegate>(profile));
 #endif
 #if defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_WIN)
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =

@@ -11,7 +11,11 @@
 
 TestingBrowserProcessPlatformPart::TestingBrowserProcessPlatformPart() {
 #if defined(OS_MAC)
-  geolocation_manager_ = std::make_unique<device::FakeGeolocationManager>();
+  auto fake_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  fake_geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kAllowed);
+  geolocation_manager_ = std::move(fake_geolocation_manager);
 #endif
 }
 
