@@ -262,6 +262,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PASSWORD_EXPIRY_CHANGE_PASSWORD_BUTTON" desc="Text on a button that takes the user to page to change their password">
         Change password
       </message>
+      <message name="IDS_PASSWORD_CHANGE_NOTIFICATION_TITLE" desc="Message title for a notification that tells the user that the password was updated.">
+        Chrome OS password updated
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_NOTIFICATION_BODY" desc="Message body on a notification that politely requests the user to start using the new password.">
+        Your password change was successful. Please use the new password from now on.
+      </message>
 
       <!-- In-session password change -->
       <message name="IDS_PASSWORD_CHANGE_CONFIRM_DIALOG_TITLE" desc="Title for the dialog where a user corrects and confirms their old and new passwords in order to complete a password change">

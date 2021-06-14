@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/feature_list.h"
@@ -12,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/saml/password_change_success_notification.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -158,7 +160,7 @@ void RecheckPasswordExpiryTask::CancelPendingRecheck() {
 // static
 std::unique_ptr<InSessionPasswordChangeManager>
 InSessionPasswordChangeManager::CreateIfEnabled(Profile* primary_profile) {
-  if (base::FeatureList::IsEnabled(features::kInSessionPasswordChange) &&
+  if (base::FeatureList::IsEnabled(::features::kInSessionPasswordChange) &&
       primary_profile->GetPrefs()->GetBoolean(
           prefs::kSamlInSessionPasswordChangeEnabled)) {
     std::unique_ptr<InSessionPasswordChangeManager> manager =
@@ -410,6 +412,9 @@ void InSessionPasswordChangeManager::OnAuthSuccess(
   DismissExpiryNotification();
   PasswordChangeDialog::Dismiss();
   ConfirmPasswordChangeDialog::Dismiss();
+  if (ash::features::IsSamlNotificationOnPasswordChangeSuccessEnabled()) {
+    PasswordChangeSuccessNotification::Show(primary_profile_);
+  }
   // We request a new sync token. It will be updated locally and signal the fact
   // of password change to other devices owned by the user.
   CreateTokenAsync();

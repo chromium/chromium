@@ -341,6 +341,11 @@ const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
 const base::Feature kEnablePciguardUi{"EnablePciguardUi",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables showing notification after the password change for SAML users.
+const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
+    "EnableSamlNotificationOnPasswordChangeSuccess",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables SAML re-authentication on the lock screen once the sign-in time
 // limit expires.
 const base::Feature kEnableSamlReauthenticationOnLockscreen{
@@ -960,6 +965,11 @@ bool IsQuickAnswersTranslationCloudAPIEnabled() {
 
 bool IsQuickAnswersTranslationEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersTranslation);
+}
+
+bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
+  return base::FeatureList::IsEnabled(
+      kEnableSamlNotificationOnPasswordChangeSuccess);
 }
 
 bool IsSamlReauthenticationOnLockscreenEnabled() {
