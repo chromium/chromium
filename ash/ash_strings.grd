@@ -3168,6 +3168,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE" desc="A11y description template for the Quick Answers user notice view.">
         <ph name="DESC_TEXT">$1<ex>With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.</ex></ph> Use Left or Right arrow keys to manage this feature.
       </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when supported intent is generated.">
+        Get the <ph name="intent">$1<ex>definition</ex></ph> for "<ph name="query">$2<ex>unfathomable</ex></ph>" and more
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        Get definitions, translations, or unit conversions when you right-click or touch &amp; hold text.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON" desc="Display text on the no thanks button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        No Thanks
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON" desc="Display text on the allow button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        Allow
+      </message>
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_LOADING" desc="Display text when the Quick Answers view is loading.">
         Loading...
       </message>

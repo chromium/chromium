@@ -76,8 +76,13 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
       chromeos::quick_answers::prefs::kQuickAnswersEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateSettingsEnabled,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      chromeos::quick_answers::prefs::kQuickAnswersConsented,
+      base::BindRepeating(&QuickAnswersState::UpdateUserConsented,
+                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
+  UpdateUserConsented();
 
   prefs_initialized_ = true;
 }
@@ -108,7 +113,7 @@ void QuickAnswersState::InitializeObserver(
 void QuickAnswersState::UpdateSettingsEnabled() {
   auto settings_enabled = pref_change_registrar_->prefs()->GetBoolean(
       chromeos::quick_answers::prefs::kQuickAnswersEnabled);
-  if (prefs_initialized_ && settings_enabled_ == settings_enabled) {
+  if (settings_enabled_ == settings_enabled) {
     return;
   }
   settings_enabled_ = settings_enabled;
@@ -116,6 +121,15 @@ void QuickAnswersState::UpdateSettingsEnabled() {
     observer.OnSettingsEnabled(settings_enabled_);
 
   UpdateEligibility();
+}
+
+void QuickAnswersState::UpdateUserConsented() {
+  auto user_consented = pref_change_registrar_->prefs()->GetBoolean(
+      chromeos::quick_answers::prefs::kQuickAnswersConsented);
+  if (user_consented_ == user_consented) {
+    return;
+  }
+  user_consented_ = user_consented;
 }
 
 void QuickAnswersState::UpdateEligibility() {

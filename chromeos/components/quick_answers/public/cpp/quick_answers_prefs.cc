@@ -16,6 +16,10 @@ const char kQuickAnswersNoticed[] = "settings.quick_answers.consented";
 // A preference that indicates the user has enabled the Quick Answers services.
 const char kQuickAnswersEnabled[] = "settings.quick_answers.enabled";
 
+// A preference that indicates the user has provide consent to enable the Quick
+// Answers feature.
+const char kQuickAnswersConsented[] = "settings.quick_answers.user_consented";
+
 // A preference to keep track of the number of Quick Answers notice impression.
 const char kQuickAnswersNoticeImpressionCount[] =
     "settings.quick_answers.consent.count";
@@ -28,6 +32,7 @@ const char kQuickAnswersNoticeImpressionDuration[] =
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kQuickAnswersNoticed, false);
   registry->RegisterBooleanPref(kQuickAnswersEnabled, false);
+  registry->RegisterBooleanPref(kQuickAnswersConsented, false);
   registry->RegisterIntegerPref(kQuickAnswersNoticeImpressionCount, 0);
   registry->RegisterIntegerPref(kQuickAnswersNoticeImpressionDuration, 0);
 }

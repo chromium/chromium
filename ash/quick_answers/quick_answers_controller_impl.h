@@ -81,6 +81,9 @@ class ASH_EXPORT QuickAnswersControllerImpl
   // notice screen for the Quick Answers feature.
   void OnNoticeSettingsRequestedByUser();
 
+  // Handle user consent result.
+  void OnUserConsentResult(bool consented);
+
   // Open Quick-Answers dogfood URL.
   void OpenQuickAnswersDogfoodLink();
 
@@ -110,6 +113,11 @@ class ASH_EXPORT QuickAnswersControllerImpl
   // visible.
   void ShowUserNotice(const std::u16string& intent_type,
                       const std::u16string& intent_text);
+
+  // Show the user consent view. Does nothing if the view is already
+  // visible.
+  void ShowUserConsent(const std::u16string& intent_type,
+                       const std::u16string& intent_text);
 
   chromeos::quick_answers::QuickAnswersRequest BuildRequest();
 

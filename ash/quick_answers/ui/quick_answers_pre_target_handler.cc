@@ -5,6 +5,7 @@
 #include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 
 #include "ash/quick_answers/ui/quick_answers_view.h"
+#include "ash/quick_answers/ui/user_consent_view.h"
 #include "ash/quick_answers/ui/user_notice_view.h"
 #include "base/containers/adapters.h"
 #include "ui/aura/env.h"
@@ -19,6 +20,12 @@ namespace ash {
 
 QuickAnswersPreTargetHandler::QuickAnswersPreTargetHandler(
     QuickAnswersView* view)
+    : view_(view) {
+  Init();
+}
+
+QuickAnswersPreTargetHandler::QuickAnswersPreTargetHandler(
+    quick_answers::UserConsentView* view)
     : view_(view) {
   Init();
 }

@@ -53,6 +53,7 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   void OnLocaleChanged(const std::string& locale) override;
 
   bool settings_enabled() const { return settings_enabled_; }
+  bool user_consented() const { return user_consented_; }
   bool is_eligible() const { return is_eligible_; }
 
   void set_eligibility_for_testing(bool is_eligible) {
@@ -64,12 +65,16 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
 
   // Called when the related preferences are obtained from the pref service.
   void UpdateSettingsEnabled();
+  void UpdateUserConsented();
 
   // Called when the feature eligibility might change.
   void UpdateEligibility();
 
   // Whether the Quick Answers is enabled in system settings.
   bool settings_enabled_ = false;
+
+  // Whether the Quick Answers feature has been consented by user.
+  bool user_consented_ = false;
 
   // Whether the Quick Answers feature is eligible. The value is derived from a
   // number of other states.

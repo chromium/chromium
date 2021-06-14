@@ -11,7 +11,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/quick_answers_notice.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -101,7 +103,13 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
 
 void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
     const chromeos::quick_answers::QuickAnswersRequest& request) {
-  if (ShouldShowUserNotice()) {
+  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled() &&
+      !QuickAnswersState::Get()->user_consented()) {
+    ShowUserConsent(
+        IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
+        base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
+  } else if (!chromeos::features::IsQuickAnswersStandaloneSettingsEnabled() &&
+             ShouldShowUserNotice()) {
     ShowUserNotice(
         IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
         base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
@@ -120,6 +128,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
 void QuickAnswersControllerImpl::DismissQuickAnswers(bool is_active) {
   visibility_ = QuickAnswersVisibility::kClosed;
   MaybeDismissQuickAnswersNotice();
+  quick_answers_ui_controller_->CloseUserConsentView();
   bool closed = quick_answers_ui_controller_->CloseQuickAnswersView();
   // |quick_answer_| could be null before we receive the result from the server.
   // Do not send the signal since the quick answer is dismissed before ready.
@@ -241,6 +250,22 @@ void QuickAnswersControllerImpl::OnNoticeSettingsRequestedByUser() {
       GURL(kAssistantRelatedInfoUrl), /*from_user_interaction=*/true);
 }
 
+void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
+  quick_answers_ui_controller_->CloseUserConsentView();
+
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  prefs->SetBoolean(chromeos::quick_answers::prefs::kQuickAnswersConsented,
+                    consented);
+  prefs->SetBoolean(chromeos::quick_answers::prefs::kQuickAnswersEnabled,
+                    consented);
+
+  if (consented) {
+    // Display Quick-Answer for the cached query when user consent has
+    // been granted.
+    MaybeShowQuickAnswers(anchor_bounds_, title_, context_);
+  }
+}
+
 void QuickAnswersControllerImpl::OpenQuickAnswersDogfoodLink() {
   NewWindowDelegate::GetInstance()->NewTabWithUrl(
       GURL(kDogfoodUrl), /*from_user_interaction=*/true);
@@ -269,6 +294,16 @@ void QuickAnswersControllerImpl::ShowUserNotice(
     quick_answers_ui_controller_->CreateUserNoticeView(
         anchor_bounds_, intent_type, intent_text);
     notice_controller_->StartNotice();
+  }
+}
+
+void QuickAnswersControllerImpl::ShowUserConsent(
+    const std::u16string& intent_type,
+    const std::u16string& intent_text) {
+  // Show notice informing user about the feature if required.
+  if (!quick_answers_ui_controller_->is_showing_user_consent_view()) {
+    quick_answers_ui_controller_->CreateUserConsentView(
+        anchor_bounds_, intent_type, intent_text);
   }
 }
 

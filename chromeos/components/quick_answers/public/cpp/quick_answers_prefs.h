@@ -13,6 +13,7 @@ namespace prefs {
 
 extern const char kQuickAnswersNoticed[];
 extern const char kQuickAnswersEnabled[];
+extern const char kQuickAnswersConsented[];
 extern const char kQuickAnswersNoticeImpressionCount[];
 extern const char kQuickAnswersNoticeImpressionDuration[];
 

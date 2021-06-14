@@ -21,6 +21,7 @@ namespace ash {
 class QuickAnswersView;
 
 namespace quick_answers {
+class UserConsentView;
 class UserNoticeView;
 }  // namespace quick_answers
 
@@ -30,6 +31,7 @@ class UserNoticeView;
 class QuickAnswersPreTargetHandler : public ui::EventHandler {
  public:
   explicit QuickAnswersPreTargetHandler(QuickAnswersView* view);
+  explicit QuickAnswersPreTargetHandler(quick_answers::UserConsentView* view);
   explicit QuickAnswersPreTargetHandler(quick_answers::UserNoticeView* view);
 
   // Disallow copy and assign.

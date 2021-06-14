@@ -754,6 +754,8 @@ component("ash") {
     "quick_answers/ui/quick_answers_pre_target_handler.h",
     "quick_answers/ui/quick_answers_view.cc",
     "quick_answers/ui/quick_answers_view.h",
+    "quick_answers/ui/user_consent_view.cc",
+    "quick_answers/ui/user_consent_view.h",
     "quick_answers/ui/user_notice_view.cc",
     "quick_answers/ui/user_notice_view.h",
     "root_window_controller.cc",
