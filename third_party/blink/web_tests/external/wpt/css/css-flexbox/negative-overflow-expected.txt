@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS .flexbox 1
+PASS .flexbox 2
+PASS .flexbox 3
+PASS .flexbox 4
+FAIL .flexbox 5 assert_equals: 
+<div class="flexbox wrap-reverse" data-expected-scroll-height="200">
+    <div></div>
+    <div></div>
+</div>
+scrollHeight expected 200 but got 50
+PASS .flexbox 6
+PASS .flexbox 7
+PASS .flexbox 8
+PASS .flexbox 9
+PASS .flexbox 10
+FAIL .flexbox 11 assert_equals: 
+<div class="flexbox wrap-reverse vertical-padding" data-expected-scroll-height="215">
+    <div></div>
+    <div></div>
+</div>
+scrollHeight expected 215 but got 65
+Harness: the test ran to completion.
+

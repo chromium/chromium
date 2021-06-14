@@ -745,13 +745,8 @@ crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure ]
 crbug.com/1003506 external/wpt/css/css-flexbox/percentage-heights-007.html [ Failure ]
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
-# As of Apr-19-2021, the importer hasn't imported a change to this test made 2
-# weeks ago. Before the change, it passed. After the change, it will fail or
-# crash. But apparently it is failing/crashing on some platforms already...?
-crbug.com/1114306 external/wpt/css/css-flexbox/negative-overflow.html [ Pass Failure Crash ]
 
 # These tests are in conflict with overflow-area-*, update them if our change is web compatible.
-crbug.com/1069614 external/wpt/css/css-flexbox/overflow-top-left.html [ Failure ]
 crbug.com/1069614 external/wpt/css/css-flexbox/scrollbars-auto.html [ Failure ]
 crbug.com/1069614 external/wpt/css/css-flexbox/scrollbars.html [ Failure ]
 crbug.com/1069614 css3/flexbox/overflow-and-padding.html [ Failure ]
@@ -789,6 +784,7 @@ crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-003.h
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse-line-wrapping.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [ Failure ]
 
+crbug.com/606208 external/wpt/css/css-flexbox/order/order-abs-children-painting-order.html [ Failure ]
 # We paint in an incorrect order when layers are present. Blocked on composite-after-paint.
 crbug.com/370604 external/wpt/css/css-flexbox/flexbox-paint-ordering-002.xhtml [ Failure ]
 
@@ -2547,7 +2543,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/getcredential-badargs-rpid.ht
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/getcredential-badargs-userverification.https.html [ Crash Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/credblob-supported.https.html [ Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-large-blob-not-supported.https.html [ Crash ]
-crbug.com/626703 external/wpt/css/css-flexbox/order/order-abs-children-painting-order.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-extensions.https.html [ Crash Timeout ]
 crbug.com/626703 external/wpt/css/css-grid/alignment/grid-content-alignment-overflow-002.html [ Failure ]
 crbug.com/626703 external/wpt/webtransport/idlharness.any.worker.html [ Timeout Failure ]
