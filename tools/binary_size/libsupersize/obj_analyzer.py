@@ -11,16 +11,16 @@ _BulkObjectFileAnalyzerWorker:
   Performs the actual work. Uses Process Pools to shard out per-object-file
   work and then aggregates results.
 
-_BulkObjectFileAnalyzerMaster:
+_BulkObjectFileAnalyzerHost:
   Creates a subprocess and sends IPCs to it asking it to do work.
 
-_BulkObjectFileAnalyzerSlave:
+_BulkObjectFileAnalyzerDelegate:
   Receives IPCs and delegates logic to _BulkObjectFileAnalyzerWorker.
   Runs _BulkObjectFileAnalyzerWorker on a background thread in order to stay
   responsive to IPCs.
 
 BulkObjectFileAnalyzer:
-  Extracts information from .o files. Alias for _BulkObjectFileAnalyzerMaster,
+  Extracts information from .o files. Alias for _BulkObjectFileAnalyzerHost,
   but when SUPERSIZE_DISABLE_ASYNC=1, alias for _BulkObjectFileAnalyzerWorker.
   * AnalyzePaths(): Processes all .o files to collect symbol names that exist
     within each. Does not work with thin archives (expand them first).
@@ -262,7 +262,7 @@ def _TerminateSubprocesses():
     _active_pids = []
 
 
-class _BulkObjectFileAnalyzerMaster(object):
+class _BulkObjectFileAnalyzerHost(object):
   """Runs BulkObjectFileAnalyzer in a subprocess."""
   def __init__(self, tool_prefix, output_directory, track_string_literals=True):
     self._tool_prefix = tool_prefix
@@ -289,8 +289,8 @@ class _BulkObjectFileAnalyzerMaster(object):
       worker_analyzer = _BulkObjectFileAnalyzerWorker(
           self._tool_prefix, self._output_directory,
           track_string_literals=self._track_string_literals)
-      slave = _BulkObjectFileAnalyzerSlave(worker_analyzer, child_conn)
-      slave.Run()
+      delegate = _BulkObjectFileAnalyzerDelegate(worker_analyzer, child_conn)
+      delegate.Run()
 
   def AnalyzePaths(self, paths):
     if self._child_pid is None:
@@ -329,7 +329,7 @@ class _BulkObjectFileAnalyzerMaster(object):
     # _active_pids to be killed just in case.
 
 
-class _BulkObjectFileAnalyzerSlave(object):
+class _BulkObjectFileAnalyzerDelegate(object):
   """The subprocess entry point."""
   def __init__(self, worker_analyzer, pipe):
     self._worker_analyzer = worker_analyzer
@@ -404,7 +404,7 @@ class _BulkObjectFileAnalyzerSlave(object):
     sys.exit(0)
 
 
-BulkObjectFileAnalyzer = _BulkObjectFileAnalyzerMaster
+BulkObjectFileAnalyzer = _BulkObjectFileAnalyzerHost
 if parallel.DISABLE_ASYNC:
   BulkObjectFileAnalyzer = _BulkObjectFileAnalyzerWorker
 
@@ -424,8 +424,8 @@ def main():
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   if args.multiprocess:
-    bulk_analyzer = _BulkObjectFileAnalyzerMaster(
-        args.tool_prefix, args.output_directory)
+    bulk_analyzer = _BulkObjectFileAnalyzerHost(args.tool_prefix,
+                                                args.output_directory)
   else:
     parallel.DISABLE_ASYNC = True
     bulk_analyzer = _BulkObjectFileAnalyzerWorker(
