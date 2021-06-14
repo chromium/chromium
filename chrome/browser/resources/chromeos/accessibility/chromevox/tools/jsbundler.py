@@ -44,8 +44,8 @@ sys.path.insert(
                  'third_party/devtools-frontend/src/scripts/build'))
 sys.path.insert(
     0,
-    os.path.join(_CHROME_SOURCE, ('third_party/chromevox/third_party/' +
-                                  'closure-library/closure/bin/build')))
+    os.path.join(_CHROME_SOURCE, ('third_party/google-closure-library/' +
+                                  'closure/bin/build')))
 import depstree
 import rjsmin
 import source
@@ -54,7 +54,7 @@ import treescan
 
 def Die(message):
   '''Prints an error message and exit the program.'''
-  print >> sys.stderr, message
+  print(message, file=sys.stderr)
   sys.exit(1)
 
 
@@ -75,7 +75,7 @@ class SourceWithPaths(source.Source):
   def __str__(self):
     return self.GetOutPath()
 
-class Bundle():
+class Bundle(object):
   '''An ordered list of sources without duplicates.'''
 
   def __init__(self):
@@ -113,7 +113,7 @@ class Bundle():
     return rjsmin.jsmin(self.GetUncompressedSource())
 
 
-class PathRewriter():
+class PathRewriter(object):
   '''A list of simple path rewrite rules to map relative input paths to
   relative output paths.
   '''
@@ -189,7 +189,7 @@ def _GetBase(sources):
   Returns:
     SourceWithPath: The source file providing the goog namespace.
   '''
-  for source in sources.itervalues():
+  for source in list(sources.values()):
     if (os.path.basename(source.GetInPath()) == 'base.js' and
         'goog' in source.provides):
       return source
@@ -205,11 +205,15 @@ def CalcDeps(bundle, sources, top_level):
     top_level, list: List of top-level input paths to calculate dependencies
       for.
   '''
-  providers = [s for s in sources.itervalues() if len(s.provides) > 0]
+  providers = [s for s in list(sources.values()) if len(s.provides) > 0]
+  providers.sort(key=lambda x:str(x))
+  for p in providers:
+    p.requires = sorted(list(p.requires))
   deps = depstree.DepsTree(providers)
   namespaces = []
   for path in top_level:
-    namespaces.extend(sources[path].requires)
+    namespaces.extend(sorted(sources[path].requires))
+  namespaces.sort()
   # base.js is an implicit dependency that always goes first.
   bundle.Add(_GetBase(sources))
   bundle.Add(deps.GetDependencies(namespaces))
@@ -270,16 +274,16 @@ def WriteOutput(bundle, format, out_file, dest_dir):
     if dest_dir:
       paths = (os.path.join(dest_dir, p) for p in paths)
     paths = (os.path.normpath(p) for p in paths)
-    out_file.write('\n'.join(paths))
+    out_file.write('\n'.join(paths).encode('utf-8'))
   elif format == 'html':
     HTML_TEMPLATE = '<script src=\'%s\'>'
     script_lines = (HTML_TEMPLATE % p for p in bundle.GetOutPaths())
-    out_file.write('\n'.join(script_lines))
+    out_file.write('\n'.join(script_lines).encode('utf-8'))
   elif format == 'bundle':
-    out_file.write(bundle.GetUncompressedSource())
+    out_file.write(bundle.GetUncompressedSource().encode('utf-8'))
   elif format == 'compressed_bundle':
-    out_file.write(bundle.GetCompressedSource())
-  out_file.write('\n')
+    out_file.write(bundle.GetCompressedSource().encode('utf-8'))
+  out_file.write('\n'.encode('utf-8'))
 
 
 def WriteStampfile(stampfile):
@@ -406,9 +410,9 @@ def main():
     LinkOrCopyFiles(bundle.GetSources(), options.dest_dir)
   else:
     if options.output_file:
-      out_file = open(options.output_file, 'w')
+      out_file = open(options.output_file, 'wb')
     else:
-      out_file = sys.stdout
+      out_file = sys.stdout.buffer
     try:
       WriteOutput(bundle, options.mode, out_file, options.dest_dir)
     finally:

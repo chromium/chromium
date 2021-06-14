@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.6
 
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -10,10 +10,14 @@ import io
 import optparse
 import sys
 
+logfp = open('/tmp/pylog.txt', 'a+')
+logfp.write('generate_test_messages.py ' + sys.version + '\n')
+logfp.close()
+
 
 def Die(message):
   '''Prints an error message and exit the program.'''
-  print >> sys.stderr, message
+  print(message, file=sys.stderr)
   sys.exit(1)
 
 
