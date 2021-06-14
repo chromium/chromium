@@ -270,7 +270,8 @@ Polymer({
 
   /** @private */
   computeShowSpinner_() {
-    return !this.dialogShown_ && this.get('adapterState.discovering');
+    return !this.dialogShown_ && this.adapterState &&
+        this.adapterState.discovering;
   },
 
   /** @private */
@@ -361,7 +362,7 @@ Polymer({
 
   /** @private */
   stopDiscovery_() {
-    if (!this.get('adapterState.discovering')) {
+    if (!this.adapterState || !this.adapterState.discovering) {
       return;
     }
 
