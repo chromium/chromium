@@ -90,6 +90,13 @@ const char kUMAReregistrationResult[] =
 
 enum PolicyRequired { POLICY_NOT_REQUIRED, POLICY_REQUIRED };
 
+void SendJobOKNowForBinding(
+    policy::FakeDeviceManagementService* service,
+    policy::DeviceManagementService::JobForTesting job,
+    const enterprise_management::DeviceManagementResponse& response) {
+  service->SendJobOKNow(&job, response);
+}
+
 }  // namespace
 
 namespace policy {
@@ -250,25 +257,26 @@ class UserCloudPolicyManagerChromeOSTest
 
   // Issues the OAuth2 tokens and returns the device management register job
   // if the flow succeeded.
-  DeviceManagementService::JobControl* IssueOAuthToken(bool has_request_token) {
+  DeviceManagementService::JobForTesting IssueOAuthToken(
+      bool has_request_token) {
     em::DeviceManagementRequest dummy;
     return IssueOAuthTokenAndCaptureRequest(has_request_token, &dummy);
   }
 
   // Issues the OAuth2 tokens,captures the request message, and returns the
   // device management register job if the flow succeeded.
-  DeviceManagementService::JobControl* IssueOAuthTokenAndCaptureRequest(
+  DeviceManagementService::JobForTesting IssueOAuthTokenAndCaptureRequest(
       bool has_request_token,
       em::DeviceManagementRequest* register_request) {
     EXPECT_FALSE(manager_->core()->client()->is_registered());
 
     // Issuing this token triggers the callback of the OAuth2PolicyFetcher,
     // which triggers the registration request.
-    DeviceManagementService::JobControl* job_control = nullptr;
-    EXPECT_CALL(device_management_service_, StartJob(_))
-        .WillOnce(DoAll(
-            device_management_service_.CaptureRequest(register_request),
-            device_management_service_.StartJobFullControl(&job_control)));
+    DeviceManagementService::JobForTesting job;
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(
+            DoAll(device_management_service_.CaptureRequest(register_request),
+                  SaveArg<0>(&job)));
 
     if (!has_request_token) {
       GaiaUrls* gaia_urls = GaiaUrls::GetInstance();
@@ -296,28 +304,27 @@ class UserCloudPolicyManagerChromeOSTest
               std::string() /*id_token*/, scopes);
     }
 
-    EXPECT_TRUE(job_control);
+    EXPECT_TRUE(job.IsActive());
     EXPECT_FALSE(manager_->core()->client()->is_registered());
 
     Mock::VerifyAndClearExpectations(&device_management_service_);
 
-    return job_control;
+    return job;
   }
 
   // Expects a policy fetch request to be issued after invoking |trigger_fetch|.
   // This method replies to that fetch request and verifies that the manager
   // handled the response.
   void FetchPolicy(base::OnceClosure trigger_fetch, bool timeout) {
-    DeviceManagementService::JobControl* job_control = nullptr;
+    DeviceManagementService::JobForTesting job;
     DeviceManagementService::JobConfiguration::JobType job_type;
     DeviceManagementService::JobConfiguration::ParameterMap params;
-    EXPECT_CALL(device_management_service_, StartJob(_))
-        .WillOnce(DoAll(
-            device_management_service_.CaptureJobType(&job_type),
-            device_management_service_.CaptureQueryParams(&params),
-            device_management_service_.StartJobFullControl(&job_control)));
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                        device_management_service_.CaptureQueryParams(&params),
+                        SaveArg<0>(&job)));
     std::move(trigger_fetch).Run();
-    ASSERT_TRUE(job_control);
+    ASSERT_TRUE(job.IsActive());
     ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
               job_type);
     bool is_oauth_token_passed =
@@ -335,10 +342,9 @@ class UserCloudPolicyManagerChromeOSTest
     } else {
       // Send the initial policy back. This completes the initialization flow.
       EXPECT_CALL(*store_, Store(_));
-      device_management_service_.DoURLCompletion(
-          &job_control, net::OK, DeviceManagementService::kSuccess,
-          policy_blob_);
-      EXPECT_EQ(nullptr, job_control);
+      device_management_service_.SendJobResponseNow(
+          &job, net::OK, DeviceManagementService::kSuccess, policy_blob_);
+      EXPECT_FALSE(job.IsActive());
       Mock::VerifyAndClearExpectations(store_);
       // Notifying that the store has cached the fetched policy completes the
       // process, and initializes the manager.
@@ -365,7 +371,9 @@ class UserCloudPolicyManagerChromeOSTest
   // Policy infrastructure.
   TestingPrefServiceSimple prefs_;
   MockConfigurationPolicyObserver observer_;
-  MockDeviceManagementService device_management_service_;
+  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService device_management_service_{
+      &job_creation_handler_};
   MockCloudPolicyStore* store_;                          // Not owned.
   MockCloudExternalDataManager* external_data_manager_;  // Not owned.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
@@ -487,17 +495,15 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingFirstFetch) {
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(false);
-  ASSERT_TRUE(job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
 
   // Reply with a valid registration response. This triggers the initial policy
   // fetch.
-  FetchPolicy(
-      base::BindOnce(&MockDeviceManagementService::DoURLCompletionForBinding,
-                     base::Unretained(&device_management_service_),
-                     base::Unretained(job_control), net::OK,
-                     DeviceManagementService::kSuccess, register_blob_),
-      false);
+  FetchPolicy(base::BindOnce(&SendJobOKNowForBinding,
+                             base::Unretained(&device_management_service_), job,
+                             register_blob_),
+              false);
 }
 
 TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingRefreshFetch) {
@@ -543,17 +549,15 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingFetchStoreError) {
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(false);
-  ASSERT_TRUE(job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
 
   // Reply with a valid registration response. This triggers the initial policy
   // fetch.
-  FetchPolicy(
-      base::BindOnce(&MockDeviceManagementService::DoURLCompletionForBinding,
-                     base::Unretained(&device_management_service_),
-                     base::Unretained(job_control), net::OK,
-                     DeviceManagementService::kSuccess, register_blob_),
-      false);
+  FetchPolicy(base::BindOnce(&SendJobOKNowForBinding,
+                             base::Unretained(&device_management_service_), job,
+                             register_blob_),
+              false);
 }
 
 TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingFetchOAuthError) {
@@ -602,16 +606,16 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingFetchRegisterError) {
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(false);
-  ASSERT_TRUE(job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
 
   // Now make it fail.
   EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(0);
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK, DeviceManagementService::kServiceUnavailable,
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kServiceUnavailable,
       em::DeviceManagementResponse());
-  EXPECT_EQ(nullptr, job_control);
+  EXPECT_FALSE(job.IsActive());
   EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_TRUE(PolicyBundle().Equals(manager_->policies()));
   Mock::VerifyAndClearExpectations(&observer_);
@@ -632,22 +636,21 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingFetchPolicyFetchError) {
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(false);
-  ASSERT_TRUE(job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
 
   // Reply with a valid registration response. This triggers the initial policy
   // fetch.
-  DeviceManagementService::JobControl* policy_job = nullptr;
+  DeviceManagementService::JobForTesting policy_job;
   DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&policy_job)));
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK, DeviceManagementService::kSuccess, register_blob_);
-  EXPECT_EQ(nullptr, job_control);
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&policy_job)));
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kSuccess, register_blob_);
+  EXPECT_FALSE(job.IsActive());
   Mock::VerifyAndClearExpectations(&device_management_service_);
-  ASSERT_TRUE(policy_job);
+  ASSERT_TRUE(policy_job.IsActive());
   ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
@@ -659,10 +662,10 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingFetchPolicyFetchError) {
   // also correct and makes the implementation simpler.
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(0);
   EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
-  device_management_service_.DoURLCompletion(
+  device_management_service_.SendJobResponseNow(
       &policy_job, net::OK, DeviceManagementService::kServiceUnavailable,
       register_blob_);
-  EXPECT_EQ(nullptr, policy_job);
+  EXPECT_FALSE(policy_job.IsActive());
   Mock::VerifyAndClearExpectations(&observer_);
   EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_TRUE(PolicyBundle().Equals(manager_->policies()));
@@ -686,14 +689,14 @@ TEST_P(UserCloudPolicyManagerChromeOSTest,
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(false);
-  ASSERT_TRUE(job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
 
   // Make the registration attempt fail.
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK, DeviceManagementService::kServiceUnavailable,
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kServiceUnavailable,
       register_blob_);
-  EXPECT_EQ(nullptr, job_control);
+  EXPECT_FALSE(job.IsActive());
   Mock::VerifyAndClearExpectations(&device_management_service_);
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
   EXPECT_FALSE(manager_->core()->client()->is_registered());
@@ -716,22 +719,21 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, NoCacheButPolicyExpectedFetchError) {
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(false);
-  ASSERT_TRUE(job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
 
   // Reply with a valid registration response. This triggers the initial policy
   // fetch.
-  DeviceManagementService::JobControl* policy_job = nullptr;
+  DeviceManagementService::JobForTesting policy_job;
   DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&policy_job)));
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK, DeviceManagementService::kSuccess, register_blob_);
-  EXPECT_EQ(nullptr, job_control);
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&policy_job)));
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kSuccess, register_blob_);
+  EXPECT_FALSE(job.IsActive());
   Mock::VerifyAndClearExpectations(&device_management_service_);
-  ASSERT_TRUE(policy_job);
+  ASSERT_TRUE(policy_job.IsActive());
   ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
@@ -742,10 +744,10 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, NoCacheButPolicyExpectedFetchError) {
   // A single notification suffices for this edge case, but this behavior is
   // also correct and makes the implementation simpler.
   EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
-  device_management_service_.DoURLCompletion(
+  device_management_service_.SendJobResponseNow(
       &policy_job, net::OK, DeviceManagementService::kServiceUnavailable,
       em::DeviceManagementResponse());
-  EXPECT_EQ(nullptr, policy_job);
+  EXPECT_FALSE(policy_job.IsActive());
   Mock::VerifyAndClearExpectations(&observer_);
   EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_TRUE(PolicyBundle().Equals(manager_->policies()));
@@ -776,11 +778,11 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, NonBlockingFirstFetch) {
 
   // That should have notified the manager, which now issues the request for the
   // policy oauth token.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(true);
-  ASSERT_TRUE(job_control);
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK, DeviceManagementService::kSuccess, register_blob_);
-  EXPECT_EQ(nullptr, job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(true);
+  ASSERT_TRUE(job.IsActive());
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kSuccess, register_blob_);
+  EXPECT_FALSE(job.IsActive());
 
   // The refresh scheduler takes care of the initial fetch for unmanaged users.
   // Running the task runner issues the initial fetch.
@@ -830,9 +832,9 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, TestLifetimeReportingRegular) {
   store_->NotifyStoreLoaded();
 
   em::DeviceManagementRequest register_request;
-  DeviceManagementService::JobControl* job_control =
+  DeviceManagementService::JobForTesting job =
       IssueOAuthTokenAndCaptureRequest(false, &register_request);
-  ASSERT_TRUE(job_control);
+  ASSERT_TRUE(job.IsActive());
   Mock::VerifyAndClearExpectations(&device_management_service_);
   ASSERT_TRUE(register_request.has_register_request());
   ASSERT_TRUE(register_request.register_request().has_lifetime());
@@ -849,9 +851,9 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, TestLifetimeReportingEphemeralUser) {
   store_->NotifyStoreLoaded();
 
   em::DeviceManagementRequest register_request;
-  DeviceManagementService::JobControl* job_control =
+  DeviceManagementService::JobForTesting job =
       IssueOAuthTokenAndCaptureRequest(false, &register_request);
-  ASSERT_TRUE(job_control);
+  ASSERT_TRUE(job.IsActive());
 
   Mock::VerifyAndClearExpectations(&device_management_service_);
   ASSERT_TRUE(register_request.has_register_request());
@@ -1000,22 +1002,21 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, Reregistration) {
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* job_control = IssueOAuthToken(false);
-  ASSERT_TRUE(job_control);
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
 
   // Register.
-  DeviceManagementService::JobControl* policy_job = nullptr;
+  DeviceManagementService::JobForTesting policy_job;
   DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&policy_job)));
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK, DeviceManagementService::kSuccess, register_blob_);
-  EXPECT_EQ(nullptr, job_control);
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&policy_job)));
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kSuccess, register_blob_);
+  EXPECT_FALSE(job.IsActive());
 
   // Validate registered state.
-  ASSERT_TRUE(policy_job);
+  ASSERT_TRUE(policy_job.IsActive());
   ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
@@ -1024,17 +1025,17 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, Reregistration) {
 
   // Simulate policy fetch fail (error code 410), which should trigger the
   // re-registration flow (FetchPolicyOAuthToken()).
-  DeviceManagementService::JobControl* reregister_job = nullptr;
+  DeviceManagementService::JobForTesting reregister_job;
   em::DeviceManagementRequest register_request;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(DoAll(
-          device_management_service_.CaptureRequest(&register_request),
-          device_management_service_.StartJobFullControl(&reregister_job)));
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(
+          DoAll(device_management_service_.CaptureRequest(&register_request),
+                SaveArg<0>(&reregister_job)));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(0);
-  device_management_service_.DoURLCompletion(
+  device_management_service_.SendJobResponseNow(
       &policy_job, net::OK, DeviceManagementService::kDeviceNotFound,
       em::DeviceManagementResponse());
-  EXPECT_EQ(nullptr, policy_job);
+  EXPECT_FALSE(policy_job.IsActive());
   histogram_tester.ExpectUniqueSample(kUMAReregistrationResult, 0, 1);
 
   // Copy register request (used to check correct re-registration parameters are
@@ -1055,19 +1056,19 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, Reregistration) {
             register_request.register_request().reregistration_dm_token());
 
   // Validate re-registration state.
-  ASSERT_TRUE(reregister_job);
+  ASSERT_TRUE(reregister_job.IsActive());
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
   EXPECT_FALSE(manager_->core()->client()->is_registered());
   EXPECT_FALSE(user_manager_->GetActiveUser()->force_online_signin());
 
   // Validate successful re-registration.
-  policy_job = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(device_management_service_.StartJobFullControl(&policy_job));
-  device_management_service_.DoURLCompletion(&reregister_job, net::OK,
-                                             DeviceManagementService::kSuccess,
-                                             register_blob_);
-  EXPECT_EQ(nullptr, reregister_job);
+  policy_job.Deactivate();
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(SaveArg<0>(&policy_job));
+  device_management_service_.SendJobResponseNow(
+      &reregister_job, net::OK, DeviceManagementService::kSuccess,
+      register_blob_);
+  EXPECT_FALSE(reregister_job.IsActive());
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
   EXPECT_TRUE(manager_->core()->client()->is_registered());
   EXPECT_FALSE(user_manager_->GetActiveUser()->force_online_signin());
@@ -1093,23 +1094,22 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, ReregistrationFails) {
 
   // This starts the OAuth2 policy token fetcher using the signin Profile.
   // The manager will then issue the registration request.
-  DeviceManagementService::JobControl* register_job = IssueOAuthToken(false);
-  ASSERT_TRUE(register_job);
+  DeviceManagementService::JobForTesting register_job = IssueOAuthToken(false);
+  ASSERT_TRUE(register_job.IsActive());
 
   // Register.
-  DeviceManagementService::JobControl* policy_job = nullptr;
+  DeviceManagementService::JobForTesting policy_job;
   DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&policy_job)));
-  device_management_service_.DoURLCompletion(&register_job, net::OK,
-                                             DeviceManagementService::kSuccess,
-                                             register_blob_);
-  EXPECT_EQ(nullptr, register_job);
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&policy_job)));
+  device_management_service_.SendJobResponseNow(
+      &register_job, net::OK, DeviceManagementService::kSuccess,
+      register_blob_);
+  EXPECT_FALSE(register_job.IsActive());
 
   // Validate registered state.
-  ASSERT_TRUE(policy_job);
+  ASSERT_TRUE(policy_job.IsActive());
   ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
@@ -1118,15 +1118,14 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, ReregistrationFails) {
 
   // Simulate policy fetch fail (error code 410), which should trigger the
   // re-registration flow (FetchPolicyOAuthToken()).
-  DeviceManagementService::JobControl* reregister_job = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          device_management_service_.StartJobFullControl(&reregister_job));
+  DeviceManagementService::JobForTesting reregister_job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(SaveArg<0>(&reregister_job));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(0);
-  device_management_service_.DoURLCompletion(
+  device_management_service_.SendJobResponseNow(
       &policy_job, net::OK, DeviceManagementService::kDeviceNotFound,
       em::DeviceManagementResponse());
-  EXPECT_EQ(nullptr, policy_job);
+  EXPECT_FALSE(policy_job.IsActive());
   histogram_tester.ExpectUniqueSample(kUMAReregistrationResult, 0, 1);
 
   // Simulate OAuth token fetch.
@@ -1139,16 +1138,16 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, ReregistrationFails) {
           std::move(ok_response), kOAuth2AccessTokenData));
 
   // Validate re-registration state.
-  ASSERT_TRUE(reregister_job);
+  ASSERT_TRUE(reregister_job.IsActive());
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
   EXPECT_FALSE(manager_->core()->client()->is_registered());
   EXPECT_FALSE(user_manager_->GetActiveUser()->force_online_signin());
 
   // Validate unsuccessful re-registration.
-  device_management_service_.DoURLCompletion(
+  device_management_service_.SendJobResponseNow(
       &reregister_job, net::OK, DeviceManagementService::kServiceUnavailable,
       register_blob_);
-  EXPECT_EQ(nullptr, reregister_job);
+  EXPECT_FALSE(reregister_job.IsActive());
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
   EXPECT_FALSE(manager_->core()->client()->is_registered());
   EXPECT_TRUE(user_manager_->GetActiveUser()->force_online_signin());

@@ -102,7 +102,9 @@ class DeviceLocalAccountPolicyServiceTestBase
   UserPolicyBuilder device_local_account_policy_;
   std::unique_ptr<ash::CrosSettings> cros_settings_;
   scoped_refptr<base::TestSimpleTaskRunner> extension_cache_task_runner_;
-  MockDeviceManagementService mock_device_management_service_;
+  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService fake_device_management_service_{
+      &job_creation_handler_};
   FakeAffiliatedInvalidationServiceProvider
       affiliated_invalidation_service_provider_;
   std::unique_ptr<DeviceLocalAccountPolicyService> service_;
@@ -161,7 +163,7 @@ void DeviceLocalAccountPolicyServiceTestBase::SetUp() {
   device_local_account_policy_.policy_data().set_policy_type(
       dm_protocol::kChromePublicAccountPolicyType);
 
-  mock_device_management_service_.ScheduleInitialization(0);
+  fake_device_management_service_.ScheduleInitialization(0);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -412,35 +414,34 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, FetchPolicy) {
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
 
-  service_->Connect(&mock_device_management_service_);
+  service_->Connect(&fake_device_management_service_);
   EXPECT_TRUE(broker->core()->client());
 
-  DeviceManagementService::JobControl* job = nullptr;
+  DeviceManagementService::JobForTesting job;
   DeviceManagementService::JobConfiguration::JobType job_type;
-  EXPECT_CALL(mock_device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(mock_device_management_service_.CaptureJobType(&job_type),
-                mock_device_management_service_.StartJobFullControl(&job)));
+  std::string payload;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(fake_device_management_service_.CaptureJobType(&job_type),
+                      fake_device_management_service_.CapturePayload(&payload),
+                      SaveArg<0>(&job)));
   // This will be called twice, because the ComponentCloudPolicyService will
   // also become ready after flushing all the pending tasks.
   EXPECT_CALL(service_observer_, OnPolicyUpdated(account_1_user_id_)).Times(2);
   FlushDeviceSettings();
 
-  DCHECK(job);
+  EXPECT_TRUE(job.IsActive());
   ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type);
-  std::string payload = job->GetConfiguration()->GetPayload();
 
   em::DeviceManagementResponse response;
   response.mutable_policy_response()->add_responses()->CopyFrom(
       device_local_account_policy_.policy());
-  mock_device_management_service_.DoURLCompletion(
-      &job, net::OK, DeviceManagementService::kSuccess, response);
-  EXPECT_EQ(nullptr, job);
+  fake_device_management_service_.SendJobOKNow(&job, response);
+  EXPECT_FALSE(job.IsActive());
   FlushDeviceSettings();
 
   Mock::VerifyAndClearExpectations(&service_observer_);
-  Mock::VerifyAndClearExpectations(&mock_device_management_service_);
+  Mock::VerifyAndClearExpectations(&fake_device_management_service_);
 
   em::DeviceManagementRequest request;
   request.ParseFromString(payload);
@@ -485,15 +486,14 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, RefreshPolicy) {
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
 
-  service_->Connect(&mock_device_management_service_);
+  service_->Connect(&fake_device_management_service_);
   ASSERT_TRUE(broker->core()->service());
 
   em::DeviceManagementResponse response;
   response.mutable_policy_response()->add_responses()->CopyFrom(
       device_local_account_policy_.policy());
-  EXPECT_CALL(mock_device_management_service_, StartJob(_))
-      .WillRepeatedly(
-          mock_device_management_service_.StartJobOKAsync(response));
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillRepeatedly(fake_device_management_service_.SendJobOKAsync(response));
   EXPECT_CALL(*this, OnRefreshDone(true)).Times(1);
   // This will be called twice, because the ComponentCloudPolicyService will
   // also become ready after flushing all the pending tasks.
@@ -504,7 +504,7 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, RefreshPolicy) {
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&service_observer_);
   Mock::VerifyAndClearExpectations(this);
-  Mock::VerifyAndClearExpectations(&mock_device_management_service_);
+  Mock::VerifyAndClearExpectations(&fake_device_management_service_);
 
   ASSERT_TRUE(broker->core()->store());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, broker->core()->store()->status());
@@ -962,36 +962,33 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
 
   // Bring up the cloud connection. The refresh scheduler may fire refreshes at
   // this point which are not relevant for the test.
-  EXPECT_CALL(mock_device_management_service_, StartJob(_))
-      .WillRepeatedly(mock_device_management_service_.StartJobAsync(
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillRepeatedly(fake_device_management_service_.SendJobResponseAsync(
           net::ERR_FAILED, DeviceManagementService::kSuccess));
-  service_->Connect(&mock_device_management_service_);
+  service_->Connect(&fake_device_management_service_);
   FlushDeviceSettings();
-  Mock::VerifyAndClearExpectations(&mock_device_management_service_);
+  Mock::VerifyAndClearExpectations(&fake_device_management_service_);
 
   // No callbacks until the refresh completes.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(_)).Times(0);
-  DeviceManagementService::JobControl* job_control = nullptr;
-  EXPECT_CALL(mock_device_management_service_, StartJob(_))
-      .WillOnce(
-          mock_device_management_service_.StartJobFullControl(&job_control));
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation).WillOnce(SaveArg<0>(&job));
   provider_->RefreshPolicies();
   ReloadDeviceSettings();
   Mock::VerifyAndClearExpectations(&provider_observer_);
-  Mock::VerifyAndClearExpectations(&mock_device_management_service_);
+  Mock::VerifyAndClearExpectations(&fake_device_management_service_);
   EXPECT_TRUE(provider_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
   // When the response comes in, it should propagate and fire the notification.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
-  ASSERT_TRUE(job_control);
+  ASSERT_TRUE(job.IsActive());
   em::DeviceManagementResponse response;
   device_local_account_policy_.Build();
   response.mutable_policy_response()->add_responses()->CopyFrom(
       device_local_account_policy_.policy());
-  mock_device_management_service_.DoURLCompletion(
-      &job_control, net::OK, DeviceManagementService::kSuccess, response);
-  EXPECT_EQ(nullptr, job_control);
+  fake_device_management_service_.SendJobOKNow(&job, response);
+  EXPECT_FALSE(job.IsActive());
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&provider_observer_);
 }

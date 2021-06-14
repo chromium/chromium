@@ -67,7 +67,8 @@ class AndroidManagementClientTest : public testing::Test {
   em::DeviceManagementResponse android_management_response_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockDeviceManagementService service_;
+  StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService service_{&job_creation_handler_};
   StrictMock<base::MockCallback<AndroidManagementClient::StatusCallback>>
       callback_observer_;
   std::unique_ptr<AndroidManagementClient> client_;
@@ -79,10 +80,10 @@ class AndroidManagementClientTest : public testing::Test {
 TEST_F(AndroidManagementClientTest, CheckAndroidManagementCall) {
   DeviceManagementService::JobConfiguration::JobType job_type;
   DeviceManagementService::JobConfiguration::ParameterMap params;
-  EXPECT_CALL(service_, StartJob(_))
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
       .WillOnce(DoAll(service_.CaptureJobType(&job_type),
                       service_.CaptureQueryParams(&params),
-                      service_.StartJobOKAsync(android_management_response_)));
+                      service_.SendJobOKAsync(android_management_response_)));
   EXPECT_CALL(callback_observer_,
               Run(AndroidManagementClient::Result::UNMANAGED))
       .Times(1);

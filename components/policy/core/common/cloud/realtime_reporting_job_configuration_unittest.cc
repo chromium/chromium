@@ -152,7 +152,8 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockDeviceManagementService service_;
+  StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService service_{&job_creation_handler_};
   MockCloudPolicyClient client_;
   StrictMock<MockCallbackObserver> callback_observer_;
   DeviceManagementService::Job job_;

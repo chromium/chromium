@@ -24,7 +24,6 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -112,7 +111,6 @@ class StatusUploaderTest : public testing::Test {
     EXPECT_CALL(*collector_ptr_, GetStatusAsync)
         .WillOnce(MoveArg<0>(&status_callback));
     task_runner_->RunPendingTasks();
-    testing::Mock::VerifyAndClearExpectations(&device_management_service_);
 
     return status_callback;
   }
@@ -132,8 +130,6 @@ class StatusUploaderTest : public testing::Test {
     // callback in order to simulate valid status data.
     StatusCollectorParams status_params;
     std::move(status_callback).Run(std::move(status_params));
-
-    testing::Mock::VerifyAndClearExpectations(&device_management_service_);
 
     // Make sure no status upload is queued up yet (since an upload is in
     // progress).
@@ -180,7 +176,6 @@ class StatusUploaderTest : public testing::Test {
   MockDeviceStatusCollector* collector_ptr_;
   ui::UserActivityDetector detector_;
   MockCloudPolicyClient client_;
-  MockDeviceManagementService device_management_service_;
   TestingPrefServiceSimple prefs_;
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
@@ -238,7 +233,6 @@ TEST_F(StatusUploaderTest, ResetTimerAfterFailedStatusCollection) {
   EXPECT_CALL(*collector_ptr_, GetStatusAsync)
       .WillOnce(MoveArg<0>(&status_callback));
   task_runner_->RunPendingTasks();
-  testing::Mock::VerifyAndClearExpectations(&device_management_service_);
 
   // Running the callback should trigger StatusUploader::OnStatusReceived, which
   // in turn should recognize the failure to get status and queue another status

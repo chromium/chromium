@@ -119,7 +119,8 @@ class DeviceCloudStateKeysUploaderTest : public testing::Test {
   std::string client_id_;
   chromeos::FakeSessionManagerClient fake_session_manager_client_;
   ServerBackedStateKeysBroker broker_;
-  testing::StrictMock<MockDeviceManagementService> service_;
+  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService service_{&job_creation_handler_};
   std::unique_ptr<DeviceCloudStateKeysUploader> uploader_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory url_loader_factory_;
@@ -132,11 +133,9 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeys) {
 
   DeviceManagementService::JobConfiguration::JobType job_type;
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
-  EXPECT_CALL(service_, StartJob)
-      .WillOnce(DoAll(
-          service_.CaptureJobType(&job_type),
-          service_.StartJobAsync(net::OK, DeviceManagementService::kSuccess,
-                                 policy_response)));
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&job_type),
+                      service_.SendJobOKAsync(policy_response)));
   ExpectSuccess(true);
   run_loop_.Run();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
@@ -174,11 +173,9 @@ TEST_F(DeviceCloudStateKeysUploaderTest,
   // and a successful state keys upload (via policy fetch).
   DeviceManagementService::JobConfiguration::JobType job_type;
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
-  EXPECT_CALL(service_, StartJob)
-      .WillOnce(DoAll(
-          service_.CaptureJobType(&job_type),
-          service_.StartJobAsync(net::OK, DeviceManagementService::kSuccess,
-                                 policy_response)));
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&job_type),
+                      service_.SendJobOKAsync(policy_response)));
   ExpectSuccess(true);
   run_loop_.Run();
   EXPECT_TRUE(uploader_->IsClientRegistered());
@@ -193,12 +190,10 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysMultipleTimes) {
 
   DeviceManagementService::JobConfiguration::JobType job_type;
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
-  EXPECT_CALL(service_, StartJob)
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
       .Times(3)
-      .WillRepeatedly(DoAll(
-          service_.CaptureJobType(&job_type),
-          service_.StartJobAsync(net::OK, DeviceManagementService::kSuccess,
-                                 policy_response)));
+      .WillRepeatedly(DoAll(service_.CaptureJobType(&job_type),
+                            service_.SendJobOKAsync(policy_response)));
   ExpectSuccess(true);
   run_loop_.Run();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,

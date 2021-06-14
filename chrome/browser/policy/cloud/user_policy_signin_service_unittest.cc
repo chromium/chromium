@@ -66,6 +66,7 @@ namespace em = enterprise_management;
 using testing::_;
 using testing::AnyNumber;
 using testing::Mock;
+using testing::SaveArg;
 
 namespace policy {
 
@@ -240,11 +241,10 @@ class UserPolicySigninServiceTest : public testing::Test {
     // registration.
     DeviceManagementService::JobConfiguration::JobType job_type =
         DeviceManagementService::JobConfiguration::TYPE_INVALID;
-    DeviceManagementService::JobControl* job_control = nullptr;
-    EXPECT_CALL(device_management_service_, StartJob(_))
-        .WillOnce(DoAll(
-            device_management_service_.CaptureJobType(&job_type),
-            device_management_service_.StartJobFullControl(&job_control)));
+    DeviceManagementService::JobForTesting job;
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                        SaveArg<0>(&job)));
 
     // Now mimic the user being a hosted domain - this should cause a Register()
     // call.
@@ -253,7 +253,7 @@ class UserPolicySigninServiceTest : public testing::Test {
     // Should have no more outstanding requests.
     ASSERT_FALSE(IsRequestActive());
     Mock::VerifyAndClearExpectations(this);
-    ASSERT_NE(nullptr, job_control);
+    ASSERT_TRUE(job.IsActive());
     EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
               job_type);
 
@@ -263,9 +263,7 @@ class UserPolicySigninServiceTest : public testing::Test {
         ->set_device_management_token(expected_dm_token);
     registration_response.mutable_register_response()->set_enrollment_type(
         em::DeviceRegisterResponse::ENTERPRISE);
-    device_management_service_.DoURLCompletion(
-        &job_control, net::OK, DeviceManagementService::kSuccess,
-        registration_response);
+    device_management_service_.SendJobOKNow(&job, registration_response);
 
     EXPECT_TRUE(register_completed_);
     EXPECT_EQ(dm_token_, expected_dm_token);
@@ -298,7 +296,9 @@ class UserPolicySigninServiceTest : public testing::Test {
   // True if OnRegisterCompleted() was called.
   bool register_completed_;
 
-  MockDeviceManagementService device_management_service_;
+  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService device_management_service_{
+      &job_creation_handler_};
 
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -513,11 +513,10 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   // refresh the policy for the user.
   DeviceManagementService::JobConfiguration::JobType job_type =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobControl* job_control = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&job_control)));
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&job)));
 
   // Client registration should not be in progress since the client should be
   // already registered.
@@ -608,11 +607,10 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientFailedRegistration) {
   // registration.
   DeviceManagementService::JobConfiguration::JobType job_type =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobControl* job_control = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&job_control)));
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&job)));
 
   // Now mimic the user being a hosted domain - this should cause a Register()
   // call.
@@ -621,15 +619,14 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientFailedRegistration) {
   // Should have no more outstanding requests.
   ASSERT_FALSE(IsRequestActive());
   Mock::VerifyAndClearExpectations(this);
-  ASSERT_NE(nullptr, job_control);
+  ASSERT_TRUE(job.IsActive());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type);
   EXPECT_FALSE(register_completed_);
 
   // Make client registration fail (hosted domain user that is not managed).
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK,
-      DeviceManagementService::kDeviceManagementNotAllowed,
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kDeviceManagementNotAllowed,
       em::DeviceManagementResponse());
 
   EXPECT_TRUE(register_completed_);
@@ -651,11 +648,10 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
   // registration.
   DeviceManagementService::JobConfiguration::JobType job_type =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobControl* job_control = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&job_control)));
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&job)));
 
   // Now mimic the user being a hosted domain - this should cause a Register()
   // call.
@@ -664,7 +660,7 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
   // Should have no more outstanding requests.
   ASSERT_FALSE(IsRequestActive());
   Mock::VerifyAndClearExpectations(this);
-  ASSERT_NE(nullptr, job_control);
+  ASSERT_TRUE(job.IsActive());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type);
   EXPECT_FALSE(register_completed_);
@@ -675,9 +671,7 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
       ->set_device_management_token(expected_dm_token);
   registration_response.mutable_register_response()->set_enrollment_type(
       em::DeviceRegisterResponse::ENTERPRISE);
-  device_management_service_.DoURLCompletion(&job_control, net::OK,
-                                             DeviceManagementService::kSuccess,
-                                             registration_response);
+  device_management_service_.SendJobOKNow(&job, registration_response);
 
   EXPECT_TRUE(register_completed_);
   EXPECT_EQ(dm_token_, expected_dm_token);

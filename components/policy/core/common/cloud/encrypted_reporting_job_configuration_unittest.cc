@@ -294,7 +294,8 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   ScopedFakeSerialNumber fake_serial_number_;
 #endif
 
-  MockDeviceManagementService service_;
+  StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService service_{&job_creation_handler_};
   MockCloudPolicyClient client_;
   StrictMock<MockCompleteCb> complete_cb_;
 

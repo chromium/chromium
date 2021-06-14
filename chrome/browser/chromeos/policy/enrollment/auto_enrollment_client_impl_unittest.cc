@@ -174,7 +174,8 @@ class AutoEnrollmentClientImplTest
 
   void CreateClient(int power_initial, int power_limit) {
     state_ = AUTO_ENROLLMENT_STATE_PENDING;
-    service_ = std::make_unique<MockDeviceManagementService>();
+    service_ =
+        std::make_unique<FakeDeviceManagementService>(&job_creation_handler_);
     service_->ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
 
@@ -201,12 +202,11 @@ class AutoEnrollmentClientImplTest
   void ProgressCallback(AutoEnrollmentState state) { state_ = state; }
 
   void ServerWillFail(int net_error, int response_code) {
-    em::DeviceManagementResponse dummy_response;
-    EXPECT_CALL(*service_, StartJob(_))
-        .WillOnce(DoAll(
-            service_->CaptureJobType(&failed_job_type_),
-            service_->CaptureRequest(&last_request_),
-            service_->StartJobAsync(net_error, response_code, dummy_response)))
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(
+            DoAll(service_->CaptureJobType(&failed_job_type_),
+                  service_->CaptureRequest(&last_request_),
+                  service_->SendJobResponseAsync(net_error, response_code)))
         .RetiresOnSaturation();
   }
 
@@ -237,12 +237,10 @@ class AutoEnrollmentClientImplTest
       }
     }
 
-    EXPECT_CALL(*service_, StartJob(_))
-        .WillOnce(
-            DoAll(service_->CaptureJobType(&auto_enrollment_job_type_),
-                  service_->CaptureRequest(&last_request_),
-                  service_->StartJobAsync(
-                      net::OK, DeviceManagementService::kSuccess, response)))
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(service_->CaptureJobType(&auto_enrollment_job_type_),
+                        service_->CaptureRequest(&last_request_),
+                        service_->SendJobOKAsync(response)))
         .RetiresOnSaturation();
   }
 
@@ -326,12 +324,10 @@ class AutoEnrollmentClientImplTest
           *initial_state_response);
     }
 
-    EXPECT_CALL(*service_, StartJob(_))
-        .WillOnce(
-            DoAll(service_->CaptureJobType(&state_retrieval_job_type_),
-                  service_->CaptureRequest(&last_request_),
-                  service_->StartJobAsync(
-                      net::OK, DeviceManagementService::kSuccess, response)))
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(service_->CaptureJobType(&state_retrieval_job_type_),
+                        service_->CaptureRequest(&last_request_),
+                        service_->SendJobOKAsync(response)))
         .RetiresOnSaturation();
   }
 
@@ -348,12 +344,10 @@ class AutoEnrollmentClientImplTest
       state_response->set_management_domain(management_domain);
     state_response->set_is_license_packaged_with_device(
         is_license_packaged_with_device);
-    EXPECT_CALL(*service_, StartJob(_))
-        .WillOnce(
-            DoAll(service_->CaptureJobType(&state_retrieval_job_type_),
-                  service_->CaptureRequest(&last_request_),
-                  service_->StartJobAsync(
-                      net::OK, DeviceManagementService::kSuccess, response)))
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(service_->CaptureJobType(&state_retrieval_job_type_),
+                        service_->CaptureRequest(&last_request_),
+                        service_->SendJobOKAsync(response)))
         .RetiresOnSaturation();
   }
 
@@ -366,10 +360,10 @@ class AutoEnrollmentClientImplTest
                      TYPE_INITIAL_ENROLLMENT_STATE_RETRIEVAL;
   }
 
-  void ServerWillReplyAsync(DeviceManagementService::JobControl** job) {
-    EXPECT_CALL(*service_, StartJob(_))
+  void ServerWillReplyAsync(DeviceManagementService::JobForTesting* job) {
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
         .WillOnce(DoAll(service_->CaptureJobType(&last_async_job_type_),
-                        service_->StartJobFullControl(job)));
+                        SaveArg<0>(job)));
   }
 
   bool HasCachedDecision() {
@@ -539,7 +533,8 @@ class AutoEnrollmentClientImplTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState scoped_testing_local_state_;
   TestingPrefServiceSimple* local_state_;
-  std::unique_ptr<MockDeviceManagementService> service_;
+  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  std::unique_ptr<FakeDeviceManagementService> service_;
   em::DeviceManagementRequest last_request_;
   AutoEnrollmentState state_;
   DeviceManagementService::JobConfiguration::JobType failed_job_type_ =
@@ -991,7 +986,7 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
 
 TEST_P(AutoEnrollmentClientImplTest, ReuseCachedDecision) {
   // No bucket download requests should be issued.
-  EXPECT_CALL(*service_, StartJob(_)).Times(0);
+  EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
   local_state_->SetUserPref(prefs::kShouldAutoEnroll,
                             std::make_unique<base::Value>(true));
   local_state_->SetUserPref(prefs::kAutoEnrollmentPowerLimit,
@@ -1099,12 +1094,12 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonWithPendingRequest) {
-  DeviceManagementService::JobControl* job = nullptr;
+  DeviceManagementService::JobForTesting job;
   ServerWillReplyAsync(&job);
-  EXPECT_FALSE(job);
+  EXPECT_FALSE(job.IsActive());
   client()->Start();
   base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(job);
+  ASSERT_TRUE(job.IsActive());
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
 
   // Cancel while a request is in flight.
@@ -1113,22 +1108,22 @@ TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonWithPendingRequest) {
   EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
 
   // The client cleans itself up once a reply is received.
-  service_->DoURLCompletion(&job, net::OK,
-                            DeviceManagementService::kServiceUnavailable,
-                            em::DeviceManagementResponse());
-  EXPECT_EQ(nullptr, job);
+  service_->SendJobResponseNow(&job, net::OK,
+                               DeviceManagementService::kServiceUnavailable,
+                               em::DeviceManagementResponse());
+  EXPECT_FALSE(job.IsActive());
   // The DeleteSoon task has been posted:
   EXPECT_FALSE(base::CurrentThread::Get()->IsIdleForTesting());
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
-  DeviceManagementService::JobControl* job = nullptr;
+  DeviceManagementService::JobForTesting job;
   ServerWillReplyAsync(&job);
-  EXPECT_FALSE(job);
+  EXPECT_FALSE(job.IsActive());
   client()->Start();
   base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(job);
+  ASSERT_TRUE(job.IsActive());
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
 
   // Cancel while a request is in flight.
@@ -1144,10 +1139,10 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
 
   // The client cleans itself up once a reply is received.
-  service_->DoURLCompletion(&job, net::OK,
-                            DeviceManagementService::kServiceUnavailable,
-                            em::DeviceManagementResponse());
-  EXPECT_EQ(nullptr, job);
+  service_->SendJobResponseNow(&job, net::OK,
+                               DeviceManagementService::kServiceUnavailable,
+                               em::DeviceManagementResponse());
+  EXPECT_FALSE(job.IsActive());
   // The DeleteSoon task has been posted:
   EXPECT_FALSE(base::CurrentThread::Get()->IsIdleForTesting());
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
@@ -1488,60 +1483,46 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
   void ServerWillReplyForPsm(int net_error,
                              int response_code,
                              const em::DeviceManagementResponse& response) {
-    EXPECT_CALL(*service_, StartJob(_))
-        .WillOnce(
-            DoAll(service_->CaptureJobType(&psm_last_job_type_),
-                  service_->CaptureRequest(&psm_last_request_),
-                  service_->StartJobAsync(net_error, response_code, response)))
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(
+            service_->CaptureJobType(&psm_last_job_type_),
+            service_->CaptureRequest(&psm_last_request_),
+            service_->SendJobResponseAsync(net_error, response_code, response)))
         .RetiresOnSaturation();
   }
 
   // Holds the full control of the given job in |job| and captures the job type
   // in |psm_last_job_type_|, and its request in |psm_last_request_|.
-  void ServerWillReplyAsyncForPsm(DeviceManagementService::JobControl** job) {
-    EXPECT_CALL(*service_, StartJob(_))
+  void ServerWillReplyAsyncForPsm(DeviceManagementService::JobForTesting* job) {
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
         .WillOnce(DoAll(service_->CaptureJobType(&psm_last_job_type_),
                         service_->CaptureRequest(&psm_last_request_),
-                        service_->StartJobFullControl(job)));
+                        SaveArg<0>(job)));
   }
 
   void ServerReplyForPsmAsyncJobWithOprfResponse(
-      DeviceManagementService::JobControl** job) {
+      DeviceManagementService::JobForTesting* job) {
     em::DeviceManagementResponse response = GetPsmOprfResponse();
 
-    ServerReplyForAsyncJob(job, net::OK, DeviceManagementService::kSuccess,
-                           response);
+    service_->SendJobOKNow(job, response);
   }
 
   void ServerReplyForPsmAsyncJobWithQueryResponse(
-      DeviceManagementService::JobControl** job) {
+      DeviceManagementService::JobForTesting* job) {
     em::DeviceManagementResponse response = GetPsmQueryResponse();
 
-    ServerReplyForAsyncJob(job, net::OK, DeviceManagementService::kSuccess,
-                           response);
+    service_->SendJobOKNow(job, response);
   }
 
-  void ServerFailsForAsyncJob(DeviceManagementService::JobControl** job) {
-    em::DeviceManagementResponse dummy_response;
-    ServerReplyForAsyncJob(job, net::OK,
-                           DeviceManagementService::kServiceUnavailable,
-                           dummy_response);
+  void ServerFailsForAsyncJob(DeviceManagementService::JobForTesting* job) {
+    service_->SendJobResponseNow(job, net::OK,
+                                 DeviceManagementService::kServiceUnavailable);
   }
 
   void ServerRepliesEmptyResponseForAsyncJob(
-      DeviceManagementService::JobControl** job) {
+      DeviceManagementService::JobForTesting* job) {
     em::DeviceManagementResponse dummy_response;
-    ServerReplyForAsyncJob(job, net::OK, DeviceManagementService::kSuccess,
-                           dummy_response);
-  }
-
-  // Mocks the server reply for the full controlled job |job|.
-  void ServerReplyForAsyncJob(
-      DeviceManagementService::JobControl** job,
-      int net_error,
-      int response_code,
-      const enterprise_management::DeviceManagementResponse& response) {
-    service_->DoURLCompletion(job, net_error, response_code, response);
+    service_->SendJobOKNow(job, dummy_response);
   }
 
   const em::PrivateSetMembershipRequest& psm_request() const {
@@ -2282,8 +2263,8 @@ TEST_P(PsmHelperAndHashDanceTest,
 
   const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
 
-  DeviceManagementService::JobControl* psm_rlwe_oprf_job = nullptr;
-  DeviceManagementService::JobControl* hash_dance_job = nullptr;
+  DeviceManagementService::JobForTesting psm_rlwe_oprf_job;
+  DeviceManagementService::JobForTesting hash_dance_job;
 
   // Expect two requests and capture them, in order, when available in
   // |psm_rlwe_oprf_job| and |hash_dance_job|.
@@ -2291,8 +2272,8 @@ TEST_P(PsmHelperAndHashDanceTest,
   ServerWillReplyAsync(&hash_dance_job);
 
   // Expect none of the jobs have been captured.
-  EXPECT_FALSE(psm_rlwe_oprf_job);
-  EXPECT_FALSE(hash_dance_job);
+  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
+  EXPECT_FALSE(hash_dance_job.IsActive());
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -2300,14 +2281,14 @@ TEST_P(PsmHelperAndHashDanceTest,
   // Verify the only job that has been captured is the PSM RLWE OPRF request.
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
-  ASSERT_TRUE(psm_rlwe_oprf_job);
-  EXPECT_FALSE(hash_dance_job);
+  ASSERT_TRUE(psm_rlwe_oprf_job.IsActive());
+  EXPECT_FALSE(hash_dance_job.IsActive());
 
   // Trigger RetryStep.
   client()->Retry();
 
   // Verify hash dance job has not been triggered after RetryStep.
-  EXPECT_FALSE(hash_dance_job);
+  EXPECT_FALSE(hash_dance_job.IsActive());
 
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
@@ -2326,7 +2307,7 @@ TEST_P(PsmHelperAndHashDanceTest,
                                   /*dm_status_count=*/1);
 
   // Verify hash dance job has been captured.
-  ASSERT_TRUE(hash_dance_job);
+  ASSERT_TRUE(hash_dance_job.IsActive());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             last_async_job_type_);
 
@@ -2351,8 +2332,8 @@ TEST_P(PsmHelperAndHashDanceTest,
   ExpectPsmHashDanceComparisonRecorded(PsmHashDanceComparison::kBothError);
 
   // Verify both jobs have finished.
-  EXPECT_EQ(hash_dance_job, nullptr);
-  EXPECT_EQ(psm_rlwe_oprf_job, nullptr);
+  EXPECT_FALSE(hash_dance_job.IsActive());
+  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
 }
 
 TEST_P(PsmHelperAndHashDanceTest,
@@ -2361,9 +2342,9 @@ TEST_P(PsmHelperAndHashDanceTest,
 
   const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
 
-  DeviceManagementService::JobControl* psm_rlwe_oprf_job = nullptr;
-  DeviceManagementService::JobControl* psm_rlwe_query_job = nullptr;
-  DeviceManagementService::JobControl* hash_dance_job = nullptr;
+  DeviceManagementService::JobForTesting psm_rlwe_oprf_job;
+  DeviceManagementService::JobForTesting psm_rlwe_query_job;
+  DeviceManagementService::JobForTesting hash_dance_job;
 
   // Expect three requests and capture them, in order, when available in
   // |psm_rlwe_oprf_job|, |psm_rlwe_query_job|, and |hash_dance_job|.
@@ -2372,9 +2353,9 @@ TEST_P(PsmHelperAndHashDanceTest,
   ServerWillReplyAsync(&hash_dance_job);
 
   // Expect none of the jobs have been captured.
-  EXPECT_FALSE(psm_rlwe_oprf_job);
-  EXPECT_FALSE(psm_rlwe_query_job);
-  EXPECT_FALSE(hash_dance_job);
+  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
+  EXPECT_FALSE(psm_rlwe_query_job.IsActive());
+  EXPECT_FALSE(hash_dance_job.IsActive());
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -2382,9 +2363,9 @@ TEST_P(PsmHelperAndHashDanceTest,
   // Verify the only job that has been captured is the PSM RLWE OPRF request.
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
-  ASSERT_TRUE(psm_rlwe_oprf_job);
-  EXPECT_FALSE(psm_rlwe_query_job);
-  EXPECT_FALSE(hash_dance_job);
+  ASSERT_TRUE(psm_rlwe_oprf_job.IsActive());
+  EXPECT_FALSE(psm_rlwe_query_job.IsActive());
+  EXPECT_FALSE(hash_dance_job.IsActive());
 
   // Reply with PSM RLWE OPRF response.
   ServerReplyForPsmAsyncJobWithOprfResponse(&psm_rlwe_oprf_job);
@@ -2395,14 +2376,14 @@ TEST_P(PsmHelperAndHashDanceTest,
   // Verify the only job that has been captured is the PSM RLWE Query request.
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
-  ASSERT_TRUE(psm_rlwe_query_job);
-  EXPECT_FALSE(hash_dance_job);
+  ASSERT_TRUE(psm_rlwe_query_job.IsActive());
+  EXPECT_FALSE(hash_dance_job.IsActive());
 
   // Trigger RetryStep.
   client()->Retry();
 
   // Verify hash dance job has not been triggered after RetryStep.
-  EXPECT_FALSE(hash_dance_job);
+  EXPECT_FALSE(hash_dance_job.IsActive());
 
   // Reply with PSM RLWE Query response.
   ServerReplyForPsmAsyncJobWithQueryResponse(&psm_rlwe_query_job);
@@ -2421,7 +2402,7 @@ TEST_P(PsmHelperAndHashDanceTest,
                                   /*dm_status_count=*/2);
 
   // Verify hash dance job has been captured.
-  ASSERT_TRUE(hash_dance_job);
+  ASSERT_TRUE(hash_dance_job.IsActive());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             last_async_job_type_);
 
@@ -2447,9 +2428,9 @@ TEST_P(PsmHelperAndHashDanceTest,
       PsmHashDanceComparison::kPSMSuccessHashDanceError);
 
   // Verify all jobs have finished.
-  EXPECT_EQ(hash_dance_job, nullptr);
-  EXPECT_EQ(psm_rlwe_oprf_job, nullptr);
-  EXPECT_EQ(psm_rlwe_query_job, nullptr);
+  EXPECT_FALSE(hash_dance_job.IsActive());
+  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
+  EXPECT_FALSE(psm_rlwe_query_job.IsActive());
 }
 
 INSTANTIATE_TEST_SUITE_P(
