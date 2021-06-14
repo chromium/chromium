@@ -328,6 +328,10 @@ void PolicyMap::Erase(const std::string& policy) {
   map_.erase(policy);
 }
 
+PolicyMap::iterator PolicyMap::EraseIt(const_iterator it) {
+  return map_.erase(it);
+}
+
 void PolicyMap::EraseMatching(
     const base::RepeatingCallback<bool(const const_iterator)>& filter) {
   FilterErase(filter, true);

@@ -64,28 +64,31 @@ void SchemaMap::FilterBundle(PolicyBundle* bundle,
 
     for (auto it_map = policy_map.begin(); it_map != policy_map.end();) {
       const std::string& policy_name = it_map->first;
-      base::Value* policy_value = it_map->second.value();
-      Schema policy_schema = schema->GetProperty(policy_name);
-      ++it_map;
+      PolicyMap::Entry& entry = it_map->second;
+      const Schema policy_schema = schema->GetProperty(policy_name);
+      // TODO (https://crbug.com/1219503) remove this dummy string
+      std::string error;
 
-      if (!policy_value) {
-        if (drop_invalid_component_policies)
-          policy_map.Erase(policy_name);
-        else
-          policy_map.GetMutable(policy_name)->SetIgnored();
+      const bool has_value = entry.value();
+      const bool is_valid =
+          has_value &&
+          policy_schema.Normalize(entry.value(), SCHEMA_ALLOW_UNKNOWN,
+                                  /* error_path= */ nullptr, &error,
+                                  /* changed = */ nullptr);
+      if (drop_invalid_component_policies && (!has_value || !is_valid)) {
+        it_map = policy_map.EraseIt(it_map);
         continue;
       }
 
-      std::string error_path;
-      std::string error;
-      if (!policy_schema.Normalize(policy_value, SCHEMA_ALLOW_UNKNOWN,
-                                   &error_path, &error, nullptr)) {
-        if (drop_invalid_component_policies) {
-          policy_map.Erase(policy_name);
-        } else {
-          policy_map.GetMutable(policy_name)->SetInvalid();
-        }
+      ++it_map;
+
+      if (!has_value) {
+        entry.SetIgnored();
+        continue;
       }
+
+      if (!is_valid)
+        entry.SetInvalid();
     }
   }
 }

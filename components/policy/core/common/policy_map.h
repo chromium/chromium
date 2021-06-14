@@ -233,6 +233,10 @@ class POLICY_EXPORT PolicyMap {
   // Erase the given |policy|, if it exists in this map.
   void Erase(const std::string& policy);
 
+  // Erase the given iterator |it|. Returns the iterator following |it| (which
+  // could be `map_.end()`).
+  iterator EraseIt(const_iterator it);
+
   // Erase all entries for which |filter| returns true.
   void EraseMatching(
       const base::RepeatingCallback<bool(const const_iterator)>& filter);
