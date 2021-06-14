@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -26,7 +27,7 @@ WebString TestWebFrameContentDumper::DumpWebViewAsText(WebView* web_view,
   DCHECK(web_view);
   WebLocalFrame* frame = web_view->MainFrame()->ToWebLocalFrame();
 
-  WebViewImpl* web_view_impl = static_cast<WebViewImpl*>(web_view);
+  WebViewImpl* web_view_impl = To<WebViewImpl>(web_view);
   DCHECK(web_view_impl->MainFrameViewWidget());
   // Updating the document lifecycle isn't enough, the BeginFrame() step
   // should come first which runs events such as notifying of media query

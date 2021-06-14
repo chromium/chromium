@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace blink {
@@ -679,7 +680,7 @@ void RemoteFrame::SetEmbeddingToken(
 }
 
 void RemoteFrame::SetPageFocus(bool is_focused) {
-  static_cast<WebViewImpl*>(WebFrame::FromCoreFrame(this)->View())
+  To<WebViewImpl>(WebFrame::FromCoreFrame(this)->View())
       ->SetPageFocus(is_focused);
 }
 
@@ -736,7 +737,7 @@ void RemoteFrame::ScrollRectToVisible(
   // view on Android which also requires an automatic zoom into legible scale.
   // This is handled by main frame's WebView.
   WebViewImpl* web_view =
-      static_cast<WebViewImpl*>(WebFrame::FromCoreFrame(this)->View());
+      To<WebViewImpl>(WebFrame::FromCoreFrame(this)->View());
   web_view->ZoomAndScrollToFocusedEditableElementRect(
       element_bounds_in_document, caret_bounds_in_document, true);
 }

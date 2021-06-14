@@ -170,6 +170,7 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/skia_util.h"
@@ -471,9 +472,8 @@ WebView* WebView::Create(
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
       is_inside_portal, compositing_enabled, widgets_never_composited,
-      static_cast<WebViewImpl*>(opener), std::move(page_handle),
-      agent_group_scheduler, session_storage_namespace_id,
-      std::move(page_base_background_color));
+      To<WebViewImpl>(opener), std::move(page_handle), agent_group_scheduler,
+      session_storage_namespace_id, std::move(page_base_background_color));
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -1409,7 +1409,7 @@ void WebViewImpl::PaintContent(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
 // static
 void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
                                   WebView* web_view) {
-  WebViewImpl* web_view_impl = static_cast<WebViewImpl*>(web_view);
+  WebViewImpl* web_view_impl = To<WebViewImpl>(web_view);
   WebSettings* settings = web_view->GetSettings();
   ApplyFontsFromMap(prefs.standard_font_family_map,
                     SetStandardFontFamilyWrapper, settings);

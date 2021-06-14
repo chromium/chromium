@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -612,7 +613,7 @@ void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
                                       class WebView* opener) {
   test_web_view_client_ =
       CreateDefaultClientIfNeeded(web_view_client, owned_test_web_view_client_);
-  web_view_ = static_cast<WebViewImpl*>(
+  web_view_ = To<WebViewImpl>(
       WebView::Create(test_web_view_client_,
                       /*is_hidden=*/false,
                       /*is_inside_portal=*/false,
@@ -637,7 +638,7 @@ void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
   // If a test turned off this settings, opened WebViews should propagate that.
   if (opener) {
     web_view_->GetSettings()->SetAllowUniversalAccessFromFileURLs(
-        static_cast<WebViewImpl*>(opener)
+        To<WebViewImpl>(opener)
             ->GetPage()
             ->GetSettings()
             .GetAllowUniversalAccessFromFileURLs());
