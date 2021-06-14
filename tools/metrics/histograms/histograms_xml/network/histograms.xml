@@ -614,6 +614,78 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.DnsProxy.Query.Failed{Stage}Duration" units="ms"
+    expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the duration of
+    various stages of the resolution process, including the entire time elapsed
+    processing the query. The measurement is started when the resolver first
+    reads the query data from the client and completes when the reply is sent.
+
+    This histogram collects data for stages of the query that have resulted in
+    some kind of failure. It's possible that for any single query, both
+    successful and failed stages may exist. The most obvious case is when a
+    resolution step is retried. As such, the total time elapsed will necessarily
+    include zero or more resolution stages which are recorded in the
+    query-type-specific version of this histogram.
+
+    A &quot;total&quot; duration will be successful if at least one resolve
+    stage succeeds, but will be recorded as 'failed' if they all do, or if any
+    other stage fails.
+
+    All measurements are made within the Resolver class. The &quot;receive&quot;
+    time is recorded in OnDNSQuery(). This is also when the &quot;total&quot;
+    time starts. The &quot;resolve&quot; measurements all start from the
+    Resolve() method, and will stop either in the same method (on failure) or
+    handler applicable to the specific client that was used: HandleAresResult()
+    and HandleCurlResult(). The &quot;reply&quot; time is recorded in the
+    ReplyDNS() method.
+  </summary>
+  <token key="Stage">
+    <variant name="Receive"/>
+    <variant name="Reply"/>
+    <variant name="Total"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.Query.{Stage}Duration" units="ms"
+    expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the duration of
+    various stages of the resolution process, including the entire time elapsed
+    processing the query. The measurement is started when the resolver first
+    reads the query data from the client and completes when the reply is sent.
+
+    This histogram collects data for stages of the query that have resulted in
+    success. It's possible that for any single query, both successful and failed
+    stages may exist. The most obvious case is when a resolution step is
+    retried. As such, the total time elapsed will necessarily include zero or
+    more resolution stages which are recorded in the query-type-specific version
+    of this histogram.
+
+    A &quot;total&quot; duration will be successful if at least one resolve
+    stage succeeds, but will be recorded as 'failed' if they all do, or if any
+    other stage fails.
+
+    All measurements are made within the Resolver class. The &quot;receive&quot;
+    time is recorded in OnDNSQuery(). This is also when the &quot;total&quot;
+    time starts. The &quot;resolve&quot; measurements all start from the
+    Resolve() method, and will stop either in the same method (on failure) or
+    handler applicable to the specific client that was used: HandleAresResult()
+    and HandleCurlResult(). The &quot;reply&quot; time is recorded in the
+    ReplyDNS() method.
+  </summary>
+  <token key="Stage">
+    <variant name="Receive"/>
+    <variant name="Reply"/>
+    <variant name="Total"/>
+  </token>
+</histogram>
+
 <histogram name="Network.DnsProxy.{Family}Nameservers" units="units"
     expires_after="2021-12-01">
   <owner>garrick@chromium.org</owner>
@@ -655,6 +727,48 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Diagnostic metric for Chrome OS DNS proxy that records any errors that occur
     during DNS queries made by the service. A value will be recorded whenever
     the request completes in error.
+  </summary>
+  <token key="Type">
+    <variant name="DnsOverHttps"/>
+    <variant name="PlainText"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.{Type}Query.FailedResolveDuration" units="ms"
+    expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the duration of a
+    failed name resolution as part of an overall query. The measurement is
+    started just before the client resolver (either plaintext or DoH) is run and
+    stopped on its completion.
+
+    All measurements are made within the Resolver class. The &quot;resolve&quot;
+    measurements all start from the Resolve() method, and will stop either in
+    the same method (on failure) or handler applicable to the specific client
+    that was used: HandleAresResult() and HandleCurlResult().
+  </summary>
+  <token key="Type">
+    <variant name="DnsOverHttps"/>
+    <variant name="PlainText"/>
+  </token>
+</histogram>
+
+<histogram name="Network.DnsProxy.{Type}Query.ResolveDuration" units="ms"
+    expires_after="2021-12-01">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the duration of a
+    successful name resolution as part of an overall query. The measurement is
+    started just before the client resolver (either plaintext or DoH) is run and
+    stopped on its completion.
+
+    All measurements are made within the Resolver class. The &quot;resolve&quot;
+    measurements all start from the Resolve() method, and will stop either in
+    the same method (on failure) or handler applicable to the specific client
+    that was used: HandleAresResult() and HandleCurlResult().
   </summary>
   <token key="Type">
     <variant name="DnsOverHttps"/>
