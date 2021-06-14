@@ -152,9 +152,9 @@ class CORE_EXPORT HTMLCanvasElement final
   // Derived from OffscreenCanvasPlaceholder.
   bool HasCanvasCapture() const final { return !listeners_.IsEmpty(); }
 
-  // Used for rendering.
-  void DidDraw(const SkIRect&) override;
-  using CanvasRenderingContextHost::DidDraw;
+  // Used for rendering
+  void DidDraw(const FloatRect&) override;
+  void DidDraw() override;
 
   void Paint(GraphicsContext&,
              const PhysicalRect&,
@@ -182,7 +182,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
 
-  bool IsDirty() { return !dirty_rect_.isEmpty(); }
+  bool IsDirty() { return !dirty_rect_.IsEmpty(); }
 
   void DoDeferredPaintInvalidation();
 
@@ -392,7 +392,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool canvas_is_clear_ = true;
 
   bool ignore_reset_;
-  SkIRect dirty_rect_;
+  FloatRect dirty_rect_;
 
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;

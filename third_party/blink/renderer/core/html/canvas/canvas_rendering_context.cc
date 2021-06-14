@@ -59,7 +59,12 @@ void CanvasRenderingContext::Dispose() {
 }
 
 void CanvasRenderingContext::DidDraw(const SkIRect& dirty_rect) {
-  Host()->DidDraw(dirty_rect);
+  Host()->DidDraw(SkRect::Make(dirty_rect));
+  DidDrawCommon();
+}
+
+void CanvasRenderingContext::DidDraw() {
+  Host()->DidDraw();
   DidDrawCommon();
 }
 

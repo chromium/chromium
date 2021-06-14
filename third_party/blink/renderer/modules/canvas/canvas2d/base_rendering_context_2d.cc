@@ -1266,12 +1266,12 @@ void BaseRenderingContext2D::clearRect(double x,
                   kClipFill);
     c = GetPaintCanvas();  // Check overdraw may have swapped the PaintCanvas
     c->drawRect(rect, clear_flags);
-    DidDraw2D(clip_bounds);
+    DidDraw(clip_bounds);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(rect, clip_bounds, &dirty_rect)) {
       c->drawRect(rect, clear_flags);
-      DidDraw2D(dirty_rect);
+      DidDraw(dirty_rect);
     }
   }
 }
@@ -2138,7 +2138,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     }
   }
 
-  DidDraw2D(dest_rect);
+  DidDraw(dest_rect);
 }
 
 void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,

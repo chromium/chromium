@@ -154,11 +154,8 @@ class CORE_EXPORT CanvasRenderingContext
     return nullptr;
   }
   virtual bool IsPaintable() const = 0;
-  void DidDraw(const SkIRect& dirty_rect);
-  void DidDraw() {
-    return DidDraw(Host() ? SkIRect::MakeWH(Host()->width(), Host()->height())
-                          : SkIRect::MakeEmpty());
-  }
+  virtual void DidDraw(const SkIRect& dirty_rect);
+  virtual void DidDraw();
 
   // Return true if the content is updated.
   virtual bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) {

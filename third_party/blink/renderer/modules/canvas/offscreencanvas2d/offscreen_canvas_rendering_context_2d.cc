@@ -279,9 +279,16 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
   return GetCanvasResourceProvider()->Canvas();
 }
 
-void OffscreenCanvasRenderingContext2D::DidDraw2D(const SkIRect& dirty_rect) {
+void OffscreenCanvasRenderingContext2D::DidDraw() {
+  dirty_rect_for_commit_.setWH(Width(), Height());
+  Host()->DidDraw();
+  if (GetCanvasResourceProvider() && GetCanvasResourceProvider()->needs_flush())
+    FinalizeFrame();
+}
+
+void OffscreenCanvasRenderingContext2D::DidDraw(const SkIRect& dirty_rect) {
   dirty_rect_for_commit_.join(dirty_rect);
-  Host()->DidDraw(dirty_rect_for_commit_);
+  Host()->DidDraw(SkRect::Make(dirty_rect_for_commit_));
   if (GetCanvasResourceProvider() && GetCanvasResourceProvider()->needs_flush())
     FinalizeFrame();
 }

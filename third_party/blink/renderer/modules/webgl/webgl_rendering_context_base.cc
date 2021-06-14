@@ -1385,12 +1385,24 @@ void WebGLRenderingContextBase::MarkContextChanged(
       if (layout_box && settings->GetAcceleratedCompositingEnabled())
         layout_box->ContentChanged(change_type);
     }
-    DidDraw();
+    IntSize canvas_size = ClampedCanvasSize();
+    DidDraw(SkIRect::MakeXYWH(0, 0, canvas_size.Width(), canvas_size.Height()));
   }
 }
+
 scoped_refptr<base::SingleThreadTaskRunner>
 WebGLRenderingContextBase::GetContextTaskRunner() {
   return task_runner_;
+}
+
+void WebGLRenderingContextBase::DidDraw(const SkIRect& dirty_rect) {
+  MarkContextChanged(kCanvasChanged);
+  CanvasRenderingContext::DidDraw(dirty_rect);
+}
+
+void WebGLRenderingContextBase::DidDraw() {
+  MarkContextChanged(kCanvasChanged);
+  CanvasRenderingContext::DidDraw();
 }
 
 bool WebGLRenderingContextBase::PushFrame() {
