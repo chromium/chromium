@@ -19,6 +19,6 @@
   // So, we wait for the second navigation before logging the adFrameType.
   await dp.Page.onceFrameNavigated();
   const { params } = await dp.Page.onceFrameNavigated();
-  testRunner.log({ adFrameType: params.frame.adFrameType });
+  testRunner.log({adFrameStatus: params.frame.adFrameStatus});
   testRunner.completeTest();
 })

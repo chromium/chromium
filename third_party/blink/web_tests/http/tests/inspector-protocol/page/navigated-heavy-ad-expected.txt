@@ -1,6 +1,11 @@
 Tests that the ad frame type is reported on navigation
 
 {
-    adFrameType : root
+    adFrameStatus : {
+        adFrameType : root
+        explanations : [
+            [0] : CreatedByAdScript
+        ]
+    }
 }
 

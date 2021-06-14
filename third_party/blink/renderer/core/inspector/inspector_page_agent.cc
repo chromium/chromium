@@ -35,8 +35,10 @@
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
+#include "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
@@ -1327,6 +1329,43 @@ CreateOriginTrials(LocalDOMWindow* window) {
   return trials;
 }
 
+protocol::Page::AdFrameType BuildAdFrameType(LocalFrame* frame) {
+  if (frame->IsAdRoot())
+    return protocol::Page::AdFrameTypeEnum::Root;
+  if (frame->IsAdSubframe())
+    return protocol::Page::AdFrameTypeEnum::Child;
+  return protocol::Page::AdFrameTypeEnum::None;
+}
+
+std::unique_ptr<protocol::Page::AdFrameStatus> BuildAdFrameStatus(
+    LocalFrame* frame) {
+  if (!frame->AdEvidence() || !frame->AdEvidence()->is_complete()) {
+    return protocol::Page::AdFrameStatus::create()
+        .setAdFrameType(protocol::Page::AdFrameTypeEnum::None)
+        .build();
+  }
+  const FrameAdEvidence& evidence = *frame->AdEvidence();
+  auto explanations =
+      std::make_unique<protocol::Array<protocol::Page::AdFrameExplanation>>();
+  if (evidence.parent_is_ad()) {
+    explanations->push_back(protocol::Page::AdFrameExplanationEnum::ParentIsAd);
+  }
+  if (evidence.created_by_ad_script() ==
+      mojom::blink::FrameCreationStackEvidence::kCreatedByAdScript) {
+    explanations->push_back(
+        protocol::Page::AdFrameExplanationEnum::CreatedByAdScript);
+  }
+  if (evidence.most_restrictive_filter_list_result() ==
+      mojom::blink::FilterListResult::kMatchedBlockingRule) {
+    explanations->push_back(
+        protocol::Page::AdFrameExplanationEnum::MatchedBlockingRule);
+  }
+  return protocol::Page::AdFrameStatus::create()
+      .setAdFrameType(BuildAdFrameType(frame))
+      .setExplanations(std::move(explanations))
+      .build();
+}
+
 }  // namespace
 
 std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
@@ -1366,13 +1405,7 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
   }
   if (loader && !loader->UnreachableURL().IsEmpty())
     frame_object->setUnreachableUrl(loader->UnreachableURL().GetString());
-  if (frame->IsAdRoot()) {
-    frame_object->setAdFrameType(protocol::Page::AdFrameTypeEnum::Root);
-  } else if (frame->IsAdSubframe()) {
-    frame_object->setAdFrameType(protocol::Page::AdFrameTypeEnum::Child);
-  } else {
-    frame_object->setAdFrameType(protocol::Page::AdFrameTypeEnum::None);
-  }
+  frame_object->setAdFrameStatus(BuildAdFrameStatus(frame));
   auto origin_trials = CreateOriginTrials(frame->DomWindow());
   if (!origin_trials->empty())
     frame_object->setOriginTrials(std::move(origin_trials));
