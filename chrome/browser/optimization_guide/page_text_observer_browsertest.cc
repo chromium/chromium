@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -329,30 +330,42 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
   }
 
   ASSERT_TRUE(consumer.result());
-  EXPECT_THAT(
-      consumer.result()->frame_results(),
-      ::testing::UnorderedElementsAreArray({
-          MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-              /*amp_frame=*/false,
-              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              u"mainframe"),
-          MakeFrameDump(
-              mojom::TextDumpEvent::kFinishedLoad, amp_frame_id,
-              /*amp_frame=*/true,
-              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              u"AMP"),
-      }));
+
+  bool has_amp_result = false;
+  bool has_mainframe_result = false;
+  for (const FrameTextDumpResult& result : consumer.result()->frame_results()) {
+    if (result.amp_frame()) {
+      EXPECT_EQ(mojom::TextDumpEvent::kFinishedLoad, result.event());
+      EXPECT_EQ(amp_frame_id, result.rfh_id());
+      EXPECT_EQ(
+          web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+          result.unique_navigation_id());
+      // Sometimes blink adds trailing whitespace since there's another element
+      // on the page. Happens non-deterministically.
+      EXPECT_EQ(u"AMP",
+                std::u16string(base::TrimWhitespace(
+                    *result.contents(), base::TrimPositions::TRIM_ALL)));
+      has_amp_result = true;
+    } else {
+      EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
+      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+                result.rfh_id());
+      EXPECT_EQ(
+          web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+          result.unique_navigation_id());
+      // Sometimes blink adds trailing whitespace since there's another element
+      // on the page. Happens non-deterministically.
+      EXPECT_EQ(u"mainframe",
+                std::u16string(base::TrimWhitespace(
+                    *result.contents(), base::TrimPositions::TRIM_ALL)));
+      has_mainframe_result = true;
+    }
+  }
+  EXPECT_TRUE(has_amp_result);
+  EXPECT_TRUE(has_mainframe_result);
 }
 
-// Disable due to flaky. https://crbug.com/1206352
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OOPIFNotAmpSubframe DISABLED_OOPIFNotAmpSubframe
-#else
-#define MAYBE_OOPIFNotAmpSubframe OOPIFNotAmpSubframe
-#endif  // defined(OS_LINUX)
-IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, MAYBE_OOPIFNotAmpSubframe) {
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
@@ -376,16 +389,18 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, MAYBE_OOPIFNotAmpSubframe) {
 
   consumer.WaitForPageText();
   ASSERT_TRUE(consumer.result());
-  EXPECT_THAT(
-      consumer.result()->frame_results(),
-      ::testing::UnorderedElementsAreArray({
-          MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-              /*amp_frame=*/false,
-              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              u"mainframe"),
-      }));
+  ASSERT_EQ(1U, consumer.result()->frame_results().size());
+
+  const auto& result = *consumer.result()->frame_results().begin();
+
+  EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
+  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+            result.rfh_id());
+  EXPECT_FALSE(result.amp_frame());
+  EXPECT_EQ(web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+            result.unique_navigation_id());
+  EXPECT_EQ(u"mainframe", base::TrimWhitespace(*result.contents(),
+                                               base::TrimPositions::TRIM_ALL));
 }
 
 class PageTextObserverSingleProcessBrowserTest
