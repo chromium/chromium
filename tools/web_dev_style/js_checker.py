@@ -98,7 +98,7 @@ class JSChecker(object):
 
     affected_files = self.input_api.AffectedFiles(file_filter=self.file_filter,
                                                   include_deletes=False)
-    affected_js_files = filter(lambda f: f.LocalPath().endswith(".js"),
+    affected_js_files = filter(lambda f: f.LocalPath().endswith((".js", ".ts")),
                                affected_files)
 
     if affected_js_files:

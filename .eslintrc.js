@@ -56,4 +56,9 @@ module.exports = {
 
     // TODO(dpapad): Add more checks according to our styleguide.
   },
+
+  'overrides': [{
+    'files': ['**/*.ts'],
+    'parser': './third_party/node/node_modules/@typescript-eslint/parser',
+  }]
 };

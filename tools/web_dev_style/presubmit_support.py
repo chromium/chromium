@@ -10,7 +10,7 @@ import resource_checker
 
 
 def IsResource(f):
-  return f.LocalPath().endswith(('.html', '.css', '.js'))
+  return f.LocalPath().endswith(('.html', '.css', '.js', '.ts'))
 
 
 def CheckStyle(input_api, output_api, file_filter=lambda f: True):
@@ -29,11 +29,13 @@ def CheckStyle(input_api, output_api, file_filter=lambda f: True):
 
 
 def CheckStyleESLint(input_api, output_api):
-  is_js = lambda f: f.LocalPath().endswith('.js')
-  js_files = input_api.AffectedFiles(file_filter=is_js, include_deletes=False)
-  if not js_files:
+  should_check = lambda f: f.LocalPath().endswith(('.js', '.ts'))
+  files_to_check = input_api.AffectedFiles(file_filter=should_check,
+                                           include_deletes=False)
+  if not files_to_check:
     return []
-  return js_checker.JSChecker(input_api, output_api).RunEsLintChecks(js_files)
+  return js_checker.JSChecker(input_api,
+                              output_api).RunEsLintChecks(files_to_check)
 
 
 def DisallowIncludes(input_api, output_api, msg):

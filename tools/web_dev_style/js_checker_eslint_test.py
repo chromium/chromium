@@ -21,8 +21,8 @@ class JsCheckerEsLintTest(unittest.TestCase):
   def tearDown(self):
     os.remove(self._tmp_file)
 
-  def _runChecks(self, file_contents):
-    tmp_args = {'suffix': '.js', 'dir': _HERE_PATH, 'delete': False}
+  def _runChecks(self, file_contents, file_type):
+    tmp_args = {'suffix': '.' + file_type, 'dir': _HERE_PATH, 'delete': False}
     with tempfile.NamedTemporaryFile(**tmp_args) as f:
       self._tmp_file = f.name
       f.write(file_contents)
@@ -47,11 +47,18 @@ class JsCheckerEsLintTest(unittest.TestCase):
     self.assertEqual(line, message.get('line'))
 
   def testGetElementByIdCheck(self):
-    results = self._runChecks("const a = document.getElementById('foo');")
+    results = self._runChecks("const a = document.getElementById('foo');", 'js')
+    self._assertError(results, 'no-restricted-properties', 1)
+
+    results = self._runChecks(
+        "const a: HTMLELement = document.getElementById('foo');", 'ts')
     self._assertError(results, 'no-restricted-properties', 1)
 
   def testPrimitiveWrappersCheck(self):
-    results = self._runChecks('const a = new Number(1);')
+    results = self._runChecks('const a = new Number(1);', 'js')
+    self._assertError(results, 'no-new-wrappers', 1)
+
+    results = self._runChecks('const a: number = new Number(1);', 'ts')
     self._assertError(results, 'no-new-wrappers', 1)
 
 
