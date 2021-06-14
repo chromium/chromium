@@ -79,8 +79,7 @@ void SkiaOutputSurfaceImplTest::SetUpSkiaOutputSurfaceImpl() {
   RendererSettings settings;
   settings.use_skia_renderer = true;
   auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-      GetGpuService(), TestGpuServiceHolder::GetInstance()->task_executor(),
-      gpu::kNullSurfaceHandle);
+      GetGpuService(), gpu::kNullSurfaceHandle);
   display_controller_ =
       std::make_unique<DisplayCompositorMemoryAndTaskController>(
           std::move(skia_deps));

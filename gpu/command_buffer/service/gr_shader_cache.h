@@ -13,7 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "gpu/gpu_gles2_export.h"
+#include "gpu/raster_export.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
 class GrDirectContext;
@@ -21,11 +21,11 @@ class GrDirectContext;
 namespace gpu {
 namespace raster {
 
-class GPU_GLES2_EXPORT GrShaderCache
+class RASTER_EXPORT GrShaderCache
     : public GrContextOptions::PersistentCache,
       public base::trace_event::MemoryDumpProvider {
  public:
-  class GPU_GLES2_EXPORT Client {
+  class RASTER_EXPORT Client {
    public:
     virtual ~Client() {}
 
@@ -33,7 +33,7 @@ class GPU_GLES2_EXPORT GrShaderCache
                              const std::string& shader) = 0;
   };
 
-  class GPU_GLES2_EXPORT ScopedCacheUse {
+  class RASTER_EXPORT ScopedCacheUse {
    public:
     ScopedCacheUse(GrShaderCache* cache, int32_t client_id);
     ~ScopedCacheUse();

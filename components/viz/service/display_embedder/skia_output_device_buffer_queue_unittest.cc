@@ -267,8 +267,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   void SetUpOnMain() override {
     gpu::SurfaceHandle surface_handle_ = gpu::kNullSurfaceHandle;
     dependency_ = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-        gpu_service_holder_->gpu_service(),
-        gpu_service_holder_->task_executor(), surface_handle_);
+        gpu_service_holder_->gpu_service(), surface_handle_);
   }
 
   void SetUpOnGpu() override {

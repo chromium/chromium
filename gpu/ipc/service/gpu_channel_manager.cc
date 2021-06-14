@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
@@ -498,6 +499,29 @@ void GpuChannelManager::LoseAllContexts() {
   }
 }
 
+SharedContextState::ContextLostCallback
+GpuChannelManager::GetContextLostCallback() {
+  return base::BindPostTask(task_runner_,
+                            base::BindOnce(&GpuChannelManager::OnContextLost,
+                                           weak_factory_.GetWeakPtr()));
+}
+
+GpuChannelManager::OnMemoryAllocatedChangeCallback
+GpuChannelManager::GetOnMemoryAllocatedChangeCallback() {
+  return base::BindPostTask(
+      task_runner_,
+      base::BindOnce(
+          [](base::WeakPtr<gpu::GpuChannelManager> gpu_channel_manager,
+             gpu::CommandBufferId id, uint64_t old_size, uint64_t new_size,
+             gpu::GpuPeakMemoryAllocationSource source) {
+            if (gpu_channel_manager) {
+              gpu_channel_manager->peak_memory_monitor()
+                  ->OnMemoryAllocatedChange(id, old_size, new_size, source);
+            }
+          },
+          weak_factory_.GetWeakPtr()));
+}
+
 void GpuChannelManager::DestroyAllChannels() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -872,8 +896,6 @@ void GpuChannelManager::ScheduleGrContextCleanup() {
 
 void GpuChannelManager::StoreShader(const std::string& key,
                                     const std::string& shader) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
   delegate_->StoreShaderToDisk(kGrShaderCacheClientId, key, shader);
 }
 

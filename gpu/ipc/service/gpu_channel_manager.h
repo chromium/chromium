@@ -77,6 +77,12 @@ class ProgramCache;
 class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     : public raster::GrShaderCache::Client {
  public:
+  using OnMemoryAllocatedChangeCallback =
+      base::OnceCallback<void(gpu::CommandBufferId id,
+                              uint64_t old_size,
+                              uint64_t new_size,
+                              gpu::GpuPeakMemoryAllocationSource source)>;
+
   GpuChannelManager(
       const GpuPreferences& gpu_preferences,
       GpuChannelManagerDelegate* delegate,
@@ -155,6 +161,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     return &peak_memory_monitor_;
   }
 
+  GpuProcessActivityFlags* activity_flags() { return &activity_flags_; }
+
 #if defined(OS_ANDROID)
   void DidAccessGpu();
   void OnBackgroundCleanup();
@@ -162,13 +170,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   void OnApplicationBackgrounded();
 
-  MailboxManager* mailbox_manager() { return mailbox_manager_.get(); }
+  MailboxManager* mailbox_manager() const { return mailbox_manager_.get(); }
 
   gl::GLShareGroup* share_group() const { return share_group_.get(); }
 
   SyncPointManager* sync_point_manager() const { return sync_point_manager_; }
 
-  SharedImageManager* shared_image_manager() { return shared_image_manager_; }
+  SharedImageManager* shared_image_manager() const {
+    return shared_image_manager_;
+  }
 
   // Retrieve GPU Resource consumption statistics for the task manager
   void GetVideoMemoryUsageStats(
@@ -198,6 +208,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       ImageDecodeAcceleratorWorker* worker);
 
   void LoseAllContexts();
+
+  SharedContextState::ContextLostCallback GetContextLostCallback();
+  GpuChannelManager::OnMemoryAllocatedChangeCallback
+  GetOnMemoryAllocatedChangeCallback();
 
  private:
   friend class GpuChannelManagerTest;

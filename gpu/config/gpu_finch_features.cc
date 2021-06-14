@@ -193,6 +193,9 @@ const base::Feature kVulkan {
 #endif
 };
 
+const base::Feature kEnableDrDc{"EnableDrDc",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByBrand{
@@ -285,6 +288,24 @@ bool IsUsingVulkan() {
 
 #else
   return base::FeatureList::IsEnabled(kVulkan);
+#endif
+}
+
+bool IsDrDcEnabled() {
+#if defined(OS_ANDROID)
+  // Currently only supported on android P.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() !=
+      base::android::SDK_VERSION_P) {
+    return false;
+  }
+
+  // Currently not supported for vulkan.
+  if (IsUsingVulkan())
+    return false;
+
+  return base::FeatureList::IsEnabled(kEnableDrDc);
+#else
+  return false;
 #endif
 }
 

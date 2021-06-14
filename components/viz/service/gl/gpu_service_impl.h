@@ -20,6 +20,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/service/display_embedder/compositor_gpu_thread.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/activity_flags.h"
@@ -250,6 +251,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
     return gpu_channel_manager_.get();
   }
 
+  CompositorGpuThread* compositor_gpu_thread() {
+    return compositor_gpu_thread_.get();
+  }
+
   gpu::ImageFactory* gpu_image_factory();
   gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
     return gpu_memory_buffer_factory_.get();
@@ -279,10 +284,19 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
     return main_runner_;
   }
 
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner() {
+    return compositor_gpu_thread() ? compositor_gpu_thread()->task_runner()
+                                   : main_runner_;
+  }
+
   gpu::GpuWatchdogThread* watchdog_thread() { return watchdog_thread_.get(); }
 
   const gpu::GpuFeatureInfo& gpu_feature_info() const {
     return gpu_feature_info_;
+  }
+
+  const gpu::GpuDriverBugWorkarounds& gpu_driver_bug_workarounds() const {
+    return gpu_driver_bug_workarounds_;
   }
 
   bool in_host_process() const { return gpu_info_.in_process_gpu; }
@@ -371,6 +385,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   // Information about general chrome feature support for the GPU.
   gpu::GpuFeatureInfo gpu_feature_info_;
 
+  const gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
+
   bool hdr_enabled_ = false;
 
   // What we would have gotten if we haven't fallen back to SwiftShader or
@@ -384,6 +400,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   mojo::SharedRemote<mojom::GpuHost> gpu_host_;
   std::unique_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   std::unique_ptr<media::MediaGpuChannelManager> media_gpu_channel_manager_;
+
+  // Display compositor gpu thread.
+  std::unique_ptr<CompositorGpuThread> compositor_gpu_thread_;
 
   // On some platforms (e.g. android webview), the SyncPointManager and
   // SharedImageManager comes from external sources.

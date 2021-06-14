@@ -268,6 +268,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     // Disabled until viz scheduling can be improved.
     features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);
+
+    // Disable dr-dc on webview.
+    features.DisableIfNotSet(::features::kEnableDrDc);
   }
 
   android_webview::RegisterPathProvider();

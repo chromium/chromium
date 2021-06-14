@@ -1618,6 +1618,12 @@ void NativeViewGLSurfaceEGL::SetEnableSwapTimestamps() {
   DCHECK_GE(composition_start_index_, 0);
 
   use_egl_timestamps_ = !supported_egl_timestamps_.empty();
+
+  // Recreate the presentation helper here to make sure egl_timestamp_client_
+  // in |presentation_helper_| is initialized after |use_egl_timestamp_| is
+  // initialized.
+  presentation_helper_ =
+      std::make_unique<GLSurfacePresentationHelper>(GetVSyncProvider());
 }
 
 bool NativeViewGLSurfaceEGL::InitializeNativeWindow() {

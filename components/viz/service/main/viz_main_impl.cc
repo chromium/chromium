@@ -284,10 +284,16 @@ void VizMainImpl::StopDebugStream() {
 #endif
 
 scoped_refptr<gpu::SharedContextState> VizMainImpl::GetSharedContextState() {
+  // This method should be only called for GLRenderer and not for SkiaRenderer.
+  // Hence adding DCHECK since DrDc only works with SkiaRenderer.
+  DCHECK(!features::IsDrDcEnabled());
   return gpu_service_->GetContextState();
 }
 
 scoped_refptr<gl::GLShareGroup> VizMainImpl::GetShareGroup() {
+  // This method should be only called for GLRenderer and not for SkiaRenderer.
+  // Hence adding DCHECK since DrDc only works with SkiaRenderer.
+  DCHECK(!features::IsDrDcEnabled());
   return gpu_service_->share_group();
 }
 

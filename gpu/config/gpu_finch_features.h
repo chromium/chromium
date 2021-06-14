@@ -60,8 +60,11 @@ GPU_EXPORT extern const base::Feature kEnableGrShaderCacheForVulkan;
 GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;
 
 GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
+GPU_EXPORT extern const base::Feature kEnableDrDc;
 
 GPU_EXPORT bool IsUsingVulkan();
+GPU_EXPORT bool IsDrDcEnabled();
+
 #if defined(OS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();
 GPU_EXPORT bool IsAndroidSurfaceControlEnabled();

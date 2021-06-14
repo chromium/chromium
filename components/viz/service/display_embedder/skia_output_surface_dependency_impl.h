@@ -16,10 +16,6 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace gpu {
-class CommandBufferTaskExecutor;
-}
-
 namespace viz {
 
 class GpuServiceImpl;
@@ -29,7 +25,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
  public:
   SkiaOutputSurfaceDependencyImpl(
       GpuServiceImpl* gpu_service_impl,
-      gpu::CommandBufferTaskExecutor* gpu_task_executor,
       gpu::SurfaceHandle surface_handle);
   ~SkiaOutputSurfaceDependencyImpl() override;
 
@@ -71,7 +66,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
 
  private:
   GpuServiceImpl* const gpu_service_impl_;
-  gpu::CommandBufferTaskExecutor* const gpu_task_executor_;
   const gpu::SurfaceHandle surface_handle_;
   scoped_refptr<base::SingleThreadTaskRunner> client_thread_task_runner_;
 

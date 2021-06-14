@@ -298,7 +298,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
   // would be kept alive by VizProcessContextProvider. If no |task_sequence| is
   // passed in, create one here.
   if (task_sequence) {
-    task_sequence_ = task_sequence;
+    task_sequence_ = std::move(task_sequence);
   } else {
     task_scheduler_holder_ =
         std::make_unique<gpu::GpuTaskSchedulerHelper>(task_executor_);

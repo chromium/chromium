@@ -339,6 +339,8 @@ GpuServiceImpl::GpuServiceImpl(
       gpu_preferences_(gpu_preferences),
       gpu_info_(gpu_info),
       gpu_feature_info_(gpu_feature_info),
+      gpu_driver_bug_workarounds_(
+          gpu_feature_info.enabled_gpu_driver_bug_workarounds),
       gpu_info_for_hardware_gpu_(gpu_info_for_hardware_gpu),
       gpu_feature_info_for_hardware_gpu_(gpu_feature_info_for_hardware_gpu),
       gpu_extra_info_(gpu_extra_info),
@@ -453,6 +455,7 @@ GpuServiceImpl::~GpuServiceImpl() {
   if (watchdog_thread_)
     watchdog_thread_->OnGpuProcessTearDown();
 
+  compositor_gpu_thread_.reset();
   media_gpu_channel_manager_.reset();
   gpu_channel_manager_.reset();
 
@@ -552,9 +555,12 @@ void GpuServiceImpl::InitializeWithHost(
     // When using real buffers for testing overlay configurations, we need
     // access to SharedImageManager on the viz thread to obtain the buffer
     // corresponding to a mailbox.
-    bool thread_safe_manager = features::ShouldUseRealBuffersForPageFlipTest();
+    const bool display_context_on_another_thread = features::IsDrDcEnabled();
+    bool thread_safe_manager =
+        features::ShouldUseRealBuffersForPageFlipTest() ||
+        display_context_on_another_thread;
     owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
-        thread_safe_manager, false /* display_context_on_another_thread */);
+        thread_safe_manager, display_context_on_another_thread);
     shared_image_manager = owned_shared_image_manager_.get();
   } else {
     // With this feature enabled, we don't expect to receive an external
@@ -588,6 +594,10 @@ void GpuServiceImpl::InitializeWithHost(
       gpu_channel_manager_.get());
   if (watchdog_thread())
     watchdog_thread()->AddPowerObserver();
+
+  // Create and Initialize compositor gpu thread.
+  compositor_gpu_thread_ =
+      CompositorGpuThread::Create(gpu_channel_manager_.get());
 }
 
 void GpuServiceImpl::Bind(
@@ -852,10 +862,8 @@ void GpuServiceImpl::UnregisterDisplayContext(
 
 void GpuServiceImpl::LoseAllContexts() {
   DCHECK(main_runner_->BelongsToCurrentThread());
-
   if (IsExiting())
     return;
-
   for (auto& display_context : display_contexts_)
     display_context.MarkContextLost();
   gpu_channel_manager_->LoseAllContexts();
