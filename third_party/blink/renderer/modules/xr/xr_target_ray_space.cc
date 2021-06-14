@@ -52,7 +52,10 @@ bool XRTargetRaySpace::EmulatedPosition() const {
 
 device::mojom::blink::XRNativeOriginInformationPtr
 XRTargetRaySpace::NativeOrigin() const {
-  return input_source_->nativeOrigin();
+  return device::mojom::blink::XRNativeOriginInformation::
+      NewInputSourceSpaceInfo(device::mojom::blink::XRInputSourceSpaceInfo::New(
+          input_source_->source_id(),
+          device::mojom::blink::XRInputSourceSpaceType::kTargetRay));
 }
 
 std::string XRTargetRaySpace::ToString() const {

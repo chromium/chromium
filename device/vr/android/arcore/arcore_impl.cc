@@ -1172,29 +1172,33 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
   // First, check if we recognize the type of the native origin.
-
-  if (native_origin_information->is_reference_space_type()) {
-    // Reference spaces are implicitly recognized and don't carry an ID.
-  } else if (native_origin_information->is_input_source_id()) {
-    // Input source IDs are verified in the higher layer as ArCoreImpl does
-    // not carry input source state.
-  } else if (native_origin_information->is_plane_id()) {
-    // Validate that we know which plane's space the hit test is interested in
-    // tracking.
-    if (!plane_manager_->PlaneExists(
-            PlaneId(native_origin_information->get_plane_id()))) {
+  switch (native_origin_information->which()) {
+    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO:
+      // Input sources are verified in the higher layer as ArCoreImpl does
+      // not carry input source state.
+      break;
+    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+      // Reference spaces are implicitly recognized and don't carry an ID.
+      break;
+    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
+      // Validate that we know which plane's space the hit test is interested in
+      // tracking.
+      if (!plane_manager_->PlaneExists(
+              PlaneId(native_origin_information->get_plane_id()))) {
+        return absl::nullopt;
+      }
+      break;
+    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+      // Unsupported by ARCore:
       return absl::nullopt;
-    }
-  } else if (native_origin_information->is_anchor_id()) {
-    // Validate that we know which anchor's space the hit test is interested
-    // in tracking.
-    if (!anchor_manager_->AnchorExists(
-            AnchorId(native_origin_information->get_anchor_id()))) {
-      return absl::nullopt;
-    }
-  } else {
-    NOTREACHED();
-    return absl::nullopt;
+    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+      // Validate that we know which anchor's space the hit test is interested
+      // in tracking.
+      if (!anchor_manager_->AnchorExists(
+              AnchorId(native_origin_information->get_anchor_id()))) {
+        return absl::nullopt;
+      }
+      break;
   }
 
   auto subscription_id = CreateHitTestSubscriptionId();
@@ -1388,18 +1392,29 @@ bool ArCoreImpl::NativeOriginExists(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_ID:
+    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO: {
+      mojom::XRInputSourceSpaceInfo* input_source_space_info =
+          native_origin_information.get_input_source_space_info().get();
+
+      // ARCore only supports input sources that have "TAPPING" target ray mode,
+      // those input sources do not have grip space so the native origin is
+      // guaranteed not to exist:
+      if (input_source_space_info->input_source_space_type ==
+          mojom::XRInputSourceSpaceType::kGrip) {
+        return false;
+      }
 
       // Linear search should be fine for ARCore device as it only has one input
       // source (for now).
       for (auto& input_source_state : input_state) {
         if (input_source_state->source_id ==
-            native_origin_information.get_input_source_id()) {
+            input_source_space_info->input_source_id) {
           return true;
         }
       }
 
       return false;
+    }
     case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
       // All reference spaces are known to ARCore.
       return true;
@@ -1421,18 +1436,29 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_ID:
+    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO: {
+      mojom::XRInputSourceSpaceInfo* input_source_space_info =
+          native_origin_information.get_input_source_space_info().get();
+
+      // ARCore only supports input sources that have "TAPPING" target ray mode,
+      // those input sources do not have grip space so the native origin is
+      // guaranteed not to be localizable:
+      if (input_source_space_info->input_source_space_type ==
+          mojom::XRInputSourceSpaceType::kGrip) {
+        return absl::nullopt;
+      }
 
       // Linear search should be fine for ARCore device as it only has one input
       // source (for now).
       for (auto& input_source_state : input_state) {
         if (input_source_state->source_id ==
-            native_origin_information.get_input_source_id()) {
+            input_source_space_info->input_source_id) {
           return GetMojoFromInputSource(input_source_state, mojo_from_viewer);
         }
       }
 
       return absl::nullopt;
+    }
     case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
       return GetMojoFromReferenceSpace(
           native_origin_information.get_reference_space_type(),

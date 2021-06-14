@@ -513,14 +513,30 @@ enum XRReferenceSpaceType {
 // them roughly corresponds to something that either is an XRSpace (for example
 // XRReferenceSpaceType, XRBoundedReferenceSpace) or returns an XRSpace (for
 // example XRAnchor, XRPlane, XRInputSource). Native origin can be identified,
-// depending on its type, by the id of the entity (this is the case for planes,
-// anchors and input sources), or by reference space type.
+// depending on its type, by the id of the entity (this is the case for planes
+// and anchors), by reference space type, handedness & joint, or by input source
+// id & input source space type.
 union XRNativeOriginInformation {
-  uint32 input_source_id;
+  XRInputSourceSpaceInfo input_source_space_info;
   uint64 plane_id;
   uint64 anchor_id;
   XRReferenceSpaceType reference_space_type;
   XRHandJointSpaceInfo hand_joint_space_info;
+};
+
+// Input sources have 2 kinds of native origins, each of them backs a different
+// type of XRSpace. See https://immersive-web.github.io/webxr/#xrinputsource,
+// specifically `targetRaySpace` & `gripSpace` members.
+enum XRInputSourceSpaceType {
+  kTargetRay = 0,
+  kGrip = 1,
+};
+
+// To uniquely identify a native origin derived from an input source, we need to
+// know the input source's id and the type of the space.
+struct XRInputSourceSpaceInfo {
+  uint32 input_source_id;
+  XRInputSourceSpaceType input_source_space_type;
 };
 
 // Since there is no single way to identify a joint as it may be on the left or

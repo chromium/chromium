@@ -192,7 +192,7 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     const gfx::Transform& native_origin_from_anchor,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) const {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_ID:
+    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO:
       // Currently unimplemented as only anchors are supported and are never
       // created relative to input sources
       return absl::nullopt;

@@ -1420,7 +1420,7 @@ void ArCoreGl::SubscribeToHitTest(
   // Input source state information is known to ArCoreGl and not to ArCore -
   // check if we recognize the input source id.
 
-  if (native_origin_information->is_input_source_id()) {
+  if (native_origin_information->is_input_source_space_info()) {
     DVLOG(1) << __func__
              << ": ARCore device supports only transient input sources for "
                 "now. Rejecting subscription request.";

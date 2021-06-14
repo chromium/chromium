@@ -256,12 +256,6 @@ absl::optional<TransformationMatrix> XRInputSource::InputFromPointer() const {
   return *(input_from_pointer_.get());
 }
 
-device::mojom::blink::XRNativeOriginInformationPtr XRInputSource::nativeOrigin()
-    const {
-  return device::mojom::blink::XRNativeOriginInformation::NewInputSourceId(
-      this->source_id());
-}
-
 void XRInputSource::OnSelectStart() {
   DVLOG(3) << __func__;
   // Discard duplicate events and ones after the session has ended.

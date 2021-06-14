@@ -1215,8 +1215,8 @@ class MockRuntime {
   // Private functions - utilities:
   _nativeOriginKnown(nativeOriginInformation){
 
-    if (nativeOriginInformation.inputSourceId !== undefined) {
-      if (!this.input_sources_.has(nativeOriginInformation.inputSourceId)) {
+    if (nativeOriginInformation.inputSourceSpaceInfo !== undefined) {
+      if (!this.input_sources_.has(nativeOriginInformation.inputSourceSpaceInfo.inputSourceId)) {
         // Unknown input source.
         return false;
       }
@@ -1565,11 +1565,11 @@ class MockRuntime {
   _getMojoFromNativeOrigin(nativeOriginInformation) {
     const mojo_from_viewer = this._getMojoFromViewer();
 
-    if (nativeOriginInformation.inputSourceId !== undefined) {
-      if (!this.input_sources_.has(nativeOriginInformation.inputSourceId)) {
+    if (nativeOriginInformation.inputSourceSpaceInfo !== undefined) {
+      if (!this.input_sources_.has(nativeOriginInformation.inputSourceSpaceInfo.inputSourceId)) {
         return null;
       } else {
-        const inputSource = this.input_sources_.get(nativeOriginInformation.inputSourceId);
+        const inputSource = this.input_sources_.get(nativeOriginInformation.inputSourceSpaceInfo.inputSourceId);
         return inputSource._getMojoFromInputSource(mojo_from_viewer);
       }
     } else if (nativeOriginInformation.referenceSpaceType !== undefined) {
