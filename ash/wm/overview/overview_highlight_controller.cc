@@ -5,7 +5,7 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -271,8 +271,8 @@ void OverviewHighlightController::UpdateHighlight(
   // manually here.
   DockedMagnifierControllerImpl* docked_magnifier =
       Shell::Get()->docked_magnifier_controller();
-  MagnificationController* fullscreen_magnifier =
-      Shell::Get()->magnification_controller();
+  FullScreenMagnifierController* fullscreen_magnifier =
+      Shell::Get()->full_screen_magnifier_controller();
   const gfx::Point point_of_interest =
       highlighted_view_->GetMagnifierFocusPointInScreen();
   if (docked_magnifier->GetEnabled())

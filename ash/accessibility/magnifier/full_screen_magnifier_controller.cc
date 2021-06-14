@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 
 #include <algorithm>
 #include <memory>
@@ -89,7 +89,7 @@ void MoveCursorTo(aura::WindowTreeHost* host, const gfx::Point& root_location) {
 
 }  // namespace
 
-class MagnificationController::GestureProviderClient
+class FullScreenMagnifierController::GestureProviderClient
     : public ui::GestureProviderAuraClient {
  public:
   GestureProviderClient() = default;
@@ -99,7 +99,7 @@ class MagnificationController::GestureProviderClient
   void OnGestureEvent(GestureConsumer* consumer,
                       ui::GestureEvent* event) override {
     // Do nothing. OnGestureEvent is for timer based gesture events, e.g. tap.
-    // MagnificationController is interested only in pinch and scroll
+    // FullScreenMagnifierController is interested only in pinch and scroll
     // gestures.
     DCHECK_NE(ui::ET_GESTURE_SCROLL_BEGIN, event->type());
     DCHECK_NE(ui::ET_GESTURE_SCROLL_END, event->type());
@@ -113,7 +113,7 @@ class MagnificationController::GestureProviderClient
   DISALLOW_COPY_AND_ASSIGN(GestureProviderClient);
 };
 
-MagnificationController::MagnificationController()
+FullScreenMagnifierController::FullScreenMagnifierController()
     : root_window_(Shell::GetPrimaryRootWindow()),
       scale_(kNonMagnifiedScale),
       original_scale_(kNonMagnifiedScale) {
@@ -132,7 +132,7 @@ MagnificationController::MagnificationController()
   magnifier_debug_draw_rect_ = ::switches::IsMagnifierDebugDrawRectEnabled();
 }
 
-MagnificationController::~MagnificationController() {
+FullScreenMagnifierController::~FullScreenMagnifierController() {
   if (input_method_)
     input_method_->RemoveObserver(this);
   input_method_ = nullptr;
@@ -145,7 +145,7 @@ MagnificationController::~MagnificationController() {
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
-void MagnificationController::SetEnabled(bool enabled) {
+void FullScreenMagnifierController::SetEnabled(bool enabled) {
   if (enabled) {
     if (!is_enabled_) {
       input_method_ = magnifier_utils::GetInputMethod(root_window_);
@@ -189,19 +189,20 @@ void MagnificationController::SetEnabled(bool enabled) {
   keyboard::KeyboardUIController::Get()->UpdateKeyboardConfig(config);
 }
 
-bool MagnificationController::IsEnabled() const {
+bool FullScreenMagnifierController::IsEnabled() const {
   return is_enabled_;
 }
 
-void MagnificationController::SetKeepFocusCentered(bool keep_focus_centered) {
+void FullScreenMagnifierController::SetKeepFocusCentered(
+    bool keep_focus_centered) {
   keep_focus_centered_ = keep_focus_centered;
 }
 
-bool MagnificationController::KeepFocusCentered() const {
+bool FullScreenMagnifierController::KeepFocusCentered() const {
   return keep_focus_centered_;
 }
 
-void MagnificationController::SetScale(float scale, bool animate) {
+void FullScreenMagnifierController::SetScale(float scale, bool animate) {
   if (!is_enabled_)
     return;
 
@@ -210,48 +211,50 @@ void MagnificationController::SetScale(float scale, bool animate) {
   RedrawKeepingMousePosition(scale, animate, false);
 }
 
-void MagnificationController::StepToNextScaleValue(int delta_index) {
+void FullScreenMagnifierController::StepToNextScaleValue(int delta_index) {
   SetScale(magnifier_utils::GetNextMagnifierScaleValue(
                delta_index, GetScale(), kNonMagnifiedScale, kMaxMagnifiedScale),
            true /* animate */);
 }
 
-void MagnificationController::MoveWindow(int x, int y, bool animate) {
+void FullScreenMagnifierController::MoveWindow(int x, int y, bool animate) {
   if (!is_enabled_)
     return;
 
   Redraw(gfx::PointF(x, y), scale_, animate);
 }
 
-void MagnificationController::MoveWindow(const gfx::Point& point,
-                                         bool animate) {
+void FullScreenMagnifierController::MoveWindow(const gfx::Point& point,
+                                               bool animate) {
   if (!is_enabled_)
     return;
 
   Redraw(gfx::PointF(point), scale_, animate);
 }
 
-gfx::Point MagnificationController::GetWindowPosition() const {
+gfx::Point FullScreenMagnifierController::GetWindowPosition() const {
   return gfx::ToFlooredPoint(origin_);
 }
 
-void MagnificationController::SetScrollDirection(ScrollDirection direction) {
+void FullScreenMagnifierController::SetScrollDirection(
+    ScrollDirection direction) {
   scroll_direction_ = direction;
   StartOrStopScrollIfNecessary();
 }
 
-gfx::Rect MagnificationController::GetViewportRect() const {
+gfx::Rect FullScreenMagnifierController::GetViewportRect() const {
   return gfx::ToEnclosingRect(GetWindowRectDIP(scale_));
 }
 
-void MagnificationController::CenterOnPoint(const gfx::Point& point_in_screen) {
+void FullScreenMagnifierController::CenterOnPoint(
+    const gfx::Point& point_in_screen) {
   gfx::Point point_in_root = point_in_screen;
   ::wm::ConvertPointFromScreen(root_window_, &point_in_root);
 
   MoveMagnifierWindowCenterPoint(point_in_root);
 }
 
-void MagnificationController::HandleFocusedNodeChanged(
+void FullScreenMagnifierController::HandleFocusedNodeChanged(
     bool is_editable_node,
     const gfx::Rect& node_bounds_in_screen) {
   // The editable node is handled by OnCaretBoundsChanged.
@@ -270,7 +273,7 @@ void MagnificationController::HandleFocusedNodeChanged(
   MoveMagnifierWindowFollowRect(node_bounds_in_root);
 }
 
-void MagnificationController::HandleMoveMagnifierToRect(
+void FullScreenMagnifierController::HandleMoveMagnifierToRect(
     const gfx::Rect& rect_in_screen) {
   gfx::Rect node_bounds_in_root = rect_in_screen;
   ::wm::ConvertRectFromScreen(root_window_, &node_bounds_in_root);
@@ -280,7 +283,7 @@ void MagnificationController::HandleMoveMagnifierToRect(
   MoveMagnifierWindowFollowRect(node_bounds_in_root);
 }
 
-void MagnificationController::SwitchTargetRootWindow(
+void FullScreenMagnifierController::SwitchTargetRootWindow(
     aura::Window* new_root_window,
     bool redraw_original_root_window) {
   DCHECK(new_root_window);
@@ -307,7 +310,7 @@ void MagnificationController::SwitchTargetRootWindow(
   root_window_->AddObserver(this);
 }
 
-gfx::Transform MagnificationController::GetMagnifierTransform() const {
+gfx::Transform FullScreenMagnifierController::GetMagnifierTransform() const {
   gfx::Transform transform;
   if (IsEnabled()) {
     transform.Scale(scale_, scale_);
@@ -318,7 +321,7 @@ gfx::Transform MagnificationController::GetMagnifierTransform() const {
   return transform;
 }
 
-void MagnificationController::OnInputContextHandlerChanged() {
+void FullScreenMagnifierController::OnInputContextHandlerChanged() {
   if (!is_enabled_)
     return;
 
@@ -333,7 +336,7 @@ void MagnificationController::OnInputContextHandlerChanged() {
     input_method_->AddObserver(this);
 }
 
-void MagnificationController::OnCaretBoundsChanged(
+void FullScreenMagnifierController::OnCaretBoundsChanged(
     const ui::TextInputClient* client) {
   // caret bounds in screen coordinates.
   const gfx::Rect caret_bounds = client->GetCaretBounds();
@@ -385,17 +388,17 @@ void MagnificationController::OnCaretBoundsChanged(
       FROM_HERE,
       base::TimeDelta::FromMilliseconds(
           disable_move_magnifier_delay_ ? 0 : kMoveMagnifierDelayInMs),
-      this, &MagnificationController::OnMoveMagnifierTimer);
+      this, &FullScreenMagnifierController::OnMoveMagnifierTimer);
 }
 
-void MagnificationController::OnInputMethodDestroyed(
+void FullScreenMagnifierController::OnInputMethodDestroyed(
     const ui::InputMethod* input_method) {
   DCHECK_EQ(input_method, input_method_);
   input_method_->RemoveObserver(this);
   input_method_ = nullptr;
 }
 
-void MagnificationController::OnImplicitAnimationsCompleted() {
+void FullScreenMagnifierController::OnImplicitAnimationsCompleted() {
   if (!is_on_animation_)
     return;
 
@@ -414,7 +417,8 @@ void MagnificationController::OnImplicitAnimationsCompleted() {
   StartOrStopScrollIfNecessary();
 }
 
-void MagnificationController::OnWindowDestroying(aura::Window* root_window) {
+void FullScreenMagnifierController::OnWindowDestroying(
+    aura::Window* root_window) {
   if (root_window == root_window_) {
     // There must be at least one root window because this controller is
     // destroyed before the root windows get destroyed.
@@ -431,7 +435,7 @@ void MagnificationController::OnWindowDestroying(aura::Window* root_window) {
   }
 }
 
-void MagnificationController::OnWindowBoundsChanged(
+void FullScreenMagnifierController::OnWindowBoundsChanged(
     aura::Window* window,
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
@@ -439,7 +443,7 @@ void MagnificationController::OnWindowBoundsChanged(
   // TODO(yoshiki): implement here. crbug.com/230979
 }
 
-void MagnificationController::OnMouseEvent(ui::MouseEvent* event) {
+void FullScreenMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
   aura::Window* target = static_cast<aura::Window*>(event->target());
   aura::Window* current_root = target->GetRootWindow();
   gfx::Point root_location = event->root_location();
@@ -477,7 +481,7 @@ void MagnificationController::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
-void MagnificationController::OnScrollEvent(ui::ScrollEvent* event) {
+void FullScreenMagnifierController::OnScrollEvent(ui::ScrollEvent* event) {
   if (event->IsAltDown() && event->IsControlDown()) {
     if (event->type() == ui::ET_SCROLL_FLING_START) {
       event->StopPropagation();
@@ -506,7 +510,7 @@ void MagnificationController::OnScrollEvent(ui::ScrollEvent* event) {
   }
 }
 
-void MagnificationController::OnTouchEvent(ui::TouchEvent* event) {
+void FullScreenMagnifierController::OnTouchEvent(ui::TouchEvent* event) {
   aura::Window* target = static_cast<aura::Window*>(event->target());
   aura::Window* current_root = target->GetRootWindow();
 
@@ -520,7 +524,7 @@ void MagnificationController::OnTouchEvent(ui::TouchEvent* event) {
     SwitchTargetRootWindow(current_root, true);
 }
 
-ui::EventDispatchDetails MagnificationController::RewriteEvent(
+ui::EventDispatchDetails FullScreenMagnifierController::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
   if (!IsEnabled())
@@ -550,7 +554,7 @@ ui::EventDispatchDetails MagnificationController::RewriteEvent(
   }
 
   // User can change zoom level with two fingers pinch and pan around with two
-  // fingers scroll. Once MagnificationController detects one of those two
+  // fingers scroll. Once FullScreenMagnifierController detects one of those two
   // gestures, it starts consuming all touch events with cancelling existing
   // touches. If cancel_pressed_touches is set to true, ET_TOUCH_CANCELLED
   // events are dispatched for existing touches after the next for-loop.
@@ -559,7 +563,7 @@ ui::EventDispatchDetails MagnificationController::RewriteEvent(
   if (cancel_pressed_touches) {
     DCHECK_EQ(2u, press_event_map_.size());
 
-    // MagnificationController starts consuming all touch events after it
+    // FullScreenMagnifierController starts consuming all touch events after it
     // cancells existing touches.
     consume_touch_event_ = true;
 
@@ -572,11 +576,11 @@ ui::EventDispatchDetails MagnificationController::RewriteEvent(
       touch_cancel_event.set_flags(it.second->flags());
 
       // TouchExplorationController is watching event stream and managing its
-      // internal state. If an event rewriter (MagnificationController) rewrites
-      // event stream, the next event rewriter won't get the event, which makes
-      // TouchExplorationController confused. Send cancelled event for recorded
-      // touch events to the next event rewriter here instead of rewriting an
-      // event in the stream.
+      // internal state. If an event rewriter (FullScreenMagnifierController)
+      // rewrites event stream, the next event rewriter won't get the event,
+      // which makes TouchExplorationController confused. Send cancelled event
+      // for recorded touch events to the next event rewriter here instead of
+      // rewriting an event in the stream.
       ui::EventDispatchDetails details =
           SendEvent(continuation, &touch_cancel_event);
       if (details.dispatcher_destroyed || details.target_destroyed)
@@ -606,7 +610,7 @@ ui::EventDispatchDetails MagnificationController::RewriteEvent(
   return SendEvent(continuation, &event);
 }
 
-bool MagnificationController::Redraw(
+bool FullScreenMagnifierController::Redraw(
     const gfx::PointF& position_in_physical_pixels,
     float scale,
     bool animate) {
@@ -617,10 +621,11 @@ bool MagnificationController::Redraw(
                    kDefaultAnimationTweenType);
 }
 
-bool MagnificationController::RedrawDIP(const gfx::PointF& position_in_dip,
-                                        float scale,
-                                        int duration_in_ms,
-                                        gfx::Tween::Type tween_type) {
+bool FullScreenMagnifierController::RedrawDIP(
+    const gfx::PointF& position_in_dip,
+    float scale,
+    int duration_in_ms,
+    gfx::Tween::Type tween_type) {
   DCHECK(root_window_);
 
   float x = position_in_dip.x();
@@ -712,7 +717,7 @@ bool MagnificationController::RedrawDIP(const gfx::PointF& position_in_dip,
   return true;
 }
 
-void MagnificationController::StartOrStopScrollIfNecessary() {
+void FullScreenMagnifierController::StartOrStopScrollIfNecessary() {
   // This value controls the scrolling speed.
   const int kMoveOffset = 40;
   if (is_on_animation_) {
@@ -743,7 +748,7 @@ void MagnificationController::StartOrStopScrollIfNecessary() {
             kDefaultAnimationTweenType);
 }
 
-void MagnificationController::RedrawKeepingMousePosition(
+void FullScreenMagnifierController::RedrawKeepingMousePosition(
     float scale,
     bool animate,
     bool ignore_mouse_change) {
@@ -762,7 +767,7 @@ void MagnificationController::RedrawKeepingMousePosition(
     AfterAnimationMoveCursorTo(mouse_in_root);
 }
 
-void MagnificationController::OnMouseMove(const gfx::Point& location) {
+void FullScreenMagnifierController::OnMouseMove(const gfx::Point& location) {
   DCHECK(root_window_);
 
   gfx::Point mouse(location);
@@ -787,7 +792,7 @@ void MagnificationController::OnMouseMove(const gfx::Point& location) {
                                  reduce_bottom_margin);
 }
 
-void MagnificationController::AfterAnimationMoveCursorTo(
+void FullScreenMagnifierController::AfterAnimationMoveCursorTo(
     const gfx::Point& location) {
   DCHECK(root_window_);
 
@@ -804,11 +809,11 @@ void MagnificationController::AfterAnimationMoveCursorTo(
   position_after_animation_ = location;
 }
 
-bool MagnificationController::IsMagnified() const {
+bool FullScreenMagnifierController::IsMagnified() const {
   return scale_ >= kMinMagnifiedScaleThreshold;
 }
 
-gfx::RectF MagnificationController::GetWindowRectDIP(float scale) const {
+gfx::RectF FullScreenMagnifierController::GetWindowRectDIP(float scale) const {
   const gfx::Size size_in_dip = root_window_->bounds().size();
   const float width = size_in_dip.width() / scale;
   const float height = size_in_dip.height() / scale;
@@ -816,16 +821,16 @@ gfx::RectF MagnificationController::GetWindowRectDIP(float scale) const {
   return gfx::RectF(origin_.x(), origin_.y(), width, height);
 }
 
-gfx::Size MagnificationController::GetHostSizeDIP() const {
+gfx::Size FullScreenMagnifierController::GetHostSizeDIP() const {
   return root_window_->bounds().size();
 }
 
-void MagnificationController::ValidateScale(float* scale) {
+void FullScreenMagnifierController::ValidateScale(float* scale) {
   *scale = base::ClampToRange(*scale, kNonMagnifiedScale, kMaxMagnifiedScale);
   DCHECK(kNonMagnifiedScale <= *scale && *scale <= kMaxMagnifiedScale);
 }
 
-bool MagnificationController::ProcessGestures() {
+bool FullScreenMagnifierController::ProcessGestures() {
   bool cancel_pressed_touches = false;
 
   std::vector<std::unique_ptr<ui::GestureEvent>> gestures =
@@ -905,7 +910,7 @@ bool MagnificationController::ProcessGestures() {
   return cancel_pressed_touches;
 }
 
-void MagnificationController::MoveMagnifierWindowFollowPoint(
+void FullScreenMagnifierController::MoveMagnifierWindowFollowPoint(
     const gfx::Point& point,
     int x_panning_margin,
     int y_panning_margin,
@@ -968,7 +973,7 @@ void MagnificationController::MoveMagnifierWindowFollowPoint(
   }
 }
 
-void MagnificationController::MoveMagnifierWindowCenterPoint(
+void FullScreenMagnifierController::MoveMagnifierWindowCenterPoint(
     const gfx::Point& point) {
   DCHECK(root_window_);
 
@@ -994,7 +999,7 @@ void MagnificationController::MoveMagnifierWindowCenterPoint(
   }
 }
 
-void MagnificationController::MoveMagnifierWindowFollowRect(
+void FullScreenMagnifierController::MoveMagnifierWindowFollowRect(
     const gfx::Rect& rect) {
   DCHECK(root_window_);
   last_move_magnifier_to_rect_ = base::TimeTicks::Now();
@@ -1038,7 +1043,7 @@ void MagnificationController::MoveMagnifierWindowFollowRect(
   }
 }
 
-void MagnificationController::OnMoveMagnifierTimer() {
+void FullScreenMagnifierController::OnMoveMagnifierTimer() {
   // Ignore caret changes while move magnifier to rect activity is occurring.
   if (base::TimeTicks::Now() - last_move_magnifier_to_rect_ <
       magnifier_utils::kPauseCaretUpdateDuration) {

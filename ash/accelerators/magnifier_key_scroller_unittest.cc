@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
@@ -49,8 +49,8 @@ TEST_F(MagnifierKeyScrollerTest, Basic) {
   wm::ActivateWindow(window.get());
 
   MagnifierKeyScroller::ScopedEnablerForTest scoped;
-  MagnificationController* controller =
-      Shell::Get()->magnification_controller();
+  FullScreenMagnifierController* controller =
+      Shell::Get()->full_screen_magnifier_controller();
   controller->SetEnabled(true);
 
   EXPECT_EQ("200,150", controller->GetWindowPosition().ToString());

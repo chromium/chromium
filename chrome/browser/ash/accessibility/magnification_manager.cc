@@ -7,7 +7,7 @@
 #include <limits>
 #include <memory>
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/docked_magnifier_controller.h"
 #include "ash/shell.h"
@@ -105,7 +105,8 @@ void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
     const gfx::Rect& rect) {
   // Fullscreen magnifier and docked magnifier are mutually exclusive.
   if (fullscreen_magnifier_enabled_) {
-    Shell::Get()->magnification_controller()->HandleMoveMagnifierToRect(rect);
+    Shell::Get()->full_screen_magnifier_controller()->HandleMoveMagnifierToRect(
+        rect);
     return;
   }
   if (IsDockedMagnifierEnabled()) {
@@ -230,7 +231,7 @@ void MagnificationManager::SetMagnifierEnabledInternal(bool enabled) {
 
   fullscreen_magnifier_enabled_ = enabled;
 
-  Shell::Get()->magnification_controller()->SetEnabled(enabled);
+  Shell::Get()->full_screen_magnifier_controller()->SetEnabled(enabled);
 }
 
 void MagnificationManager::SetMagnifierKeepFocusCenteredInternal(
@@ -240,7 +241,7 @@ void MagnificationManager::SetMagnifierKeepFocusCenteredInternal(
 
   keep_focus_centered_ = keep_focus_centered;
 
-  Shell::Get()->magnification_controller()->SetKeepFocusCentered(
+  Shell::Get()->full_screen_magnifier_controller()->SetKeepFocusCentered(
       keep_focus_centered_);
 }
 
@@ -250,13 +251,13 @@ void MagnificationManager::SetMagnifierScaleInternal(double scale) {
 
   scale_ = scale;
 
-  Shell::Get()->magnification_controller()->SetScale(scale_,
-                                                     false /* animate */);
+  Shell::Get()->full_screen_magnifier_controller()->SetScale(
+      scale_, false /* animate */);
 }
 
 void MagnificationManager::SetMagnifierMouseFollowingModeInternal(
     MagnifierMouseFollowingMode mouse_following_mode) {
-  Shell::Get()->magnification_controller()->set_mouse_following_mode(
+  Shell::Get()->full_screen_magnifier_controller()->set_mouse_following_mode(
       mouse_following_mode);
 }
 

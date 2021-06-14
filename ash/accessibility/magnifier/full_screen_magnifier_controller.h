@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFICATION_CONTROLLER_H_
-#define ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFICATION_CONTROLLER_H_
+#ifndef ASH_ACCESSIBILITY_MAGNIFIER_FULL_SCREEN_MAGNIFIER_CONTROLLER_H_
+#define ASH_ACCESSIBILITY_MAGNIFIER_FULL_SCREEN_MAGNIFIER_CONTROLLER_H_
 
 #include <map>
 #include <memory>
@@ -37,22 +37,22 @@ class GestureProviderAura;
 
 namespace ash {
 
-// MagnificationController controls the Fullscreen Magnifier feature.
-// MagnificationController implements GestureConsumer as it has its own
+// FullScreenMagnifierController implements GestureConsumer as it has its own
 // GestureProvider to recognize gestures with screen coordinates of touches.
 // Logical coordinates of touches cannot be used as they are changed with
 // viewport change: scroll, zoom.
-// MagnificationController implements EventRewriter to see and rewrite touch
-// events. Once the controller detects two fingers pinch or scroll, it starts
-// consuming all touch events not to confuse an app or a browser on the screen.
-// It needs to rewrite events to dispatch touch cancel events.
-class ASH_EXPORT MagnificationController : public ui::EventHandler,
-                                           public ui::ImplicitAnimationObserver,
-                                           public aura::WindowObserver,
-                                           public ui::IMEBridgeObserver,
-                                           public ui::InputMethodObserver,
-                                           public ui::GestureConsumer,
-                                           public ui::EventRewriter {
+// FullScreenMagnifierController implements EventRewriter to see and rewrite
+// touch events. Once the controller detects two fingers pinch or scroll, it
+// starts consuming all touch events not to confuse an app or a browser on the
+// screen. It needs to rewrite events to dispatch touch cancel events.
+class ASH_EXPORT FullScreenMagnifierController
+    : public ui::EventHandler,
+      public ui::ImplicitAnimationObserver,
+      public aura::WindowObserver,
+      public ui::IMEBridgeObserver,
+      public ui::InputMethodObserver,
+      public ui::GestureConsumer,
+      public ui::EventRewriter {
  public:
   enum ScrollDirection {
     SCROLL_NONE,
@@ -62,8 +62,8 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
     SCROLL_DOWN
   };
 
-  MagnificationController();
-  ~MagnificationController() override;
+  FullScreenMagnifierController();
+  ~FullScreenMagnifierController() override;
 
   void set_mouse_following_mode(
       MagnifierMouseFollowingMode mouse_following_mode) {
@@ -306,7 +306,7 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
 
   ScrollDirection scroll_direction_ = SCROLL_NONE;
 
-  // If true, MagnificationController consumes all touch events.
+  // If true, FullScreenMagnifierController consumes all touch events.
   bool consume_touch_event_ = false;
 
   // Number of touch points on the screen.
@@ -321,9 +321,10 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
   std::unique_ptr<GestureProviderClient> gesture_provider_client_;
 
   // MagnificationCotroller owns its GestureProvider to detect gestures with
-  // screen coordinates of touch events. As MagnificationController changes zoom
-  // level and moves viewport, logical coordinates of touches cannot be used for
-  // gesture detection as they are changed if the controller reacts to gestures.
+  // screen coordinates of touch events. As FullScreenMagnifierController
+  // changes zoom level and moves viewport, logical coordinates of touches
+  // cannot be used for gesture detection as they are changed if the controller
+  // reacts to gestures.
   std::unique_ptr<ui::GestureProviderAura> gesture_provider_;
 
   // Timer for moving magnifier window when it fires.
@@ -344,9 +345,9 @@ class ASH_EXPORT MagnificationController : public ui::EventHandler,
   // few milliseconds after the last move magnifier to rect call.
   base::TimeTicks last_move_magnifier_to_rect_;
 
-  DISALLOW_COPY_AND_ASSIGN(MagnificationController);
+  DISALLOW_COPY_AND_ASSIGN(FullScreenMagnifierController);
 };
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFICATION_CONTROLLER_H_
+#endif  // ASH_ACCESSIBILITY_MAGNIFIER_FULL_SCREEN_MAGNIFIER_CONTROLLER_H_

@@ -123,6 +123,7 @@ class EventTransformationHandler;
 class FullRestoreController;
 class FocusCycler;
 class FrameThrottlingController;
+class FullScreenMagnifierController;
 class HighContrastController;
 class HighlighterController;
 class HoldingSpaceController;
@@ -137,7 +138,6 @@ class LockStateController;
 class LogoutConfirmationController;
 class LoginScreenController;
 class LoginUnlockThroughputRecorder;
-class MagnificationController;
 class MarkerController;
 class TabletModeController;
 class MediaControllerImpl;
@@ -152,7 +152,7 @@ class OcclusionTrackerPauser;
 class OverlayEventFilter;
 class OverviewController;
 class ParentAccessController;
-class PartialMagnificationController;
+class PartialMagnifierController;
 class PciePeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
@@ -391,6 +391,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   ::wm::FocusController* focus_controller() { return focus_controller_.get(); }
   AshFocusRules* focus_rules() { return focus_rules_; }
   FocusCycler* focus_cycler() { return focus_cycler_.get(); }
+  FullScreenMagnifierController* full_screen_magnifier_controller() {
+    return full_screen_magnifier_controller_.get();
+  }
   HighlighterController* highlighter_controller() {
     return highlighter_controller_.get();
   }
@@ -425,9 +428,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   LogoutConfirmationController* logout_confirmation_controller() {
     return logout_confirmation_controller_.get();
   }
-  MagnificationController* magnification_controller() {
-    return magnification_controller_.get();
-  }
   MarkerController* marker_controller() { return marker_controller_.get(); }
   MediaControllerImpl* media_controller() { return media_controller_.get(); }
   MessageCenterController* message_center_controller() {
@@ -453,8 +453,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   ParentAccessController* parent_access_controller() {
     return parent_access_controller_.get();
   }
-  PartialMagnificationController* partial_magnification_controller() {
-    return partial_magnification_controller_.get();
+  PartialMagnifierController* partial_magnifier_controller() {
+    return partial_magnifier_controller_.get();
   }
   PeripheralBatteryListener* peripheral_battery_listener() {
     return peripheral_battery_listener_.get();
@@ -770,7 +770,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<WindowTreeHostManager> window_tree_host_manager_;
   std::unique_ptr<PersistentWindowController> persistent_window_controller_;
   std::unique_ptr<HighContrastController> high_contrast_controller_;
-  std::unique_ptr<MagnificationController> magnification_controller_;
+  std::unique_ptr<FullScreenMagnifierController>
+      full_screen_magnifier_controller_;
   std::unique_ptr<MarkerController> marker_controller_;
   std::unique_ptr<AutoclickController> autoclick_controller_;
   std::unique_ptr<::wm::FocusController> focus_controller_;
@@ -848,8 +849,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ui::EventHandler> magnifier_key_scroll_handler_;
   std::unique_ptr<ui::EventHandler> speech_feedback_handler_;
   std::unique_ptr<LaserPointerController> laser_pointer_controller_;
-  std::unique_ptr<PartialMagnificationController>
-      partial_magnification_controller_;
+  std::unique_ptr<PartialMagnifierController> partial_magnifier_controller_;
   std::unique_ptr<HighlighterController> highlighter_controller_;
 
   std::unique_ptr<DockedMagnifierControllerImpl> docked_magnifier_controller_;

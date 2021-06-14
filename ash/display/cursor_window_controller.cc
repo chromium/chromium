@@ -4,7 +4,7 @@
 
 #include "ash/display/cursor_window_controller.h"
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/constants/ash_constants.h"
@@ -165,7 +165,7 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
     return true;
   }
 
-  if (shell->magnification_controller()->IsEnabled())
+  if (shell->full_screen_magnifier_controller()->IsEnabled())
     return true;
 
   if (cursor_color_ != kDefaultCursorColor)

@@ -87,8 +87,7 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
   EXPECT_TRUE(laser_pointer_controller_->is_enabled());
 
   // Verify that toggling laser pointer disables magnifier when it was enabled.
-  auto* magnification_controller =
-      Shell::Get()->partial_magnification_controller();
+  auto* magnification_controller = Shell::Get()->partial_magnifier_controller();
   controller_->OnMagnifierButtonPressed(true);
   EXPECT_TRUE(magnification_controller->is_enabled());
   EXPECT_FALSE(laser_pointer_controller_->is_enabled());
@@ -139,8 +138,7 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
   EXPECT_FALSE(laser_pointer_controller_->is_enabled());
 
   // Verify that toggling marker disables magnifier when it was enabled.
-  auto* magnification_controller =
-      Shell::Get()->partial_magnification_controller();
+  auto* magnification_controller = Shell::Get()->partial_magnifier_controller();
   controller_->OnMagnifierButtonPressed(true);
   EXPECT_TRUE(magnification_controller->is_enabled());
   controller_->OnMarkerPressed();

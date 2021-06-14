@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/magnifier/partial_magnification_controller.h"
+#include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -15,14 +15,14 @@
 
 namespace ash {
 
-// Wrapper for PartialMagnificationController that exposes internal state to
+// Wrapper for PartialMagnifierController that exposes internal state to
 // test functions.
-class PartialMagnificationControllerTestApi {
+class PartialMagnifierControllerTestApi {
  public:
-  explicit PartialMagnificationControllerTestApi(
-      PartialMagnificationController* controller)
+  explicit PartialMagnifierControllerTestApi(
+      PartialMagnifierController* controller)
       : controller_(controller) {}
-  ~PartialMagnificationControllerTestApi() = default;
+  ~PartialMagnifierControllerTestApi() = default;
 
   bool is_enabled() const { return controller_->is_enabled_; }
   bool is_active() const { return controller_->is_active_; }
@@ -43,15 +43,13 @@ class PartialMagnificationControllerTestApi {
   }
 
  private:
-  PartialMagnificationController* controller_;
-
-  DISALLOW_ASSIGN(PartialMagnificationControllerTestApi);
+  PartialMagnifierController* controller_;
 };
 
-class PartialMagnificationControllerTest : public AshTestBase {
+class PartialMagnifierControllerTest : public AshTestBase {
  public:
-  PartialMagnificationControllerTest() = default;
-  ~PartialMagnificationControllerTest() override = default;
+  PartialMagnifierControllerTest() = default;
+  ~PartialMagnifierControllerTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -59,28 +57,25 @@ class PartialMagnificationControllerTest : public AshTestBase {
   }
 
  protected:
-  PartialMagnificationController* GetController() const {
-    return Shell::Get()->partial_magnification_controller();
+  PartialMagnifierController* GetController() const {
+    return Shell::Get()->partial_magnifier_controller();
   }
 
-  PartialMagnificationControllerTestApi GetTestApi() const {
-    return PartialMagnificationControllerTestApi(
-        Shell::Get()->partial_magnification_controller());
+  PartialMagnifierControllerTestApi GetTestApi() const {
+    return PartialMagnifierControllerTestApi(
+        Shell::Get()->partial_magnifier_controller());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PartialMagnificationControllerTest);
 };
 
 // The magnifier should not show up immediately after being enabled.
-TEST_F(PartialMagnificationControllerTest, InactiveByDefault) {
+TEST_F(PartialMagnifierControllerTest, InactiveByDefault) {
   GetController()->SetEnabled(true);
   EXPECT_FALSE(GetTestApi().is_active());
   EXPECT_FALSE(GetTestApi().host_widget());
 }
 
 // The magnifier should show up only after a pointer is pressed while enabled.
-TEST_F(PartialMagnificationControllerTest, ActiveOnPointerDown) {
+TEST_F(PartialMagnifierControllerTest, ActiveOnPointerDown) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
 
@@ -102,7 +97,7 @@ TEST_F(PartialMagnificationControllerTest, ActiveOnPointerDown) {
 
 // Verifies that nothing bad happens if a second display is disconnected while
 // the magnifier is active.
-TEST_F(PartialMagnificationControllerTest, MultipleDisplays) {
+TEST_F(PartialMagnifierControllerTest, MultipleDisplays) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
 
@@ -123,7 +118,7 @@ TEST_F(PartialMagnificationControllerTest, MultipleDisplays) {
 }
 
 // Turning the magnifier off while it is active destroys the window.
-TEST_F(PartialMagnificationControllerTest, DisablingDisablesActive) {
+TEST_F(PartialMagnifierControllerTest, DisablingDisablesActive) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
 
@@ -137,7 +132,7 @@ TEST_F(PartialMagnificationControllerTest, DisablingDisablesActive) {
 }
 
 // The magnifier only activates for pointer events.
-TEST_F(PartialMagnificationControllerTest, ActivatesOnlyForPointer) {
+TEST_F(PartialMagnifierControllerTest, ActivatesOnlyForPointer) {
   GetController()->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->PressTouch();
@@ -145,7 +140,7 @@ TEST_F(PartialMagnificationControllerTest, ActivatesOnlyForPointer) {
 }
 
 // The magnifier activates for mouse events.
-TEST_F(PartialMagnificationControllerTest, ActivatesForMouseEvents) {
+TEST_F(PartialMagnifierControllerTest, ActivatesForMouseEvents) {
   GetController()->SetEnabled(true);
   GetController()->set_allow_mouse_following(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -154,7 +149,7 @@ TEST_F(PartialMagnificationControllerTest, ActivatesForMouseEvents) {
 }
 
 // The magnifier is always located at pointer.
-TEST_F(PartialMagnificationControllerTest, MagnifierFollowsPointer) {
+TEST_F(PartialMagnifierControllerTest, MagnifierFollowsPointer) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
   GetController()->SetEnabled(true);
@@ -190,7 +185,7 @@ TEST_F(PartialMagnificationControllerTest, MagnifierFollowsPointer) {
 
 // The magnifier appears on the root window associated with the
 // correct display.
-TEST_F(PartialMagnificationControllerTest, MagnifierAppearsCorrectDisplay) {
+TEST_F(PartialMagnifierControllerTest, MagnifierAppearsCorrectDisplay) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
   UpdateDisplay("800x600,800x600");
@@ -209,7 +204,7 @@ TEST_F(PartialMagnificationControllerTest, MagnifierAppearsCorrectDisplay) {
 }
 
 // The magnifier appears under the pen, not the mouse.
-TEST_F(PartialMagnificationControllerTest, MagnifierAppearsUnderPen) {
+TEST_F(PartialMagnifierControllerTest, MagnifierAppearsUnderPen) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   UpdateDisplay("800x600,800x600");
   GetController()->SetEnabled(true);

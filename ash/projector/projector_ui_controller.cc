@@ -4,7 +4,7 @@
 
 #include "ash/projector/projector_ui_controller.h"
 
-#include "ash/accessibility/magnifier/partial_magnification_controller.h"
+#include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/ui/projector_bar_view.h"
@@ -65,7 +65,7 @@ void EnableMarker(bool enabled) {
 }
 
 void EnableMagnifier(bool enabled) {
-  auto* magnifier_controller = Shell::Get()->partial_magnification_controller();
+  auto* magnifier_controller = Shell::Get()->partial_magnifier_controller();
   DCHECK(magnifier_controller);
   magnifier_controller->SetEnabled(enabled);
   magnifier_controller->set_allow_mouse_following(enabled);
@@ -170,10 +170,10 @@ ProjectorUiController::ProjectorUiController(
   DCHECK(marker_controller);
   marker_controller_observation_.Observe(marker_controller);
 
-  auto* partial_magnification_controller =
-      Shell::Get()->partial_magnification_controller();
-  DCHECK(partial_magnification_controller);
-  partial_magnification_observation_.Observe(partial_magnification_controller);
+  auto* partial_magnifier_controller =
+      Shell::Get()->partial_magnifier_controller();
+  DCHECK(partial_magnifier_controller);
+  partial_magnification_observation_.Observe(partial_magnifier_controller);
 
   caption_bubble_ =
       std::make_unique<ProjectorUiController::CaptionBubbleController>(this);

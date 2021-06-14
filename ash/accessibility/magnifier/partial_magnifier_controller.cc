@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/magnifier/partial_magnification_controller.h"
+#include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/shell.h"
@@ -25,26 +25,26 @@ constexpr int kMagnifierRadius = 188;
 
 }  // namespace
 
-PartialMagnificationController::PartialMagnificationController() {
+PartialMagnifierController::PartialMagnifierController() {
   Shell::Get()->AddPreTargetHandler(this);
 
   MagnifierGlass::Params params = {kMagnificationScale, kMagnifierRadius};
   magnifier_glass_ = std::make_unique<MagnifierGlass>(std::move(params));
 }
 
-PartialMagnificationController::~PartialMagnificationController() {
+PartialMagnifierController::~PartialMagnifierController() {
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
-void PartialMagnificationController::AddObserver(Observer* observer) {
+void PartialMagnifierController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void PartialMagnificationController::RemoveObserver(Observer* observer) {
+void PartialMagnifierController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void PartialMagnificationController::SetEnabled(bool enabled) {
+void PartialMagnifierController::SetEnabled(bool enabled) {
   if (is_enabled_ == enabled)
     return;
 
@@ -54,7 +54,7 @@ void PartialMagnificationController::SetEnabled(bool enabled) {
     observer.OnPartialMagnificationStateChanged(enabled);
 }
 
-void PartialMagnificationController::SwitchTargetRootWindowIfNeeded(
+void PartialMagnifierController::SwitchTargetRootWindowIfNeeded(
     aura::Window* new_root_window) {
   if (new_root_window == current_root_window_)
     return;
@@ -78,15 +78,15 @@ void PartialMagnificationController::SwitchTargetRootWindowIfNeeded(
   }
 }
 
-void PartialMagnificationController::OnTouchEvent(ui::TouchEvent* event) {
+void PartialMagnifierController::OnTouchEvent(ui::TouchEvent* event) {
   OnLocatedEvent(event, event->pointer_details());
 }
 
-void PartialMagnificationController::OnMouseEvent(ui::MouseEvent* event) {
+void PartialMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
   OnLocatedEvent(event, event->pointer_details());
 }
 
-void PartialMagnificationController::SetActive(bool active) {
+void PartialMagnifierController::SetActive(bool active) {
   // Fail if we're trying to activate while disabled.
   DCHECK(is_enabled_ || !active);
 
@@ -98,7 +98,7 @@ void PartialMagnificationController::SetActive(bool active) {
     magnifier_glass_->Close();
 }
 
-void PartialMagnificationController::OnLocatedEvent(
+void PartialMagnifierController::OnLocatedEvent(
     ui::LocatedEvent* event,
     const ui::PointerDetails& pointer_details) {
   if (!is_enabled_)

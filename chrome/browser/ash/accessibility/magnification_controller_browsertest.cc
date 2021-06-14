@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -42,8 +42,8 @@ aura::Window* GetRootWindow() {
   return Shell::GetPrimaryRootWindow();
 }
 
-MagnificationController* GetMagnificationController() {
-  return Shell::Get()->magnification_controller();
+FullScreenMagnifierController* GetFullScreenMagnifierController() {
+  return Shell::Get()->full_screen_magnifier_controller();
 }
 
 bool IsMagnifierEnabled() {
@@ -55,16 +55,16 @@ void SetMagnifierEnabled(bool enabled) {
 }
 
 void MoveMagnifierWindow(int x, int y) {
-  GetMagnificationController()->MoveWindow(x, y, false);
+  GetFullScreenMagnifierController()->MoveWindow(x, y, false);
 }
 
 gfx::Rect GetViewPort() {
-  return GetMagnificationController()->GetViewportRect();
+  return GetFullScreenMagnifierController()->GetViewportRect();
 }
 
 class MagnifierAnimationWaiter {
  public:
-  explicit MagnifierAnimationWaiter(MagnificationController* controller)
+  explicit MagnifierAnimationWaiter(FullScreenMagnifierController* controller)
       : controller_(controller) {}
 
   void Wait() {
@@ -83,17 +83,17 @@ class MagnifierAnimationWaiter {
     }
   }
 
-  MagnificationController* controller_;  // not owned
+  FullScreenMagnifierController* controller_;  // not owned
   scoped_refptr<content::MessageLoopRunner> runner_;
   DISALLOW_COPY_AND_ASSIGN(MagnifierAnimationWaiter);
 };
 
 }  // namespace
 
-class MagnificationControllerTest : public InProcessBrowserTest {
+class FullScreenMagnifierControllerTest : public InProcessBrowserTest {
  protected:
-  MagnificationControllerTest() {}
-  ~MagnificationControllerTest() override {}
+  FullScreenMagnifierControllerTest() {}
+  ~FullScreenMagnifierControllerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Make screens sufficiently wide to host 2 browsers side by side.
@@ -105,13 +105,13 @@ class MagnificationControllerTest : public InProcessBrowserTest {
 
     // Confirms that magnifier is enabled.
     EXPECT_TRUE(IsMagnifierEnabled());
-    EXPECT_EQ(2.0f, GetMagnificationController()->GetScale());
+    EXPECT_EQ(2.0f, GetFullScreenMagnifierController()->GetScale());
 
-    // MagnificationController moves the magnifier window with animation
+    // FullScreenMagnifierController moves the magnifier window with animation
     // when the magnifier is set to be enabled. It will move the mouse cursor
     // when the animation completes. Wait until the animation completes, so that
     // the mouse movement won't affect the position of magnifier window later.
-    MagnifierAnimationWaiter waiter(GetMagnificationController());
+    MagnifierAnimationWaiter waiter(GetFullScreenMagnifierController());
     waiter.Wait();
     base::RunLoop().RunUntilIdle();
   }
@@ -157,7 +157,7 @@ class MagnificationControllerTest : public InProcessBrowserTest {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MagnificationControllerTest);
+  DISALLOW_COPY_AND_ASSIGN(FullScreenMagnifierControllerTest);
 };
 
 // Test is flaky on ChromeOS: crbug.com/1150753
@@ -167,7 +167,7 @@ class MagnificationControllerTest : public InProcessBrowserTest {
 #else
 #define MAYBE_FollowFocusOnWebButtonContained FollowFocusOnWebButtonContained
 #endif
-IN_PROC_BROWSER_TEST_F(MagnificationControllerTest,
+IN_PROC_BROWSER_TEST_F(FullScreenMagnifierControllerTest,
                        MAYBE_FollowFocusOnWebButtonContained) {
   DCHECK(IsMagnifierEnabled());
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(

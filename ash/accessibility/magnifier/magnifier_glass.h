@@ -61,7 +61,7 @@ class ASH_EXPORT MagnifierGlass : public aura::WindowObserver,
   views::Widget* host_widget_for_testing() const { return host_widget_; }
 
  private:
-  friend class PartialMagnificationControllerTestApi;
+  friend class PartialMagnifierControllerTestApi;
   class BorderRenderer;
 
   // aura::WindowObserver:

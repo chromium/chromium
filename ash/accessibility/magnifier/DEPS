@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "magnification_controller\.cc": [
+  "full_screen_magnifier_controller\.cc": [
     "+ash/host"
   ],
   "docked_magnifier_controller_impl.*\.cc": [

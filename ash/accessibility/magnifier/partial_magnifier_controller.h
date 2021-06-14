@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_MAGNIFIER_PARTIAL_MAGNIFICATION_CONTROLLER_H_
-#define ASH_ACCESSIBILITY_MAGNIFIER_PARTIAL_MAGNIFICATION_CONTROLLER_H_
+#ifndef ASH_ACCESSIBILITY_MAGNIFIER_PARTIAL_MAGNIFIER_CONTROLLER_H_
+#define ASH_ACCESSIBILITY_MAGNIFIER_PARTIAL_MAGNIFIER_CONTROLLER_H_
 
 #include <memory>
 
@@ -30,7 +30,7 @@ class MagnifierGlass;
 
 // Controls the partial screen magnifier, which is a small area of the screen
 // which is zoomed in.  The zoomed area follows the mouse cursor when enabled.
-class ASH_EXPORT PartialMagnificationController : public ui::EventHandler {
+class ASH_EXPORT PartialMagnifierController : public ui::EventHandler {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -38,8 +38,8 @@ class ASH_EXPORT PartialMagnificationController : public ui::EventHandler {
     virtual void OnPartialMagnificationStateChanged(bool enabled) = 0;
   };
 
-  PartialMagnificationController();
-  ~PartialMagnificationController() override;
+  PartialMagnifierController();
+  ~PartialMagnifierController() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -63,7 +63,7 @@ class ASH_EXPORT PartialMagnificationController : public ui::EventHandler {
   bool is_enabled() const { return is_enabled_; }
 
  private:
-  friend class PartialMagnificationControllerTestApi;
+  friend class PartialMagnifierControllerTestApi;
 
   // ui::EventHandler:
   void OnTouchEvent(ui::TouchEvent* event) override;
@@ -89,9 +89,9 @@ class ASH_EXPORT PartialMagnificationController : public ui::EventHandler {
 
   base::ObserverList<Observer> observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(PartialMagnificationController);
+  DISALLOW_COPY_AND_ASSIGN(PartialMagnifierController);
 };
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_MAGNIFIER_PARTIAL_MAGNIFICATION_CONTROLLER_H_
+#endif  // ASH_ACCESSIBILITY_MAGNIFIER_PARTIAL_MAGNIFIER_CONTROLLER_H_
