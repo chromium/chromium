@@ -165,9 +165,15 @@ bool TabGroupHeader::OnMousePressed(const ui::MouseEvent& event) {
   if (editor_bubble_tracker_.is_open())
     return false;
 
-  tab_strip_->MaybeStartDrag(this, event, tab_strip_->GetSelectionModel());
+  // Allow a right click from touch to drag, which corresponds to a long click.
+  if (event.IsOnlyLeftMouseButton() ||
+      (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
+    tab_strip_->MaybeStartDrag(this, event, tab_strip_->GetSelectionModel());
 
-  return true;
+    return true;
+  }
+
+  return false;
 }
 
 bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
