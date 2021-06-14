@@ -61,7 +61,14 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   FRIEND_TEST_ALL_PREFIXES(ProjectorUiControllerTest, UmaMetricsTest);
 
   // The location of the bar.
-  enum class BarLocation { kUpperLeft, kUpperRight, kLowerRight, kLowerLeft };
+  enum class BarLocation {
+    kUpperLeft,
+    kUpperCenter,
+    kUpperRight,
+    kLowerRight,
+    kLowerCenter,
+    kLowerLeft
+  };
 
   // The state of the marker bar.
   enum class MarkerBarState { kDisabled, kHighlighted, kExpanded };
@@ -111,7 +118,7 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   views::BoxLayoutView* marker_bar_ = nullptr;
   views::BoxLayoutView* tools_bar_ = nullptr;
 
-  BarLocation bar_location_ = BarLocation::kLowerLeft;
+  BarLocation bar_location_ = BarLocation::kLowerCenter;
   MarkerBarState marker_bar_state_ = MarkerBarState::kDisabled;
 
   ProjectorControllerImpl* projector_controller_ = nullptr;

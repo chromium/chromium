@@ -324,7 +324,18 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
   bar_view_->OnChangeBarLocationButtonPressed();
   histogram_tester.ExpectBucketCount(
       kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarLocationBottomLeft,
+      /*count=*/1);
+
+  bar_view_->OnChangeBarLocationButtonPressed();
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kToolbarLocationTopLeft,
+      /*count=*/1);
+  bar_view_->OnChangeBarLocationButtonPressed();
+  histogram_tester.ExpectBucketCount(
+      kProjectorToolbarHistogramName,
+      /*sample=*/ProjectorToolbar::kToolbarLocationTopCenter,
       /*count=*/1);
   bar_view_->OnChangeBarLocationButtonPressed();
   histogram_tester.ExpectBucketCount(
@@ -339,7 +350,7 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
   bar_view_->OnChangeBarLocationButtonPressed();
   histogram_tester.ExpectBucketCount(
       kProjectorToolbarHistogramName,
-      /*sample=*/ProjectorToolbar::kToolbarLocationBottomLeft,
+      /*sample=*/ProjectorToolbar::kToolbarLocationBottomCenter,
       /*count=*/1);
 
   Shell::Get()->projector_controller()->SetProjectorToolsVisible(
@@ -349,7 +360,7 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
       /*sample=*/ProjectorToolbar::kToolbarClosed,
       /*count=*/1);
   histogram_tester.ExpectTotalCount(kProjectorToolbarHistogramName,
-                                    /*count=*/20);
+                                    /*count=*/22);
 }
 
 }  // namespace ash

@@ -337,6 +337,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "system_tray_update.icon",
     "system_tray_volume_mute.icon",
     "three_files.icon",
+    "toolbar_position_bottom_center.icon",
+    "toolbar_position_top_center.icon",
     "touch_calibration_complete_check.icon",
     "touch_calibration_hand.icon",
     "trash_can.icon",

@@ -65977,6 +65977,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="16" label="Toggle toolbar location to top right"/>
   <int value="17" label="Toggle toolbar location to bottom right"/>
   <int value="18" label="Undo"/>
+  <int value="19" label="Toggle toolbar location to top center"/>
+  <int value="20" label="Toggle toolbar location to bottom center"/>
 </enum>
 
 <enum name="PromoBrowserCommandEnum">

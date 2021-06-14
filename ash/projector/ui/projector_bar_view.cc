@@ -360,7 +360,7 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
           base::BindRepeating(
               &ProjectorBarView::OnChangeBarLocationButtonPressed,
               base::Unretained(this)),
-          kAutoclickPositionBottomLeftIcon,
+          kToolbarPositionBottomCenterIcon,
           l10n_util::GetStringUTF16(IDS_TOOLBAR_LOCATION_BUTTON)));
   bar_location_button_->SetVisible(true);
   tools_bar_ = AddChildView(std::move(box_layout));
@@ -394,6 +394,11 @@ void ProjectorBarView::OnMagnifierButtonPressed(bool enabled) {
 void ProjectorBarView::OnChangeBarLocationButtonPressed() {
   switch (bar_location_) {
     case BarLocation::kUpperLeft:
+      bar_location_ = BarLocation::kUpperCenter;
+      bar_location_button_->SetVectorIcon(kToolbarPositionTopCenterIcon);
+      RecordToolbarMetrics(ProjectorToolbar::kToolbarLocationTopCenter);
+      break;
+    case BarLocation::kUpperCenter:
       bar_location_ = BarLocation::kUpperRight;
       bar_location_button_->SetVectorIcon(kAutoclickPositionTopRightIcon);
       RecordToolbarMetrics(ProjectorToolbar::kToolbarLocationTopRight);
@@ -404,6 +409,11 @@ void ProjectorBarView::OnChangeBarLocationButtonPressed() {
       RecordToolbarMetrics(ProjectorToolbar::kToolbarLocationBottomRight);
       break;
     case BarLocation::kLowerRight:
+      bar_location_ = BarLocation::kLowerCenter;
+      bar_location_button_->SetVectorIcon(kToolbarPositionBottomCenterIcon);
+      RecordToolbarMetrics(ProjectorToolbar::kToolbarLocationBottomCenter);
+      break;
+    case BarLocation::kLowerCenter:
       bar_location_ = BarLocation::kLowerLeft;
       bar_location_button_->SetVectorIcon(kAutoclickPositionBottomLeftIcon);
       RecordToolbarMetrics(ProjectorToolbar::kToolbarLocationBottomLeft);
@@ -414,6 +424,7 @@ void ProjectorBarView::OnChangeBarLocationButtonPressed() {
       RecordToolbarMetrics(ProjectorToolbar::kToolbarLocationTopLeft);
       break;
   }
+
   GetWidget()->SetBounds(CalculateBoundsInScreen());
 }
 
@@ -491,6 +502,11 @@ gfx::Rect ProjectorBarView::CalculateBoundsInScreen() const {
       origin =
           gfx::Point(work_area.x() + kBarMargin, work_area.y() + kBarMargin);
       break;
+    case BarLocation::kUpperCenter:
+      origin = gfx::Point(
+          work_area.x() + (work_area.width() - preferred_size.width()) / 2,
+          work_area.y() + kBarMargin);
+      break;
     case BarLocation::kUpperRight:
       origin =
           gfx::Point(work_area.right() - preferred_size.width() - kBarMargin,
@@ -501,6 +517,11 @@ gfx::Rect ProjectorBarView::CalculateBoundsInScreen() const {
       origin =
           gfx::Point(work_area.right() - preferred_size.width() - kBarMargin,
                      work_area.bottom() - preferred_size.height() - kBarMargin);
+      break;
+    case BarLocation::kLowerCenter:
+      origin = gfx::Point(
+          work_area.x() + (work_area.width() - preferred_size.width()) / 2,
+          work_area.bottom() - preferred_size.height() - kBarMargin);
       break;
     case BarLocation::kLowerLeft:
       origin =
