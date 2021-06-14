@@ -144,13 +144,9 @@ syncer::ClientTagHash SyncedBookmarkTracker::GetClientTagHashFromGUID(
 std::unique_ptr<SyncedBookmarkTracker> SyncedBookmarkTracker::CreateEmpty(
     sync_pb::ModelTypeState model_type_state) {
   // base::WrapUnique() used because the constructor is private.
-  auto tracker = base::WrapUnique(new SyncedBookmarkTracker(
+  return base::WrapUnique(new SyncedBookmarkTracker(
       std::move(model_type_state), /*bookmarks_full_title_reuploaded=*/false,
       /*last_sync_time=*/base::Time::Now()));
-  tracker->bookmark_client_tags_in_protocol_enabled_ =
-      base::FeatureList::IsEnabled(
-          switches::kSyncUseClientTagForBookmarkCommits);
-  return tracker;
 }
 
 // static
@@ -179,27 +175,6 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
   auto tracker = base::WrapUnique(new SyncedBookmarkTracker(
       model_metadata.model_type_state(), bookmarks_full_title_reuploaded,
       last_sync_time));
-
-  // Read |bookmark_client_tags_in_protocol_enabled_| while honoring the
-  // corresponding feature toggle too.
-  if (model_metadata.bookmark_client_tags_in_protocol_enabled()) {
-    // If the feature used to be enabled, it can continue to do so as long as
-    // the feature toggle is still enabled. If it becomes disabled, the boolean
-    // transitions to false immediately (independently of in-flight local
-    // changes) to guarantee that there is an effective kill switch.
-    tracker->bookmark_client_tags_in_protocol_enabled_ =
-        base::FeatureList::IsEnabled(
-            switches::kSyncUseClientTagForBookmarkCommits);
-  } else {
-    // If the feature used to be disabled, transitioning to true requires *NOT*
-    // having pending local changes (in-flight creations, strictly speaking, but
-    // that's too complex to implement), to avoid creating duplicates on the
-    // server (the same bookmark with and without a client tag).
-    tracker->bookmark_client_tags_in_protocol_enabled_ =
-        !tracker->HasLocalChanges() &&
-        base::FeatureList::IsEnabled(
-            switches::kSyncUseClientTagForBookmarkCommits);
-  }
 
   const CorruptionReason corruption_reason =
       tracker->InitEntitiesFromModelAndMetadata(model,
@@ -392,8 +367,6 @@ SyncedBookmarkTracker::BuildBookmarkModelMetadata() const {
   model_metadata.set_bookmarks_full_title_reuploaded(
       bookmarks_full_title_reuploaded_);
   model_metadata.set_last_sync_time(syncer::TimeToProtoTime(last_sync_time_));
-  model_metadata.set_bookmark_client_tags_in_protocol_enabled(
-      bookmark_client_tags_in_protocol_enabled_);
 
   for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
        sync_id_to_entities_map_) {
@@ -698,7 +671,8 @@ bool SyncedBookmarkTracker::ReuploadBookmarksOnLoadIfNeeded() {
 }
 
 bool SyncedBookmarkTracker::bookmark_client_tags_in_protocol_enabled() const {
-  return bookmark_client_tags_in_protocol_enabled_;
+  return base::FeatureList::IsEnabled(
+      switches::kSyncUseClientTagForBookmarkCommits);
 }
 
 void SyncedBookmarkTracker::TraverseAndAppend(
