@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Sorry, we couldn’t validate your credentials</translation>
 <translation id="1310482092992808703">Group tabs</translation>
 <translation id="1311657260431405215">This QR code is not a URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylised_highlight_</translation>
 <translation id="1327257854815634930">Navigation history is opened</translation>
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
@@ -961,6 +962,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7233236755231902816">To see the web in your language, get the latest version of Chrome</translation>
+<translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
 <translation id="7252076891734325316">Place your phone close to the computer</translation>
 <translation id="7274013316676448362">Blocked site</translation>

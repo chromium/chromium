@@ -1897,6 +1897,7 @@
 <translation id="3027296729579831126">تفعيل ميزة "المشاركة عن قرب"</translation>
 <translation id="3029466929721441205">عرض أدوات قلم الشاشة في الرفّ</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{يطلُب <ph name="MANAGER" /> منك تنزيل تحديث الجهاز اليوم. وسيتم تنزيل التحديث تلقائيًا عند الاتصال بالإنترنت.}zero{يطلُب <ph name="MANAGER" /> منك تنزيل تحديث الجهاز قبل الموعد النهائي. وسيتم تنزيل التحديث تلقائيًا عند الاتصال بالإنترنت.}two{يطلُب <ph name="MANAGER" /> منك تنزيل تحديث الجهاز قبل الموعد النهائي. وسيتم تنزيل التحديث تلقائيًا عند الاتصال بالإنترنت.}few{يطلُب <ph name="MANAGER" /> منك تنزيل تحديث الجهاز قبل الموعد النهائي. وسيتم تنزيل التحديث تلقائيًا عند الاتصال بالإنترنت.}many{يطلُب <ph name="MANAGER" /> منك تنزيل تحديث الجهاز قبل الموعد النهائي. وسيتم تنزيل التحديث تلقائيًا عند الاتصال بالإنترنت.}other{يطلُب <ph name="MANAGER" /> منك تنزيل تحديث الجهاز قبل الموعد النهائي. وسيتم تنزيل التحديث تلقائيًا عند الاتصال بالإنترنت.}}</translation>
+<translation id="3030967311408872958">من غروب الشمس إلى شروقها</translation>
 <translation id="3031417829280473749">‏الوكيل X</translation>
 <translation id="3031557471081358569">اختيار العناصر المراد استيرادها:</translation>
 <translation id="3036327949511794916">لقد انتهت مهلة إرجاع جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
@@ -4074,6 +4075,7 @@
 <translation id="5502500733115278303">تمّ الاستيراد من متصفّح فايرفوكس</translation>
 <translation id="5502915260472117187">طفل</translation>
 <translation id="5503982651688210506">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها واستخدام الميكروفون</translation>
+<translation id="5504909642107847870">مراجعة إعدادات الخصوصية والأمان</translation>
 <translation id="5505264765875738116">منع المواقع الإلكترونية من طلب إرسال إشعارات</translation>
 <translation id="5505307013568720083">نفد الحبر</translation>
 <translation id="5505794066310932198">‏إيقاف/تفعيل Commander</translation>
@@ -4901,6 +4903,7 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - يتم البحث عن جهاز يتضمّن بلوتوث</translation>
 <translation id="6445450263907939268">إذا كنت لا تريد هذه التغييرات، فيمكنك استعادة الإعدادات السابقة.</translation>
 <translation id="6446213738085045933">إنشاء اختصار على سطح المكتب</translation>
+<translation id="6447210166804596538">مراجعة أهم عناصر التحكّم في الخصوصية والأمان من مكان واحد</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6450876761651513209">تغيير الإعدادات المتعلقة بالخصوصية</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> وعلامة تبويب واحدة إضافية}two{<ph name="PAGE_TITLE" /> وعلامَتا تبويب إضافيتان}few{<ph name="PAGE_TITLE" /> و# علامات تبويب إضافية}many{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}other{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}}</translation>
@@ -6883,6 +6886,7 @@
 <translation id="8655972064210167941">فشل تسجيل الدخول، نظرًا لعدم القدرة على التحقق من كلمة مرورك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
 <translation id="8657393004602556571">هل تريد تجاهل الملاحظات؟</translation>
 <translation id="8658645149275195032">يشارك <ph name="APP_NAME" /> الشاشة والصوت من خلال <ph name="TAB_NAME" />.</translation>
+<translation id="8660073998956001352">محرّكات البحث</translation>
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">الأشخاص</translation>
@@ -7073,6 +7077,7 @@
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8846132060409673887">قراءة نموذج هذا الكمبيوتر والشركة المصنِّعة</translation>
 <translation id="8846163936679269230">‏إعادة ضبط الملفات الشخصية لبطاقة eSIM</translation>
+<translation id="8846746259444262774">تعذّر تثبيت التطبيق.</translation>
 <translation id="8847523528195140327">تسجيل الخروج عند غلق الغلاف</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">مخفي</translation>

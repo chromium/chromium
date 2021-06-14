@@ -67,6 +67,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="4176825807642096119">Kodi i qasjes</translation>
 <translation id="4227991223508142681">Mjeti i sigurimit të strehuesit</translation>
 <translation id="4240294130679914010">Çinstaluesi i strehuesit të Chromoting</translation>
+<translation id="4257751272692708833">Përcjellësi i URL së <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kodi i qasjes është i pavlefshëm. Provo sërish.</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="4405930547258349619">Biblioteka kryesore</translation>
@@ -121,6 +122,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="6612717000975622067">Dërgo Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Ndaj</translation>
 <translation id="677755392401385740">Strehuesi u nis për përdoruesin: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplikacion ndihmës për të hapur një URL te klienti <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Shfaq/fshih tastierën.</translation>
 <translation id="6963936880795878952">Lidhjet me kompjuterin në largësi janë të bllokuara përkohësisht sepse dikush po përpiqej të lidhej me të nëpërmjet një kodi PIN të pavlefshëm. Provo përsëri më vonë.</translation>
 <translation id="6965382102122355670">Në rregull</translation>

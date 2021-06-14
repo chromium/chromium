@@ -611,6 +611,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3212623355668894776">Close all guest windows so that your browsing activity is deleted from this device.</translation>
 <translation id="3215092763954878852">Couldn't use WebAuthn</translation>
 <translation id="3218181027817787318">Relative</translation>
+<translation id="3223287115535306850">App launching throbber</translation>
 <translation id="3225919329040284222">The server presented a certificate that doesn't match built-in expectations. These expectations are included for certain, high-security websites in order to protect you.</translation>
 <translation id="3226128629678568754">Press the reload button to resubmit the data needed to load the page.</translation>
 <translation id="3226387218769101247">Thumbnails</translation>
@@ -685,6 +686,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3447884698081792621">Show certificate (issued by <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Fetch interval:</translation>
 <translation id="3453962258458347894">Number of retries</translation>
+<translation id="3454555520521576458">Resizable</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> wants to see text and images copied to the clipboard</translation>
 <translation id="3461824795358126837">Highlighter</translation>
@@ -1019,6 +1021,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4677585247300749148"><ph name="URL" /> wants to respond to accessibility events</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> and other sites where you use this password now.</translation>
+<translation id="468314109939257734">View your virtual card number</translation>
 <translation id="4690462567478992370">Stop using an invalid certificate</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1927,6 +1930,7 @@ Additional details:
 <translation id="8057711352706143257">'<ph name="SOFTWARE_NAME" />' isn’t configured correctly. Uninstalling '<ph name="SOFTWARE_NAME" />' usually fixes the problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Sorry, something went wrong.</translation>
 <translation id="8067872629359326442">You just entered your password on a deceptive site. Chromium can help. To change your password and notify Google that your account may be at risk, click 'Protect account'.</translation>
+<translation id="8070439594494267500">App icon</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Manage site settings</translation>
 <translation id="8078141288243656252">Cannot annotate when rotated</translation>

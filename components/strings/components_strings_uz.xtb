@@ -609,6 +609,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3212623355668894776">Barcha mehmon oynalarni yopsangiz, bu qurilmadan brauzerdagi faoliyat oʻchiriladi.</translation>
 <translation id="3215092763954878852">WebAuthn ishlatib boʻlmadi</translation>
 <translation id="3218181027817787318">Aloqador</translation>
+<translation id="3223287115535306850">Ilova yuklanishi belgisi</translation>
 <translation id="3225919329040284222">Serverdagi sertifikat ba’zi saytlardagi yuqori darajali havfsizlik ichki parametrlariga mos kelmaydi.</translation>
 <translation id="3226128629678568754">Ba’zi ma’lumotlarni qayta kiritish uchun sahifa yuklanishi kerak, “yangilash” tugmasini bosing.</translation>
 <translation id="3226387218769101247">Eskizlar</translation>
@@ -683,6 +684,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3447884698081792621">Sertifikatni ko‘rsatish (noshir: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Yuklash oralig‘i:</translation>
 <translation id="3453962258458347894">Qayta urinishlar soni</translation>
+<translation id="3454555520521576458">Hajmi oʻzgaruvchan</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> klipbordga nusxalangan matn va rasmlarni ko‘rmoqchi</translation>
 <translation id="3461824795358126837">Marker</translation>
@@ -1015,6 +1017,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4677585247300749148"><ph name="URL" /> maxsus imkoniyatlardan foydalanmoqchi</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Hozirgina shubhali saytda parol kiritdingiz. Chromium hoziroq <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> va boshqa saytlardagi shu parolingizni tekshirishni tavsiya qiladi.</translation>
+<translation id="468314109939257734">Virtual karta raqamini koʻrish</translation>
 <translation id="4690462567478992370">Yaroqsiz sertifikatdan foydalanishni to‘xtatish</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1922,6 +1925,7 @@ Batafsil axborot:
 <translation id="8057711352706143257">“<ph name="SOFTWARE_NAME" />” noto‘g‘ri sozlangan. “<ph name="SOFTWARE_NAME" />” dasturini o‘chirib ko‘ring. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Xatolik yuz berdi.</translation>
 <translation id="8067872629359326442">Hozirgina shubhali saytda parol kiritdingiz. Chromium yordamga tayyor. Parolni almashtirish va Googlega bu hisob xavf ostida ekanini xabar qilish uchun Hisobni himoyalash ustiga bosing.</translation>
+<translation id="8070439594494267500">Ilova belgisi</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Sayt sozlamalarini boshqarish</translation>
 <translation id="8078141288243656252">Aylantirilganda izohlanmaydi</translation>

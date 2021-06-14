@@ -1229,6 +1229,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2300383962156589922">Customise and control <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Keyboard shortcuts for search keywords</translation>
 <translation id="2301382460326681002">Extension root directory is invalid.</translation>
+<translation id="2301402091755573488">Shared tab</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" has requested additional permissions.</translation>
 <translation id="23055578400314116">Select a username</translation>
 <translation id="2307462900900812319">Configure network</translation>
@@ -1506,6 +1507,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2612676031748830579">Card number</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> will be able to edit <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Read and change your data on <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Activate the Next button to continue the setup or the Previous button to change the 'Select' switch assignment.</translation>
 <translation id="2618797463720777311">Set up Nearby Share</translation>
 <translation id="2619761439309613843">Daily Refresh</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> can't be downloaded securely.</translation>
@@ -2902,6 +2904,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4120817667028078560">Path too long</translation>
 <translation id="4124823734405044952">Your security key has been reset</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4126916490446791914">Auto-scan enabled</translation>
 <translation id="412730574613779332">Speedy</translation>
 <translation id="4130199216115862831">Device Log</translation>
 <translation id="4130207949184424187">This extension has changed the page that is shown when you search from the Omnibox.</translation>
@@ -3285,6 +3288,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
     If your child uses a Chromebook in school and you wish to mirror the school experience at home to ensure that your child has access to all necessary schoolwork, please sign out of this Family Link account and sign in to the school account from the Chrome OS accounts page (note: Family Link parental controls will not apply).&lt;br&gt;&lt;br&gt;
     If your child does not use a Chromebook in school or if you prefer to manage your child’s experience at home using Family Link, please click the Next button below to add a school account to this profile.</translation>
 <translation id="4576541033847873020">Pair Bluetooth device</translation>
+<translation id="4576763597586015380">To continue saving passwords in your Google Account, verify that it’s you</translation>
 <translation id="4579453506923101210">Forget connected phone</translation>
 <translation id="4579581181964204535">Unable to cast <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Error while restoring Linux</translation>
@@ -5005,6 +5009,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6538098297809675636">Error detecting code</translation>
 <translation id="653920215766444089">Searching for pointing device</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> Only enable if you know what you are doing or if you have been asked to do so, as collection of data may reduce performance.</translation>
+<translation id="6540672086173674880">Google may use your browsing history to personalise Search and other Google services. You can change this at any time at myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">This site has been blocked from accessing your motion sensors.</translation>
 <translation id="6545665334409411530">Repeat rate</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
@@ -5890,6 +5895,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="754207240458482646">Synced with other devices on your account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Enable debugging features on this <ph name="IDS_SHORT_PRODUCT_NAME" /> device</translation>
 <translation id="7543525346216957623">Ask your parent</translation>
+<translation id="7546012169463147344">Auto-scan will automatically cycle through and focus on items on the screen.‏ When an item is focused, press the 'Select' key that you just assigned to activate it.</translation>
 <translation id="7547317915858803630">Warning: your <ph name="PRODUCT_NAME" /> settings are stored on a network drive. This may result in slowdowns, crashes or even loss of data.</translation>
 <translation id="7548856833046333824">Fizzy</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6860,6 +6866,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8621866727807194849">There's harmful software on your computer. Chrome is removing it, restoring your settings and disabling extensions. This will make your browser work normally again.</translation>
 <translation id="8621979332865976405">Share your entire screen</translation>
 <translation id="8624354461147303341">Get discounts</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Not allowed to use your microphone</translation>
 <translation id="8625916342247441948">Don't allow sites to connect to HID devices</translation>
@@ -6924,6 +6931,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8677212948402625567">Collapse all...</translation>
 <translation id="867767487203716855">Next update</translation>
 <translation id="8677859815076891398">No albums. Create an album in <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Data was encrypted with your sync passphrase on <ph name="TIME" />. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="8678582529642151449">Tabs don't shrink</translation>
 <translation id="8678933587484842200">How would you like this application to launch?</translation>
 <translation id="8680251145628383637">Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.</translation>

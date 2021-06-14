@@ -310,6 +310,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kur ky kontroll është aktiv dhe statusi është aktiv, Chrome përcakton se me cilin grup të madh personash (kohortë) është më i ngjashëm aktiviteti yt i shfletimit së fundi. Reklamuesit mund të zgjedhin reklamat për grupin dhe aktiviteti yt i shfletimit mbahet privat në pajisjen tënde. Grupi yt përditësohet çdo ditë.}=1{Kur ky kontroll është aktiv dhe statusi është aktiv, Chrome përcakton se me cilin grup të madh personash (kohortë) është më i ngjashëm aktiviteti yt i shfletimit së fundi. Reklamuesit mund të zgjedhin reklamat për grupin dhe aktiviteti yt i shfletimit mbahet privat në pajisjen tënde. Grupi yt përditësohet çdo ditë.}other{Kur ky kontroll është aktiv dhe statusi është aktiv, Chrome përcakton se me cilin grup të madh personash (kohortë) është më i ngjashëm aktiviteti yt i shfletimit së fundi. Reklamuesit mund të zgjedhin reklamat për grupin dhe aktiviteti yt i shfletimit mbahet privat në pajisjen tënde. Grupi yt përditësohet çdo {NUM_DAYS} ditë.}}</translation>
 <translation id="2053553514270667976">Kodi postar</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugjerim}other{# sugjerime}}</translation>
+<translation id="2071156619270205202">Kjo kartë nuk është e përshtatshme për numrin e kartës virtuale.</translation>
 <translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="20817612488360358">Cilësimet e përfaqësuesit të sistemit janë caktuar që të përdoren, por është specifikuar po ashtu një konfigurim i qartë i përfaqësuesit.</translation>
@@ -438,9 +439,11 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2521385132275182522">Kapje me tel poshtë djathtas</translation>
 <translation id="2523886232349826891">Ruajtur vetëm në këtë pajisje</translation>
 <translation id="2524461107774643265">Shto më shumë informacion</translation>
+<translation id="2529899080962247600">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha hyrjet e mëtejshme do të shpërfillen.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
 <translation id="2536110899380797252">Shto adresë</translation>
 <translation id="2539524384386349900">Zbulo</translation>
+<translation id="2540701853218677861">Historik i identifikimit/daljes së pajisjeve, duke përfshirë vulat kohore dhe përpjekjet e dështuara</translation>
 <translation id="2541219929084442027">Faqet që shikon në skedat "e fshehta" nuk do të ruhen në historikun e shfletuesit tënd, vendin e ruajtjes të kukive apo historikun e kërkimeve pasi ke mbyllur të gjitha skedat e tua "të fshehta". Çdo skedar që shkarkon apo faqeshënues që krijon do të mbahet.</translation>
 <translation id="2544644783021658368">Një dokument i vetëm</translation>
 <translation id="254947805923345898">Vlera e politikës nuk është e vlefshme.</translation>
@@ -631,6 +634,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3320021301628644560">Shto adresën e faturimit</translation>
 <translation id="3324983252691184275">E kuqe e fortë</translation>
 <translation id="3329013043687509092">Ngopje</translation>
+<translation id="3333762389743153920">Nuk është e përshtatshme për kartë virtuale</translation>
 <translation id="3338095232262050444">E sigurt</translation>
 <translation id="3355823806454867987">Ndrysho cilësimet e përfaqësuesit...</translation>
 <translation id="3360103848165129075">Fleta e përpunuesit të pagesës</translation>
@@ -764,6 +768,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3754210790023674521">Dil nga "Figura brenda figurës"</translation>
 <translation id="3759461132968374835">Nuk ke ndërprerje aksidentale të raportuara së fundi. Ndërprerjet aksidentale që kanë ndodhur kur raportimi i tyre ka qenë i çaktivizuar, nuk do të shfaqen këtu.</translation>
 <translation id="3760561303380396507">Të përdoret Windows Hello në vend të CVC?</translation>
+<translation id="3761171036307311438">Emri në kartë:</translation>
 <translation id="3761718714832595332">Fshihe statusin</translation>
 <translation id="3765032636089507299">Faqja e "Shfletimit të sigurt" është duke u ndërtuar.</translation>
 <translation id="3765588406864124894">Kutia postare 9</translation>
@@ -1141,6 +1146,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifiko kartën tënde</translation>
 <translation id="5135404736266831032">Menaxho adresat...</translation>
+<translation id="5138014172396933048">Karta virtuale nuk ofrohet për momentin, kontakto me bankën tënde</translation>
 <translation id="5138227688689900538">Shfaq më pak</translation>
 <translation id="514010763713772514">Përfundoje blerjen më shpejt herën tjetër</translation>
 <translation id="5145883236150621069">Një kod gabimi i pranishëm në përgjigjen e politikës</translation>
@@ -1187,6 +1193,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5287240709317226393">Shfaq kukit</translation>
 <translation id="5287456746628258573">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimin ose numrat e kartës së kreditit) kur dërgohen te ky sajt.</translation>
 <translation id="5288108484102287882">Vërtetimi i vlerave të politikës ka ngritur shqetësime</translation>
+<translation id="5288808348893593856">Lidhja e faqes është e sigurt përveç nëse Chrome të thotë ndryshe.</translation>
 <translation id="5289384342738547352">Menaxhimi i shumë dokumenteve</translation>
 <translation id="5299298092464848405">Gabim gjatë analizimit të politikës</translation>
 <translation id="5300589172476337783">Shfaq</translation>
@@ -1547,9 +1554,11 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6685834062052613830">Dil dhe përfundo konfigurimin</translation>
 <translation id="6687335167692595844">Kërkohet madhësia e fontit</translation>
 <translation id="6688743156324860098">Përditëso…</translation>
+<translation id="6688775486821967877">Karta virtuale nuk ofrohet për momentin, provo përsëri më vonë</translation>
 <translation id="6689249931105087298">Relative me ngjeshjen e pikës së zezë</translation>
 <translation id="6689271823431384964">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet. Emri i mbajtësit të kartës vjen nga llogaria jote.</translation>
 <translation id="6698381487523150993">Krijuar:</translation>
+<translation id="6699188552522342100">A është e saktë kjo faqe interneti?</translation>
 <translation id="6702919718839027939">Prezantim</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6710594484020273272">&lt;Shkruaj termin e kërkimit&gt;</translation>
@@ -2054,6 +2063,7 @@ Detaje shtesë:
           <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Përdor Touch ID për të konfirmuar kartat më shpejt</translation>
+<translation id="8577348305244205642">Karta virtuale nuk ofrohet</translation>
 <translation id="858637041960032120">Shto numrin e telefonit</translation>
 <translation id="8589998999637048520">Cilësia më e mirë</translation>
 <translation id="8600271352425265729">Vetëm këtë herë</translation>

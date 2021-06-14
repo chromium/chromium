@@ -1216,6 +1216,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ilovasini sozlash va boshqarish</translation>
 <translation id="2300578660547687840">Kalit soʻzlarni qidirish uchun tezkor tugmalar</translation>
 <translation id="2301382460326681002">Kengaytma tub katalogi noto‘g‘ri.</translation>
+<translation id="2301402091755573488">Ulashilgan varaq</translation>
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />” kengaytmasi qo‘shimcha ruxsatnomalar so‘radi.</translation>
 <translation id="23055578400314116">Foydalanuvchini tanlang</translation>
 <translation id="2307462900900812319">Tarmoqni sozlash</translation>
@@ -1493,6 +1494,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2612676031748830579">Karta raqami</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> sayti <ph name="FILENAME" /> faylini tahrirlay oladi</translation>
 <translation id="2616366145935564096">Ma’lumotlarni o‘qish va o‘zgartirish: <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Sozlashda davom etish uchun Keyingi tugmasini yoki “Tanlash” kalit tugmasini oʻzgartirish uchun Avvalgi tugmasini faollashtiring.</translation>
 <translation id="2618797463720777311">Nearby Share’ni sozlash</translation>
 <translation id="2619761439309613843">Kundalik yangilash</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> faylini xavfsiz yuklab olish imkonsiz.</translation>
@@ -2889,6 +2891,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4120817667028078560">Yo‘lak haddan tashqari uzun</translation>
 <translation id="4124823734405044952">Elektron kalit sozlamalari qayta tiklandi</translation>
 <translation id="4124935795427217608">Bir shoxli ot</translation>
+<translation id="4126916490446791914">Avtomatik skanerlash yoniq</translation>
 <translation id="412730574613779332">Superqahramon</translation>
 <translation id="4130199216115862831">Qurilma jurnali</translation>
 <translation id="4130207949184424187">Bu kengaytma omniboks orqali qidiruv so‘rovini kiritganda ishlatiladigan birlamchi qidiruv tizimini o‘zgartirdi.</translation>
@@ -3272,6 +3275,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
     Agar farzandingiz Chromebookni maktabda ishlatsa va uyda ham shunday sharoit yaratmoqchi boʻlsangiz, Chrome OS hisoblar sahifasida joriy Family Link hisobidan chiqib, maktab hisobiga kiring (eslatma: Family Link ota-ona nazorati maktab hisobida ishlamaydi).&lt;br&gt;&lt;br&gt;
     Agar farzandingiz Chromebookni maktabda ishlatmasa yoki farzandingiz undan faqat uyda Family Link orqali foydalanishini istasangiz, quyidagi Keyingisi tugmasini bosing va bu profilga maktab hisobini kiriting.</translation>
 <translation id="4576541033847873020">Bluetooth qurilma ulash</translation>
+<translation id="4576763597586015380">Parollarni Google hisobingizga saqlashda davom etish uchun shaxsingizni tasdiqlang</translation>
 <translation id="4579453506923101210">Ulangan telefonni oʻchirish</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> translatsiya qilinmadi.</translation>
 <translation id="4581774856936278355">Linux tiklanmadi</translation>
@@ -4992,6 +4996,8 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6538098297809675636">Kod aniqlanmadi</translation>
 <translation id="653920215766444089">Ishora qurilmasi qidirilmoqda</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Ushbu funksiya faqat zarurligida yoqilsin, chunki ma’lumotlarni yig‘ish jarayoni unumdorlikni pasaytirishi mumkin.</translation>
+<translation id="6540672086173674880">Google brauzer tarixidan qidiruv va boshqa Google xizmatlarini sizga moslashtirish 
+maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontrols/search sahifasidan boshqarishingiz mumkin.</translation>
 <translation id="6541638731489116978">Bu sayt uchun harakat sensorlaridan foydalanish taqiqlandi</translation>
 <translation id="6545665334409411530">Takrorlash tezligi</translation>
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
@@ -5877,6 +5883,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="754207240458482646">Hisobingizdagi boshqa qurilmalarga sinxronlandi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383"><ph name="IDS_SHORT_PRODUCT_NAME" /> qurilmasida tuzatish funksiyalarini yoqish.</translation>
 <translation id="7543525346216957623">Ota-onangizdan so‘rang</translation>
+<translation id="7546012169463147344">Avtomatik skanerlash funksiyasi ekrandagi elementlarni avtomatik almashtiradi va fokuslaydi. Kerakli element fokuslanganda uni faollashtirish uchun “Tanlash” tugmasini bosing.</translation>
 <translation id="7547317915858803630">Diqqat! <ph name="PRODUCT_NAME" /> sozlamalari tarmoq diskiga saqlanmoqda. Bu ish faoliyatini sekinlashtirishi, ishdan chiqarishi yoki ma’lumotlarning o‘chib ketishiga olib kelishi mumkin.</translation>
 <translation id="7548856833046333824">Limonad</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6845,6 +6852,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8621866727807194849">Kompyuteringizda zararli dasturlar topildi. Chrome uni tozalab, sozlamalarni qayta tiklaydi, kengaytmalarni oʻchirib qoʻyadi. Keyin brauzeringiz yana nuqsonsiz ishlay boshlaydi.</translation>
 <translation id="8621979332865976405">Butun ekranni namoyish qilish</translation>
 <translation id="8624354461147303341">Chegirmalar olish</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Kengaytmalar</translation>
 <translation id="8625663000550647058">Mikrofondan foydalanish taqiqlangan</translation>
 <translation id="8625916342247441948">Saytlarga HID qurilmalarga ulanishni taqiqlash</translation>
@@ -6909,6 +6917,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8677212948402625567">Barchasini yig‘ish...</translation>
 <translation id="867767487203716855">Keyingi yangilanish</translation>
 <translation id="8677859815076891398">Albomlar mavjud emas. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> orqali albom yarating.</translation>
+<translation id="8678538439778360739">Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Google Pay manzillari va toʻlov usullari esa shifrlanmagan.</translation>
 <translation id="8678582529642151449">Varaqlar kichraymaydi</translation>
 <translation id="8678933587484842200">Bu ilova qanday ishga tushirilsin?</translation>
 <translation id="8680251145628383637">Xatcho‘plar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlash uchun o‘z hisobingizga kiring. Tizimga kirish birdaniga barcha Google xizmatlarida amalga oshadi.</translation>
