@@ -992,6 +992,12 @@ def main():
       return 1
 
   args.cros_cache = os.path.abspath(args.cros_cache)
+  if args.flash and args.public_image:
+    # The flashing tools depend on being unauthenticated with GS when flashing
+    # public images, so make sure the env var GS uses to locate its creds is
+    # unset in that case.
+    os.environ.pop('BOTO_CONFIG', None)
+
   return args.func(args, unknown_args)
 
 
