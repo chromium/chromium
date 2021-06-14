@@ -5,6 +5,51 @@
 </head>
 <body>
 <script>
+  test(() => {
+    let div = document.createElement("div");
+    document.body.appendChild(div);
+    let divText = "Hello World";
+    div.innerText = divText;
+    div.editContext = new EditContext();
+    div.focus();
+
+    let got_delete_by_drag = false;
+    let got_insert_from_drop = false;
+    div.addEventListener('beforeinput', (event) => {
+      if (event.inputType == 'deleteByDrag') {
+        got_delete_by_drag = true;
+      } else if (event.inputType == 'insertFromDrop') {
+        got_insert_from_drop = true;
+        assert_equals(event.dataTransfer.getData('text/plain'), 'Hello');
+      }
+    });
+
+    // select 'Hello'
+    textNode = div.childNodes[0];
+    let range = document.createRange();
+    range.setStart(textNode, 0);
+    range.setEnd(textNode, 5);
+    let selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    // drag 'hello'
+    x = div.offsetLeft + 10;
+    y = div.offsetTop + div.offsetHeight / 2;
+    eventSender.mouseMoveTo(x, y);
+    eventSender.mouseDown();
+    // and drop it off to the right
+    eventSender.leapForward(500);
+    eventSender.mouseMoveTo(div.offsetLeft +
+    div.offsetWidth - 20, y);
+    eventSender.mouseUp();
+
+    assert_equals(div.innerText, divText, "DOM shouldn't be modified.");
+    assert_equals(got_delete_by_drag, true, "The beforeinput event, deleteByDrag, should be fired.");
+    assert_equals(got_insert_from_drop, true, "The beforeinput event, insertFromDrop, should be fired.");
+
+    document.body.removeChild(div);
+  }, "EditContext should disable DOM mutation from Drag and Drop");
+
   let onMacPlatform = navigator.userAgent.search(/\bMac OS X\b/) != -1;
   if (onMacPlatform) {
     formatCommands = [{'modifier': 'metaKey', 'key': 'b', 'command': 'formatBold'},
