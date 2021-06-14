@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
@@ -1089,6 +1090,136 @@ public class ExternalNavigationHandlerTest {
             if (mUrlHandler.mShownIncognitoAlertDialog != null) {
                 mUrlHandler.mShownIncognitoAlertDialog.cancel();
             }
+            activity.finish();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testFallbackUrl_FallbackToMarketApp_Incognito_DelegateHandleDialogPresentation() {
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addDataScheme("market");
+        ActivityMonitor monitor = InstrumentationRegistry.getInstrumentation().addMonitor(
+                filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
+        Intent dummyIntent = new Intent(mApplicationContextToRestore, DummyUiActivity.class);
+        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Activity activity =
+                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+        mDelegate.setContext(activity);
+        mDelegate.setCanLoadUrlInTab(true);
+        mDelegate.setShouldPresentLeavingIncognitoDialog(true);
+        try {
+            mDelegate.setCanResolveActivityForExternalSchemes(false);
+            String playUrl = "https://play.google.com/store/apps/details?id=com.imdb.mobile"
+                    + "&referrer=mypage";
+
+            String intent = "intent:///name/nm0000158#Intent;scheme=imdb;package=com.imdb.mobile;"
+                    + "S." + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL + "="
+                    + Uri.encode(playUrl, null) + ";end;";
+
+            mUrlHandler.mCanShowIncognitoDialog = true;
+            ThreadUtils.runOnUiThreadBlocking(() -> {
+                checkUrl(intent).withIsIncognito(true).withHasUserGesture(true).expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, START_INCOGNITO);
+                Assert.assertNull(mDelegate.startActivityIntent);
+                Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
+
+                // Verify that the incognito dialog was not shown.
+                Assert.assertNull(mUrlHandler.mShownIncognitoAlertDialog);
+
+                // Verify that the delegate was given the opportunity to present the dialog.
+                Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
+
+                // Inform the handler that the user decided not to launch the intent and verify that
+                // the appropriate URL is navigated to in the browser.
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(false));
+                Assert.assertEquals(playUrl, mUrlHandler.mNewUrlAfterClobbering);
+                mUrlHandler.mNewUrlAfterClobbering = null;
+                mDelegate.incognitoDialogUserDecisionCallback = null;
+
+                checkUrl(intent).withIsIncognito(true).withHasUserGesture(true).expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, START_INCOGNITO);
+                Assert.assertNull(mDelegate.startActivityIntent);
+
+                // Verify that the incognito dialog was not shown.
+                Assert.assertNull(mUrlHandler.mShownIncognitoAlertDialog);
+
+                // Verify that the delegate was given the opportunity to present the dialog.
+                Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
+
+                // Inform the handler that the user decided to launch the intent and verify that
+                // the intent was launched.
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(true));
+                Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
+                Assert.assertEquals(1, monitor.getHits());
+                Assert.assertEquals("market://details?id=com.imdb.mobile&referrer=mypage",
+                        mDelegate.startActivityIntent.getDataString());
+            });
+        } finally {
+            activity.finish();
+            InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testFallbackUrl_ChromeCanHandle_Incognito_DelegateHandleDialogPresentation() {
+        mDelegate.add(new IntentActivity("https", "package"));
+        Intent dummyIntent = new Intent(mApplicationContextToRestore, DummyUiActivity.class);
+        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Activity activity =
+                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+        mDelegate.setContext(activity);
+        mDelegate.setCanLoadUrlInTab(true);
+        mDelegate.setShouldPresentLeavingIncognitoDialog(true);
+        try {
+            String intent = "intent://example.com#Intent;scheme=https;"
+                    + "S.browser_fallback_url=http%3A%2F%2Fgoogle.com;end";
+
+            mUrlHandler.mResolveInfoContainsSelf = true;
+            mUrlHandler.mCanShowIncognitoDialog = true;
+            ThreadUtils.runOnUiThreadBlocking(() -> {
+                checkUrl(intent).withIsIncognito(true).withHasUserGesture(true).expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, START_INCOGNITO);
+                Assert.assertNull(mDelegate.startActivityIntent);
+                Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
+
+                // Verify that the incognito dialog was not shown.
+                Assert.assertNull(mUrlHandler.mShownIncognitoAlertDialog);
+
+                // Verify that the delegate was given the opportunity to present the dialog.
+                Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
+
+                // Inform the handler that the user decided not to launch the intent and verify that
+                // the appropriate URL is navigated to in the browser.
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(false));
+                Assert.assertEquals("https://example.com/", mUrlHandler.mNewUrlAfterClobbering);
+
+                mUrlHandler.mNewUrlAfterClobbering = null;
+                mUrlHandler.mResolveInfoContainsSelf = false;
+                mDelegate.incognitoDialogUserDecisionCallback = null;
+
+                checkUrl(intent).withIsIncognito(true).withHasUserGesture(true).expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, START_INCOGNITO);
+                Assert.assertNull(mDelegate.startActivityIntent);
+
+                // Verify that the incognito dialog was not shown.
+                Assert.assertNull(mUrlHandler.mShownIncognitoAlertDialog);
+
+                // Verify that the delegate was given the opportunity to present the dialog.
+                Assert.assertNotNull(mDelegate.incognitoDialogUserDecisionCallback);
+
+                // Inform the handler that the user decided not to launch the intent and verify that
+                // the appropriate URL is navigated to in the browser.
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(false));
+                Assert.assertEquals("http://google.com/", mUrlHandler.mNewUrlAfterClobbering);
+            });
+        } finally {
             activity.finish();
         }
     }
@@ -2346,6 +2477,16 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
+        public boolean hasCustomLeavingIncognitoDialog() {
+            return mShouldPresentLeavingIncognitoDialog;
+        }
+
+        @Override
+        public void presentLeavingIncognitoDialog(Callback<Boolean> onUserDecision) {
+            incognitoDialogUserDecisionCallback = onUserDecision;
+        }
+
+        @Override
         public void loadUrlIfPossible(LoadUrlParams loadUrlParams) {}
 
         @Override
@@ -2502,9 +2643,14 @@ public class ExternalNavigationHandlerTest {
             mCanLoadUrlInTab = value;
         }
 
+        public void setShouldPresentLeavingIncognitoDialog(boolean value) {
+            mShouldPresentLeavingIncognitoDialog = value;
+        }
+
         public Intent startActivityIntent;
         public boolean startIncognitoIntentCalled;
         public boolean maybeSetRequestMetadataCalled;
+        public Callback<Boolean> incognitoDialogUserDecisionCallback;
 
         private String mReferrerWebappPackageName;
 
@@ -2521,6 +2667,7 @@ public class ExternalNavigationHandlerTest {
         private boolean mIsIntentToAutofillAssistant;
         private @IntentToAutofillAllowingAppResult int mAutofillAssistantAllowAppOverrideResult;
         private boolean mCanLoadUrlInTab;
+        private boolean mShouldPresentLeavingIncognitoDialog;
         private Context mContext;
     }
 

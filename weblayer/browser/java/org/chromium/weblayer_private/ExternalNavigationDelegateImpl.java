@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Function;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -115,6 +116,18 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean isIncognito() {
         return mTab.getProfile().isIncognito();
+    }
+
+    @Override
+    public boolean hasCustomLeavingIncognitoDialog() {
+        return false;
+    }
+
+    @Override
+    public void presentLeavingIncognitoDialog(Callback<Boolean> onUserDecision) {
+        // This should never be called due to returning false in
+        // hasCustomLeavingIncognitoDialog().
+        assert false;
     }
 
     @Override
