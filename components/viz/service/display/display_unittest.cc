@@ -84,7 +84,7 @@ class TestDisplayScheduler : public DisplayScheduler {
  public:
   explicit TestDisplayScheduler(BeginFrameSource* begin_frame_source,
                                 base::SingleThreadTaskRunner* task_runner)
-      : DisplayScheduler(begin_frame_source, task_runner, 1) {}
+      : DisplayScheduler(begin_frame_source, task_runner, 1, 1) {}
 
   ~TestDisplayScheduler() override = default;
 

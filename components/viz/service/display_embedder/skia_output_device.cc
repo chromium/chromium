@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display_embedder/skia_output_device.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -181,7 +182,8 @@ void SkiaOutputDevice::SetDependencyTimings(base::TimeTicks task_ready) {
 
 void SkiaOutputDevice::StartSwapBuffers(BufferPresentedCallback feedback) {
   DCHECK_LT(static_cast<int>(pending_swaps_.size()),
-            capabilities_.max_frames_pending);
+            std::max(capabilities_.max_frames_pending,
+                     capabilities_.max_frames_pending_120hz.value_or(0)));
 
   pending_swaps_.emplace(++swap_id_, std::move(feedback), viz_scheduled_draw_,
                          gpu_started_draw_, gpu_task_ready_);

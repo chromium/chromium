@@ -24,6 +24,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
@@ -67,6 +68,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     Capabilities(const Capabilities& capabilities);
 
     int max_frames_pending = 1;
+    // If set, should be the max number of pending frames when running at or
+    // above 120hz. Otherwise, fallback to `max_frames_pending`.
+    absl::optional<int> max_frames_pending_120hz;
     // The number of buffers for the SkiaOutputDevice. If the
     // |supports_post_sub_buffer| true, SkiaOutputSurfaceImpl will track target
     // damaged area based on this number.

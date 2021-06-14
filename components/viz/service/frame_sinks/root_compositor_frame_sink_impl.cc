@@ -123,11 +123,13 @@ RootCompositorFrameSinkImpl::Create(
 
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
 
-  int max_frames_pending = output_surface->capabilities().max_frames_pending;
+  const auto& capabilities = output_surface->capabilities();
+  int max_frames_pending = capabilities.max_frames_pending;
   DCHECK_GT(max_frames_pending, 0);
 
   auto scheduler = std::make_unique<DisplayScheduler>(
       begin_frame_source, task_runner.get(), max_frames_pending,
+      capabilities.max_frames_pending_120hz,
       run_all_compositor_stages_before_draw, gpu_pipeline);
 
 #if !defined(OS_APPLE)

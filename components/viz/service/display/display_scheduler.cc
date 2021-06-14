@@ -8,8 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
-#include "gpu/config/gpu_finch_features.h"
 
 namespace viz {
 
@@ -44,6 +42,7 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
 DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
                                    base::SingleThreadTaskRunner* task_runner,
                                    int max_pending_swaps,
+                                   absl::optional<int> max_pending_swaps_120hz,
                                    bool wait_for_all_surfaces_before_draw,
                                    gfx::RenderingPipeline* gpu_pipeline)
     : begin_frame_observer_(std::make_unique<BeginFrameObserver>(this)),
@@ -59,6 +58,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       next_swap_id_(1),
       pending_swaps_(0),
       max_pending_swaps_(max_pending_swaps),
+      max_pending_swaps_120hz_(max_pending_swaps_120hz),
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
       observing_begin_frame_source_(false) {
   begin_frame_deadline_closure_ = base::BindRepeating(
@@ -139,7 +139,8 @@ void DisplayScheduler::SetGpuLatency(base::TimeDelta gpu_latency) {
 
 bool DisplayScheduler::DrawAndSwap() {
   TRACE_EVENT0("viz", "DisplayScheduler::DrawAndSwap");
-  DCHECK_LT(pending_swaps_, max_pending_swaps_);
+  DCHECK_LT(pending_swaps_,
+            std::max(max_pending_swaps_, max_pending_swaps_120hz_.value_or(0)));
   DCHECK(!output_surface_lost_);
 
   bool success = client_ && client_->DrawAndSwap(current_frame_display_time());
@@ -200,18 +201,15 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
 }
 
 int DisplayScheduler::MaxPendingSwaps() const {
-#if defined(OS_ANDROID)
-  if (::features::IncreaseBufferCountForHighFrameRate() &&
-      max_pending_swaps_ == 4) {
-    // Interval for 120hz with some delta for margin of error.
-    constexpr base::TimeDelta k120HzInterval =
-        base::TimeDelta::FromMicroseconds(8500);
-    if (current_begin_frame_args_.interval > k120HzInterval) {
-      return 2;
-    }
+  // Interval for 120hz with some delta for margin of error.
+  constexpr base::TimeDelta k120HzInterval =
+      base::TimeDelta::FromMicroseconds(8500);
+  if (current_begin_frame_args_.interval > k120HzInterval ||
+      !max_pending_swaps_120hz_) {
+    return max_pending_swaps_;
+  } else {
+    return max_pending_swaps_120hz_.value();
   }
-#endif
-  return max_pending_swaps_;
 }
 
 void DisplayScheduler::SetNeedsOneBeginFrame(bool needs_draw) {

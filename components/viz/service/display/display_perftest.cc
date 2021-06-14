@@ -65,8 +65,8 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
   std::unique_ptr<Display> CreateDisplay() {
     FrameSinkId frame_sink_id(3, 3);
 
-    auto scheduler = std::make_unique<DisplayScheduler>(&begin_frame_source_,
-                                                        task_runner_.get(), 1);
+    auto scheduler = std::make_unique<DisplayScheduler>(
+        &begin_frame_source_, task_runner_.get(), 1, 1);
 
     std::unique_ptr<FakeOutputSurface> output_surface =
         FakeOutputSurface::Create3d();

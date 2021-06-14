@@ -105,7 +105,8 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     }
     scheduler = std::make_unique<viz::DisplayScheduler>(
         display_begin_frame_source_, compositor_task_runner_.get(),
-        display_output_surface->capabilities().max_frames_pending);
+        display_output_surface->capabilities().max_frames_pending,
+        display_output_surface->capabilities().max_frames_pending_120hz);
   }
 
   auto overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
