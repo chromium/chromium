@@ -78,10 +78,6 @@ constexpr int kDragBufferPx = 20;
 constexpr base::TimeDelta kShelfHandleIconDragDelay =
     base::TimeDelta::FromMilliseconds(500);
 
-// Delay in milliseconds to do the page flip in fullscreen app list.
-constexpr base::TimeDelta kPageFlipDelay =
-    base::TimeDelta::FromMilliseconds(500);
-
 // The drag and drop proxy should get scaled by this factor.
 constexpr float kDragAndDropProxyScale = 1.2f;
 
@@ -263,8 +259,7 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
                            AppsGridViewFolderDelegate* folder_delegate)
     : folder_delegate_(folder_delegate),
       contents_view_(contents_view),
-      app_list_view_delegate_(app_list_view_delegate),
-      page_flip_delay_(kPageFlipDelay) {
+      app_list_view_delegate_(app_list_view_delegate) {
   DCHECK(app_list_view_delegate_);
 }
 
@@ -521,15 +516,7 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
   DropTargetRegion last_drop_target_region = drop_target_region_;
   UpdateDropTargetRegion();
 
-  MaybeStartPageFlipTimer(last_drag_point_);
-
-  if (cardified_state_) {
-    int hovered_page = GetPageFlipTargetForDrag(last_drag_point_);
-    if (hovered_page == -1)
-      hovered_page = pagination_model_.selected_page();
-
-    SetHighlightedBackgroundCard(hovered_page);
-  }
+  MaybeStartPageFlip();
 
   if (last_drop_target != drop_target_ ||
       last_drop_target_region != drop_target_region_) {
@@ -698,7 +685,7 @@ void AppsGridView::EndDrag(bool cancel) {
   // Hide the |current_ghost_view_| for item drag that started
   // within |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
-  StopPageFlipTimer();
+  MaybeStopPageFlip();
   if (cardified_state_) {
     if (!reparented_into_folder) {
       // Temporarily set to cardified UI State so it animates back to its
@@ -717,11 +704,6 @@ void AppsGridView::EndDrag(bool cancel) {
     StartFolderDroppingAnimation(folder_item_view, drag_item,
                                  drag_source_bounds);
   }
-}
-
-void AppsGridView::StopPageFlipTimer() {
-  page_flip_timer_.Stop();
-  page_flip_target_ = -1;
 }
 
 AppListItemView* AppsGridView::GetItemViewAt(int index) const {
@@ -1718,7 +1700,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   // Hide the |current_ghost_view_| after completed drag from within
   // folder to |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
-  StopPageFlipTimer();
+  MaybeStopPageFlip();
 }
 
 void AppsGridView::EndDragForReparentInHiddenFolderGridView() {
@@ -1827,13 +1809,6 @@ void AppsGridView::CancelAnimationsForTest() {
   }
 }
 
-bool AppsGridView::FirePageFlipTimerForTest() {
-  if (!page_flip_timer_.IsRunning())
-    return false;
-  page_flip_timer_.FireNow();
-  return true;
-}
-
 bool AppsGridView::FireFolderItemReparentTimerForTest() {
   if (!folder_item_reparent_timer_.IsRunning())
     return false;
@@ -1914,43 +1889,8 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
   if (should_host_start_drag && !host_drag_start_timer_.IsRunning()) {
     host_drag_start_timer_.Start(FROM_HERE, kShelfHandleIconDragDelay, this,
                                  &AppsGridView::OnHostDragStartTimerFired);
-    StopPageFlipTimer();
+    MaybeStopPageFlip();
   }
-}
-
-void AppsGridView::MaybeStartPageFlipTimer(const gfx::Point& drag_point) {
-  if (!IsPointWithinPageFlipBuffer(drag_point))
-    StopPageFlipTimer();
-  int new_page_flip_target = GetPageFlipTargetForDrag(drag_point);
-
-  if (new_page_flip_target == page_flip_target_)
-    return;
-
-  StopPageFlipTimer();
-  if (IsValidPageFlipTarget(new_page_flip_target)) {
-    page_flip_target_ = new_page_flip_target;
-
-    if (page_flip_target_ != pagination_model_.selected_page()) {
-      page_flip_timer_.Start(FROM_HERE, page_flip_delay_, this,
-                             &AppsGridView::OnPageFlipTimer);
-    }
-  }
-}
-
-void AppsGridView::OnPageFlipTimer() {
-  DCHECK(IsValidPageFlipTarget(page_flip_target_));
-
-  if (pagination_model_.total_pages() == page_flip_target_) {
-    // Create a new page because the user requests to put an item to a new page.
-    extra_page_opened_ = true;
-    pagination_model_.SetTotalPages(pagination_model_.total_pages() + 1);
-  }
-
-  pagination_model_.SelectPage(page_flip_target_, true);
-  if (!folder_delegate_)
-    RecordPageSwitcherSource(kDragAppToBorder, IsTabletMode());
-
-  BeginHideCurrentGhostImageView();
 }
 
 void AppsGridView::MoveItemInModel(AppListItemView* item_view,
@@ -2282,27 +2222,6 @@ bool AppsGridView::IsPointWithinDragBuffer(const gfx::Point& point) const {
   gfx::Rect rect(GetLocalBounds());
   rect.Inset(-kDragBufferPx, -kDragBufferPx, -kDragBufferPx, -kDragBufferPx);
   return rect.Contains(point);
-}
-
-bool AppsGridView::IsPointWithinPageFlipBuffer(const gfx::Point& point) const {
-  // The page flip buffer is the work area bounds excluding shelf bounds, which
-  // is the same as AppsContainerView's bounds.
-  gfx::Point point_in_parent = point;
-  ConvertPointToTarget(this, parent(), &point_in_parent);
-  return parent()->GetContentsBounds().Contains(point_in_parent);
-}
-
-bool AppsGridView::IsPointWithinBottomDragBuffer(
-    const gfx::Point& point) const {
-  // The bottom drag buffer is between the bottom of apps grid and top of shelf.
-  gfx::Point point_in_parent = point;
-  ConvertPointToTarget(this, parent(), &point_in_parent);
-  gfx::Rect parent_rect = parent()->GetContentsBounds();
-  const int kBottomDragBufferMax = parent_rect.bottom();
-  const int kBottomDragBufferMin = bounds().bottom() - GetInsets().bottom() -
-                                   GetAppListConfig().page_flip_zone_size();
-  return point_in_parent.y() > kBottomDragBufferMin &&
-         point_in_parent.y() < kBottomDragBufferMax;
 }
 
 void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
@@ -2733,17 +2652,6 @@ bool AppsGridView::IsValidReorderTargetIndex(const GridIndex& index) const {
   return IsValidIndex(index);
 }
 
-bool AppsGridView::IsValidPageFlipTarget(int page) const {
-  if (pagination_model_.is_valid_page(page))
-    return true;
-
-  // If the user wants to drag an app to the next new page and has not done so
-  // during the dragging session, then it is the right target because a new page
-  // will be created in OnPageFlipTimer().
-  return !folder_delegate_ && !extra_page_opened_ &&
-         pagination_model_.total_pages() == page;
-}
-
 // TODO(crbug.com/1211608): Move to PagedAppsGridView.
 void AppsGridView::CalculateIdealBounds() {
   DCHECK(!folder_delegate_);
@@ -3063,32 +2971,6 @@ void AppsGridView::OnHostDragStartTimerFired() {
     // From now on we forward the drag events.
     forward_events_to_drag_and_drop_host_ = true;
   }
-}
-
-int AppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
-  int new_page_flip_target = -1;
-
-  // Drag zones are at the edges of the scroll axis.
-  if (IsScrollAxisVertical()) {
-    if (drag_point.y() <
-        GetAppListConfig().page_flip_zone_size() + GetInsets().top()) {
-      new_page_flip_target = pagination_model_.selected_page() - 1;
-    } else if (IsPointWithinBottomDragBuffer(drag_point)) {
-      // If the drag point is within the drag buffer, but not over the shelf.
-      new_page_flip_target = pagination_model_.selected_page() + 1;
-    }
-  } else {
-    // TODO(xiyuan): Fix this for RTL.
-    if (new_page_flip_target == -1 &&
-        drag_point.x() < GetAppListConfig().page_flip_zone_size())
-      new_page_flip_target = pagination_model_.selected_page() - 1;
-
-    if (new_page_flip_target == -1 &&
-        drag_point.x() > width() - GetAppListConfig().page_flip_zone_size()) {
-      new_page_flip_target = pagination_model_.selected_page() + 1;
-    }
-  }
-  return new_page_flip_target;
 }
 
 }  // namespace ash

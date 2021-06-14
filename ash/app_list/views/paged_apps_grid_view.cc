@@ -64,6 +64,10 @@ constexpr char kPageDragScrollInTabletMaxLatencyHistogram[] =
     "Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency."
     "TabletMode";
 
+// Delay in milliseconds to do the page flip in fullscreen app list.
+constexpr base::TimeDelta kPageFlipDelay =
+    base::TimeDelta::FromMilliseconds(500);
+
 // Vertical padding between the apps grid pages in cardified state.
 constexpr int kCardifiedPaddingBetweenPages = 12;
 
@@ -172,7 +176,8 @@ PagedAppsGridView::PagedAppsGridView(
     : AppsGridView(contents_view,
                    contents_view->GetAppListMainView()->view_delegate(),
                    folder_delegate),
-      contents_view_(contents_view) {
+      contents_view_(contents_view),
+      page_flip_delay_(kPageFlipDelay) {
   DCHECK(contents_view_);
   pagination_model_.AddObserver(this);
 
@@ -519,6 +524,22 @@ void PagedAppsGridView::MaybeEndCardifiedView() {
     EndAppsGridCardifiedView();
 }
 
+void PagedAppsGridView::MaybeStartPageFlip() {
+  MaybeStartPageFlipTimer(last_drag_point());
+
+  if (cardified_state_) {
+    int hovered_page = GetPageFlipTargetForDrag(last_drag_point());
+    if (hovered_page == -1)
+      hovered_page = pagination_model_.selected_page();
+
+    SetHighlightedBackgroundCard(hovered_page);
+  }
+}
+
+void PagedAppsGridView::MaybeStopPageFlip() {
+  StopPageFlipTimer();
+}
+
 void PagedAppsGridView::OnAppListItemViewActivated(
     AppListItemView* pressed_item_view,
     const ui::Event& event) {
@@ -708,6 +729,13 @@ void PagedAppsGridView::OnImplicitAnimationsCompleted() {
   RemoveAllBackgroundCards();
 }
 
+bool PagedAppsGridView::FirePageFlipTimerForTest() {
+  if (!page_flip_timer_.IsRunning())
+    return false;
+  page_flip_timer_.FireNow();
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // private:
 
@@ -754,6 +782,105 @@ void PagedAppsGridView::MaybeCreateGradientMask() {
       layer()->SetMaskLayer(fadeout_layer_delegate_->layer());
     }
   }
+}
+
+bool PagedAppsGridView::IsValidPageFlipTarget(int page) const {
+  if (pagination_model_.is_valid_page(page))
+    return true;
+
+  // If the user wants to drag an app to the next new page and has not done so
+  // during the dragging session, then it is the right target because a new page
+  // will be created in OnPageFlipTimer().
+  return !IsInFolder() && !extra_page_opened_ &&
+         pagination_model_.total_pages() == page;
+}
+
+bool PagedAppsGridView::IsPointWithinPageFlipBuffer(
+    const gfx::Point& point) const {
+  // The page flip buffer is the work area bounds excluding shelf bounds, which
+  // is the same as AppsContainerView's bounds.
+  gfx::Point point_in_parent = point;
+  ConvertPointToTarget(this, parent(), &point_in_parent);
+  return parent()->GetContentsBounds().Contains(point_in_parent);
+}
+
+bool PagedAppsGridView::IsPointWithinBottomDragBuffer(
+    const gfx::Point& point) const {
+  // The bottom drag buffer is between the bottom of apps grid and top of shelf.
+  gfx::Point point_in_parent = point;
+  ConvertPointToTarget(this, parent(), &point_in_parent);
+  gfx::Rect parent_rect = parent()->GetContentsBounds();
+  const int kBottomDragBufferMax = parent_rect.bottom();
+  const int kBottomDragBufferMin = bounds().bottom() - GetInsets().bottom() -
+                                   GetAppListConfig().page_flip_zone_size();
+  return point_in_parent.y() > kBottomDragBufferMin &&
+         point_in_parent.y() < kBottomDragBufferMax;
+}
+
+int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
+  int new_page_flip_target = -1;
+
+  // Drag zones are at the edges of the scroll axis.
+  if (IsScrollAxisVertical()) {
+    if (drag_point.y() <
+        GetAppListConfig().page_flip_zone_size() + GetInsets().top()) {
+      new_page_flip_target = pagination_model_.selected_page() - 1;
+    } else if (IsPointWithinBottomDragBuffer(drag_point)) {
+      // If the drag point is within the drag buffer, but not over the shelf.
+      new_page_flip_target = pagination_model_.selected_page() + 1;
+    }
+  } else {
+    // TODO(xiyuan): Fix this for RTL.
+    if (new_page_flip_target == -1 &&
+        drag_point.x() < GetAppListConfig().page_flip_zone_size())
+      new_page_flip_target = pagination_model_.selected_page() - 1;
+
+    if (new_page_flip_target == -1 &&
+        drag_point.x() > width() - GetAppListConfig().page_flip_zone_size()) {
+      new_page_flip_target = pagination_model_.selected_page() + 1;
+    }
+  }
+  return new_page_flip_target;
+}
+
+void PagedAppsGridView::MaybeStartPageFlipTimer(const gfx::Point& drag_point) {
+  if (!IsPointWithinPageFlipBuffer(drag_point))
+    StopPageFlipTimer();
+  int new_page_flip_target = GetPageFlipTargetForDrag(drag_point);
+
+  if (new_page_flip_target == page_flip_target_)
+    return;
+
+  StopPageFlipTimer();
+  if (IsValidPageFlipTarget(new_page_flip_target)) {
+    page_flip_target_ = new_page_flip_target;
+
+    if (page_flip_target_ != pagination_model_.selected_page()) {
+      page_flip_timer_.Start(FROM_HERE, page_flip_delay_, this,
+                             &PagedAppsGridView::OnPageFlipTimer);
+    }
+  }
+}
+
+void PagedAppsGridView::OnPageFlipTimer() {
+  DCHECK(IsValidPageFlipTarget(page_flip_target_));
+
+  if (pagination_model_.total_pages() == page_flip_target_) {
+    // Create a new page because the user requests to put an item to a new page.
+    extra_page_opened_ = true;
+    pagination_model_.SetTotalPages(pagination_model_.total_pages() + 1);
+  }
+
+  pagination_model_.SelectPage(page_flip_target_, true);
+  if (!IsInFolder())
+    RecordPageSwitcherSource(kDragAppToBorder, IsTabletMode());
+
+  BeginHideCurrentGhostImageView();
+}
+
+void PagedAppsGridView::StopPageFlipTimer() {
+  page_flip_timer_.Stop();
+  page_flip_target_ = -1;
 }
 
 void PagedAppsGridView::StartAppsGridCardifiedView() {

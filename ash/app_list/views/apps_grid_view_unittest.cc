@@ -287,18 +287,23 @@ class AppsGridViewTest : public views::ViewsTestBase {
         folder_apps_grid_view()->pagination_model());
     folder_apps_grid_view()->pagination_model()->SelectPage(target_page,
                                                             true /*animate*/);
-    while (folder_grid_test_api.HasPendingPageFlip()) {
+    while (HasPendingPageFlip(folder_apps_grid_view())) {
       page_flip_waiter.Wait();
     }
     folder_grid_test_api.LayoutToIdealBounds();
   }
 
-  void SetPageFlipDurationForTest(AppsGridView* apps_grid_view) {
+  void SetPageFlipDurationForTest(PagedAppsGridView* apps_grid_view) {
     apps_grid_view->set_page_flip_delay_for_testing(
         base::TimeDelta::FromMilliseconds(3));
     apps_grid_view->pagination_model()->SetTransitionDurations(
         base::TimeDelta::FromMilliseconds(2),
         base::TimeDelta::FromMilliseconds(1));
+  }
+
+  bool HasPendingPageFlip(PagedAppsGridView* apps_grid_view) {
+    return apps_grid_view->page_flip_timer_.IsRunning() ||
+           apps_grid_view->pagination_model()->has_transition();
   }
 
   const AppListConfig& GetAppListConfig() const {
@@ -359,7 +364,7 @@ class AppsGridViewTest : public views::ViewsTestBase {
     return contents_view_->apps_container_view()->app_list_folder_view();
   }
 
-  AppsGridView* folder_apps_grid_view() const {
+  PagedAppsGridView* folder_apps_grid_view() const {
     return app_list_folder_view()->items_grid_view();
   }
 
@@ -574,7 +579,7 @@ class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
     page_flip_waiter_->Reset();
     UpdateDrag(AppsGridView::MOUSE, point_in_page_flip_buffer, apps_grid_view_,
                /*steps=*/10);
-    while (test_api_->HasPendingPageFlip()) {
+    while (HasPendingPageFlip(apps_grid_view_)) {
       page_flip_waiter_->Wait();
     }
     EndDrag(apps_grid_view_, false /*cancel*/);
@@ -2363,7 +2368,7 @@ TEST_P(AppsGridViewDragAndDropTest, MouseDragFlipToNextPage) {
       gfx::Point(apps_grid_bounds.width() / 2, apps_grid_bounds.bottom() + 1);
   UpdateDrag(AppsGridView::MOUSE, apps_grid_bottom_center, apps_grid_view_,
              5 /*steps*/);
-  while (test_api_->HasPendingPageFlip()) {
+  while (HasPendingPageFlip(apps_grid_view_)) {
     page_flip_waiter_->Wait();
   }
 
@@ -2390,7 +2395,7 @@ TEST_P(AppsGridViewDragAndDropTest, MouseDragFlipToPreviousPage) {
                                   0);
   UpdateDrag(AppsGridView::MOUSE, apps_grid_top_center, apps_grid_view_,
              5 /*steps*/);
-  while (test_api_->HasPendingPageFlip()) {
+  while (HasPendingPageFlip(apps_grid_view_)) {
     page_flip_waiter_->Wait();
   }
 
@@ -2882,7 +2887,7 @@ TEST_P(AppsGridViewDragAndDropTest, CreateANewPageByDraggingLogsMetrics) {
   // For fullscreen, drag to the bottom/right of bounds.
   page_flip_waiter_->Reset();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
-  while (test_api_->HasPendingPageFlip())
+  while (HasPendingPageFlip(apps_grid_view_))
     page_flip_waiter_->Wait();
   EndDrag(apps_grid_view_, false /*cancel*/);
 

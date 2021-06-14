@@ -55,7 +55,7 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
 
 AppsGridViewTestApi::AppsGridViewTestApi(AppsGridView* view) : view_(view) {}
 
-AppsGridViewTestApi::~AppsGridViewTestApi() {}
+AppsGridViewTestApi::~AppsGridViewTestApi() = default;
 
 views::View* AppsGridViewTestApi::GetViewAtModelIndex(int index) const {
   return view_->view_model_.view_at(index);
@@ -84,11 +84,6 @@ gfx::Rect AppsGridViewTestApi::GetItemTileRectOnCurrentPageAt(int row,
 void AppsGridViewTestApi::PressItemAt(int index) {
   GetViewAtModelIndex(index)->OnKeyPressed(
       ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE));
-}
-
-bool AppsGridViewTestApi::HasPendingPageFlip() const {
-  return view_->page_flip_timer_.IsRunning() ||
-         view_->pagination_model()->has_transition();
 }
 
 int AppsGridViewTestApi::TilesPerPage() const {

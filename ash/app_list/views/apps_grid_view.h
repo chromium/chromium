@@ -190,9 +190,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns true if a touch or click lies between two occupied tiles.
   bool EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event);
 
-  // Stops the timer that triggers a page flip during a drag.
-  void StopPageFlipTimer();
-
   // Returns the item view of the item at |index|, or nullptr if there is no
   // view at |index|.
   AppListItemView* GetItemViewAt(int index) const;
@@ -293,7 +290,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   const AppListModel* model() const { return model_; }
 
-  bool FirePageFlipTimerForTest();
   bool FireFolderItemReparentTimerForTest();
   bool FireFolderDroppingTimerForTest();
   bool FireDragToShelfTimerForTest();
@@ -306,10 +302,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // For test: Return if the drag and drop operation gets dispatched.
   bool forward_events_to_drag_and_drop_host_for_test() {
     return forward_events_to_drag_and_drop_host_;
-  }
-
-  void set_page_flip_delay_for_testing(base::TimeDelta page_flip_delay) {
-    page_flip_delay_ = page_flip_delay;
   }
 
   views::BoundsAnimator* bounds_animator_for_testing() {
@@ -346,9 +338,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Ends the "cardified" state if the subclass supports it.
   virtual void MaybeEndCardifiedView() {}
 
-  // TODO(crbug.com/1211608): Remove this method. It exists to allow this
-  // class to call into PagedAppsGridView from UpdateDrag().
-  virtual void SetHighlightedBackgroundCard(int new_highlighted_page) {}
+  // Starts a page flip if the subclass supports it.
+  virtual void MaybeStartPageFlip() {}
+
+  // Stops a page flip (by ending its timer) if the subclass supports it.
+  virtual void MaybeStopPageFlip() {}
 
   // Calculates the item views' bounds for non-folder.
   virtual void CalculateIdealBounds();
@@ -374,16 +368,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Cancels any context menus showing for app items on the current page.
   void CancelContextMenusOnCurrentPage();
 
-  // Returns true if the page is the right target to flip to.
-  bool IsValidPageFlipTarget(int page) const;
-
-  // Starts the page flip timer if |drag_point| is in left/right side page flip
-  // zone or is over page switcher.
-  void MaybeStartPageFlipTimer(const gfx::Point& drag_point);
-
   // views::BoundsAnimatorObserver:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
+
+  void BeginHideCurrentGhostImageView();
 
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
@@ -430,6 +419,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Tile spacing between the tile views.
   int horizontal_tile_padding_ = 0;
   int vertical_tile_padding_ = 0;
+
+  // True if an extra page is opened after the user drags an app to the bottom
+  // of last page with intention to put it in a new page. This is only used for
+  // non-folder.
+  bool extra_page_opened_ = false;
 
  private:
   friend class test::AppsGridViewTestApi;
@@ -517,9 +511,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   void DispatchDragEventToDragAndDropHost(
       const gfx::Point& location_in_screen_coordinates);
 
-  // Invoked when |page_flip_timer_| fires.
-  void OnPageFlipTimer();
-
   // Updates |model_| to move item represented by |item_view| to |target| slot.
   // Pushes all items from |item_view|'s GridIndex + 1 to |target| back by 1
   // GridIndex slot. |clear_overflow| is whether, if |target| is on a full page,
@@ -565,14 +556,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns true if |point| lies within the bounds of this grid view plus a
   // buffer area surrounding it that can trigger drop target change.
   bool IsPointWithinDragBuffer(const gfx::Point& point) const;
-
-  // Returns true if |point| lies within the bounds of this grid view plus a
-  // buffer area surrounding it that can trigger page flip.
-  bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const;
-
-  // Returns whether |point| is in the bottom drag buffer, and not over the
-  // shelf.
-  bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const;
 
   // Overridden from AppListItemListObserver:
   void OnListItemAdded(size_t index, AppListItem* item) override;
@@ -763,13 +746,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // |current_ghost_view_| and |last_ghost_view_|.
   void CreateGhostImageView();
 
-  void BeginHideCurrentGhostImageView();
-
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
-
-  // Obtains the target page to flip for |drag_point|.
-  int GetPageFlipTargetForDrag(const gfx::Point& drag_point);
 
   AppListModel* model_ = nullptr;         // Owned by AppListView.
   AppListItemList* item_list_ = nullptr;  // Not owned.
@@ -848,12 +826,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Last mouse drag location in this view's coordinates.
   gfx::Point last_drag_point_;
 
-  // Timer to auto flip page when dragging an item near the left/right edges.
-  base::OneShotTimer page_flip_timer_;
-
-  // Target page to switch to when |page_flip_timer_| fires.
-  int page_flip_target_ = -1;
-
   // Used to animate individual icon positions.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
@@ -870,17 +842,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // True if the drag_view_ item is a folder item being dragged for reparenting.
   bool dragging_for_reparent_item_ = false;
 
-  // Delay for when |page_flip_timer_| should fire after user drags an item near
-  // the edge.
-  base::TimeDelta page_flip_delay_;
-
   // True if it is the end gesture from shelf dragging.
   bool is_end_gesture_ = false;
-
-  // True if an extra page is opened after the user drags an app to the bottom
-  // of last page with intention to put it in a new page. This is only used for
-  // non-folder.
-  bool extra_page_opened_ = false;
 
   // The drop location of the most recent reorder related accessibility event.
   GridIndex last_reorder_a11y_event_location_;

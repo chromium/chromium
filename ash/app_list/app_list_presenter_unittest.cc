@@ -389,7 +389,7 @@ class PopulatedAppListTest : public AshTestBase,
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
   std::unique_ptr<test::AppListTestViewDelegate> app_list_test_delegate_;
   AppListView* app_list_view_ = nullptr;    // Owned by native widget.
-  AppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
+  PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
 
   base::test::ScopedFeatureList feature_list_;
 };

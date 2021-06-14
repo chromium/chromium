@@ -74,6 +74,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   bool IsScrollAxisVertical() const override;
   void MaybeStartCardifiedView() override;
   void MaybeEndCardifiedView() override;
+  void MaybeStartPageFlip() override;
+  void MaybeStopPageFlip() override;
 
   // AppListItemView::GridDelegate:
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
@@ -92,10 +94,16 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
+  bool FirePageFlipTimerForTest();
   bool cardified_state_for_testing() const { return cardified_state_; }
   int BackgroundCardCountForTesting() const { return background_cards_.size(); }
+  void set_page_flip_delay_for_testing(base::TimeDelta page_flip_delay) {
+    page_flip_delay_ = page_flip_delay;
+  }
 
  private:
+  friend class test::AppsGridViewTest;
+
   class FadeoutLayerDelegate;
 
   // Indicates whether the drag event (from the gesture or mouse) should be
@@ -106,6 +114,30 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // gradient appears at the top and bottom of the apps grid to create a
   // "fade out" effect when dragging the whole page.
   void MaybeCreateGradientMask();
+
+  // Returns true if the page is the right target to flip to.
+  bool IsValidPageFlipTarget(int page) const;
+
+  // Returns true if |point| lies within the bounds of this grid view plus a
+  // buffer area surrounding it that can trigger page flip.
+  bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const;
+
+  // Returns whether |point| is in the bottom drag buffer, and not over the
+  // shelf.
+  bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const;
+
+  // Obtains the target page to flip for |drag_point|.
+  int GetPageFlipTargetForDrag(const gfx::Point& drag_point);
+
+  // Starts the page flip timer if |drag_point| is in left/right side page flip
+  // zone or is over page switcher.
+  void MaybeStartPageFlipTimer(const gfx::Point& drag_point);
+
+  // Invoked when |page_flip_timer_| fires.
+  void OnPageFlipTimer();
+
+  // Stops the timer that triggers a page flip during a drag.
+  void StopPageFlipTimer();
 
   // Helper functions to start the Apps Grid Cardified state.
   // The cardified state scales down apps and is shown when the user drags an
@@ -132,8 +164,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Removes all background cards from |background_cards_|.
   void RemoveAllBackgroundCards();
   // Updates the highlighted background card. Used only for cardified state.
-  // TODO(crbug.com/1211608): Remove "override" from this method.
-  void SetHighlightedBackgroundCard(int new_highlighted_page) override;
+  void SetHighlightedBackgroundCard(int new_highlighted_page);
 
   // Update the padding of tile view based on the contents bounds.
   void UpdateTilePadding();
@@ -143,6 +174,16 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Depends on |pagination_model_|.
   std::unique_ptr<PaginationController> pagination_controller_;
+
+  // Timer to auto flip page when dragging an item near the left/right edges.
+  base::OneShotTimer page_flip_timer_;
+
+  // Target page to switch to when |page_flip_timer_| fires.
+  int page_flip_target_ = -1;
+
+  // Delay for when |page_flip_timer_| should fire after user drags an item near
+  // the edge.
+  base::TimeDelta page_flip_delay_;
 
   // Whether the grid is in mouse drag. Used for between-item drags that move
   // the entire grid, not for app icon drags.
