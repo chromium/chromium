@@ -3,15 +3,15 @@
 # found in the LICENSE file.
 
 config("fishhook_config") {
-  include_dirs = [ "src" ]
+  include_dirs = [ "." ]
   visibility = [ ":fishhook" ]
 }
 
 source_set("fishhook") {
   testonly = true
   sources = [
-    "src/fishhook.c",
-    "src/fishhook.h",
+    "fishhook.c",
+    "fishhook.h",
   ]
 
   public_configs = [ ":fishhook_config" ]

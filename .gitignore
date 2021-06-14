@@ -218,7 +218,6 @@ vs-chromium-project.txt
 /ios/third_party/earl_grey/src
 /ios/third_party/earl_grey2/src
 /ios/third_party/edo/src
-/ios/third_party/fishhook/src
 /ios/third_party/gcdwebserver/src
 /ios/third_party/gtx/src
 /ios/third_party/material_components_ios/src

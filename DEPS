@@ -570,11 +570,6 @@ deps = {
       'condition': 'checkout_ios',
   },
 
-  'src/ios/third_party/fishhook/src': {
-      'url': Var('chromium_git') + '/external/github.com/facebook/fishhook.git' + '@' + '66315a9c251edfe92f669ae2deeac0d75374c948',
-      'condition': 'checkout_ios',
-  },
-
   'src/ios/third_party/gcdwebserver/src': {
       'url': Var('chromium_git') + '/external/github.com/swisspol/GCDWebServer.git' + '@' + '43555c66627f6ed44817855a0f6d465f559d30e0',
       'condition': 'checkout_ios',

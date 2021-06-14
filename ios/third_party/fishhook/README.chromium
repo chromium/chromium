@@ -2,6 +2,7 @@ Name: fishhook
 Short Name: fishhook
 URL: https://github.com/facebook/fishhook
 Version: 0.2
+Revision: 8ef82f0711494ecc78d16bf6ce76f5ad92e5f67b
 License: BSD
 License File: NOT_SHIPPED
 Security Critical: no
@@ -9,3 +10,7 @@ Security Critical: no
 Description:
 Fishhook is a library that enables dynamically rebinding symbols in Mach-O
 binaries running on iOS.
+
+Local Modifications:
+2021.06.09: https://github.com/facebook/fishhook/pull/84/files:  If hooking in
+__DATA_CONST or __AUTH_CONST, promise writable before trying to write.
