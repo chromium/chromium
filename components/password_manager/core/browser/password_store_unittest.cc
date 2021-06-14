@@ -2015,4 +2015,31 @@ TEST_F(PasswordStoreTest, TestNewerGooglePasswordsAreNotDeleted) {
   store->ShutdownOnUIThread();
 }
 
+TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
+  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
+      CreatePasswordStoreWithMockedMetaData();
+  store->Init(nullptr);
+  WaitForPasswordStore();
+
+  store->AddLogin(MakePasswordForm(kTestAndroidRealm1));
+  WaitForPasswordStore();
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebRealm1)};
+
+  // Add affiliated android form corresponding to a 'observed_form'.
+  auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
+  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(observed_form,
+                                                      {kTestAndroidRealm1});
+  store->SetAffiliatedMatchHelper(std::move(mock_helper));
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef).Times(0);
+  store->GetLogins(observed_form, &mock_consumer);
+  mock_consumer.CancelAllRequests();
+  WaitForPasswordStore();
+
+  store->ShutdownOnUIThread();
+}
+
 }  // namespace password_manager

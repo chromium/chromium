@@ -394,6 +394,12 @@ class PasswordStore : protected PasswordStoreSync,
   void ScheduleEnterprisePasswordURLUpdate();
 
  protected:
+  using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
+  using LoginsTask = base::OnceCallback<LoginsResult()>;
+  using LoginsReply = base::OnceCallback<void(LoginsResult)>;
+  using LoginsResultProcessor =
+      base::OnceCallback<void(LoginsReply, LoginsResult)>;
+
   friend class base::RefCountedThreadSafe<PasswordStore>;
 
   // Represents a single CheckReuse() request. Implements functionality to
@@ -495,6 +501,13 @@ class PasswordStore : protected PasswordStoreSync,
   // or with a signon_realm that is a PSL-match to that of |form|.
   virtual std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const PasswordFormDigest& form) = 0;
+
+  // Returns all PasswordForms with the same signon_realm as a form in the
+  // |forms|. If multiple forms are given, those will be concatenated. Callback
+  // is called on the main sequence.
+  virtual void FillMatchingLoginsAsync(
+      LoginsReply callback,
+      const std::vector<PasswordFormDigest>& forms) = 0;
 
   // Finds and returns all not-blocklisted PasswordForms with the specified
   // |plain_text_password| stored in the credential database.
@@ -632,12 +645,6 @@ class PasswordStore : protected PasswordStoreSync,
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, AddInsecureCredentialsSync);
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, UpdateInsecureCredentialsSync);
 
-  using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
-  using LoginsTask = base::OnceCallback<LoginsResult()>;
-  using LoginsReply = base::OnceCallback<void(LoginsResult)>;
-  using LoginsResultProcessor =
-      base::OnceCallback<void(LoginsReply, LoginsResult)>;
-
   using StatsResult = std::vector<InteractionsStats>;
   using StatsTask = base::OnceCallback<StatsResult()>;
 
@@ -740,17 +747,6 @@ class PasswordStore : protected PasswordStoreSync,
   // Finds all PasswordForms and returns the result.
   std::vector<std::unique_ptr<PasswordForm>> GetAllLoginsImpl();
 
-  // Extended version of GetLoginsImpl that also returns credentials stored for
-  // the specified affiliated Android applications and Web realms. That is, it
-  // finds all PasswordForms with a signon_realm that is either:
-  //  * equal to that of |form|,
-  //  * is a PSL-match to the realm of |form|,
-  //  * is one of those in |additional_affiliated_realms|,
-  // and returns the result.
-  std::vector<std::unique_ptr<PasswordForm>> GetLoginsWithAffiliationsImpl(
-      const PasswordFormDigest& form,
-      const std::vector<std::string>& additional_affiliated_realms);
-
   // Extended version of GetMatchingInsecureCredentialsImpl that also returns
   // credentials stored for the specified affiliated Android applications or Web
   // realms.
@@ -763,13 +759,6 @@ class PasswordStore : protected PasswordStoreSync,
   // the main sequence.
   void InjectAffiliationAndBrandingInformation(LoginsReply callback,
                                                LoginsResult forms);
-
-  // Schedules GetLoginsWithAffiliationsImpl() to be run on the background
-  // sequence.
-  void ScheduleGetFilteredLoginsWithAffiliations(
-      base::WeakPtr<PasswordStoreConsumer> consumer,
-      const PasswordFormDigest& form,
-      const std::vector<std::string>& additional_affiliated_realms);
 
   // Schedules GetInsecureCredentialsWithAffiliationsImpl() to be run on the
   // background sequence.

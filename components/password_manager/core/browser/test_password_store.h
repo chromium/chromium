@@ -86,6 +86,9 @@ class TestPasswordStore : public PasswordStore {
   PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const PasswordFormDigest& form) override;
+  void FillMatchingLoginsAsync(
+      LoginsReply callback,
+      const std::vector<PasswordFormDigest>& forms) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   bool FillAutofillableLogins(
@@ -145,6 +148,9 @@ class TestPasswordStore : public PasswordStore {
   bool DeleteAndRecreateDatabaseFile() override;
 
  private:
+  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsBulk(
+      const std::vector<PasswordFormDigest>& forms);
+
   const password_manager::IsAccountStore is_account_store_;
 
   PasswordMap stored_passwords_;

@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/insecure_credentials_consumer.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -80,6 +81,14 @@ bool ShouldPhishedCredentialsBeUploadedToSync(const PrefService* prefs) {
 bool HasPhishedCredentials(const std::vector<InsecureCredential>& credentials) {
   return base::Contains(credentials, InsecureType::kPhished,
                         &InsecureCredential::insecure_type);
+}
+
+std::vector<PasswordFormDigest> ConvertToForms(
+    const std::vector<std::string>& realms) {
+  std::vector<PasswordFormDigest> forms;
+  for (const auto& realm : realms)
+    forms.emplace_back(PasswordForm::Scheme::kHtml, realm, GURL(realm));
+  return forms;
 }
 
 }  // namespace
@@ -239,15 +248,21 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords", "PasswordStore::GetLogins",
                                     consumer);
+
+  scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler =
+      new GetLoginsWithAffiliationsRequestHandler(consumer->GetWeakPtr(), this);
+
   if (affiliated_match_helper_) {
     affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
-        form, base::BindOnce(
-                  &PasswordStore::ScheduleGetFilteredLoginsWithAffiliations,
-                  this, consumer->GetWeakPtr(), form));
+        form,
+        base::BindOnce(ConvertToForms)
+            .Then(base::BindOnce(&PasswordStore::FillMatchingLoginsAsync, this,
+                                 request_handler->AffiliatedLoginsClosure())));
   } else {
-    PostLoginsTaskAndReplyToConsumerWithResult(
-        consumer, base::BindOnce(&PasswordStore::GetLoginsImpl, this, form));
+    request_handler->AffiliatedLoginsClosure().Run({});
   }
+
+  FillMatchingLoginsAsync(request_handler->LoginsForFormClosure(), {form});
 }
 
 void PasswordStore::GetLoginsByPassword(
@@ -1103,25 +1118,6 @@ std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetAllLoginsImpl() {
   return results;
 }
 
-std::vector<std::unique_ptr<PasswordForm>>
-PasswordStore::GetLoginsWithAffiliationsImpl(
-    const PasswordFormDigest& form,
-    const std::vector<std::string>& additional_affiliated_realms) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<PasswordForm>> results(FillMatchingLogins(form));
-  for (const std::string& realm : additional_affiliated_realms) {
-    std::vector<std::unique_ptr<PasswordForm>> more_results(
-        FillMatchingLogins({PasswordForm::Scheme::kHtml, realm, GURL()}));
-    for (auto& result : more_results)
-      result->is_affiliation_based_match = true;
-    password_manager_util::TrimUsernameOnlyCredentials(&more_results);
-    results.insert(results.end(), std::make_move_iterator(more_results.begin()),
-                   std::make_move_iterator(more_results.end()));
-  }
-
-  return results;
-}
-
 std::vector<InsecureCredential>
 PasswordStore::GetInsecureCredentialsWithAffiliationsImpl(
     const std::string& signon_realm,
@@ -1148,18 +1144,6 @@ void PasswordStore::InjectAffiliationAndBrandingInformation(
         std::move(callback));
   } else {
     std::move(callback).Run(std::move(forms));
-  }
-}
-
-void PasswordStore::ScheduleGetFilteredLoginsWithAffiliations(
-    base::WeakPtr<PasswordStoreConsumer> consumer,
-    const PasswordFormDigest& form,
-    const std::vector<std::string>& additional_affiliated_realms) {
-  if (consumer) {
-    PostLoginsTaskAndReplyToConsumerWithResult(
-        consumer.get(),
-        base::BindOnce(&PasswordStore::GetLoginsWithAffiliationsImpl, this,
-                       form, additional_affiliated_realms));
   }
 }
 

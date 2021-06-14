@@ -60,6 +60,9 @@ class PasswordStoreImpl : public PasswordStore {
       base::Time delete_end) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const PasswordFormDigest& form) override;
+  void FillMatchingLoginsAsync(
+      LoginsReply callback,
+      const std::vector<PasswordFormDigest>& forms) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   bool FillAutofillableLogins(
@@ -106,6 +109,10 @@ class PasswordStoreImpl : public PasswordStore {
  private:
   // Resets |login_db_| on the background sequence.
   void ResetLoginDB();
+
+  // Synchronous implementation of FillMatchingLoginsAsync.
+  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsInternal(
+      const std::vector<PasswordFormDigest>& forms);
 
   // The login SQL database. The LoginDatabase instance is received via the
   // in an uninitialized state, so as to allow injecting mocks, then Init() is
