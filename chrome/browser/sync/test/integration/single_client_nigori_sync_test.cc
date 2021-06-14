@@ -41,6 +41,7 @@
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/trusted_vault/fake_security_domains_server.h"
+#include "components/sync/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -1076,21 +1077,22 @@ class SingleClientNigoriWithRecoverySyncTest
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                        ShouldReportDegradedTrustedVaultRecoverability) {
+  const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
+
   const GURL recoverability_url =
       GetTrustedVaultRecoverabilityURL(*embedded_test_server());
 
-  // Mimic the key being available upon startup but recoverability degraded.
-  const std::vector<uint8_t> trusted_vault_key =
-      GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
-  GetSecurityDomainsServer()->SetRecoverabilityDegraded();
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{trusted_vault_key}),
+  // Mimic the account being already using a trusted vault passphrase.
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
                         GetFakeServer());
+
+  // Mimic the key being available upon startup but recoverability degraded.
   ASSERT_TRUE(SetupClients());
+  static_cast<syncer::StandaloneTrustedVaultClient*>(
+      GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient())
+      ->SetRecoverabilityDegradedForTesting();
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
-      kGaiaId, {trusted_vault_key},
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      kGaiaId, {kTestEncryptionKey}, /*last_key_version=*/1);
   ASSERT_TRUE(SetupSync());
 
   ASSERT_EQ(syncer::PassphraseType::kTrustedVaultPassphrase,
@@ -1146,23 +1148,23 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                        ShouldDeferAddingTrustedVaultRecoverabilityMethod) {
+  const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
   const std::vector<uint8_t> kTestRecoveryMethodPublicKey = {1, 2, 3, 4};
   const int kTestMethodTypeHint = 8;
 
   // Mimic the account being already using a trusted vault passphrase.
-  const std::vector<uint8_t> trusted_vault_key =
-      GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{trusted_vault_key}),
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
                         GetFakeServer());
   ASSERT_TRUE(SetupClients());
 
+  syncer::StandaloneTrustedVaultClient* const trusted_vault_client =
+      static_cast<syncer::StandaloneTrustedVaultClient*>(
+          GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient());
+
   // Mimic the key being available upon startup but recoverability degraded.
-  GetSecurityDomainsServer()->SetRecoverabilityDegraded();
+  trusted_vault_client->SetRecoverabilityDegradedForTesting();
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
-      kGaiaId, {trusted_vault_key},
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      kGaiaId, {kTestEncryptionKey}, /*last_key_version=*/1);
 
   // Mimic a recovery method being added before or during sign-in, which should
   // be deferred until sign-in completes.
@@ -1309,18 +1311,18 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
     ShouldReportDegradedTrustedVaultRecoverability) {
-  // Mimic the key being available upon startup but recoverability degraded.
-  const std::vector<uint8_t> trusted_vault_key =
-      GetSecurityDomainsServer()->RotateTrustedVaultKey(
-          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
-  GetSecurityDomainsServer()->SetRecoverabilityDegraded();
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{trusted_vault_key}),
+  // Mimic the account using a trusted vault passphrase.
+  const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
                         GetFakeServer());
+
+  // The key is available on startup but recoverability is degraded.
   ASSERT_TRUE(SetupClients());
+  static_cast<syncer::StandaloneTrustedVaultClient*>(
+      GetSyncService(0)->GetSyncClientForTest()->GetTrustedVaultClient())
+      ->SetRecoverabilityDegradedForTesting();
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
-      kGaiaId, {trusted_vault_key},
-      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+      kGaiaId, {kTestEncryptionKey}, /*last_key_version=*/1);
 
   SetupSyncTransport();
 

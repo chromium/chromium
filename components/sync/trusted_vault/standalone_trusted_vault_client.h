@@ -74,6 +74,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void FetchBackendPrimaryAccountForTesting(
       base::OnceCallback<void(const absl::optional<CoreAccountInfo>&)> callback)
       const;
+  void SetRecoverabilityDegradedForTesting();
   void GetLastAddedRecoveryMethodPublicKeyForTesting(
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
 

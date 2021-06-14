@@ -283,6 +283,16 @@ void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(
       std::move(cb));
 }
 
+void StandaloneTrustedVaultClient::SetRecoverabilityDegradedForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting,
+          backend_));
+}
+
 void StandaloneTrustedVaultClient::
     GetLastAddedRecoveryMethodPublicKeyForTesting(
         base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
