@@ -189,6 +189,8 @@ static_library("browser") {
     "password_store_factory_util.h",
     "password_store_impl.cc",
     "password_store_impl.h",
+    "password_store_interface.cc",
+    "password_store_interface.h",
     "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",

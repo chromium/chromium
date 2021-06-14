@@ -93,12 +93,6 @@ std::vector<PasswordFormDigest> ConvertToForms(
 
 }  // namespace
 
-void PasswordStore::Observer::OnLoginsChangedIn(
-    PasswordStore* store,
-    const PasswordStoreChangeList& changes) {
-  OnLoginsChanged(changes);
-}
-
 void PasswordStore::DatabaseInsecureCredentialsObserver::
     OnInsecureCredentialsChangedIn(PasswordStore* store) {
   OnInsecureCredentialsChanged();

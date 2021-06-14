@@ -228,7 +228,7 @@ void SavedPasswordsPresenter::OnLoginsChanged(
 }
 
 void SavedPasswordsPresenter::OnLoginsChangedIn(
-    PasswordStore* store,
+    PasswordStoreInterface* store,
     const PasswordStoreChangeList& changes) {
   store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
 }

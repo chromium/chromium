@@ -116,7 +116,7 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
   // PasswordStore::Observer
   void OnLoginsChanged(const PasswordStoreChangeList& changes) override;
-  void OnLoginsChangedIn(PasswordStore* store,
+  void OnLoginsChangedIn(PasswordStoreInterface* store,
                          const PasswordStoreChangeList& changes) override;
 
   // PasswordStoreConsumer:
