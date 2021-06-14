@@ -56,6 +56,7 @@ promise_test(async t => {
   // The generator will be used as the source for the processor to
   // produce frames in a controlled manner.
   const generator = new MediaStreamTrackGenerator('video');
+  t.add_cleanup(() => generator.stop());
   // Use a larger maxBufferSize than the default to ensure no frames
   // will be dropped.
   const processor = new MediaStreamTrackProcessor({track: generator, maxBufferSize:10});
