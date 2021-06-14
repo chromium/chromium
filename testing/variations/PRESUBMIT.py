@@ -8,10 +8,13 @@ for more details on the presubmit API built into depot_tools.
 """
 
 import copy
+import io
 import json
 import sys
 
 from collections import OrderedDict
+
+USE_PYTHON3 = True
 
 VALID_EXPERIMENT_KEYS = [
     'name', 'forcing_flag', 'params', 'enable_features', 'disable_features',
@@ -77,7 +80,7 @@ def PrettyPrint(contents):
                                                ('experiments', [])])
       for experiment in experiment_config['experiments']:
         ordered_experiment = OrderedDict()
-        for index in xrange(0, 10):
+        for index in range(0, 10):
           comment_key = '//' + str(index)
           if comment_key in experiment:
             ordered_experiment[comment_key] = experiment[comment_key]
@@ -317,9 +320,10 @@ def CheckChangeOnCommit(input_api, output_api):
 
 
 def main(argv):
-  content = open(argv[1]).read()
+  with io.open(argv[1], encoding='utf-8') as f:
+    content = f.read()
   pretty = PrettyPrint(content)
-  open(argv[1], 'wb').write(pretty)
+  io.open(argv[1], 'wb').write(pretty.encode('utf-8'))
 
 
 if __name__ == '__main__':
