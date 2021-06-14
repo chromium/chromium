@@ -43,7 +43,7 @@ class ShareRanking : public base::SupportsUserData::Data {
   void Rank(ShareHistory* history,
             const std::string& type,
             const std::vector<std::string>& available_on_system,
-            int fold,
+            unsigned int fold,
             bool persist_update,
             GetRankingCallback callback);
 
@@ -52,14 +52,19 @@ class ShareRanking : public base::SupportsUserData::Data {
   // share history and ranking for this type, a set of all targets available on
   // the current system, and a fold, and computes the new display ranking and
   // the new persistent ranking.
+  //
+  // TODO(ellyjones): Document (publicly) how this works and why.
   static void ComputeRanking(
       const std::map<std::string, int>& all_share_history,
       const std::map<std::string, int>& recent_share_history,
       const Ranking& old_ranking,
       const std::vector<std::string>& available_on_system,
-      int fold,
+      unsigned int fold,
+      bool fix_more,
       Ranking* display_ranking,
       Ranking* persisted_ranking);
+
+  static const char* const kMoreTarget;
 
  private:
   void Init();

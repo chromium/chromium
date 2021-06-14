@@ -41,23 +41,10 @@ class ShareRankingTest : public testing::Test {
   leveldb_proto::test::FakeDB<proto::ShareRanking>* backing_db_ = nullptr;
 };
 
-TEST_F(ShareRankingTest, DISABLED_EmptyOldRankingReflectsHistory) {
-  std::map<std::string, int> history = {
-      {"bar", 2},
-      {"foo", 3},
-      {"baz", 1},
-  };
-
-  ShareRanking::Ranking displayed, persisted;
-  ShareRanking::ComputeRanking(history, history, {}, {"foo", "bar", "baz"}, 3,
-                               &displayed, &persisted);
-
-  ShareRanking::Ranking expected{"foo", "bar", "baz"};
-  EXPECT_EQ(displayed, expected);
-  EXPECT_EQ(persisted, expected);
-}
-
-TEST_F(ShareRankingTest, DISABLED_CountsMatchOldRanking) {
+// The "easy case": the existing usage counts are the same as the current
+// ranking, and every app in the ranking is available, so the new ranking and
+// the displayed ranking should both be the same as the current ranking.
+TEST_F(ShareRankingTest, CountsMatchOldRanking) {
   std::map<std::string, int> history = {
       {"bar", 2},
       {"foo", 3},
@@ -68,12 +55,17 @@ TEST_F(ShareRankingTest, DISABLED_CountsMatchOldRanking) {
   ShareRanking::Ranking current{"foo", "bar", "baz"};
 
   ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
-                               3, &displayed, &persisted);
+                               3, false, &displayed, &persisted);
+  ASSERT_EQ(displayed.size(), current.size());
+  ASSERT_EQ(persisted.size(), current.size());
   EXPECT_EQ(displayed, current);
   EXPECT_EQ(persisted, current);
 }
 
-TEST_F(ShareRankingTest, DISABLED_UnavailableAppDoesNotShow) {
+// If the existing ranking includes an above-the-fold app that doesn't exist on
+// the system, that app should be replaced by the next available below-the-fold
+// app that does.
+TEST_F(ShareRankingTest, UnavailableAppDoesNotShow) {
   std::map<std::string, int> history = {
       {"foo", 5}, {"bar", 4}, {"baz", 3}, {"quxx", 2}, {"blit", 1},
   };
@@ -81,15 +73,77 @@ TEST_F(ShareRankingTest, DISABLED_UnavailableAppDoesNotShow) {
   ShareRanking::Ranking displayed, persisted;
   ShareRanking::Ranking current{"foo", "bar", "baz", "quxx", "blit"};
 
-  ShareRanking::ComputeRanking(history, history, current,
-                               {"foo", "quxx", "baz", "blit"}, 4, &displayed,
-                               &persisted);
+  ShareRanking::ComputeRanking(history, {}, current,
+                               {"foo", "quxx", "baz", "blit"}, 4, false,
+                               &displayed, &persisted);
   ShareRanking::Ranking expected_displayed{
       "foo",
+      "blit",
       "baz",
       "quxx",
-      "bliz",
   };
+  EXPECT_EQ(displayed, expected_displayed);
+  EXPECT_EQ(persisted, current);
+}
+
+TEST_F(ShareRankingTest, HighAllUsageAppReplacesLowest) {
+  std::map<std::string, int> history = {
+      {"foo", 5}, {"bar", 4}, {"baz", 3}, {"quxx", 2}, {"blit", 10}};
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::Ranking current{"foo", "bar", "baz", "quxx", "blit"};
+  ShareRanking::ComputeRanking(history, {}, current,
+                               {"foo", "bar", "quxx", "baz", "blit"}, 4, false,
+                               &displayed, &persisted);
+  ShareRanking::Ranking expected_displayed{
+      "foo",
+      "bar",
+      "baz",
+      "blit",
+  };
+  ShareRanking::Ranking expected_persisted{"foo", "bar", "baz", "blit", "quxx"};
+  EXPECT_EQ(displayed, expected_displayed);
+  EXPECT_EQ(persisted, expected_persisted);
+}
+
+TEST_F(ShareRankingTest, HighRecentUsageAppReplacesLowest) {
+  std::map<std::string, int> history = {
+      {"foo", 5}, {"bar", 4}, {"baz", 3}, {"quxx", 2}, {"blit", 6}};
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::Ranking current{"foo", "bar", "baz", "quxx", "blit"};
+  ShareRanking::ComputeRanking({}, history, current,
+                               {"foo", "bar", "quxx", "baz", "blit"}, 4, false,
+                               &displayed, &persisted);
+  ShareRanking::Ranking expected_displayed{
+      "foo",
+      "bar",
+      "baz",
+      "blit",
+  };
+  ShareRanking::Ranking expected_persisted{"foo", "bar", "baz", "blit", "quxx"};
+  EXPECT_EQ(displayed, expected_displayed);
+  EXPECT_EQ(persisted, expected_persisted);
+}
+
+TEST_F(ShareRankingTest, MoreTargetReplacesLast) {
+  std::map<std::string, int> history = {
+      {"bar", 2},
+      {"foo", 3},
+      {"baz", 1},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::Ranking current{"foo", "bar", "baz"};
+
+  ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
+                               3, true, &displayed, &persisted);
+
+  std::vector<std::string> expected_displayed{"foo", "bar",
+                                              ShareRanking::kMoreTarget};
+
+  ASSERT_EQ(displayed.size(), expected_displayed.size());
+  ASSERT_EQ(persisted.size(), current.size());
   EXPECT_EQ(displayed, expected_displayed);
   EXPECT_EQ(persisted, current);
 }
