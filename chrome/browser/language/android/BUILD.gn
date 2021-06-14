@@ -79,6 +79,7 @@ android_resources("java_resources") {
     "java/res/layout/accept_languages_item.xml",
     "java/res/layout/accept_languages_list.xml",
     "java/res/layout/add_languages_main.xml",
+    "java/res/layout/app_language_confirm_content.xml",
     "java/res/layout/app_language_prompt_content.xml",
     "java/res/layout/app_language_prompt_row.xml",
     "java/res/layout/language_ask_prompt_content.xml",

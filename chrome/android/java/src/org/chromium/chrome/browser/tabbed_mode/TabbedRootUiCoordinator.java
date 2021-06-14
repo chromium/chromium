@@ -22,6 +22,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
@@ -741,8 +742,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mActivity, mActivity.getWindowAndroid())) {
             return true;
         }
-        if (AppLanguagePromoDialog.maybeShowPrompt(
-                    mActivity, mActivity.getModalDialogManagerSupplier())) {
+        if (AppLanguagePromoDialog.maybeShowPrompt(mActivity,
+                    mActivity.getModalDialogManagerSupplier(),
+                    () -> ApplicationLifetime.terminate(true))) {
             return true;
         }
         return LanguageAskPrompt.maybeShowLanguageAskPrompt(

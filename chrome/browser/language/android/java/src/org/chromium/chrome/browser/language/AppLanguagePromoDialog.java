@@ -26,6 +26,7 @@ import org.chromium.components.language.GeoLanguageProviderBridge;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -39,11 +40,13 @@ import java.util.List;
  * Implements a modal dialog that prompts the user to change their UI language. Displayed once at
  * browser startup when no other promo or modals are shown.
  */
-public class AppLanguagePromoDialog implements ModalDialogProperties.Controller {
+public class AppLanguagePromoDialog {
     private Activity mActivity;
     private ModalDialogManager mModalDialogManager;
     private PropertyModel mAppLanguageModal;
+    private PropertyModel mConfirmModal;
     private LanguageItemAdapter mAdapter;
+    private RestartAction mRestartAction;
 
     @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR})
     @Retention(RetentionPolicy.SOURCE)
@@ -52,23 +55,40 @@ public class AppLanguagePromoDialog implements ModalDialogProperties.Controller 
         int SEPARATOR = 1;
     }
 
-    public AppLanguagePromoDialog(
-            Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+    /**
+     * Interface for holding the Chrome restart action.
+     */
+    @FunctionalInterface
+    public interface RestartAction {
+        void restart();
+    }
+
+    public AppLanguagePromoDialog(Activity activity,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            RestartAction restartAction) {
         mActivity = activity;
         mModalDialogManager = modalDialogManagerSupplier.get();
+        mRestartAction = restartAction;
 
         Resources resources = mActivity.getResources();
         mAppLanguageModal =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.CONTROLLER,
+                                new SimpleModalDialogController(
+                                        mModalDialogManager, this::onDismissAppLanguageModal))
                         .with(ModalDialogProperties.TITLE, resources, R.string.languages_srp_title)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.languages_srp_accept_title)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.languages_srp_cancel_title)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
                         .build();
+
+        mConfirmModal = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                                .with(ModalDialogProperties.CONTROLLER,
+                                        new SimpleModalDialogController(
+                                                mModalDialogManager, this::onDismissConfirmModal))
+                                .build();
     }
 
     /**
@@ -163,7 +183,7 @@ public class AppLanguagePromoDialog implements ModalDialogProperties.Controller 
     }
 
     /**
-     * Internal class representing an individual langauge row.
+     * Internal class representing an individual language row.
      */
     private class AppLanguagePromptRowViewHolder
             extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -255,29 +275,23 @@ public class AppLanguagePromoDialog implements ModalDialogProperties.Controller 
         mModalDialogManager.showDialog(mAppLanguageModal, ModalDialogManager.ModalDialogType.APP);
     }
 
-    @Override
-    public void onClick(PropertyModel model, int buttonType) {
-        if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
-            mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-        } else {
-            mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        }
-    }
-
-    @Override
-    public void onDismiss(PropertyModel model, int dismissalCause) {
+    public void onDismissAppLanguageModal(@DialogDismissalCause int dismissalCause) {
         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-            saveAppLanguage();
+            startAppLanguageInstall();
         }
         TranslateBridge.setAppLanguagePromptShown();
+    }
+
+    public void onDismissConfirmModal(@DialogDismissalCause int dismissalCause) {
+        // No action is taken if the confirm modal is dismissed.
     }
 
     /**
      * Return an ordered set of LanguageItems that should be shown at the top of the list. These
      * languages come from the user's currently location and preferred languages.
-     * @param uiLanguages Collection of possible UI langauges.
+     * @param uiLanguages Collection of possible UI languages.
      * @param currentLanguage The LanguageItem representing the current UI language.
-     * @return An ordered set of LangaugeItems.
+     * @return An ordered set of LanguageItems.
      */
     private LinkedHashSet<LanguageItem> getTopLanguages(
             Collection<LanguageItem> uiLanguages, LanguageItem currentLanguage) {
@@ -294,11 +308,35 @@ public class AppLanguagePromoDialog implements ModalDialogProperties.Controller 
     }
 
     /**
-     * Save the currently selected language as the app language. Setting the app language preference
-     * will start a downloaded for the correct language split if needed.
+     * Show the confirm modal with a progress spinner and start the language split install. Chrome
+     * will restart once the language split has been downloaded. If the download fails an error
+     * message is shown.
      */
-    private void saveAppLanguage() {
-        AppLocaleUtils.setAppLanguagePref(mAdapter.getSelectedLanguage().getCode());
+    private void startAppLanguageInstall() {
+        View customView = LayoutInflater.from(mActivity).inflate(
+                R.layout.app_language_confirm_content, null, false);
+
+        String languageCode = mAdapter.getSelectedLanguage().getCode();
+        String languageName = mAdapter.getSelectedLanguage().getDisplayName();
+        CharSequence messageText = mActivity.getResources().getString(
+                R.string.languages_srp_loading_text, languageName);
+        TextView messageView = customView.findViewById(R.id.message);
+        messageView.setText(messageText);
+
+        mConfirmModal.set(ModalDialogProperties.CUSTOM_VIEW, customView);
+        mModalDialogManager.showDialog(mConfirmModal, ModalDialogManager.ModalDialogType.APP);
+
+        AppLocaleUtils.setAppLanguagePref(mAdapter.getSelectedLanguage().getCode(), (success) -> {
+            if (success) {
+                mRestartAction.restart();
+            } else {
+                CharSequence failedText = mActivity.getResources().getString(
+                        R.string.languages_split_failed, languageName);
+                messageView.setText(failedText);
+                mConfirmModal.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        mActivity.getText(R.string.ok).toString());
+            }
+        });
     }
 
     /**
@@ -307,12 +345,13 @@ public class AppLanguagePromoDialog implements ModalDialogProperties.Controller 
      * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
      * @return Whether the prompt was shown or not.
      */
-    public static boolean maybeShowPrompt(
-            Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+    public static boolean maybeShowPrompt(Activity activity,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            RestartAction restartAction) {
         if (!shouldShowPrompt()) return false;
 
         AppLanguagePromoDialog prompt =
-                new AppLanguagePromoDialog(activity, modalDialogManagerSupplier);
+                new AppLanguagePromoDialog(activity, modalDialogManagerSupplier, restartAction);
         prompt.showAppLanguageModal();
         return true;
     }
