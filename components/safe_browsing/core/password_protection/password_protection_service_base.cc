@@ -15,10 +15,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
@@ -58,7 +58,6 @@ PasswordProtectionServiceBase::PasswordProtectionServiceBase(
       is_off_the_record_(is_off_the_record),
       identity_manager_(identity_manager),
       try_token_fetch_(try_token_fetch) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
   if (history_service)
     history_service_observation_.Observe(history_service);
 
@@ -127,7 +126,7 @@ void PasswordProtectionServiceBase::RequestFinished(
     PasswordProtectionRequest* request,
     RequestOutcome outcome,
     std::unique_ptr<LoginReputationClientResponse> response) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(request);
 
   if (response) {
@@ -206,7 +205,7 @@ void PasswordProtectionServiceBase::RequestFinished(
 }
 
 void PasswordProtectionServiceBase::CancelPendingRequests() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   for (auto it = pending_requests_.begin(); it != pending_requests_.end();) {
     PasswordProtectionRequest* request = it->get();
     // These are the requests for whom we're still waiting for verdicts.
@@ -244,13 +243,12 @@ int PasswordProtectionServiceBase::GetRequestTimeoutInMS() {
 void PasswordProtectionServiceBase::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  GetTaskRunner(ThreadID::UI)
-      ->PostTask(
-          FROM_HERE,
-          base::BindRepeating(&PasswordProtectionServiceBase::
-                                  RemoveUnhandledSyncPasswordReuseOnURLsDeleted,
-                              GetWeakPtr(), deletion_info.IsAllHistory(),
-                              deletion_info.deleted_rows()));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindRepeating(&PasswordProtectionServiceBase::
+                              RemoveUnhandledSyncPasswordReuseOnURLsDeleted,
+                          GetWeakPtr(), deletion_info.IsAllHistory(),
+                          deletion_info.deleted_rows()));
 }
 
 void PasswordProtectionServiceBase::HistoryServiceBeingDeleted(
