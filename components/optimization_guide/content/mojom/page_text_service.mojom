@@ -9,7 +9,10 @@ import "mojo/public/mojom/base/string16.mojom";
 // The events at which taking a text dump are supported.
 enum TextDumpEvent {
   // The first layout on the page. Equal to
-  // blink::WebMeaningfulLayout::kFinishedParsing.
+  // blink::WebMeaningfulLayout::kFinishedParsing. Note that the text dumped at
+  // this event is not deterministic due to races in the renderer. In particular
+  // some text that may have been populated after the "real" first layout event
+  // may also be captured.
   kFirstLayout,
 
   // The page is finished loading. Equal to

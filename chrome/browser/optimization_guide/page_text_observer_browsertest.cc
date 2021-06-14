@@ -76,9 +76,7 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   bool was_called() const { return was_called_; }
 
-  absl::optional<PageTextDumpResult> result() {
-    return base::OptionalFromPtr(result_.get());
-  }
+  PageTextDumpResult* result() { return result_.get(); }
 
   // PageTextObserver::Consumer:
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
@@ -99,7 +97,7 @@ class TestConsumer : public PageTextObserver::Consumer {
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request_;
 
   base::OnceClosure on_page_text_closure_;
-  std::unique_ptr<PageTextDumpResult> result_;
+  std::unique_ptr<PageTextDumpResult> result_ = nullptr;
 };
 
 }  // namespace
@@ -210,9 +208,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
       }));
 }
 
-// Flaky. See crbug/1187264.
-IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest,
-                       DISABLED_FirstLayoutAndOnLoad) {
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
@@ -220,9 +216,6 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest,
   // caused by the renderer never finishing the page load and is thus outside
   // the control of this feature. Thorough testing shows that this flake does
   // not repeat itself, so running the test an extra time is sufficient.
-  //
-  // If this test starts timing out or failing the |EXPECT_THAT| check, then
-  // that is indicative of a real issue.
   for (size_t i = 0; i < 2; i++) {
     TestConsumer first_layout_consumer;
     TestConsumer on_load_consumer;
@@ -256,30 +249,42 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest,
     }
 
     ASSERT_TRUE(first_layout_consumer.result());
-    EXPECT_THAT(
-        first_layout_consumer.result()->frame_results(),
-        ::testing::UnorderedElementsAreArray({
-            MakeFrameDump(
-                mojom::TextDumpEvent::kFirstLayout,
-                web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-                /*amp_frame=*/false,
-                web_contents()
-                    ->GetController()
-                    .GetVisibleEntry()
-                    ->GetUniqueID(),
-                u"hello"),
-            MakeFrameDump(
-                mojom::TextDumpEvent::kFinishedLoad,
-                web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-                /*amp_frame=*/false,
-                web_contents()
-                    ->GetController()
-                    .GetVisibleEntry()
-                    ->GetUniqueID(),
-                u"hello\n\nworld"),
-        }));
 
-    EXPECT_EQ(first_layout_consumer.result(), on_load_consumer.result());
+    bool has_first_layout_event = false;
+    bool has_finished_load_event = false;
+    for (const FrameTextDumpResult& result :
+         first_layout_consumer.result()->frame_results()) {
+      SCOPED_TRACE(result);
+
+      // These fields are the same for both events.
+      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+                result.rfh_id());
+      EXPECT_FALSE(result.amp_frame());
+      EXPECT_EQ(
+          web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+          result.unique_navigation_id());
+
+      ASSERT_TRUE(result.contents().has_value());
+      // The text that is dumped during first layout may or may not include the
+      // text that is dynamically added by the test page's JavaScript. Checking
+      // for text equality is inherently flaky, and this determinism is not a
+      // guarantee that we make to callers.
+      if (result.event() == mojom::TextDumpEvent::kFirstLayout) {
+        EXPECT_TRUE(base::Contains(*result.contents(), u"hello"));
+        has_first_layout_event = true;
+      }
+
+      // The finished load event is deterministic in what text should be
+      // populated on the page.
+      if (result.event() == mojom::TextDumpEvent::kFinishedLoad) {
+        EXPECT_EQ(u"hello\n\nworld", *result.contents());
+        has_finished_load_event = true;
+      }
+    }
+
+    EXPECT_TRUE(has_first_layout_event);
+    EXPECT_TRUE(has_finished_load_event);
+    EXPECT_EQ(*first_layout_consumer.result(), *on_load_consumer.result());
     return;
   }
   FAIL();
