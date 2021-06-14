@@ -103,6 +103,10 @@ DownloadItemView::discard_button_
 DownloadItemView::open_now_button_
 DownloadItemView::save_button_
 DownloadItemView::scan_button_
+OpaqueBrowserFrameViewLayout::minimize_button_
+OpaqueBrowserFrameViewLayout::maximize_button_
+OpaqueBrowserFrameViewLayout::restore_button_
+OpaqueBrowserFrameViewLayout::close_button_
 
 # Populated manually - incompatibilities with tracing (TRACE_EVENT*) and
 # gmock/EXPECT_THAT.
