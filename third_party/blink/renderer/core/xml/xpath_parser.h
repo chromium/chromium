@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PARSER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"
 #include "third_party/blink/renderer/core/xml/xpath_step.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -65,6 +64,8 @@ class Parser {
 
  public:
   Parser();
+  Parser(const Parser&) = delete;
+  Parser& operator=(const Parser&) = delete;
   ~Parser();
 
   XPathNSResolver* Resolver() const { return resolver_; }
@@ -109,8 +110,6 @@ class Parser {
   String data_;
   int last_token_type_;
   XPathNSResolver* resolver_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Parser);
 };
 
 }  // namespace xpath
