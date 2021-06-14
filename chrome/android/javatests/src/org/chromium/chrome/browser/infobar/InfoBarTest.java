@@ -43,6 +43,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
+import org.chromium.chrome.test.util.InfoBarUtil.InfoBarMatcher;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
@@ -483,17 +484,28 @@ public class InfoBarTest {
         });
         mListener.addInfoBarAnimationFinished("InfoBar not added");
 
-        // Make sure it has Kill/Wait buttons.
-        List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
-        Assert.assertEquals("Wrong infobar count", 1, infoBars.size());
-        Assert.assertTrue(InfoBarUtil.hasPrimaryButton(infoBars.get(0)));
-        Assert.assertTrue(InfoBarUtil.hasSecondaryButton(infoBars.get(0)));
+        CriteriaHelper.pollUiThread(() -> {
+            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
+            InfoBarMatcher matcher =
+                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
+            Criteria.checkThat(infoBars, Matchers.hasItem(matcher));
+
+            // Make sure it has Kill/Wait buttons.
+            Assert.assertTrue(InfoBarUtil.hasPrimaryButton(matcher.mLastMatch));
+            Assert.assertTrue(InfoBarUtil.hasSecondaryButton(matcher.mLastMatch));
+        });
 
         // Fake a responsive renderer signal.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> { getTabWebContentsDelegate().rendererResponsive(); });
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-        Assert.assertTrue("Wrong infobar count", sActivityTestRule.getInfoBars().isEmpty());
+
+        CriteriaHelper.pollUiThread(() -> {
+            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
+            InfoBarMatcher matcher =
+                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
+            Criteria.checkThat(infoBars, Matchers.not(Matchers.hasItem(matcher)));
+        });
     }
 
     /**
@@ -512,19 +524,22 @@ public class InfoBarTest {
         });
         mListener.addInfoBarAnimationFinished("InfoBar not added");
 
-        // Make sure it has Kill/Wait buttons.
-        final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
-        Assert.assertEquals("Wrong infobar count", 1, infoBars.size());
-        Assert.assertTrue(InfoBarUtil.hasPrimaryButton(infoBars.get(0)));
-        Assert.assertTrue(InfoBarUtil.hasSecondaryButton(infoBars.get(0)));
+        CriteriaHelper.pollUiThread(() -> {
+            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
+            InfoBarMatcher matcher =
+                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
+            Criteria.checkThat(infoBars, Matchers.hasItem(matcher));
 
-        // Activate the Kill button.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> { InfoBarUtil.clickPrimaryButton(infoBars.get(0)); });
+            // Make sure it has Kill/Wait buttons.
+            Assert.assertTrue(InfoBarUtil.hasPrimaryButton(matcher.mLastMatch));
+            Assert.assertTrue(InfoBarUtil.hasSecondaryButton(matcher.mLastMatch));
+
+            // Activate the Kill button.
+            InfoBarUtil.clickPrimaryButton(matcher.mLastMatch);
+        });
 
         // The renderer should have been killed and the InfoBar removed.
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-        Assert.assertTrue("Wrong infobar count", sActivityTestRule.getInfoBars().isEmpty());
         CriteriaHelper.pollUiThread(() -> {
             return SadTab.isShowing(sActivityTestRule.getActivity().getActivityTab());
         }, MAX_TIMEOUT, CHECK_INTERVAL);

@@ -294,6 +294,7 @@ android_library("chrome_java_test_support") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/favicon/android:java",
     "//components/infobars/android:java",
+    "//components/infobars/core:infobar_enums_java",
     "//components/location/android:location_java",
     "//components/omnibox/browser:browser_java",
     "//components/policy/android:policy_java",
