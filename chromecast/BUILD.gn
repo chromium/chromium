@@ -631,6 +631,7 @@ buildflag_header("chromecast_buildflags") {
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",
     "ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER=$enable_chromium_runtime_cast_renderer",
+    "ENABLE_CAST_MEDIA_RUNTIME=$enable_cast_media_runtime",
   ]
 }
 

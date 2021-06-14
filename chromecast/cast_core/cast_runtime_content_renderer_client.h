@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chromecast/renderer/cast_content_renderer_client.h"
-#include "components/cast_streaming/renderer/public/cast_streaming_content_renderer_client.h"
+#include "components/cast_streaming/renderer/public/demuxer_provider.h"
 
 namespace media {
 class Demuxer;
@@ -38,8 +38,7 @@ class CastRuntimeContentRendererClient
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) override;
 
  private:
-  cast_streaming::CastStreamingContentRendererClient
-      cast_streaming_renderer_client_;
+  cast_streaming::DemuxerProvider cast_streaming_demuxer_provider_;
 };
 
 }  // namespace chromecast

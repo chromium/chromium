@@ -65,6 +65,15 @@ test("cast_common_unittests") {
   ]
 }
 
+cast_source_set("cors_exempt_headers") {
+  sources = [
+    "cors_exempt_headers.cc",
+    "cors_exempt_headers.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 cast_source_set("common") {
   sources = [
     "cast_content_client.cc",

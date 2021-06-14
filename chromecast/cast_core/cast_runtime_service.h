@@ -5,12 +5,30 @@
 #ifndef CHROMECAST_CAST_CORE_CAST_RUNTIME_SERVICE_H_
 #define CHROMECAST_CAST_CORE_CAST_RUNTIME_SERVICE_H_
 
+#include <memory>
+
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_endpoint_manager.h"
 #include "chromecast/service/cast_service.h"
 
+class PrefService;
+
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace chromecast {
 
+class CastWindowManager;
 class WebCryptoServer;
+
+namespace media {
+class MediaPipelineBackendManager;
+}  // namespace media
 
 namespace receiver {
 class MediaManager;
@@ -19,22 +37,34 @@ class MediaManager;
 // This interface is to be used for building the Cast Runtime Service and act as
 // the border between shared Chromium code and the specifics of that
 // implementation.
-//
-// NOTE: When adding a new interface to this class, first add it to all
-// implementations of this interface in downstream repos. Else, the roll of this
-// code into those repos will break.
 class CastRuntimeService
     : public CastService,
       public media::CastRuntimeAudioChannelEndpointManager {
  public:
+  static std::unique_ptr<CastRuntimeService> Create(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      content::BrowserContext* browser_context,
+      CastWindowManager* window_manager,
+      media::MediaPipelineBackendManager* media_pipeline_backend_manager,
+      PrefService* pref_service);
+
   // Returns current instance of CastRuntimeService in the browser process.
   static CastRuntimeService* GetInstance();
 
   CastRuntimeService();
   ~CastRuntimeService() override;
 
-  virtual WebCryptoServer* GetWebCryptoServer() = 0;
-  virtual receiver::MediaManager* GetMediaManager() = 0;
+  virtual WebCryptoServer* GetWebCryptoServer();
+  virtual receiver::MediaManager* GetMediaManager();
+
+  // CastService overrides.
+  void InitializeInternal() override;
+  void FinalizeInternal() override;
+  void StartInternal() override;
+  void StopInternal() override;
+
+  // CastRuntimeAudioChannelEndpointManager overrides.
+  const std::string& GetAudioChannelEndpoint() override;
 };
 
 }  // namespace chromecast

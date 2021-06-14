@@ -23,7 +23,7 @@ CastRuntimeContentRendererClient::~CastRuntimeContentRendererClient() = default;
 void CastRuntimeContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   CastContentRendererClient::RenderFrameCreated(render_frame);
-  cast_streaming_renderer_client_.RenderFrameCreated(render_frame);
+  cast_streaming_demuxer_provider_.RenderFrameCreated(render_frame);
 }
 
 std::unique_ptr<::media::Demuxer>
@@ -36,7 +36,7 @@ CastRuntimeContentRendererClient::OverrideDemuxerForUrl(
     return nullptr;
   }
 
-  return cast_streaming_renderer_client_.OverrideDemuxerForUrl(
+  return cast_streaming_demuxer_provider_.OverrideDemuxerForUrl(
       render_frame, url, std::move(media_task_runner));
 }
 
