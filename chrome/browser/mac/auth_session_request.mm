@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -146,6 +147,11 @@ std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
 
   std::string scheme =
       base::SysNSStringToUTF8(request_.get().callbackURLScheme);
+
+  // URL schemes should be lower case (see RFC 1738 §2.1). This is enforced by
+  // GURL. However, clients to macOS might not pass in an all-lower-case scheme,
+  // so lower-case it.
+  scheme = base::ToLowerASCII(scheme);
 
   // base::Unretained is safe because throttles are owned by the
   // NavigationRequest, which won't outlive the WebContents, whose lifetime this
