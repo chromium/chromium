@@ -522,6 +522,10 @@ void SpellChecker::ReplaceMisspelledRange(const String& text) {
   if (current_document != GetFrame().GetDocument())
     return;
 
+  // No DOM mutation if EditContext is active.
+  if (GetFrame().GetInputMethodController().GetActiveEditContext())
+    return;
+
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetFrame().GetDocument()->UpdateStyleAndLayout(

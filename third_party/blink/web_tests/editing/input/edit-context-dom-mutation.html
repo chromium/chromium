@@ -113,5 +113,29 @@
       document.body.removeChild(div);
     }, "EditContext should disable DOM mutation from " + testcase['modifier'] + " + " + testcase['key']);
   });
+
+  test(() => {
+    let editContext = new EditContext();
+    let div = document.createElement("div");
+    document.body.appendChild(div);
+    let myText = "appla";
+    div.innerHTML = myText;
+    div.editContext = editContext;
+    div.focus();
+
+    // The beforeinput event should be fired as usual.
+    div.addEventListener('beforeinput', (event) => {
+      assert_equals(event.inputType, 'insertReplacementText');
+      assert_equals(event.dataTransfer.getData('text/plain'), 'apple');
+      assert_equals(event.getTargetRanges().length, 1);
+    });
+
+    let selection = window.getSelection();
+    selection.collapse(div, 0);
+    selection.extend(div, 1);
+    internals.setMarker(document, selection.getRangeAt(0), 'Spelling');
+    internals.replaceMisspelled(document, 'apple');
+    assert_equals(div.innerText, myText, "DOM shouldn't be modified");
+  }, "EditContext should disable DOM mutation from spellcheck");
 </script>
 </body>
