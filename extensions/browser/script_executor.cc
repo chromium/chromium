@@ -290,9 +290,6 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
                                    mojom::RunLocation run_at,
                                    ScriptExecutor::ProcessType process_type,
                                    const GURL& webview_src,
-                                   bool user_gesture,
-                                   mojom::CSSOrigin css_origin,
-                                   ScriptExecutor::ResultType result_type,
                                    ScriptFinishedCallback callback) {
   if (host_id.type == mojom::HostID::HostType::kExtensions) {
     // Don't execute if the extension has been unloaded.
@@ -320,9 +317,6 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
   params->run_at = run_at;
   params->is_web_view = (process_type == WEB_VIEW_PROCESS);
   params->webview_src = webview_src;
-  params->wants_result = (result_type == JSON_SERIALIZED_RESULT);
-  params->user_gesture = user_gesture;
-  params->css_origin = css_origin;
 
   // Handler handles IPCs and deletes itself on completion.
   new Handler(base::PassKey<ScriptExecutor>(), observer_, web_contents_,

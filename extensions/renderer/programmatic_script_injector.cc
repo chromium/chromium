@@ -53,11 +53,13 @@ mojom::InjectionType ProgrammaticScriptInjector::script_type() const {
 }
 
 bool ProgrammaticScriptInjector::IsUserGesture() const {
-  return params_->user_gesture;
+  DCHECK(params_->injection->is_js());
+  return params_->injection->get_js()->user_gesture;
 }
 
 mojom::CSSOrigin ProgrammaticScriptInjector::GetCssOrigin() const {
-  return params_->css_origin;
+  DCHECK(params_->injection->is_css());
+  return params_->injection->get_css()->css_origin;
 }
 
 bool ProgrammaticScriptInjector::IsRemovingCSS() const {
@@ -75,7 +77,8 @@ const absl::optional<std::string> ProgrammaticScriptInjector::GetInjectionKey()
 }
 
 bool ProgrammaticScriptInjector::ExpectsResults() const {
-  return params_->wants_result;
+  DCHECK(params_->injection->is_js());
+  return params_->injection->get_js()->wants_result;
 }
 
 bool ProgrammaticScriptInjector::ShouldInjectJs(

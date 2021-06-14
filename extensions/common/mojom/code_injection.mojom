@@ -4,6 +4,7 @@
 
 module extensions.mojom;
 
+import "extensions/common/mojom/css_origin.mojom";
 import "url/mojom/url.mojom";
 
 // A struct representing a single piece of code to inject in the renderer.
@@ -13,6 +14,14 @@ struct JSInjection {
 
   // The URL of the script that was injected, if any.
   url.mojom.Url script_url;
+
+  // Whether the caller is interested in the result value. Manifest-declared
+  // content scripts and executeScript() calls without a response callback
+  // are examples of when this will be false.
+  bool wants_result;
+
+  // Whether the code to be executed should be associated with a user gesture.
+  bool user_gesture;
 };
 
 struct CSSInjection {
@@ -22,6 +31,9 @@ struct CSSInjection {
   // A generated injection key for the CSS, which can be used to remove it
   // later.
   string? key;
+
+  // The origin of the CSS.
+  CSSOrigin css_origin;
 };
 
 // A single CodeInjection, which is allowed to contain exactly one of

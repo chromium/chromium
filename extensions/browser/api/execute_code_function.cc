@@ -136,12 +136,13 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
       injection_key = ScriptExecutor::GenerateInjectionKey(
           host_id_, script_url_, code_string);
     }
-    injection = mojom::CodeInjection::NewCss(
-        mojom::CSSInjection::New(code_string, std::move(injection_key)));
+    injection = mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
+        code_string, std::move(injection_key), css_origin));
   } else {
     DCHECK_EQ(action_type, mojom::ActionType::kAddJavascript);
-    injection = mojom::CodeInjection::NewJs(
-        mojom::JSInjection::New(code_string, script_url_));
+    bool wants_result = has_callback();
+    injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
+        code_string, script_url_, wants_result, user_gesture()));
   }
 
   executor->ExecuteScript(
@@ -149,9 +150,7 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
       {root_frame_id_}, match_about_blank, run_at,
       IsWebView() ? ScriptExecutor::WEB_VIEW_PROCESS
                   : ScriptExecutor::DEFAULT_PROCESS,
-      GetWebViewSrc(), user_gesture(), css_origin,
-      has_callback() ? ScriptExecutor::JSON_SERIALIZED_RESULT
-                     : ScriptExecutor::NO_RESULT,
+      GetWebViewSrc(),
       base::BindOnce(&ExecuteCodeFunction::OnExecuteCodeFinished, this));
   return true;
 }

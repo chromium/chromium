@@ -67,12 +67,6 @@ class ScriptExecutor {
     WEB_VIEW_PROCESS,
   };
 
-  // The type of result the caller is interested in.
-  enum ResultType {
-    NO_RESULT,
-    JSON_SERIALIZED_RESULT,
-  };
-
   struct FrameResult {
     FrameResult();
     FrameResult(FrameResult&&);
@@ -127,9 +121,6 @@ class ScriptExecutor {
                      mojom::RunLocation run_at,
                      ProcessType process_type,
                      const GURL& webview_src,
-                     bool user_gesture,
-                     mojom::CSSOrigin css_origin,
-                     ResultType result_type,
                      ScriptFinishedCallback callback);
 
   // Set the observer for ScriptsExecutedNotification callbacks.
