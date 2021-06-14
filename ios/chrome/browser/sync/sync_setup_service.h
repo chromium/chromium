@@ -53,8 +53,6 @@ class SyncSetupService : public KeyedService {
   // |SyncableDatatypes|.
   syncer::ModelType GetModelType(SyncableDatatype datatype);
 
-  // Deprecated, use |CanSyncFeatureStart|.
-  bool IsSyncEnabled() const;
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
   // Enables or disables sync. Changes won't take effect in the sync backend

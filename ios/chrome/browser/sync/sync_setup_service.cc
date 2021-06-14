@@ -110,10 +110,6 @@ void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
 
-bool SyncSetupService::IsSyncEnabled() const {
-  return CanSyncFeatureStart();
-}
-
 bool SyncSetupService::CanSyncFeatureStart() const {
   return sync_service_->CanSyncFeatureStart();
 }
