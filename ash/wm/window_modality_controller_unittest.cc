@@ -8,7 +8,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/test_child_modal_parent.h"
 #include "ash/wm/window_util.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/test_window_delegate.h"

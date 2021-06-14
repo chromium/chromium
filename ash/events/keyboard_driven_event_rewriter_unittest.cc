@@ -8,7 +8,7 @@
 
 #include "ash/events/keyboard_driven_event_rewriter.h"
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"

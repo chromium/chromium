@@ -6,9 +6,9 @@
 
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "ash/keyboard/ui/grit/keyboard_resources_map.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace keyboard {

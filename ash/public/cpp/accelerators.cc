@@ -5,8 +5,8 @@
 #include "ash/public/cpp/accelerators.h"
 
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 
 namespace ash {
 

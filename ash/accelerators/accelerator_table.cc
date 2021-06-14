@@ -5,7 +5,7 @@
 #include "ash/accelerators/accelerator_table.h"
 
 #include "ash/strings/grit/ash_strings.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace ash {
 

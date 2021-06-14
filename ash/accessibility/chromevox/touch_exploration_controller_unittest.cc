@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "ash/accessibility/chromevox/mock_touch_exploration_controller_delegate.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
