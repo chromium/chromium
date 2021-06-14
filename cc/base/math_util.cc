@@ -106,7 +106,13 @@ static gfx::PointF ComputeClippedCartesianPoint2dForEdge(
   // i.e., either the coordinate is not moving, or is trending to one
   // infinity or the other.
 
-  DCHECK_NE(h1.w() > 0, h2.w() > 0);
+  // This assertion isn't really as strong as it looks because
+  // std::isfinite(h1.w()) or std::isfinite(h2.w()) might not be true
+  // (and they could be NaN).
+  // TODO(crbug.com/1219622): We should be able to assert something
+  // stronger here, and avoid dependencies on undefined floating point
+  // behavior.
+  DCHECK_NE(h1.w() <= 0, h2.w() <= 0);
 
   float t = h1.w() / (h1.w() - h2.w());
   float x;
@@ -157,7 +163,13 @@ static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
   // a t that will result in the largest (in absolute value) of x, y, or
   // z being HomogeneousCoordinate::kInfiniteCoordinate
 
-  DCHECK_NE(h1.w() > 0, h2.w() > 0);
+  // This assertion isn't really as strong as it looks because
+  // std::isfinite(h1.w()) or std::isfinite(h2.w()) might not be true
+  // (and they could be NaN).
+  // TODO(crbug.com/1219622): We should be able to assert something
+  // stronger here, and avoid dependencies on undefined floating point
+  // behavior.
+  DCHECK_NE(h1.w() <= 0, h2.w() <= 0);
 
   float w_diff = h1.w() - h2.w();
   float t = h1.w() / w_diff;
