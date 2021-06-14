@@ -43,7 +43,8 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
 void MostVisitedSitesProvider::Stop(bool clear_cached_results,
                                     bool due_to_user_inactivity) {
   request_weak_ptr_factory_.InvalidateWeakPtrs();
-  matches_.clear();
+  if (clear_cached_results)
+    matches_.clear();
 }
 
 MostVisitedSitesProvider::MostVisitedSitesProvider(
