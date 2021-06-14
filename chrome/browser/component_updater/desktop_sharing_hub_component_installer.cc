@@ -19,6 +19,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/browser/share/core/share_targets.h"
 #include "components/component_updater/component_updater_paths.h"
 
 using component_updater::ComponentUpdateService;
@@ -37,7 +38,7 @@ const uint8_t kDesktopSharingHubPublicKeySHA256[32] = {
 
 const char kDesktopSharingHubManifestName[] = "Desktop Sharing Hub";
 
-void LoadFileTypesFromDisk(const base::FilePath& pb_path) {
+void LoadShareTargetsFromDisk(const base::FilePath& pb_path) {
   if (pb_path.empty())
     return;
 
@@ -49,8 +50,7 @@ void LoadFileTypesFromDisk(const base::FilePath& pb_path) {
     LOG(ERROR) << "Failed reading from " << pb_path.value();
     return;
   }
-
-  // TODO(crbug/1186831) send binary_pb to desktop sharing hub model.
+  sharing::ShareTargets::GetInstance()->PopulateFromDynamicUpdate(binary_pb);
 }
 
 }  // namespace
@@ -90,7 +90,7 @@ void DesktopSharingHubComponentInstallerPolicy::ComponentReady(
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadFileTypesFromDisk, GetInstalledPath(install_dir)));
+      base::BindOnce(&LoadShareTargetsFromDisk, GetInstalledPath(install_dir)));
 }
 
 // Called during startup and installation before ComponentReady().

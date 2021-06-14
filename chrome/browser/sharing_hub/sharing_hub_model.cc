@@ -5,11 +5,15 @@
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/share/core/share_targets.h"
+#include "chrome/browser/share/proto/share_target.pb.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -24,7 +28,11 @@ namespace sharing_hub {
 SharingHubModel::SharingHubModel(content::BrowserContext* context)
     : context_(context) {
   PopulateFirstPartyActions();
-  PopulateThirdPartyActions();
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&SharingHubModel::PopulateThirdPartyActions,
+                     base::Unretained(this)));
 }
 
 SharingHubModel::~SharingHubModel() = default;
@@ -98,16 +106,19 @@ void SharingHubModel::PopulateFirstPartyActions() {
 void SharingHubModel::PopulateThirdPartyActions() {
   // Note: The third party action id must be greater than 0, otherwise the
   // action will be disabled in the app menu.
-  // TODO(1186833): Replace with actual 3P data.
-  std::string title = "title";
-  third_party_action_list_.push_back(
-      {1, base::ASCIIToUTF16(title), kQrcodeGeneratorIcon, false});
-  third_party_action_urls_[1] = GURL(u"https://www.google.com");
-
-  std::string title2 = "title2";
-  third_party_action_list_.push_back(
-      {2, base::ASCIIToUTF16(title2), kQrcodeGeneratorIcon, false});
-  third_party_action_urls_[2] = GURL(u"https://www.twitter.com");
+  std::string locale = "GLOBAL";
+  int id = 1;
+  const sharing::mojom::ShareTargets* targets =
+      sharing::ShareTargets::GetInstance()->GetShareTargetsForLocale(locale);
+  if (targets) {
+    for (const sharing::mojom::ShareTarget& target : targets->targets()) {
+      // get ICON from target.icon();
+      third_party_action_list_.push_back({id,
+                                          base::ASCIIToUTF16(target.nickname()),
+                                          kQrcodeGeneratorIcon, false});
+      third_party_action_urls_[id] = GURL(target.url());
+    }
+  }
 }
 
 bool SharingHubModel::DoShowSendTabToSelfForWebContents(

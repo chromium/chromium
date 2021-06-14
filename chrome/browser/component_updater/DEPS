@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/elevation_service",
+  "+chrome/browser/share",
   "+components/cdm/common",
   "+components/live_caption",
   "+components/soda",

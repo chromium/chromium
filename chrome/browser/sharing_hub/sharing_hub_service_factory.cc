@@ -34,4 +34,10 @@ KeyedService* SharingHubServiceFactory::BuildServiceInstanceFor(
   return new SharingHubService(context);
 }
 
+bool SharingHubServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  // Create this service at startup to ensure that the model exists before ui is
+  // drawn.
+
+  return true;
+}
 }  // namespace sharing_hub
