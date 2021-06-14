@@ -1076,7 +1076,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
           transform->Translation2D();
     }
   } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
-             !object_.IsAnonymous()) {
+             object_.IsForElement()) {
     // With kTransformInterop enabled, 3D rendering contexts follow the
     // DOM ancestor chain, so flattening should apply regardless of
     // presence of transform.
@@ -2803,7 +2803,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateFilter();
     UpdateOverflowControlsClip();
   } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
-             !object_.IsAnonymous()) {
+             object_.IsForElement()) {
     // With kTransformInterop enabled, 3D rendering contexts follow the
     // DOM ancestor chain, so flattening should apply regardless of
     // presence of transform.

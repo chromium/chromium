@@ -1986,7 +1986,7 @@ bool LayoutBox::MapVisualRectToContainer(
   bool has_perspective = container_object && container_object->HasLayer() &&
                          container_object->StyleRef().HasPerspective();
   if (has_perspective && RuntimeEnabledFeatures::TransformInteropEnabled() &&
-      container_object != NonAnonymousAncestor())
+      container_object != NearestAncestorForElement())
     has_perspective = false;
 
   // d) Perspective applied by container.

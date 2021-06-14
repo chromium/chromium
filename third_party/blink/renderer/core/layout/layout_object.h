@@ -1353,6 +1353,14 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
            StyleRef().StyleType() == kPseudoIdNone && IsLayoutBlock() &&
            !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
   }
+  // This is similar to the negation of IsAnonymous, with a single difference.
+  // When a block is inside an inline, there is an anonymous block that is a
+  // continuation of the inline, wrapping the block that is inside it, as
+  // https://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level describes.
+  // That anonymous block also returns true here.  This allows us to track
+  // when layout object parent-child relationships correspond to DOM
+  // parent-child relationships.
+  bool IsForElement() const;
   // If node has been split into continuations, it returns the first layout
   // object generated for the node.
   const LayoutObject* ContinuationRoot() const {
@@ -2291,9 +2299,13 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
       LayoutObject* container,
       AncestorSkipInfo* = nullptr);
 
-  // Returns the nearest anceestor in the layout tree that is not anonymous,
+  // Returns the nearest ancestor in the layout tree that is not anonymous,
   // or null if there is none.
   LayoutObject* NonAnonymousAncestor() const;
+
+  // Returns the nearest ancestor in the layout tree that IsForElement(),
+  // or null if there is none.
+  LayoutObject* NearestAncestorForElement() const;
 
   const LayoutBlock* InclusiveContainingBlock() const;
 
