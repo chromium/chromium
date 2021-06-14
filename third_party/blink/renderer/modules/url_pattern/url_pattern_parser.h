@@ -25,6 +25,14 @@ namespace url_pattern {
 
 class Component;
 
+// A helper class to parse the first string passed to the URLPattern
+// constructor.  In general the parser works by using the liburlpattern
+// tokenizer to first split up the input into pattern tokens.  It can
+// then look through the tokens to find non-special characters that match
+// the different URL component separators.  Each component is then split
+// off and stored in a `URLPatternInit` object that can be accessed via
+// `GetResult()`.  The intent is that this init object should then be
+// processed as if it was passed into the constructor itself.
 class Parser final {
   STACK_ALLOCATED();
 
@@ -51,6 +59,8 @@ class Parser final {
  private:
   enum class StringParseState {
     kProtocol,
+    kUsername,
+    kPassword,
     kHostname,
     kPort,
     kPathname,
@@ -86,23 +96,37 @@ class Parser final {
   // Returns true if the token at the given `index` is the protocol component
   // suffix; e.g. ':'.
   bool IsProtocolSuffix(size_t index) const;
+  bool IsProtocolSuffix() const { return IsProtocolSuffix(token_index_); }
 
   // Returns true if the next two tokens are slashes; e.g. `//`.
   bool NextIsAuthoritySlashes() const;
+
+  // Returns true if the tokan at the given `index` is the `@` character used
+  // to separate username and password from the hostname.
+  bool IsIdentityTerminator(size_t index) const;
+  bool IsIdentityTerminator() const {
+    return IsIdentityTerminator(token_index_);
+  }
+
+  // Returns true if the current token is the password prefix; e.g. `:`.
+  bool IsPasswordPrefix() const;
 
   // Returns true if the current token is the port prefix; e.g. `:`.
   bool IsPortPrefix() const;
 
   // Returns true if the current token is the start of the pathname; e.g. `/`.
-  bool IsPathnameStart() const;
+  bool IsPathnameStart(size_t index) const;
+  bool IsPathnameStart() const { return IsPathnameStart(token_index_); }
 
   // Returns true if the current token is the search component prefix; e.g. `?`.
   // This also takes into account if this could be a valid pattern modifier by
   // looking at the preceding tokens.
-  bool IsSearchPrefix() const;
+  bool IsSearchPrefix(size_t index) const;
+  bool IsSearchPrefix() const { return IsSearchPrefix(token_index_); }
 
   // Returns true if the current token is the hsah component prefix; e.g. `#`.
-  bool IsHashPrefix() const;
+  bool IsHashPrefix(size_t index) const;
+  bool IsHashPrefix() const { return IsHashPrefix(token_index_); }
 
   // These methods indicate if the current token is opening or closing a pattern
   // grouping; e.g. `{` or `}`.
