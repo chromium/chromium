@@ -158,9 +158,13 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
 }
 
 gfx::Image GetDefaultFavicon() {
+  bool is_dark = false;
+#if !defined(OS_ANDROID)
+  // Android doesn't currently implement NativeTheme::GetInstanceForNativeUi.
   const ui::NativeTheme* native_theme =
       ui::NativeTheme::GetInstanceForNativeUi();
-  bool is_dark = native_theme && native_theme->ShouldUseDarkColors();
+  is_dark = native_theme && native_theme->ShouldUseDarkColors();
+#endif
   int resource_id = is_dark ? IDR_DEFAULT_FAVICON_DARK : IDR_DEFAULT_FAVICON;
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
