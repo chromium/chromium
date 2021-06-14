@@ -5,46 +5,36 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
-/**
- * @typedef {{
- *   sitelist: Array<string>,
- *   greylist: Array<string>,
- * }}
- */
-let RuleSet;
+type RuleSet = {
+  sitelist: Array<string>;
+  greylist: Array<string>;
+};
 
-/**
- * @typedef {{
- *   gpo: RuleSet,
- *   ieem: (RuleSet|undefined),
- *   external: (RuleSet|undefined),
- * }}
- */
-let RuleSetList;
+type RuleSetList = {
+  gpo: RuleSet;
+  ieem?: RuleSet;
+  external?: RuleSet;
+};
 
 /**
  * Returned by getRulesetSources().
- * @typedef {{
- *   browser_switcher: Object<string, string>!,
- * }}
  */
-let RulesetSources;
+type RulesetSources = {
+  browser_switcher: {[k: string]: string};
+};
 
 /**
  * Returned by getTimestamps().
- * @typedef {{
- *   last_fetch: number,
- *   next_fetch: number,
- * }}
  */
-let TimestampPair;
+type TimestampPair = {
+  last_fetch: number;
+  next_fetch: number;
+};
 
 /**
  * Converts 'this_word' to 'ThisWord'
- * @param {string} symbol
- * @return {string}
  */
-function snakeCaseToUpperCamelCase(symbol) {
+function snakeCaseToUpperCamelCase(symbol: string): string {
   if (!symbol) {
     return symbol;
   }
@@ -55,21 +45,19 @@ function snakeCaseToUpperCamelCase(symbol) {
 
 /**
  * Clears the table, and inserts a header row.
- * @param {HTMLTableElement} table
- * @param {HTMLTemplateElement} headerTemplate
- *     Template to use to re-create the header row.
+ * @param headerTemplate Template to use to re-create the header row.
  */
-function clearTable(table, headerTemplate) {
+function clearTable(
+    table: HTMLTableElement, headerTemplate: HTMLTemplateElement) {
   table.innerHTML = '';
   const headerRow = document.importNode(headerTemplate.content, true);
   table.appendChild(headerRow);
 }
 
 /**
- * @param {string} rule
- * @return {string} String describing the rule type.
+ * @return String describing the rule type.
  */
-function getRuleType(rule) {
+function getRuleType(rule: string): string {
   if (rule == '*') {
     return 'wildcard';
   }
@@ -81,33 +69,31 @@ function getRuleType(rule) {
 
 /**
  * Creates and returns a <tr> element for the given rule.
- * @param {string} rule
- * @param {string} rulesetName
- * @return {HTMLTableRowElement}
  */
-function createRowForRule(rule, rulesetName) {
-  const row = document.importNode($('rule-row-template').content, true);
+function createRowForRule(
+    rule: string, rulesetName: string): HTMLTableRowElement {
+  const row = document.importNode(
+                  ($('rule-row-template') as HTMLTemplateElement).content,
+                  true) as unknown as HTMLTableRowElement;
   const cells = row.querySelectorAll('td');
   cells[0].innerText = rule;
   cells[0].className = 'url';
   cells[1].innerText = rulesetName;
   cells[2].innerText = getRuleType(rule);
   cells[3].innerText = /^!/.test(rule) ? 'yes' : 'no';
-  return /** @type {HTMLTableRowElement} */ (row);
+  return row;
 }
 
 /**
  * Updates the content of all tables after receiving data from the backend.
- * @param {RuleSetList} rulesets
  */
-function updateTables(rulesets) {
-  const headerTemplate =
-      /** @type {HTMLTemplateElement} */ ($('header-row-template'));
-  clearTable(/** @type {HTMLTableElement} */ ($('sitelist')), headerTemplate);
-  clearTable(/** @type {HTMLTableElement} */ ($('greylist')), headerTemplate);
+function updateTables(rulesets: RuleSetList) {
+  const headerTemplate = $('header-row-template') as HTMLTemplateElement;
+  clearTable($('sitelist') as HTMLTableElement, headerTemplate);
+  clearTable($('greylist') as HTMLTableElement, headerTemplate);
 
   for (const [rulesetName, ruleset] of Object.entries(rulesets)) {
-    for (const [listName, rules] of Object.entries(ruleset)) {
+    for (const [listName, rules] of Object.entries(ruleset as RuleSet)) {
       const table = $(listName);
       for (const rule of rules) {
         table.appendChild(createRowForRule(rule, rulesetName));
@@ -117,7 +103,7 @@ function updateTables(rulesets) {
 }
 
 function checkUrl() {
-  const url = $('url-checker-input').value;
+  const url = ($('url-checker-input') as HTMLInputElement).value;
   if (!url) {
     $('output').innerText = '';
     return;
@@ -127,7 +113,7 @@ function checkUrl() {
         // URL is valid.
         $('output').innerText = JSON.stringify(decision, null, 2);
       })
-      .catch(err => {
+      .catch(() => {
         // URL is invalid.
         $('output').innerText =
             'Invalid URL. Make sure it is formatted properly.';
@@ -138,10 +124,8 @@ $('url-checker-input').addEventListener('input', checkUrl);
 
 /**
  * Formats |date| as "HH:MM:SS".
- * @param {Date} date
- * @return {string}
  */
-function formatTime(date) {
+function formatTime(date: Date): string {
   const hh = date.getHours().toString().padStart(2, '0');
   const mm = date.getMinutes().toString().padStart(2, '0');
   const ss = date.getSeconds().toString().padStart(2, '0');
@@ -150,9 +134,8 @@ function formatTime(date) {
 
 /**
  * Update the paragraphs under the "XML sitelists" section.
- * @param {TimestampPair?} timestamps
  */
-function updateTimestamps(timestamps) {
+function updateTimestamps(timestamps: TimestampPair|null) {
   if (!timestamps) {
     return;
   }
@@ -178,20 +161,18 @@ function updateTimestamps(timestamps) {
 
 /**
  * Update the table under the "XML sitelists" section.
- * @param {RulesetSources} sources
  */
-function updateXmlTable({browser_switcher: sources}) {
-  const headerTemplate =
-      /** @type {HTMLTemplateElement} */ ($('xml-header-row-template'));
-  clearTable(
-      /** @type {HTMLTableElement} */ ($('xml-sitelists')), headerTemplate);
+function updateXmlTable({browser_switcher: sources}: RulesetSources) {
+  const headerTemplate = $('xml-header-row-template') as HTMLTemplateElement;
+  clearTable($('xml-sitelists') as HTMLTableElement, headerTemplate);
 
   for (const [prefName, url] of Object.entries(sources)) {
     // Hacky: guess the policy name from the pref name by converting 'foo_bar'
     // to 'BrowserSwitcherFooBar'. This relies on prefs having the same name as
     // the associated policy.
     const policyName = 'BrowserSwitcher' + snakeCaseToUpperCamelCase(prefName);
-    const row = document.importNode($('xml-row-template').content, true);
+    const row = document.importNode(
+        ($('xml-row-template') as HTMLTemplateElement).content, true);
     const cells = row.querySelectorAll('td');
     cells[0].innerText = policyName;
     cells[1].innerText = url || '(not configured)';

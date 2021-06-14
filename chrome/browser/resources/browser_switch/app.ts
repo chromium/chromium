@@ -7,30 +7,23 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserSwitchProxy, BrowserSwitchProxyImpl} from './browser_switch_proxy.js';
 
-/** @type {number} */
-const MS_PER_SECOND = 1000;
+const MS_PER_SECOND: number = 1000;
 
-/** @enum {string} */
-const LaunchError = {
-  GENERIC_ERROR: 'genericError',
-  PROTOCOL_ERROR: 'protocolError',
-};
+enum LaunchError {
+  GENERIC_ERROR = 'genericError',
+  PROTOCOL_ERROR = 'protocolError',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const BrowserSwitchAppElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
   static get is() {
     return 'browser-switch-app';
@@ -44,7 +37,6 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     return {
       /**
        * URL to launch in the alternative browser.
-       * @private
        */
       url_: {
         type: String,
@@ -55,7 +47,6 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
 
       /**
        * Error message, or empty string if no error has occurred (yet).
-       * @private
        */
       error_: {
         type: String,
@@ -65,7 +56,6 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
       /**
        * Countdown displayed to the user, number of seconds until launching. If
        * 0 or less, doesn't get displayed at all.
-       * @private
        */
       secondCounter_: {
         type: Number,
@@ -73,6 +63,10 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
       },
     };
   }
+
+  private url_: string;
+  private error_: string;
+  private secondCounter_: number;
 
   /** @override */
   connectedCallback() {
@@ -100,8 +94,7 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     this.startCountdown_(Math.floor(milliseconds / 1000));
   }
 
-  /** @private */
-  launchAndCloseTab_() {
+  private launchAndCloseTab_() {
     // Mark this page with '?done=...' so that restoring the tab doesn't
     // immediately re-trigger LBS.
     history.pushState({}, '', '/?done=true');
@@ -111,11 +104,7 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     });
   }
 
-  /**
-   * @param {number} seconds
-   * @private
-   */
-  startCountdown_(seconds) {
+  private startCountdown_(seconds: number) {
     this.secondCounter_ = seconds;
     const intervalId = setInterval(() => {
       this.secondCounter_--;
@@ -125,11 +114,7 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     }, 1 * MS_PER_SECOND);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeTitle_() {
+  private computeTitle_(): string {
     if (this.error_) {
       return this.i18n('errorTitle', getBrowserName());
     }
@@ -139,11 +124,7 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     return this.i18n('openingTitle', getBrowserName());
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeDescription_() {
+  private computeDescription_(): string {
     if (this.error_) {
       return this.i18n(
           this.error_, getUrlHostname(this.url_), getBrowserName());
@@ -155,23 +136,17 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
 
 customElements.define(BrowserSwitchAppElement.is, BrowserSwitchAppElement);
 
-/** @return {string} */
-function getBrowserName() {
+function getBrowserName(): string {
   return loadTimeData.getString('browserName');
 }
 
-/**
- * @param {string} url
- * @return {string}
- */
-function getUrlHostname(url) {
+function getUrlHostname(url: string): string {
   const anchor = document.createElement('a');
   anchor.href = url;
   // Return entire url if parsing failed (which means the URL is bogus).
   return anchor.hostname || url;
 }
 
-/** @return {!BrowserSwitchProxy} */
-function getProxy() {
+function getProxy(): BrowserSwitchProxy {
   return BrowserSwitchProxyImpl.getInstance();
 }

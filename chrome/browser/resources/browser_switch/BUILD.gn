@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos_lacros)
 
 grit("resources") {
   defines = chrome_grit_defines
@@ -27,60 +29,48 @@ grit("resources") {
 
 generate_grd("build_grd") {
   grd_prefix = "browser_switch"
-  input_files = [
-    "app.js",
-    "browser_switch.html",
-    "browser_switch_proxy.js",
-    "internals/browser_switch_internals.html",
-    "internals/browser_switch_internals.js",
-  ]
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-
   out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "browser_switch.html",
+    "internals/browser_switch_internals.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "app.ts",
+    "browser_switch_proxy.ts",
+    "internals/browser_switch_internals.ts",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [
-    ":copy_files",
-    ":copy_files_internals",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":copy_browser_proxy",
+    ":copy_internals",
     ":web_components",
   ]
 }
 
-copy("copy_files") {
-  sources = [
-    "browser_switch.html",
-    "browser_switch_proxy.js",
-  ]
+copy("copy_browser_proxy") {
+  sources = [ "browser_switch_proxy.ts" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-copy("copy_files_internals") {
-  sources = [
-    "internals/browser_switch_internals.html",
-    "internals/browser_switch_internals.js",
-  ]
+copy("copy_internals") {
+  sources = [ "internals/browser_switch_internals.ts" ]
   outputs = [ "$target_gen_dir/internals/{{source_file_part}}" ]
 }
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":app",
-    ":browser_switch_proxy",
-    "internals:browser_switch_internals",
-  ]
-}
-
-js_library("app") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("browser_switch_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
 html_to_js("web_components") {
-  js_files = [ "app.js" ]
+  js_files = [ "app.ts" ]
 }

@@ -176,9 +176,6 @@ if (enable_js_type_check) {
         "webapks:closure_compile",
       ]
     }
-    if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-      deps += [ "browser_switch:closure_compile" ]
-    }
 
     # Note: The following targets should only be type-checked on Windows builds,
     # but because Window bots don't depend on Java, |closure_compile| is off on
