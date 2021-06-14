@@ -1038,7 +1038,7 @@ if (enable_java_templates) {
 
       args = [
         "--target-name",
-        get_label_info(target_name, "label_no_toolchain"),
+        get_label_info(":${target_name}", "label_no_toolchain"),
         "--depfile",
         rebase_path(depfile, root_build_dir),
         "--lint-binary-path",
@@ -2022,7 +2022,7 @@ if (enable_java_templates) {
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       args = [
         "--target-name",
-        get_label_info(target_name, "label_no_toolchain"),
+        get_label_info(":${target_name}", "label_no_toolchain"),
         "--script",
         rebase_path(_bytecode_checker_script, root_build_dir),
         "--gn-target=${invoker.target_label}",
@@ -3114,7 +3114,7 @@ if (enable_java_templates) {
         "--jar-path=$_rebased_output_jar_path",
         "--java-srcjars=$_rebased_java_srcjars",
         "--target-name",
-        get_label_info(target_name, "label_no_toolchain"),
+        get_label_info(":${target_name}", "label_no_toolchain"),
       ]
 
       if (defined(invoker.header_jar_path)) {
