@@ -1,0 +1,13 @@
+Name: JGit - Core
+Short Name: org.eclipse.jgit
+URL: https://www.eclipse.org/jgit/
+Version: 4.4.1.201607150455-r
+License: BSD 3-Clause
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Repository access and algorithms
+
+Local Modifications:
+No modifications.

@@ -44,6 +44,18 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'UnescapedEntity',
     'NonCanonicalType',
     'AlmostJavadoc',
+    # The following are added for errorprone update: https://crbug.com/1216032
+    'InlineMeSuggester',
+    'DoNotClaimAnnotations',
+    'JavaUtilDate',
+    'IdentityHashMapUsage',
+    'UnnecessaryMethodReference',
+    'LongFloatConversion',
+    'CharacterGetNumericValue',
+    'ErroneousThreadPoolConstructorChecker',
+    'StaticMockMember',
+    'MissingSuperCall',
+    'ToStringReturnsNull',
     # TODO(crbug.com/834807): Follow steps in bug
     'DoubleBraceInitialization',
     # TODO(crbug.com/834790): Follow steps in bug.
@@ -176,7 +188,6 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'InvalidThrows',
     'LongLiteralLowerCaseSuffix',
     'MultiVariableDeclaration',
-    'ParameterNotNullable',
     'RedundantOverride',
     'StaticQualifiedUsingExpression',
     'StringEquality',
@@ -208,6 +219,8 @@ def ProcessJavacOutput(output, target_name):
       return '{}\n{}Expecting a FragmentActivity? See {}'.format(
           line, prefix, 'docs/ui/android/bytecode_rewriting.md')
     return line
+
+  output = build_utils.FilterReflectiveAccessJavaWarnings(output)
 
   lines = (l for l in output.split('\n') if ApplyFilters(l))
   lines = (Elaborate(l) for l in lines)

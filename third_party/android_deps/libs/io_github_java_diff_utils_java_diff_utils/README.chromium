@@ -1,0 +1,13 @@
+Name: java-diff-utils
+Short Name: java-diff-utils
+URL: https://github.com/java-diff-utils/java-diff-utils
+Version: 4.0
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+The DiffUtils library for computing diffs, applying patches, generationg side-by-side view in Java.
+
+Local Modifications:
+No modifications.

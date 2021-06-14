@@ -1,0 +1,10 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:2@4.4.1.201607150455-r.cr0
+package: chromium/third_party/android_deps/libs/org_eclipse_jgit_org_eclipse_jgit
+description: "JGit - Core"
+data:
+- file: org.eclipse.jgit-4.4.1.201607150455-r.jar

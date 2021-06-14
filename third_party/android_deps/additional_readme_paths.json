@@ -109,6 +109,7 @@
     "libs/com_googlecode_java_diff_utils_diffutils",
     "libs/com_squareup_javapoet",
     "libs/com_squareup_javawriter",
+    "libs/io_github_java_diff_utils_java_diff_utils",
     "libs/javax_annotation_javax_annotation_api",
     "libs/javax_annotation_jsr250_api",
     "libs/javax_inject_javax_inject",
@@ -140,6 +141,7 @@
     "libs/org_codehaus_plexus_plexus_container_default",
     "libs/org_codehaus_plexus_plexus_interpolation",
     "libs/org_codehaus_plexus_plexus_utils",
+    "libs/org_eclipse_jgit_org_eclipse_jgit",
     "libs/org_jetbrains_annotations",
     "libs/org_jetbrains_kotlin_kotlin_stdlib",
     "libs/org_jetbrains_kotlin_kotlin_stdlib_common",
@@ -163,6 +165,5 @@
     "libs/org_robolectric_shadows_framework",
     "libs/org_robolectric_shadows_playservices",
     "libs/org_robolectric_utils",
-    "libs/org_robolectric_utils_reflector",
-    "libs/org_threeten_threeten_extra"
+    "libs/org_robolectric_utils_reflector"
 ]
