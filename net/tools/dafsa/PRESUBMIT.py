@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 """Chromium presubmit script for src/net/tools/dafsa."""
+
+
+USE_PYTHON3 = True
 
 
 def _RunMakeDafsaTests(input_api, output_api):
