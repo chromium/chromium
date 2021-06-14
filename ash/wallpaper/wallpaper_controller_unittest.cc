@@ -62,6 +62,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 using ash::prefs::kWallpaperCollectionId;
@@ -2163,6 +2164,16 @@ TEST_F(WallpaperControllerTest, LockDuringOverview) {
 
   // Make sure that wallpaper still have blur.
   ASSERT_EQ(30, wallpaper_view->blur_sigma());
+}
+
+TEST_F(WallpaperControllerTest, DontLeakShieldView) {
+  SetSessionState(SessionState::LOCKED);
+  views::View* shield_view = wallpaper_view()->shield_view_for_testing();
+  ASSERT_TRUE(shield_view);
+  views::ViewTracker view_tracker(shield_view);
+  SetSessionState(SessionState::ACTIVE);
+  EXPECT_EQ(nullptr, wallpaper_view()->shield_view_for_testing());
+  EXPECT_EQ(nullptr, view_tracker.view());
 }
 
 TEST_F(WallpaperControllerTest, OnlyShowDevicePolicyWallpaperOnLoginScreen) {

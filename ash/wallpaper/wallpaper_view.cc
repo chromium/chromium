@@ -97,7 +97,7 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
   } else {
     DCHECK(shield_view_);
-    parent()->RemoveChildView(shield_view_);
+    parent()->RemoveChildViewT(shield_view_);
     shield_view_ = nullptr;
   }
 }
