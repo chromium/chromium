@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -178,6 +179,26 @@ COMPONENT_EXPORT(NETWORK_CPP_BASE)
 net::ReferrerPolicy ReferrerPolicyForUrlRequest(
     mojom::ReferrerPolicy referrer_policy);
 
+namespace debug {
+
+class COMPONENT_EXPORT(NETWORK_CPP_BASE) ScopedResourceRequestCrashKeys {
+ public:
+  explicit ScopedResourceRequestCrashKeys(
+      const network::ResourceRequest& request);
+  ~ScopedResourceRequestCrashKeys();
+
+  ScopedResourceRequestCrashKeys(const ScopedResourceRequestCrashKeys&) =
+      delete;
+  ScopedResourceRequestCrashKeys& operator=(
+      const ScopedResourceRequestCrashKeys&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString url_;
+  url::debug::ScopedOriginCrashKey request_initiator_;
+  base::debug::ScopedCrashKeyString resource_type_;
+};
+
+}  // namespace debug
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_RESOURCE_REQUEST_H_

@@ -17,6 +17,16 @@
 
 namespace network {
 
+namespace {
+
+base::debug::CrashKeyString* GetRequestInitiatorOriginLockCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "request_initiator_origin_lock", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+}  // namespace
+
 InitiatorLockCompatibility VerifyRequestInitiatorLock(
     const absl::optional<url::Origin>& request_initiator_origin_lock,
     const absl::optional<url::Origin>& request_initiator) {
@@ -64,4 +74,17 @@ url::Origin GetTrustworthyInitiator(
   return request_initiator.value();
 }
 
+namespace debug {
+
+ScopedRequestInitiatorOriginLockCrashKey::
+    ScopedRequestInitiatorOriginLockCrashKey(
+        const absl::optional<url::Origin>& request_initiator_origin_lock)
+    : ScopedOriginCrashKey(
+          GetRequestInitiatorOriginLockCrashKey(),
+          base::OptionalOrNullptr(request_initiator_origin_lock)) {}
+
+ScopedRequestInitiatorOriginLockCrashKey::
+    ~ScopedRequestInitiatorOriginLockCrashKey() = default;
+
+}  // namespace debug
 }  // namespace network

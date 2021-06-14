@@ -7,12 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
-#include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
@@ -20,7 +17,6 @@
 #include "net/http/http_util.h"
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/preflight_controller.h"
-#include "services/network/crash_keys.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -245,7 +241,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& resource_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  debug::ScopedRequestCrashKeys request_crash_keys(resource_request);
+  debug::ScopedResourceRequestCrashKeys request_crash_keys(resource_request);
 
   if (!IsValidRequest(resource_request, options)) {
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))

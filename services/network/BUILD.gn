@@ -30,8 +30,6 @@ component("network_service") {
     "cors/preflight_controller.h",
     "cors/preflight_result.cc",
     "cors/preflight_result.h",
-    "crash_keys.cc",
-    "crash_keys.h",
     "crl_set_distributor.cc",
     "crl_set_distributor.h",
     "data_pipe_element_reader.cc",

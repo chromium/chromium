@@ -73,14 +73,30 @@ InitiatorLockCompatibility VerifyRequestInitiatorLock(
 // network::ResourceRequest::request_initiator which may be initially set in an
 // untrustworthy process (eg: renderer process).
 //
-// TODO(lukasza): Remove this function if https://crrev.com/c/1661114 sticks
-// (i.e. if ResourceRequest::request_initiator is sanitized and made trustworthy
-// by CorsURLLoaderFactory::CreateLoaderAndStart and IsValidRequest). Once we
-// remove this, this header can be moved to non-public directory.
+// TODO(https://crbug.com/920634): Remove this function, because
+// ResourceRequest::request_initator should now be trustworthy *within the
+// NetworkService* (see r888724).
 COMPONENT_EXPORT(NETWORK_CPP)
 url::Origin GetTrustworthyInitiator(
     const absl::optional<url::Origin>& request_initiator_origin_lock,
     const absl::optional<url::Origin>& request_initiator);
+
+namespace debug {
+
+class COMPONENT_EXPORT(NETWORK_CPP) ScopedRequestInitiatorOriginLockCrashKey
+    : public url::debug::ScopedOriginCrashKey {
+ public:
+  explicit ScopedRequestInitiatorOriginLockCrashKey(
+      const absl::optional<url::Origin>& request_initiator_origin_lock);
+  ~ScopedRequestInitiatorOriginLockCrashKey();
+
+  ScopedRequestInitiatorOriginLockCrashKey(
+      const ScopedRequestInitiatorOriginLockCrashKey&) = delete;
+  ScopedRequestInitiatorOriginLockCrashKey& operator=(
+      const ScopedRequestInitiatorOriginLockCrashKey&) = delete;
+};
+
+}  // namespace debug
 
 }  // namespace network
 

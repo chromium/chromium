@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/resource_request.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -74,6 +75,24 @@ bool OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
     const absl::optional<ResourceRequest::WebBundleTokenParams>& rhs) {
   return (!lhs && !rhs) ||
          (lhs && rhs && lhs->EqualsForTesting(*rhs));  // IN-TEST
+}
+
+base::debug::CrashKeyString* GetRequestUrlCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "request_url", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetRequestInitiatorCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "request_initiator", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetRequestResourceTypeCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "request_resource_type", base::debug::CrashKeySize::Size32);
+  return crash_key;
 }
 
 }  // namespace
@@ -269,4 +288,17 @@ net::ReferrerPolicy ReferrerPolicyForUrlRequest(
   return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
 }
 
+namespace debug {
+
+ScopedResourceRequestCrashKeys::ScopedResourceRequestCrashKeys(
+    const network::ResourceRequest& request)
+    : url_(GetRequestUrlCrashKey(), request.url.possibly_invalid_spec()),
+      request_initiator_(GetRequestInitiatorCrashKey(),
+                         base::OptionalOrNullptr(request.request_initiator)),
+      resource_type_(GetRequestResourceTypeCrashKey(),
+                     base::NumberToString(request.resource_type)) {}
+
+ScopedResourceRequestCrashKeys::~ScopedResourceRequestCrashKeys() = default;
+
+}  // namespace debug
 }  // namespace network
