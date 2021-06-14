@@ -7,8 +7,7 @@
 #include "remoting/protocol/webrtc_frame_scheduler.h"
 
 #include "base/bind.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/test/task_environment.h"
 #include "remoting/base/session_options.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/webrtc_dummy_video_encoder.h"
@@ -26,15 +25,15 @@ namespace protocol {
 class WebrtcFrameSchedulerTest : public ::testing::Test {
  public:
   WebrtcFrameSchedulerTest()
-      : task_runner_(
-            // Default ctor starts clock with null TimeTicks, which confuses
-            // the scheduler, so use the current time as a baseline.
-            new base::TestMockTimeTaskRunner(base::Time::Now(),
-                                             base::TimeTicks::Now())),
-        task_runner_handle_(task_runner_.get()),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         frame_(DesktopSize(1, 1)) {
+    // Default ctor starts clock with null TimeTicks, which confuses
+    // the scheduler, so use the current time as a baseline.
+    task_environment_.FastForwardBy(base::Time::NowFromSystemTime() -
+                                    base::Time());
+
     scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(SessionOptions());
-    scheduler_->SetTickClockForTest(task_runner_->GetMockTickClock());
+    scheduler_->SetTickClockForTest(task_environment_.GetMockTickClock());
     scheduler_->Start(
         base::BindRepeating(&WebrtcFrameSchedulerTest::CaptureCallback,
                             base::Unretained(this)));
@@ -59,8 +58,7 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
   }
 
  protected:
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<WebrtcFrameSchedulerSimple> scheduler_;
 
@@ -74,16 +72,16 @@ TEST_F(WebrtcFrameSchedulerTest, UpdateBitrateWhenPending) {
   scheduler_->OnKeyFrameRequested();
   scheduler_->OnTargetBitrateChanged(100);
 
-  EXPECT_TRUE(task_runner_->HasPendingTask());
-  task_runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_FALSE(task_environment_.MainThreadIsIdle());
+  task_environment_.FastForwardUntilNoTasksRemain();
 
   EXPECT_EQ(1, capture_callback_count_);
 
   scheduler_->OnTargetBitrateChanged(1001);
 
-  // |task_runner_| shouldn't have pending tasks as the scheduler should be
-  // waiting for the previous capture request to complete.
-  EXPECT_FALSE(task_runner_->HasPendingTask());
+  // There shouldn't be any pending tasks as the scheduler should be waiting for
+  // the previous capture request to complete.
+  EXPECT_TRUE(task_environment_.MainThreadIsIdle());
 }
 
 TEST_F(WebrtcFrameSchedulerTest, EmptyFrameUpdate_ShouldNotBeSentImmediately) {
@@ -114,7 +112,7 @@ TEST_F(WebrtcFrameSchedulerTest, EmptyFrameUpdate_ShouldBeSentAfter2000ms) {
   frame_.mutable_updated_region()->SetRect(DesktopRect::MakeWH(1, 1));
   scheduler_->OnFrameCaptured(&frame_, &out_params);
   // Wait more than 2000ms.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(3000));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(3000));
   // Empty frame.
   frame_.mutable_updated_region()->Clear();
   bool result = scheduler_->OnFrameCaptured(&frame_, &out_params);
@@ -135,7 +133,7 @@ TEST_F(WebrtcFrameSchedulerTest, Capturer_RunsAt30Fps) {
   // repeated captures.
   scheduler_->OnKeyFrameRequested();
 
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // There should be approximately 30 captures in 1 second.
   EXPECT_LE(29, capture_callback_count_);
@@ -150,7 +148,7 @@ TEST_F(WebrtcFrameSchedulerTest, RttReportedInFrameStats) {
   auto rtt = base::TimeDelta::FromMilliseconds(123);
   scheduler_->OnRttUpdate(rtt);
 
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   EXPECT_EQ(rtt, frame_stats_.rtt_estimate);
 }
