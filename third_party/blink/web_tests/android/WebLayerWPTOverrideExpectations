@@ -805,6 +805,7 @@ crbug.com/1050754 external/wpt/external/wpt/fetch/api/basic/stream-safe-creation
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
+crbug.com/1050754 external/wpt/external/wpt/inert/inert-retargeting-iframe.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/infrastructure/server/context.any.serviceworker-module.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/infrastructure/server/context.any.sharedworker-module.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/infrastructure/server/context.any.sharedworker.html [ Failure ]
