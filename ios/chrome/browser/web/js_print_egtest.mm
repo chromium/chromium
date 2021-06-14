@@ -51,7 +51,11 @@ id<GREYMatcher> PrintOptionsCancelButton() {
   [ChromeEarlGrey tapWebStateElementWithID:@"printButton"];
 
   // Test if print dialog appeared.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Printer Options")]
+  NSString* dialogTitle = @"Printer Options";
+  if (@available(iOS 15, *)) {
+    dialogTitle = @"Print Options";
+  }
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(dialogTitle)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Clean up and close print dialog.
