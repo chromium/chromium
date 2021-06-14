@@ -110,7 +110,7 @@ void ScanningMetricsHandler::HandleRecordNumCompletedScans(
   AllowJavascript();
 
   CHECK_EQ(1U, args->GetSize());
-  base::UmaHistogramCounts100("Scanning.NumCompletedScanScansInSession",
+  base::UmaHistogramCounts100("Scanning.NumCompletedScansInSession",
                               args->GetList()[0].GetInt());
 }
 
