@@ -126,10 +126,7 @@ feedwire::Request CreateFeedQueryRequest(
   feed_request.add_client_capability(feedwire::Capability::LOTTIE_ANIMATIONS);
   feed_request.add_client_capability(
       feedwire::Capability::LONG_PRESS_CARD_MENU);
-  // Add Share capability if sharing is turned on.
-  if (base::FeatureList::IsEnabled(kFeedShare)) {
-    feed_request.add_client_capability(feedwire::Capability::SHARE);
-  }
+  feed_request.add_client_capability(feedwire::Capability::SHARE);
   if (stream_type.IsWebFeed()) {
     feed_request.add_client_capability(feedwire::Capability::WEB_FEEDS);
   }

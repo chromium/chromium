@@ -40,9 +40,6 @@ extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
 // Used for A:B testing of a bug fix (crbug.com/1151391).
 extern const base::Feature kInterestFeedSpinnerAlwaysAnimate;
 
-// Feature that allows the user to share articles from their feed.
-extern const base::Feature kFeedShare;
-
 // Feature that allows users to keep up with and consume web content.
 extern const base::Feature kWebFeed;
 

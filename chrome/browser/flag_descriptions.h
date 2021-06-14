@@ -1759,9 +1759,6 @@ extern const char kInterestFeedV2HeartsDescription[];
 extern const char kInterestFeedV2AutoplayName[];
 extern const char kInterestFeedV2AutoplayDescription[];
 
-extern const char kFeedShareName[];
-extern const char kFeedShareDescription[];
-
 extern const char kInterestFeedV1ClickAndViewActionsConditionalUploadName[];
 extern const char
     kInterestFeedV1ClickAndViewActionsConditionalUploadDescription[];

@@ -3056,9 +3056,6 @@ const char kInterestFeedV2HeartsDescription[] = "Enable hearts on Feedv2.";
 const char kInterestFeedV2AutoplayName[] = "Interest Feed v2 Autoplay";
 const char kInterestFeedV2AutoplayDescription[] = "Enable autoplay on Feedv2.";
 
-const char kFeedShareName[] = "Share from feed";
-const char kFeedShareDescription[] = "Allow feed articles to be shared.";
-
 const char kInterestFeedV1ClickAndViewActionsConditionalUploadName[] =
     "Interest Feed V1 clicks/views conditional upload";
 const char kInterestFeedV1ClickAndViewActionsConditionalUploadDescription[] =
