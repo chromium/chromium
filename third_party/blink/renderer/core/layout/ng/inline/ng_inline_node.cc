@@ -162,22 +162,23 @@ class ReusingTextShaper final {
         shaper_(data->text_content) {}
 
   scoped_refptr<ShapeResult> Shape(const NGInlineItem& start_item,
+                                   const Font& font,
                                    unsigned end_offset) {
     const unsigned start_offset = start_item.StartOffset();
     DCHECK_LT(start_offset, end_offset);
 
     if (!reusable_items_)
-      return Reshape(start_item, start_offset, end_offset);
+      return Reshape(start_item, font, start_offset, end_offset);
 
     // TODO(yosin): We should support segment text
     if (data_.segments)
-      return Reshape(start_item, start_offset, end_offset);
+      return Reshape(start_item, font, start_offset, end_offset);
 
     const Vector<const ShapeResult*> reusable_shape_results =
         CollectReusableShapeResults(start_offset, end_offset,
                                     start_item.Direction());
     if (reusable_shape_results.IsEmpty())
-      return Reshape(start_item, start_offset, end_offset);
+      return Reshape(start_item, font, start_offset, end_offset);
 
     const scoped_refptr<ShapeResult> shape_result =
         ShapeResult::CreateEmpty(*reusable_shape_results.front());
@@ -188,9 +189,9 @@ class ReusingTextShaper final {
       // e.g. <div style="white-space:pre">&nbsp; abc</div>, deleteChar(0, 1)
       // See xternal/wpt/editing/run/delete.html?993-993
       if (offset < reusable_shape_result->StartIndex()) {
-        AppendShapeResult(
-            *Reshape(start_item, offset, reusable_shape_result->StartIndex()),
-            shape_result.get());
+        AppendShapeResult(*Reshape(start_item, font, offset,
+                                   reusable_shape_result->StartIndex()),
+                          shape_result.get());
         offset = shape_result->EndIndex();
       }
       DCHECK_LT(offset, reusable_shape_result->EndIndex());
@@ -204,7 +205,7 @@ class ReusingTextShaper final {
         return shape_result;
     }
     DCHECK_LT(offset, end_offset);
-    AppendShapeResult(*Reshape(start_item, offset, end_offset),
+    AppendShapeResult(*Reshape(start_item, font, offset, end_offset),
                       shape_result.get());
     return shape_result;
   }
@@ -245,11 +246,11 @@ class ReusingTextShaper final {
   }
 
   scoped_refptr<ShapeResult> Reshape(const NGInlineItem& start_item,
+                                     const Font& font,
                                      unsigned start_offset,
                                      unsigned end_offset) {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
-    const Font& font = start_item.FontWithSvgScaling();
     if (data_.segments) {
       return data_.segments->ShapeText(&shaper_, &font, direction, start_offset,
                                        end_offset,
@@ -1366,7 +1367,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
     // Shape each item with the full context of the entire node.
     scoped_refptr<ShapeResult> shape_result =
-        shaper.Shape(start_item, end_offset);
+        shaper.Shape(start_item, font, end_offset);
 
     if (UNLIKELY(spacing.SetSpacing(font.GetFontDescription()))) {
       shape_result->ApplySpacing(spacing);
