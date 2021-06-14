@@ -83,6 +83,9 @@
   <message name="IDS_HISTORY_REMOVE_PAGE" desc="Command in the history entry drop-down menu. Removes a page from the history.">
     Remove from history
   </message>
+  <message name="IDS_HISTORY_REMOVE_PAGE_SUCCESS" desc="Screen reader message that is read after user successfully removes one history item from the item's options menu. The message will reference the page's title.">
+    '<ph name="PAGE_TITLE">$1<ex>Google Store - My Cart</ex></ph>' deleted
+  </message>
   <message name="IDS_HISTORY_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history items">
     Remove selected items
   </message>

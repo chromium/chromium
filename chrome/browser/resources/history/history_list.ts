@@ -440,6 +440,11 @@ export class HistoryListElement extends HistoryListElementBase {
     const itemData = this.actionMenuModel_!;
 
     this.deleteItems_([itemData.item]).then(() => {
+      IronA11yAnnouncer.requestAvailability();
+      this.fire_(
+          'iron-announce',
+          {text: this.i18n('deleteSuccess', itemData.item.title)});
+
       // This unselect-all resets the toolbar when deleting a selected item
       // and clears selection state which can be invalid if items move
       // around during deletion.
