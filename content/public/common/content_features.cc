@@ -308,11 +308,6 @@ const base::Feature kNetworkQualityEstimatorWebHoldback{
 // (activated by kUserAgentClientHint)
 const base::Feature kGreaseUACH{"GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If a page does a client side redirect or adds to the history without a user
-// gesture, then skip it on back/forward UI.
-const base::Feature kHistoryManipulationIntervention{
-    "HistoryManipulationIntervention", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Prevents sandboxed iframes from using the history API to navigate frames
 // outside their subttree, if they are restricted from doing top-level
 // navigations.

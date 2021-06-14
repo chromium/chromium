@@ -1884,11 +1884,6 @@
     "expiry_milestone": 80
   },
   {
-    "name": "enable-history-manipulation-intervention",
-    "owners": [ "shivanisha" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "enable-hosted-app-quit-notification",
     "owners": [ "ccameron" ],
     "expiry_milestone": 77

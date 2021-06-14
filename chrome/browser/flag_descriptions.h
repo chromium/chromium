@@ -1285,9 +1285,6 @@ extern const char kShowOverdrawFeedbackDescription[];
 extern const char kSkiaRendererName[];
 extern const char kSkiaRendererDescription[];
 
-extern const char kHistoryManipulationIntervention[];
-extern const char kHistoryManipulationInterventionDescription[];
-
 extern const char kStorageAccessAPIName[];
 extern const char kStorageAccessAPIDescription[];
 

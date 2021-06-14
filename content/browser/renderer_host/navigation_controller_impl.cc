@@ -885,9 +885,6 @@ int NavigationControllerImpl::GetIndexForOffset(int offset) {
 }
 
 bool NavigationControllerImpl::CanGoBack() {
-  if (!base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention))
-    return CanGoToOffset(-1);
-
   for (int index = GetIndexForOffset(-1); index >= 0; index--) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
       return true;
@@ -896,9 +893,6 @@ bool NavigationControllerImpl::CanGoBack() {
 }
 
 bool NavigationControllerImpl::CanGoForward() {
-  if (!base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention))
-    return CanGoToOffset(1);
-
   for (int index = GetIndexForOffset(1); index < GetEntryCount(); index++) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
       return true;
@@ -913,9 +907,6 @@ bool NavigationControllerImpl::CanGoToOffset(int offset) {
 
 #if defined(OS_ANDROID)
 bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
-  if (!base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention))
-    return CanGoToOffset(offset);
-
   if (offset == 0)
     return true;
   int increment = offset > 0 ? 1 : -1;
@@ -936,18 +927,14 @@ void NavigationControllerImpl::GoBack() {
   int target_index = GetIndexForOffset(-1);
 
   // Log metrics for the number of entries that are eligible for skipping on
-  // back button and move the target index past the skippable entries, if
-  // history intervention is enabled.
+  // back button and move the target index past the skippable entries.
   int count_entries_skipped = 0;
   bool all_skippable_entries = true;
-  bool history_intervention_enabled =
-      base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention);
   for (int index = target_index; index >= 0; index--) {
     if (GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
       count_entries_skipped++;
     } else {
-      if (history_intervention_enabled)
-        target_index = index;
+      target_index = index;
       all_skippable_entries = false;
       break;
     }
@@ -962,7 +949,7 @@ void NavigationControllerImpl::GoBack() {
   // Do nothing if all entries are skippable. Normally this path would not
   // happen as consumers would have already checked it in CanGoBack but a lot of
   // tests do not do that.
-  if (history_intervention_enabled && all_skippable_entries)
+  if (all_skippable_entries)
     return;
 
   GoToIndex(target_index);
@@ -978,14 +965,11 @@ void NavigationControllerImpl::GoForward() {
   // entries are marked skippable only when they add another entry because of
   // redirect or pushState.
   int count_entries_skipped = 0;
-  bool history_intervention_enabled =
-      base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention);
   for (size_t index = target_index; index < entries_.size(); index++) {
     if (GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
       count_entries_skipped++;
     } else {
-      if (history_intervention_enabled)
-        target_index = index;
+      target_index = index;
       break;
     }
   }
@@ -1034,9 +1018,7 @@ void NavigationControllerImpl::GoToOffsetWithSkipping(int offset) {
   if (!CanGoToOffsetWithSkipping(offset))
     return;
 
-  bool history_intervention_enabled =
-      base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention);
-  if (offset == 0 || !history_intervention_enabled) {
+  if (offset == 0) {
     GoToIndex(GetIndexForOffset(offset));
     return;
   }
@@ -2735,13 +2717,10 @@ void NavigationControllerImpl::PruneOldestSkippableEntryIfFull() {
   CHECK_EQ(pending_entry_index_, -1);
 
   int index = 0;
-  if (base::FeatureList::IsEnabled(
-          features::kHistoryManipulationIntervention)) {
-    // Retrieve the oldest skippable entry.
-    for (; index < GetEntryCount(); index++) {
-      if (GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
-        break;
-    }
+  // Retrieve the oldest skippable entry.
+  for (; index < GetEntryCount(); index++) {
+    if (GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
+      break;
   }
 
   // If there is no skippable entry or if it is the last committed entry then

@@ -2650,10 +2650,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsOnChromeUrlsDescription, kOsAll,
      SINGLE_VALUE_TYPE(extensions::switches::kExtensionsOnChromeURLs)},
 #endif  // ENABLE_EXTENSIONS
-    {"enable-history-manipulation-intervention",
-     flag_descriptions::kHistoryManipulationIntervention,
-     flag_descriptions::kHistoryManipulationInterventionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kHistoryManipulationIntervention)},
     {"colr-v1-fonts", flag_descriptions::kCOLRV1FontsName,
      flag_descriptions::kCOLRV1FontsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCOLRV1Fonts)},
