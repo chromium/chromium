@@ -11,7 +11,8 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_predictor.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.pb.h"
-#include "third_party/protobuf/src/google/protobuf/stubs/mathutil.h"
+// TODO(crbug.com/1219417): Resolve usage of this header.
+#include "third_party/protobuf/src/google/protobuf/stubs/mathutil.h"  // nogncheck
 
 namespace app_list {
 
