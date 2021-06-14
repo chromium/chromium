@@ -17,7 +17,7 @@
 namespace base {
 
 // Platform- and thread-specific implementation in support of stack sampling on
-// Mac (X86_64) and iOS (X86_64 and ARM64).
+// Mac.
 class BASE_EXPORT SuspendableThreadDelegateMac
     : public SuspendableThreadDelegate {
  public:
