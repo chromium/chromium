@@ -110,7 +110,13 @@ class BackForwardCacheMetricsBrowserTest : public ContentBrowserTest,
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_override_;
 };
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, UKM) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_UKM DISABLED_UKM
+#else
+#define MAYBE_UKM UKM
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, MAYBE_UKM) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(
@@ -482,8 +488,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
       testing::ElementsAre(FeatureUsage{id3, 1 << kPageShowFeature, 0, 0}));
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_Features_SameOriginSubframes DISABLED_Features_SameOriginSubframes
+#else
+#define MAYBE_Features_SameOriginSubframes Features_SameOriginSubframes
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
-                       Features_SameOriginSubframes) {
+                       MAYBE_Features_SameOriginSubframes) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(embedded_test_server()->GetURL(
@@ -539,8 +551,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
       testing::ElementsAre(FeatureUsage{id4, 0, 1 << kPageShowFeature, 0}));
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_Features_CrossOriginSubframes \
+  DISABLED_Features_CrossOriginSubframes
+#else
+#define MAYBE_Features_CrossOriginSubframes Features_CrossOriginSubframes
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
-                       Features_CrossOriginSubframes) {
+                       MAYBE_Features_CrossOriginSubframes) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(embedded_test_server()->GetURL(

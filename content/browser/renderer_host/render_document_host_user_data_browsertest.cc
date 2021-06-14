@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -719,7 +720,14 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, CrossSiteNavigation) {
 
 // Tests that RenderDocumentHostUserData object is cleared on performing same
 // site navigation.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SameSiteNavigation) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_SameSiteNavigation DISABLED_SameSiteNavigation
+#else
+#define MAYBE_SameSiteNavigation SameSiteNavigation
+#endif
+IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
+                       MAYBE_SameSiteNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));

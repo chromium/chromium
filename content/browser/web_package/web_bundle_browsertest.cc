@@ -1730,7 +1730,13 @@ IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
                           &RunSameDocumentNavigationTest);
 }
 
-IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest, IframeNavigation) {
+#if defined(OS_ANDROID)
+#define MAYBE_IframeNavigation DISABLED_IframeNavigation
+#else
+#define MAYBE_IframeNavigation IframeNavigation
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
+                       MAYBE_IframeNavigation) {
   RunSharedNavigationTest(&SetUpIframeNavigationTest, &RunIframeNavigationTest);
 }
 
@@ -1746,8 +1752,13 @@ IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
                           &RunIframeParentInitiatedOutOfBundleNavigationTest);
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_IframeSameDocumentNavigation DISABLED_IframeSameDocumentNavigation
+#else
+#define MAYBE_IframeSameDocumentNavigation IframeSameDocumentNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
-                       IframeSameDocumentNavigation) {
+                       MAYBE_IframeSameDocumentNavigation) {
   RunSharedNavigationTest(&SetUpIframeNavigationTest,
                           &RunIframeSameDocumentNavigationTest);
 }
@@ -2569,7 +2580,13 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, SameDocumentNavigation) {
                           &RunSameDocumentNavigationTest);
 }
 
-IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, IframeNavigation) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_IframeNavigation DISABLED_IframeNavigation
+#else
+#define MAYBE_IframeNavigation IframeNavigation
+#endif
+IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, MAYBE_IframeNavigation) {
   RunSharedNavigationTest(&SetUpIframeNavigationTest, &RunIframeNavigationTest);
 }
 
@@ -2585,8 +2602,14 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
                           &RunIframeParentInitiatedOutOfBundleNavigationTest);
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_IframeSameDocumentNavigation DISABLED_IframeSameDocumentNavigation
+#else
+#define MAYBE_IframeSameDocumentNavigation IframeSameDocumentNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       IframeSameDocumentNavigation) {
+                       MAYBE_IframeSameDocumentNavigation) {
   RunSharedNavigationTest(&SetUpIframeNavigationTest,
                           &RunIframeSameDocumentNavigationTest);
 }
@@ -2657,8 +2680,15 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
                 "/web_bundle/path_test/in_scope/page.html"));
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_HistoryNavigationError_UnexpectedContentType \
+  DISABLED_HistoryNavigationError_UnexpectedContentType
+#else
+#define MAYBE_HistoryNavigationError_UnexpectedContentType \
+  HistoryNavigationError_UnexpectedContentType
+#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       HistoryNavigationError_UnexpectedContentType) {
+                       MAYBE_HistoryNavigationError_UnexpectedContentType) {
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2686,8 +2716,15 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   HistoryBackAndWaitUntilConsoleError("Unexpected content type.");
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_HistoryNavigationError_MissingNosniff \
+  DISABLED_HistoryNavigationError_MissingNosniff
+#else
+#define MAYBE_HistoryNavigationError_MissingNosniff \
+  HistoryNavigationError_MissingNosniff
+#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       HistoryNavigationError_MissingNosniff) {
+                       MAYBE_HistoryNavigationError_MissingNosniff) {
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2716,8 +2753,15 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
       "header.");
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_HistoryNavigationError_UnexpectedRedirect \
+  DISABLED_HistoryNavigationError_UnexpectedRedirect
+#else
+#define MAYBE_HistoryNavigationError_UnexpectedRedirect \
+  HistoryNavigationError_UnexpectedRedirect
+#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       HistoryNavigationError_UnexpectedRedirect) {
+                       MAYBE_HistoryNavigationError_UnexpectedRedirect) {
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2745,8 +2789,15 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   HistoryBackAndWaitUntilConsoleError("Unexpected redirect.");
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_HistoryNavigationError_ReadMetadataFailure \
+  DISABLED_HistoryNavigationError_ReadMetadataFailure
+#else
+#define MAYBE_HistoryNavigationError_ReadMetadataFailure \
+  HistoryNavigationError_ReadMetadataFailure
+#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       HistoryNavigationError_ReadMetadataFailure) {
+                       MAYBE_HistoryNavigationError_ReadMetadataFailure) {
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2767,8 +2818,15 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
       "Failed to read metadata of Web Bundle file: Wrong magic bytes.");
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_HistoryNavigationError_ExpectedUrlNotFound \
+  DISABLED_HistoryNavigationError_ExpectedUrlNotFound
+#else
+#define MAYBE_HistoryNavigationError_ExpectedUrlNotFound \
+  HistoryNavigationError_ExpectedUrlNotFound
+#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       HistoryNavigationError_ExpectedUrlNotFound) {
+                       MAYBE_HistoryNavigationError_ExpectedUrlNotFound) {
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   const std::string alt_primary_url_path = "/web_bundle/alt.html";

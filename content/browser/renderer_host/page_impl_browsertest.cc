@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -164,7 +165,16 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
 }
 
 // Test that a new Page object is created for a same-site same-RFH navigation.
-IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteSameRenderFrameHostNavigation) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_SameSiteSameRenderFrameHostNavigation \
+  DISABLED_SameSiteSameRenderFrameHostNavigation
+#else
+#define MAYBE_SameSiteSameRenderFrameHostNavigation \
+  SameSiteSameRenderFrameHostNavigation
+#endif
+IN_PROC_BROWSER_TEST_F(PageImplTest,
+                       MAYBE_SameSiteSameRenderFrameHostNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));

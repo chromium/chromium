@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -2974,8 +2975,16 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
   EXPECT_THAT(offsets_, testing::ElementsAre(1, 0, 1, 1, -1, -1, 1));
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_NavigationEntryOffsetsForSubframes \
+  DISABLED_NavigationEntryOffsetsForSubframes
+#else
+#define MAYBE_NavigationEntryOffsetsForSubframes \
+  NavigationEntryOffsetsForSubframes
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
-                       NavigationEntryOffsetsForSubframes) {
+                       MAYBE_NavigationEntryOffsetsForSubframes) {
   const GURL url1(embedded_test_server()->GetURL("/title1.html"));
   const GURL url1_fragment1(
       embedded_test_server()->GetURL("/title1.html#id_1"));

@@ -259,14 +259,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
 
 // Verify that content::FeatureObserver is notified when a frame with active
 // IndexedDB connections is navigated away.
-// https://crbug.com/1218731 disabled on desktop.
-#if defined(OS_ANDROID)
-#define MAYBE_ObserverNavigate ObserverNavigate
-#else
-#define MAYBE_ObserverNavigate DISABLED_ObserverNavigate
-#endif
+// https://crbug.com/1218731 fails when BackforwardCache is enabled.
 IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
-                       MAYBE_ObserverNavigate) {
+                       DISABLED_ObserverNavigate) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 

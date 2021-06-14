@@ -2117,7 +2117,13 @@ IN_PROC_BROWSER_TEST_F(
 // Ensure portal activations respect navigation precedence. If there is an
 // ongoing browser initiated navigation, then a portal activation without user
 // activation cannot proceed.
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigationPrecedence) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_NavigationPrecedence DISABLED_NavigationPrecedence
+#else
+#define MAYBE_NavigationPrecedence NavigationPrecedence
+#endif
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_NavigationPrecedence) {
   GURL main_url1(embedded_test_server()->GetURL("portal.test", "/title1.html"));
   GURL main_url2(embedded_test_server()->GetURL("portal.test", "/title2.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url1));

@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_service.h"
@@ -310,7 +311,13 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, FrameFormBackForward) {
 // Test that back/forward preserves POST data and document state when navigating
 // across frames (ie, from frame -> nonframe).
 // Hangs, see http://crbug.com/45058.
-IN_PROC_BROWSER_TEST_F(SessionHistoryTest, CrossFrameFormBackForward) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_CrossFrameFormBackForward DISABLED_CrossFrameFormBackForward
+#else
+#define MAYBE_CrossFrameFormBackForward CrossFrameFormBackForward
+#endif
+IN_PROC_BROWSER_TEST_F(SessionHistoryTest, MAYBE_CrossFrameFormBackForward) {
   ASSERT_FALSE(CanGoBack());
 
   GURL frames(GetURL("frames.html"));

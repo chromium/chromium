@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -264,8 +265,16 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, UserGestureConsumed) {
   }
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_DisabledOnScriptHistoryNavigation \
+  DISABLED_DisabledOnScriptHistoryNavigation
+#else
+#define MAYBE_DisabledOnScriptHistoryNavigation \
+  DisabledOnScriptHistoryNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
-                       DisabledOnScriptHistoryNavigation) {
+                       MAYBE_DisabledOnScriptHistoryNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL target_text_url(embedded_test_server()->GetURL(
       "/scrollable_page_with_content.html#:~:text=text"));
@@ -350,8 +359,17 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
 // initial landing on the page is via a non-user-activated script navigation.
 // This ensure we're not inappropriately blocking a text-fragment based on the
 // state of the initial document load.
-IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
-                       SameDocumentBrowserNavigationOnScriptNavigatedDocument) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_SameDocumentBrowserNavigationOnScriptNavigatedDocument \
+  DISABLED_SameDocumentBrowserNavigationOnScriptNavigatedDocument
+#else
+#define MAYBE_SameDocumentBrowserNavigationOnScriptNavigatedDocument \
+  SameDocumentBrowserNavigationOnScriptNavigatedDocument
+#endif
+IN_PROC_BROWSER_TEST_F(
+    TextFragmentAnchorBrowserTest,
+    MAYBE_SameDocumentBrowserNavigationOnScriptNavigatedDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContents* main_contents = shell()->web_contents();
   RenderFrameSubmissionObserver frame_observer(main_contents);

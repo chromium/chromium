@@ -426,8 +426,16 @@ class SignedExchangePrefetchBrowserTest
   DISALLOW_COPY_AND_ASSIGN(SignedExchangePrefetchBrowserTest);
 };
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchMainResourceSXG_SameOrigin \
+  DISABLED_PrefetchMainResourceSXG_SameOrigin
+#else
+#define MAYBE_PrefetchMainResourceSXG_SameOrigin \
+  PrefetchMainResourceSXG_SameOrigin
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchMainResourceSXG_SameOrigin) {
+                       MAYBE_PrefetchMainResourceSXG_SameOrigin) {
   RunPrefetchMainResourceSXGTest("example.com" /* prefetch_page_hostname */,
                                  "/prefetch.html" /* prefetch_page_path */,
                                  "example.com" /* sxg_hostname */,
@@ -436,8 +444,16 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
                                  "/target.html" /* inner_url_path */);
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchMainResourceSXG_CrossOrigin \
+  DISABLED_PrefetchMainResourceSXG_CrossOrigin
+#else
+#define MAYBE_PrefetchMainResourceSXG_CrossOrigin \
+  PrefetchMainResourceSXG_CrossOrigin
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchMainResourceSXG_CrossOrigin) {
+                       MAYBE_PrefetchMainResourceSXG_CrossOrigin) {
   RunPrefetchMainResourceSXGTest(
       "aggregator.example.com" /* prefetch_page_hostname */,
       "/prefetch.html" /* prefetch_page_path */,
@@ -447,8 +463,15 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
       "/target.html" /* inner_url_path */);
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchMainResourceSXG_SameURL \
+  DISABLED_PrefetchMainResourceSXG_SameURL
+#else
+#define MAYBE_PrefetchMainResourceSXG_SameURL PrefetchMainResourceSXG_SameURL
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchMainResourceSXG_SameURL) {
+                       MAYBE_PrefetchMainResourceSXG_SameURL) {
   RunPrefetchMainResourceSXGTest("example.com" /* prefetch_page_hostname */,
                                  "/prefetch.html" /* prefetch_page_path */,
                                  "example.com" /* sxg_hostname */,
@@ -765,8 +788,16 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
 // SignedExchangePrefetchCacheForNavigations when
 // |sxg_subresource_prefetch_enabled| is false to check the behavior of
 // SignedExchangePrefetchCacheForNavigations feature.
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchAlternativeSubresourceSXG \
+  DISABLED_PrefetchAlternativeSubresourceSXG
+#else
+#define MAYBE_PrefetchAlternativeSubresourceSXG \
+  PrefetchAlternativeSubresourceSXG
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchAlternativeSubresourceSXG) {
+                       MAYBE_PrefetchAlternativeSubresourceSXG) {
   const char* prefetch_page_path = "/prefetch.html";
   const char* page_sxg_path = "/target.sxg";
   const char* page_inner_url_path = "/target.html";
