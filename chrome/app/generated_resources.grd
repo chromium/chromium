@@ -11125,6 +11125,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Close Incognito
     </message>
 
+    <!-- Incognito Clear Browsing Data dialog bubble. -->
+    <message name="IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT" desc ="The primary text of the clear browsing data dialog which is shown in Incognito when users invokes a clear browsing data action in Incognito. The text describes how Incognito users can clear the browsing data by closing all Incognito windows.">
+      To clear data, close all Incognito windows
+    </message>
+    <message name="IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_SECONDARY_TEXT" desc ="The secondary text of the clear browsing data dialog which is shown in Incognito when users invokes a clear browsing data action in Incognito. The text describes how the clear browsing data action affects only the Incognito windows.">
+      This only affects Incognito windows
+    </message>
+    <message name="IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_CLOSE_WINDOWS_BUTTON" desc = "The text of the button offering to close all Incognito windows in the dialog.">
+      Close windows
+    </message>
+
    <!-- Guest Profile Menu bubble. -->
    <message name="IDS_GUEST_WINDOW_COUNT_MESSAGE" desc="The message showing the number of open guest windows. This is not used for zero windows.[ICU Syntax]">
       {0, plural,

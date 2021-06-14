@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/inspect_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/content_restriction.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -732,9 +733,16 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_VIEW_PASSWORDS:
       ShowPasswordManager(browser_);
       break;
-    case IDC_CLEAR_BROWSING_DATA:
-      ShowClearBrowsingDataDialog(browser_);
+    case IDC_CLEAR_BROWSING_DATA: {
+      if (profile()->IsIncognitoProfile() &&
+          base::FeatureList::IsEnabled(
+              features::kIncognitoClearBrowsingDataDialogForDesktop)) {
+        ShowIncognitoClearBrowsingDataDialog(browser_);
+      } else {
+        ShowClearBrowsingDataDialog(browser_);
+      }
       break;
+    }
     case IDC_IMPORT_SETTINGS:
       ShowImportDialog(browser_);
       break;
@@ -1037,10 +1045,18 @@ void BrowserCommandController::InitCommandState() {
       IDC_RECENT_TABS_MENU,
       (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
        !profile()->IsIncognitoProfile()));
-  command_updater_.UpdateCommandEnabled(
-      IDC_CLEAR_BROWSING_DATA,
-      (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
-       !profile()->IsIncognitoProfile()));
+
+  if (profile()->IsIncognitoProfile()) {
+    command_updater_.UpdateCommandEnabled(
+        IDC_CLEAR_BROWSING_DATA,
+        base::FeatureList::IsEnabled(
+            features::kIncognitoClearBrowsingDataDialogForDesktop));
+  } else {
+    command_updater_.UpdateCommandEnabled(
+        IDC_CLEAR_BROWSING_DATA,
+        (!profile()->IsGuestSession() && !profile()->IsSystemProfile()));
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_TAKE_SCREENSHOT, true);
   // Chrome OS uses the system tray menu to handle multi-profiles. Avatar menu

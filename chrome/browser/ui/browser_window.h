@@ -531,6 +531,9 @@ class BrowserWindow : public ui::BaseWindow {
   // in-product help.
   virtual FeaturePromoController* GetFeaturePromoController() = 0;
 
+  // Shows an Incognito clear browsing data dialog.
+  virtual void ShowIncognitoClearBrowsingDataDialog() = 0;
+
  protected:
   friend class BrowserCloseManager;
   friend class BrowserView;

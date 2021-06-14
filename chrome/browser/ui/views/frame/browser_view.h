@@ -517,6 +517,8 @@ class BrowserView : public BrowserWindow,
   void ShowInProductHelpPromo(InProductHelpFeature iph_feature) override;
   FeaturePromoController* GetFeaturePromoController() override;
 
+  void ShowIncognitoClearBrowsingDataDialog() override;
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,

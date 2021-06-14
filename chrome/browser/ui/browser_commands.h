@@ -229,6 +229,8 @@ void ExecuteUIDebugCommand(int id, const Browser* browser);
 
 absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 
+void ShowIncognitoClearBrowsingDataDialog(Browser* browser);
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_COMMANDS_H_

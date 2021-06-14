@@ -194,6 +194,8 @@ class TestBrowserWindow : public BrowserWindow {
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const std::map<std::string, bool>& product_specific_data) override {}
+
+  void ShowIncognitoClearBrowsingDataDialog() override {}
 #endif
 
   ExclusiveAccessContext* GetExclusiveAccessContext() override;

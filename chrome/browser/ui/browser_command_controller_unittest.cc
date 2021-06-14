@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -542,3 +543,45 @@ TEST_F(BrowserCommandControllerTest, OnSigninAllowedPrefChange) {
 INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
                          GuestBrowserCommandControllerTest,
                          /*is_ephemeral=*/testing::Bool());
+
+class IncognitoClearBrowsingDataCommandTest
+    : public BrowserWithTestWindowTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  IncognitoClearBrowsingDataCommandTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kIncognitoClearBrowsingDataDialogForDesktop);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kIncognitoClearBrowsingDataDialogForDesktop);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    IncognitoClearBrowsingDataCommandTestWithFeatureFlag,
+    IncognitoClearBrowsingDataCommandTest,
+    /*should_show_cbd_option_in_incognito=*/testing::Bool());
+
+TEST_P(IncognitoClearBrowsingDataCommandTest,
+       testClearBrowsingDataOptionStateInIncognito) {
+  // Set up a profile with an off the record profile.
+  std::unique_ptr<TestingProfile> profile1 = TestingProfile::Builder().Build();
+  Profile* incognito_profile =
+      profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_EQ(incognito_profile->GetOriginalProfile(), profile1.get());
+
+  // Create a new browser based on the off the record profile.
+  Browser::CreateParams profile_params(incognito_profile, true);
+  std::unique_ptr<Browser> incognito_browser =
+      CreateBrowserWithTestWindowForParams(profile_params);
+
+  chrome::BrowserCommandController command_controller(incognito_browser.get());
+  bool should_show_cbd_option_in_incognito = GetParam();
+  EXPECT_EQ(should_show_cbd_option_in_incognito,
+            command_controller.IsCommandEnabled(IDC_CLEAR_BROWSING_DATA));
+}
