@@ -100,7 +100,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
                                 int flags,
                                 float x,
                                 float y) {
-    test_screen_->SetCursorScreenPointForTesting(gfx::Point(x, y));
+    test_screen_->set_cursor_screen_point(gfx::Point(x, y));
     return ui::MouseEvent(type, gfx::Point(x, y), gfx::Point(),
                           ui::EventTimeForNow(), flags, 0);
   }

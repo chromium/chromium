@@ -16,6 +16,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 
 class TestPictureInPictureWindowController
@@ -75,10 +76,9 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
   }
 
   void SetDisplayWorkArea(const gfx::Rect& work_area) {
-    display::test::TestScreen* screen = GetTestScreen();
-    display::Display display = screen->GetPrimaryDisplay();
+    display::Display display = test_screen_.GetPrimaryDisplay();
     display.set_work_area(work_area);
-    screen->display_list().UpdateDisplay(display);
+    test_screen_.display_list().UpdateDisplay(display);
   }
 
   OverlayWindowViews& overlay_window() { return *overlay_window_; }
@@ -91,6 +91,9 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
   content::WebContents* const web_contents_ =
       web_contents_factory_.CreateWebContents(&profile_);
   TestPictureInPictureWindowController pip_window_controller_{web_contents_};
+
+  display::test::TestScreen test_screen_;
+  display::test::ScopedScreenOverride scoped_screen_override_{&test_screen_};
 
   std::unique_ptr<OverlayWindowViews> overlay_window_;
 };

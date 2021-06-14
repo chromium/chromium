@@ -5,9 +5,11 @@
 #ifndef UI_AURA_TEST_TEST_SCREEN_H_
 #define UI_AURA_TEST_TEST_SCREEN_H_
 
+#include "base/compiler_specific.h"
+#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
-#include "ui/display/test/test_screen.h"
+#include "ui/display/screen_base.h"
 
 namespace gfx {
 class ColorSpace;
@@ -20,14 +22,13 @@ namespace aura {
 class Window;
 class WindowTreeHost;
 
-// A minimal Aura implementation of display::test::TestScreen.
-class TestScreen : public display::test::TestScreen, public WindowObserver {
+// A minimal, testing Aura implementation of display::Screen.
+// TODO(bruthig): Consider extending gfx::test::TestScreen.
+class TestScreen : public display::ScreenBase, public WindowObserver {
  public:
   // Creates a display::Screen of the specified size. If no size is specified,
   // then creates a 800x600 screen. |size| is in physical pixels.
   static TestScreen* Create(const gfx::Size& size);
-  TestScreen(const TestScreen&) = delete;
-  TestScreen& operator=(const TestScreen&) = delete;
   ~TestScreen() override;
 
   WindowTreeHost* CreateHostForPrimaryDisplay();
@@ -61,7 +62,6 @@ class TestScreen : public display::test::TestScreen, public WindowObserver {
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
   std::string GetCurrentWorkspace() override;
-  void SetCursorScreenPointForTesting(const gfx::Point& point) override;
 
  private:
   explicit TestScreen(const gfx::Rect& screen_bounds);
@@ -69,6 +69,8 @@ class TestScreen : public display::test::TestScreen, public WindowObserver {
   aura::WindowTreeHost* host_ = nullptr;
 
   float ui_scale_ = 1.0f;
+
+  DISALLOW_COPY_AND_ASSIGN(TestScreen);
 };
 
 }  // namespace aura

@@ -53,9 +53,6 @@ class DISPLAY_EXPORT Screen {
   // Returns the current absolute position of the mouse pointer.
   virtual gfx::Point GetCursorScreenPoint() = 0;
 
-  // Allows tests to override the cursor point location on the screen.
-  virtual void SetCursorScreenPointForTesting(const gfx::Point& point);
-
   // Returns true if the cursor is directly over |window|.
   virtual bool IsWindowUnderCursor(gfx::NativeWindow window) = 0;
 
@@ -180,7 +177,7 @@ class DISPLAY_EXPORT Screen {
   DISALLOW_COPY_AND_ASSIGN(Screen);
 };
 
-DISPLAY_EXPORT Screen* CreateNativeScreen();
+Screen* CreateNativeScreen();
 
 }  // namespace display
 

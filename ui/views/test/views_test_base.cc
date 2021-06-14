@@ -15,8 +15,6 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
-#include "ui/display/screen.h"
-#include "ui/display/test/test_screen.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/test_platform_native_widget.h"
@@ -151,13 +149,6 @@ int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
   return 0;
 }
 #endif
-
-display::test::TestScreen* ViewsTestBase::GetTestScreen() const {
-  display::test::TestScreen* test_screen = test_helper_->GetTestScreen();
-  // This TestScreen should be installed as the display::Screen singleton.
-  DCHECK_EQ(display::Screen::GetScreen(), test_screen);
-  return test_screen;
-}
 
 gfx::NativeWindow ViewsTestBase::GetContext() {
   return test_helper_->GetContext();

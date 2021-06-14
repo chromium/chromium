@@ -28,12 +28,6 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-namespace display {
-namespace test {
-class TestScreen;
-}  // namespace test
-}  // namespace display
-
 namespace views {
 
 // A base class for views unit test. It creates a message loop necessary
@@ -99,10 +93,6 @@ class ViewsTestBase : public PlatformTest {
   // Get the system reserved height at the top of the screen. On Mac, this
   // includes the menu bar and title bar.
   static int GetSystemReservedHeightAtTopOfScreen();
-
-  // Returns the test screen installed by |test_helper_|. We also dcheck that it
-  // should be the global screen instance.
-  display::test::TestScreen* GetTestScreen() const;
 
  protected:
   base::test::TaskEnvironment* task_environment() {

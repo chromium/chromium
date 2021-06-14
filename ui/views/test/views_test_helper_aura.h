@@ -10,12 +10,6 @@
 #include "ui/aura/test/aura_test_helper.h"
 #include "ui/views/test/views_test_helper.h"
 
-namespace display {
-namespace test {
-class TestScreen;
-}  // namespace test
-}  // namespace display
-
 namespace views {
 
 class ViewsTestHelperAura : public ViewsTestHelper {
@@ -33,7 +27,6 @@ class ViewsTestHelperAura : public ViewsTestHelper {
   std::unique_ptr<TestViewsDelegate> GetFallbackTestViewsDelegate() override;
   void SetUp() override;
   gfx::NativeWindow GetContext() override;
-  display::test::TestScreen* GetTestScreen() const override;
 
   // Provides a way for test bases to customize what test helper will be used
   // for |aura_test_helper_|.

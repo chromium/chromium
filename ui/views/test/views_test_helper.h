@@ -12,12 +12,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_delegate.h"
 
-namespace display {
-namespace test {
-class TestScreen;
-}  // namespace test
-}  // namespace display
-
 namespace views {
 
 class TestViewsDelegate;
@@ -46,9 +40,6 @@ class ViewsTestHelper {
 
   // Returns a context window, e.g. the Aura root window.
   virtual gfx::NativeWindow GetContext();
-
-  // Return the test screen created by this class.
-  virtual display::test::TestScreen* GetTestScreen() const = 0;
 
  protected:
   ViewsTestHelper() = default;

@@ -7,15 +7,14 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "build/build_config.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/compositor/compositor.h"
-#include "ui/display/display.h"
 #include "ui/display/display_transform.h"
-#include "ui/display/test/test_screen.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/native_widget_types.h"
@@ -32,13 +31,12 @@ bool IsRotationPortrait(display::Display::Rotation rotation) {
 
 }  // namespace
 
-// TODO(weili): Remove this and use the constructor directly.
 // static
 TestScreen* TestScreen::Create(const gfx::Size& size) {
+  const gfx::Size kDefaultSize(800, 600);
   // Use (0,0) because the desktop aura tests are executed in
   // native environment where the display's origin is (0,0).
-  return new TestScreen(size.IsEmpty() ? kDefaultScreenBounds
-                                       : gfx::Rect(size));
+  return new TestScreen(gfx::Rect(size.IsEmpty() ? kDefaultSize : size));
 }
 
 TestScreen::~TestScreen() {
@@ -171,14 +169,7 @@ std::string TestScreen::GetCurrentWorkspace() {
   return {};
 }
 
-void TestScreen::SetCursorScreenPointForTesting(const gfx::Point& point) {
-  display::test::TestScreen::SetCursorScreenPointForTesting(point);
-
-  Env::GetInstance()->SetLastMouseLocation(point);
-}
-
-TestScreen::TestScreen(const gfx::Rect& screen_bounds)
-    : display::test::TestScreen(/* create_display = */ false) {
+TestScreen::TestScreen(const gfx::Rect& screen_bounds) {
   static int64_t synthesized_display_id = 2000;
   display::Display display(synthesized_display_id++);
   display.SetScaleAndBounds(1.0f, screen_bounds);
