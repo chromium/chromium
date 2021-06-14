@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -219,9 +218,6 @@ SyncStatusCode OpenDatabase(const base::FilePath& path,
   std::unique_ptr<leveldb::DB> db;
   leveldb::Status db_status =
       leveldb_env::OpenDB(options, path.AsUTF8Unsafe(), &db);
-  UMA_HISTOGRAM_ENUMERATION("SyncFileSystem.Database.Open",
-                            leveldb_env::GetLevelDBStatusUMAValue(db_status),
-                            leveldb_env::LEVELDB_STATUS_MAX);
   SyncStatusCode status = LevelDBStatusToSyncStatusCode(db_status);
   if (status != SYNC_STATUS_OK) {
     return status;

@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h"
@@ -516,10 +515,6 @@ void SyncFileSystemService::DidRegisterOrigin(const GURL& app_origin,
     std::move(callback).Run(SYNC_STATUS_ABORT);
     return;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("SyncFileSystem.RegisterOriginResult",
-                            remote_service_->GetCurrentState(),
-                            REMOTE_SERVICE_STATE_MAX);
 
   if (status == SYNC_STATUS_FAILED) {
     // If we got generic error return the service status information.

@@ -77452,12 +77452,18 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncFSConflictResolutionPolicy">
+  <obsolete>
+    Removed in M37.
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="LastWriteWin"/>
   <int value="2" label="Manual"/>
 </enum>
 
 <enum name="SyncFSRemoteServiceState">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
   <int value="0" label="OK"/>
   <int value="1" label="TemporaryUnavailable"/>
   <int value="2" label="AuthenticationRequired"/>

@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -178,18 +177,6 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
 
   DISALLOW_COPY_AND_ASSIGN(WorkerObserver);
 };
-
-namespace {
-
-void DidRegisterOrigin(const base::TimeTicks& start_time,
-                       SyncStatusCallback callback,
-                       SyncStatusCode status) {
-  base::TimeDelta delta(base::TimeTicks::Now() - start_time);
-  LOCAL_HISTOGRAM_TIMES("SyncFileSystem.RegisterOriginTime", delta);
-  std::move(callback).Run(status);
-}
-
-}  // namespace
 
 std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
     content::BrowserContext* context,
@@ -395,8 +382,7 @@ void SyncEngine::RegisterOrigin(const GURL& origin,
   }
 
   SyncStatusCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, base::BindOnce(&DidRegisterOrigin, base::TimeTicks::Now(),
-                                TrackCallback(std::move(callback))));
+      FROM_HERE, TrackCallback(std::move(callback)));
 
   worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncWorkerInterface::RegisterOrigin,

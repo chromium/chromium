@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -243,13 +242,6 @@ void MetadataDatabaseIndex::Initialize(
   for (size_t i = 0; i < contents->file_trackers.size(); ++i)
     StoreFileTracker(std::move(contents->file_trackers[i]));
   contents->file_trackers.clear();
-
-  UMA_HISTOGRAM_COUNTS_1M("SyncFileSystem.MetadataNumber",
-                          metadata_by_id_.size());
-  UMA_HISTOGRAM_COUNTS_1M("SyncFileSystem.TrackerNumber",
-                          tracker_by_id_.size());
-  UMA_HISTOGRAM_COUNTS_100("SyncFileSystem.RegisteredAppNumber",
-                           app_root_by_app_id_.size());
 }
 
 MetadataDatabaseIndex::MetadataDatabaseIndex(LevelDBWrapper* db) : db_(db) {}
