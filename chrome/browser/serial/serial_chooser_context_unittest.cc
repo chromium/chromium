@@ -28,6 +28,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::NiceMock;
+
 namespace {
 
 class MockPortObserver : public SerialChooserContext::PortObserver {
@@ -119,7 +121,7 @@ class SerialChooserContextTest : public testing::Test {
   permissions::MockPermissionObserver& permission_observer() {
     return permission_observer_;
   }
-  MockPortObserver& port_observer() { return port_observer_; }
+  NiceMock<MockPortObserver>& port_observer() { return port_observer_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -128,12 +130,12 @@ class SerialChooserContextTest : public testing::Test {
   ScopedTestingLocalState testing_local_state_;
   TestingProfile profile_;
   SerialChooserContext* context_;
-  permissions::MockPermissionObserver permission_observer_;
+  NiceMock<permissions::MockPermissionObserver> permission_observer_;
   base::ScopedObservation<
       permissions::ObjectPermissionContextBase,
       permissions::ObjectPermissionContextBase::PermissionObserver>
       scoped_permission_observation_{&permission_observer_};
-  MockPortObserver port_observer_;
+  NiceMock<MockPortObserver> port_observer_;
   base::ScopedObservation<SerialChooserContext,
                           SerialChooserContext::PortObserver,
                           &SerialChooserContext::AddPortObserver,
@@ -260,14 +262,15 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
   port->token = base::UnguessableToken::Create();
   port_manager().AddPort(port.Clone());
 
-  context()->GrantPortPermission(origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
-
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::SERIAL_GUARD),
-                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+                  ContentSettingsType::SERIAL_CHOOSER_DATA))
+      .Times(2);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
+
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   port_manager().RemovePort(port->token);
   {
@@ -299,14 +302,15 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
       CreatePersistentPort(/*name=*/absl::nullopt, "ABC123");
   port_manager().AddPort(port.Clone());
 
-  context()->GrantPortPermission(origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
-
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::SERIAL_GUARD),
-                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+                  ContentSettingsType::SERIAL_CHOOSER_DATA))
+      .Times(2);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
+
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   // Without a display name a persistent permission cannot be recorded and so
   // removing the device will revoke permission.
@@ -400,9 +404,9 @@ TEST_F(SerialChooserContextTest, GuardPermission) {
 
 TEST_F(SerialChooserContextTest, PolicyGuardPermission) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
-
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
+
   context()->GrantPortPermission(origin, *port);
 
   auto* profile_prefs = profile()->GetTestingPrefService();
