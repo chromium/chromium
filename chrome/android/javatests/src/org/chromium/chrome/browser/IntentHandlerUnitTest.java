@@ -482,44 +482,44 @@ public class IntentHandlerUnitTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testMaybeAddAdditionalExtraHeaders() {
+    public void testmaybeAddAdditionalContentHeaders() {
         String contentUrl = "content://com.example.org/document/1";
         Intent intent = new Intent();
 
-        Assert.assertNull(IntentHandler.maybeAddAdditionalExtraHeaders(null, null, null));
+        Assert.assertNull(IntentHandler.maybeAddAdditionalContentHeaders(null, null, null));
         // Null URL.
-        Assert.assertNull(IntentHandler.maybeAddAdditionalExtraHeaders(intent, null, null));
+        Assert.assertNull(IntentHandler.maybeAddAdditionalContentHeaders(intent, null, null));
         // Null intent.
-        Assert.assertNull(IntentHandler.maybeAddAdditionalExtraHeaders(null, contentUrl, null));
+        Assert.assertNull(IntentHandler.maybeAddAdditionalContentHeaders(null, contentUrl, null));
         // Null type.
-        Assert.assertNull(IntentHandler.maybeAddAdditionalExtraHeaders(intent, contentUrl, null));
+        Assert.assertNull(IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
         // Empty type.
         intent.setType("");
-        Assert.assertNull(IntentHandler.maybeAddAdditionalExtraHeaders(intent, contentUrl, null));
+        Assert.assertNull(IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
 
         // Type not used by MHTML.
         intent.setType("text/plain");
-        Assert.assertNull(IntentHandler.maybeAddAdditionalExtraHeaders(intent, contentUrl, null));
+        Assert.assertNull(IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
 
         // MHTML type with no extra headers.
         intent.setType("multipart/related");
         Assert.assertEquals("X-Chrome-intent-type: multipart/related",
-                IntentHandler.maybeAddAdditionalExtraHeaders(intent, contentUrl, null));
+                IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
 
         // MHTML type with extra headers.
         intent.setType("multipart/related");
         Assert.assertEquals("Foo: bar\nX-Chrome-intent-type: multipart/related",
-                IntentHandler.maybeAddAdditionalExtraHeaders(intent, contentUrl, "Foo: bar"));
+                IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, "Foo: bar"));
 
         // Different MHTML type.
         intent.setType("message/rfc822");
         Assert.assertEquals("X-Chrome-intent-type: message/rfc822",
-                IntentHandler.maybeAddAdditionalExtraHeaders(intent, contentUrl, null));
+                IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
 
         // Different MHTML type with extra headers.
         intent.setType("message/rfc822");
         Assert.assertEquals("Foo: bar\nX-Chrome-intent-type: message/rfc822",
-                IntentHandler.maybeAddAdditionalExtraHeaders(intent, contentUrl, "Foo: bar"));
+                IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, "Foo: bar"));
     }
 
     @Test

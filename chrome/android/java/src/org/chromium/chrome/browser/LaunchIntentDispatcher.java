@@ -51,8 +51,8 @@ import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.widget.Toast;
-import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -247,11 +247,15 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     }
 
     @Override
-    public void processUrlViewIntent(String url, String referer, String headers,
-            @IntentHandler.TabOpenType int tabOpenType, String externalAppId,
-            int tabIdToBringToFront, boolean hasUserGesture, boolean isRendererInitiated,
-            @Nullable Origin initiatorOrigin, Intent intent) {
+    public void processUrlViewIntent(LoadUrlParams loadUrlParams, int tabOpenType,
+            String externalAppId, int tabIdToBringToFront, Intent intent) {
         assert false;
+    }
+
+    @Override
+    public long getIntentHandlingTimeMs() {
+        assert false;
+        return 0;
     }
 
     /** When started with an intent, maybe pre-resolve the domain. */

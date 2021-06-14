@@ -231,7 +231,6 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 import org.chromium.webapk.lib.client.WebApkNavigationClient;
 
 import java.util.ArrayList;
@@ -1734,14 +1733,18 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
 
             @Override
+            public long getIntentHandlingTimeMs() {
+                return 0;
+            }
+
+            @Override
             public void processTranslateTabIntent(
                     @Nullable String targetLanguageCode, @Nullable String expectedUrl) {}
 
             @Override
-            public void processUrlViewIntent(String url, String referer, String headers,
+            public void processUrlViewIntent(LoadUrlParams loadUrlParams,
                     @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,
-                    boolean hasUserGesture, boolean isRendererInitiated,
-                    @Nullable Origin initiatorOrigin, Intent intent) {}
+                    Intent intent) {}
         };
     }
 

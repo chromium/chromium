@@ -190,12 +190,9 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.content_public.common.Referrer;
-import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
-import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -1337,10 +1334,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
          * @param url The url from the intent.
          */
         @Override
-        public void processUrlViewIntent(String url, String referer, String headers,
-                @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,
-                boolean hasUserGesture, boolean isRendererInitiated,
-                @Nullable Origin initiatorOrigin, Intent intent) {
+        public void processUrlViewIntent(LoadUrlParams loadUrlParams, @TabOpenType int tabOpenType,
+                String externalAppId, int tabIdToBringToFront, Intent intent) {
             if (isActivityFinishingOrDestroyed()) {
                 return;
             }
@@ -1350,12 +1345,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 RecordUserAction.record("MobileTabbedModeViewIntentFromApp");
             }
 
+            final String url = loadUrlParams.getUrl();
             boolean fromLauncherShortcut = IntentUtils.safeGetBooleanExtra(
                     intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false);
             boolean focus = false;
-
-            LoadUrlParams loadUrlParams = createLoadUrlParamsForIntent(url, referer, hasUserGesture,
-                    mIntentHandlingTimeMs, intent, headers, isRendererInitiated, initiatorOrigin);
 
             TabModel tabModel = getCurrentTabModel();
             switch (tabOpenType) {
@@ -1503,6 +1496,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     && !shouldShowTabSwitcherOnStart()) {
                 mOverviewModeController.hideOverview(true);
             }
+        }
+
+        @Override
+        public long getIntentHandlingTimeMs() {
+            return mIntentHandlingTimeMs;
         }
 
         @Override
@@ -2129,51 +2127,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             finish();
             return true;
         }
-    }
-
-    /**
-     * Create a LoadUrlParams for handling a VIEW intent.
-     */
-    private static LoadUrlParams createLoadUrlParamsForIntent(String url, String referer,
-            boolean hasUserGesture, long intentHandlingTimeMs, Intent intent, String headers,
-            boolean isRendererInitiated, @Nullable Origin initiatorOrigin) {
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-        loadUrlParams.setIntentReceivedTimestamp(intentHandlingTimeMs);
-        loadUrlParams.setHasUserGesture(hasUserGesture);
-        // Add FROM_API to ensure intent handling isn't used again. Without FROM_API Chrome could
-        // get stuck in a loop continually being asked to open a link, and then calling out to the
-        // system.
-        int transitionType = PageTransition.LINK | PageTransition.FROM_API;
-        loadUrlParams.setTransitionType(
-                IntentHandler.getTransitionTypeFromIntent(intent, transitionType));
-        if (referer != null) {
-            loadUrlParams.setReferrer(
-                    new Referrer(referer, IntentHandler.getReferrerPolicyFromIntent(intent)));
-        }
-
-        // Handle post data case.
-        if (IntentHandler.wasIntentSenderChrome(intent)) {
-            String postDataType =
-                    IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_POST_DATA_TYPE);
-            byte[] postData =
-                    IntentUtils.safeGetByteArrayExtra(intent, IntentHandler.EXTRA_POST_DATA);
-            if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
-                StringBuilder appendToHeader = new StringBuilder();
-                appendToHeader.append("Content-Type: ");
-                appendToHeader.append(postDataType);
-                if (TextUtils.isEmpty(headers)) {
-                    headers = appendToHeader.toString();
-                } else {
-                    headers = headers + "\r\n" + appendToHeader.toString();
-                }
-
-                loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
-            }
-        }
-        loadUrlParams.setVerbatimHeaders(headers);
-        loadUrlParams.setIsRendererInitiated(isRendererInitiated);
-        loadUrlParams.setInitiatorOrigin(initiatorOrigin);
-        return loadUrlParams;
     }
 
     /**
