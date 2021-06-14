@@ -211,9 +211,9 @@ class FormStructure {
   // * NAME_LAST_SECOND heuristic predictions are unconditionally used.
   void OverrideServerPredictionsWithHeuristics();
 
-  // Returns the FieldRendererId for fields that are eligible for Manual Filling
-  // on form interaction.
-  static std::vector<FieldRendererId> FindFieldsEligibleForManualFilling(
+  // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
+  // filling on form interaction.
+  static std::vector<FieldGlobalId> FindFieldsEligibleForManualFilling(
       const std::vector<FormStructure*>& forms);
 
   const AutofillField* field(size_t index) const;

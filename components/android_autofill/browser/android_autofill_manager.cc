@@ -153,4 +153,12 @@ AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
   return nullptr;
 }
 
+void AndroidAutofillManager::SendFormDataToRenderer(
+    int query_id,
+    AutofillDriver::RendererFormDataAction action,
+    const FormData& form) {
+  driver()->SendFormDataToRenderer(query_id, action, form,
+                                   form.main_frame_origin, {});
+}
+
 }  // namespace autofill

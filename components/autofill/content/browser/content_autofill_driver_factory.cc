@@ -28,12 +28,13 @@ std::unique_ptr<AutofillDriver> CreateDriver(
     content::RenderFrameHost* render_frame_host,
     AutofillClient* client,
     const std::string& app_locale,
+    ContentAutofillRouter* router,
     BrowserAutofillManager::AutofillDownloadManagerState
         enable_download_manager,
     AutofillManager::AutofillManagerFactoryCallback
         autofill_manager_factory_callback) {
   return std::make_unique<ContentAutofillDriver>(
-      render_frame_host, client, app_locale, enable_download_manager,
+      render_frame_host, client, app_locale, router, enable_download_manager,
       std::move(autofill_manager_factory_callback));
 }
 
@@ -43,7 +44,7 @@ const char ContentAutofillDriverFactory::
     kContentAutofillDriverFactoryWebContentsUserDataKey[] =
         "web_contents_autofill_driver_factory";
 
-ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {}
+ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
 
 // static
 void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
@@ -127,10 +128,11 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
 
   // ContentAutofillDriver are created on demand here.
   if (!driver) {
-    AddForKey(render_frame_host,
-              base::BindRepeating(CreateDriver, render_frame_host, client(),
-                                  app_locale_, enable_download_manager_,
-                                  autofill_manager_factory_callback_));
+    AddForKey(
+        render_frame_host,
+        base::BindRepeating(CreateDriver, render_frame_host, client(),
+                            app_locale_, &router_, enable_download_manager_,
+                            autofill_manager_factory_callback_));
     driver = DriverForKey(render_frame_host);
   }
 
@@ -142,10 +144,26 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
 
 void ContentAutofillDriverFactory::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  AutofillDriver* driver = DriverForKey(render_frame_host);
+  ContentAutofillDriver* driver =
+      static_cast<ContentAutofillDriver*>(DriverForKey(render_frame_host));
   if (driver) {
-    static_cast<ContentAutofillDriver*>(driver)
-        ->MaybeReportAutofillWebOTPMetrics();
+    driver->MaybeReportAutofillWebOTPMetrics();
+    // If the popup menu has been triggered from within an iframe and that frame
+    // is deleted, hide the popup. This is necessary because the popup may
+    // actually be shown by the AutofillExternalDelegate of an ancestor frame,
+    // which is not notified about |render_frame_host|'s destruction and
+    // therefore won't close the popup.
+    if (render_frame_host->GetParent() &&
+        router_.last_queried_source() == driver) {
+      router_.HidePopup(driver);
+    }
+    if (!render_frame_host->GetParent()) {
+      router_.Reset();
+    } else {
+      // UnregisterDriver() must not be called if |driver| belongs to the main
+      // frame because of crbug/1190640.
+      router_.UnregisterDriver(driver);
+    }
   }
   DeleteForKey(render_frame_host);
 }
@@ -173,9 +191,20 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
   if (navigation_handle->HasCommitted() &&
       (navigation_handle->IsInMainFrame() ||
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
+    ContentAutofillDriver* driver =
+        DriverForFrame(navigation_handle->GetRenderFrameHost());
+    if (!navigation_handle->IsSameDocument() &&
+        !navigation_handle->IsServedFromBackForwardCache()) {
+      if (navigation_handle->IsInMainFrame()) {
+        router_.Reset();
+      } else {
+        // UnregisterDriver() must not be called if |driver| belongs to the main
+        // frame because of crbug/1190640.
+        router_.UnregisterDriver(driver);
+      }
+    }
     NavigationFinished();
-    DriverForFrame(navigation_handle->GetRenderFrameHost())
-        ->DidNavigateFrame(navigation_handle);
+    driver->DidNavigateFrame(navigation_handle);
   }
 }
 

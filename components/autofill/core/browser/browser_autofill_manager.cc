@@ -94,6 +94,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -395,6 +396,7 @@ BrowserAutofillManager::FillingContext::FillingContext(
     : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
       filled_field_unique_name(field.unique_name()),
+      filled_origin(field.origin),
       original_fill_time(AutofillTickClock::NowTicks()) {
   DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
          !optional_cvc);
@@ -1710,7 +1712,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   // Count the number of times the value of a specific type was filled into the
   // form.
   base::flat_map<ServerFieldType, size_t> type_filling_count;
+  // See SendFormDataToRenderer().
+  base::flat_map<FieldGlobalId, ServerFieldType> field_type_map;
   type_filling_count.reserve(form_structure->field_count());
+  field_type_map.reserve(form_structure->field_count());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     std::string field_number = base::StringPrintf("Field %zu", i);
@@ -1834,6 +1839,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                        should_notify, optional_cvc ? *optional_cvc : kEmptyCvc,
                        data_util::DetermineGroups(*form_structure),
                        &failure_to_fill);
+    field_type_map[result.fields[i].global_id()] = field_type;
 
     bool has_value_after = !result.fields[i].value.empty();
     bool is_autofilled_after = result.fields[i].is_autofilled;
@@ -1864,7 +1870,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                          << LogMessage::kSendFillingData << Br{}
                          << std::move(buffer);
   }
-  driver()->SendFormDataToRenderer(query_id, action, result);
+  driver()->SendFormDataToRenderer(query_id, action, result, field.origin,
+                                   field_type_map);
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
@@ -2486,7 +2493,8 @@ void BrowserAutofillManager::TriggerRefill(const FormData& form) {
           field->global_id() == filling_context->filled_field_id) ||
          (!base::FeatureList::IsEnabled(
               features::kAutofillRefillWithRendererIds) &&
-          field->unique_name() == filling_context->filled_field_unique_name))) {
+          field->unique_name() == filling_context->filled_field_unique_name)) &&
+        field->origin == filling_context->filled_origin) {
       autofill_field = field.get();
       break;
     }
@@ -2504,7 +2512,8 @@ void BrowserAutofillManager::TriggerRefill(const FormData& form) {
 
     for (const std::unique_ptr<AutofillField>& field : *form_structure) {
       if (field->GetFieldSignature() ==
-          filling_context->filled_field_signature) {
+              filling_context->filled_field_signature &&
+          field->origin == filling_context->filled_origin) {
         if (autofill_field == nullptr || is_better(*field, *autofill_field)) {
           autofill_field = field.get();
         }

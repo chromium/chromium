@@ -7,10 +7,12 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "url/origin.h"
 
 namespace web {
 class WebFrame;
@@ -45,9 +47,13 @@ class AutofillDriverIOS : public AutofillDriver {
   ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
-  void SendFormDataToRenderer(int query_id,
-                              RendererFormDataAction action,
-                              const FormData& data) override;
+  void SendFormDataToRenderer(
+      int query_id,
+      RendererFormDataAction action,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
+      override;
   void PropagateAutofillPredictions(
       const std::vector<autofill::FormStructure*>& forms) override;
   void HandleParsedForms(const std::vector<const FormData*>& forms) override;
@@ -59,7 +65,7 @@ class AutofillDriverIOS : public AutofillDriver {
       const FieldGlobalId& field,
       const std::u16string& value) override;
   void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldRendererId>& fields) override;
+      const std::vector<FieldGlobalId>& fields) override;
 
   BrowserAutofillManager* autofill_manager() {
     return &browser_autofill_manager_;

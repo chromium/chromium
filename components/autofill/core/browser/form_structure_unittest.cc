@@ -8352,23 +8352,22 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  FieldRendererId full_name_renderer_id = MakeFieldRendererId();
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.unique_renderer_id = full_name_renderer_id;
+  field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
+  FieldGlobalId full_name_id = field.global_id();
 
-  FieldRendererId country_renderer_id = MakeFieldRendererId();
   field.label = u"Country";
   field.name = u"country";
-  field.unique_renderer_id = country_renderer_id;
+  field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
-  FieldRendererId unknown_renderer_id = MakeFieldRendererId();
   field.label = u"Unknown";
   field.name = u"unknown";
-  field.unique_renderer_id = unknown_renderer_id;
+  field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
+  FieldGlobalId unknown_id = field.global_id();
 
   FormStructure form_structure(form);
 
@@ -8380,10 +8379,10 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   forms.push_back(&form_structure);
 
   form_structure.identify_sections_for_testing();
-  std::vector<FieldRendererId> expected_result;
+  std::vector<FieldGlobalId> expected_result;
   // Only credit card related and unknown fields are elible for manual filling.
-  expected_result.push_back(full_name_renderer_id);
-  expected_result.push_back(unknown_renderer_id);
+  expected_result.push_back(full_name_id);
+  expected_result.push_back(unknown_id);
 
   EXPECT_EQ(expected_result,
             FormStructure::FindFieldsEligibleForManualFilling(forms));

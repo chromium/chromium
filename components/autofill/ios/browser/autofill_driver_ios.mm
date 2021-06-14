@@ -96,7 +96,9 @@ bool AutofillDriverIOS::RendererIsAvailable() {
 void AutofillDriverIOS::SendFormDataToRenderer(
     int query_id,
     RendererFormDataAction action,
-    const FormData& data) {
+    const FormData& data,
+    const url::Origin& triggered_origin,
+    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   web::WebFrame* web_frame = web::GetWebFrameWithId(web_state_, web_frame_id_);
   if (!web_frame) {
     return;
@@ -144,7 +146,7 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
     const std::u16string& value) {}
 
 void AutofillDriverIOS::SendFieldsEligibleForManualFillingToRenderer(
-    const std::vector<FieldRendererId>& fields) {}
+    const std::vector<FieldGlobalId>& fields) {}
 
 void AutofillDriverIOS::RendererShouldClearFilledSection() {}
 

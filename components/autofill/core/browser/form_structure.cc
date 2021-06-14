@@ -953,9 +953,9 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
 }
 
 // static
-std::vector<FieldRendererId> FormStructure::FindFieldsEligibleForManualFilling(
+std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
     const std::vector<FormStructure*>& forms) {
-  std::vector<FieldRendererId> fields_eligible_for_manual_filling;
+  std::vector<FieldGlobalId> fields_eligible_for_manual_filling;
   for (const auto* form : forms) {
     for (const auto& field : form->fields_) {
       FieldTypeGroup field_type_group =
@@ -968,7 +968,7 @@ std::vector<FieldRendererId> FormStructure::FindFieldsEligibleForManualFilling(
       // this list may expand in the future.
       if (field_type_group == FieldTypeGroup::kCreditCard ||
           field_type_group == FieldTypeGroup::kNoGroup) {
-        fields_eligible_for_manual_filling.push_back(field->unique_renderer_id);
+        fields_eligible_for_manual_filling.push_back(field->global_id());
       }
     }
   }

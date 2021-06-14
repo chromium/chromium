@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -75,11 +76,14 @@ class MockAutofillClient : public autofill::TestAutofillClient {
 
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
-  MockAutofillDriver(content::RenderFrameHost* rfh, MockAutofillClient* client)
+  MockAutofillDriver(content::RenderFrameHost* rfh,
+                     MockAutofillClient* client,
+                     ContentAutofillRouter* router)
       : ContentAutofillDriver(
             rfh,
             client,
             kAppLocale,
+            router,
             kDownloadState,
             AutofillManager::AutofillManagerFactoryCallback()) {}
 
@@ -226,8 +230,7 @@ static constexpr absl::optional<int> kNoSelection;
 class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
  public:
   AutofillPopupControllerUnitTest()
-      : autofill_client_(new MockAutofillClient()),
-        autofill_popup_controller_(nullptr) {}
+      : autofill_client_(std::make_unique<MockAutofillClient>()) {}
   ~AutofillPopupControllerUnitTest() override = default;
 
   void SetUp() override {
@@ -246,6 +249,10 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
       autofill_popup_controller_->DoHide();
 
     external_delegate_.reset();
+    autofill_manager_.reset();
+    autofill_driver_.reset();
+    autofill_router_.reset();
+
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -278,9 +285,12 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   std::unique_ptr<MockAutofillClient> autofill_client_;
+  std::unique_ptr<ContentAutofillRouter> autofill_router_;
+  std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
+  std::unique_ptr<MockBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
   std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_popup_view_;
-  NiceMock<TestAutofillPopupController>* autofill_popup_controller_;
+  NiceMock<TestAutofillPopupController>* autofill_popup_controller_ = nullptr;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -297,8 +307,10 @@ class AutofillPopupControllerAccessibilityUnitTest
 
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>>
   CreateExternalDelegate() override {
+    autofill_router_ = std::make_unique<ContentAutofillRouter>();
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(
-        web_contents()->GetMainFrame(), autofill_client_.get());
+        web_contents()->GetMainFrame(), autofill_client_.get(),
+        autofill_router_.get());
     autofill_manager_ = std::make_unique<MockBrowserAutofillManager>(
         autofill_driver_.get(), autofill_client_.get());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
@@ -306,8 +318,6 @@ class AutofillPopupControllerAccessibilityUnitTest
   }
 
  protected:
-  std::unique_ptr<MockBrowserAutofillManager> autofill_manager_;
-  std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   content::testing::ScopedContentAXModeSetter accessibility_mode_setter_;
 };
 #endif

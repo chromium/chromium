@@ -46,8 +46,7 @@ AutofillField* FindAutofillFillField(const FormStructure& form,
   return nullptr;
 }
 
-// Returns true if |live_form| does not match |cached_form|, assuming that
-// |live_form|'s language is |live_form_language|.
+// Returns true if |live_form| does not match |cached_form|.
 bool CachedFormNeedsUpdate(const FormData& live_form,
                            const FormStructure& cached_form) {
   if (live_form.fields.size() != cached_form.field_count())
@@ -346,13 +345,6 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
       driver_->TransformBoundingBoxToViewportCoordinates(bounding_box);
 
   OnFocusOnFormFieldImpl(form, field, transformed_box);
-}
-
-void AutofillManager::SendFormDataToRenderer(
-    int query_id,
-    AutofillDriver::RendererFormDataAction action,
-    const FormData& data) {
-  driver_->SendFormDataToRenderer(query_id, action, data);
 }
 
 // Returns true if |live_form| does not match |cached_form|.

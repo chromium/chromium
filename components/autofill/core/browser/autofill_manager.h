@@ -161,11 +161,6 @@ class AutofillManager
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
-  // Send the form |data| to renderer for the specified |action|.
-  void SendFormDataToRenderer(int query_id,
-                              AutofillDriver::RendererFormDataAction action,
-                              const FormData& data);
-
   // Fills |form_structure| and |autofill_field| with the cached elements
   // corresponding to |form| and |field|.  This might have the side-effect of
   // updating the cache.  Returns false if the |form| is not autofillable, or if

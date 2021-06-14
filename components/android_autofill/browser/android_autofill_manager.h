@@ -42,6 +42,11 @@ class AndroidAutofillManager : public AutofillManager {
 
   bool has_server_prediction() const { return has_server_prediction_; }
 
+  // Send the |form| to the renderer for the specified |action|.
+  void SendFormDataToRenderer(int query_id,
+                              AutofillDriver::RendererFormDataAction action,
+                              const FormData& form);
+
  protected:
   AndroidAutofillManager(
       AutofillDriver* driver,

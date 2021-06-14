@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/supports_user_data.h"
+#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -39,6 +40,10 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
           enable_download_manager,
       AutofillManager::AutofillManagerFactoryCallback
           autofill_manager_factory_callback);
+
+  ContentAutofillDriverFactory(const ContentAutofillDriver&) = delete;
+  ContentAutofillDriverFactory& operator=(const ContentAutofillDriver&) =
+      delete;
 
   ~ContentAutofillDriverFactory() override;
 
@@ -84,6 +89,7 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
   BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;
   AutofillManager::AutofillManagerFactoryCallback
       autofill_manager_factory_callback_;
+  ContentAutofillRouter router_;
 };
 
 }  // namespace autofill

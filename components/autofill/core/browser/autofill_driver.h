@@ -7,11 +7,14 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/isolation_info.h"
+#include "url/origin.h"
 
 #if !defined(OS_IOS)
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
@@ -74,13 +77,19 @@ class AutofillDriver {
   GetOrCreateCreditCardInternalAuthenticator() = 0;
 #endif
 
-  // Forwards |data| to the renderer. |query_id| is the id of the renderer's
-  // original request for the data. |action| is the action the renderer should
-  // perform with the |data|. This method is a no-op if the renderer is not
-  // currently available.
-  virtual void SendFormDataToRenderer(int query_id,
-                                      RendererFormDataAction action,
-                                      const FormData& data) = 0;
+  // Forwards |data| to the renderer.
+  // |query_id| is the id of the renderer's original request for the data.
+  // |action| is the action the renderer should perform with the |data|.
+  // |triggered_origin| is the origin of the field on which Autofill was
+  // triggered, and |field_type_map| are the type predictions; these two
+  // parameters can be taken into account to decide which fields to fill across
+  // frames. This method is a no-op if the renderer is not currently available.
+  virtual void SendFormDataToRenderer(
+      int query_id,
+      RendererFormDataAction action,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
 
   // Pass the form structures to the password manager to choose correct username
   // and to the password generation manager to detect account creation forms.
@@ -137,7 +146,7 @@ class AutofillDriver {
   // Tells the renderer about the form fields that are eligible for triggering
   // manual filling on form interaction.
   virtual void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldRendererId>& fields) = 0;
+      const std::vector<FieldGlobalId>& fields) = 0;
 };
 
 }  // namespace autofill

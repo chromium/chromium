@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -34,9 +35,16 @@
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace autofill {
+
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::ElementsAre;
+using ::testing::Return;
+using ::testing::SaveArg;
 
 namespace {
 
@@ -303,7 +311,8 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
       : BrowserAutofillManager(driver, client, kAppLocale, kDownloadState) {}
   ~MockBrowserAutofillManager() override {}
 
-  MOCK_METHOD0(Reset, void());
+  MOCK_METHOD(void, Reset, (), (override));
+  MOCK_METHOD(bool, ShouldParseForms, (const std::vector<FormData>&), ());
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -314,18 +323,20 @@ class MockAutofillClient : public TestAutofillClient {
 class TestContentAutofillDriver : public ContentAutofillDriver {
  public:
   TestContentAutofillDriver(content::RenderFrameHost* rfh,
-                            AutofillClient* client)
+                            AutofillClient* client,
+                            ContentAutofillRouter* router)
       : ContentAutofillDriver(
             rfh,
             client,
             kAppLocale,
+            router,
             kDownloadState,
             AutofillManager::AutofillManagerFactoryCallback()) {
-    std::unique_ptr<BrowserAutofillManager> autofill_manager(
+    std::unique_ptr<MockBrowserAutofillManager> autofill_manager(
         new MockBrowserAutofillManager(this, client));
     SetBrowserAutofillManager(std::move(autofill_manager));
   }
-  ~TestContentAutofillDriver() override {}
+  ~TestContentAutofillDriver() override = default;
 
   virtual MockBrowserAutofillManager* mock_browser_autofill_manager() {
     return static_cast<MockBrowserAutofillManager*>(browser_autofill_manager());
@@ -349,8 +360,10 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
 
     test_autofill_client_ = std::make_unique<MockAutofillClient>();
+    router_ = std::make_unique<ContentAutofillRouter>();
     driver_ = std::make_unique<TestContentAutofillDriver>(
-        web_contents()->GetMainFrame(), test_autofill_client_.get());
+        web_contents()->GetMainFrame(), test_autofill_client_.get(),
+        router_.get());
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
@@ -388,6 +401,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 
  protected:
   std::unique_ptr<MockAutofillClient> test_autofill_client_;
+  std::unique_ptr<ContentAutofillRouter> router_;
   std::unique_ptr<TestContentAutofillDriver> driver_;
 
   FakeAutofillAgent fake_agent_;
@@ -466,8 +480,9 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   test::CreateTestAddressFormData(&input_form_data);
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->SendFormDataToRenderer(
-      input_page_id, AutofillDriver::FORM_DATA_ACTION_FILL, input_form_data);
+  driver_->SendFormDataToRenderer(input_page_id,
+                                  AutofillDriver::FORM_DATA_ACTION_FILL,
+                                  input_form_data, url::Origin(), {});
 
   run_loop.RunUntilIdle();
 
@@ -488,8 +503,9 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   test::CreateTestAddressFormData(&input_form_data);
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->SendFormDataToRenderer(
-      input_page_id, AutofillDriver::FORM_DATA_ACTION_PREVIEW, input_form_data);
+  driver_->SendFormDataToRenderer(input_page_id,
+                                  AutofillDriver::FORM_DATA_ACTION_PREVIEW,
+                                  input_form_data, url::Origin(), {});
 
   run_loop.RunUntilIdle();
 
@@ -509,14 +525,24 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
 
   FormData form;
   test::CreateTestAddressFormData(&form);
+
+  std::vector<FormData> augmented_forms;
+  EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
+      .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
+  driver_->FormsSeen({form});
+
+  ContentAutofillDriverTestApi(driver_.get()).SetFrameAndFormMetaData(form);
+  ASSERT_EQ(augmented_forms.size(), 1u);
+  EXPECT_TRUE(augmented_forms.front().SameFormAs(form));
+
   FormStructure form_structure(form);
-  std::vector<FormStructure*> forms(1, &form_structure);
+  std::vector<FormStructure*> form_structures(1, &form_structure);
   std::vector<FormDataPredictions> expected_type_predictions =
-      FormStructure::GetFieldTypePredictions(forms);
+      FormStructure::GetFieldTypePredictions(form_structures);
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->SendAutofillTypePredictionsToRenderer(forms);
+  driver_->SendAutofillTypePredictionsToRenderer(form_structures);
   run_loop.RunUntilIdle();
 
   std::vector<FormDataPredictions> output_type_predictions;
@@ -606,7 +632,8 @@ TEST_F(ContentAutofillDriverTest, EnableHeavyFormDataScraping) {
         .Times(test_case.heavy_scraping_enabled ? 1 : 0);
 
     std::unique_ptr<ContentAutofillDriver> driver(new TestContentAutofillDriver(
-        web_contents()->GetMainFrame(), test_autofill_client_.get()));
+        web_contents()->GetMainFrame(), test_autofill_client_.get(),
+        router_.get()));
 
     base::RunLoop().RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&fake_agent_);

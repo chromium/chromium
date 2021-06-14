@@ -309,15 +309,18 @@ class MockAutofillDriver : public TestAutofillDriver {
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
 
   // Mock methods to enable testability.
-  MOCK_METHOD3(SendFormDataToRenderer,
+  MOCK_METHOD5(SendFormDataToRenderer,
                void(int query_id,
                     RendererFormDataAction action,
-                    const FormData& data));
+                    const FormData& data,
+                    const url::Origin& triggered_origin,
+                    const base::flat_map<FieldGlobalId, ServerFieldType>&
+                        field_type_map));
 
   MOCK_METHOD1(SendAutofillTypePredictionsToRenderer,
                void(const std::vector<FormStructure*>& forms));
   MOCK_METHOD1(SendFieldsEligibleForManualFillingToRenderer,
-               void(const std::vector<FieldRendererId>& fields));
+               void(const std::vector<FieldGlobalId>& fields));
 };
 
 }  // namespace
@@ -500,7 +503,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                                           int unique_id,
                                           int* response_query_id,
                                           FormData* response_data) {
-    EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _))
+    EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _, _, _))
         .WillOnce((DoAll(testing::SaveArg<0>(response_query_id),
                          testing::SaveArg<2>(response_data))));
     FillAutofillFormData(input_query_id, input_form, input_field, unique_id);
@@ -572,7 +575,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "2017", "1");
     card->SetNetworkForMaskedCard(kVisaCard);
 
-    EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _))
+    EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _, _, _))
         .Times(AtLeast(1));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
         AutofillDriver::FORM_DATA_ACTION_FILL, kDefaultPageID, *form,
@@ -2627,7 +2630,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
 
   int response_query_id = 0;
   FormData response_data;
-  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _))
+  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _, _, _))
       .WillOnce((DoAll(testing::SaveArg<0>(&response_query_id),
                        testing::SaveArg<2>(&response_data))));
   browser_autofill_manager_->FillOrPreviewDataModelForm(
@@ -2662,7 +2665,8 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldRemoved) {
   AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
   ASSERT_TRUE(profile);
 
-  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _)).Times(0);
+  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _, _, _))
+      .Times(0);
 }
 
 // Tests that BrowserAutofillManager ignores loss of focus events sent from the
@@ -7659,7 +7663,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   const char guid[] = "00000000-0000-0000-0000-000000000001";
 
   // Expect no fields filled, no form data sent to renderer.
-  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _)).Times(0);
+  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _, _, _))
+      .Times(0);
 
   FillAutofillFormData(kDefaultPageID, form, *form.fields.begin(),
                        MakeFrontendID(std::string(), guid));
@@ -7696,7 +7701,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   const char guid[] = "00000000-0000-0000-0000-000000000004";
 
   // Expect no fields filled, no form data sent to renderer.
-  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _)).Times(0);
+  EXPECT_CALL(*autofill_driver_, SendFormDataToRenderer(_, _, _, _, _))
+      .Times(0);
 
   FillAutofillFormData(kDefaultPageID, form, *form.fields.begin(),
                        MakeFrontendID(guid, std::string()));
