@@ -8,22 +8,22 @@
     const video = document.querySelector('video');
 
     function addPictureInPictureEventListeners() {
-      video.addEventListener('enterpictureinpicture', () => {
+      video.addEventListener('enterpictureinpicture', _ => {
         document.title = 'enterpictureinpicture';
       });
-      video.addEventListener('leavepictureinpicture', () => {
+      video.addEventListener('leavepictureinpicture', _ => {
         document.title = 'leavepictureinpicture';
       });
     }
 
     function addPlayEventListener() {
-      video.addEventListener('play', () => {
+      video.addEventListener('play', _ => {
         document.title = 'play';
       }, { once: true });
     }
 
     function addPauseEventListener() {
-      video.addEventListener('pause', () => {
+      video.addEventListener('pause', _ => {
         document.title = 'pause';
       }, { once: true });
     }
@@ -48,7 +48,7 @@
           return;
         }
 
-        video.addEventListener('ended', () => {
+        video.addEventListener('ended', _ => {
           resolve();
         }, { once: true });
       });
@@ -58,6 +58,25 @@
       video.src = "../tulip2.webm";
       await video.play();
       return true;
+    }
+
+    async function resetVideo() {
+      video.src = "";
+      await _waitForEmptied();
+      return true;
+    }
+
+    function _waitForEmptied() {
+      return new Promise((resolve, _) => {
+        if (video.networkState == HTMLMediaElement.NETWORK_EMPTY) {
+          resolve();
+          return;
+        }
+
+        video.addEventListener('emptied', _ => {
+          resolve();
+        }, { once: true });
+      });
     }
 
     async function enterPictureInPicture() {
@@ -73,7 +92,7 @@
           return;
         }
 
-        video.addEventListener('loadedmetadata', () => {
+        video.addEventListener('loadedmetadata', _ => {
           resolve();
         }, { once: true });
       });

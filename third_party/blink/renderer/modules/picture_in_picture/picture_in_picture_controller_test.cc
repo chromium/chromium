@@ -32,6 +32,13 @@ using ::testing::_;
 
 namespace blink {
 
+viz::SurfaceId TestSurfaceId() {
+  // Use a fake but valid viz::SurfaceId.
+  return {viz::FrameSinkId(1, 1),
+          viz::LocalSurfaceId(
+              11, base::UnguessableToken::Deserialize(0x111111, 0))};
+}
+
 // The MockPictureInPictureSession implements a PictureInPicture session in the
 // same process as the test and guarantees that the callbacks are called in
 // order for the events to be fired.
@@ -47,14 +54,14 @@ class MockPictureInPictureSession
   }
   ~MockPictureInPictureSession() override = default;
 
-  MOCK_METHOD1(Stop, void(StopCallback));
-  MOCK_METHOD5(
-      Update,
-      void(uint32_t,
-           mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-           const absl::optional<viz::SurfaceId>&,
-           const gfx::Size&,
-           bool));
+  MOCK_METHOD(void, Stop, (StopCallback));
+  MOCK_METHOD(void,
+              Update,
+              (uint32_t,
+               mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
+               const viz::SurfaceId&,
+               const gfx::Size&,
+               bool));
 
  private:
   mojo::Receiver<mojom::blink::PictureInPictureSession> receiver_;
@@ -82,22 +89,23 @@ class MockPictureInPictureService
         session_remote_.InitWithNewPipeAndPassReceiver());
   }
 
-  MOCK_METHOD7(
+  MOCK_METHOD(
+      void,
       StartSession,
-      void(uint32_t,
-           mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-           const absl::optional<viz::SurfaceId>&,
-           const gfx::Size&,
-           bool,
-           mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
-           StartSessionCallback));
+      (uint32_t,
+       mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
+       const viz::SurfaceId&,
+       const gfx::Size&,
+       bool,
+       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
+       StartSessionCallback));
 
   MockPictureInPictureSession& Session() { return *session_.get(); }
 
   void StartSessionInternal(
       uint32_t,
       mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-      const absl::optional<viz::SurfaceId>&,
+      const viz::SurfaceId&,
       const gfx::Size&,
       bool,
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
@@ -130,24 +138,26 @@ class PictureInPictureControllerFrameClient
   DISALLOW_COPY_AND_ASSIGN(PictureInPictureControllerFrameClient);
 };
 
-class PictureInPictureControllerPlayer : public EmptyWebMediaPlayer {
+class PictureInPictureControllerPlayer final : public EmptyWebMediaPlayer {
  public:
   PictureInPictureControllerPlayer() = default;
-  ~PictureInPictureControllerPlayer() final = default;
+  ~PictureInPictureControllerPlayer() override = default;
 
-  double Duration() const final {
+  double Duration() const override {
     if (infinity_duration_)
       return std::numeric_limits<double>::infinity();
     return EmptyWebMediaPlayer::Duration();
   }
-
-  ReadyState GetReadyState() const final { return kReadyStateHaveMetadata; }
-  bool HasVideo() const final { return true; }
+  ReadyState GetReadyState() const override { return kReadyStateHaveMetadata; }
+  bool HasVideo() const override { return true; }
+  void OnRequestPictureInPicture() override { surface_id_ = TestSurfaceId(); }
+  absl::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
 
   void set_infinity_duration(bool value) { infinity_duration_ = value; }
 
  private:
   bool infinity_duration_ = false;
+  absl::optional<viz::SurfaceId> surface_id_;
 
   DISALLOW_COPY_AND_ASSIGN(PictureInPictureControllerPlayer);
 };
@@ -193,7 +203,7 @@ class PictureInPictureControllerTest : public PageTestBase {
 
  private:
   Persistent<HTMLVideoElement> video_;
-  MockPictureInPictureService mock_service_;
+  testing::NiceMock<MockPictureInPictureService> mock_service_;
   scoped_refptr<cc::Layer> layer_;
 };
 
@@ -203,7 +213,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
 
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
-              StartSession(player->GetDelegateId(), _, player->GetSurfaceId(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
@@ -223,7 +233,7 @@ TEST_F(PictureInPictureControllerTest, ExitPictureInPictureFiresEvent) {
 
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
-              StartSession(player->GetDelegateId(), _, player->GetSurfaceId(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
@@ -251,7 +261,7 @@ TEST_F(PictureInPictureControllerTest, StartObserving) {
 
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
-              StartSession(player->GetDelegateId(), _, player->GetSurfaceId(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
@@ -271,7 +281,7 @@ TEST_F(PictureInPictureControllerTest, StopObserving) {
 
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
-              StartSession(player->GetDelegateId(), _, player->GetSurfaceId(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
                            player->NaturalSize(), true, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
@@ -300,7 +310,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_InfiniteDuration) {
 
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
-              StartSession(player->GetDelegateId(), _, player->GetSurfaceId(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
                            player->NaturalSize(), false, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
@@ -320,7 +330,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_MediaSource) {
 
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
-              StartSession(player->GetDelegateId(), _, player->GetSurfaceId(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
                            player->NaturalSize(), false, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())

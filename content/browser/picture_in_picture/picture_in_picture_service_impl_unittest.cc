@@ -285,46 +285,4 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
   EXPECT_EQ(gfx::Size(), window_size);
 }
 
-// The |surface_id| is an optional parameter in the StartSession() call but
-// needs to be non-null in order to create a session at the moment. The creation
-// will early return if that condition isn't satisfied, failing to create the
-// session.
-TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NoSurfaceId) {
-  const int kPlayerVideoOnlyId = 30;
-  const PictureInPictureWindowControllerImpl* controller =
-      PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-          contents());
-
-  ASSERT_TRUE(controller);
-  EXPECT_FALSE(controller->active_session_for_testing());
-
-  mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>
-      observer_remote;
-
-  EXPECT_CALL(delegate(), EnterPictureInPicture(_, _, _)).Times(0);
-
-  mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
-  gfx::Size window_size;
-
-  service().StartSession(
-      kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), absl::nullopt,
-      gfx::Size(42, 42), true /* show_play_pause_button */,
-      std::move(observer_remote),
-      base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
-              const gfx::Size& b) {
-            if (remote.is_valid())
-              session_remote.Bind(std::move(remote));
-            window_size = b;
-          }));
-
-  EXPECT_FALSE(controller->active_session_for_testing());
-
-  // The |session_remote| won't be bound because the |remote| received in the
-  // StartSessionCallback will be invalid due to PictureInPictureSession not
-  // ever being created (meaning the the receiver won't be bound either).
-  EXPECT_FALSE(session_remote);
-  EXPECT_EQ(gfx::Size(), window_size);
-}
-
 }  // namespace content

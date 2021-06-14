@@ -28,7 +28,7 @@ interface PictureInPictureSession {
   // This call cannot happen after `Stop()`.
   Update(uint32 player_id,
       pending_associated_remote<media.mojom.MediaPlayer> player_remote,
-      viz.mojom.SurfaceId? surface_id,
+      viz.mojom.SurfaceId surface_id,
       gfx.mojom.Size natural_size,
       bool show_play_pause_button);
 
@@ -40,9 +40,14 @@ interface PictureInPictureSession {
 // PictureInPictureService is a Document-associated interface that lives in
 // the browser process. It is responsible for implementing the browser-side
 // support for https://wicg.github.io/picture-in-picture and manages all
-// picture-in-picture interactions for Document. Picture-in-picture allows
+// picture-in-picture interactions for Document. Picture-in-Picture allows
 // a Document to display a video in an always-on-top floating window with
 // basic playback functionality (e.g. play and pause).
+// The window provides playback control by translating user actions into
+// media.mojom.MediaPlayer messages. The MediaPlayer remote can be reset by the
+// renderer even while the Picute-in-Picture session is active, indicating that
+// the media player is gone. A new MediaPlayer remote can be provided later by
+// an Update() message to the PictureInPictureSession object.
 interface PictureInPictureService {
   // Notify the service that it should start a Picture-in-Picture session. If a
   // Picture-in-Picture session is already running, it will be closed.
@@ -61,7 +66,7 @@ interface PictureInPictureService {
   StartSession(
       uint32 player_id,
       pending_associated_remote<media.mojom.MediaPlayer> player_remote,
-      viz.mojom.SurfaceId? surface_id,
+      viz.mojom.SurfaceId surface_id,
       gfx.mojom.Size natural_size,
       bool show_play_pause_button,
       pending_remote<PictureInPictureSessionObserver> observer)

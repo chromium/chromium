@@ -148,11 +148,11 @@ void PictureInPictureWindowControllerImpl::UpdateLayerBounds() {
 }
 
 bool PictureInPictureWindowControllerImpl::IsPlayerActive() {
-  if (!active_session_)
+  if (!active_session_ || !active_session_->player_id().has_value())
     return false;
 
   return GetWebContentsImpl()->media_web_contents_observer()->IsPlayerActive(
-      active_session_->player_id());
+      active_session_->player_id().value());
 }
 
 WebContents* PictureInPictureWindowControllerImpl::GetWebContents() {

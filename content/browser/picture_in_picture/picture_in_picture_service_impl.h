@@ -41,7 +41,7 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
   void StartSession(
       uint32_t player_id,
       mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
-      const absl::optional<viz::SurfaceId>& surface_id,
+      const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size,
       bool show_play_pause_button,
       mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>,

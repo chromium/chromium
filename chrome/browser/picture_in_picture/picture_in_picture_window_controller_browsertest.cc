@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -2240,28 +2239,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       ExecJs(active_web_contents, "video.src=''; exitPictureInPicture();"));
 
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
-}
-
-// Tests that when closing the window after the player was reset, the <video>
-// element is still notified.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       ResetPlayerCloseWindowNotifiesElement) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(kPictureInPictureWindowSizePage));
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Video should be in Picture-in-Picture.
-  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
-
-  // Reset video source and wait for the notification.
-  ASSERT_TRUE(ExecJs(active_web_contents, "resetVideo();"));
-  WaitForTitle(active_web_contents, u"emptied");
-
-  window_controller()->Close(true /* should_pause_video */);
-
-  // Video should no longer be in Picture-in-Picture.
-  ExpectLeavePictureInPicture(active_web_contents);
 }
 
 // Tests that play/pause video playback is toggled if there are no focus

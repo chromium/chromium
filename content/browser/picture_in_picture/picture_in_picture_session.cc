@@ -26,6 +26,8 @@ PictureInPictureSession::PictureInPictureSession(
       observer_(std::move(observer)) {
   receiver_.set_disconnect_handler(base::BindOnce(
       &PictureInPictureSession::OnConnectionError, base::Unretained(this)));
+  media_player_remote_.set_disconnect_handler(base::BindOnce(
+      &PictureInPictureSession::OnPlayerGone, base::Unretained(this)));
 }
 
 PictureInPictureSession::~PictureInPictureSession() {
@@ -39,7 +41,7 @@ void PictureInPictureSession::Stop(StopCallback callback) {
 void PictureInPictureSession::Update(
     uint32_t player_id,
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
-    const absl::optional<viz::SurfaceId>& surface_id,
+    const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
   player_id_ = MediaPlayerId(
@@ -47,9 +49,16 @@ void PictureInPictureSession::Update(
 
   media_player_remote_.reset();
   media_player_remote_.Bind(std::move(player_remote));
+  media_player_remote_.set_disconnect_handler(base::BindOnce(
+      &PictureInPictureSession::OnPlayerGone, base::Unretained(this)));
 
-  GetController().EmbedSurface(surface_id.value(), natural_size);
+  GetController().EmbedSurface(surface_id, natural_size);
   GetController().SetShowPlayPauseButton(show_play_pause_button);
+}
+
+void PictureInPictureSession::OnPlayerGone() {
+  player_id_.reset();
+  GetController().SetShowPlayPauseButton(false);
 }
 
 void PictureInPictureSession::NotifyWindowResized(const gfx::Size& size) {

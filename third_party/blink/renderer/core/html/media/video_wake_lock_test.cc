@@ -33,7 +33,7 @@ namespace blink {
 // The VideoWakeLockPictureInPictureSession implements a PictureInPicture
 // session in the same process as the test and guarantees that the callbacks are
 // called in order for the events to be fired.
-class VideoWakeLockPictureInPictureSession
+class VideoWakeLockPictureInPictureSession final
     : public mojom::blink::PictureInPictureSession {
  public:
   explicit VideoWakeLockPictureInPictureSession(
@@ -41,14 +41,13 @@ class VideoWakeLockPictureInPictureSession
       : receiver_(this, std::move(receiver)) {}
   ~VideoWakeLockPictureInPictureSession() override = default;
 
-  void Stop(StopCallback callback) final { std::move(callback).Run(); }
-
+  void Stop(StopCallback callback) override { std::move(callback).Run(); }
   void Update(uint32_t player_id,
               mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>
                   player_remote,
-              const absl::optional<viz::SurfaceId>&,
+              const viz::SurfaceId&,
               const gfx::Size&,
-              bool show_play_pause_button) final {}
+              bool show_play_pause_button) override {}
 
  private:
   mojo::Receiver<mojom::blink::PictureInPictureSession> receiver_;
@@ -57,7 +56,7 @@ class VideoWakeLockPictureInPictureSession
 // The VideoWakeLockPictureInPictureService implements the PictureInPicture
 // service in the same process as the test and guarantees that the callbacks are
 // called in order for the events to be fired.
-class VideoWakeLockPictureInPictureService
+class VideoWakeLockPictureInPictureService final
     : public mojom::blink::PictureInPictureService {
  public:
   VideoWakeLockPictureInPictureService() : receiver_(this) {}
@@ -71,11 +70,11 @@ class VideoWakeLockPictureInPictureService
   void StartSession(
       uint32_t,
       mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-      const absl::optional<viz::SurfaceId>&,
+      const viz::SurfaceId&,
       const gfx::Size&,
       bool,
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
-      StartSessionCallback callback) final {
+      StartSessionCallback callback) override {
     mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote;
     session_ = std::make_unique<VideoWakeLockPictureInPictureSession>(
         session_remote.InitWithNewPipeAndPassReceiver());
@@ -90,8 +89,19 @@ class VideoWakeLockPictureInPictureService
 
 class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
  public:
-  ReadyState GetReadyState() const final { return kReadyStateHaveMetadata; }
-  bool HasVideo() const final { return true; }
+  ReadyState GetReadyState() const override { return kReadyStateHaveMetadata; }
+  bool HasVideo() const override { return true; }
+  void OnRequestPictureInPicture() override {
+    // Use a fake but valid viz::SurfaceId.
+    surface_id_ = viz::SurfaceId(
+        viz::FrameSinkId(1, 1),
+        viz::LocalSurfaceId(11,
+                            base::UnguessableToken::Deserialize(0x111111, 0)));
+  }
+  absl::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
+
+ private:
+  absl::optional<viz::SurfaceId> surface_id_;
 };
 
 class VideoWakeLockFrameClient : public test::MediaStubLocalFrameClient {

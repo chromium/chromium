@@ -145,12 +145,5 @@
       .catch(e => { document.title = 'failed to enter Picture-in-Picture after leaving'; });
     });
   }
-
-  function resetVideo() {
-    video.addEventListener('emptied', () => {
-      document.title = 'emptied';
-    }, { once: true });
-    video.src = '';
-  }
 </script>
 </html>
