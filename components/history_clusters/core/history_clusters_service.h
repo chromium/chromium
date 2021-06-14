@@ -18,8 +18,8 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/memories.mojom.h"
-#include "components/history_clusters/core/memories_remote_model_helper.h"
 #include "components/history_clusters/core/visit_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/query_parser/query_parser.h"
@@ -122,7 +122,7 @@ class HistoryClustersService : public KeyedService {
   // Helper service to handle communicating with the remote model. This will be
   // used for debugging only; the launch ready feature will use a local model
   // instead.
-  std::unique_ptr<MemoriesRemoteModelHelper> remote_model_helper_;
+  std::unique_ptr<ClusteringBackend> backend_;
 
   // In-memory cache of keywords match clusters, so we can query this
   // synchronously as the user types in the omnibox. Also save the timestamp
@@ -135,10 +135,9 @@ class HistoryClustersService : public KeyedService {
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;
 
-  // Used to asyncly call into `remote_model_helper_` after async history
-  // request.
-  std::unique_ptr<base::WeakPtrFactory<MemoriesRemoteModelHelper>>
-      remote_model_helper_weak_factory_;
+  // Used to asyncly call into `backend_` after async history request.
+  std::unique_ptr<base::WeakPtrFactory<ClusteringBackend>>
+      backend_weak_factory_;
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.
   base::WeakPtrFactory<HistoryClustersService> weak_ptr_factory_{this};

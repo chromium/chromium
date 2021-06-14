@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
-#define COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_REMOTE_CLUSTERING_BACKEND_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_REMOTE_CLUSTERING_BACKEND_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/clustering_backend.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -25,20 +25,17 @@ using DebugLoggerCallback = base::RepeatingCallback<void(const std::string&)>;
 // A helper class to communicate with the remote model. Forms requests from
 // `history::AnnotatedVisit`s and parses the response into
 // `history::Cluster`s.
-class MemoriesRemoteModelHelper {
+class RemoteClusteringBackend : public ClusteringBackend {
  public:
   // Pass in a defined `debug_logger` to enable debug logging from this class.
-  MemoriesRemoteModelHelper(
+  RemoteClusteringBackend(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       absl::optional<DebugLoggerCallback> debug_logger);
-  ~MemoriesRemoteModelHelper();
+  ~RemoteClusteringBackend() override;
 
-  // POSTs `visits` to the remote endpoint and invokes `callback` with the
-  // retrieved `Cluster`s.
-  using MemoriesCallback =
-      base::OnceCallback<void(std::vector<history::Cluster>)>;
-  void GetMemories(MemoriesCallback callback,
-                   const std::vector<history::AnnotatedVisit>& visits);
+  // ClusteringBackend:
+  void GetClusters(ClustersCallback callback,
+                   const std::vector<history::AnnotatedVisit>& visits) override;
 
  private:
   // Helpers for making requests used by `GetMemories()`.
@@ -59,4 +56,4 @@ class MemoriesRemoteModelHelper {
 
 }  // namespace history_clusters
 
-#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_REMOTE_CLUSTERING_BACKEND_H_

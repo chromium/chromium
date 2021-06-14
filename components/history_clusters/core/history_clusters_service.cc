@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/remote_clustering_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
@@ -24,7 +25,7 @@ namespace {
 // function is only responsible for matching `query`.
 std::vector<history::Cluster> FilterClustersMatchingQuery(
     std::string query,
-    std::vector<history::Cluster> clusters) {
+    const std::vector<history::Cluster>& clusters) {
   if (query.empty())
     return clusters;
 
@@ -93,7 +94,7 @@ std::vector<history_clusters::mojom::MemoryPtr> ClustersToMojom(
 //  not support paging.
 HistoryClustersService::QueryMemoriesResponse FormQueryMemoriesResponse(
     mojom::QueryParamsPtr query_params,
-    std::vector<history::Cluster> clusters) {
+    const std::vector<history::Cluster>& clusters) {
   return {nullptr, ClustersToMojom(clusters)};
 }
 
@@ -114,13 +115,12 @@ HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : history_service_(history_service) {
-  remote_model_helper_ = std::make_unique<MemoriesRemoteModelHelper>(
+  backend_ = std::make_unique<RemoteClusteringBackend>(
       url_loader_factory,
       base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,
                           weak_ptr_factory_.GetWeakPtr()));
-  remote_model_helper_weak_factory_ =
-      std::make_unique<base::WeakPtrFactory<MemoriesRemoteModelHelper>>(
-          remote_model_helper_.get());
+  backend_weak_factory_ =
+      std::make_unique<base::WeakPtrFactory<ClusteringBackend>>(backend_.get());
 }
 
 HistoryClustersService::~HistoryClustersService() = default;
@@ -191,19 +191,18 @@ void HistoryClustersService::QueryMemories(
   // `QueryMemories` has 4 steps:
   // 1. Get visits either asynchronously from the history db or synchronously
   //    from `visits_`.
-  // 2. Ask `remote_model_helper_` to convert the visits to memories.
+  // 2. Ask `backend_` to convert the visits to memories.
   // 3. Filter memories matching `query_params` and create.
   // 4. Run `callback` with the continuation query params and matched memories.
 
   // Copy `query_params->query` because `query_params` is about to be moved.
   auto query_string = query_params->query;
-  auto on_visits_callback =
-      base::BindOnce(&MemoriesRemoteModelHelper::GetMemories,
-                     remote_model_helper_weak_factory_->GetWeakPtr(),
-                     base::BindOnce(&FilterClustersMatchingQuery, query_string)
-                         .Then(base::BindOnce(&FormQueryMemoriesResponse,
-                                              std::move(query_params)))
-                         .Then(std::move(callback)));
+  auto on_visits_callback = base::BindOnce(
+      &ClusteringBackend::GetClusters, backend_weak_factory_->GetWeakPtr(),
+      base::BindOnce(&FilterClustersMatchingQuery, query_string)
+          .Then(base::BindOnce(&FormQueryMemoriesResponse,
+                               std::move(query_params)))
+          .Then(std::move(callback)));
 
   history_service_->GetAnnotatedVisits(
       kMaxVisitsToCluster.Get(),

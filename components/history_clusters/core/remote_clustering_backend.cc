@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_clusters/core/memories_remote_model_helper.h"
+#include "components/history_clusters/core/remote_clustering_backend.h"
 
 #include <utility>
 
@@ -76,7 +76,7 @@ proto::GetClustersRequest CreateRequestProto(
   }
 
   if (debug_logger) {
-    debug_logger->Run("MemoriesRemoteModelHelper CreateRequestProto:");
+    debug_logger->Run("RemoteClusteringBackend CreateRequestProto:");
 
     base::DictionaryValue debug_value;
     debug_value.SetStringKey("experiment_name", request.experiment_name());
@@ -139,7 +139,7 @@ std::vector<history::Cluster> ParseResponseProto(
       debug_clusters_list.Append(std::move(debug_cluster));
     }
 
-    debug_logger->Run("MemoriesRemoteModelHelper ParseResponseProto Clusters:");
+    debug_logger->Run("RemoteClusteringBackend ParseResponseProto Clusters:");
 
     std::string debug_string;
     if (base::JSONWriter::WriteWithOptions(
@@ -154,15 +154,15 @@ std::vector<history::Cluster> ParseResponseProto(
 
 }  // namespace
 
-MemoriesRemoteModelHelper::MemoriesRemoteModelHelper(
+RemoteClusteringBackend::RemoteClusteringBackend(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     absl::optional<DebugLoggerCallback> debug_logger)
     : url_loader_factory_(url_loader_factory), debug_logger_(debug_logger) {}
 
-MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
+RemoteClusteringBackend::~RemoteClusteringBackend() = default;
 
-void MemoriesRemoteModelHelper::GetMemories(
-    MemoriesCallback callback,
+void RemoteClusteringBackend::GetClusters(
+    ClustersCallback callback,
     const std::vector<history::AnnotatedVisit>& visits) {
   const GURL endpoint(RemoteModelEndpoint());
   if (!endpoint.is_valid() || visits.empty()) {
@@ -200,7 +200,7 @@ void MemoriesRemoteModelHelper::GetMemories(
              std::unique_ptr<std::string> response) {
             if (!response) {
               if (debug_logger) {
-                debug_logger->Run("MemoriesRemoteModelHelper response nullptr");
+                debug_logger->Run("RemoteClusteringBackend response nullptr");
                 debug_logger->Run(base::StringPrintf("Net Error Code: %d",
                                                      url_loader->NetError()));
                 debug_logger->Run("Net Error String: " +
@@ -225,7 +225,7 @@ void MemoriesRemoteModelHelper::GetMemories(
 
 // static
 std::unique_ptr<network::ResourceRequest>
-MemoriesRemoteModelHelper::CreateRequest(const GURL& endpoint) {
+RemoteClusteringBackend::CreateRequest(const GURL& endpoint) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GURL(endpoint);
   request->method = "POST";
@@ -233,8 +233,7 @@ MemoriesRemoteModelHelper::CreateRequest(const GURL& endpoint) {
 }
 
 // static
-std::unique_ptr<network::SimpleURLLoader>
-MemoriesRemoteModelHelper::CreateLoader(
+std::unique_ptr<network::SimpleURLLoader> RemoteClusteringBackend::CreateLoader(
     std::unique_ptr<network::ResourceRequest> request,
     const std::string& request_body) {
   const net::NetworkTrafficAnnotationTag traffic_annotation =
