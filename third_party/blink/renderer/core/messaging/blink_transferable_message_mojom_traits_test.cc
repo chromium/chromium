@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
