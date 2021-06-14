@@ -83,12 +83,12 @@ cast_source_set("base") {
   public_deps = [
     ":chromecast_switches",
     ":init_shlib",
+    "//base",
     "//chromecast/base/metrics",
     "//chromecast/public",
   ]
 
   deps = [
-    "//base",
     "//chromecast:chromecast_buildflags",
     "//third_party/widevine/cdm:buildflags",
   ]
