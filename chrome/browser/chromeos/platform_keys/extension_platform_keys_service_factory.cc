@@ -15,14 +15,16 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "net/cert/x509_certificate.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#endif
 
 namespace chromeos {
 namespace {
@@ -88,9 +90,9 @@ ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "ExtensionPlatformKeysService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance());
-  DependsOn(
-      chromeos::platform_keys::KeyPermissionsServiceFactory::GetInstance());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DependsOn(crosapi::KeystoreServiceFactoryAsh::GetInstance());
+#endif
 }
 
 ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() {}
