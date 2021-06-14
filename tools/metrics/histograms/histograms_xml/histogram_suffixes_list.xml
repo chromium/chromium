@@ -14397,6 +14397,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="StorageAccess" label="Storage Access API permission"/>
   <suffix name="VideoCapture" label="Camera permission"/>
   <suffix name="VR" label="VR permission"/>
+  <suffix name="WindowPlacement" label="Window Placement permission"/>
   <affected-histogram name="Permissions.Engagement.Accepted"/>
   <affected-histogram name="Permissions.Engagement.AcceptedOnce"/>
   <affected-histogram name="Permissions.Engagement.Denied"/>
@@ -14424,6 +14425,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="StorageAccess" label="Storage Access API permission actions"/>
   <suffix name="VideoCapture" label="Camera permission actions"/>
   <suffix name="VR" label="VR permission actions"/>
+  <suffix name="WindowPlacement" label="Window Placement permission actions"/>
   <affected-histogram name="ContentSettings.PermissionActions"/>
   <affected-histogram name="ContentSettings.PermissionActionsInsecureOrigin"/>
   <affected-histogram name="ContentSettings.PermissionActionsSecureOrigin"/>
