@@ -276,6 +276,8 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
         data->cells.emplace_back(
             cell_block_constraints[cell_index].border_box_borders,
             cell_block_size, cell_block_constraints[cell_index].column_index,
+            /* has_grown */ cell_block_size >
+                cell_block_constraints[cell_index].min_block_size,
             cell_block_constraints[cell_index].is_constrained);
       }
     }
