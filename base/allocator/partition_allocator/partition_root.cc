@@ -7,7 +7,6 @@
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -678,52 +677,57 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 
   // Don't reallocate in-place if new reservation size would be less than 80 %
   // of the current one, to avoid holding on to too much unused address space.
-  // Make this check before comparing committed sizes, as even with equal or
-  // similar committed sizes we can save a lot if the original allocation was
-  // heavily padded for alignment.
+  // Make this check before comparing slot sizes, as even with equal or similar
+  // slot sizes we can save a lot if the original allocation was heavily padded
+  // for alignment.
   if ((new_reservation_size / SystemPageSize()) * 5 <
       (current_reservation_size / SystemPageSize()) * 4)
     return false;
 
-  // Calculate committed size the way PartitionDirectMap() would.
-  size_t new_committed_size = bits::AlignUp(raw_size, SystemPageSize());
-  if (new_committed_size < kMinDirectMappedDownsize)
+  // Note that the new size isn't a bucketed size; this function is called
+  // whenever we're reallocating a direct mapped allocation, so calculate it
+  // the way PartitionDirectMap() would.
+  size_t new_slot_size = GetDirectMapSlotSize(raw_size);
+  if (new_slot_size < kMinDirectMappedDownsize)
     return false;
 
   // Past this point, we decided we'll attempt to reallocate without relocating,
   // so we have to honor the padding for alignment in front of the original
   // allocation, even though this function isn't requesting any alignment.
 
-  size_t current_committed_size =
-      bits::AlignUp(slot_span->GetRawSize(), SystemPageSize());
-  // Slot and slot span are equivalent for direct map.
+  // bucket->slot_size is the currently committed size of the allocation.
+  size_t current_slot_size = slot_span->bucket->slot_size;
   char* slot_start =
       static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
+  // This is the available part of the reservation up to which the new
+  // allocation can grow.
+  size_t available_reservation_size =
+      current_reservation_size - extent->padding_for_alignment -
+      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
 #if DCHECK_IS_ON()
   char* reservation_start = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(slot_start) & kSuperPageBaseMask);
   PA_DCHECK(internal::IsReservationStart(reservation_start));
-  PA_DCHECK(slot_start + slot_span->bucket->slot_size ==
+  PA_DCHECK(slot_start + available_reservation_size ==
             reservation_start + current_reservation_size -
                 GetDirectMapMetadataAndGuardPagesSize() + PartitionPageSize());
 #endif
 
-  if (new_committed_size == current_committed_size) {
+  if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
     // That's because raw_size may have changed.
-  } else if (new_committed_size < current_committed_size) {
+  } else if (new_slot_size < current_slot_size) {
     // Shrink by decommitting unneeded pages and making them inaccessible.
-    size_t decommit_size = current_committed_size - new_committed_size;
-    DecommitSystemPagesForData(slot_start + new_committed_size, decommit_size,
+    size_t decommit_size = current_slot_size - new_slot_size;
+    DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
                                PageUpdatePermissions);
     // Since the decommited system pages are still reserved, we don't need to
     // change the entries for decommitted pages in the reservation offset table.
-  } else if (new_committed_size <= slot_span->bucket->slot_size) {
+  } else if (new_slot_size <= available_reservation_size) {
     // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
-    size_t recommit_slot_size_growth =
-        new_committed_size - current_committed_size;
-    RecommitSystemPagesForData(slot_start + current_committed_size,
+    size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
+    RecommitSystemPagesForData(slot_start + current_slot_size,
                                recommit_slot_size_growth,
                                PageUpdatePermissions);
     // The recommited system pages had been already reserved and all the
@@ -731,7 +735,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     // region) have been already initialized.
 
 #if DCHECK_IS_ON()
-    memset(slot_start + current_committed_size, kUninitializedByte,
+    memset(slot_start + current_slot_size, kUninitializedByte,
            recommit_slot_size_growth);
 #endif
   } else {
@@ -741,6 +745,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   }
 
   slot_span->SetRawSize(raw_size);
+  slot_span->bucket->slot_size = new_slot_size;
 
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.

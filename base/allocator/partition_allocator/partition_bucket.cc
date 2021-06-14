@@ -207,20 +207,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // small ones (e.g. WTF::String), and does not have a thread cache.
     ScopedUnlockGuard<thread_safe> scoped_unlock{root->lock_};
 
-    // Layout inside a direct map reservation:
-    //  |guard&metadata|[padding]|slot==slot_span|guard|
-    //                           <------(a)------>
-    //                 <---(b)--->
-    //  <------(c)----->            +            <-(c)->
-    //  <----------------------(d)--------------------->
-    //   (a) slot_size (slot and slot span are equivalent for direct map)
-    //   (b) padding_for_alignment
-    //   (c) GetDirectMapMetadataAndGuardPagesSize()
-    //   (d) reservation_size
-    //
-    // See also the slot layout diagram in AllocFlagsNoHooks() under RawAlloc()
-    // call. This will explain |committed_size| and |raw_size|.
-    size_t committed_size = bits::AlignUp(raw_size, SystemPageSize());
+    const size_t slot_size =
+        PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
     // The super page starts with a partition page worth of metadata and guard
     // pages, hence alignment requests ==PartitionPageSize() will be
     // automatically satisfied. Padding is needed for higher-order alignment
@@ -229,11 +217,13 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         slot_span_alignment - PartitionPageSize();
     const size_t reservation_size =
         PartitionRoot<thread_safe>::GetDirectMapReservationSize(
-            raw_size, padding_for_alignment);
-    const size_t slot_size =
+            raw_size + padding_for_alignment);
+#if DCHECK_IS_ON()
+    const size_t available_reservation_size =
         reservation_size - padding_for_alignment -
         PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
-    PA_DCHECK(committed_size <= slot_size);
+    PA_DCHECK(slot_size <= available_reservation_size);
+#endif
 
     // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
     // BackupRefPtr support.
@@ -280,8 +270,8 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Note that we didn't check above, because if we cannot even commit a
     // single page, then this is likely hopeless anyway, and we will crash very
     // soon.
-    const bool ok = root->TryRecommitSystemPagesForData(
-        slot_start, committed_size, PageUpdatePermissions);
+    const bool ok = root->TryRecommitSystemPagesForData(slot_start, slot_size,
+                                                        PageUpdatePermissions);
     if (!ok) {
       if (!return_null) {
         PartitionOutOfMemoryCommitFailure(root, slot_size);

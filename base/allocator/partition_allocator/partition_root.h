@@ -413,12 +413,17 @@ struct BASE_EXPORT PartitionRoot {
 #endif
   }
 
-  // |padding_for_alignment| is between the first partition page (guard pages +
-  // meta-data) and the allocation (where |raw_size| starts).
+  static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+  GetDirectMapSlotSize(size_t raw_size) {
+    // Caller must check that the size is not above the MaxDirectMapped()
+    // limit before calling. This also guards against integer overflow in the
+    // calculation here.
+    PA_DCHECK(raw_size <= MaxDirectMapped());
+    return bits::AlignUp(raw_size, SystemPageSize());
+  }
+
   static ALWAYS_INLINE size_t
-  GetDirectMapReservationSize(size_t raw_size,
-                              size_t padding_for_alignment = 0) {
-    size_t padded_raw_size = raw_size + padding_for_alignment;
+  GetDirectMapReservationSize(size_t padded_raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
@@ -1100,7 +1105,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
   // |ptr| points after the ref-count and the cookie.
   //
-  // Layout inside a slot:
+  // Layout inside the slot:
   //  <------extras----->                  <-extras->
   //  <--------------utilized_slot_size------------->
   //                    <----usable_size--->
@@ -1110,7 +1115,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   //
   // Note: ref-count and cookies can be 0-sized.
   //
-  // For more context, see the other Layout comment in AllocFlagsNoHooks().
+  // For more context, see the other "Layout inside the slot" comment below.
 #if EXPENSIVE_DCHECKS_ARE_ON() || defined(PA_ZERO_RANDOMLY_ON_FREE)
   const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
 #endif
@@ -1476,22 +1481,20 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   if (UNLIKELY(!slot_start))
     return nullptr;
 
-  // Layout inside a slot:
-  //  |[refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|[uncommitted]|
+  // Layout inside the slot:
+  //  |[refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
   //                    <---(a)---->
   //                    <-------(b)-------->
   //  <-------(c)------->                  <--(c)--->
   //  <-------------(d)------------>   +   <--(d)--->
   //  <---------------------(e)--------------------->
   //  <-------------------------(f)-------------------------->
-  //  <--------------------------------(g)--------------------------------->
   //   (a) requested_size
   //   (b) usable_size
   //   (c) extras
   //   (d) raw_size
   //   (e) utilized_slot_size
-  //   (f) slot's committed region (==slot_size for normal buckets)
-  //   (g) slot_size
+  //   (f) slot_size
   //
   // - Ref-count may or may not exist in the slot, depending on CheckedPtr
   //   implementation.
@@ -1508,9 +1511,6 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   to save raw_size, i.e. only for large allocations. For small allocations,
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
-  // - "uncommitted" space occurs only in the direct map case, if more space
-  //   than needed is reserved due to allocation granularity, or when downsized
-  //   by realloc.
   //
   // If BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) is true, Layout inside the
   // slot of small buckets:
@@ -1699,9 +1699,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::TryRealloc(
 // Return the capacity of the underlying slot (adjusted for extras) that'd be
 // used to satisfy a request of |size|. This doesn't mean this capacity would be
 // readily available. It merely means that if an allocation happened with that
-// returned value, it'd use the same amount of underlying address space as the
-// allocation with |size|. This isn't necessarily true for committed memory,
-// because single-slot spans and direct map may commit less than reserved pages.
+// returned value, it'd use the same amount of underlying memory as the
+// allocation with |size|.
 template <bool thread_safe>
 ALWAYS_INLINE size_t
 PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
@@ -1720,9 +1719,7 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
   } else if (size > MaxDirectMapped()) {
     // Too large to allocate => return the size unchanged.
   } else {
-    PA_DCHECK(size > kMaxBucketed);
-    size = GetDirectMapReservationSize(size) -
-           GetDirectMapMetadataAndGuardPagesSize();
+    size = GetDirectMapSlotSize(size);
   }
   size = AdjustSizeForExtrasSubtract(size);
   return size;

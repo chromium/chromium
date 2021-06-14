@@ -43,14 +43,10 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
     extent->next_extent->prev_extent = extent->prev_extent;
   }
 
-  size_t raw_size = slot_span->GetRawSize();
-  size_t committed_size = bits::AlignUp(raw_size, SystemPageSize());
-  size_t reservation_size = extent->reservation_size;
-  PA_DCHECK(committed_size <= slot_span->bucket->slot_size);
-
   // The actual decommit is deferred, when releasing the reserved memory region.
-  root->DecreaseCommittedPages(committed_size);
+  root->DecreaseCommittedPages(slot_span->bucket->slot_size);
 
+  size_t reservation_size = extent->reservation_size;
   PA_DCHECK(!(reservation_size & DirectMapAllocationGranularityOffsetMask()));
   PA_DCHECK(root->total_size_of_direct_mapped_pages >= reservation_size);
   root->total_size_of_direct_mapped_pages -= reservation_size;
