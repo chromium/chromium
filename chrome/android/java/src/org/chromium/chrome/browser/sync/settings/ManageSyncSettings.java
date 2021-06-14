@@ -241,11 +241,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             type.setOnPreferenceChangeListener(this);
         }
 
-        if (profile.isChild()) {
-            mGoogleActivityControls.setSummary(
-                    R.string.sign_in_google_activity_controls_summary_child_account);
-        }
-
         // Prevent sync settings changes from taking effect until the user leaves this screen.
         mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
 

@@ -326,11 +326,8 @@ public abstract class SyncConsentFragmentBase
         mConsentTextTracker.setText(mView.getTitleView(), R.string.signin_title);
 
         mConsentTextTracker.setText(mView.getSyncTitleView(), R.string.signin_sync_title);
-        final @StringRes int syncDescription =
-                mChildAccountStatus == ChildAccountStatus.REGULAR_CHILD
-                ? R.string.signin_sync_description_child_account
-                : R.string.signin_sync_description;
-        mConsentTextTracker.setText(mView.getSyncDescriptionView(), syncDescription);
+        mConsentTextTracker.setText(
+                mView.getSyncDescriptionView(), R.string.signin_sync_description);
 
         final @StringRes int refuseButtonTextId =
                 mSigninAccessPoint == SigninAccessPoint.SIGNIN_PROMO
