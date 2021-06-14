@@ -36,11 +36,6 @@ class WebJsTest : public WebTestT {
     Inject();
   }
 
-  // Returns an id representation of the JavaScript's evaluation results;
-  // the JavaScript is passed in as a |format| and its arguments.
-  id ExecuteJavaScriptWithFormat(NSString* format, ...)
-      __attribute__((format(__NSString__, 2, 3)));
-
   // Helper method that EXPECTs the |java_script| evaluation results on each
   // element obtained by scripts in |get_element_javas_cripts|; the expected
   // result is the corresponding entry in |expected_results|.
@@ -76,25 +71,15 @@ void WebJsTest<WebTestT>::Inject() {
 }
 
 template <class WebTestT>
-id WebJsTest<WebTestT>::ExecuteJavaScriptWithFormat(NSString* format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString* java_script =
-      [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-
-  return WebTestT::ExecuteJavaScript(java_script);
-}
-
-template <class WebTestT>
 void WebJsTest<WebTestT>::ExecuteJavaScriptOnElementsAndCheck(
     NSString* java_script,
     NSArray* get_element_java_scripts,
     NSArray* expected_results) {
   for (NSUInteger i = 0; i < get_element_java_scripts.count; ++i) {
-    EXPECT_NSEQ(
-        expected_results[i],
-        ExecuteJavaScriptWithFormat(java_script, get_element_java_scripts[i]));
+    NSString* js_to_execute =
+        [NSString stringWithFormat:java_script, get_element_java_scripts[i]];
+    EXPECT_NSEQ(expected_results[i],
+                WebTestT::ExecuteJavaScript(js_to_execute));
   }
 }
 
@@ -104,10 +89,11 @@ void WebJsTest<WebTestT>::ExecuteBooleanJavaScriptOnElementsAndCheck(
     NSArray* get_element_java_scripts,
     NSArray* get_element_java_scripts_expecting_true) {
   for (NSString* get_element_java_script in get_element_java_scripts) {
+    NSString* js_to_execute =
+        [NSString stringWithFormat:java_script, get_element_java_script];
     BOOL expected = [get_element_java_scripts_expecting_true
         containsObject:get_element_java_script];
-    EXPECT_NSEQ(@(expected), ExecuteJavaScriptWithFormat(
-                                 java_script, get_element_java_script))
+    EXPECT_NSEQ(@(expected), WebTestT::ExecuteJavaScript(js_to_execute))
         << [NSString stringWithFormat:@"%@ on %@ should return %d", java_script,
                                       get_element_java_script, expected];
   }

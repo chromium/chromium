@@ -141,9 +141,11 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   EXPECT_NSEQ(
-      @YES, ExecuteJavaScriptWithFormat(
-                @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
-                GAIASignInFormData(formOrigin, formName), username, password));
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:
+              @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
+              GAIASignInFormData(formOrigin, formName), username, password]));
   // Verifies that the sign-in form has been filled with username/password.
   ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
                                       @[ kEmailInputID, kPasswordInputID ],
@@ -165,9 +167,11 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   EXPECT_NSEQ(
-      @NO, ExecuteJavaScriptWithFormat(
-               @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
-               GAIASignInFormData(formOrigin, formName), username2, password));
+      @NO,
+      ExecuteJavaScript([NSString
+          stringWithFormat:
+              @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
+              GAIASignInFormData(formOrigin, formName), username2, password]));
   // Verifies that the sign-in form has not been filled.
   ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
                                       @[ kEmailInputID, kPasswordInputID ],
@@ -189,9 +193,11 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   EXPECT_NSEQ(
-      @YES, ExecuteJavaScriptWithFormat(
-                @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
-                GAIASignInFormData(formOrigin, formName), username2, password));
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:
+              @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
+              GAIASignInFormData(formOrigin, formName), username2, password]));
   // Verifies that the sign-in form has been filled with the new username
   // and password.
   ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
@@ -344,10 +350,11 @@ TEST_F(PasswordControllerJsTest, GetPasswordFormData) {
           @"\"is_checkable\":false,\"value\":\"\",\"label\":\"Password:\"}]}",
           base_url.c_str(), base_url.c_str(), mainFrameID.c_str()];
 
-  EXPECT_NSEQ(result, ExecuteJavaScriptWithFormat(
-                          @"__gCrWeb.stringify(__gCrWeb.passwords."
-                          @"getPasswordFormData(%@, window))",
-                          parameter));
+  EXPECT_NSEQ(result,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:@"__gCrWeb.stringify(__gCrWeb.passwords."
+                                   @"getPasswordFormData(%@, window))",
+                                   parameter]));
 }
 
 // Check that if a form action is not set then the action is parsed to the
@@ -407,23 +414,22 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
 
   // Replace __gCrWeb.message.invokeOnHost with mock method for checking of call
   // arguments.
-  ExecuteJavaScriptWithFormat(
-      @"var invokeOnHostArgument = null;"
-       "var invokeOnHostCalls = 0;"
-       "__gCrWeb.message.invokeOnHost = function(command) {"
-       "  invokeOnHostArgument = command;"
-       "  invokeOnHostCalls++;"
-       "}");
+  ExecuteJavaScript(@"var invokeOnHostArgument = null;"
+                     "var invokeOnHostCalls = 0;"
+                     "__gCrWeb.message.invokeOnHost = function(command) {"
+                     "  invokeOnHostArgument = command;"
+                     "  invokeOnHostCalls++;"
+                     "}");
 
   // Simulate touchend event on the button.
-  ExecuteJavaScriptWithFormat(
+  ExecuteJavaScript(
       @"document.getElementsByName('username')[0].value = 'user1';"
        "document.getElementsByName('password')[0].value = 'password1';"
        "var e = new UIEvent('touchend');"
        "document.getElementsByTagName('button')[0].dispatchEvent(e);");
 
   // Check that there was only 1 call for invokeOnHost.
-  EXPECT_NSEQ(@1, ExecuteJavaScriptWithFormat(@"invokeOnHostCalls"));
+  EXPECT_NSEQ(@1, ExecuteJavaScript(@"invokeOnHostCalls"));
 
   WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
   std::string mainFrameID = main_frame->GetFrameId();
@@ -454,9 +460,8 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
           BaseUrl().c_str(), mainFrameID.c_str()];
 
   // Check that invokeOnHost was called with the correct argument.
-  EXPECT_NSEQ(
-      expected_command,
-      ExecuteJavaScriptWithFormat(@"__gCrWeb.stringify(invokeOnHostArgument)"));
+  EXPECT_NSEQ(expected_command,
+              ExecuteJavaScript(@"__gCrWeb.stringify(invokeOnHostArgument)"));
 }
 
 // Check that a form is filled if url of a page and url in form fill data are
@@ -490,9 +495,11 @@ TEST_F(PasswordControllerJsTest, OriginsAreDifferentInPathes) {
                         "  ]"
                         "}",
                        page_origin.c_str(), form_fill_data_origin.c_str()];
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
-                        form_fill_data, username, password));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:
+                      @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
+                      form_fill_data, username, password]));
   // Verifies that the sign-in form has been filled with username/password.
   ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
                                       @[ @"name", @"password" ],
@@ -515,11 +522,12 @@ TEST_F(PasswordControllerJsTest,
   uint32_t formIdentifier = 404;
   NSString* const password = @"abc";
   uint32_t newPasswordIdentifier = 2;
-  EXPECT_NSEQ(@NO,
-              ExecuteJavaScriptWithFormat(
-                  @"__gCrWeb.passwords."
-                  @"fillPasswordFormWithGeneratedPassword(%d, %d, %d, '%@')",
-                  formIdentifier, newPasswordIdentifier, 0, password));
+  EXPECT_NSEQ(
+      @NO, ExecuteJavaScript([NSString
+               stringWithFormat:
+                   @"__gCrWeb.passwords."
+                   @"fillPasswordFormWithGeneratedPassword(%d, %d, %d, '%@')",
+                   formIdentifier, newPasswordIdentifier, 0, password]));
 }
 
 // Check that filling a form without password fields fails.
@@ -540,11 +548,12 @@ TEST_F(PasswordControllerJsTest,
   uint32_t const newPasswordIdentifier = 3;
   uint32_t const confirmPasswordIdentifier = 4;
   EXPECT_NSEQ(
-      @NO, ExecuteJavaScriptWithFormat(
-               @"__gCrWeb.passwords."
-               @"fillPasswordFormWithGeneratedPassword(%d, %d, %d, '%@')",
-               formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
-               password));
+      @NO, ExecuteJavaScript([NSString
+               stringWithFormat:
+                   @"__gCrWeb.passwords."
+                   @"fillPasswordFormWithGeneratedPassword(%d, %d, %d, '%@')",
+                   formIdentifier, newPasswordIdentifier,
+                   confirmPasswordIdentifier, password]));
 }
 
 // Check that a matching and complete password form is successfully filled
@@ -567,21 +576,28 @@ TEST_F(PasswordControllerJsTest,
   NSString* const password = @"abc";
   uint32_t const newPasswordIdentifier = 3;
   uint32_t const confirmPasswordIdentifier = 4;
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"__gCrWeb.passwords."
-                  @"fillPasswordFormWithGeneratedPassword(%u, %u, %u, '%@')",
-                  formIdentifier, newPasswordIdentifier,
-                  confirmPasswordIdentifier, password));
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('ps1').value == '%@'", password));
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('ps2').value == '%@'", password));
-  EXPECT_NSEQ(@NO,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('user').value == '%@'", password));
+  EXPECT_NSEQ(
+      @YES, ExecuteJavaScript([NSString
+                stringWithFormat:
+                    @"__gCrWeb.passwords."
+                    @"fillPasswordFormWithGeneratedPassword(%u, %u, %u, '%@')",
+                    formIdentifier, newPasswordIdentifier,
+                    confirmPasswordIdentifier, password]));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('ps1').value == '%@'",
+                           password]));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('ps2').value == '%@'",
+                           password]));
+  EXPECT_NSEQ(
+      @NO,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('user').value == '%@'",
+                           password]));
 }
 
 // Check that a matching and complete password field is successfully filled
@@ -604,19 +620,27 @@ TEST_F(
   uint32_t formIdentifier = 1;
   NSString* const password = @"abc";
   uint32_t const newPasswordIdentifier = 3;
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"__gCrWeb.passwords."
-                  @"fillPasswordFormWithGeneratedPassword(%u, %u, %u, '%@')",
-                  formIdentifier, newPasswordIdentifier, 0, password));
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('ps1').value == '%@'", password));
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"document.getElementById('ps2').value == '%@'", @""));
-  EXPECT_NSEQ(@NO,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('user').value == '%@'", password));
+  EXPECT_NSEQ(
+      @YES, ExecuteJavaScript([NSString
+                stringWithFormat:
+                    @"__gCrWeb.passwords."
+                    @"fillPasswordFormWithGeneratedPassword(%u, %u, %u, '%@')",
+                    formIdentifier, newPasswordIdentifier, 0, password]));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('ps1').value == '%@'",
+                           password]));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('ps2').value == '%@'",
+                           @""]));
+  EXPECT_NSEQ(
+      @NO,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('user').value == '%@'",
+                           password]));
 }
 
 // Check that a matching and complete confirm password field is successfully
@@ -639,17 +663,18 @@ TEST_F(
   uint32_t formIdentifier = 1;
   NSString* const password = @"abc";
   uint32_t const confirmPasswordIdentifier = 4;
-  EXPECT_NSEQ(@NO,
-              ExecuteJavaScriptWithFormat(
-                  @"__gCrWeb.passwords."
-                  @"fillPasswordFormWithGeneratedPassword(%u, %u, %u, '%@')",
-                  formIdentifier, 0, confirmPasswordIdentifier, password));
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"document.getElementById('ps1').value == '%@'", @""));
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"document.getElementById('ps2').value == '%@'", @""));
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"document.getElementById('user').value == '%@'", @""));
+  EXPECT_NSEQ(
+      @NO, ExecuteJavaScript([NSString
+               stringWithFormat:
+                   @"__gCrWeb.passwords."
+                   @"fillPasswordFormWithGeneratedPassword(%u, %u, %u, '%@')",
+                   formIdentifier, 0, confirmPasswordIdentifier, password]));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript(@"document.getElementById('ps1').value == ''"));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript(@"document.getElementById('ps2').value == ''"));
+  EXPECT_NSEQ(
+      @YES, ExecuteJavaScript(@"document.getElementById('user').value == ''"));
 }
 
 // Check that unknown or null identifiers are handled gracefully.
@@ -671,17 +696,21 @@ TEST_F(
   uint32_t formIdentifier = 1;
   NSString* const password = @"abc";
   EXPECT_NSEQ(
-      @NO, ExecuteJavaScriptWithFormat(
-               @"__gCrWeb.passwords."
-               @"fillPasswordFormWithGeneratedPassword(%u, '%@', null, '%@')",
-               formIdentifier, @"hello", password));
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"document.getElementById('ps1').value == '%@'", @""));
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"document.getElementById('ps2').value == '%@'", @""));
-  EXPECT_NSEQ(@NO,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('user').value == '%@'", password));
+      @NO,
+      ExecuteJavaScript([NSString
+          stringWithFormat:
+              @"__gCrWeb.passwords."
+              @"fillPasswordFormWithGeneratedPassword(%u, '%@', null, '%@')",
+              formIdentifier, @"hello", password]));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript(@"document.getElementById('ps1').value == ''"));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript(@"document.getElementById('ps2').value == ''"));
+  EXPECT_NSEQ(
+      @NO,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('user').value == '%@'",
+                           password]));
 }
 
 // Check that a matching and complete password form is successfully filled
@@ -701,20 +730,28 @@ TEST_F(PasswordControllerJsTest,
   NSString* const password = @"abc";
   uint32_t const newPasswordIdentifier = 2;
   uint32_t const confirmPasswordIdentifier = 3;
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"__gCrWeb.passwords."
-                  @"fillPasswordFormWithGeneratedPassword(0, %u, %u, '%@')",
-                  newPasswordIdentifier, confirmPasswordIdentifier, password));
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('ps1').value == '%@'", password));
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('ps2').value == '%@'", password));
-  EXPECT_NSEQ(@NO,
-              ExecuteJavaScriptWithFormat(
-                  @"document.getElementById('user').value == '%@'", password));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:
+              @"__gCrWeb.passwords."
+              @"fillPasswordFormWithGeneratedPassword(0, %u, %u, '%@')",
+              newPasswordIdentifier, confirmPasswordIdentifier, password]));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('ps1').value == '%@'",
+                           password]));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('ps2').value == '%@'",
+                           password]));
+  EXPECT_NSEQ(
+      @NO,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"document.getElementById('user').value == '%@'",
+                           password]));
 }
 
 // Check that a form with only password field (i.e. w/o username) is filled.
@@ -744,9 +781,11 @@ TEST_F(PasswordControllerJsTest, FillOnlyPasswordField) {
            "  ]"
            "}",
           page_origin.c_str(), form_fill_data_origin.c_str()];
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"__gCrWeb.passwords.fillPasswordForm(%@, '', '%@')",
-                        form_fill_data, password));
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:@"__gCrWeb.passwords.fillPasswordForm(%@, '', '%@')",
+                           form_fill_data, password]));
   // Verifies that the sign-in form has been filled with |password|.
   ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
                                       @[ @"password" ], @[ password ]);
@@ -782,9 +821,9 @@ TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
           @"\"max_length\":524288,\"is_checkable\":false,\"value\":\"\","
           @"\"label\":\"Password:\"}]}",
           base_url.c_str()];
-  EXPECT_NSEQ(result,
-              ExecuteJavaScriptWithFormat(
-                  @"__gCrWeb.passwords.getPasswordFormDataAsString(0)"));
+  EXPECT_NSEQ(
+      result,
+      ExecuteJavaScript(@"__gCrWeb.passwords.getPasswordFormDataAsString(0)"));
 }
 
 }  // namespace

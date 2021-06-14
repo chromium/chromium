@@ -25,10 +25,11 @@ class FontSizeJsTest : public web::WebJsTest<web::WebTestWithWebState> {
 
   // Find DOM element by |element_id| and get computed font size in px.
   float GetElementFontSize(NSString* element_id) {
-    NSNumber* res = ExecuteJavaScriptWithFormat(
-        @"parseFloat(getComputedStyle(document.getElementById('%@'))."
-        @"getPropertyValue('font-size'));",
-        element_id);
+    NSNumber* res = ExecuteJavaScript([NSString
+        stringWithFormat:
+            @"parseFloat(getComputedStyle(document.getElementById('%@'))."
+            @"getPropertyValue('font-size'));",
+            element_id]);
     return res.floatValue;
   }
 
@@ -51,8 +52,9 @@ class FontSizeJsTest : public web::WebJsTest<web::WebTestWithWebState> {
   // adjust font size to |scale|% and return if it is executed without
   // exception.
   bool AdjustFontSize(int scale) WARN_UNUSED_RESULT {
-    id script_result = ExecuteJavaScriptWithFormat(
-        @"__gCrWeb.font_size.adjustFontSize(%d); true;", scale);
+    id script_result = ExecuteJavaScript([NSString
+        stringWithFormat:@"__gCrWeb.font_size.adjustFontSize(%d); true;",
+                         scale]);
     return [script_result isEqual:@YES];
   }
 
