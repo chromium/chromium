@@ -26,6 +26,11 @@ static_library("internal") {
     "database/signal_key_internal.cc",
     "database/signal_key_internal.h",
     "database/user_action_database.h",
+    "execution/dummy_model_execution_manager.cc",
+    "execution/dummy_model_execution_manager.h",
+    "execution/model_execution_manager.h",
+    "execution/model_execution_manager_factory.cc",
+    "execution/model_execution_manager_factory.h",
     "execution/model_execution_status.h",
     "scheduler/model_execution_scheduler.h",
     "scheduler/model_execution_scheduler_impl.cc",
@@ -51,12 +56,13 @@ static_library("internal") {
     "//components/segmentation_platform/public",
   ]
 
-  public_deps =
-      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+  public_deps = [
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
 
   if (build_with_tflite_lib) {
     sources += [
-      "execution/model_execution_manager.h",
       "execution/model_execution_manager_impl.cc",
       "execution/model_execution_manager_impl.h",
       "execution/segmentation_model_executor.cc",
@@ -69,8 +75,6 @@ static_library("internal") {
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite-support",
     ]
-
-    public_deps += [ "//components/optimization_guide/core" ]
   }
 }
 
@@ -89,6 +93,8 @@ source_set("unit_tests") {
     "database/signal_key_unittest.cc",
     "database/test_segment_info_database.cc",
     "database/test_segment_info_database.h",
+    "execution/dummy_model_execution_manager_unittest.cc",
+    "execution/model_execution_manager_factory_unittest.cc",
     "scheduler/model_execution_scheduler_unittest.cc",
     "segmentation_platform_service_impl_unittest.cc",
     "selection/segment_selector_unittest.cc",
@@ -98,8 +104,10 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
+    "//base",
     "//base/test:test_support",
     "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/core:test_support",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//testing/gmock",
@@ -112,11 +120,6 @@ source_set("unit_tests") {
     sources += [
       "execution/model_execution_manager_impl_unittest.cc",
       "execution/segmentation_model_executor_unittest.cc",
-    ]
-
-    deps += [
-      "//base",
-      "//components/optimization_guide/core:test_support",
     ]
   }
 }

@@ -1,4 +1,6 @@
+DummyModelExecutionManagerTest.*
 MetadataUtilsTest.*
+ModelExecutionManagerFactoryTest.*
 ModelExecutionManagerTest.*
 ModelExecutionSchedulerTest.*
 SegmentationModelExecutorTest.*

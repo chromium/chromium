@@ -56,7 +56,8 @@ class SegmentationModelExecutorTest : public testing::Test {
 
   void ResetModelExecutor() {
     model_executor_handle_.reset();
-    // Allow for the background class to be destroyed.
+    // Allow for the SegmentationModelExecutor owned by SegmentationModelHandler
+    // to be destroyed.
     RunUntilIdle();
   }
 

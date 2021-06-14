@@ -33,7 +33,8 @@ class ModelExecutionManagerTest : public testing::Test {
 
   void TearDown() override {
     model_execution_manager_.reset();
-    // Allow for the background class to be destroyed.
+    // Allow for the SegmentationModelExecutor owned by SegmentationModelHandler
+    // to be destroyed.
     RunUntilIdle();
   }
 
