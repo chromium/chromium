@@ -1156,7 +1156,7 @@ try_.chromium_linux_builder(
     builderless = False,
     goma_jobs = goma.jobs.J150,
     tryjob = try_.job(
-        experiment_percentage = 10,
+        experiment_percentage = 5,
     ),
     properties = {
         "bot_update_experiments": [
