@@ -76,4 +76,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1186991
   "launcher.SearchBuiltInApps",
+
+  # crbug.com/1212788
+  "apps.LaunchGallery.stable",
 ]
