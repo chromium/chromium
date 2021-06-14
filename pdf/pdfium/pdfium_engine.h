@@ -183,7 +183,6 @@ class PDFiumEngine : public PDFEngine,
                         SendThumbnailCallback send_callback) override;
 
   // DocumentLoader::Client:
-  pp::Instance* GetPluginInstance() override;
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override;
   void OnPendingRequestComplete() override;
   void OnNewDataReceived() override;

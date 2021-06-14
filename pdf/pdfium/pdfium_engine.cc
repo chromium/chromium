@@ -728,10 +728,6 @@ bool PDFiumEngine::HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) {
   return true;
 }
 
-pp::Instance* PDFiumEngine::GetPluginInstance() {
-  return client_->GetPluginInstance();
-}
-
 std::unique_ptr<URLLoaderWrapper> PDFiumEngine::CreateURLLoader() {
   return std::make_unique<URLLoaderWrapperImpl>(client_->CreateUrlLoader());
 }

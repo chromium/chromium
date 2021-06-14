@@ -200,7 +200,6 @@ class TestClient : public DocumentLoader::Client {
   ~TestClient() override = default;
 
   // DocumentLoader::Client overrides:
-  pp::Instance* GetPluginInstance() override { return nullptr; }
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override {
     return std::unique_ptr<URLLoaderWrapper>(
         new TestURLLoader(partial_loader_data()));
