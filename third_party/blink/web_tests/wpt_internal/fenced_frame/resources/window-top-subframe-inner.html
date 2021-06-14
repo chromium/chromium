@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<title>Fenced frame content to report the value of a subframe's window.top</title>
+
+<body>
+<script>
+async function init() { // Needed in order to use top-level await.
+  // This file is meant to be navigated to from a <fencedframe> element. It
+  // creates a subframe and pulls its value of `window.top` and reports back to
+  // the page hosting the <fencedframe> whether or not this value was correct.
+
+  const window_top_key = KEYS["window.top"];
+
+  const iframe = document.createElement('iframe');
+  iframe.src = "dummy.html";
+  const load_promise = new Promise((resolve, reject) => {
+    iframe.onload = resolve;
+    iframe.onerror = reject;
+  });
+  document.body.append(iframe);
+
+  await load_promise;
+
+  // Report whether or not the subframe's `window.top` was correct.
+  const result = (iframe.contentWindow.top == window) ? "pass" : "fail";
+  writeValueToServer(window_top_key, result);
+}
+
+init();
+</script>
+</body>

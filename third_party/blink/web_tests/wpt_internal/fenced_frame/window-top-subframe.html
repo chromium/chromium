@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Test window.top</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const window_top_key = KEYS["window.top"];
+
+  attachFencedFrame("resources/window-top-subframe-inner.html");
+
+  const actual_result = await nextValueFromServer(window_top_key);
+  assert_equals(actual_result, "pass",
+                "The fenced frame has the right value for `window.top`");
+}, "window.top for subframes inside a fenced frames");
+</script>
+
+</body>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<title>Fenced frame content to report the value of window.top</title>
+
+<body>
+<script>
+async function init() { // Needed in order to use top-level await.
+  // This file is meant to be navigated to from a <fencedframe> element. It
+  // reports back to the page hosting the <fencedframe> whether or not
+  // `window.top` has the correct value.
+
+  const window_top_key = KEYS["window.top"];
+  const navigate_key = KEYS["navigate"];
+
+  // Report whether or not `window.top` was correct.
+  const result = (window.top == window) ? "pass" : "fail";
+  writeValueToServer(window_top_key, result);
+
+  const url = new URL(location.href);
+  if (url.search === "") {
+    // See `document-referrer-inner.html` for documentation for this code block.
+    await nextValueFromServer(navigate_key);
+    location.href = location.href + "?final";
+  }
+}
+
+init();
+</script>
+</body>

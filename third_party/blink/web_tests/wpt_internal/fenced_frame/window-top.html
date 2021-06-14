@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>Test window.top</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const window_top_key = KEYS["window.top"];
+  const navigate_key = KEYS["navigate"];
+
+  attachFencedFrame("resources/window-top-inner.html");
+
+  const actual_result = await nextValueFromServer(window_top_key);
+  assert_equals(actual_result, "pass",
+                "The fenced frame has the right value for `window.top`");
+
+  writeValueToServer(navigate_key, "navigate");
+
+  const next_actual_result  = await nextValueFromServer(window_top_key);
+  assert_equals(next_actual_result, "pass",
+                "The fenced frame has the right value for `window.top` upon " +
+                "subsequent navigations");
+
+}, "window.top");
+</script>
+
+</body>

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/report.h"
@@ -130,6 +132,29 @@ DOMWindow* DOMWindow::parent() const {
 DOMWindow* DOMWindow::top() const {
   if (!GetFrame())
     return nullptr;
+
+  // TODO(crbug.com/1123606): Remove this once we use MPArch as the underlying
+  // fenced frames implementation, instead of the
+  // `FencedFrameShadowDOMDelegate`. This is the version of `top()` specifically
+  // for fenced frames implemented with the ShadowDOM, because it provides
+  // top-most DOMWindow within the "fenced" frame tree. That is, the closest
+  // DOMWindow to this window that is marked as fenced, if one such frame
+  // exists (see the early-break below). See
+  // https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit#heading=h.jztjmd6vstll.
+  if (RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()) &&
+      features::kFencedFramesImplementationTypeParam.Get() ==
+          features::FencedFramesImplementationType::kShadowDOM) {
+    Frame* frame = GetFrame();
+    while (frame->Parent()) {
+      if (frame->Owner() && frame->Owner()->GetFramePolicy().is_fenced) {
+        break;
+      }
+      frame = frame->Parent();
+    }
+
+    DCHECK(frame);
+    return frame->DomWindow();
+  }
 
   return GetFrame()->Tree().Top().DomWindow();
 }

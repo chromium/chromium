@@ -16,6 +16,7 @@ const KEYS = {
   // Add keys below this list:
   "document.referrer" : "00000000-0000-0000-0000-000000000001",
   "navigate"          : "00000000-0000-0000-0000-000000000002",
+  "window.top"        : "00000000-0000-0000-0000-000000000003",
 }
 
 function attachFencedFrame(url) {
