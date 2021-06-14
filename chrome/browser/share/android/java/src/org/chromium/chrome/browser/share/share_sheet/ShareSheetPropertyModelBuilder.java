@@ -50,7 +50,7 @@ import java.util.Set;
 public class ShareSheetPropertyModelBuilder {
     @IntDef({ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.TEXT,
             ContentType.HIGHLIGHTED_TEXT, ContentType.LINK_AND_TEXT, ContentType.IMAGE,
-            ContentType.OTHER_FILE_TYPE})
+            ContentType.OTHER_FILE_TYPE, ContentType.IMAGE_AND_LINK})
     @Retention(RetentionPolicy.SOURCE)
     @interface ContentType {
         int LINK_PAGE_VISIBLE = 0;
@@ -60,6 +60,7 @@ public class ShareSheetPropertyModelBuilder {
         int LINK_AND_TEXT = 4;
         int IMAGE = 5;
         int OTHER_FILE_TYPE = 6;
+        int IMAGE_AND_LINK = 7;
     }
 
     private static final int MAX_NUM_APPS = 7;
@@ -70,7 +71,7 @@ public class ShareSheetPropertyModelBuilder {
     static final HashSet<Integer> ALL_CONTENT_TYPES_FOR_TEST = new HashSet<>(
             Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE,
                     ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT, ContentType.LINK_AND_TEXT,
-                    ContentType.IMAGE, ContentType.OTHER_FILE_TYPE));
+                    ContentType.IMAGE, ContentType.OTHER_FILE_TYPE, ContentType.IMAGE_AND_LINK));
     private static final ArrayList<String> FALLBACK_ACTIVITIES =
             new ArrayList<>(Arrays.asList("com.whatsapp.ContactPicker",
                     "com.facebook.composer.shareintent.ImplicitShareIntentHandlerDefaultAlias",
@@ -116,7 +117,8 @@ public class ShareSheetPropertyModelBuilder {
      */
     static Set<Integer> getContentTypes(ShareParams params, ChromeShareExtras chromeShareExtras) {
         Set<Integer> contentTypes = new HashSet<>();
-        if (!TextUtils.isEmpty(params.getUrl())) {
+        boolean hasUrl = !TextUtils.isEmpty(params.getUrl());
+        if (hasUrl && !chromeShareExtras.skipPageSharingActions()) {
             if (chromeShareExtras.isUrlOfVisiblePage()) {
                 contentTypes.add(ContentType.LINK_PAGE_VISIBLE);
             } else {
@@ -130,13 +132,17 @@ public class ShareSheetPropertyModelBuilder {
                 contentTypes.add(ContentType.TEXT);
             }
         }
-        if (!TextUtils.isEmpty(params.getUrl()) && !TextUtils.isEmpty(params.getText())) {
+        if (hasUrl && !TextUtils.isEmpty(params.getText())) {
             contentTypes.add(ContentType.LINK_AND_TEXT);
         }
         if (params.getFileUris() != null) {
             if (!TextUtils.isEmpty(params.getFileContentType())
                     && params.getFileContentType().startsWith(IMAGE_TYPE)) {
-                contentTypes.add(ContentType.IMAGE);
+                if (hasUrl) {
+                    contentTypes.add(ContentType.IMAGE_AND_LINK);
+                } else {
+                    contentTypes.add(ContentType.IMAGE);
+                }
             } else {
                 contentTypes.add(ContentType.OTHER_FILE_TYPE);
             }
@@ -243,8 +249,9 @@ public class ShareSheetPropertyModelBuilder {
             resolveInfoList.addAll(mPackageManager.queryIntentActivities(
                     ShareHelper.getShareLinkAppCompatibilityIntent(), 0));
         }
-        if (!Collections.disjoint(
-                    contentTypes, Arrays.asList(ContentType.IMAGE, ContentType.OTHER_FILE_TYPE))) {
+        if (!Collections.disjoint(contentTypes,
+                    Arrays.asList(ContentType.IMAGE, ContentType.IMAGE_AND_LINK,
+                            ContentType.OTHER_FILE_TYPE))) {
             resolveInfoList.addAll(mPackageManager.queryIntentActivities(
                     ShareHelper.createShareFileAppCompatibilityIntent(fileContentType), 0));
         }

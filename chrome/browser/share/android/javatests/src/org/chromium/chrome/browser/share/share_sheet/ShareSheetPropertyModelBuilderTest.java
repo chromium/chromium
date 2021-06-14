@@ -217,6 +217,36 @@ public final class ShareSheetPropertyModelBuilderTest {
 
     @Test
     @MediumTest
+    public void getContentTypes_hasImageAndLink_AndPage() {
+        ShareParams shareParams =
+                new ShareParams.Builder(null, "", URL)
+                        .setFileUris(new ArrayList<>(ImmutableList.of(Uri.EMPTY, Uri.EMPTY)))
+                        .setFileContentType("image/png")
+                        .build();
+        ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();
+
+        assertEquals("Should contain IMAGE_AND_LINK and LINK_PAGE_NOT_VISIBLE.",
+                ImmutableSet.of(ContentType.IMAGE_AND_LINK, ContentType.LINK_PAGE_NOT_VISIBLE),
+                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+    }
+
+    @Test
+    @MediumTest
+    public void getContentTypes_hasImageAndLink_NoPage() {
+        ShareParams shareParams =
+                new ShareParams.Builder(null, "", URL)
+                        .setFileUris(new ArrayList<>(ImmutableList.of(Uri.EMPTY, Uri.EMPTY)))
+                        .setFileContentType("image/png")
+                        .build();
+        ChromeShareExtras shareExtras =
+                new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
+
+        assertEquals("Should contain IMAGE_AND_LINK.", ImmutableSet.of(ContentType.IMAGE_AND_LINK),
+                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+    }
+
+    @Test
+    @MediumTest
     public void getContentTypes_NoFiles_hasNoFileContentType() {
         ShareParams shareParams =
                 new ShareParams.Builder(null, "", "").setFileContentType("*/*").build();

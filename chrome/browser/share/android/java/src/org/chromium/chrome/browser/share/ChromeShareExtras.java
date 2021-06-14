@@ -45,9 +45,15 @@ public class ChromeShareExtras {
 
     private final boolean mIsReshareHighlightedText;
 
+    /**
+     * Whether page sharing 1P actions should be added to the share sheet or not.
+     */
+    private final boolean mSkipPageSharingActions;
+
     private ChromeShareExtras(boolean saveLastUsed, boolean shareDirectly,
             boolean isUrlOfVisiblePage, GURL imageSrcUrl, boolean isUserHighlightedText,
-            boolean sharingTabGroup, boolean isReshareHighlightedText) {
+            boolean sharingTabGroup, boolean isReshareHighlightedText,
+            boolean skipPageSharingActions) {
         mSaveLastUsed = saveLastUsed;
         mShareDirectly = shareDirectly;
         mIsUrlOfVisiblePage = isUrlOfVisiblePage;
@@ -55,6 +61,7 @@ public class ChromeShareExtras {
         mIsUserHighlightedText = isUserHighlightedText;
         mSharingTabGroup = sharingTabGroup;
         mIsReshareHighlightedText = isReshareHighlightedText;
+        mSkipPageSharingActions = skipPageSharingActions;
     }
 
     /**
@@ -105,6 +112,14 @@ public class ChromeShareExtras {
     }
 
     /**
+     * @return Whether page sharing 1P actions should be added to the share
+     * sheet or not.
+     */
+    public boolean skipPageSharingActions() {
+        return mSkipPageSharingActions;
+    }
+
+    /**
      * The builder for {@link ChromeShareExtras} objects.
      */
     public static class Builder {
@@ -115,6 +130,7 @@ public class ChromeShareExtras {
         private boolean mIsUserHighlightedText;
         private boolean mSharingTabGroup;
         private boolean mIsReshareHighlightedText;
+        private boolean mSkipPageSharingActions;
 
         /**
          * Sets whether to save the chosen activity for future direct sharing.
@@ -170,10 +186,15 @@ public class ChromeShareExtras {
             return this;
         }
 
+        public Builder setSkipPageSharingActions(boolean skipPageSharingActions) {
+            mSkipPageSharingActions = skipPageSharingActions;
+            return this;
+        }
+
         public ChromeShareExtras build() {
             return new ChromeShareExtras(mSaveLastUsed, mShareDirectly, mIsUrlOfVisiblePage,
                     mImageSrcUrl, mIsUserHighlightedText, mSharingTabGroup,
-                    mIsReshareHighlightedText);
+                    mIsReshareHighlightedText, mSkipPageSharingActions);
         }
     }
 }

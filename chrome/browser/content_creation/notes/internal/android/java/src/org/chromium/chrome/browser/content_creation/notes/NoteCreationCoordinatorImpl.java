@@ -105,7 +105,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                     .build();
 
                     long shareStartTime = System.currentTimeMillis();
-                    ChromeShareExtras extras = new ChromeShareExtras.Builder().build();
+                    ChromeShareExtras extras =
+                            new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
 
                     // Dismiss current dialog before showing the share sheet.
                     this.dismiss();
