@@ -1653,6 +1653,10 @@ crbug.com/666993 [ Debug ] external/wpt/requestidlecallback/callback-idle-period
 # crbug.com/1218716: These fail when TrustTokenOriginTrial is enabled.
 crbug.com/1218716 external/wpt/trust-tokens/trust-token-parameter-validation-xhr.tentative.https.html [ Failure ]
 crbug.com/1218716 external/wpt/trust-tokens/trust-token-parameter-validation.tentative.https.html [ Failure ]
+crbug.com/1218716 external/wpt/feature-policy/experimental-features/trust-token-redemption-default-feature-policy.tentative.https.sub.html [ Failure ]
+crbug.com/1218716 external/wpt/feature-policy/experimental-features/trust-token-redemption-supported-by-feature-policy.tentative.html [ Failure ]
+crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-token-redemption-default-permissions-policy.tentative.https.sub.html [ Failure ]
+crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-token-redemption-supported-by-permissions-policy.tentative.html [ Failure ]
 crbug.com/1218716 webexposed/element-instance-property-listing.html [ Failure ]
 crbug.com/1218716 webexposed/feature-policy-features.html [ Failure ]
 crbug.com/1218716 webexposed/global-interface-listing-dedicated-worker.html [ Failure ]
