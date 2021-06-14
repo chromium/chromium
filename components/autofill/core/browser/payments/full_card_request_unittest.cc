@@ -39,27 +39,38 @@ using testing::_;
 class MockResultDelegate : public FullCardRequest::ResultDelegate,
                            public base::SupportsWeakPtr<MockResultDelegate> {
  public:
-  MOCK_METHOD3(OnFullCardRequestSucceeded,
-               void(const payments::FullCardRequest&,
-                    const CreditCard&,
-                    const std::u16string&));
-  MOCK_METHOD1(OnFullCardRequestFailed,
-               void(payments::FullCardRequest::FailureType));
+  MOCK_METHOD(void,
+              OnFullCardRequestSucceeded,
+              (const payments::FullCardRequest&,
+               const CreditCard&,
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              OnFullCardRequestFailed,
+              (payments::FullCardRequest::FailureType),
+              (override));
 };
 
 // The delegate responsible for displaying the unmask prompt UI.
 class MockUIDelegate : public FullCardRequest::UIDelegate,
                        public base::SupportsWeakPtr<MockUIDelegate> {
  public:
-  MOCK_METHOD3(ShowUnmaskPrompt,
-               void(const CreditCard&,
-                    AutofillClient::UnmaskCardReason,
-                    base::WeakPtr<CardUnmaskDelegate>));
-  MOCK_METHOD1(OnUnmaskVerificationResult,
-               void(AutofillClient::PaymentsRpcResult));
+  MOCK_METHOD(void,
+              ShowUnmaskPrompt,
+              (const CreditCard&,
+               AutofillClient::UnmaskCardReason,
+               base::WeakPtr<CardUnmaskDelegate>),
+              (override));
+  MOCK_METHOD(void,
+              OnUnmaskVerificationResult,
+              (AutofillClient::PaymentsRpcResult),
+              (override));
 #if defined(OS_ANDROID)
-  MOCK_CONST_METHOD0(ShouldOfferFidoAuth, bool());
-  MOCK_CONST_METHOD0(UserOptedInToFidoFromSettingsPageOnMobile, bool());
+  MOCK_METHOD(bool, ShouldOfferFidoAuth, (), (const override));
+  MOCK_METHOD(bool,
+              UserOptedInToFidoFromSettingsPageOnMobile,
+              (),
+              (const override));
 #endif
 };
 
@@ -68,9 +79,15 @@ class MockPersonalDataManager : public TestPersonalDataManager {
  public:
   MockPersonalDataManager() {}
   ~MockPersonalDataManager() override {}
-  MOCK_CONST_METHOD0(IsSyncFeatureEnabled, bool());
-  MOCK_METHOD1(UpdateCreditCard, void(const CreditCard& credit_card));
-  MOCK_METHOD1(UpdateServerCreditCard, void(const CreditCard& credit_card));
+  MOCK_METHOD(bool, IsSyncFeatureEnabled, (), (const override));
+  MOCK_METHOD(void,
+              UpdateCreditCard,
+              (const CreditCard& credit_card),
+              (override));
+  MOCK_METHOD(void,
+              UpdateServerCreditCard,
+              (const CreditCard& credit_card),
+              (override));
 };
 
 // TODO(crbug.com/881835): Simplify this test setup.

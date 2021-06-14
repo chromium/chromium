@@ -121,12 +121,19 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   ~MockAutofillClient() override = default;
 
-  MOCK_METHOD0(ShouldShowSigninPromo, bool());
-  MOCK_CONST_METHOD0(GetChannel, version_info::Channel());
-  MOCK_METHOD2(ConfirmSaveUpiIdLocally,
-               void(const std::string& upi_id,
-                    base::OnceCallback<void(bool user_decision)> callback));
-  MOCK_CONST_METHOD0(GetProfileType, profile_metrics::BrowserProfileType());
+  MOCK_METHOD(bool, ShouldShowSigninPromo, (), (override));
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  MOCK_METHOD(void,
+              ConfirmSaveUpiIdLocally,
+              (const std::string& upi_id,
+               base::OnceCallback<void(bool user_decision)> callback),
+              (override));
+#endif
+  MOCK_METHOD(profile_metrics::BrowserProfileType,
+              GetProfileType,
+              (),
+              (const override));
 };
 
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
@@ -138,13 +145,15 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;
 
-  MOCK_METHOD6(StartUploadRequest,
-               bool(const FormStructure&,
-                    bool,
-                    const ServerFieldTypeSet&,
-                    const std::string&,
-                    bool,
-                    PrefService*));
+  MOCK_METHOD(bool,
+              StartUploadRequest,
+              (const FormStructure&,
+               bool,
+               const ServerFieldTypeSet&,
+               const std::string&,
+               bool,
+               PrefService*),
+              (override));
 };
 
 void ExpectFilledField(const char* expected_label,
@@ -309,18 +318,22 @@ class MockAutofillDriver : public TestAutofillDriver {
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
 
   // Mock methods to enable testability.
-  MOCK_METHOD5(SendFormDataToRenderer,
-               void(int query_id,
-                    RendererFormDataAction action,
-                    const FormData& data,
-                    const url::Origin& triggered_origin,
-                    const base::flat_map<FieldGlobalId, ServerFieldType>&
-                        field_type_map));
-
-  MOCK_METHOD1(SendAutofillTypePredictionsToRenderer,
-               void(const std::vector<FormStructure*>& forms));
-  MOCK_METHOD1(SendFieldsEligibleForManualFillingToRenderer,
-               void(const std::vector<FieldGlobalId>& fields));
+  MOCK_METHOD(void,
+              SendFormDataToRenderer,
+              (int query_id,
+               RendererFormDataAction action,
+               const FormData& data,
+               const url::Origin& triggered_origin,
+               (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
+              (override));
+  MOCK_METHOD(void,
+              SendAutofillTypePredictionsToRenderer,
+              (const std::vector<FormStructure*>& forms),
+              (override));
+  MOCK_METHOD(void,
+              SendFieldsEligibleForManualFillingToRenderer,
+              (const std::vector<FieldGlobalId>& fields),
+              (override));
 };
 
 }  // namespace
@@ -346,6 +359,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::make_unique<MockAutocompleteHistoryManager>();
     autocomplete_history_manager_->Init(
         /*profile_database=*/database_,
+        /*pref_service=*/autofill_client_.GetPrefs(),
         /*is_off_the_record=*/false);
 
     autofill_driver_ =
@@ -9232,7 +9246,9 @@ TEST_F(BrowserAutofillManagerTest, DontImportUpiIdWhenIncognito) {
   scoped_feature_list.InitAndEnableFeature(features::kAutofillSaveAndFillVPA);
   autofill_driver_->SetIsIncognito(true);
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
   EXPECT_CALL(autofill_client_, ConfirmSaveUpiIdLocally(_, _)).Times(0);
+#endif  // #if !defined(OS_ANDROID) && !defined(OS_IOS)
 
   FormData form;
   form.url = GURL("https://wwww.foo.com");

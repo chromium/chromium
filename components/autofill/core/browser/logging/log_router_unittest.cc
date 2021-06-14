@@ -23,7 +23,7 @@ class MockLogReceiver : public LogReceiver {
  public:
   MockLogReceiver() = default;
 
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLogReceiver);
@@ -33,7 +33,7 @@ class MockLogManager : public StubLogManager {
  public:
   MockLogManager() = default;
 
-  MOCK_METHOD1(OnLogRouterAvailabilityChanged, void(bool));
+  MOCK_METHOD(void, OnLogRouterAvailabilityChanged, (bool), (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLogManager);

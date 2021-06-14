@@ -115,7 +115,7 @@ class MockPersonalDataManager : public TestPersonalDataManager {
  public:
   MockPersonalDataManager() = default;
   ~MockPersonalDataManager() override = default;
-  MOCK_METHOD0(OnUserAcceptedUpstreamOffer, void());
+  MOCK_METHOD(void, OnUserAcceptedUpstreamOffer, (), (override));
 };
 
 class CreditCardSaveManagerTest : public testing::Test {
@@ -138,6 +138,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     personal_data_.SetSyncServiceForTest(&sync_service_);
     autocomplete_history_manager_.Init(
         /*profile_database=*/database_,
+        /*pref_service=*/nullptr,
         /*is_off_the_record=*/false);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(

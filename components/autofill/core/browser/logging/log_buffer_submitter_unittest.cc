@@ -18,7 +18,7 @@ namespace autofill {
 
 class MockLogReceiver : public LogReceiver {
  public:
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
 };
 
 TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {

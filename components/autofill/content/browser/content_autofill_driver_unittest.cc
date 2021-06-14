@@ -154,8 +154,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Mocked mojom::AutofillAgent methods:
-  MOCK_METHOD0(FirstUserGestureObservedInTab, void());
-  MOCK_METHOD0(EnableHeavyFormDataScraping, void());
+  MOCK_METHOD(void, EnableHeavyFormDataScraping, (), (override));
 
  private:
   void CallDone() {
@@ -315,10 +314,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   MOCK_METHOD(bool, ShouldParseForms, (const std::vector<FormData>&), ());
 };
 
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MOCK_METHOD0(OnFirstUserGestureObserved, void());
-};
+class MockAutofillClient : public TestAutofillClient {};
 
 class TestContentAutofillDriver : public ContentAutofillDriver {
  public:

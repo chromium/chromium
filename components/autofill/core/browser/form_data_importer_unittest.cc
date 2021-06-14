@@ -76,8 +76,8 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
   PersonalDataLoadedObserverMock() {}
   ~PersonalDataLoadedObserverMock() override {}
 
-  MOCK_METHOD0(OnPersonalDataChanged, void());
-  MOCK_METHOD0(OnPersonalDataFinishedProfileTasks, void());
+  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
+  MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
 };
 
 template <typename T>

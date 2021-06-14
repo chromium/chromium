@@ -21,7 +21,7 @@ namespace {
 
 class MockAutofillClient : public TestAutofillClient {
  public:
-  MOCK_METHOD1(HideAutofillPopup, void(PopupHidingReason));
+  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
 };
 
 // Just a stub AutofillDriver implementation which announces its construction

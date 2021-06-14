@@ -23,7 +23,7 @@ const char kTestText[] = "abcd1234";
 class MockLogReceiver : public autofill::LogReceiver {
  public:
   MockLogReceiver() = default;
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLogReceiver);
@@ -32,7 +32,7 @@ class MockLogReceiver : public autofill::LogReceiver {
 class MockNotifiedObject {
  public:
   MockNotifiedObject() = default;
-  MOCK_METHOD0(NotifyAboutLoggingActivity, void());
+  MOCK_METHOD(void, NotifyAboutLoggingActivity, (), ());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockNotifiedObject);

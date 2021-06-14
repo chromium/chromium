@@ -322,7 +322,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {}
-  MOCK_METHOD1(ExecuteCommand, void(int));
+  MOCK_METHOD(void, ExecuteCommand, (int), (override));
 };
 
 }  // namespace

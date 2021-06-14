@@ -85,9 +85,14 @@ ACTION_P(SignalEvent, event) {
 class MockAutofillWebDataServiceObserver
     : public AutofillWebDataServiceObserverOnDBSequence {
  public:
-  MOCK_METHOD1(AutofillEntriesChanged, void(const AutofillChangeList& changes));
-  MOCK_METHOD1(AutofillProfileChanged,
-               void(const AutofillProfileChange& change));
+  MOCK_METHOD(void,
+              AutofillEntriesChanged,
+              (const AutofillChangeList& changes),
+              (override));
+  MOCK_METHOD(void,
+              AutofillProfileChanged,
+              (const AutofillProfileChange& change),
+              (override));
 };
 
 class WebDataServiceTest : public testing::Test {

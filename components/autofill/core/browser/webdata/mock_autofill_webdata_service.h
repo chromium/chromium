@@ -17,15 +17,22 @@ class MockAutofillWebDataService : public AutofillWebDataService {
  public:
   MockAutofillWebDataService();
 
-  MOCK_METHOD1(AddFormFields, void(const std::vector<FormFieldData>&));
-  MOCK_METHOD1(CancelRequest, void(int));
-  MOCK_METHOD4(GetFormValuesForElementName,
-               WebDataServiceBase::Handle(const std::u16string& name,
-                                          const std::u16string& prefix,
-                                          int limit,
-                                          WebDataServiceConsumer* consumer));
-  MOCK_METHOD1(RemoveExpiredAutocompleteEntries,
-               WebDataServiceBase::Handle(WebDataServiceConsumer* consumer));
+  MOCK_METHOD(void,
+              AddFormFields,
+              (const std::vector<FormFieldData>&),
+              (override));
+  MOCK_METHOD(void, CancelRequest, (int), (override));
+  MOCK_METHOD(WebDataServiceBase::Handle,
+              GetFormValuesForElementName,
+              (const std::u16string& name,
+               const std::u16string& prefix,
+               int limit,
+               WebDataServiceConsumer* consumer),
+              (override));
+  MOCK_METHOD(WebDataServiceBase::Handle,
+              RemoveExpiredAutocompleteEntries,
+              (WebDataServiceConsumer * consumer),
+              (override));
 
  protected:
   ~MockAutofillWebDataService() override;

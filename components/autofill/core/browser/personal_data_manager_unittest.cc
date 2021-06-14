@@ -93,14 +93,13 @@ ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
 }
 
-
 class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
  public:
   PersonalDataLoadedObserverMock() = default;
   ~PersonalDataLoadedObserverMock() override = default;
 
-  MOCK_METHOD0(OnPersonalDataChanged, void());
-  MOCK_METHOD0(OnPersonalDataFinishedProfileTasks, void());
+  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
+  MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
 };
 
 class PersonalDataManagerMock : public PersonalDataManager {
@@ -110,7 +109,7 @@ class PersonalDataManagerMock : public PersonalDataManager {
       : PersonalDataManager(app_locale, variations_country_code) {}
   ~PersonalDataManagerMock() override = default;
 
-  MOCK_METHOD1(OnValidated, void(const AutofillProfile* profile));
+  MOCK_METHOD(void, OnValidated, (const AutofillProfile* profile), (override));
   void OnValidatedPDM(const AutofillProfile* profile) {
     PersonalDataManager::OnValidated(profile);
   }
