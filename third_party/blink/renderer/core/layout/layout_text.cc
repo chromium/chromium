@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
@@ -2390,6 +2391,9 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
 
   const FrameSelection& frame_selection = GetFrame()->Selection();
   if (IsInLayoutNGInlineFormattingContext()) {
+    float scaling_factor = 1.0f;
+    if (const auto* svg_inline_text = DynamicTo<LayoutSVGInlineText>(this))
+      scaling_factor = svg_inline_text->ScalingFactor();
     PhysicalRect rect;
     NGInlineCursor cursor(*ContainingNGBlockFlow());
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
@@ -2400,6 +2404,12 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       if (status.start == status.end)
         continue;
       PhysicalRect item_rect = cursor.CurrentLocalSelectionRectForText(status);
+      // TODO(tkent): Apply bounding box transform.
+      // See svg/text/text-selection-path-01-b.svg.
+      if (scaling_factor != 1.0f) {
+        item_rect.offset.Scale(1 / scaling_factor);
+        item_rect.size.Scale(1 / scaling_factor);
+      }
       item_rect.offset += cursor.Current().OffsetInContainerFragment();
       rect.Unite(item_rect);
     }

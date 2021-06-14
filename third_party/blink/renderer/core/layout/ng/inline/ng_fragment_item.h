@@ -375,6 +375,7 @@ class CORE_EXPORT NGFragmentItem {
 
   // Compute line-relative coordinates for given offsets, this is not
   // flow-relative:
+  // This returns scaled values for kSVGText type.
   // https://drafts.csswg.org/css-writing-modes-3/#line-directions
   std::pair<LayoutUnit, LayoutUnit> LineLeftAndRightForOffsets(
       StringView text,
@@ -383,6 +384,7 @@ class CORE_EXPORT NGFragmentItem {
 
   // The layout box of text in (start, end) range in local coordinate.
   // Start and end offsets must be between StartOffset() and EndOffset().
+  // This returns a scaled PhysicalRect for kSVGText type.
   PhysicalRect LocalRect(StringView text,
                          unsigned start_offset,
                          unsigned end_offset) const;

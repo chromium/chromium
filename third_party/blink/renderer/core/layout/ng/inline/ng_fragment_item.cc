@@ -853,6 +853,10 @@ LayoutUnit NGFragmentItem::InlinePositionForOffset(
   DCHECK_EQ(1u, text.length());
   if (!offset || UNLIKELY(IsRtl(Style().Direction())))
     return LayoutUnit();
+  if (Type() == kSvgText) {
+    return LayoutUnit(IsHorizontal() ? SvgFragmentData()->rect.Width()
+                                     : SvgFragmentData()->rect.Height());
+  }
   return IsHorizontal() ? Size().width : Size().height;
 }
 
@@ -885,22 +889,28 @@ std::pair<LayoutUnit, LayoutUnit> NGFragmentItem::LineLeftAndRightForOffsets(
 PhysicalRect NGFragmentItem::LocalRect(StringView text,
                                        unsigned start_offset,
                                        unsigned end_offset) const {
-  if (start_offset == StartOffset() && end_offset == EndOffset())
-    return LocalRect();
+  LayoutUnit width = Size().width;
+  LayoutUnit height = Size().height;
+  if (Type() == kSvgText) {
+    width = LayoutUnit(SvgFragmentData()->rect.Size().Width());
+    height = LayoutUnit(SvgFragmentData()->rect.Size().Height());
+  }
+  if (start_offset == StartOffset() && end_offset == EndOffset()) {
+    return {LayoutUnit(), LayoutUnit(), width, height};
+  }
   LayoutUnit start_position, end_position;
   std::tie(start_position, end_position) =
       LineLeftAndRightForOffsets(text, start_offset, end_offset);
   const LayoutUnit inline_size = end_position - start_position;
   switch (GetWritingMode()) {
     case WritingMode::kHorizontalTb:
-      return {start_position, LayoutUnit(), inline_size, Size().height};
+      return {start_position, LayoutUnit(), inline_size, height};
     case WritingMode::kVerticalRl:
     case WritingMode::kVerticalLr:
     case WritingMode::kSidewaysRl:
-      return {LayoutUnit(), start_position, Size().width, inline_size};
+      return {LayoutUnit(), start_position, width, inline_size};
     case WritingMode::kSidewaysLr:
-      return {LayoutUnit(), Size().height - end_position, Size().width,
-              inline_size};
+      return {LayoutUnit(), height - end_position, width, inline_size};
   }
   NOTREACHED();
   return {};

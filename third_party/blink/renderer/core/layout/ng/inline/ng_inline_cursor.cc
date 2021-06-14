@@ -450,6 +450,8 @@ PhysicalRect NGInlineCursor::CurrentLocalSelectionRectForText(
   const PhysicalRect selection_rect =
       CurrentLocalRect(selection_status.start, selection_status.end);
   LogicalRect logical_rect = Current().ConvertChildToLogical(selection_rect);
+  if (Current()->Type() == NGFragmentItem::kSvgText)
+    return Current().ConvertChildToPhysical(logical_rect);
   // Let LocalRect for line break have a space width to paint line break
   // when it is only character in a line or only selected in a line.
   if (selection_status.start != selection_status.end &&
