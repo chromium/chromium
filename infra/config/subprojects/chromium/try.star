@@ -178,7 +178,16 @@ try_.builder(
     os = os.LINUX_BIONIC_REMOVE,
     properties = {
         "branch_script": "infra/config/scripts/branch.py",
-        "branch_types": ["standard", "lts"],
+        "branch_configs": [
+            {
+                "name": "standard",
+                "branch_types": ["standard"],
+            },
+            {
+                "name": "lts",
+                "branch_types": ["lts"],
+            },
+        ],
         "verification_scripts": ["infra/config/main.star", "infra/config/dev.star"],
     },
     tryjob = try_.job(
