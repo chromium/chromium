@@ -1284,9 +1284,9 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
       involvement = UserNavigationInvolvement::kActivation;
     }
-    if (!app_history->DispatchNavigateEvent(url, nullptr,
-                                            NavigateEventType::kFragment,
-                                            frame_load_type, involvement)) {
+    if (!app_history->DispatchNavigateEvent(
+            url, nullptr, NavigateEventType::kFragment, frame_load_type,
+            involvement, nullptr, history_item)) {
       return mojom::blink::CommitResult::Aborted;
     }
   }
