@@ -193,8 +193,8 @@ SkPath MessageView::GetHighlightPath() const {
   int inset = -views::PlatformStyle::kFocusHaloInset;
   rect.Inset(gfx::Insets(inset));
 
-  int top_radius = std::max(0, top_radius_ - inset);
-  int bottom_radius = std::max(0, bottom_radius_ - inset);
+  SkScalar top_radius = std::max(0, top_radius_ - inset);
+  SkScalar bottom_radius = std::max(0, bottom_radius_ - inset);
   SkScalar radii[8] = {top_radius,    top_radius,      // top-left
                        top_radius,    top_radius,      // top-right
                        bottom_radius, bottom_radius,   // bottom-right

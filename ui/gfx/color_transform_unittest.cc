@@ -896,7 +896,7 @@ TEST(ColorSpaceTest, PiecewiseHDR) {
           // Test epsilon after the HDR joint
           sdr_joint + kSideEpsilon,
           // Test the middle of the linear HDR segment
-          sdr_joint + 0.5 * (1.f - sdr_joint),
+          sdr_joint + 0.5f * (1.f - sdr_joint),
           // Test just before the end of the linear HDR segment.
           1.f - kSideEpsilon,
           // Test the endpoint of the linear HDR segment.
@@ -908,7 +908,7 @@ TEST(ColorSpaceTest, PiecewiseHDR) {
           1.f - kSideEpsilon,
           1.f,
           1.f + kSideEpsilon,
-          0.5 * (1.f + hdr_level),
+          0.5f * (1.f + hdr_level),
           hdr_level - kSideEpsilon,
           hdr_level,
       };

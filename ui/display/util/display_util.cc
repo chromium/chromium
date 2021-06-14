@@ -128,8 +128,8 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
   if (NearlyEqual(primaries_matrix, SkNamedGamut::kSRGB, kPrimariesTolerance))
     color_space_primaries = gfx::ColorSpace::PrimaryID::BT709;
 
-  const double gamma = edid_parser.gamma();
-  if (gamma < 1.0) {
+  const float gamma = edid_parser.gamma();
+  if (gamma < 1.0f) {
     EmitEdidColorSpaceChecksOutcomeUma(
         EdidColorSpaceChecksOutcome::kErrorBadGamma);
     return gfx::ColorSpace();

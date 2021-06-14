@@ -188,7 +188,7 @@ class LabelSelectionTest : public LabelTest {
     label()->OnPaint(&canvas);
   }
 
-  gfx::Point GetCursorPoint(int index) {
+  gfx::Point GetCursorPoint(uint32_t index) {
     SimulatePaint();
     gfx::RenderText* render_text =
         label()->GetRenderTextForSelectionController();

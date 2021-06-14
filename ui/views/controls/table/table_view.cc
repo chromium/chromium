@@ -1680,7 +1680,7 @@ AXVirtualView* TableView::GetVirtualAccessibilityRow(int row) {
     ++row;
   if (static_cast<size_t>(row) <
       GetViewAccessibility().virtual_children().size()) {
-    const auto& ax_row = GetViewAccessibility().virtual_children()[size_t{row}];
+    const auto& ax_row = GetViewAccessibility().virtual_children()[row];
     DCHECK(ax_row);
     DCHECK_EQ(ax_row->GetData().role, ax::mojom::Role::kRow);
     return ax_row.get();
