@@ -1058,11 +1058,11 @@ void TabStripModel::CloseSelectedTabs() {
 }
 
 void TabStripModel::SelectNextTab(UserGestureDetails detail) {
-  SelectRelativeTab(true, detail);
+  SelectRelativeTab(TabRelativeDirection::kNext, detail);
 }
 
 void TabStripModel::SelectPreviousTab(UserGestureDetails detail) {
-  SelectRelativeTab(false, detail);
+  SelectRelativeTab(TabRelativeDirection::kPrevious, detail);
 }
 
 void TabStripModel::SelectLastTab(UserGestureDetails detail) {
@@ -1070,11 +1070,11 @@ void TabStripModel::SelectLastTab(UserGestureDetails detail) {
 }
 
 void TabStripModel::MoveTabNext() {
-  MoveTabRelative(true);
+  MoveTabRelative(TabRelativeDirection::kNext);
 }
 
 void TabStripModel::MoveTabPrevious() {
-  MoveTabRelative(false);
+  MoveTabRelative(TabRelativeDirection::kPrevious);
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
@@ -1944,7 +1944,8 @@ TabStripSelectionChange TabStripModel::SetSelection(
   return selection;
 }
 
-void TabStripModel::SelectRelativeTab(bool next, UserGestureDetails detail) {
+void TabStripModel::SelectRelativeTab(TabRelativeDirection direction,
+                                      UserGestureDetails detail) {
   // This may happen during automated testing or if a user somehow buffers
   // many key accelerators.
   if (contents_data_.empty())
@@ -1957,7 +1958,7 @@ void TabStripModel::SelectRelativeTab(bool next, UserGestureDetails detail) {
   // Ensure the active tab is not in a collapsed group so the while loop can
   // fallback on activating the active tab.
   DCHECK(!start_group.has_value() || !IsGroupCollapsed(start_group.value()));
-  const int delta = next ? 1 : -1;
+  const int delta = direction == TabRelativeDirection::kNext ? 1 : -1;
   int index = (start_index + count() + delta) % count();
   absl::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(index);
   while (group.has_value() && IsGroupCollapsed(group.value())) {
@@ -1967,8 +1968,8 @@ void TabStripModel::SelectRelativeTab(bool next, UserGestureDetails detail) {
   ActivateTabAt(index, detail);
 }
 
-void TabStripModel::MoveTabRelative(bool forward) {
-  const int offset = forward ? 1 : -1;
+void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
+  const int offset = direction == TabRelativeDirection::kNext ? 1 : -1;
   const int current_index = active_index();
   absl::optional<tab_groups::TabGroupId> current_group =
       GetTabGroupForTab(current_index);
@@ -1997,8 +1998,9 @@ void TabStripModel::MoveTabRelative(bool forward) {
       const TabGroup* group = group_model_->GetTabGroup(target_group.value());
       if (group->visual_data()->is_collapsed()) {
         const gfx::Range tabs_in_group = group->ListTabs();
-        target_index =
-            forward ? tabs_in_group.end() - 1 : tabs_in_group.start();
+        target_index = direction == TabRelativeDirection::kNext
+                           ? tabs_in_group.end() - 1
+                           : tabs_in_group.start();
       } else {
         GroupTab(current_index, target_group.value());
         return;
