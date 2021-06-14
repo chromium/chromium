@@ -1328,7 +1328,7 @@ bool PasswordStore::RemoveOldGoogleLogins() {
 }
 
 void PasswordStore::MarkOldGoogleLoginsRemoved(bool success) {
-  if (success) {
+  if (success && prefs_ && !shutdown_called_) {
     prefs_->SetBoolean(prefs::kWereOldGoogleLoginsRemoved, true);
   }
 }
