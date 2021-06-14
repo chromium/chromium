@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
+#include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/test/test_permissions_client.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
+#include "content/public/test/test_renderer_host.h"
 
 namespace {
 
@@ -18,8 +19,6 @@ struct TestConfig {
   const ContentSetting second;  // second content setting to be set
   const ContentSetting result;  // expected resulting content setting
 };
-
-}  // namespace
 
 // Waits until a change is observed for a specific content setting type.
 class ContentSettingsChangeWaiter : public content_settings::Observer {
@@ -31,6 +30,11 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
         ->GetSettingsMap(browser_context_)
         ->AddObserver(this);
   }
+
+  ContentSettingsChangeWaiter(const ContentSettingsChangeWaiter&) = delete;
+  ContentSettingsChangeWaiter& operator=(const ContentSettingsChangeWaiter&) =
+      delete;
+
   ~ContentSettingsChangeWaiter() override {
     permissions::PermissionsClient::Get()
         ->GetSettingsMap(browser_context_)
@@ -52,12 +56,14 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
   content::BrowserContext* browser_context_;
   ContentSettingsType content_type_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsChangeWaiter);
 };
 
+}  // namespace
+
+namespace permissions {
+
 class CameraPanTiltZoomPermissionContextTests
-    : public ChromeRenderViewHostTestHarness,
+    : public content::RenderViewHostTestHarness,
       public testing::WithParamInterface<TestConfig> {
  public:
   CameraPanTiltZoomPermissionContextTests() = default;
@@ -86,9 +92,8 @@ class CameraPanTiltZoomPermissionContextTests
   }
 
  private:
+  TestPermissionsClient client_;
   webrtc::MediaStreamDeviceEnumeratorImpl device_enumerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraPanTiltZoomPermissionContextTests);
 };
 
 class CameraContentSettingTests
@@ -203,3 +208,5 @@ INSTANTIATE_TEST_SUITE_P(
         // Default camera permission is ask if camera PTZ is ask.
         TestConfig{CONTENT_SETTING_DEFAULT, CONTENT_SETTING_ASK,
                    CONTENT_SETTING_ASK}));
+
+}  // namespace permissions

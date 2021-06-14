@@ -2,14 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("webrtc") {
+source_set("media_stream_device_enumerator") {
   sources = [
     "media_stream_device_enumerator.h",
     "media_stream_device_enumerator_impl.cc",
     "media_stream_device_enumerator_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("webrtc") {
+  sources = [
     "media_stream_devices_controller.cc",
     "media_stream_devices_controller.h",
   ]
+
+  public_deps = [ ":media_stream_device_enumerator" ]
 
   deps = [
     "//base",

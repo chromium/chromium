@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_WEBRTC_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
-#define CHROME_BROWSER_MEDIA_WEBRTC_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
+#ifndef COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
+#define COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -13,6 +13,8 @@
 namespace webrtc {
 class MediaStreamDeviceEnumerator;
 }  // namespace webrtc
+
+namespace permissions {
 
 // Manage user permissions that only control camera movement (pan, tilt, and
 // zoom). Those permissions are automatically reset when the "regular" camera
@@ -66,4 +68,6 @@ class CameraPanTiltZoomPermissionContext
   const webrtc::MediaStreamDeviceEnumerator* const device_enumerator_;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_WEBRTC_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_

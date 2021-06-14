@@ -4,11 +4,13 @@
 
 #include "weblayer/browser/permissions/permission_manager_factory.h"
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/accessibility_permission_context.h"
+#include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
@@ -18,6 +20,7 @@
 #include "components/permissions/contexts/wake_lock_permission_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
+#include "components/webrtc/media_stream_device_enumerator_impl.h"
 #include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "weblayer/browser/background_fetch/background_fetch_permission_context.h"
@@ -63,6 +66,16 @@ class SafePermissionContext : public permissions::PermissionContextBase {
  protected:
   bool IsRestrictedToSecureOrigins() const override { return true; }
 };
+
+// Used by the CameraPanTiltZoomPermissionContext to query which devices support
+// that API.
+// TODO(crbug.com/1219486): Move this elsewhere once we're using a custom
+// implementation of MediaStreamDeviceEnumerator to expose this information to
+// WebLayer embedders via an API.
+webrtc::MediaStreamDeviceEnumerator* GetMediaStreamDeviceEnumerator() {
+  static base::NoDestructor<webrtc::MediaStreamDeviceEnumeratorImpl> instance;
+  return instance.get();
+}
 
 permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     content::BrowserContext* browser_context) {
@@ -134,6 +147,9 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::WAKE_LOCK_SYSTEM] =
       std::make_unique<permissions::WakeLockPermissionContext>(
           browser_context, ContentSettingsType::WAKE_LOCK_SYSTEM);
+  permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
+      std::make_unique<permissions::CameraPanTiltZoomPermissionContext>(
+          browser_context, GetMediaStreamDeviceEnumerator());
 
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.

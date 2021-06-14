@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
+#include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
@@ -12,6 +12,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+
+namespace permissions {
 
 CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context,
@@ -155,3 +157,5 @@ bool CameraPanTiltZoomPermissionContext::HasAvailableCameraPtzDevices() const {
   }
   return false;
 }
+
+}  // namespace permissions

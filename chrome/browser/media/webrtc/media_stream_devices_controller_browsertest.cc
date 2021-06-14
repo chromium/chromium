@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
@@ -25,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request.h"
@@ -779,13 +779,14 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerPtzTest, ContentSettings) {
   };
 
   // Prevent automatic camera permission change when camera PTZ gets updated.
-  CameraPanTiltZoomPermissionContext* camera_pan_tilt_zoom_permission_context =
-      static_cast<CameraPanTiltZoomPermissionContext*>(
-          PermissionManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(
-                  GetWebContents()->GetBrowserContext()))
-              ->GetPermissionContextForTesting(
-                  ContentSettingsType::CAMERA_PAN_TILT_ZOOM));
+  permissions::CameraPanTiltZoomPermissionContext*
+      camera_pan_tilt_zoom_permission_context =
+          static_cast<permissions::CameraPanTiltZoomPermissionContext*>(
+              PermissionManagerFactory::GetForProfile(
+                  Profile::FromBrowserContext(
+                      GetWebContents()->GetBrowserContext()))
+                  ->GetPermissionContextForTesting(
+                      ContentSettingsType::CAMERA_PAN_TILT_ZOOM));
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(
           Profile::FromBrowserContext(GetWebContents()->GetBrowserContext()));

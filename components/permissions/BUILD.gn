@@ -23,6 +23,8 @@ source_set("permissions") {
     "contexts/accessibility_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
     "contexts/bluetooth_chooser_context.h",
+    "contexts/camera_pan_tilt_zoom_permission_context.cc",
+    "contexts/camera_pan_tilt_zoom_permission_context.h",
     "contexts/clipboard_read_write_permission_context.cc",
     "contexts/clipboard_read_write_permission_context.h",
     "contexts/clipboard_sanitized_write_permission_context.cc",
@@ -102,6 +104,7 @@ source_set("permissions") {
     "//components/url_formatter",
     "//components/variations",
     "//components/vector_icons",
+    "//components/webrtc:media_stream_device_enumerator",
     "//content/public/browser",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
@@ -190,6 +193,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",
     "contexts/midi_sysex_permission_context_unittest.cc",
@@ -218,6 +222,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//components/ukm/content",
     "//components/variations",
+    "//components/webrtc",
     "//content/test:test_support",
     "//sql",
     "//sql:test_support",
