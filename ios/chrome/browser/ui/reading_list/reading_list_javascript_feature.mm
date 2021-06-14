@@ -119,7 +119,6 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
   // Translate score by +1 to make histogram logging simpler by keeping all
   // scores positive. Multiply by 100 to get granular scoring logging to the
   // hundredths digit.
-  NSLog(@"score: %f", score);
   base::UmaHistogramCustomCounts(
       "IOS.ReadingList.Javascript.RegularDistillabilityScore",
       (score + 1) * 100, 0, 400, 50);
