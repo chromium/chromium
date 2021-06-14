@@ -456,6 +456,7 @@ if (enable_pdf) {
       "//gin",
       "//mojo/core/embedder",
       "//mojo/public/cpp/bindings",
+      "//pdf:buildflags",
       "//ppapi/c",
       "//ppapi/cpp:objects",
       "//printing",

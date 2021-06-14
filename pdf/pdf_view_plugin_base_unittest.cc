@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
@@ -27,15 +28,46 @@ namespace chrome_pdf {
 
 namespace {
 
+// Keep it in-sync with the `kFinalFallbackName` returned by
+// net::GetSuggestedFilename().
+constexpr char kDefaultDownloadFileName[] = "download";
+
+// Dummy data to save.
+constexpr uint8_t kSaveData[] = {'1', '2', '3'};
+
+class TestPDFiumEngine : public PDFiumEngine {
+ public:
+  explicit TestPDFiumEngine(PDFEngine::Client* client)
+      : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {}
+
+  TestPDFiumEngine(const TestPDFiumEngine&) = delete;
+
+  TestPDFiumEngine& operator=(const TestPDFiumEngine&) = delete;
+
+  ~TestPDFiumEngine() override = default;
+
+  uint32_t GetLoadedByteSize() override { return sizeof(kSaveData); }
+
+  bool ReadLoadedBytes(uint32_t length, void* buffer) override {
+    DCHECK_LE(length, GetLoadedByteSize());
+    memcpy(buffer, kSaveData, length);
+    return true;
+  }
+
+  std::vector<uint8_t> GetSaveData() override {
+    return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
+  }
+};
+
 // This test approach relies on PdfViewPluginBase continuing to exist.
 // PdfViewPluginBase and PdfViewWebPlugin are going to merge once
 // OutOfProcessInstance is deprecated.
 class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
   // Public for testing.
-  using PdfViewPluginBase::ConsumeSaveToken;
   using PdfViewPluginBase::edit_mode;
   using PdfViewPluginBase::HandleMessage;
+  using PdfViewPluginBase::InitializeEngine;
 
   MOCK_METHOD(bool, Confirm, (const std::string&), (override));
 
@@ -133,6 +165,32 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   base::Value sent_message_;
 };
 
+base::Value CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType type,
+                                     const std::string& token) {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "save");
+  message.SetIntKey("saveRequestType", static_cast<int>(type));
+  message.SetStringKey("token", token);
+  return message;
+}
+
+base::Value CreateExpectedSaveToBufferResponse(const std::string& token) {
+  base::Value expected_response(base::Value::Type::DICTIONARY);
+  expected_response.SetStringKey("type", "saveData");
+  expected_response.SetStringKey("token", token);
+  expected_response.SetStringKey("fileName", kDefaultDownloadFileName);
+  expected_response.SetKey("dataToSave",
+                           base::Value(base::make_span(kSaveData)));
+  return expected_response;
+}
+
+base::Value CreateExpectedSaveToFileResponse(const std::string& token) {
+  base::Value expected_response(base::Value::Type::DICTIONARY);
+  expected_response.SetStringKey("type", "consumeSaveToken");
+  expected_response.SetStringKey("token", token);
+  return expected_response;
+}
+
 }  // namespace
 
 class PdfViewPluginBaseTest : public testing::Test {
@@ -140,25 +198,135 @@ class PdfViewPluginBaseTest : public testing::Test {
   FakePdfViewPluginBase fake_plugin_;
 };
 
+class PdfViewPluginBaseSaveTest : public PdfViewPluginBaseTest {
+ public:
+  void SetUp() override {
+    std::unique_ptr<TestPDFiumEngine> engine =
+        std::make_unique<TestPDFiumEngine>(&fake_plugin_);
+    fake_plugin_.InitializeEngine(std::move(engine));
+  }
+};
+
 TEST_F(PdfViewPluginBaseTest, EnteredEditMode) {
+  EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
   fake_plugin_.EnteredEditMode();
 
-  base::Value expected_message(base::Value::Type::DICTIONARY);
-  expected_message.SetStringKey("type", "setIsEditing");
+  base::Value expected_response(base::Value::Type::DICTIONARY);
+  expected_response.SetStringKey("type", "setIsEditing");
 
   EXPECT_TRUE(fake_plugin_.edit_mode());
-  EXPECT_EQ(expected_message, fake_plugin_.sent_message());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
 }
 
-TEST_F(PdfViewPluginBaseTest, ConsumeSaveToken) {
-  const std::string kTokenString("12345678901234567890");
-  fake_plugin_.ConsumeSaveToken(kTokenString);
+#if BUILDFLAG(ENABLE_INK)
+TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
+  ASSERT_FALSE(fake_plugin_.edit_mode());
 
-  base::Value expected_message(base::Value::Type::DICTIONARY);
-  expected_message.SetStringKey("type", "consumeSaveToken");
-  expected_message.SetStringKey("token", kTokenString);
+  static constexpr char kSaveAnnotInNonEditModeToken[] =
+      "save-annot-in-non-edit-mode-token";
+  base::Value message =
+      CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kAnnotation,
+                               kSaveAnnotInNonEditModeToken);
+  base::Value expected_response =
+      CreateExpectedSaveToBufferResponse(kSaveAnnotInNonEditModeToken);
 
-  EXPECT_EQ(expected_message, fake_plugin_.sent_message());
+  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
+  fake_plugin_.HandleMessage(message);
+  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+}
+
+TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
+  fake_plugin_.EnteredEditMode();
+  ASSERT_TRUE(fake_plugin_.edit_mode());
+
+  static constexpr char kSaveAnnotInEditModeToken[] =
+      "save-annot-in-edit-mode-token";
+  base::Value message =
+      CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kAnnotation,
+                               kSaveAnnotInEditModeToken);
+  base::Value expected_response =
+      CreateExpectedSaveToBufferResponse(kSaveAnnotInEditModeToken);
+
+  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
+  fake_plugin_.HandleMessage(message);
+  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+}
+#endif  // BUILDFLAG(ENABLE_INK)
+
+TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInNonEditMode) {
+  ASSERT_FALSE(fake_plugin_.edit_mode());
+
+  static constexpr char kSaveOriginalInNonEditModeToken[] =
+      "save-original-in-non-edit-mode-token";
+  base::Value message =
+      CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kOriginal,
+                               kSaveOriginalInNonEditModeToken);
+  base::Value expected_response =
+      CreateExpectedSaveToFileResponse(kSaveOriginalInNonEditModeToken);
+
+  EXPECT_CALL(fake_plugin_, SaveAs());
+  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetPluginCanSave(false)).Times(2);
+
+  fake_plugin_.HandleMessage(message);
+  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+}
+
+TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInEditMode) {
+  fake_plugin_.EnteredEditMode();
+  ASSERT_TRUE(fake_plugin_.edit_mode());
+
+  static constexpr char kSaveOriginalInEditModeToken[] =
+      "save-original-in-edit-mode-token";
+  base::Value message =
+      CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kOriginal,
+                               kSaveOriginalInEditModeToken);
+  base::Value expected_response =
+      CreateExpectedSaveToFileResponse(kSaveOriginalInEditModeToken);
+
+  EXPECT_CALL(fake_plugin_, SaveAs());
+  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetPluginCanSave(false));
+  EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
+
+  fake_plugin_.HandleMessage(message);
+  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+}
+
+#if BUILDFLAG(ENABLE_INK)
+TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInNonEditMode) {
+  ASSERT_FALSE(fake_plugin_.edit_mode());
+
+  static constexpr char kSaveEditedInNonEditModeToken[] =
+      "save-edited-in-non-edit-mode";
+  base::Value message =
+      CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType::kEdited,
+                               kSaveEditedInNonEditModeToken);
+  base::Value expected_response =
+      CreateExpectedSaveToBufferResponse(kSaveEditedInNonEditModeToken);
+
+  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  fake_plugin_.HandleMessage(message);
+  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+}
+#endif  // BUILDFLAG(ENABLE_INK)
+
+TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInEditMode) {
+  fake_plugin_.EnteredEditMode();
+  ASSERT_TRUE(fake_plugin_.edit_mode());
+
+  static constexpr char kSaveEditedInEditModeToken[] =
+      "save-edited-in-edit-mode-token";
+  base::Value message = CreateSaveRequestMessage(
+      PdfViewPluginBase::SaveRequestType::kEdited, kSaveEditedInEditModeToken);
+  base::Value expected_response =
+      CreateExpectedSaveToBufferResponse(kSaveEditedInEditModeToken);
+
+  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  fake_plugin_.HandleMessage(message);
+  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
 }
 
 TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
