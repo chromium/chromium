@@ -46,6 +46,7 @@ gclient_gn_args = [
   'checkout_rts_model',
   'cros_boards',
   'cros_boards_with_qemu_images',
+  'generate_location_tags',
 ]
 
 
@@ -173,6 +174,13 @@ vars = {
   # Building for CrOS is only supported on linux currently.
   'checkout_simplechrome': '"{cros_boards}" != ""',
   'checkout_simplechrome_with_vms': '"{cros_boards_with_qemu_images}" != ""',
+
+  # Generate location tag metadata to include in tests result data uploaded
+  # to ResultDB. This isn't needed on some configs and the tool that generates
+  # the data may not run on them, so we make it possible for this to be
+  # turned off. Note that you also generate the metadata but not include it
+  # via a GN build arg (tests_have_location_tags).
+  'generate_location_tags': True,
 
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
@@ -4487,7 +4495,7 @@ hooks = [
   },
 
   {
-    'name': 'Generate component metadata for tests',
+    'name': 'Generate location tags for tests',
     'pattern': '.',
     'action': [
       'python3',
@@ -4495,6 +4503,7 @@ hooks = [
       '--out',
       'src/testing/location_tags.json',
     ],
+    'condition': 'generate_location_tags',
   },
 
   # Download and initialize "vpython" VirtualEnv environment packages.
