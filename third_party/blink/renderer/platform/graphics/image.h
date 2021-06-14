@@ -229,8 +229,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
     return ImageOrientationEnum::kDefault;
   }
 
-  virtual IntSize CurrentFrameDensityCorrectedSize() const { return IntSize(); }
-
   // Correct the src rect (rotate and maybe translate it) to account for a
   // non-default image orientation. The image must have non-default orientation
   // to call this method. The image_size is the oriented size of the image (i.e.

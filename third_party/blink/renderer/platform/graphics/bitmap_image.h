@@ -96,7 +96,6 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   size_t FrameCount() override;
   PaintImage PaintImageForCurrentFrame() override;
   ImageOrientation CurrentFrameOrientation() const override;
-  IntSize CurrentFrameDensityCorrectedSize() const override;
 
   PaintImage PaintImageForTesting();
   void AdvanceAnimationForTesting() override {

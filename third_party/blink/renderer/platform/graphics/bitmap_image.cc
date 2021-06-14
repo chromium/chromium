@@ -417,12 +417,6 @@ ImageOrientation BitmapImage::CurrentFrameOrientation() const {
                   : ImageOrientationEnum::kDefault;
 }
 
-IntSize BitmapImage::CurrentFrameDensityCorrectedSize() const {
-  return decoder_ ? decoder_->DensityCorrectedSizeAtIndex(
-                        PaintImage::kDefaultFrameIndex)
-                  : IntSize();
-}
-
 int BitmapImage::RepetitionCount() {
   if ((repetition_count_status_ == kUnknown) ||
       ((repetition_count_status_ == kUncertain) && all_data_received_)) {
