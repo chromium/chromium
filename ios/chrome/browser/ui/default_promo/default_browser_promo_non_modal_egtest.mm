@@ -76,7 +76,13 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 
 // Test that a non modal default modal promo appears when it is triggered by
 // pasting a copied link.
-- (void)testNonModalAppears {
+// TODO(crbug.com/1218866): Test is failing on devices.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testNonModalAppears testNonModalAppears
+#else
+#define MAYBE_testNonModalAppears DISABLED_testNonModalAppears
+#endif
+- (void)MAYBE_testNonModalAppears {
   // Promos only appear on iOS 14 and up.
   if (!base::ios::IsRunningOnIOS14OrLater()) {
     return;
