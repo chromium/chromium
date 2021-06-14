@@ -236,6 +236,8 @@ void Normalizer::NormalizeVPN(base::DictionaryValue* vpn) {
   std::string type;
   vpn->GetStringWithoutPathExpansion(::onc::vpn::kType, &type);
   RemoveEntryUnless(vpn, ::onc::vpn::kOpenVPN, type == ::onc::vpn::kOpenVPN);
+  RemoveEntryUnless(vpn, ::onc::vpn::kWireGuard,
+                    type == ::onc::vpn::kWireGuard);
   RemoveEntryUnless(
       vpn, ::onc::vpn::kIPsec,
       type == ::onc::vpn::kIPsec || type == ::onc::vpn::kTypeL2TP_IPsec);

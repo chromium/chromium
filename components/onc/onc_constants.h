@@ -352,6 +352,7 @@ ONC_EXPORT extern const char kURI[];
 }  // namespace eap_subject_alternative_name_match
 
 namespace vpn {
+ONC_EXPORT extern const char kArcVpn[];
 ONC_EXPORT extern const char kAutoConnect[];
 ONC_EXPORT extern const char kHost[];
 ONC_EXPORT extern const char kIPsec[];
@@ -360,10 +361,10 @@ ONC_EXPORT extern const char kOpenVPN[];
 ONC_EXPORT extern const char kPassword[];
 ONC_EXPORT extern const char kSaveCredentials[];
 ONC_EXPORT extern const char kThirdPartyVpn[];
-ONC_EXPORT extern const char kArcVpn[];
 ONC_EXPORT extern const char kTypeL2TP_IPsec[];
 ONC_EXPORT extern const char kType[];
 ONC_EXPORT extern const char kUsername[];
+ONC_EXPORT extern const char kWireGuard[];
 }  // namespace vpn
 
 namespace ipsec {

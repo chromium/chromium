@@ -326,6 +326,7 @@ const StringTranslationEntry kNetworkTypeTable[] = {
 const StringTranslationEntry kVPNTypeTable[] = {
     {::onc::vpn::kTypeL2TP_IPsec, shill::kProviderL2tpIpsec},
     {::onc::vpn::kOpenVPN, shill::kProviderOpenVpn},
+    {::onc::vpn::kWireGuard, shill::kProviderWireGuard},
     {::onc::vpn::kThirdPartyVpn, shill::kProviderThirdPartyVpn},
     {::onc::vpn::kArcVpn, shill::kProviderArcVpn},
     {nullptr}};

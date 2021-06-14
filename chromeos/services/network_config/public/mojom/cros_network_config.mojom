@@ -70,6 +70,7 @@ enum VpnType {
   // Internal VPN types.
   kL2TPIPsec,
   kOpenVPN,
+  kWireGuard,
   // VPN provided by a Chrome Extension.
   kExtension,
   // VPN provided by an Arc++ app.

@@ -825,6 +825,7 @@ bool Validator::ValidateVPN(base::DictionaryValue* result) {
       ::onc::vpn::kIPsec,
       ::onc::vpn::kTypeL2TP_IPsec,
       ::onc::vpn::kOpenVPN,
+      ::onc::vpn::kWireGuard,
   };
 
   if (!managed_onc_) {

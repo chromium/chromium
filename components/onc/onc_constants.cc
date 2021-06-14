@@ -339,6 +339,7 @@ const char kURI[] = "URI";
 }  // namespace eap_subject_alternative_name_match
 
 namespace vpn {
+const char kArcVpn[] = "ARCVPN";
 const char kAutoConnect[] = "AutoConnect";
 const char kHost[] = "Host";
 const char kIPsec[] = "IPsec";
@@ -347,10 +348,10 @@ const char kOpenVPN[] = "OpenVPN";
 const char kPassword[] = "Password";
 const char kSaveCredentials[] = "SaveCredentials";
 const char kThirdPartyVpn[] = "ThirdPartyVPN";
-const char kArcVpn[] = "ARCVPN";
 const char kTypeL2TP_IPsec[] = "L2TP-IPsec";
 const char kType[] = "Type";
 const char kUsername[] = "Username";
+const char kWireGuard[] = "WireGuard";
 }  // namespace vpn
 
 namespace ipsec {

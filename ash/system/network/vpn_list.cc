@@ -63,6 +63,7 @@ void VpnList::OnGetVpnProviders(std::vector<VpnProviderPtr> providers) {
     switch (provider->type) {
       case VpnType::kL2TPIPsec:
       case VpnType::kOpenVPN:
+      case VpnType::kWireGuard:
         // Only third party VpnProvider instances should exist.
         NOTREACHED();
         break;

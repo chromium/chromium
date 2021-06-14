@@ -179,6 +179,8 @@ mojom::VpnType OncVpnTypeToMojo(const std::string& onc_vpn_type) {
     return mojom::VpnType::kL2TPIPsec;
   if (onc_vpn_type == ::onc::vpn::kOpenVPN)
     return mojom::VpnType::kOpenVPN;
+  if (onc_vpn_type == ::onc::vpn::kWireGuard)
+    return mojom::VpnType::kWireGuard;
   if (onc_vpn_type == ::onc::vpn::kThirdPartyVpn)
     return mojom::VpnType::kExtension;
   if (onc_vpn_type == ::onc::vpn::kArcVpn)
@@ -193,6 +195,8 @@ std::string MojoVpnTypeToOnc(mojom::VpnType mojo_vpn_type) {
       return ::onc::vpn::kTypeL2TP_IPsec;
     case mojom::VpnType::kOpenVPN:
       return ::onc::vpn::kOpenVPN;
+    case mojom::VpnType::kWireGuard:
+      return ::onc::vpn::kWireGuard;
     case mojom::VpnType::kExtension:
       return ::onc::vpn::kThirdPartyVpn;
     case mojom::VpnType::kArc:
@@ -1506,6 +1510,9 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
         case mojom::VpnType::kOpenVPN:
           vpn->open_vpn =
               GetManagedOpenVPNProperties(vpn_dict, ::onc::vpn::kOpenVPN);
+          break;
+        case mojom::VpnType::kWireGuard:
+          // TODO: Detail Managed ONC implemention in following patches
           break;
         case mojom::VpnType::kExtension:
         case mojom::VpnType::kArc:
