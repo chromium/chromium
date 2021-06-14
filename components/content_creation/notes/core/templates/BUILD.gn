@@ -16,6 +16,7 @@ static_library("templates") {
 
   deps = [
     "//base",
+    "//components/content_creation/notes/core:features",
     "//components/strings:components_strings",
     "//ui/base",
   ]

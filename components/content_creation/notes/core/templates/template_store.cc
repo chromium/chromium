@@ -5,10 +5,12 @@
 #include "components/content_creation/notes/core/templates/template_store.h"
 
 #include "base/bind.h"
+#include "base/rand_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
+#include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/templates/template_constants.h"
 
 namespace content_creation {
@@ -28,10 +30,18 @@ void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
 }
 
 std::vector<NoteTemplate> TemplateStore::BuildTemplates() {
-  return {GetClassicTemplate(),  GetFriendlyTemplate(),   GetFreshTemplate(),
-          GetPowerfulTemplate(), GetImpactfulTemplate(),  GetLovelyTemplate(),
-          GetGroovyTemplate(),   GetMonochromeTemplate(), GetBoldTemplate(),
-          GetDreamyTemplate()};
+  std::vector<NoteTemplate> templates = {
+      GetClassicTemplate(),  GetFriendlyTemplate(),   GetFreshTemplate(),
+      GetPowerfulTemplate(), GetImpactfulTemplate(),  GetLovelyTemplate(),
+      GetGroovyTemplate(),   GetMonochromeTemplate(), GetBoldTemplate(),
+      GetDreamyTemplate()};
+
+  if (IsRandomizeOrderEnabled()) {
+    // TODO(crbug.com/1217736): Keep random order in a pref.
+    base::RandomShuffle(templates.begin(), templates.end());
+  }
+
+  return templates;
 }
 
 void TemplateStore::OnTemplatesReceived(

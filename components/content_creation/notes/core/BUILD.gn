@@ -9,11 +9,21 @@ static_library("core") {
   ]
 
   deps = [
+    ":features",
     "//base",
     "//components/content_creation/notes/core/server",
     "//components/content_creation/notes/core/templates",
     "//components/keyed_service/core",
   ]
+}
+
+static_library("features") {
+  sources = [
+    "note_features.cc",
+    "note_features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -26,6 +36,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":features",
     "//base",
     "//base/test:test_support",
     "//components/content_creation/notes/core/templates",

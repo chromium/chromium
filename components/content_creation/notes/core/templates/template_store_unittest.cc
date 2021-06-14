@@ -9,7 +9,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +19,10 @@
 namespace content_creation {
 
 class TemplateStoreTest : public testing::Test {
-  void SetUp() override { template_store_ = std::make_unique<TemplateStore>(); }
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kWebNotesStylizeEnabled);
+    template_store_ = std::make_unique<TemplateStore>();
+  }
 
  protected:
   void ValidateTemplates(const std::vector<NoteTemplate>& note_templates) {
@@ -39,6 +44,7 @@ class TemplateStoreTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TemplateStore> template_store_;
 };
 

@@ -25,6 +25,7 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_ui/photo_picker/android/features.h"
+#include "components/content_creation/notes/core/note_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
@@ -261,7 +262,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVoiceButtonInTopToolbar,
     &kVrBrowsingFeedback,
     &kPrefetchNotificationSchedulingIntegration,
-    &kWebNotesStylize,
+    &content_creation::kWebNotesStylizeEnabled,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
@@ -742,9 +743,6 @@ const base::Feature kVoiceButtonInTopToolbar{"VoiceButtonInTopToolbar",
 
 const base::Feature kVrBrowsingFeedback{"VrBrowsingFeedback",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kWebNotesStylize{"WebNotesStylize",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 static jboolean JNI_ChromeFeatureList_IsEnabled(
     JNIEnv* env,

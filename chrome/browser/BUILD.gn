@@ -3277,6 +3277,7 @@ static_library("browser") {
       "//components/component_updater/android:native_background_task_update_scheduler",
       "//components/content_capture/android",
       "//components/content_creation/notes/android",
+      "//components/content_creation/notes/core:features",
       "//components/content_settings/android",
       "//components/crash/android:crash_android",
       "//components/embedder_support/android:browser_context",

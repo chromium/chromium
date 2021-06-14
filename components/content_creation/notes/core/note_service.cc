@@ -5,6 +5,7 @@
 #include "components/content_creation/notes/core/note_service.h"
 
 #include "base/callback.h"
+#include "components/content_creation/notes/core/note_features.h"
 
 namespace content_creation {
 
@@ -14,6 +15,7 @@ NoteService::NoteService(std::unique_ptr<TemplateStore> template_store)
 NoteService::~NoteService() = default;
 
 void NoteService::GetTemplates(GetTemplatesCallback callback) {
+  DCHECK(IsStylizeEnabled());
   template_store_->GetTemplates(std::move(callback));
 }
 

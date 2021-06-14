@@ -152,7 +152,6 @@ extern const base::Feature kVoiceSearchAudioCapturePolicy;
 extern const base::Feature kVoiceButtonInTopToolbar;
 extern const base::Feature kVrBrowsingFeedback;
 extern const base::Feature kPrefetchNotificationSchedulingIntegration;
-extern const base::Feature kWebNotesStylize;
 
 }  // namespace android
 }  // namespace chrome

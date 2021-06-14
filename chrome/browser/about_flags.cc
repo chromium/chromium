@@ -203,6 +203,7 @@
 #include "chrome/browser/webapps/android/features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/browser_ui/site_settings/android/features.h"
+#include "components/content_creation/notes/core/note_features.h"
 #include "components/external_intents/android/external_intents_features.h"
 #else  // OS_ANDROID
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -636,6 +637,12 @@ const FeatureEntry::FeatureVariation kCloseTabSuggestionsStaleVariations[] = {
     {"Time & Site Engagement", kCloseTabSuggestionsTimeSiteEngagement,
      base::size(kCloseTabSuggestionsTimeSiteEngagement), nullptr},
 };
+
+const FeatureEntry::FeatureParam kWebNoteStylizeRandomizeParam[] = {
+    {"randomize_order", "true"}};
+const FeatureEntry::FeatureVariation kWebNoteStylizeVariations[] = {
+    {"With Randomized Order", kWebNoteStylizeRandomizeParam,
+     base::size(kWebNoteStylizeRandomizeParam), nullptr}};
 #endif  // OS_ANDROID
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
@@ -3284,7 +3291,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kChromeSharingHub)},
     {"webnotes-stylize", flag_descriptions::kWebNotesStylizeName,
      flag_descriptions::kWebNotesStylizeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kWebNotesStylize)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(content_creation::kWebNotesStylizeEnabled,
+                                    kWebNoteStylizeVariations,
+                                    "WebNotesStylize")},
 #endif  // OS_ANDROID
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

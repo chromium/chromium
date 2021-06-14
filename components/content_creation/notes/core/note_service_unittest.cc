@@ -8,7 +8,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/test/mocks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +22,8 @@ namespace content_creation {
 
 class NoteServiceTest : public testing::Test {
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kWebNotesStylizeEnabled);
+
     auto mock_template_store = std::make_unique<test::MockTemplateStore>();
     mock_template_store_ = mock_template_store.get();
 
@@ -33,6 +37,7 @@ class NoteServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NoteService> note_service_;
   test::MockTemplateStore* mock_template_store_;
 };
