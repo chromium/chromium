@@ -9,8 +9,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -21,6 +23,8 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 
 namespace {
 const char kXSSIResponsePreamble[] = ")]}'";
@@ -117,6 +121,38 @@ const char* GetModuleName(task_module::mojom::TaskModuleType task_module_type) {
       return "RecipeTasks";
     case task_module::mojom::TaskModuleType::kShopping:
       return "ShoppingTasks";
+  }
+}
+
+std::string GetViewedItemText(int viewed_timestamp) {
+  // GWS timestamps are relative to the Unix Epoch.
+  auto viewed_time =
+      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(viewed_timestamp);
+  auto viewed_delta = base::Time::Now() - viewed_time;
+  // Viewing items in the future is not supported. Assume the item was viewed
+  // today to account for small shifts between the local and server clock.
+  if (viewed_delta.InSeconds() < 0) {
+    viewed_delta = base::TimeDelta();
+  }
+  if (viewed_delta.InDays() < 1) {
+    return l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_TODAY);
+  }
+  return base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+      IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_AGO,
+      ui::TimeFormat::SimpleWithMonthAndYear(
+          ui::TimeFormat::Format::FORMAT_ELAPSED,
+          ui::TimeFormat::Length::LENGTH_LONG, viewed_delta,
+          /*use_month_and_year=*/true)));
+}
+
+std::string GetRecommendedItemText(
+    task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return l10n_util::GetStringUTF8(IDS_NTP_MODULES_RECIPE_TASKS_RECOMMENDED);
+    case task_module::mojom::TaskModuleType::kShopping:
+      return l10n_util::GetStringUTF8(IDS_NTP_MODULES_SHOPPING_TASKS_RELATED);
   }
 }
 }  // namespace
@@ -281,10 +317,10 @@ void TaskModuleService::OnJsonParsed(
       auto* name = task_item.FindStringPath("name");
       auto* image_url = task_item.FindStringPath("image_url");
       auto* price = task_item.FindStringPath("price");
-      auto* info = task_item.FindStringPath("info");
+      auto viewed_timestamp = task_item.FindIntPath("viewed_timestamp.seconds");
       auto* site_name = task_item.FindStringPath("site_name");
       auto* target_url = task_item.FindStringPath("target_url");
-      if (!name || !image_url || !info || !target_url) {
+      if (!name || !image_url || !target_url) {
         continue;
       }
       if (task_module::mojom::TaskModuleType::kShopping == task_module_type &&
@@ -294,7 +330,9 @@ void TaskModuleService::OnJsonParsed(
       auto mojom_task_item = task_module::mojom::TaskItem::New();
       mojom_task_item->name = *name;
       mojom_task_item->image_url = GURL(*image_url);
-      mojom_task_item->info = *info;
+      mojom_task_item->info = viewed_timestamp
+                                  ? GetViewedItemText(*viewed_timestamp)
+                                  : GetRecommendedItemText(task_module_type);
       if (task_module_type == task_module::mojom::TaskModuleType::kRecipe &&
           site_name) {
         mojom_task_item->site_name = *site_name;

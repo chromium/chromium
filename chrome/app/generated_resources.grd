@@ -5734,6 +5734,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards
       </message>
+      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_AGO" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
+        Viewed <ph name="RELATIVE_TIME">$1<ex>5 days ago</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_TODAY" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
+        Viewed today
+      </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_SENTENCE" desc="Name of the shopping tasks module in sentence case shown in various UIs.">
         Shopping suggestions
       </message>
@@ -5805,6 +5811,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE" desc="Text shown on close button of a task module.">
         Close
+      </message>
+      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_RELATED" desc="Text shown in a tag on a shopping task module product indicating that it is related to a previous search.">
+        Related to your search
+      </message>
+      <message name="IDS_NTP_MODULES_RECIPE_TASKS_RECOMMENDED" desc="Text shown in a tag on a recipe task module recipe indicating that it is recommended.">
+        Recommended
       </message>
       <message name="IDS_NTP_MODULES_CART_HEADER_CHIP_NEW" desc="Text shown on the header chip of chrome cart module.">
         New

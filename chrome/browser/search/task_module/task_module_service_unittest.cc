@@ -6,9 +6,12 @@
 
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/search/task_module/task_module_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -23,7 +26,8 @@
 class TaskModuleServiceTest : public testing::Test {
  public:
   TaskModuleServiceTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -54,9 +58,20 @@ class TaskModuleServiceTest : public testing::Test {
 
 // Verifies correct parsing of well-formed JSON.
 TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
+  auto fiveMonthsAgoTimestamp =
+      (base::Time::Now() - base::TimeDelta::FromDays(165) -
+       base::Time::UnixEpoch())
+          .InSeconds();
+  auto twoDaysAgoTimestamp = (base::Time::Now() - base::TimeDelta::FromDays(2) -
+                              base::Time::UnixEpoch())
+                                 .InSeconds();
+  auto nowTimestamp = (base::Time::Now() - base::Time::UnixEpoch()).InSeconds();
+  auto inTwoDaysTimestamp = (base::Time::Now() + base::TimeDelta::FromDays(2) -
+                             base::Time::UnixEpoch())
+                                .InSeconds();
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
-      R"()]}'
+      base::StringPrintf(R"()]}'
 {
   "update": {
     "shopping_tasks": [
@@ -68,14 +83,34 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
             "name": "foo",
             "image_url": "https://foo.com",
             "price": "$500",
-            "info": "visited 5 days ago",
+            "viewed_timestamp": {
+              "seconds": %s
+            },
             "target_url": "https://google.com/foo"
           },{
             "name": "bar",
             "image_url": "https://bar.com",
             "price": "$400",
-            "info": "visited 1 day ago",
+            "viewed_timestamp": {
+              "seconds": %s
+            },
             "target_url": "https://google.com/bar"
+          },{
+            "name": "baz",
+            "image_url": "https://baz.com",
+            "price": "$500",
+            "viewed_timestamp": {
+              "seconds": %s
+            },
+            "target_url": "https://google.com/baz"
+          },{
+            "name": "blub",
+            "image_url": "https://blub.com",
+            "price": "$600",
+            "viewed_timestamp": {
+              "seconds": %s
+            },
+            "target_url": "https://google.com/blub"
           }
         ],
         "related_searches": [
@@ -91,7 +126,11 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
       }
     ]
   }
-})");
+})",
+                         base::NumberToString(fiveMonthsAgoTimestamp).c_str(),
+                         base::NumberToString(twoDaysAgoTimestamp).c_str(),
+                         base::NumberToString(nowTimestamp).c_str(),
+                         base::NumberToString(inTwoDaysTimestamp).c_str()));
 
   task_module::mojom::TaskPtr result;
   base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
@@ -107,17 +146,17 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
 
   ASSERT_TRUE(result);
   EXPECT_EQ("hello world", result->title);
-  EXPECT_EQ(2ul, result->task_items.size());
+  EXPECT_EQ(4ul, result->task_items.size());
   EXPECT_EQ(2ul, result->related_searches.size());
   EXPECT_EQ("foo", result->task_items[0]->name);
   EXPECT_EQ("https://foo.com/", result->task_items[0]->image_url.spec());
   EXPECT_EQ("$500", result->task_items[0]->price);
-  EXPECT_EQ("visited 5 days ago", result->task_items[0]->info);
+  EXPECT_EQ("Viewed 5 months ago", result->task_items[0]->info);
   EXPECT_EQ("https://google.com/foo", result->task_items[0]->target_url.spec());
   EXPECT_EQ("bar", result->task_items[1]->name);
   EXPECT_EQ("https://bar.com/", result->task_items[1]->image_url.spec());
   EXPECT_EQ("$400", result->task_items[1]->price);
-  EXPECT_EQ("visited 1 day ago", result->task_items[1]->info);
+  EXPECT_EQ("Viewed 2 days ago", result->task_items[1]->info);
   EXPECT_EQ("https://google.com/bar", result->task_items[1]->target_url.spec());
   EXPECT_EQ("baz", result->related_searches[0]->text);
   EXPECT_EQ("https://google.com/baz",
@@ -128,6 +167,8 @@ TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
                    base::PersistentHash("shopping_tasks")));
+  EXPECT_EQ("Viewed today", result->task_items[2]->info);
+  EXPECT_EQ("Viewed today", result->task_items[3]->info);
 }
 
 // Verifies service can handle multiple in flight requests.
@@ -146,7 +187,9 @@ TEST_F(TaskModuleServiceTest, MultiRequest) {
             "name": "foo",
             "image_url": "https://foo.com",
             "price": "$500",
-            "info": "visited 5 days ago",
+            "viewed_timestamp": {
+              "seconds": 123
+            },
             "target_url": "https://google.com/foo"
           }
         ],
@@ -297,7 +340,9 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
             "name": "foo",
             "image_url": "https://foo.com",
             "price": "$500",
-            "info": "visited 5 days ago",
+            "viewed_timestamp": {
+              "seconds": 123
+            },
             "target_url": "https://google.com/foo"
           }
         ],
@@ -316,7 +361,9 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
             "name": "foo",
             "image_url": "https://foo.com",
             "price": "$500",
-            "info": "visited 5 days ago",
+            "viewed_timestamp": {
+              "seconds": 123
+            },
             "target_url": "https://google.com/foo"
           }
         ],
