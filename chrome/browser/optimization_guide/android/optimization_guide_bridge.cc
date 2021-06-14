@@ -166,19 +166,12 @@ void OptimizationGuideBridge::RegisterOptimizationTypes(
       optimization_types);
 }
 
-void OptimizationGuideBridge::CanApplyOptimization(
+void OptimizationGuideBridge::CanApplyOptimizationAsync(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_gurl,
     jint optimization_type,
     const JavaParamRef<jobject>& java_callback) {
-  if (!optimization_guide_keyed_service_->GetHintsManager()) {
-    // The decider is not initialized yet, so return unknown.
-    OnOptimizationGuideDecision(
-        java_callback, optimization_guide::OptimizationGuideDecision::kUnknown,
-        {});
-    return;
-  }
-
+  DCHECK(optimization_guide_keyed_service_->GetHintsManager());
   optimization_guide_keyed_service_->GetHintsManager()
       ->CanApplyOptimizationAsync(
           *url::GURLAndroid::ToNativeGURL(env, java_gurl),
@@ -187,6 +180,21 @@ void OptimizationGuideBridge::CanApplyOptimization(
               optimization_type),
           base::BindOnce(&OnOptimizationGuideDecision,
                          ScopedJavaGlobalRef<jobject>(env, java_callback)));
+}
+
+void OptimizationGuideBridge::CanApplyOptimization(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_gurl,
+    jint optimization_type,
+    const JavaParamRef<jobject>& java_callback) {
+  OptimizationMetadata optimization_metadata;
+  optimization_guide::OptimizationGuideDecision decision =
+      optimization_guide_keyed_service_->CanApplyOptimization(
+          *url::GURLAndroid::ToNativeGURL(env, java_gurl),
+          static_cast<optimization_guide::proto::OptimizationType>(
+              optimization_type),
+          &optimization_metadata);
+  OnOptimizationGuideDecision(java_callback, decision, optimization_metadata);
 }
 
 void OptimizationGuideBridge::OnNewPushNotification(

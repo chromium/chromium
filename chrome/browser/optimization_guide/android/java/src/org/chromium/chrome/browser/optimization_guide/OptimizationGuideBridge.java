@@ -91,14 +91,24 @@ public class OptimizationGuideBridge {
      * navigationHandle} and {@link optimizationType} when sufficient information has been
      * collected to make a decision. This should only be called for main frame navigations.
      */
-    public void canApplyOptimization(NavigationHandle navigationHandle,
+    public void canApplyOptimizationAsync(NavigationHandle navigationHandle,
             OptimizationType optimizationType, OptimizationGuideCallback callback) {
         assert navigationHandle.isInMainFrame();
 
-        canApplyOptimization(navigationHandle.getUrl(), optimizationType, callback);
+        if (mNativeOptimizationGuideBridge == 0) {
+            callback.onOptimizationGuideDecision(OptimizationGuideDecision.UNKNOWN, null);
+            return;
+        }
+
+        OptimizationGuideBridgeJni.get().canApplyOptimizationAsync(mNativeOptimizationGuideBridge,
+                navigationHandle.getUrl(), optimizationType.getNumber(), callback);
     }
 
     /**
+     * Returns whether {@link optimizationType} can be applied for {@link url}. This should
+     * only be called for main frame navigations or future main frame navigations. This will invoke
+     * {@link callback} immediately with any information available on device.
+     *
      * @param url main frame navigation URL an optimization decision is being made for.
      * @param optimizationType {@link OptimizationType} decision is being made for
      * @param callback {@link OptimizationGuideCallback} optimization decision is passed in
@@ -216,6 +226,8 @@ public class OptimizationGuideBridge {
         long init();
         void destroy(long nativeOptimizationGuideBridge);
         void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);
+        void canApplyOptimizationAsync(long nativeOptimizationGuideBridge, GURL url,
+                int optimizationType, OptimizationGuideCallback callback);
         void canApplyOptimization(long nativeOptimizationGuideBridge, GURL url,
                 int optimizationType, OptimizationGuideCallback callback);
         void onNewPushNotification(long nativeOptimizationGuideBridge, byte[] encodedNotification);

@@ -162,7 +162,7 @@ public class MerchantTrustSignalsDataProviderTest {
             }
         })
                 .when(optimizationGuideJni)
-                .canApplyOptimization(
+                .canApplyOptimizationAsync(
                         anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
     }
 
