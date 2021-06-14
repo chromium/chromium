@@ -11,7 +11,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "gpu/command_buffer/service/shader_manager.h"
-#include "third_party/angle/src/common/version.h"
+#include "third_party/angle/src/common/angle_version.h"
 
 namespace gpu {
 namespace gles2 {
