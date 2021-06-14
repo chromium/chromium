@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -57,6 +56,8 @@ namespace blink {
 //    the subclass documentation for more.
 class CORE_EXPORT Interpolation : public GarbageCollected<Interpolation> {
  public:
+  Interpolation(const Interpolation&) = delete;
+  Interpolation& operator=(const Interpolation&) = delete;
   virtual ~Interpolation() {}
 
   virtual void Interpolate(int iteration, double fraction) = 0;
@@ -76,7 +77,6 @@ class CORE_EXPORT Interpolation : public GarbageCollected<Interpolation> {
 
  protected:
   Interpolation() = default;
-  DISALLOW_COPY_AND_ASSIGN(Interpolation);
 };
 
 using ActiveInterpolations = HeapVector<Member<Interpolation>, 1>;

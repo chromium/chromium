@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
@@ -114,6 +113,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
  public:
   CSSAnimationUpdate();
+  CSSAnimationUpdate(const CSSAnimationUpdate&) = delete;
+  CSSAnimationUpdate& operator=(const CSSAnimationUpdate&) = delete;
   ~CSSAnimationUpdate();
 
   void Copy(const CSSAnimationUpdate&);
@@ -298,7 +299,6 @@ class CORE_EXPORT CSSAnimationUpdate final {
   ActiveInterpolationsMap active_interpolations_for_standard_transitions_;
 
   friend class PendingAnimationUpdate;
-  DISALLOW_COPY_AND_ASSIGN(CSSAnimationUpdate);
 };
 
 }  // namespace blink

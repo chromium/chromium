@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATED_SVG_PATH_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATED_SVG_PATH_SOURCE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/svg_path_seg_interpolation_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -24,6 +23,10 @@ class InterpolatedSVGPathSource {
     DCHECK_EQ(interpolable_path_segs_.length(), path_seg_types_.size());
   }
 
+  InterpolatedSVGPathSource(const InterpolatedSVGPathSource&) = delete;
+  InterpolatedSVGPathSource& operator=(const InterpolatedSVGPathSource&) =
+      delete;
+
   bool HasMoreData() const;
   PathSegmentData ParseSegment();
 
@@ -32,7 +35,6 @@ class InterpolatedSVGPathSource {
   wtf_size_t current_index_;
   const InterpolableList& interpolable_path_segs_;
   const Vector<SVGPathSegType>& path_seg_types_;
-  DISALLOW_COPY_AND_ASSIGN(InterpolatedSVGPathSource);
 };
 
 bool InterpolatedSVGPathSource::HasMoreData() const {

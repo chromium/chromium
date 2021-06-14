@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ELEMENT_ANIMATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ELEMENT_ANIMATIONS_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
@@ -51,6 +50,8 @@ class CORE_EXPORT ElementAnimations final
     : public GarbageCollected<ElementAnimations> {
  public:
   ElementAnimations();
+  ElementAnimations(const ElementAnimations&) = delete;
+  ElementAnimations& operator=(const ElementAnimations&) = delete;
   ~ElementAnimations();
 
   // Animations that are currently active for this element, their effects will
@@ -121,8 +122,6 @@ class CORE_EXPORT ElementAnimations final
   // an !important declaration appears in a :visited selector.
   // See https://crbug.com/1062217.
   std::unique_ptr<CSSBitset> base_important_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementAnimations);
 
   FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, PseudoElementBaseComputedStyle);
 };

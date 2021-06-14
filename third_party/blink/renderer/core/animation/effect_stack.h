@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_EFFECT_STACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_EFFECT_STACK_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -54,6 +53,8 @@ class CORE_EXPORT EffectStack {
 
  public:
   EffectStack();
+  EffectStack(const EffectStack&) = delete;
+  EffectStack& operator=(const EffectStack&) = delete;
 
   void Add(SampledEffect* sampled_effect) {
     sampled_effects_.push_back(sampled_effect);
@@ -97,7 +98,6 @@ class CORE_EXPORT EffectStack {
   HeapVector<Member<SampledEffect>> sampled_effects_;
 
   friend class AnimationEffectStackTest;
-  DISALLOW_COPY_AND_ASSIGN(EffectStack);
 };
 
 }  // namespace blink

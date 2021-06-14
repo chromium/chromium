@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATIONS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_update.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition_data.h"
@@ -57,6 +56,8 @@ class CORE_EXPORT CSSAnimations final {
 
  public:
   CSSAnimations();
+  CSSAnimations(const CSSAnimations&) = delete;
+  CSSAnimations& operator=(const CSSAnimations&) = delete;
 
   static const StylePropertyShorthand& PropertiesForTransitionAll();
   static bool IsAnimationAffectingProperty(const CSSProperty&);
@@ -289,8 +290,6 @@ class CORE_EXPORT CSSAnimations final {
     PropertyHandle property_;
     Timing::Phase previous_phase_;
   };
-
-  DISALLOW_COPY_AND_ASSIGN(CSSAnimations);
 };
 
 template <>

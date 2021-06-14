@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -25,6 +24,8 @@ class CORE_EXPORT UnderlyingValueOwner : public UnderlyingValue {
  public:
   UnderlyingValueOwner()
       : type_(nullptr), value_owner_(nullptr), value_(nullptr) {}
+  UnderlyingValueOwner(const UnderlyingValueOwner&) = delete;
+  UnderlyingValueOwner& operator=(const UnderlyingValueOwner&) = delete;
 
   operator bool() const {
     DCHECK_EQ(static_cast<bool>(type_), static_cast<bool>(value_));
@@ -56,7 +57,6 @@ class CORE_EXPORT UnderlyingValueOwner : public UnderlyingValue {
   const InterpolationType* type_;
   InterpolationValue value_owner_;
   const InterpolationValue* value_;
-  DISALLOW_COPY_AND_ASSIGN(UnderlyingValueOwner);
 };
 
 }  // namespace blink
