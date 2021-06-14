@@ -58,21 +58,28 @@ class TestExtensionUninstallDialogDelegate
  public:
   explicit TestExtensionUninstallDialogDelegate(
       base::RepeatingClosure quit_closure)
-      : quit_closure_(quit_closure), canceled_(false) {}
+      : quit_closure_(quit_closure) {}
 
   ~TestExtensionUninstallDialogDelegate() override {}
 
-  bool canceled() { return canceled_; }
+  bool canceled() const { return canceled_; }
+  const base::string16& error() const { return error_; }
 
  private:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
                                         const base::string16& error) override {
+    ASSERT_FALSE(did_close_)
+        << "OnExtensionUninstallDialogClosed() was called twice!";
+    did_close_ = true;
     canceled_ = !did_start_uninstall;
+    error_ = error;
     quit_closure_.Run();
   }
 
   base::RepeatingClosure quit_closure_;
-  bool canceled_;
+  bool did_close_ = false;
+  bool canceled_ = false;
+  base::string16 error_;
 
   DISALLOW_COPY_AND_ASSIGN(TestExtensionUninstallDialogDelegate);
 };
@@ -133,6 +140,44 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   browser()->window()->Close();
   run_loop.Run();
   EXPECT_TRUE(delegate.canceled());
+}
+
+// Tests uninstalling the extension while the dialog is active.
+// Regression test for https://1200679.
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
+                       ExtensionUninstalledWhileDialogIsActive) {
+  scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
+  extensions::ExtensionService* const service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+  service->AddExtension(extension.get());
+
+  base::RunLoop run_loop;
+  TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
+  std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
+      extensions::ExtensionUninstallDialog::Create(
+          browser()->profile(), browser()->window()->GetNativeWindow(),
+          &delegate));
+
+  dialog->ConfirmUninstall(extension.get(),
+                           extensions::UNINSTALL_REASON_FOR_TESTING,
+                           extensions::UNINSTALL_SOURCE_FOR_TESTING);
+  // Wait for the icon to load and dialog to display.
+  base::RunLoop().RunUntilIdle();
+
+  service->UninstallExtension(
+      extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+
+  run_loop.Run();
+  // The dialog should be closed with an appropriate error.
+  EXPECT_TRUE(delegate.canceled());
+  EXPECT_EQ(u"Extension was removed before dialog closed.", delegate.error());
+
+  // Explicitly destroy the dialog. ExtensionUninstallDialog's dtor will close
+  // the view dialog if it's still open (which it shouldn't be), which will
+  // guarantee that the check in the delegate for double-closed calls catches
+  // any cases.
+  dialog = nullptr;
 }
 
 // Test that we don't crash when uninstalling an extension from a web app

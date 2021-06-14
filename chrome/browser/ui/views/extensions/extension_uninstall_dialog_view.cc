@@ -62,6 +62,7 @@ class ExtensionUninstallDialogViews
 
  private:
   void Show() override;
+  void Close() override;
 
   // Pointer to the DialogModel for the dialog. This is cleared when the dialog
   // is being closed and OnDialogClosed is reported. As such it prevents access
@@ -171,6 +172,12 @@ void ExtensionUninstallDialogViews::Show() {
         ->Show();
   }
   chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_UNINSTALL);
+}
+
+void ExtensionUninstallDialogViews::Close() {
+  DCHECK(dialog_model_);
+  dialog_model_->host()->Close();
+  DCHECK(!dialog_model_);
 }
 
 void ExtensionUninstallDialogViews::DialogAccepted() {
