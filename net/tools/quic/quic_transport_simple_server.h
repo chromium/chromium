@@ -26,7 +26,7 @@ class QuicTransportSimpleServer {
  public:
   using ReadErrorCallback = base::OnceCallback<void(int)>;
 
-  QuicTransportSimpleServer(int port,
+  QuicTransportSimpleServer(uint16_t port,
                             std::vector<url::Origin> accepted_origins,
                             std::unique_ptr<quic::ProofSource> proof_source);
   ~QuicTransportSimpleServer();
@@ -49,7 +49,7 @@ class QuicTransportSimpleServer {
   // Passes the most recently read packet into the dispatcher.
   void ProcessReadPacket(int result);
 
-  const int port_;
+  const uint16_t port_;
 
   ReadErrorCallback read_error_callback_;
 

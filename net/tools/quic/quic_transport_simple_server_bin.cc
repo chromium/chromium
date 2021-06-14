@@ -9,7 +9,7 @@
 #include "net/tools/quic/quic_transport_simple_server.h"
 #include "url/gurl.h"
 
-DEFINE_QUIC_COMMAND_LINE_FLAG(int, port, 20557, "The port to listen on.");
+DEFINE_QUIC_COMMAND_LINE_FLAG(uint16_t, port, 20557, "The port to listen on.");
 
 DEFINE_QUIC_COMMAND_LINE_FLAG(std::string,
                               accepted_origins,

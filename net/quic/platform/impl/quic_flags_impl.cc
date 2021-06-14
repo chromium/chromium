@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <initializer_list>
 #include <iostream>
+#include <limits>
 #include <set>
 #include <string>
 
@@ -192,6 +193,18 @@ bool TypedQuicFlagHelper<bool>::SetFlag(const std::string& s) const {
 }
 
 template <>
+bool TypedQuicFlagHelper<uint16_t>::SetFlag(const std::string& s) const {
+  int value;
+  if (!base::StringToInt(s, &value) ||
+      value < std::numeric_limits<uint16_t>::min() ||
+      value > std::numeric_limits<uint16_t>::max()) {
+    return false;
+  }
+  *flag_ = static_cast<uint16_t>(value);
+  return true;
+}
+
+template <>
 bool TypedQuicFlagHelper<int32_t>::SetFlag(const std::string& s) const {
   int32_t value;
   if (!base::StringToInt(s, &value)) {
@@ -209,6 +222,8 @@ bool TypedQuicFlagHelper<std::string>::SetFlag(const std::string& s) const {
 
 template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)
     TypedQuicFlagHelper<bool>;
+template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)
+    TypedQuicFlagHelper<uint16_t>;
 template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)
     TypedQuicFlagHelper<int32_t>;
 template class EXPORT_TEMPLATE_DEFINE(QUIC_EXPORT_PRIVATE)

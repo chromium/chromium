@@ -72,6 +72,9 @@ template <>
 QUIC_EXPORT_PRIVATE bool TypedQuicFlagHelper<bool>::SetFlag(
     const std::string&) const;
 template <>
+QUIC_EXPORT_PRIVATE bool TypedQuicFlagHelper<uint16_t>::SetFlag(
+    const std::string&) const;
+template <>
 QUIC_EXPORT_PRIVATE bool TypedQuicFlagHelper<int32_t>::SetFlag(
     const std::string&) const;
 template <>
@@ -81,6 +84,8 @@ QUIC_EXPORT_PRIVATE bool TypedQuicFlagHelper<std::string>::SetFlag(
 // TypedQuicFlagHelper instantiations are in .cc file.
 extern template class EXPORT_TEMPLATE_DECLARE(QUIC_EXPORT_PRIVATE)
     TypedQuicFlagHelper<bool>;
+extern template class EXPORT_TEMPLATE_DECLARE(QUIC_EXPORT_PRIVATE)
+    TypedQuicFlagHelper<uint16_t>;
 extern template class EXPORT_TEMPLATE_DECLARE(QUIC_EXPORT_PRIVATE)
     TypedQuicFlagHelper<int32_t>;
 extern template class EXPORT_TEMPLATE_DECLARE(QUIC_EXPORT_PRIVATE)

@@ -59,7 +59,7 @@ class QuicTransportSimpleServerSessionHelper
 };
 
 QuicTransportSimpleServer::QuicTransportSimpleServer(
-    int port,
+    uint16_t port,
     std::vector<url::Origin> accepted_origins,
     std::unique_ptr<quic::ProofSource> proof_source)
     : port_(port),
