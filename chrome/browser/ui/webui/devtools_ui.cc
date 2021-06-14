@@ -34,11 +34,9 @@ GURL DevToolsUI::GetProxyURL(const std::string& frontend_url) {
 
 // static
 GURL DevToolsUI::GetRemoteBaseURL() {
-  return GURL(base::StringPrintf(
-      "%s%s/%s/",
-      kRemoteFrontendBase,
-      kRemoteFrontendPath,
-      content::GetWebKitRevision().c_str()));
+  return GURL(base::StringPrintf("%s%s/%s/", kRemoteFrontendBase,
+                                 kRemoteFrontendPath,
+                                 content::GetChromiumGitRevision().c_str()));
 }
 
 // static

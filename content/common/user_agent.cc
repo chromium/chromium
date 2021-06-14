@@ -61,11 +61,12 @@ std::string GetUnifiedPlatform() {
   return frozen_user_agent_strings::kUnifiedPlatformLinux;
 }
 
+// Inaccurately named for historical reasons
 std::string GetWebKitVersion() {
   return base::StringPrintf("537.36 (%s)", CHROMIUM_GIT_REVISION);
 }
 
-std::string GetWebKitRevision() {
+std::string GetChromiumGitRevision() {
   return CHROMIUM_GIT_REVISION;
 }
 
