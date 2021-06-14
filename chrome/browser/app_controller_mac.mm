@@ -340,7 +340,8 @@ Profile* GetLastProfileMac() {
 - (BOOL)userWillWaitForInProgressDownloads:(int)downloadCount;
 - (BOOL)shouldQuitWithInProgressDownloads;
 - (void)executeApplication:(id)sender;
-- (void)profileWasRemoved:(const base::FilePath&)profilePath;
+- (void)profileWasRemoved:(const base::FilePath&)profilePath
+             forIncognito:(bool)isIncognito;
 - (void)setLastProfile:(Profile*)profile;
 
 // Opens a tab for each GURL in |urls|.
@@ -388,9 +389,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
         app_controller_(app_controller) {
     DCHECK(profile_manager_);
     DCHECK(app_controller_);
-    // Listen to different events, depending on whether the
-    // kDestroyProfileOnBrowserClose experiment is disabled or not.
-    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    // Listen to ProfileObserver and ProfileManagerObserver, either one of
+    // kDestroyProfileOnBrowserClose or kUpdateHistoryEntryPointsInIncognito
+    // are enabled.
+    if (ObserveRegularProfiles() || ObserveOTRProfiles()) {
       profile_manager_->AddObserver(this);
       for (Profile* profile : profile_manager_->GetLoadedProfiles())
         profile->AddObserver(this);
@@ -400,7 +402,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   ~AppControllerProfileObserver() override {
     DCHECK(profile_manager_);
-    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    if (ObserveRegularProfiles() || ObserveOTRProfiles()) {
       profile_manager_->RemoveObserver(this);
     }
     profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
@@ -414,7 +416,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
                            const std::u16string& profile_name) override {
     // When a profile is deleted we need to notify the AppController,
     // so it can correctly update its pointer to the last used profile.
-    [app_controller_ profileWasRemoved:profile_path];
+    [app_controller_ profileWasRemoved:profile_path forIncognito:false];
   }
 
   void OnProfileWillBeRemoved(const base::FilePath& profile_path) override {}
@@ -425,12 +427,46 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override {}
 
   // ProfileManager::Observer implementation:
-  void OnProfileAdded(Profile* profile) override { profile->AddObserver(this); }
+  void OnProfileAdded(Profile* profile) override {
+    // If regular profiles are not observed, then do not add observer.
+    if (!ObserveRegularProfiles()) {
+      return;
+    }
+    profile->AddObserver(this);
+  }
 
   // ProfileObserver implementation:
   void OnProfileWillBeDestroyed(Profile* profile) override {
     profile->RemoveObserver(this);
-    [app_controller_ profileWasRemoved:profile->GetPath()];
+
+    bool did_profile_observed = profile->IsOffTheRecord()
+                                  ? ObserveOTRProfiles()
+                                  : ObserveRegularProfiles();
+
+    // If the profile is not observed, then no need to call rest.
+    if (!did_profile_observed)
+      return;
+
+    [app_controller_ profileWasRemoved:profile->GetPath()
+                          forIncognito:profile->IsOffTheRecord()];
+  }
+
+  void OnOffTheRecordProfileCreated(Profile* off_the_record) override {
+    // If off_the_record profiles are not observed, then do not add observer.
+    if (!ObserveOTRProfiles()) {
+      return;
+    }
+    off_the_record->AddObserver(this);
+  }
+
+  static bool ObserveRegularProfiles() {
+    return base::FeatureList::IsEnabled(
+        features::kDestroyProfileOnBrowserClose);
+  }
+
+  static bool ObserveOTRProfiles() {
+    return base::FeatureList::IsEnabled(
+        features::kUpdateHistoryEntryPointsInIncognito);
   }
 
   ProfileManager* profile_manager_;
@@ -1055,14 +1091,16 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 }
 
 // Called from the AppControllerProfileObserver every time a profile is deleted.
-- (void)profileWasRemoved:(const base::FilePath&)profilePath {
+- (void)profileWasRemoved:(const base::FilePath&)profilePath
+             forIncognito:(bool)isOffTheRecord {
   // If the lastProfile has been deleted, the profile manager has
   // already loaded a new one, so the pointer needs to be updated;
   // otherwise we will try to start up a browser window with a pointer
   // to the old profile.
   // In a browser test, the application is not brought to the front, so
   // |lastProfile_| might be null.
-  if (!_lastProfile || profilePath == _lastProfile->GetPath()) {
+  if (!_lastProfile || (profilePath == _lastProfile->GetPath() &&
+                        isOffTheRecord == _lastProfile->IsOffTheRecord())) {
     // Force windowChangedToProfile: to set the lastProfile_ and also update the
     // relevant menuBridge objects.
     [self setLastProfile:nullptr];
