@@ -295,8 +295,9 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
   // TODO(layout-dev): This could likely be optimized further.
   // TODO(layout-dev): Handle cases where the old items are not consecutive.
   const ComputedStyle& new_style = layout_text->StyleRef();
-  bool collapse_spaces = new_style.CollapseWhiteSpace();
-  bool preserve_newlines = new_style.PreserveNewline();
+  const bool collapse_spaces = new_style.CollapseWhiteSpace();
+  const bool preserve_newlines =
+      new_style.PreserveNewline() && LIKELY(!is_text_combine_);
   if (NGInlineItem* last_item = LastItemToCollapseWith(items_)) {
     if (collapse_spaces) {
       switch (last_item->EndCollapseType()) {
@@ -465,6 +466,13 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
   if (UNLIKELY(layout_text->IsWordBreak())) {
     typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                          layout_text);
+    if (UNLIKELY(is_text_combine_)) {
+      // We don't break text runs in text-combine-upright:all.
+      // Note: Even if we have overflow-wrap:normal and word-break:keep-all,
+      // <wbr> causes line break.
+      Append(NGInlineItem::kText, kZeroWidthSpaceCharacter, layout_text);
+      return;
+    }
     AppendBreakOpportunity(layout_text);
     return;
   }
@@ -502,7 +510,9 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
 
   const ComputedStyle& style = layout_object->StyleRef();
   EWhiteSpace whitespace = style.WhiteSpace();
-  bool is_svg_text = layout_object && layout_object->IsSVGInlineText();
+  const bool should_not_preserve_newline =
+      (layout_object && layout_object->IsSVGInlineText()) ||
+      UNLIKELY(is_text_combine_);
 
   RestoreTrailingCollapsibleSpaceIfRemoved();
 
@@ -510,7 +520,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     return;
   if (!ComputedStyle::CollapseWhiteSpace(whitespace))
     AppendPreserveWhitespace(string, &style, layout_object);
-  else if (ComputedStyle::PreserveNewline(whitespace) && !is_svg_text)
+  else if (ComputedStyle::PreserveNewline(whitespace) &&
+           !should_not_preserve_newline)
     AppendPreserveNewline(string, &style, layout_object);
   else
     AppendCollapseWhitespace(string, &style, layout_object);
@@ -579,7 +590,11 @@ void NGInlineItemsBuilderTemplate<
     // LayoutBR does not set preserve_newline, but should be preserved.
     if (UNLIKELY(space_run_has_newline && string.length() == 1 &&
                  layout_object && layout_object->IsBR())) {
-      AppendForcedBreakCollapseWhitespace(layout_object);
+      if (UNLIKELY(is_text_combine_)) {
+        AppendTextItem(" ", layout_object);
+      } else {
+        AppendForcedBreakCollapseWhitespace(layout_object);
+      }
       return;
     }
 
@@ -751,6 +766,8 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
         const ComputedStyle& style,
         unsigned index) const {
   DCHECK_LE(index, string.length());
+  if (UNLIKELY(is_text_combine_))
+    return false;
   // Check if we are at a preserved space character and auto-wrap is enabled.
   if (style.CollapseWhiteSpace() || !style.AutoWrap() || !string.length() ||
       index >= string.length() || string[index] != kSpaceCharacter)
@@ -806,6 +823,11 @@ void NGInlineItemsBuilderTemplate<
     UChar c = string[start];
     if (IsControlItemCharacter(c)) {
       if (c == kNewlineCharacter) {
+        if (UNLIKELY(is_text_combine_)) {
+          start++;
+          AppendTextItem(" ", layout_object);
+          continue;
+        }
         AppendForcedBreak(layout_object);
         start++;
         // A forced break is not a collapsible space, but following collapsible
@@ -870,6 +892,9 @@ template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
     LayoutObject* layout_object) {
   DCHECK(layout_object);
+  // Combined text should ignore force line break[1].
+  // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
+  DCHECK(!is_text_combine_);
   // At the forced break, add bidi controls to pop all contexts.
   // https://drafts.csswg.org/css-writing-modes-3/#bidi-embedding-breaks
   if (!bidi_context_.IsEmpty()) {

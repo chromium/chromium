@@ -93,7 +93,10 @@ class NGInlineNodeTest : public NGLayoutTest {
     SetupHtml("t", "<div id=t style='font:10px Ahem'>test</div>");
   }
 
-  NGInlineNodeForTest CreateInlineNode() {
+  NGInlineNodeForTest CreateInlineNode(
+      LayoutNGBlockFlow* layout_block_flow = nullptr) {
+    if (layout_block_flow)
+      layout_block_flow_ = layout_block_flow;
     if (!layout_block_flow_)
       SetupHtml("t", "<div id=t style='font:10px'>test</div>");
     NGInlineNodeForTest node(layout_block_flow_);
@@ -309,6 +312,54 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[4], kText, 10u, 11u, 0u);
   TEST_ITEM_TYPE_OFFSET_LEVEL(items[5], kCloseTag, 11u, 11u, 0u);
   EXPECT_EQ(6u, items.size());
+}
+
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<div id=t>a<br>z</div>");
+  NGInlineNodeForTest node =
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_));
+  node.CollectInlines();
+  EXPECT_EQ("a z", node.Text());
+  Vector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(3u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "<br> isn't control";
+  TEST_ITEM_TYPE_OFFSET(items[2], kText, 2u, 3u);
+}
+
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<pre id=t>a\nz</pre>");
+  NGInlineNodeForTest node =
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_));
+  node.CollectInlines();
+  EXPECT_EQ("a z", node.Text());
+  Vector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(3u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "newline isn't control";
+  TEST_ITEM_TYPE_OFFSET(items[2], kText, 2u, 3u);
+}
+
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<div id=t>a<wbr>z</div>");
+  NGInlineNodeForTest node =
+      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_));
+  node.CollectInlines();
+  EXPECT_EQ(u8"a\u200Bz", node.Text());
+  Vector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(3u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  TEST_ITEM_TYPE_OFFSET(items[1], kText, 1u, 2u) << "<wbr> isn't control";
+  TEST_ITEM_TYPE_OFFSET(items[2], kText, 2u, 3u);
 }
 
 TEST_F(NGInlineNodeTest, SegmentASCII) {

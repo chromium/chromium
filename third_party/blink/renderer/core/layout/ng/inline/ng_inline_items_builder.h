@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEMS_BUILDER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/empty_offset_mapping_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping_builder.h"
@@ -51,7 +52,8 @@ class NGInlineItemsBuilderTemplate {
       const SvgTextChunkOffsets* chunk_offsets = nullptr)
       : block_flow_(block_flow),
         items_(items),
-        text_chunk_offsets_(chunk_offsets) {}
+        text_chunk_offsets_(chunk_offsets),
+        is_text_combine_(block_flow_->IsLayoutNGTextCombine()) {}
   ~NGInlineItemsBuilderTemplate();
 
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }
@@ -185,6 +187,7 @@ class NGInlineItemsBuilderTemplate {
 
   const SvgTextChunkOffsets* text_chunk_offsets_;
 
+  const bool is_text_combine_;
   bool has_bidi_controls_ = false;
   bool has_ruby_ = false;
   bool is_empty_inline_ = true;
