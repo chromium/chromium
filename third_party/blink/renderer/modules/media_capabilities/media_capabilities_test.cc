@@ -702,7 +702,7 @@ TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
     EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
         .Times(2)
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
+    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
         .WillOnce(
             Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
   }
@@ -723,7 +723,7 @@ TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
   EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
       .Times(2)
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
+  EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
       .WillRepeatedly(
           Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
 
@@ -1000,7 +1000,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
     EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
         .Times(2)
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
+    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
         .WillRepeatedly(
             Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
   }

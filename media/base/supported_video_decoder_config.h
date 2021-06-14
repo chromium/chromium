@@ -58,19 +58,7 @@ struct MEDIA_EXPORT SupportedVideoDecoderConfig {
   // Allow copy and assignment.
 };
 
-// Enumeration of possible implementations for (Mojo)VideoDecoders.
-enum class VideoDecoderImplementation {
-  kDefault = 0,
-  kAlternate = 1,
-  kMaxValue = kAlternate
-};
-
 using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
-
-// Map of mojo VideoDecoder implementations to the vector of configs that they
-// (probably) support.
-using SupportedVideoDecoderConfigMap =
-    base::flat_map<VideoDecoderImplementation, SupportedVideoDecoderConfigs>;
 
 // Helper method to determine if |config| is supported by |supported_configs|.
 MEDIA_EXPORT bool IsVideoDecoderConfigSupported(

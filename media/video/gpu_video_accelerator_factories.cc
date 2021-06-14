@@ -7,26 +7,11 @@
 namespace media {
 
 GpuVideoAcceleratorFactories::Supported
-GpuVideoAcceleratorFactories::IsDecoderConfigSupported(
+GpuVideoAcceleratorFactories::IsDecoderConfigSupportedOrUnknown(
     const VideoDecoderConfig& config) {
   if (!IsDecoderSupportKnown())
     return Supported::kUnknown;
-
-  static_assert(media::VideoDecoderImplementation::kAlternate ==
-                    media::VideoDecoderImplementation::kMaxValue,
-                "Keep the array below in sync.");
-  VideoDecoderImplementation decoder_impls[] = {
-      VideoDecoderImplementation::kDefault,
-      VideoDecoderImplementation::kAlternate};
-  Supported supported = Supported::kUnknown;
-  for (const auto& impl : decoder_impls) {
-    supported = IsDecoderConfigSupported(impl, config);
-    DCHECK_NE(supported, Supported::kUnknown);
-    if (supported == Supported::kTrue)
-      break;
-  }
-
-  return supported;
+  return IsDecoderConfigSupported(config);
 }
 
 }  // namespace media

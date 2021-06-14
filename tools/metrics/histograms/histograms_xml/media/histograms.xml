@@ -2853,7 +2853,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="Impl">
     <variant name="Alternate"
-        summary="Timing for the kAlternate media::VideoDecoderImplementation."/>
+        summary="Timing for the kAlternate media::VideoDecoderImplementation.">
+      <obsolete>
+        Removed when D3D11/DXVA VideoDecoder implementations became mutually
+        exclusive in M93.
+      </obsolete>
+    </variant>
     <variant name="Default"
         summary="Timing for the kDefault media::VideoDecoderImplementation."/>
   </token>

@@ -36,12 +36,6 @@ class MediaLog;
 class Renderer;
 class VideoDecoder;
 
-// Map of mojo VideoDecoder implementations to the vector of configs that they
-// (probably) support.
-using SupportedVideoDecoderConfigMap =
-    base::flat_map<VideoDecoderImplementation,
-                   std::vector<SupportedVideoDecoderConfig>>;
-
 // Provides a way for MediaService to create concrete (e.g. platform specific)
 // media components’ implementations. When MediaService is created, a
 // MojoMediaClient must be passed in so that MediaService knows how to create
@@ -59,13 +53,13 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   virtual std::unique_ptr<AudioDecoder> CreateAudioDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  virtual SupportedVideoDecoderConfigMap GetSupportedVideoDecoderConfigs();
+  virtual std::vector<SupportedVideoDecoderConfig>
+  GetSupportedVideoDecoderConfigs();
 
   virtual std::unique_ptr<VideoDecoder> CreateVideoDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
-      VideoDecoderImplementation implementation,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space);
 

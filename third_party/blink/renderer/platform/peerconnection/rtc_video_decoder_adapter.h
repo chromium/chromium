@@ -69,11 +69,6 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // resolution streams, but they'll fall back if they adapt below the limit.
   static constexpr int32_t kMaxDecoderInstances = 8;
 
-  // Lists which implementations can be queried, this can vary based on platform
-  // and enabled features.
-  static std::vector<media::VideoDecoderImplementation>
-  SupportedImplementations();
-
   // Creates and initializes an RTCVideoDecoderAdapter. Returns nullptr if
   // |format| cannot be supported.
   // Called on the worker thread.
@@ -120,8 +115,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   // Called on the worker thread.
   RTCVideoDecoderAdapter(media::GpuVideoAcceleratorFactories* gpu_factories,
                          const media::VideoDecoderConfig& config,
-                         const webrtc::SdpVideoFormat& format,
-                         media::VideoDecoderImplementation implementation);
+                         const webrtc::SdpVideoFormat& format);
 
   bool InitializeSync(const media::VideoDecoderConfig& config);
   void InitializeOnMediaThread(const media::VideoDecoderConfig& config,
@@ -142,7 +136,6 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
   const webrtc::SdpVideoFormat format_;
-  const media::VideoDecoderImplementation implementation_;
   media::VideoDecoderConfig config_;
 
   // Media thread members.

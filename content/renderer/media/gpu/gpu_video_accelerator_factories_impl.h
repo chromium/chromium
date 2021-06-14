@@ -78,13 +78,11 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   base::UnguessableToken GetChannelToken() override;
   int32_t GetCommandBufferRouteId() override;
   Supported IsDecoderConfigSupported(
-      media::VideoDecoderImplementation implementation,
       const media::VideoDecoderConfig& config) override;
   bool IsDecoderSupportKnown() override;
   void NotifyDecoderSupportKnown(base::OnceClosure callback) override;
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
       media::MediaLog* media_log,
-      media::VideoDecoderImplementation implementation,
       media::RequestOverlayInfoCB request_overlay_info_cb) override;
   absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override;
@@ -172,7 +170,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   void SetContextProviderLostOnMainThread();
 
   void OnSupportedDecoderConfigs(
-      const media::SupportedVideoDecoderConfigMap& supported_configs);
+      const media::SupportedVideoDecoderConfigs& supported_configs);
   void OnDecoderSupportFailed();
 
   void OnGetVideoEncodeAcceleratorSupportedProfiles(
@@ -217,8 +215,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   // If the Optional is empty, then we have not yet gotten the configs.  If the
   // Optional contains an empty vector, then we have gotten the result and there
   // are no supported configs.
-  absl::optional<media::SupportedVideoDecoderConfigMap>
-      supported_decoder_configs_ GUARDED_BY(supported_profiles_lock_);
+  absl::optional<media::SupportedVideoDecoderConfigs> supported_decoder_configs_
+      GUARDED_BY(supported_profiles_lock_);
   Notifier decoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
 
   absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>

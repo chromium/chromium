@@ -71,7 +71,7 @@ void DecoderSupport_OnKnown(
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   DCHECK(gpu_factories->IsDecoderSupportKnown());
   support->setSupported(
-      gpu_factories->IsDecoderConfigSupported(*media_config) ==
+      gpu_factories->IsDecoderConfigSupportedOrUnknown(*media_config) ==
       media::GpuVideoAcceleratorFactories::Supported::kTrue);
   resolver->Resolve(support);
 }

@@ -219,7 +219,6 @@ void ThumbnailMediaParserImpl::DecodeVideoFrame() {
   auto mojo_decoder = std::make_unique<media::MojoVideoDecoder>(
       base::ThreadTaskRunnerHandle::Get(), gpu_factories_.get(), this,
       std::move(video_decoder_remote),
-      media::VideoDecoderImplementation::kDefault,
       base::BindRepeating(&OnRequestOverlayInfo), gfx::ColorSpace());
 
   decoder_ = std::make_unique<media::VideoThumbnailDecoder>(

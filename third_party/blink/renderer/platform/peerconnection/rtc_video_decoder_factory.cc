@@ -237,14 +237,10 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
 
     // The RTCVideoDecoderAdapter is for HW decoders only, so ignore it if there
     // are no gpu_factories_.
-    if (gpu_factories_) {
-      for (auto impl : RTCVideoDecoderAdapter::SupportedImplementations()) {
-        if (gpu_factories_->IsDecoderConfigSupported(impl, config) ==
+    if (gpu_factories_ &&
+        gpu_factories_->IsDecoderConfigSupported(config) ==
             media::GpuVideoAcceleratorFactories::Supported::kTrue) {
-          format = VdcToWebRtcFormat(config);
-          break;
-        }
-      }
+      format = VdcToWebRtcFormat(config);
     }
 
     if (base::FeatureList::IsEnabled(media::kUseDecoderStreamForWebRTC) &&
@@ -308,11 +304,9 @@ RTCVideoDecoderFactory::QueryCodecSupport(
   webrtc::VideoDecoderFactory::CodecSupport codec_support;
   // Check gpu_factories for powerEfficient.
   if (gpu_factories_) {
-    for (auto impl : RTCVideoDecoderAdapter::SupportedImplementations()) {
-      if (gpu_factories_->IsDecoderConfigSupported(impl, config) ==
-          media::GpuVideoAcceleratorFactories::Supported::kTrue) {
-        codec_support.is_power_efficient = true;
-      }
+    if (gpu_factories_->IsDecoderConfigSupported(config) ==
+        media::GpuVideoAcceleratorFactories::Supported::kTrue) {
+      codec_support.is_power_efficient = true;
     }
   }
 

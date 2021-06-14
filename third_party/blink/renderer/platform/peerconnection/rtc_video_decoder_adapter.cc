@@ -125,19 +125,6 @@ void RecordReinitializationLatency(base::TimeDelta latency) {
 }  // namespace
 
 // static
-std::vector<media::VideoDecoderImplementation>
-RTCVideoDecoderAdapter::SupportedImplementations() {
-#if defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(media::kD3D11VideoDecoder)) {
-    // Push alternate ahead of default to prefer D3D11 decoders over DXVA.
-    return {media::VideoDecoderImplementation::kAlternate,
-            media::VideoDecoderImplementation::kDefault};
-  }
-#endif
-  return {media::VideoDecoderImplementation::kDefault};
-}
-
-// static
 std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const webrtc::SdpVideoFormat& format) {
@@ -163,21 +150,19 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
       kDefaultSize, media::EmptyExtraData(),
       media::EncryptionScheme::kUnencrypted);
 
-  for (auto impl : SupportedImplementations()) {
-    std::unique_ptr<RTCVideoDecoderAdapter> rtc_video_decoder_adapter;
-    if (gpu_factories->IsDecoderConfigSupported(impl, config) !=
-        media::GpuVideoAcceleratorFactories::Supported::kFalse) {
-      // Synchronously verify that the decoder can be initialized.
-      rtc_video_decoder_adapter = base::WrapUnique(
-          new RTCVideoDecoderAdapter(gpu_factories, config, format, impl));
-      if (rtc_video_decoder_adapter->InitializeSync(config)) {
-        return rtc_video_decoder_adapter;
-      }
-      // Initialization failed - post delete task and try next supported
-      // implementation, if any.
-      gpu_factories->GetTaskRunner()->DeleteSoon(
-          FROM_HERE, std::move(rtc_video_decoder_adapter));
+  std::unique_ptr<RTCVideoDecoderAdapter> rtc_video_decoder_adapter;
+  if (gpu_factories->IsDecoderConfigSupported(config) !=
+      media::GpuVideoAcceleratorFactories::Supported::kFalse) {
+    // Synchronously verify that the decoder can be initialized.
+    rtc_video_decoder_adapter = base::WrapUnique(
+        new RTCVideoDecoderAdapter(gpu_factories, config, format));
+    if (rtc_video_decoder_adapter->InitializeSync(config)) {
+      return rtc_video_decoder_adapter;
     }
+    // Initialization failed - post delete task and try next supported
+    // implementation, if any.
+    gpu_factories->GetTaskRunner()->DeleteSoon(
+        FROM_HERE, std::move(rtc_video_decoder_adapter));
   }
 
   // To mirror what RTCVideoDecoderStreamAdapter does a little more closely,
@@ -190,12 +175,10 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
 RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const media::VideoDecoderConfig& config,
-    const webrtc::SdpVideoFormat& format,
-    media::VideoDecoderImplementation implementation)
+    const webrtc::SdpVideoFormat& format)
     : media_task_runner_(gpu_factories->GetTaskRunner()),
       gpu_factories_(gpu_factories),
       format_(format),
-      implementation_(implementation),
       config_(config) {
   DVLOG(1) << __func__;
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
@@ -456,8 +439,7 @@ void RTCVideoDecoderAdapter::InitializeOnMediaThread(
     media_log_ = std::make_unique<media::NullMediaLog>();
 
     video_decoder_ = gpu_factories_->CreateVideoDecoder(
-        media_log_.get(), implementation_,
-        WTF::BindRepeating(&OnRequestOverlayInfo));
+        media_log_.get(), WTF::BindRepeating(&OnRequestOverlayInfo));
 
     if (!video_decoder_) {
       PostCrossThreadTask(*media_task_runner_.get(), FROM_HERE,

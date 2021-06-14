@@ -102,7 +102,6 @@ MojoVideoDecoder::MojoVideoDecoder(
     GpuVideoAcceleratorFactories* gpu_factories,
     MediaLog* media_log,
     mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder,
-    VideoDecoderImplementation implementation,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space)
     : task_runner_(task_runner),
@@ -114,8 +113,7 @@ MojoVideoDecoder::MojoVideoDecoder(
       media_log_service_(media_log),
       media_log_receiver_(&media_log_service_),
       request_overlay_info_cb_(std::move(request_overlay_info_cb)),
-      target_color_space_(target_color_space),
-      video_decoder_implementation_(implementation) {
+      target_color_space_(target_color_space) {
   DVLOG(1) << __func__;
   DETACH_FROM_SEQUENCE(sequence_checker_);
   weak_this_ = weak_factory_.GetWeakPtr();
@@ -162,8 +160,7 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Fail immediately if we know that the remote side cannot support |config|.
-  if (gpu_factories_ && gpu_factories_->IsDecoderConfigSupported(
-                            video_decoder_implementation_, config) ==
+  if (gpu_factories_ && gpu_factories_->IsDecoderConfigSupported(config) ==
                             GpuVideoAcceleratorFactories::Supported::kFalse) {
     FailInit(std::move(init_cb), StatusCode::kDecoderUnsupportedConfig);
     return;
@@ -397,12 +394,11 @@ void MojoVideoDecoder::BindRemoteDecoder() {
     }
   }
 
-  remote_decoder_->Construct(
-      client_receiver_.BindNewEndpointAndPassRemote(),
-      media_log_receiver_.BindNewEndpointAndPassRemote(),
-      std::move(video_frame_handle_releaser_receiver),
-      std::move(remote_consumer_handle), std::move(command_buffer_id),
-      video_decoder_implementation_, target_color_space_);
+  remote_decoder_->Construct(client_receiver_.BindNewEndpointAndPassRemote(),
+                             media_log_receiver_.BindNewEndpointAndPassRemote(),
+                             std::move(video_frame_handle_releaser_receiver),
+                             std::move(remote_consumer_handle),
+                             std::move(command_buffer_id), target_color_space_);
 }
 
 void MojoVideoDecoder::OnWaiting(WaitingReason reason) {

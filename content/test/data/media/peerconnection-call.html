@@ -768,16 +768,19 @@
         .then(function(report) {
           var numCodecs = 0;
           var hasH264 = false;
+          var supported_codecs = [];
           report.forEach(stats => {
             if (stats.type == 'codec') {
               numCodecs++;
+              supported_codecs.push(stats.mimeType);
               if (stats.mimeType == 'video/H264') {
                 hasH264 = true;
               }
+              
             }
           });
           assertEquals(1, numCodecs);
-          assertTrue(hasH264);
+          assertTrue(hasH264, JSON.stringify(supported_codecs));
           reportTestSuccess();
         })
         .catch(failTest);

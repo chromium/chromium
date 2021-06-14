@@ -52,7 +52,6 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
           video_frame_handle_receiver,
       mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
       mojom::CommandBufferIdPtr command_buffer_id,
-      VideoDecoderImplementation implementation,
       const gfx::ColorSpace& target_color_space) final;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
@@ -86,9 +85,6 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   void OnDecoderRequestedOverlayInfo(
       bool restart_for_transitions,
       ProvideOverlayInfoCB provide_overlay_info_cb);
-
-  // Implementation value provided at the time of Construct().
-  absl::optional<VideoDecoderImplementation> implementation_;
 
   // Whether this instance is active (Decode() was called at least once).
   bool is_active_instance_ = false;

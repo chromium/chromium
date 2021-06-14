@@ -31,14 +31,11 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   MOCK_METHOD0(GetChannelToken, base::UnguessableToken());
   MOCK_METHOD0(GetCommandBufferRouteId, int32_t());
 
-  MOCK_METHOD2(IsDecoderConfigSupported,
-               Supported(VideoDecoderImplementation,
-                         const VideoDecoderConfig&));
+  MOCK_METHOD1(IsDecoderConfigSupported, Supported(const VideoDecoderConfig&));
   MOCK_METHOD0(IsDecoderSupportKnown, bool());
   MOCK_METHOD1(NotifyDecoderSupportKnown, void(base::OnceClosure));
-  MOCK_METHOD3(CreateVideoDecoder,
+  MOCK_METHOD2(CreateVideoDecoder,
                std::unique_ptr<media::VideoDecoder>(MediaLog*,
-                                                    VideoDecoderImplementation,
                                                     RequestOverlayInfoCB));
 
   MOCK_METHOD0(IsEncoderSupportKnown, bool());

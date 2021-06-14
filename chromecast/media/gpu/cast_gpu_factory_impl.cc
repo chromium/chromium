@@ -102,7 +102,6 @@ std::unique_ptr<::media::VideoDecoder>
 CastGpuFactoryImpl::CreateVideoDecoder() {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
   return CreateVideoDecoder(media_log_.get(),
-                            ::media::VideoDecoderImplementation::kDefault,
                             base::BindRepeating(&OnRequestOverlayInfo));
 }
 
@@ -137,10 +136,9 @@ int32_t CastGpuFactoryImpl::GetCommandBufferRouteId() {
 }
 
 // Return true if |config| is potentially supported by a decoder created with
-// CreateVideoDecoder() using |implementation|.
+// CreateVideoDecoder().
 ::media::GpuVideoAcceleratorFactories::Supported
 CastGpuFactoryImpl::IsDecoderConfigSupported(
-    ::media::VideoDecoderImplementation implementation,
     const ::media::VideoDecoderConfig& config) {
   if (config.codec() == ::media::VideoCodec::kCodecH264) {
     return Supported::kTrue;
@@ -159,7 +157,6 @@ void CastGpuFactoryImpl::NotifyDecoderSupportKnown(base::OnceClosure callback) {
 
 std::unique_ptr<::media::VideoDecoder> CastGpuFactoryImpl::CreateVideoDecoder(
     ::media::MediaLog* media_log,
-    ::media::VideoDecoderImplementation implementation,
     ::media::RequestOverlayInfoCB request_overlay_info_cb) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
   DCHECK(media_interface_factory_.is_bound());
@@ -173,7 +170,7 @@ std::unique_ptr<::media::VideoDecoder> CastGpuFactoryImpl::CreateVideoDecoder(
       video_decoder.InitWithNewPipeAndPassReceiver());
   return std::make_unique<::media::MojoVideoDecoder>(
       mojo_task_runner_, this, media_log, std::move(video_decoder),
-      implementation, request_overlay_info_cb, gfx::ColorSpace::CreateSRGB());
+      request_overlay_info_cb, gfx::ColorSpace::CreateSRGB());
 }
 
 absl::optional<::media::VideoEncodeAccelerator::SupportedProfiles>

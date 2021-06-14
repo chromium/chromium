@@ -1366,7 +1366,7 @@ void MediaCapabilities::GetGpuFactoriesSupport(
       media::EmptyExtraData(), encryption_scheme);
 
   OnGpuFactoriesSupport(
-      callback_id, gpu_factories->IsDecoderConfigSupported(config) ==
+      callback_id, gpu_factories->IsDecoderConfigSupportedOrUnknown(config) ==
                        media::GpuVideoAcceleratorFactories::Supported::kTrue);
 }
 

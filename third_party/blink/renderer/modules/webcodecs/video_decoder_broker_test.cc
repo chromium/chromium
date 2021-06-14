@@ -85,7 +85,6 @@ class FakeMojoMediaClient : public media::MojoMediaClient {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       media::MediaLog* media_log,
       media::mojom::CommandBufferIdPtr command_buffer_id,
-      media::VideoDecoderImplementation implementation,
       media::RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) override {
     return std::make_unique<FakeGpuVideoDecoder>();
@@ -238,7 +237,7 @@ class VideoDecoderBrokerTest : public testing::Test {
         std::make_unique<media::MockGpuVideoAcceleratorFactories>(nullptr);
     EXPECT_CALL(*gpu_factories_, GetTaskRunner())
         .WillRepeatedly(Return(media_thread_->task_runner()));
-    EXPECT_CALL(*gpu_factories_, IsDecoderConfigSupported(_, _))
+    EXPECT_CALL(*gpu_factories_, IsDecoderConfigSupported(_))
         .WillRepeatedly(
             Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
   }

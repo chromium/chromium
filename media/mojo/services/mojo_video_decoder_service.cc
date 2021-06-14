@@ -47,14 +47,9 @@ const char kInitializeTraceName[] = "MojoVideoDecoderService::Initialize";
 const char kDecodeTraceName[] = "MojoVideoDecoderService::Decode";
 const char kResetTraceName[] = "MojoVideoDecoderService::Reset";
 
-void RecordTimingHistogram(VideoDecoderImplementation impl,
-                           const char* method,
-                           base::TimeDelta elapsed) {
+void RecordTimingHistogram(const char* method, base::TimeDelta elapsed) {
   base::UmaHistogramTimes(
-      base::StringPrintf("Media.MojoVideoDecoderServiceTiming.%s.%s",
-                         impl == VideoDecoderImplementation::kDefault
-                             ? "Default"
-                             : "Alternate",
+      base::StringPrintf("Media.MojoVideoDecoderServiceTiming.Default.%s",
                          method),
       elapsed);
 }
@@ -145,8 +140,8 @@ MojoVideoDecoderService::~MojoVideoDecoderService() {
   weak_factory_.InvalidateWeakPtrs();
   decoder_.reset();
 
-  if (implementation_)
-    RecordTimingHistogram(*implementation_, "Destruct", elapsed.Elapsed());
+  if (decoder_)
+    RecordTimingHistogram("Destruct", elapsed.Elapsed());
 }
 
 void MojoVideoDecoderService::GetSupportedConfigs(
@@ -165,7 +160,6 @@ void MojoVideoDecoderService::Construct(
         video_frame_handle_releaser_receiver,
     mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
     mojom::CommandBufferIdPtr command_buffer_id,
-    VideoDecoderImplementation implementation,
     const gfx::ColorSpace& target_color_space) {
   DVLOG(1) << __func__;
   TRACE_EVENT0("media", "MojoVideoDecoderService::Construct");
@@ -176,8 +170,6 @@ void MojoVideoDecoderService::Construct(
   }
 
   base::ElapsedTimer elapsed;
-  implementation_ = implementation;
-
   client_.Bind(std::move(client));
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -195,12 +187,11 @@ void MojoVideoDecoderService::Construct(
 
   decoder_ = mojo_media_client_->CreateVideoDecoder(
       task_runner, media_log_.get(), std::move(command_buffer_id),
-      implementation,
       base::BindRepeating(
           &MojoVideoDecoderService::OnDecoderRequestedOverlayInfo, weak_this_),
       target_color_space);
 
-  RecordTimingHistogram(*implementation_, "Construct", elapsed.Elapsed());
+  RecordTimingHistogram("Construct", elapsed.Elapsed());
 }
 
 void MojoVideoDecoderService::Initialize(

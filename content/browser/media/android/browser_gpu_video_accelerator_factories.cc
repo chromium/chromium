@@ -101,7 +101,6 @@ int32_t BrowserGpuVideoAcceleratorFactories::GetCommandBufferRouteId() {
 
 media::GpuVideoAcceleratorFactories::Supported
 BrowserGpuVideoAcceleratorFactories::IsDecoderConfigSupported(
-    media::VideoDecoderImplementation implementation,
     const media::VideoDecoderConfig& config) {
   // Tell the caller to just try it, there are no other decoders to fall back on
   // anyway.
@@ -121,7 +120,6 @@ void BrowserGpuVideoAcceleratorFactories::NotifyDecoderSupportKnown(
 std::unique_ptr<media::VideoDecoder>
 BrowserGpuVideoAcceleratorFactories::CreateVideoDecoder(
     media::MediaLog* media_log,
-    media::VideoDecoderImplementation implementation,
     media::RequestOverlayInfoCB request_overlay_info_cb) {
   return nullptr;
 }

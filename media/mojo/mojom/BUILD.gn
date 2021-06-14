@@ -335,10 +335,6 @@ mojom("mojom") {
           cpp = "::media::SupportedVideoDecoderConfig"
         },
         {
-          mojom = "media.mojom.VideoDecoderImplementation"
-          cpp = "::media::VideoDecoderImplementation"
-        },
-        {
           mojom = "media.mojom.VideoDecoderType"
           cpp = "::media::VideoDecoderType"
         },

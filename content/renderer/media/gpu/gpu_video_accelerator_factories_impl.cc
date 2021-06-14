@@ -206,7 +206,7 @@ void GpuVideoAcceleratorFactoriesImpl::NotifyDecoderSupportKnown(
 }
 
 void GpuVideoAcceleratorFactoriesImpl::OnSupportedDecoderConfigs(
-    const media::SupportedVideoDecoderConfigMap& supported_configs) {
+    const media::SupportedVideoDecoderConfigs& supported_configs) {
   base::AutoLock lock(supported_profiles_lock_);
   video_decoder_.reset();
   supported_decoder_configs_ = supported_configs;
@@ -218,7 +218,7 @@ void GpuVideoAcceleratorFactoriesImpl::OnDecoderSupportFailed() {
   video_decoder_.reset();
   if (decoder_support_notifier_.is_notified())
     return;
-  supported_decoder_configs_ = media::SupportedVideoDecoderConfigMap();
+  supported_decoder_configs_ = media::SupportedVideoDecoderConfigs();
   decoder_support_notifier_.Notify();
 }
 
@@ -302,7 +302,6 @@ int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {
 
 media::GpuVideoAcceleratorFactories::Supported
 GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
-    media::VideoDecoderImplementation implementation,
     const media::VideoDecoderConfig& config) {
   // There is no support for alpha channel hardware decoding yet.
   if (config.alpha_mode() == media::VideoDecoderConfig::AlphaMode::kHasAlpha) {
@@ -318,14 +317,8 @@ GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
   if (!supported_decoder_configs_)
     return Supported::kUnknown;
 
-  auto iter = supported_decoder_configs_->find(implementation);
-  // If the decoder implementation wasn't listed, then fail.  This means that
-  // there is no such decoder implementation.
-  if (iter == supported_decoder_configs_->end())
-    return Supported::kFalse;
-
-  // Iterate over the supported configs for |impl|.
-  for (const auto& supported : iter->second) {
+  // Iterate over the supported configs.
+  for (const auto& supported : *supported_decoder_configs_) {
     if (supported.Matches(config))
       return Supported::kTrue;
   }
@@ -335,7 +328,6 @@ GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
 std::unique_ptr<media::VideoDecoder>
 GpuVideoAcceleratorFactoriesImpl::CreateVideoDecoder(
     media::MediaLog* media_log,
-    media::VideoDecoderImplementation implementation,
     media::RequestOverlayInfoCB request_overlay_info_cb) {
   DCHECK(video_accelerator_enabled_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -349,7 +341,7 @@ GpuVideoAcceleratorFactoriesImpl::CreateVideoDecoder(
   interface_factory_->CreateVideoDecoder(
       video_decoder.InitWithNewPipeAndPassReceiver());
   return std::make_unique<media::MojoVideoDecoder>(
-      task_runner_, this, media_log, std::move(video_decoder), implementation,
+      task_runner_, this, media_log, std::move(video_decoder),
       std::move(request_overlay_info_cb), rendering_color_space_);
 #else
   return nullptr;
