@@ -122,8 +122,6 @@ void RegisterProtocolHandlersWithOs(
   std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id, profile->GetPath());
 
-  // TODO(crbug/1019239): Update CheckAndUpdateExternalInstallations
-  // to receive a callback that returns a bool.
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
