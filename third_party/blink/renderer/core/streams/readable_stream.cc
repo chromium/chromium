@@ -95,6 +95,8 @@ class ReadableStream::PipeToEngine final
  public:
   PipeToEngine(ScriptState* script_state, PipeOptions* pipe_options)
       : script_state_(script_state), pipe_options_(pipe_options) {}
+  PipeToEngine(const PipeToEngine&) = delete;
+  PipeToEngine& operator=(const PipeToEngine&) = delete;
 
   // This is the main entrypoint for ReadableStreamPipeTo().
   ScriptPromise Start(ReadableStream* readable, WritableStream* destination) {
@@ -701,13 +703,13 @@ class ReadableStream::PipeToEngine final
   TraceWrapperV8Reference<v8::Value> shutdown_error_;
   bool is_shutting_down_ = false;
   bool is_reading_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeToEngine);
 };
 
 class ReadableStream::TeeEngine final : public GarbageCollected<TeeEngine> {
  public:
   TeeEngine() = default;
+  TeeEngine(const TeeEngine&) = delete;
+  TeeEngine& operator=(const TeeEngine&) = delete;
 
   // Create the streams and start copying data.
   void Start(ScriptState*, ReadableStream*, ExceptionState&);
@@ -745,8 +747,6 @@ class ReadableStream::TeeEngine final : public GarbageCollected<TeeEngine> {
   TraceWrapperV8Reference<v8::Value> reason_[2];
   Member<ReadableStream> branch_[2];
   Member<ReadableStreamDefaultController> controller_[2];
-
-  DISALLOW_COPY_AND_ASSIGN(TeeEngine);
 };
 
 class ReadableStream::TeeEngine::PullAlgorithm final : public StreamAlgorithm {

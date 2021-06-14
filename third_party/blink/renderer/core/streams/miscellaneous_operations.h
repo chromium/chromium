@@ -168,6 +168,8 @@ class StrategyUnpacker final {
   // arbitrary user code. The object cannot be used if
   // exception_state.HadException() is true.
   StrategyUnpacker(ScriptState*, ScriptValue strategy, ExceptionState&);
+  StrategyUnpacker(const StrategyUnpacker&) = delete;
+  StrategyUnpacker& operator=(const StrategyUnpacker&) = delete;
   ~StrategyUnpacker() = default;
 
   // Performs MakeSizeAlgorithmFromSizeFunction on |size_|. Because this method
@@ -186,8 +188,6 @@ class StrategyUnpacker final {
  private:
   v8::Local<v8::Value> size_;
   v8::Local<v8::Value> high_water_mark_;
-
-  DISALLOW_COPY_AND_ASSIGN(StrategyUnpacker);
 };
 
 }  // namespace blink

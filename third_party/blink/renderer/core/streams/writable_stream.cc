@@ -45,6 +45,8 @@ class WritableStream::PendingAbortRequest final
       : promise_(promise),
         reason_(isolate, reason),
         was_already_erroring_(was_already_erroring) {}
+  PendingAbortRequest(const PendingAbortRequest&) = delete;
+  PendingAbortRequest& operator=(const PendingAbortRequest&) = delete;
 
   StreamPromiseResolver* GetPromise() { return promise_; }
   v8::Local<v8::Value> Reason(v8::Isolate* isolate) {
@@ -62,8 +64,6 @@ class WritableStream::PendingAbortRequest final
   Member<StreamPromiseResolver> promise_;
   TraceWrapperV8Reference<v8::Value> reason_;
   const bool was_already_erroring_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingAbortRequest);
 };
 
 WritableStream* WritableStream::Create(ScriptState* script_state,
