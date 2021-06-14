@@ -23,6 +23,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class GridLayout;
+}  // namespace views
+
 namespace send_tab_to_self {
 
 class SendTabToSelfBubbleController;
@@ -64,7 +68,10 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   void Init() override;
 
   // Creates the scroll view.
-  void CreateScrollView();
+  void CreateScrollView(views::GridLayout* layout);
+
+  // Creates the subtitle / hint text used in V2.
+  void CreateHintTextLabel(views::GridLayout* layout);
 
   // Populates the scroll view containing valid devices.
   void PopulateScrollView(const std::vector<TargetDeviceInfo>& devices);

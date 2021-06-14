@@ -9,10 +9,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,6 +23,8 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace send_tab_to_self {
 
@@ -108,16 +112,57 @@ void SendTabToSelfBubbleViewImpl::Init() {
                   provider->GetDistanceMetric(
                       views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
                   0));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  views::GridLayout* layout =
+      SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::ColumnSet* columns = layout->AddColumnSet(0);
+  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kFixed, width, width);
 
-  CreateScrollView();
+  if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2)) {
+    CreateHintTextLabel(layout);
+  }
+
+  CreateScrollView(layout);
 
   PopulateScrollView(controller_->GetValidDevices());
 }
 
-void SendTabToSelfBubbleViewImpl::CreateScrollView() {
-  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+void SendTabToSelfBubbleViewImpl::CreateScrollView(views::GridLayout* layout) {
+  layout->StartRow(1.0f, 0);
+  scroll_view_ = layout->AddView(std::make_unique<views::ScrollView>());
   scroll_view_->ClipHeightTo(0, kDeviceButtonHeight * kMaximumButtons);
+}
+
+void SendTabToSelfBubbleViewImpl::CreateHintTextLabel(
+    views::GridLayout* layout) {
+  layout->StartRow(1.0f, 0);
+
+  auto margin = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
+
+  views::View* container = layout->AddView(std::make_unique<views::View>());
+  auto* container_layout =
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          gfx::Insets(0, margin, 0, margin)));
+  container_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  auto description = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(
+          IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_HINT_TEXT),
+      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+  description->SetMultiLine(true);
+  description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  container->AddChildView(std::move(description));
+
+  auto* provider = ChromeLayoutProvider::Get();
+  const int vertical_distance =
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
+  layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_distance);
 }
 
 void SendTabToSelfBubbleViewImpl::PopulateScrollView(
