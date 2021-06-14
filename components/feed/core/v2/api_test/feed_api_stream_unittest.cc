@@ -329,6 +329,45 @@ TEST_F(FeedApiTest, LoadFromNetworkDiscoFeedEnabled) {
             surface.DescribeUpdates());
 }
 
+TEST_P(FeedNetworkEndpointTest, TestAllNetworkEndpointConfigs) {
+  SetUseFeedQueryRequestsForWebFeeds(GetWebFeedUsesFeedQueryRequests());
+
+  // Enable WebFeed and subscribe to a page, so that we can check if the WebFeed
+  // is refreshed by ForceRefreshForDebugging.
+  base::test::ScopedFeatureList features;
+  std::vector<base::Feature> enabled_features = {kWebFeed},
+                             disabled_features = {};
+  if (GetDiscoFeedEnabled()) {
+    enabled_features.push_back(kDiscoFeedEndpoint);
+  } else {
+    disabled_features.push_back(kDiscoFeedEndpoint);
+  }
+  features.InitWithFeatures(enabled_features, disabled_features);
+
+  // WebFeed stream is only fetched when there's a subscription.
+  FollowWebFeed(MakeWebFeedPageInformation("https://cats.com"));
+
+  // Force a refresh that results in a successful load of both feed types.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+
+  TestForYouSurface surface(stream_.get());
+  TestWebFeedSurface web_feed_surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("2 slices", surface.DescribeState());
+  EXPECT_EQ("2 slices", web_feed_surface.DescribeState());
+
+  // Total 2 queries (Web + For You).
+  EXPECT_EQ(2, network_.send_query_call_count);
+  // API request to DiscoFeed (For You) - if enabled by feature
+  EXPECT_EQ(GetDiscoFeedEnabled() ? 1 : 0,
+            network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
+  // API request to WebFeedList if FeedQuery not enabled by config.
+  EXPECT_EQ(GetWebFeedUsesFeedQueryRequests() ? 0 : 1,
+            network_.GetApiRequestCount<WebFeedListContentsDiscoverApi>());
+}
+
 // Perform a background refresh when DiscoFeedEndpoint is enabled. A
 // QueryBackgroundFeedDiscoverApi request should be made.
 TEST_F(FeedApiTest, BackgroundRefreshDiscoFeedEnabled) {
@@ -2290,6 +2329,10 @@ INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,
                          ::testing::Values(kForYouStream, kWebFeedStream),
                          ::testing::PrintToStringParamName());
+INSTANTIATE_TEST_SUITE_P(FeedApiTest,
+                         FeedNetworkEndpointTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 }  // namespace
 }  // namespace test

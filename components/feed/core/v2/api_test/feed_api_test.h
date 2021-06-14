@@ -430,6 +430,16 @@ class FeedStreamTestForAllStreamTypes
   RefreshTaskId GetRefreshTaskId() const;
 };
 
+class FeedNetworkEndpointTest
+    : public FeedApiTest,
+      public ::testing::WithParamInterface<::testing::tuple<bool, bool>> {
+ public:
+  static bool GetDiscoFeedEnabled() { return ::testing::get<0>(GetParam()); }
+  static bool GetWebFeedUsesFeedQueryRequests() {
+    return ::testing::get<1>(GetParam());
+  }
+};
+
 }  // namespace test
 }  // namespace feed
 

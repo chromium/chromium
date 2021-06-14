@@ -165,34 +165,39 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   const std::string gaia =
       force_signed_out_request ? std::string() : stream_->GetSyncSignedInGaia();
 
-  if (options_.stream_type.IsForYou() ||
-      GetFeedConfig().use_feed_query_requests_for_web_feeds) {
-    if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
-      switch (options_.load_type) {
-        case LoadType::kInitialLoad:
-          stream_->GetNetwork()
-              ->SendApiRequest<QueryInteractiveFeedDiscoverApi>(
-                  request, gaia,
-                  base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
-                                 GetWeakPtr()));
-          break;
-        case LoadType::kBackgroundRefresh:
-          stream_->GetNetwork()->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
-              request, gaia,
-              base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
-                             GetWeakPtr()));
-          break;
-      }
-    } else {
-      stream_->GetNetwork()->SendQueryRequest(
-          NetworkRequestType::kFeedQuery, request, gaia,
-          base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
-    }
-  } else {
-    DCHECK(options_.stream_type.IsWebFeed());
-    stream_->GetNetwork()->SendApiRequest<WebFeedListContentsDiscoverApi>(
+  FeedNetwork* network = stream_->GetNetwork();
+  DCHECK(network);
+
+  if (options_.stream_type.IsWebFeed() &&
+      !GetFeedConfig().use_feed_query_requests_for_web_feeds) {
+    // Special case: web feed that is not using Feed Query requests go to
+    // WebFeedListContentsDiscoverApi.
+    network->SendApiRequest<WebFeedListContentsDiscoverApi>(
         std::move(request), gaia,
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
+  } else if (options_.stream_type.IsForYou() &&
+             base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
+    // Special case: For You feed using the DiscoFeedEndpoint call
+    // Query*FeedDiscoverApi.
+    switch (options_.load_type) {
+      case LoadType::kInitialLoad:
+        network->SendApiRequest<QueryInteractiveFeedDiscoverApi>(
+            request, gaia,
+            base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
+                           GetWeakPtr()));
+        break;
+      case LoadType::kBackgroundRefresh:
+        network->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
+            request, gaia,
+            base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
+                           GetWeakPtr()));
+        break;
+    }
+  } else {
+    // Other requests use GWS.
+    network->SendQueryRequest(
+        NetworkRequestType::kFeedQuery, request, gaia,
+        base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
   }
 }
 
