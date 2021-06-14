@@ -24,10 +24,10 @@ class ModuleRecordResolver;
 // implementation. Unit tests can implement a subset of Modulator interface
 // which is exercised from unit-under-test.
 class DummyModulator : public Modulator {
-  DISALLOW_COPY_AND_ASSIGN(DummyModulator);
-
  public:
   DummyModulator();
+  DummyModulator(const DummyModulator&) = delete;
+  DummyModulator& operator=(const DummyModulator&) = delete;
   ~DummyModulator() override;
   void Trace(Visitor*) const override;
 

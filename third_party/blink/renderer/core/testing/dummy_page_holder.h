@@ -35,7 +35,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -76,6 +75,8 @@ class DummyPageHolder {
       base::OnceCallback<void(Settings&)> setting_overrider =
           base::NullCallback(),
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+  DummyPageHolder(const DummyPageHolder&) = delete;
+  DummyPageHolder& operator=(const DummyPageHolder&) = delete;
   ~DummyPageHolder();
 
   Page& GetPage() const;
@@ -100,7 +101,6 @@ class DummyPageHolder {
 
   Persistent<LocalFrameClient> local_frame_client_;
   std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler_;
-  DISALLOW_COPY_AND_ASSIGN(DummyPageHolder);
 };
 
 }  // namespace blink

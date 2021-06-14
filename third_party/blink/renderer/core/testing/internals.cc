@@ -30,7 +30,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
@@ -215,6 +214,9 @@ class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
   UseCounterImplObserverImpl(ScriptPromiseResolver* resolver,
                              WebFeature feature)
       : resolver_(resolver), feature_(feature) {}
+  UseCounterImplObserverImpl(const UseCounterImplObserverImpl&) = delete;
+  UseCounterImplObserverImpl& operator=(const UseCounterImplObserverImpl&) =
+      delete;
 
   bool OnCountFeature(WebFeature feature) final {
     if (feature_ != feature)
@@ -231,7 +233,6 @@ class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
  private:
   Member<ScriptPromiseResolver> resolver_;
   WebFeature feature_;
-  DISALLOW_COPY_AND_ASSIGN(UseCounterImplObserverImpl);
 };
 
 class TestReadableStreamSource : public UnderlyingSourceBase {
