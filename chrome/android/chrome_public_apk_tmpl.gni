@@ -179,10 +179,23 @@ template("chrome_public_common_apk_or_module_tmpl") {
       png_to_webp = !is_java_debug
     }
 
-    # Removes metadata needed for Resources.getIdentifier("resource_name").
-    strip_resource_names = !is_java_debug
+    # We only optimize resources for bundles since APKs are not shipped.
+    # Resources only live in the base module atm as such we only need to set
+    # these on the base module
+    if (_is_bundle) {
+      # Removes metadata needed for Resources.getIdentifier("resource_name").
+      strip_resource_names = !is_java_debug
 
-    short_resource_paths = true
+      # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
+      short_resource_paths = true
+
+      # Removes unused resources from the apk. Only enabled on official builds
+      # since it adds a slow step and serializes the build graph causing fewer
+      # expensive tasks (eg: proguarding, resource optimization) to be run in
+      # parallel by adding dependencies between them (adds around 10-20
+      # seconds on my machine).
+      strip_unused_resources = is_official_build
+    }
 
     if (!defined(aapt_locale_allowlist)) {
       # Include resource strings files only for supported locales.
@@ -539,13 +552,16 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         }
       }
 
-      # Resources config for blocklisting resource names from obfuscation
-      resources_config_paths = [
-        "//android_webview/aapt2.config",
-        "//chrome/android/aapt2.config",
-      ]
-      if (defined(invoker.resources_config_paths)) {
-        resources_config_paths += invoker.resources_config_paths
+      # We only optimize resources in bundles.
+      if (_is_bundle_module) {
+        # Resources config for blocklisting resource names from obfuscation
+        resources_config_paths = [
+          "//android_webview/aapt2.config",
+          "//chrome/android/aapt2.config",
+        ]
+        if (defined(invoker.resources_config_paths)) {
+          resources_config_paths += invoker.resources_config_paths
+        }
       }
 
       if (defined(invoker.never_incremental)) {

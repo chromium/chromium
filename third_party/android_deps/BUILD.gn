@@ -138,7 +138,7 @@ java_prebuilt("com_android_tools_common_java") {
   # This target does not come with most of its dependencies and is
   # only meant to be used by the resources shrinker. If you wish to use
   # this for other purposes, change buildCompileNoDeps in build.gradle.
-  visibility = [ "//build/android/gyp/resources_shrinker:*" ]
+  visibility = [ "//build/android/unused_resources:*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -150,7 +150,7 @@ java_prebuilt("com_android_tools_layoutlib_layoutlib_api_java") {
   # This target does not come with most of its dependencies and is
   # only meant to be used by the resources shrinker. If you wish to use
   # this for other purposes, change buildCompileNoDeps in build.gradle.
-  visibility = [ "//build/android/gyp/resources_shrinker:*" ]
+  visibility = [ "//build/android/unused_resources:*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -162,7 +162,7 @@ java_prebuilt("com_android_tools_sdk_common_java") {
   # This target does not come with most of its dependencies and is
   # only meant to be used by the resources shrinker. If you wish to use
   # this for other purposes, change buildCompileNoDeps in build.gradle.
-  visibility = [ "//build/android/gyp/resources_shrinker:*" ]
+  visibility = [ "//build/android/unused_resources:*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

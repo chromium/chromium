@@ -360,6 +360,12 @@ template("write_build_config") {
       args += [ "--treat-as-locale-paks" ]
     }
 
+    if (defined(invoker.merged_android_manifest)) {
+      args += [
+        "--merged-android-manifest",
+        rebase_path(invoker.merged_android_manifest, root_build_dir),
+      ]
+    }
     if (defined(invoker.android_manifest)) {
       inputs += [ invoker.android_manifest ]
       args += [
@@ -2253,28 +2259,14 @@ if (enable_java_templates) {
   #     Use resource IDs provided by another APK target when compiling resources
   #     (via. "aapt2 link --stable-ids")
   #
-  #   short_resource_paths: (optional)
-  #     Rename the paths within a the apk to be randomly generated short
-  #     strings to reduce binary size.
-  #
-  #   strip_resource_names: (optional)
-  #     Strip resource names from the resources table of the apk.
   #
   # Output variables:
   #   arsc_output: Path to output .ap_ file (optional).
   #
   #   proto_output: Path to output .proto.ap_ file (optional).
   #
-  #   optimized_arsc_output: Path to optimized .ap_ file (optional).
-  #
-  #   optimized_proto_output: Path to optimized .proto.ap_ file (optional).
-  #
   #   r_text_out_path: (optional):
   #       Path for the corresponding generated R.txt file.
-  #
-  #   resources_path_map_out_path: (optional):
-  #       Path for the generated map between original resource paths and
-  #       shortend resource paths.
   #
   #   proguard_file: (optional)
   #       Path to proguard configuration file for this apk target.
@@ -2304,9 +2296,6 @@ if (enable_java_templates) {
 
     if (defined(invoker.arsc_output)) {
       _arsc_output = invoker.arsc_output
-    }
-    if (defined(invoker.optimized_arsc_output)) {
-      _optimized_arsc_output = invoker.optimized_arsc_output
     }
     _final_srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
 
@@ -2375,46 +2364,12 @@ if (enable_java_templates) {
         rebase_path(invoker.size_info_path, root_build_dir),
       ]
     }
-    if (defined(_optimized_arsc_output)) {
-      _outputs += [ _optimized_arsc_output ]
-      _args += [
-        "--optimized-arsc-path",
-        rebase_path(_optimized_arsc_output, root_build_dir),
-      ]
-    }
-    if (defined(invoker.optimized_proto_output)) {
-      _outputs += [ invoker.optimized_proto_output ]
-      _args += [
-        "--optimized-proto-path",
-        rebase_path(invoker.optimized_proto_output, root_build_dir),
-      ]
-    }
-    if (defined(invoker.resources_config_paths)) {
-      _inputs += invoker.resources_config_paths
-      _rebased_resource_configs =
-          rebase_path(invoker.resources_config_paths, root_build_dir)
-      _args += [ "--resources-config-paths=${_rebased_resource_configs}" ]
-    }
-    if (defined(invoker.short_resource_paths) && invoker.short_resource_paths) {
-      _args += [ "--short-resource-paths" ]
-      if (defined(invoker.resources_path_map_out_path)) {
-        _outputs += [ invoker.resources_path_map_out_path ]
-        _args += [
-          "--resources-path-map-out-path",
-          rebase_path(invoker.resources_path_map_out_path, root_build_dir),
-        ]
-      }
-    }
 
     if (defined(invoker.r_java_root_package_name)) {
       _args += [
         "--r-java-root-package-name",
         invoker.r_java_root_package_name,
       ]
-    }
-
-    if (defined(invoker.strip_resource_names) && invoker.strip_resource_names) {
-      _args += [ "--strip-resource-names" ]
     }
 
     # Useful to have android:debuggable in the manifest even for Release
@@ -2643,35 +2598,117 @@ if (enable_java_templates) {
     }
   }
 
+  # A template that is used to optimize compiled resources using aapt2 optimize.
+  #
+  #   proto_input_path:
+  #     Path to input compiled .proto.ap_ file.
+  #
+  #   short_resource_paths: (optional)
+  #     Rename the paths within a the apk to be randomly generated short
+  #     strings to reduce binary size.
+  #
+  #   strip_resource_names: (optional)
+  #     Strip resource names from the resources table of the apk.
+  #
+  #   resources_configs_paths: (optional)
+  #     List of resource configs to use for optimization.
+  #
+  #   optimized_proto_output:
+  #     Path to output optimized .proto.ap_ file.
+  #
+  #   resources_path_map_out_path: (optional):
+  #       Path for the generated map between original resource paths and
+  #       shortened resource paths.
+  template("optimize_resources") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker, [ "deps" ])
+      script = "//build/android/gyp/optimize_resources.py"
+      outputs = [ invoker.optimized_proto_output ]
+      inputs = [
+        android_sdk_tools_bundle_aapt2,
+        invoker.r_text_path,
+        invoker.proto_input_path,
+      ]
+      args = [
+        "--aapt2-path",
+        rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
+        "--r-text-in",
+        rebase_path(invoker.r_text_path, root_build_dir),
+        "--proto-path",
+        rebase_path(invoker.proto_input_path, root_build_dir),
+        "--optimized-proto-path",
+        rebase_path(invoker.optimized_proto_output, root_build_dir),
+      ]
+
+      if (defined(invoker.resources_config_paths)) {
+        inputs += invoker.resources_config_paths
+        _rebased_resource_configs =
+            rebase_path(invoker.resources_config_paths, root_build_dir)
+        args += [ "--resources-config-paths=${_rebased_resource_configs}" ]
+      }
+
+      if (defined(invoker.short_resource_paths) &&
+          invoker.short_resource_paths) {
+        args += [ "--short-resource-paths" ]
+        if (defined(invoker.resources_path_map_out_path)) {
+          outputs += [ invoker.resources_path_map_out_path ]
+          args += [
+            "--resources-path-map-out-path",
+            rebase_path(invoker.resources_path_map_out_path, root_build_dir),
+          ]
+        }
+      }
+
+      if (defined(invoker.strip_resource_names) &&
+          invoker.strip_resource_names) {
+        args += [ "--strip-resource-names" ]
+      }
+    }
+  }
+
+  # A template that is used to find unused resources.
   template("unused_resources") {
-    _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-    _shrinker_dep = "//build/android/gyp/resources_shrinker:resources_shrinker"
-    _shrinker_script = "$root_build_dir/bin/helper/resources_shrinker"
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
-      script = "//build/android/gyp/resources_shrinker/shrinker.py"
-      inputs = [
-        invoker.build_config,
-        invoker.proguard_mapping_path,
-        _shrinker_script,
-      ]
+      script = "//build/android/gyp/unused_resources.py"
+      depfile = "$target_gen_dir/${target_name}.d"
+      _unused_resources_script = "$root_build_dir/bin/helper/unused_resources"
+      inputs = [ _unused_resources_script ]
       outputs = [ invoker.output_config ]
       if (!defined(deps)) {
         deps = []
       }
-      deps += [ _shrinker_dep ]
+      deps += [ "//build/android/unused_resources:unused_resources" ]
+      _rebased_module_build_config =
+          rebase_path(invoker.build_config, root_build_dir)
       args = [
         "--script",
-        rebase_path(_shrinker_script, root_build_dir),
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
-        "--proguard-mapping",
-        rebase_path(invoker.proguard_mapping_path, root_build_dir),
-        "--r-text=@FileArg($_rebased_build_config:deps_info:r_text_path)",
-        "--dex=@FileArg($_rebased_build_config:final_dex:path)",
-        "--android-manifest=@FileArg($_rebased_build_config:deps_info:android_manifest)",
+        rebase_path(_unused_resources_script, root_build_dir),
         "--output-config",
         rebase_path(invoker.output_config, root_build_dir),
+        "--r-text=@FileArg($_rebased_module_build_config:deps_info:r_text_path)",
+        "--dependencies-res-zips=@FileArg($_rebased_module_build_config:deps_info:dependency_zips)",
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
       ]
+
+      if (defined(invoker.proguard_mapping_path)) {
+        inputs += [ invoker.proguard_mapping_path ]
+        args += [
+          "--proguard-mapping",
+          rebase_path(invoker.proguard_mapping_path, root_build_dir),
+        ]
+      }
+
+      foreach(_build_config, invoker.all_module_build_configs) {
+        inputs += [ _build_config ]
+        _rebased_build_config = rebase_path(_build_config, root_build_dir)
+        args += [
+          "--dexes=@FileArg($_rebased_build_config:final_dex:path)",
+          "--android-manifests=@FileArg($_rebased_build_config:deps_info:merged_android_manifest)",
+        ]
+      }
     }
   }
 
@@ -3623,6 +3660,7 @@ if (enable_java_templates) {
             [
               "android_manifest",
               "android_manifest_dep",
+              "merged_android_manifest",
               "final_dex_path",
               "loadable_modules",
               "native_lib_placeholders",
