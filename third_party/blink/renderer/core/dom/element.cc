@@ -3164,7 +3164,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
             pseudo_element->LayoutStyleForDisplayContents(*layout_style);
       }
     } else if (auto* html_element = DynamicTo<HTMLHtmlElement>(this)) {
-      layout_style = html_element->LayoutStyleForElement(layout_style);
+      if (this == GetDocument().documentElement())
+        layout_style = html_element->LayoutStyleForElement(layout_style);
     }
     // kEqual means that the computed style didn't change, but there are
     // additional flags in ComputedStyle which may have changed. For instance,
