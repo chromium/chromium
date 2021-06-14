@@ -300,12 +300,10 @@ void URLDownloader::DistillerCallback(
     return;
   }
 
-  std::vector<dom_distiller::DistillerViewer::ImageInfo> images_block = images;
-  std::string block_html = html;
   task_tracker_.PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&URLDownloader::SaveDistilledHTML, base::Unretained(this),
-                     page_url, images_block, block_html),
+                     page_url, images, html),
       base::BindOnce(&URLDownloader::DownloadCompletionHandler,
                      base::Unretained(this), page_url, title,
                      reading_list::OfflinePagePath(
