@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_TIMER_COORDINATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_TIMER_COORDINATOR_H_
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -25,6 +24,8 @@ class DOMTimerCoordinator {
 
  public:
   DOMTimerCoordinator() = default;
+  DOMTimerCoordinator(const DOMTimerCoordinator&) = delete;
+  DOMTimerCoordinator& operator=(const DOMTimerCoordinator&) = delete;
 
   // Creates and installs a new timer. Returns the assigned ID.
   int InstallNewTimeout(ExecutionContext*,
@@ -57,8 +58,6 @@ class DOMTimerCoordinator {
 
   int circular_sequential_id_ = 0;
   int timer_nesting_level_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMTimerCoordinator);
 };
 
 }  // namespace blink

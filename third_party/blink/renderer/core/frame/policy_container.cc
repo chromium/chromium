@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/policy_container.h"
+
+#include "base/macros.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 
 namespace blink {

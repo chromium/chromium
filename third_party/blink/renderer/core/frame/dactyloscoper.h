@@ -26,6 +26,8 @@ class CORE_EXPORT Dactyloscoper {
 
  public:
   Dactyloscoper();
+  Dactyloscoper(const Dactyloscoper&) = delete;
+  Dactyloscoper& operator=(const Dactyloscoper&) = delete;
 
   void Record(WebFeature);
 
@@ -70,9 +72,6 @@ class CORE_EXPORT Dactyloscoper {
                           IdentifiableTokenBuilder().GetToken());
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Dactyloscoper);
 };
 
 }  // namespace blink

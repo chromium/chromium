@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VIEW_AUTO_SIZE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VIEW_AUTO_SIZE_INFO_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -19,6 +18,8 @@ class FrameViewAutoSizeInfo final
     : public GarbageCollected<FrameViewAutoSizeInfo> {
  public:
   explicit FrameViewAutoSizeInfo(LocalFrameView*);
+  FrameViewAutoSizeInfo(const FrameViewAutoSizeInfo&) = delete;
+  FrameViewAutoSizeInfo& operator=(const FrameViewAutoSizeInfo&) = delete;
 
   void ConfigureAutoSizeMode(const IntSize& min_size, const IntSize& max_size);
   // Returns true if the LocalFrameView was resized.
@@ -42,8 +43,6 @@ class FrameViewAutoSizeInfo final
   // Clear();
   bool running_first_autosize_ = false;
   uint32_t num_passes_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameViewAutoSizeInfo);
 };
 
 }  // namespace blink

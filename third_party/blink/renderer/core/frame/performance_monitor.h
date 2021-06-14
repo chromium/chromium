@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -103,6 +102,8 @@ class CORE_EXPORT PerformanceMonitor final
   void Shutdown();
 
   PerformanceMonitor(LocalFrame*, v8::Isolate*);
+  PerformanceMonitor(const PerformanceMonitor&) = delete;
+  PerformanceMonitor& operator=(const PerformanceMonitor&) = delete;
   ~PerformanceMonitor() override;
 
   virtual void Trace(Visitor*) const;
@@ -163,8 +164,6 @@ class CORE_EXPORT PerformanceMonitor final
               typename DefaultHash<size_t>::Hash,
               WTF::UnsignedWithZeroKeyHashTraits<size_t>>
       subscriptions_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceMonitor);
 };
 
 }  // namespace blink

@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -1161,12 +1160,12 @@ class FrameNavigationDisabler {
 
  public:
   explicit FrameNavigationDisabler(LocalFrame&);
+  FrameNavigationDisabler(const FrameNavigationDisabler&) = delete;
+  FrameNavigationDisabler& operator=(const FrameNavigationDisabler&) = delete;
   ~FrameNavigationDisabler();
 
  private:
   LocalFrame* frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameNavigationDisabler);
 };
 
 // A helper class for attributing cost inside a scope to a LocalFrame, with
@@ -1192,6 +1191,8 @@ class ScopedFrameBlamer {
 
  public:
   explicit ScopedFrameBlamer(LocalFrame*);
+  ScopedFrameBlamer(const ScopedFrameBlamer&) = delete;
+  ScopedFrameBlamer& operator=(const ScopedFrameBlamer&) = delete;
   ~ScopedFrameBlamer() {
     if (UNLIKELY(frame_))
       LeaveContext();
@@ -1201,8 +1202,6 @@ class ScopedFrameBlamer {
   void LeaveContext();
 
   LocalFrame* frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFrameBlamer);
 };
 
 }  // namespace blink

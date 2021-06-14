@@ -26,6 +26,9 @@ class CORE_EXPORT PictureInPictureController
  public:
   static const char kSupplementName[];
 
+  PictureInPictureController(const PictureInPictureController&) = delete;
+  PictureInPictureController& operator=(const PictureInPictureController&) =
+      delete;
   virtual ~PictureInPictureController() = default;
 
   // Should be called before any other call to make sure a document is attached.
@@ -87,8 +90,6 @@ class CORE_EXPORT PictureInPictureController
   // It is protected so that clients use the static method
   // IsElementInPictureInPicture() that avoids creating the controller.
   virtual bool IsPictureInPictureElement(const Element*) const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureController);
 };
 
 }  // namespace blink

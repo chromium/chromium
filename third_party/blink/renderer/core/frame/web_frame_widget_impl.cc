@@ -2788,6 +2788,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
         presentation_time_callback_(std::move(presentation_time_callback)),
         task_runner_(std::move(task_runner)),
         widget_(widget) {}
+  ReportTimeSwapPromise(const ReportTimeSwapPromise&) = delete;
+  ReportTimeSwapPromise& operator=(const ReportTimeSwapPromise&) = delete;
   ~ReportTimeSwapPromise() override = default;
 
   void DidActivate() override {}
@@ -2900,8 +2902,6 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   CrossThreadWeakPersistent<WebFrameWidgetImpl> widget_;
   uint32_t frame_token_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportTimeSwapPromise);
 };
 
 void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(

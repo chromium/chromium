@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PAGE_DISMISSAL_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PAGE_DISMISSAL_SCOPE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -16,11 +15,11 @@ class CORE_EXPORT PageDismissalScope final {
 
  public:
   PageDismissalScope();
+  PageDismissalScope(const PageDismissalScope&) = delete;
+  PageDismissalScope& operator=(const PageDismissalScope&) = delete;
   ~PageDismissalScope();
 
   static bool IsActive();
-
-  DISALLOW_COPY_AND_ASSIGN(PageDismissalScope);
 };
 
 }  // namespace blink

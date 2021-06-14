@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_LIFECYCLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_LIFECYCLE_H_
 
-#include "base/macros.h"
-
 namespace blink {
 
 class FrameLifecycle {
@@ -18,14 +16,14 @@ class FrameLifecycle {
   };
 
   FrameLifecycle();
+  FrameLifecycle(const FrameLifecycle&) = delete;
+  FrameLifecycle& operator=(const FrameLifecycle&) = delete;
 
   State GetState() const { return state_; }
   void AdvanceTo(State);
 
  private:
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameLifecycle);
 };
 
 }  // namespace blink

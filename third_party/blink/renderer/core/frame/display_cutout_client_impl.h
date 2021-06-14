@@ -28,6 +28,8 @@ class CORE_EXPORT DisplayCutoutClientImpl final
   DisplayCutoutClientImpl(
       LocalFrame*,
       mojo::PendingAssociatedReceiver<mojom::blink::DisplayCutoutClient>);
+  DisplayCutoutClientImpl(const DisplayCutoutClientImpl&) = delete;
+  DisplayCutoutClientImpl& operator=(const DisplayCutoutClientImpl&) = delete;
 
   // Notify the renderer that the safe areas have changed.
   void SetSafeArea(mojom::blink::DisplayCutoutSafeAreaPtr safe_area) override;
@@ -38,8 +40,6 @@ class CORE_EXPORT DisplayCutoutClientImpl final
   Member<LocalFrame> frame_;
 
   mojo::AssociatedReceiver<mojom::blink::DisplayCutoutClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayCutoutClientImpl);
 };
 
 }  // namespace blink

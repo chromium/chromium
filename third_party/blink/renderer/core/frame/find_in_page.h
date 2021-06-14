@@ -29,6 +29,8 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
                                      public mojom::blink::FindInPage {
  public:
   FindInPage(WebLocalFrameImpl& frame, InterfaceRegistry* interface_registry);
+  FindInPage(const FindInPage&) = delete;
+  FindInPage& operator=(const FindInPage&) = delete;
 
   bool FindInternal(int identifier,
                     const WebString& search_text,
@@ -110,8 +112,6 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
   mojo::Remote<mojom::blink::FindInPageClient> client_;
 
   mojo::AssociatedReceiver<mojom::blink::FindInPage> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FindInPage);
 };
 
 }  // namespace blink

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/surface_layer.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -25,6 +24,9 @@ class CORE_EXPORT ChildFrameCompositingHelper : public cc::ContentLayerClient {
  public:
   explicit ChildFrameCompositingHelper(
       ChildFrameCompositor* child_frame_compositor);
+  ChildFrameCompositingHelper(const ChildFrameCompositingHelper&) = delete;
+  ChildFrameCompositingHelper& operator=(const ChildFrameCompositingHelper&) =
+      delete;
   ~ChildFrameCompositingHelper() override;
 
   void SetSurfaceId(const viz::SurfaceId& surface_id,
@@ -46,8 +48,6 @@ class CORE_EXPORT ChildFrameCompositingHelper : public cc::ContentLayerClient {
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   scoped_refptr<cc::PictureLayer> crash_ui_layer_;
   float device_scale_factor_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildFrameCompositingHelper);
 };
 
 }  // namespace blink

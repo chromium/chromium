@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_OPENED_FRAME_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_OPENED_FRAME_TRACKER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -22,6 +21,8 @@ class OpenedFrameTracker {
 
  public:
   OpenedFrameTracker();
+  OpenedFrameTracker(const OpenedFrameTracker&) = delete;
+  OpenedFrameTracker& operator=(const OpenedFrameTracker&) = delete;
   ~OpenedFrameTracker();
   void Trace(Visitor*) const;
 
@@ -35,8 +36,6 @@ class OpenedFrameTracker {
 
  private:
   HeapHashSet<WeakMember<Frame>> opened_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenedFrameTracker);
 };
 
 }  // namespace blink

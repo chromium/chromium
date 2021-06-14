@@ -34,6 +34,8 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
                         const gfx::Size& visible_viewport_size,
                         const gfx::Rect& view_screen_rect,
                         const gfx::Rect& window_screen_rect);
+  ScreenMetricsEmulator(const ScreenMetricsEmulator&) = delete;
+  ScreenMetricsEmulator& operator=(const ScreenMetricsEmulator&) = delete;
   virtual ~ScreenMetricsEmulator() = default;
 
   const ScreenInfo& GetOriginalScreenInfo() const;
@@ -94,8 +96,6 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   gfx::Rect original_view_screen_rect_;
   gfx::Rect original_window_screen_rect_;
   std::vector<gfx::Rect> original_root_window_segments_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenMetricsEmulator);
 };
 
 }  // namespace blink

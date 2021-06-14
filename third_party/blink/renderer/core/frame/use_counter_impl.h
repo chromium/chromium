@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
 
 #include <bitset>
-#include "base/macros.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -89,6 +88,8 @@ class CORE_EXPORT UseCounterImpl final {
   enum class CSSPropertyType { kDefault, kAnimation };
 
   explicit UseCounterImpl(Context = kDefaultContext, CommitState = kPreCommit);
+  UseCounterImpl(const UseCounterImpl&) = delete;
+  UseCounterImpl& operator=(const UseCounterImpl&) = delete;
 
   // An interface to observe UseCounterImpl changes. Note that this is never
   // notified when the counter is disabled by |m_muteCount| or when |m_context|
@@ -164,8 +165,6 @@ class CORE_EXPORT UseCounterImpl final {
   UseCounterFeatureTracker feature_tracker_;
 
   HeapHashSet<Member<Observer>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UseCounterImpl);
 };
 
 }  // namespace blink

@@ -206,6 +206,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
    public:
     ScopedUkmHierarchicalTimer(ScopedUkmHierarchicalTimer&&);
+    ScopedUkmHierarchicalTimer(const ScopedUkmHierarchicalTimer&) = delete;
+    ScopedUkmHierarchicalTimer& operator=(const ScopedUkmHierarchicalTimer&) =
+        delete;
     ~ScopedUkmHierarchicalTimer();
 
    private:
@@ -219,11 +222,11 @@ class CORE_EXPORT LocalFrameUkmAggregator
     const size_t metric_index_;
     const base::TickClock* clock_;
     const base::TimeTicks start_time_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedUkmHierarchicalTimer);
   };
 
   LocalFrameUkmAggregator(int64_t source_id, ukm::UkmRecorder*);
+  LocalFrameUkmAggregator(const LocalFrameUkmAggregator&) = delete;
+  LocalFrameUkmAggregator& operator=(const LocalFrameUkmAggregator&) = delete;
   ~LocalFrameUkmAggregator();
 
   // Create a scoped timer with the index of the metric. Note the index must
@@ -375,8 +378,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kMustNotChooseNextFrame
   };
   SampleControlForTest next_frame_sample_control_for_test_ = kNoPreference;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFrameUkmAggregator);
 };
 
 }  // namespace blink

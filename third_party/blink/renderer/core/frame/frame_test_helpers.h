@@ -37,7 +37,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
@@ -351,6 +350,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
  public:
   explicit WebViewHelper(CreateTestWebFrameWidgetCallback
                              create_web_frame_callback = base::NullCallback());
+  WebViewHelper(const WebViewHelper&) = delete;
+  WebViewHelper& operator=(const WebViewHelper&) = delete;
   ~WebViewHelper();
 
   // Helpers for creating the main frame. All methods that accept raw
@@ -486,8 +487,6 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
 
   // The Platform should not change during the lifetime of the test!
   Platform* const platform_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewHelper);
 };
 
 // Minimal implementation of WebLocalFrameClient needed for unit tests that load

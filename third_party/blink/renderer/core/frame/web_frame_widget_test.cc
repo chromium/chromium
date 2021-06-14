@@ -204,6 +204,8 @@ enum {
 class MockHandledEventCallback {
  public:
   MockHandledEventCallback() = default;
+  MockHandledEventCallback(const MockHandledEventCallback&) = delete;
+  MockHandledEventCallback& operator=(const MockHandledEventCallback&) = delete;
   MOCK_METHOD4_T(Run,
                  void(mojom::InputEventResultState,
                       const ui::LatencyInfo&,
@@ -223,8 +225,6 @@ class MockHandledEventCallback {
       absl::optional<cc::TouchAction> touch_action) {
     Run(ack_state, latency_info, overscroll.get(), touch_action);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MockHandledEventCallback);
 };
 
 class MockWebFrameWidgetImpl : public SimWebFrameWidget {

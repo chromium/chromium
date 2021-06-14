@@ -28,7 +28,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -56,6 +55,8 @@ class CORE_EXPORT Settings {
 
  public:
   Settings();
+  Settings(const Settings&) = delete;
+  Settings& operator=(const Settings&) = delete;
 
   GenericFontFamilySettings& GetGenericFontFamilySettings() {
     return generic_font_family_settings_;
@@ -76,8 +77,6 @@ class CORE_EXPORT Settings {
   GenericFontFamilySettings generic_font_family_settings_;
 
   SETTINGS_MEMBER_VARIABLES
-
-  DISALLOW_COPY_AND_ASSIGN(Settings);
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_OVERLAY_INTERSTITIAL_AD_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_OVERLAY_INTERSTITIAL_AD_DETECTOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
@@ -49,6 +48,9 @@ class LocalFrame;
 class CORE_EXPORT OverlayInterstitialAdDetector {
  public:
   OverlayInterstitialAdDetector() = default;
+  OverlayInterstitialAdDetector(const OverlayInterstitialAdDetector&) = delete;
+  OverlayInterstitialAdDetector& operator=(
+      const OverlayInterstitialAdDetector&) = delete;
   ~OverlayInterstitialAdDetector() = default;
 
   void MaybeFireDetection(LocalFrame* main_frame);
@@ -85,8 +87,6 @@ class CORE_EXPORT OverlayInterstitialAdDetector {
 
   bool popup_detected_ = false;
   bool popup_ad_detected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayInterstitialAdDetector);
 };
 
 }  // namespace blink

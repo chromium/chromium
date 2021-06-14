@@ -18,13 +18,13 @@
 namespace blink {
 
 class ReportingContextTest : public testing::Test {
+ public:
+  ReportingContextTest(const ReportingContextTest&) = delete;
+  ReportingContextTest& operator=(const ReportingContextTest&) = delete;
+
  protected:
   ReportingContextTest() = default;
-
   ~ReportingContextTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReportingContextTest);
 };
 
 class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {

@@ -36,6 +36,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -12999,6 +13000,9 @@ class ContextMenuWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
   ContextMenuWebFrameClient() = default;
+  ContextMenuWebFrameClient(const ContextMenuWebFrameClient&) = delete;
+  ContextMenuWebFrameClient& operator=(const ContextMenuWebFrameClient&) =
+      delete;
   ~ContextMenuWebFrameClient() override = default;
 
   // WebLocalFrameClient:
@@ -13012,7 +13016,6 @@ class ContextMenuWebFrameClient
 
  private:
   ContextMenuData menu_data_;
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuWebFrameClient);
 };
 
 bool TestSelectAll(const std::string& html) {

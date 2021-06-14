@@ -19,6 +19,8 @@ class MockChildFrameCompositor : public ChildFrameCompositor {
     constexpr int height = 32;
     sad_page_bitmap_.allocN32Pixels(width, height);
   }
+  MockChildFrameCompositor(const MockChildFrameCompositor&) = delete;
+  MockChildFrameCompositor& operator=(const MockChildFrameCompositor&) = delete;
 
   const scoped_refptr<cc::Layer>& GetCcLayer() override { return layer_; }
 
@@ -32,8 +34,6 @@ class MockChildFrameCompositor : public ChildFrameCompositor {
  private:
   scoped_refptr<cc::Layer> layer_;
   SkBitmap sad_page_bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockChildFrameCompositor);
 };
 
 viz::SurfaceId MakeSurfaceId(const viz::FrameSinkId& frame_sink_id,
@@ -50,6 +50,10 @@ viz::SurfaceId MakeSurfaceId(const viz::FrameSinkId& frame_sink_id,
 class ChildFrameCompositingHelperTest : public testing::Test {
  public:
   ChildFrameCompositingHelperTest() : compositing_helper_(&compositor_) {}
+  ChildFrameCompositingHelperTest(const ChildFrameCompositingHelperTest&) =
+      delete;
+  ChildFrameCompositingHelperTest& operator=(
+      const ChildFrameCompositingHelperTest&) = delete;
 
   ~ChildFrameCompositingHelperTest() override {}
 
@@ -60,7 +64,6 @@ class ChildFrameCompositingHelperTest : public testing::Test {
  private:
   MockChildFrameCompositor compositor_;
   ChildFrameCompositingHelper compositing_helper_;
-  DISALLOW_COPY_AND_ASSIGN(ChildFrameCompositingHelperTest);
 };
 
 // This test verifies that the fallback surfaceId is cleared when the child
