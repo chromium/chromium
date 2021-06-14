@@ -2,39 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/feed/core/v2/notice_card_tracker.h"
+#include "components/feed/core/v2/public/ios/notice_card_tracker.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/v2/ios_shared_prefs.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace feed {
+namespace ios_feed {
 namespace {
 
-class NoticeCardTrackerTest : public testing::Test {
+class IOSNoticeCardTrackerTest : public testing::Test {
  public:
   void SetUp() override {
     feed::RegisterProfilePrefs(profile_prefs_.registry());
-    ;
   }
 
  protected:
   TestingPrefServiceSimple profile_prefs_;
 };
 
-TEST_F(NoticeCardTrackerTest,
+TEST_F(IOSNoticeCardTrackerTest,
        TrackingNoticeCardActionsDoesntUpdateCountsWhenNoNoticeCard) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       feed::kInterestFeedNoticeCardAutoDismiss);
   NoticeCardTracker tracker(&profile_prefs_);
 
-  prefs::SetLastFetchHadNoticeCard(profile_prefs_, false);
+  feed::prefs::SetLastFetchHadNoticeCard(profile_prefs_, false);
 
   // Generate enough views to reach the acknowlegement threshold, but there was
   // no notice card in the feed.
@@ -46,7 +44,7 @@ TEST_F(NoticeCardTrackerTest,
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 
-TEST_F(NoticeCardTrackerTest,
+TEST_F(IOSNoticeCardTrackerTest,
        TrackingNoticeCardActionsDoesntUpdateCountsForNonNoticeCard) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -63,7 +61,7 @@ TEST_F(NoticeCardTrackerTest,
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 
-TEST_F(NoticeCardTrackerTest,
+TEST_F(IOSNoticeCardTrackerTest,
        AcknowledgedNoticeCardWhenEnoughViewsAndNoticeCardAt1stPos) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -78,7 +76,7 @@ TEST_F(NoticeCardTrackerTest,
   EXPECT_TRUE(tracker.HasAcknowledgedNoticeCard());
 }
 
-TEST_F(NoticeCardTrackerTest,
+TEST_F(IOSNoticeCardTrackerTest,
        AcknowledgedNoticeCardWhenEnoughViewsAndNoticeCardAt2ndPos) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -96,7 +94,7 @@ TEST_F(NoticeCardTrackerTest,
   EXPECT_TRUE(tracker.HasAcknowledgedNoticeCard());
 }
 
-TEST_F(NoticeCardTrackerTest,
+TEST_F(IOSNoticeCardTrackerTest,
        DontAcknowledgedNoticeCardWhenNotEnoughViewsNorClicks) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -111,22 +109,23 @@ TEST_F(NoticeCardTrackerTest,
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 
-TEST_F(NoticeCardTrackerTest, DontAcknowledgedNoticeCardWhenFeatureDisabled) {
+TEST_F(IOSNoticeCardTrackerTest,
+       DontAcknowledgedNoticeCardWhenFeatureDisabled) {
   // Generate enough views and clicks on the notice card to reach the threshold,
   // but the feature is disabled.
-  prefs::IncrementNoticeCardClicksCount(profile_prefs_);
-  prefs::IncrementNoticeCardViewsCount(profile_prefs_);
-  prefs::IncrementNoticeCardViewsCount(profile_prefs_);
-  prefs::IncrementNoticeCardViewsCount(profile_prefs_);
+  feed::prefs::IncrementNoticeCardClicksCount(profile_prefs_);
+  feed::prefs::IncrementNoticeCardViewsCount(profile_prefs_);
+  feed::prefs::IncrementNoticeCardViewsCount(profile_prefs_);
+  feed::prefs::IncrementNoticeCardViewsCount(profile_prefs_);
 
   NoticeCardTracker tracker(&profile_prefs_);
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 
-TEST_F(NoticeCardTrackerTest,
+TEST_F(IOSNoticeCardTrackerTest,
        DontAcknowledgedNoticeCardFromViewsCountWhenThresholdIsZero) {
   base::FieldTrialParams params;
-  params[kNoticeCardViewsCountThresholdParamName] = "0";
+  params["notice-card-views-count-threshold"] = "0";
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       feed::kInterestFeedNoticeCardAutoDismiss, params);
@@ -135,10 +134,10 @@ TEST_F(NoticeCardTrackerTest,
   EXPECT_FALSE(tracker.HasAcknowledgedNoticeCard());
 }
 
-TEST_F(NoticeCardTrackerTest,
+TEST_F(IOSNoticeCardTrackerTest,
        DontAcknowledgedNoticeCardFromClicksCountWhenThresholdIsZero) {
   base::FieldTrialParams params;
-  params[kNoticeCardClicksCountThresholdParamName] = "0";
+  params["notice-card-clicks-count-threshold"] = "0";
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       feed::kInterestFeedNoticeCardAutoDismiss, params);
@@ -148,4 +147,4 @@ TEST_F(NoticeCardTrackerTest,
 }
 
 }  // namespace
-}  // namespace feed
+}  // namespace ios_feed

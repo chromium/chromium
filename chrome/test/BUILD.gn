@@ -763,7 +763,8 @@ if (is_android) {
           [ "../browser/android/feed/v2/rss_links_fetcher_browsertest.cc" ]
       deps += [
         "//components/feed:feature_list",
-        "//components/feed/core/v2:feed_core_base",
+        "//components/feed/core/v2:feed_core_v2",
+        "//components/feed/core/v2:ios_shared",
         "//components/feed/core/v2:test_helpers",
         "//components/feed/mojom:mojo_bindings",
       ]

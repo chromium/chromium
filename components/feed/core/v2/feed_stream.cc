@@ -27,6 +27,7 @@
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/image_fetcher.h"
+#include "components/feed/core/v2/ios_shared_prefs.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/protocol_translator.h"

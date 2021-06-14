@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
 #define COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
 
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
-
 class PrefService;
 
 namespace feed {
@@ -17,22 +14,7 @@ constexpr char kNoticeCardViewsCountThresholdParamName[] =
 constexpr char kNoticeCardClicksCountThresholdParamName[] =
     "notice-card-clicks-count-threshold";
 
-namespace prefs {
-
-// Increment the stored notice card views count by 1.
-void IncrementNoticeCardViewsCount(PrefService& pref_service);
-// Increment the stored notice card clicks count by 1.
-void IncrementNoticeCardClicksCount(PrefService& pref_service);
-int GetNoticeCardClicksCount(const PrefService& pref_service);
-int GetNoticeCardViewsCount(const PrefService& pref_service);
-void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);
-bool GetLastFetchHadNoticeCard(const PrefService& pref_service);
-void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
-                                                      bool value);
-bool GetHasReachedClickAndViewActionsUploadConditions(
-    const PrefService& pref_service);
-
-}  // namespace prefs
+int GetNoticeCardExpectedIndex();
 
 // Tracker for the notice card related actions that also provide signals based
 // on those.
@@ -51,8 +33,7 @@ class NoticeCardTracker {
   // Get signals based on the actions.
 
   // Indicates whether there were enough views or clicks done on the notice
-  // card to consider it as acknowledged by the user. This is safe to call in a
-  // background thread.
+  // card to consider it as acknowledged by the user.
   bool HasAcknowledgedNoticeCard() const;
 
  private:
@@ -63,12 +44,10 @@ class NoticeCardTracker {
   PrefService* profile_prefs_;
 
   // The number of views of the notice card.
-  mutable base::Lock views_count_lock_;
-  int views_count_ GUARDED_BY(views_count_lock_);
+  int views_count_;
 
   // The number of clicks/taps of the notice card.
-  mutable base::Lock clicks_count_lock_;
-  int clicks_count_ GUARDED_BY(clicks_count_lock_);
+  int clicks_count_;
 
   // The number of views of the notice card to consider it acknowledged by the
   // user.

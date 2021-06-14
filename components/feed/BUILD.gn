@@ -27,5 +27,8 @@ static_library("feature_list") {
 
 source_set("unit_tests") {
   testonly = true
-  deps = [ "core/v2:core_unit_tests" ]
+  deps = [
+    "core/v2:core_unit_tests",
+    "core/v2/public/ios:feed_ios_unit_tests",
+  ]
 }

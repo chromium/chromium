@@ -9,8 +9,30 @@ if (is_android) {
 }
 
 source_set("feed_core_v2") {
+  public = [
+    "public/feed_api.h",
+    "public/feed_service.h",
+    "public/feed_stream_surface.h",
+    "public/persistent_key_value_store.h",
+    "public/persistent_key_value_store.h",
+    "public/refresh_task_scheduler.h",
+    "public/refresh_task_scheduler.h",
+    "public/reliability_logger.h",
+    "public/stream_type.h",
+    "public/types.h",
+    "public/unread_content_observer.h",
+    "public/web_feed_subscriptions.h",
+
+    # Includes that should be made private:
+    "config.h",
+  ]
+
   sources = [
     "algorithm.h",
+    "config.cc",
+    "config.h",
+    "enums.cc",
+    "enums.h",
     "feed_network.cc",
     "feed_network.h",
     "feed_network_impl.cc",
@@ -25,6 +47,8 @@ source_set("feed_core_v2") {
     "image_fetcher.h",
     "metrics_reporter.cc",
     "metrics_reporter.h",
+    "notice_card_tracker.cc",
+    "notice_card_tracker.h",
     "persistent_key_value_store_impl.cc",
     "persistent_key_value_store_impl.h",
     "prefs.cc",
@@ -34,19 +58,12 @@ source_set("feed_core_v2") {
     "protocol_translator.cc",
     "protocol_translator.h",
     "public/feed_api.cc",
-    "public/feed_api.h",
     "public/feed_service.cc",
-    "public/feed_service.h",
     "public/feed_stream_surface.cc",
-    "public/feed_stream_surface.h",
     "public/persistent_key_value_store.cc",
-    "public/persistent_key_value_store.h",
-    "public/refresh_task_scheduler.h",
-    "public/reliability_logger.h",
-    "public/types.cc",
+    "public/public_types.cc",
+    "public/stream_type.cc",
     "public/unread_content_observer.cc",
-    "public/unread_content_observer.h",
-    "public/web_feed_subscriptions.h",
     "request_throttler.cc",
     "request_throttler.h",
     "scheduling.cc",
@@ -77,6 +94,8 @@ source_set("feed_core_v2") {
     "tasks/upload_actions_task.h",
     "tasks/wait_for_store_initialize_task.cc",
     "tasks/wait_for_store_initialize_task.h",
+    "types.cc",
+    "types.h",
     "web_feed_subscription_coordinator.cc",
     "web_feed_subscription_coordinator.h",
     "web_feed_subscriptions/fetch_recommended_web_feeds_task.cc",
@@ -93,6 +112,11 @@ source_set("feed_core_v2") {
     "web_feed_subscriptions/wire_to_store.h",
     "wire_response_translator.cc",
     "wire_response_translator.h",
+  ]
+  friend = [
+    ":core_unit_tests",
+    "//components/feed/core/v2/ios/public:feed_ios_public",
+    "//components/feed/core/v2/ios/public:feed_ios_unit_tests",
   ]
   deps = [
     "public:common",
@@ -115,7 +139,7 @@ source_set("feed_core_v2") {
   ]
 
   public_deps = [
-    ":feed_core_base",
+    ":ios_shared",
     "//base",
     "//base/util/values:values_util",
     "//components/feed/core/common:feed_core_common",
@@ -124,30 +148,16 @@ source_set("feed_core_v2") {
 }
 
 # This smaller source set is used by Chrome for iOS.
-source_set("feed_core_base") {
+source_set("ios_shared") {
   sources = [
-    "config.cc",
-    "config.h",
-    "enums.cc",
-    "enums.h",
-    "notice_card_tracker.cc",
-    "notice_card_tracker.h",
-    "public/stream_type.cc",
-    "public/stream_type.h",
-    "public/types.h",
-    "types.cc",
-    "types.h",
+    "ios_shared_prefs.cc",
+    "ios_shared_prefs.h",
   ]
   deps = [
     "//base",
-    "//base/util/type_safety",
     "//base/util/values:values_util",
-    "//components/feed:feature_list",
     "//components/feed/core/common:feed_core_common",
-    "//components/feed/core/proto:proto_v2",
     "//components/prefs",
-    "//components/version_info:channel",
-    "//url",
   ]
 }
 
@@ -177,11 +187,12 @@ source_set("core_unit_tests") {
     "feedstore_util_unittest.cc",
     "image_fetcher_unittest.cc",
     "metrics_reporter_unittest.cc",
+    "notice_card_tracker_unittest.cc",
     "persistent_key_value_store_impl_unittest.cc",
     "proto_util_unittest.cc",
     "protocol_translator_unittest.cc",
     "public/feed_service_unittest.cc",
-    "public/types_unittest.cc",
+    "public/public_types_unittest.cc",
     "request_throttler_unittest.cc",
     "scheduling_unittest.cc",
     "stream_model_unittest.cc",
@@ -192,12 +203,12 @@ source_set("core_unit_tests") {
     "test/stream_builder.h",
     "test/test_util.cc",
     "test/test_util.h",
+    "types_unittest.cc",
     "web_feed_subscriptions/web_feed_index_unittest.cc",
   ]
 
   public_deps = [ ":test_helpers" ]
   deps = [
-    ":feed_core_base_unit_tests",
     ":feed_core_v2",
     ":unit_tests_bundle_data",
     "public:common",
@@ -233,27 +244,6 @@ source_set("feed_core_stubs") {
     "public/test/stub_web_feed_subscriptions.h",
   ]
   deps = [ ":feed_core_v2" ]
-}
-
-# Tests for :feed_core_base that can be compiled in iOS.
-# This source set is added as a dep of :core_unit_tests.
-source_set("feed_core_base_unit_tests") {
-  testonly = true
-  sources = [
-    "notice_card_tracker_unittest.cc",
-    "types_unittest.cc",
-  ]
-  deps = [
-    ":feed_core_base",
-    "//base",
-    "//base/test:test_support",
-    "//components/feed:feature_list",
-    "//components/feed/core/common:feed_core_common",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }
 
 bundle_data("unit_tests_bundle_data") {
