@@ -262,10 +262,10 @@ TEST(MojoSharedBufferVideoFrameTest, InterleavedData) {
   gfx::Rect visible_rect(size);
 
   // Create interlaced UV data, which are each 1/4 the size of the Y data.
-  const size_t y_offset = 0;
-  const size_t u_offset =
+  const uint32_t y_offset = 0;
+  const uint32_t u_offset =
       VideoFrame::PlaneSize(format, VideoFrame::kYPlane, size).GetArea();
-  const size_t v_offset =
+  const uint32_t v_offset =
       u_offset + VideoFrame::RowBytes(VideoFrame::kUPlane, format, kWidth);
   const int32_t y_stride =
       VideoFrame::RowBytes(VideoFrame::kYPlane, format, kWidth);

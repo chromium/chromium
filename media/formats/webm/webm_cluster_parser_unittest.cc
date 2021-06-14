@@ -67,8 +67,8 @@ const int kTimecodeScale = 1000000;
 const int kAudioTrackNum = 1;
 const int kVideoTrackNum = 2;
 const int kTextTrackNum = 3;
-const int kTestAudioFrameDefaultDurationInMs = 13;
-const int kTestVideoFrameDefaultDurationInMs = 17;
+constexpr double kTestAudioFrameDefaultDurationInMs = 13;
+constexpr double kTestVideoFrameDefaultDurationInMs = 17;
 
 // Test duration defaults must differ from parser estimation defaults to know
 // which durations parser used when emitting buffers.
@@ -292,10 +292,10 @@ class WebMClusterParserTest : public testing::Test {
 
  protected:
   void ResetParserToHaveDefaultDurations() {
-    base::TimeDelta default_audio_duration = base::TimeDelta::FromMilliseconds(
-        kTestAudioFrameDefaultDurationInMs);
-    base::TimeDelta default_video_duration = base::TimeDelta::FromMilliseconds(
-        kTestVideoFrameDefaultDurationInMs);
+    base::TimeDelta default_audio_duration =
+        base::TimeDelta::FromMillisecondsD(kTestAudioFrameDefaultDurationInMs);
+    base::TimeDelta default_video_duration =
+        base::TimeDelta::FromMillisecondsD(kTestVideoFrameDefaultDurationInMs);
     ASSERT_GE(default_audio_duration, base::TimeDelta());
     ASSERT_GE(default_video_duration, base::TimeDelta());
     ASSERT_NE(kNoTimestamp, default_audio_duration);
@@ -378,13 +378,13 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
                                     TextTrackConfig(kTextSubtitles, "", "",
                                                     "")));
   base::TimeDelta default_audio_duration =
-      base::TimeDelta::FromMilliseconds(kTestAudioFrameDefaultDurationInMs);
+      base::TimeDelta::FromMillisecondsD(kTestAudioFrameDefaultDurationInMs);
   ASSERT_GE(default_audio_duration, base::TimeDelta());
   ASSERT_NE(kNoTimestamp, default_audio_duration);
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
       default_audio_duration, kNoTimestamp, text_tracks));
 
-  const int kExpectedVideoEstimationInMs = 33;
+  constexpr double kExpectedVideoEstimationInMs = 33;
 
   const BlockInfo kBlockInfo[] = {
       {kVideoTrackNum, 0, 33, true, NULL, 0, false},
@@ -832,8 +832,8 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
   // last block in a cluster is estimated independently for each track in the
   // cluster using the maximum seen so far.
 
-  const int kExpectedAudioEstimationInMs = 23;
-  const int kExpectedVideoEstimationInMs = 34;
+  constexpr double kExpectedAudioEstimationInMs = 23;
+  constexpr double kExpectedVideoEstimationInMs = 34;
   const BlockInfo kBlockInfo1[] = {
       {kAudioTrackNum, 0, 23, true, NULL, 0, false},
       {kAudioTrackNum, 23, 22, true, NULL, 0, false},
@@ -902,8 +902,8 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   // cluster. Duration for the last block in a cluster is estimated
   // independently for each track in the cluster using the maximum seen so far.
 
-  const int kExpectedAudioEstimationInMs = 23;
-  const int kExpectedVideoEstimationInMs = 34;
+  constexpr double kExpectedAudioEstimationInMs = 23;
+  constexpr double kExpectedVideoEstimationInMs = 34;
   const BlockInfo kBlockInfo1[] = {
       {kAudioTrackNum, 0, -23, false, NULL, 0, false},
       {kAudioTrackNum, 23, -22, false, NULL, 0, false},
