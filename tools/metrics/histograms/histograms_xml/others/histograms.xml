@@ -9042,6 +9042,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Linux.ProxyLocaltimeCallToBrowserUs" units="microseconds"
+    expires_after="2021-09-01">
+  <owner>kylechar@chromium.org</owner>
+  <owner>mpdenton@chromium.org</owner>
+  <summary>
+    The time taken for localtime_r() call to proxied from a sandboxed process to
+    the browser and a response returned back in microseconds. This histogram is
+    only recorded on Linux, where all users have high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Linux.SandboxStatus" enum="LinuxSandboxStatus"
     expires_after="2021-09-19">
   <owner>mpdenton@google.com</owner>

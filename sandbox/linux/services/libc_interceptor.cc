@@ -23,11 +23,14 @@
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace sandbox {
 
@@ -119,6 +122,8 @@ void ProxyLocaltimeCallToBrowser(time_t input,
                                  struct tm* output,
                                  char* timezone_out,
                                  size_t timezone_out_len) {
+  base::ElapsedTimer timer;
+
   base::Pickle request;
   request.WriteInt(METHOD_LOCALTIME);
   request.WriteString(
@@ -137,6 +142,11 @@ void ProxyLocaltimeCallToBrowser(time_t input,
   if (!ReadTimeStruct(&iter, output, timezone_out, timezone_out_len)) {
     memset(output, 0, sizeof(struct tm));
   }
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Linux.ProxyLocaltimeCallToBrowserUs", timer.Elapsed(),
+      base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(1),
+      /*buckets=*/50);
 }
 
 // The other side of this call is ProxyLocaltimeCallToBrowser().
