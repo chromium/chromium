@@ -9,13 +9,7 @@
 
 namespace extensions {
 
-// Fails flakily on Mac. https://crbug.com/1216102
-#if defined(OS_MAC)
-#define MAYBE_WindowOpenFocus DISABLED_WindowOpenFocus
-#else
-#define MAYBE_WindowOpenFocus WindowOpenFocus
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_WindowOpenFocus) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowOpenFocus) {
   ASSERT_TRUE(RunExtensionTest("window_open/focus")) << message_;
 }
 
