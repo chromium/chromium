@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_MULTIPART_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_MULTIPART_PARSER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
@@ -43,6 +42,8 @@ class CORE_EXPORT MultipartParser final
   };
 
   MultipartParser(Vector<char> boundary, Client*);
+  MultipartParser(const MultipartParser&) = delete;
+  MultipartParser& operator=(const MultipartParser&) = delete;
   bool AppendData(const char* bytes, size_t);
   void Cancel();
   bool Finish();
@@ -107,8 +108,6 @@ class CORE_EXPORT MultipartParser final
     kCancelled,
     kFinished
   } state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultipartParser);
 };
 
 }  // namespace blink

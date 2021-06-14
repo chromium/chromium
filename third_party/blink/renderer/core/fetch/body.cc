@@ -40,6 +40,9 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
       : resolver_(resolver),
         task_runner_(ExecutionContext::From(resolver_->GetScriptState())
                          ->GetTaskRunner(TaskType::kNetworking)) {}
+  BodyConsumerBase(const BodyConsumerBase&) = delete;
+  BodyConsumerBase& operator=(const BodyConsumerBase&) = delete;
+
   ScriptPromiseResolver* Resolver() { return resolver_; }
   void DidFetchDataLoadFailed() override {
     ScriptState::Scope scope(Resolver()->GetScriptState());
@@ -75,37 +78,40 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
 
   const Member<ScriptPromiseResolver> resolver_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(BodyConsumerBase);
 };
 
 class BodyBlobConsumer final : public BodyConsumerBase {
  public:
   explicit BodyBlobConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyBlobConsumer(const BodyBlobConsumer&) = delete;
+  BodyBlobConsumer& operator=(const BodyBlobConsumer&) = delete;
 
   void DidFetchDataLoadedBlobHandle(
       scoped_refptr<BlobDataHandle> blob_data_handle) override {
     ResolveLater(WrapPersistent(
         MakeGarbageCollected<Blob>(std::move(blob_data_handle))));
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyBlobConsumer);
 };
 
 class BodyArrayBufferConsumer final : public BodyConsumerBase {
  public:
   explicit BodyArrayBufferConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyArrayBufferConsumer(const BodyArrayBufferConsumer&) = delete;
+  BodyArrayBufferConsumer& operator=(const BodyArrayBufferConsumer&) = delete;
 
   void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer* array_buffer) override {
     ResolveLater(WrapPersistent(array_buffer));
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyArrayBufferConsumer);
 };
 
 class BodyFormDataConsumer final : public BodyConsumerBase {
  public:
   explicit BodyFormDataConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyFormDataConsumer(const BodyFormDataConsumer&) = delete;
+  BodyFormDataConsumer& operator=(const BodyFormDataConsumer&) = delete;
 
   void DidFetchDataLoadedFormData(FormData* formData) override {
     ResolveLater(WrapPersistent(formData));
@@ -117,24 +123,26 @@ class BodyFormDataConsumer final : public BodyConsumerBase {
       formData->append(pair.first, pair.second);
     DidFetchDataLoadedFormData(formData);
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyFormDataConsumer);
 };
 
 class BodyTextConsumer final : public BodyConsumerBase {
  public:
   explicit BodyTextConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyTextConsumer(const BodyTextConsumer&) = delete;
+  BodyTextConsumer& operator=(const BodyTextConsumer&) = delete;
 
   void DidFetchDataLoadedString(const String& string) override {
     ResolveLater(string);
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyTextConsumer);
 };
 
 class BodyJsonConsumer final : public BodyConsumerBase {
  public:
   explicit BodyJsonConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyJsonConsumer(const BodyJsonConsumer&) = delete;
+  BodyJsonConsumer& operator=(const BodyJsonConsumer&) = delete;
 
   void DidFetchDataLoadedString(const String& string) override {
     if (!Resolver()->GetExecutionContext() ||
@@ -153,7 +161,6 @@ class BodyJsonConsumer final : public BodyConsumerBase {
     } else
       Resolver()->Reject(trycatch.Exception());
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyJsonConsumer);
 };
 
 }  // namespace

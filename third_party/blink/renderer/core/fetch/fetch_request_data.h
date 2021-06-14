@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_REQUEST_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_REQUEST_DATA_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,6 +45,8 @@ class CORE_EXPORT FetchRequestData final
   FetchRequestData* Pass(ScriptState*);
 
   explicit FetchRequestData(ExecutionContext* execution_context);
+  FetchRequestData(const FetchRequestData&) = delete;
+  FetchRequestData& operator=(const FetchRequestData&) = delete;
   ~FetchRequestData();
 
   void SetMethod(AtomicString method) { method_ = method; }
@@ -183,8 +184,6 @@ class CORE_EXPORT FetchRequestData final
   base::UnguessableToken window_id_;
   Member<ExecutionContext> execution_context_;
   bool allow_http1_for_streaming_upload_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FetchRequestData);
 };
 
 }  // namespace blink

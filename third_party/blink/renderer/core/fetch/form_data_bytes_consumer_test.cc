@@ -48,6 +48,8 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
         &SimpleDataPipeGetter::OnMojoDisconnect, WTF::Unretained(this)));
     receivers_.Add(this, std::move(receiver));
   }
+  SimpleDataPipeGetter(const SimpleDataPipeGetter&) = delete;
+  SimpleDataPipeGetter& operator=(const SimpleDataPipeGetter&) = delete;
   ~SimpleDataPipeGetter() override = default;
 
   // network::mojom::DataPipeGetter implementation:
@@ -70,8 +72,6 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
  private:
   String str_;
   mojo::ReceiverSet<network::mojom::blink::DataPipeGetter> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDataPipeGetter);
 };
 
 scoped_refptr<EncodedFormData> ComplexFormData() {

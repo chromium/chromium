@@ -58,6 +58,9 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
                    ScriptCachedMetadataHandler* cached_metadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
+  BodyStreamBuffer(const BodyStreamBuffer&) = delete;
+  BodyStreamBuffer& operator=(const BodyStreamBuffer&) = delete;
+
   ReadableStream* Stream() { return stream_; }
 
   // Callable only when neither locked nor disturbed.
@@ -155,8 +158,6 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
 
   // TODO(ricea): Remove remaining uses of |stream_broken_|.
   bool stream_broken_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BodyStreamBuffer);
 };
 
 }  // namespace blink

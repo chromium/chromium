@@ -61,6 +61,8 @@ class CORE_EXPORT Request final : public ScriptWrappable,
 
   Request(ScriptState*, FetchRequestData*, Headers*, AbortSignal*);
   Request(ScriptState*, FetchRequestData*);
+  Request(const Request&) = delete;
+  Request& operator=(const Request&) = delete;
 
   static absl::optional<network::mojom::CredentialsMode> ParseCredentialsMode(
       const String& credentials_mode);
@@ -116,7 +118,6 @@ class CORE_EXPORT Request final : public ScriptWrappable,
   const Member<FetchRequestData> request_;
   const Member<Headers> headers_;
   const Member<AbortSignal> signal_;
-  DISALLOW_COPY_AND_ASSIGN(Request);
 };
 
 }  // namespace blink

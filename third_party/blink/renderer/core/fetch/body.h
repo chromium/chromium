@@ -32,6 +32,8 @@ class ScriptState;
 class CORE_EXPORT Body : public ExecutionContextClient {
  public:
   explicit Body(ExecutionContext*);
+  Body(const Body&) = delete;
+  Body& operator=(const Body&) = delete;
 
   ScriptPromise arrayBuffer(ScriptState*, ExceptionState&);
   ScriptPromise blob(ScriptState*, ExceptionState&);
@@ -65,7 +67,6 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   // an exception if consumption cannot proceed. The caller must check
   // |exception_state| on return.
   void RejectInvalidConsumption(ExceptionState& exception_state) const;
-  DISALLOW_COPY_AND_ASSIGN(Body);
 };
 
 }  // namespace blink

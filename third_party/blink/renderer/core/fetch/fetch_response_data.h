@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
@@ -48,6 +47,8 @@ class CORE_EXPORT FetchResponseData final
                     network::mojom::FetchResponseSource,
                     uint16_t,
                     AtomicString);
+  FetchResponseData(const FetchResponseData&) = delete;
+  FetchResponseData& operator=(const FetchResponseData&) = delete;
 
   FetchResponseData* CreateBasicFilteredResponse() const;
   FetchResponseData* CreateCorsFilteredResponse(
@@ -178,8 +179,6 @@ class CORE_EXPORT FetchResponseData final
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FetchResponseData);
 };
 
 }  // namespace blink

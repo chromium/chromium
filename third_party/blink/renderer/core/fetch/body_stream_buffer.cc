@@ -39,6 +39,8 @@ class BodyStreamBuffer::LoaderClient final
       : ExecutionContextLifecycleObserver(execution_context),
         buffer_(buffer),
         client_(client) {}
+  LoaderClient(const LoaderClient&) = delete;
+  LoaderClient& operator=(const LoaderClient&) = delete;
 
   void DidFetchDataLoadedBlobHandle(
       scoped_refptr<BlobDataHandle> blob_data_handle) override {
@@ -95,7 +97,6 @@ class BodyStreamBuffer::LoaderClient final
 
   Member<BodyStreamBuffer> buffer_;
   Member<FetchDataLoader::Client> client_;
-  DISALLOW_COPY_AND_ASSIGN(LoaderClient);
 };
 
 // Use a Create() method to split construction from initialisation.

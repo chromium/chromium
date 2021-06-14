@@ -25,6 +25,9 @@ class ScriptState;
 class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
  public:
   ReadableStreamBytesConsumer(ScriptState*, ReadableStream*);
+  ReadableStreamBytesConsumer(const ReadableStreamBytesConsumer&) = delete;
+  ReadableStreamBytesConsumer& operator=(const ReadableStreamBytesConsumer&) =
+      delete;
   ~ReadableStreamBytesConsumer() override;
 
   Result BeginRead(const char** buffer, size_t* available) override;
@@ -56,7 +59,6 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   size_t pending_offset_ = 0;
   PublicState state_ = PublicState::kReadableOrWaiting;
   bool is_reading_ = false;
-  DISALLOW_COPY_AND_ASSIGN(ReadableStreamBytesConsumer);
 };
 
 }  // namespace blink
