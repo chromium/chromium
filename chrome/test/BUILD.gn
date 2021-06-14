@@ -6551,14 +6551,6 @@ test("unit_tests") {
       ":test_proto",
       "../common/safe_browsing:mock_binary_feature_extractor",
       "//chrome/services/file_util/public/cpp:unit_tests",
-      "//components/safe_browsing/content/renderer:websocket_sb_handshake_throttle_unittest",
-      "//components/safe_browsing/content/triggers:ad_redirect_trigger",
-      "//components/safe_browsing/core:features_unittest",
-      "//components/safe_browsing/core:ping_manager_unittest",
-      "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
-      "//components/safe_browsing/core/browser/download:unittests",
-      "//components/safe_browsing/core/browser/sync:unittests",
-      "//components/safe_browsing/core/db:v4_test_util",
     ]
   } else if (safe_browsing_mode == 2 && is_android) {
     sources += [ "../browser/safe_browsing/telemetry/android/android_telemetry_service_unittest.cc" ]

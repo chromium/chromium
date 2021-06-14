@@ -63,6 +63,8 @@ using testing::Mock;
 using testing::Return;
 using testing::StrictMock;
 
+namespace safe_browsing {
+
 namespace {
 
 const char kFormActionUrl[] = "https://form_action.com/";
@@ -74,10 +76,6 @@ const char kUserName[] = "username";
 
 const unsigned int kMinute = 60;
 const unsigned int kDay = 24 * 60 * kMinute;
-
-}  // namespace
-
-namespace safe_browsing {
 
 using PasswordReuseEvent = LoginReputationClientRequest::PasswordReuseEvent;
 
@@ -264,6 +262,8 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
 
   DISALLOW_COPY_AND_ASSIGN(TestPasswordProtectionService);
 };
+
+}  // namespace
 
 class PasswordProtectionServiceTest : public ::testing::Test {
  public:

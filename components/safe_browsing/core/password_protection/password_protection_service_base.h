@@ -382,7 +382,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 
  private:
   friend class PasswordProtectionServiceTest;
-  friend class TestPasswordProtectionService;
   friend class ChromePasswordProtectionServiceTest;
   friend class ChromePasswordProtectionServiceBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(PasswordProtectionServiceTest,

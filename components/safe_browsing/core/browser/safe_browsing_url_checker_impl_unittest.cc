@@ -35,8 +35,6 @@ MATCHER_P(IsSameThreatSource, threatSource, "") {
   return arg.threat_source == threatSource;
 }
 
-}  // namespace
-
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager() = default;
@@ -236,6 +234,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
   base::flat_map<std::string, SBThreatType> urls_threat_type_;
   bool is_cached_response_ = false;
 };
+
+}  // namespace
 
 class SafeBrowsingUrlCheckerTest : public PlatformTest {
  public:
