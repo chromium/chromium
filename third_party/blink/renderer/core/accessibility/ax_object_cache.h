@@ -73,10 +73,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void Freeze() = 0;
   virtual void Thaw() = 0;
 
-  // Register/remove popups
-  virtual void InitializePopup(Document* document) = 0;
-  virtual void DisposePopup(Document* document) = 0;
-
   virtual void SelectionChanged(Node*) = 0;
   virtual void ChildrenChanged(Node*) = 0;
   virtual void ChildrenChanged(const LayoutObject*) = 0;

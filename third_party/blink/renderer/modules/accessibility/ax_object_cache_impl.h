@@ -84,10 +84,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Thaw() override { is_frozen_ = false; }
   bool IsFrozen() { return is_frozen_; }
 
-  // Register/remove popups
-  void InitializePopup(Document* document) override;
-  void DisposePopup(Document* document) override;
-
   //
   // Iterators.
   //
@@ -614,9 +610,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
   HeapMojoReceiver<mojom::blink::PermissionObserver, AXObjectCacheImpl>
       permission_observer_receiver_;
-
-  // The main document, plus any page popups.
-  HeapHashSet<WeakMember<Document>> documents_;
 
   // Queued callbacks.
   typedef HeapVector<Member<TreeUpdateParams>> TreeUpdateCallbackQueue;

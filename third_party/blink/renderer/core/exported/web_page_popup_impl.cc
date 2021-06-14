@@ -411,10 +411,8 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
   DCHECK(frame->DomWindow());
   DCHECK_EQ(popup_client_->OwnerElement().GetDocument().ExistingAXObjectCache(),
             frame->GetDocument()->ExistingAXObjectCache());
-  if (AXObjectCache* cache = frame->GetDocument()->ExistingAXObjectCache()) {
-    cache->InitializePopup(frame->GetDocument());
+  if (AXObjectCache* cache = frame->GetDocument()->ExistingAXObjectCache())
     cache->ChildrenChanged(&popup_client_->OwnerElement());
-  }
 
   page_->AnimationHostInitialized(*widget_base_->AnimationHost(), nullptr);
 
@@ -969,9 +967,6 @@ void WebPagePopupImpl::ClosePopup() {
   }
 
   closing_ = true;
-
-  if (AXObjectCache* cache = MainFrame().GetDocument()->ExistingAXObjectCache())
-    cache->DisposePopup(MainFrame().GetDocument());
 
   {
     // This function can be called in EventDispatchForbiddenScope for the main

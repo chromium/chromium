@@ -545,7 +545,6 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       permission_observer_receiver_(this, document.GetExecutionContext()) {
   if (document_->LoadEventFinished())
     AddPermissionStatusListener();
-  documents_.insert(&document);
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
 }
 
@@ -572,20 +571,6 @@ void AXObjectCacheImpl::Dispose() {
 
 AXObject* AXObjectCacheImpl::Root() {
   return GetOrCreate(document_);
-}
-
-void AXObjectCacheImpl::InitializePopup(Document* document) {
-  if (!document || documents_.Contains(document) || !document->View())
-    return;
-
-  documents_.insert(document);
-}
-
-void AXObjectCacheImpl::DisposePopup(Document* document) {
-  if (!documents_.Contains(document) || !document->View())
-    return;
-
-  documents_.erase(document);
 }
 
 Node* AXObjectCacheImpl::FocusedElement() {
@@ -3619,7 +3604,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(notifications_to_post_);
   visitor->Trace(permission_service_);
   visitor->Trace(permission_observer_receiver_);
-  visitor->Trace(documents_);
   visitor->Trace(tree_update_callback_queue_);
   visitor->Trace(nodes_with_pending_children_changed_);
   AXObjectCache::Trace(visitor);
