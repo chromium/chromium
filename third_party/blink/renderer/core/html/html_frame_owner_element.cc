@@ -519,6 +519,20 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
 
   if (ContentFrame()) {
     FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
+    // TODO(crbug.com/1123606): This is how we're temporarily restricting the
+    // referrer string on top-level frenced frame requests initiated from
+    // outside of the frame. The intention here is to redact the ultimate value
+    // of `document.referrer` so that it is consistent with what the MPArch
+    // version of fenced frames will show. We'll remove this after we've moved
+    // to the MPArch version and away from the ShadowDOM implementation. The
+    // reason we have this check here is because we only want to take this
+    // action for navigations initiated by the fenced frame's embedder. We don't
+    // need this for the initial about:blank document (i.e., when
+    // `ContentFrame()` is null) because that is taken care of for us with the
+    // shadow DOM.
+    if (frame_policy_.is_fenced) {
+      frame_load_request.GetResourceRequest().SetReferrerString("");
+    }
     frame_load_request.SetClientRedirectReason(
         ClientNavigationReason::kFrameNavigation);
     WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;

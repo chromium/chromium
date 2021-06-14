@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<title>Fenced frame content to report the value of a subframe's document.referrer</title>
+
+<body>
+<script>
+async function init() { // Needed in order to use top-level await.
+  // This file is meant to be navigated to from a <fencedframe> element. It
+  // creates a subframe and pulls its value of `document.referrer` and reports
+  // it to the page hosting the <fencedframe>.
+
+  const referrer_key = KEYS["document.referrer"];
+
+  const iframe = document.createElement('iframe');
+  iframe.src = "dummy.html";
+  const load_promise = new Promise((resolve, reject) => {
+    iframe.onload = resolve;
+    iframe.onerror = reject;
+  });
+  document.body.append(iframe);
+
+  await load_promise;
+
+  // Send the value of the subframe's `document.referrer` to the server for
+  // checking.
+  writeValueToServer(referrer_key, iframe.contentDocument.referrer);
+}
+
+init();
+</script>
+</body>

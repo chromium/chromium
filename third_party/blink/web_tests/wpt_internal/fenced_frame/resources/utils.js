@@ -1,0 +1,66 @@
+const STORE_URL = '/wpt_internal/fenced_frame/resources/key-value-store.py';
+
+// This is a dictionary of stash keys to access a specific piece of the
+// server-side stash. In order to communicate between browsing contexts that
+// cannot otherwise talk, the two browsing contexts (the producer and consumer)
+// must use the same key, which is impossible to obtain as you normally would
+// via the common API's token() method (which returns a UUID). Therefore in this
+// file, for each piece of data we're interested in communicating between the
+// fenced frame's embedder and the fenced frame itself, we have to fix a key so
+// that both frames can reference it. We need a separate stash key for each
+// piece of data, because multiple tests may run in parallel.
+const KEYS = {
+  // This key is only used to test that the server-side stash works properly.
+  "dummy"             : "00000000-0000-0000-0000-000000000000",
+
+  // Add keys below this list:
+  "document.referrer" : "00000000-0000-0000-0000-000000000001",
+  "navigate"          : "00000000-0000-0000-0000-000000000002",
+}
+
+function attachFencedFrame(url) {
+  assert_not_equals(window.HTMLFencedFrameElement, undefined,
+                    "The HTMLFencedFrameElement should be exposed on the " +
+                    "window object");
+
+  const fenced_frame = document.createElement('fencedframe');
+  fenced_frame.src = url;
+  document.body.append(fenced_frame);
+}
+
+// Reads the value specified by `key` from the key-value store on the server.
+async function readValueFromServer(key) {
+  const serverUrl = `${STORE_URL}?key=${key}`;
+  const response = await fetch(serverUrl);
+  if (!response.ok)
+    throw new Error('An error happened in the server');
+  const value = await response.text();
+
+  // The value is not stored in the server.
+  if (value === "<Not set>")
+    return { status: false };
+
+  return { status: true, value: value };
+}
+
+// Convenience wrapper around the above getter that will wait until a value is
+// available on the server.
+async function nextValueFromServer(key) {
+  while (true) {
+    // Fetches the test result from the server.
+    const { status, value } = await readValueFromServer(key);
+    if (!status) {
+      // The test result has not been stored yet. Retry after a while.
+      await new Promise(resolve => setTimeout(resolve, 20));
+      continue;
+    }
+
+    return value;
+  }
+}
+
+// Writes `value` for `key` in the key-value store on the server.
+async function writeValueToServer(key, value) {
+  const serverUrl = `${STORE_URL}?key=${key}&value=${value}`;
+  await fetch(serverUrl);
+}

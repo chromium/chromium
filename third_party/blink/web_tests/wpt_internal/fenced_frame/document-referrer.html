@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Test document.referrer referrer</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const referrer_key = KEYS["document.referrer"];
+  const navigate_key = KEYS["navigate"];
+
+  attachFencedFrame("resources/document-referrer-inner.html");
+
+  const expected_document_referrer = "";
+  const actual_document_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(actual_document_referrer, expected_document_referrer,
+                "The fenced frame's document.referrer should have been " +
+                "censored");
+
+  writeValueToServer(navigate_key, "navigate");
+
+  const next_expected_document_referrer =
+    new URL("resources/document-referrer-inner.html", location.href).toString();
+  const next_actual_document_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(next_actual_document_referrer, next_expected_document_referrer,
+                "The fenced frame's document.referrer is not censored upon " +
+                "subsequent navigations");
+
+}, "document.referrer");
+</script>
+
+</body>

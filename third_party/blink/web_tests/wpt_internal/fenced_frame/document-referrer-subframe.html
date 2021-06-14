@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>Test document.referrer referrer</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const referrer_key = KEYS["document.referrer"];
+
+  attachFencedFrame("resources/document-referrer-subframe-inner.html");
+
+  const expected_subframe_document_referrer =
+    new URL("resources/document-referrer-subframe-inner.html",
+            location.href)
+    .toString();
+  const actual_subframe_document_referrer =
+    await nextValueFromServer(referrer_key);
+  assert_equals(actual_subframe_document_referrer,
+                expected_subframe_document_referrer,
+                "The fenced frame's subframe's document.referrer upon " +
+                "initial navigation should have been censored");
+}, "document.referrer in a subframe within a fenced frame");
+</script>
+
+</body>

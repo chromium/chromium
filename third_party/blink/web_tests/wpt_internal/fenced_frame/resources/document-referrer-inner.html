@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<title>Fenced frame content to report the value of document.referrer</title>
+
+<body>
+<script>
+async function init() { // Needed in order to use top-level await.
+  // This file is meant to be navigated to from a <fencedframe> element. It
+  // reports the initial value of `document.referrer` to the page that hosts the
+  // the <fencedframe>, navigates to a subsequent document (this page again,
+  // just with a query parameter) and reports the value again.
+
+  const referrer_key = KEYS["document.referrer"];
+  const navigate_key = KEYS["navigate"];
+
+  // Send the value of `document.referrer` to the server for checking.
+  writeValueToServer(referrer_key, document.referrer);
+
+  const url = new URL(location.href);
+  if (url.search === "") {
+    // This is the first time that this page has been loaded, in which case we
+    // have to wait for the navigation signal from the parent page, and navigate
+    // to a variant of this page once we get it. This allows us to re-test
+    // document.referrer upon subsequent navigations.
+    await nextValueFromServer(navigate_key);
+    location.href = location.href + "?final";
+  }
+}
+
+init();
+</script>
+</body>
