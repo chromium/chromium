@@ -27,6 +27,8 @@ public final class SolidBackground implements Background {
         }
 
         GradientDrawable drawable = (GradientDrawable) view.getBackground();
+        drawable.mutate();
+        drawable.setColors(null);
         drawable.setColor(this.color);
     }
 }

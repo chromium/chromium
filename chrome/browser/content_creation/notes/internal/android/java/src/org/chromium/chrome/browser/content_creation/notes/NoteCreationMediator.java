@@ -92,9 +92,9 @@ public class NoteCreationMediator {
         }
     }
 
-    private PropertyModel buildModel(boolean is_first, NoteTemplate template, Typeface typeface) {
+    private PropertyModel buildModel(boolean isFirst, NoteTemplate template, Typeface typeface) {
         PropertyModel.Builder builder = new PropertyModel.Builder(NoteProperties.ALL_KEYS)
-                                                .with(NoteProperties.IS_FIRST, is_first)
+                                                .with(NoteProperties.IS_FIRST, isFirst)
                                                 .with(NoteProperties.TEMPLATE, template)
                                                 .with(NoteProperties.TYPEFACE, typeface);
 

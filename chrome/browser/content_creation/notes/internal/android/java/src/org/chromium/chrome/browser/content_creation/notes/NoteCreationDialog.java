@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.content_creation.notes;
 
 import android.app.Dialog;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,8 +124,17 @@ public class NoteCreationDialog extends DialogFragment {
         Typeface typeface = model.get(NoteProperties.TYPEFACE);
         TextView noteText = (TextView) parent.findViewById(R.id.text);
         noteText.setTypeface(typeface);
-
         template.textStyle.apply(noteText, mSelectedText);
+
+        if (template.contentBackground != null) {
+            template.contentBackground.apply(noteText);
+        } else {
+            GradientDrawable drawable = (GradientDrawable) noteText.getBackground();
+            drawable.mutate();
+            drawable.setColor(null);
+            drawable.setColors(null);
+        }
+
         TextView footerLink = (TextView) parent.findViewById(R.id.footer_link);
         TextView footerTitle = (TextView) parent.findViewById(R.id.footer_title);
         ImageView footerIcon = (ImageView) parent.findViewById(R.id.footer_icon);

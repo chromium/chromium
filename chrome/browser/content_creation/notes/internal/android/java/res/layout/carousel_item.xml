@@ -30,6 +30,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
+                android:background="@drawable/note_background_outline"
                 android:textAppearance="@style/TextAppearance.Headline" />
 
             <!-- Footer -->

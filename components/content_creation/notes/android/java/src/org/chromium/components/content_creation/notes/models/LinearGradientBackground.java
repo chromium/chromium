@@ -29,6 +29,8 @@ public final class LinearGradientBackground implements Background {
         }
 
         GradientDrawable drawable = (GradientDrawable) view.getBackground();
+        drawable.mutate();
+        drawable.setColor(null);
         drawable.setColors(this.colors);
         drawable.setOrientation(LinearGradientDirection.toOrientation(this.direction));
     }
