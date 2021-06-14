@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/fast_pair/common/fast_pair_features.h"
+#include "chromeos/components/quick_pair/common/quick_pair_features.h"
 
 namespace chromeos {
 namespace features {

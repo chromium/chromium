@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Fast Pair is CrOS only")
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are CrOS only")
 
 source_set("common") {
   sources = [
-    "fast_pair_features.cc",
-    "fast_pair_features.h",
+    "quick_pair_features.cc",
+    "quick_pair_features.h",
   ]
 
   public_deps = [ "//base" ]
