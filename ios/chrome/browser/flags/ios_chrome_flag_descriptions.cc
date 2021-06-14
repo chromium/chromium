@@ -150,6 +150,10 @@ const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "
     "the NTP.";
 
+const char kDownloadMobileConfigFileName[] = "Download .mobileconfig file";
+const char kDownloadMobileConfigFileDescription[] =
+    "Allows user to download and install a .mobileconfig file";
+
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";

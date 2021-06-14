@@ -65,6 +65,7 @@
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -759,6 +760,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableExtendedSyncPromosCapabilityName,
      flag_descriptions::kEnableExtendedSyncPromosCapabilityDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(switches::kMinorModeSupport)},
+    {"download-mobileconfig-file",
+     flag_descriptions::kDownloadMobileConfigFileName,
+     flag_descriptions::kDownloadMobileConfigFileDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDownloadMobileConfigFile)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

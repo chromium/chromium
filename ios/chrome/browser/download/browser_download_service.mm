@@ -9,9 +9,11 @@
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #include "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #include "ios/chrome/browser/download/pass_kit_mime_type.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #include "ios/chrome/browser/download/usdz_mime_type.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 
@@ -119,6 +121,13 @@ void BrowserDownloadService::OnDownloadCreated(
                               task->GetSuggestedFilename())) {
     ARQuickLookTabHelper* tab_helper =
         ARQuickLookTabHelper::FromWebState(web_state);
+    if (tab_helper) {
+      tab_helper->Download(std::move(task));
+    }
+  } else if (task->GetMimeType() == "application/x-apple-aspen-config" &&
+             base::FeatureList::IsEnabled(kDownloadMobileConfigFile)) {
+    MobileConfigTabHelper* tab_helper =
+        MobileConfigTabHelper::FromWebState(web_state);
     if (tab_helper) {
       tab_helper->Download(std::move(task));
     }

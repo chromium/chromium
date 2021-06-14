@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
+#import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
@@ -60,6 +61,7 @@
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
@@ -135,6 +137,10 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
+  }
+
+  if (base::FeatureList::IsEnabled(kDownloadMobileConfigFile)) {
+    MobileConfigTabHelper::CreateForWebState(web_state);
   }
 
   SafeBrowsingQueryManager::CreateForWebState(web_state);

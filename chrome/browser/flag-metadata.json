@@ -1145,6 +1145,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "download-mobileconfig-file",
+    "owners": [ "ewannpv", "gambard" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "download-shelf-webui",
     "owners": [ "robliao", "chrome-webui-for-features@google.com" ],
     "expiry_milestone": 98

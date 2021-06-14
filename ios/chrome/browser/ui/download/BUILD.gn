@@ -19,6 +19,8 @@ source_set("download") {
     "download_manager_state_view.mm",
     "download_manager_view_controller.h",
     "download_manager_view_controller.mm",
+    "mobileconfig_coordinator.h",
+    "mobileconfig_coordinator.mm",
     "pass_kit_coordinator.h",
     "pass_kit_coordinator.mm",
     "radial_progress_view.h",
@@ -148,4 +150,13 @@ source_set("eg2_tests") {
   ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
 }
