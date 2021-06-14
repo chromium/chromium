@@ -12,7 +12,7 @@ namespace alarms_api_constants {
 extern const double kDevDelayMinimum;
 
 // Minimum specifiable alarm period (in minutes) for packed/crx extensions.
-extern const int kReleaseDelayMinimum;
+extern const double kReleaseDelayMinimum;
 
 extern const char kWarningMinimumDevDelay[];
 extern const char kWarningMinimumReleaseDelay[];
