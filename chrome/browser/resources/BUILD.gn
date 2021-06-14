@@ -64,6 +64,10 @@ group("resources") {
     ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+    public_deps += [ "browser_switch:resources" ]
+  }
+
   if (is_linux || is_chromeos) {
     public_deps += [ "webui_js_error:resources" ]
   }

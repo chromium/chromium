@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/browser_switch_resources.h"
+#include "chrome/grit/browser_switch_resources_map.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/grit/components_resources.h"
@@ -133,19 +135,16 @@ content::WebUIDataSource* CreateBrowserSwitchUIHTMLSource(
                              IDS_ABOUT_BROWSER_SWITCH_PROTOCOL_ERROR);
   source->AddLocalizedString("title", IDS_ABOUT_BROWSER_SWITCH_TITLE);
 
-  source->AddResourcePath("app.js", IDR_BROWSER_SWITCH_APP_JS);
-  source->AddResourcePath("browser_switch.html", IDR_BROWSER_SWITCH_HTML);
-  source->AddResourcePath("browser_switch_proxy.js",
-                          IDR_BROWSER_SWITCH_PROXY_JS);
-  source->SetDefaultResource(IDR_BROWSER_SWITCH_HTML);
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kBrowserSwitchResources, kBrowserSwitchResourcesSize),
+      IDR_BROWSER_SWITCH_BROWSER_SWITCH_HTML);
 
   // Setup chrome://browser-switch/internals debug UI.
-  source->AddResourcePath("internals/browser_switch_internals.js",
-                          IDR_BROWSER_SWITCH_INTERNALS_JS);
-  source->AddResourcePath("internals/browser_switch_internals.html",
-                          IDR_BROWSER_SWITCH_INTERNALS_HTML);
-  source->AddResourcePath("internals/", IDR_BROWSER_SWITCH_INTERNALS_HTML);
-  source->AddResourcePath("internals", IDR_BROWSER_SWITCH_INTERNALS_HTML);
+  source->AddResourcePath(
+      "internals/", IDR_BROWSER_SWITCH_INTERNALS_BROWSER_SWITCH_INTERNALS_HTML);
+  source->AddResourcePath(
+      "internals", IDR_BROWSER_SWITCH_INTERNALS_BROWSER_SWITCH_INTERNALS_HTML);
 
   source->UseStringsJs();
 
