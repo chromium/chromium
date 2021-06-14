@@ -346,6 +346,8 @@ std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
 
 void DeviceCloudPolicyInitializer::TryToCreateClient(
     DeviceCloudPolicyInitializer::StartConnectionReason reason) {
+  // TODO(b/181140445): If we had a separate state keys upload request to DM
+  // Server we could drop the `state_keys_broker_->available()` requirement.
   if (!policy_store_->is_initialized() || !policy_store_->has_policy() ||
       !state_keys_broker_->available() || enrollment_handler_ ||
       install_attributes_->IsActiveDirectoryManaged()) {

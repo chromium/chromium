@@ -88,8 +88,14 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
   base::TimeDelta refresh_interval = base::TimeDelta::FromMilliseconds(
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
                         : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
+
+  // In case state_keys aren't available, we have no scheduler. See also
+  // DeviceCloudPolicyInitializer::TryToCreateClient and b/181140445
   base::Time last_refresh_time =
-      refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
+      refresh_scheduler ? refresh_scheduler->last_refresh()
+                        : policy && policy->has_timestamp()
+                              ? base::Time::FromJavaTime(policy->timestamp())
+                              : base::Time();
 
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->status() == DM_STATUS_SUCCESS;
