@@ -145,6 +145,8 @@ class PresubmitTest(unittest.TestCase):
 
 class CxxDependencyTest(unittest.TestCase):
     allow_list = [
+        'base::OnceCallback<void()>',
+        'base::RepeatingCallback<void()>',
         'gfx::ColorSpace',
         'gfx::CubicBezier',
         'gfx::ICCProfile',
@@ -155,8 +157,6 @@ class CxxDependencyTest(unittest.TestCase):
     ]
     disallow_list = [
         'GURL',
-        'base::OnceCallback<void()>',
-        'base::RepeatingCallback<void()>',
         'content::RenderFrame',
         'gfx::Canvas',
         'net::IPEndPoint',
