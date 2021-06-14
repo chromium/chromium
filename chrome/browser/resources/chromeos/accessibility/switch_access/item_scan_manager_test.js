@@ -504,7 +504,6 @@ TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', function() {
   });
 });
 
-
 TEST_F('SwitchAccessItemScanManagerTest', 'SyncFocusToNewWindow', function() {
   const website1 = `<button autofocus>one</button>`;
   const website2 = `<button autofocus>two</button>`;
@@ -574,49 +573,3 @@ TEST_F('SwitchAccessItemScanManagerTest', 'SyncFocusToNewWindow', function() {
     });
   });
 });
-
-TEST_F(
-    'SwitchAccessItemScanManagerTest', 'LockScreenBlocksUserSession',
-    function() {
-      const website = `<button autofocus>kitties!</button>`;
-      this.runWithLoadedTree(website, async (root) => {
-        let button =
-            await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
-        assertEquals('kitties!', button.automationNode.name);
-
-        // Lock the screen.
-        EventGenerator.sendKeyPress(KeyCode.L, {search: true});
-
-        // Wait for focus to move to the password field.
-        await this.untilFocusIs({
-          role: chrome.automation.RoleType.TEXT_FIELD,
-          name: 'Password for stub-user@example.com'
-        });
-
-        // The button is no longer in the tree because the screen is locked.
-        const predicate = (node) => node.name === 'kitties!' &&
-            node.role === chrome.automation.RoleType.BUTTON;
-        assertNotNullNorUndefined(
-            this.desktop_, 'this.desktop_ is null or undefined.');
-        const treeWalker = new AutomationTreeWalker(
-            this.desktop_, constants.Dir.FORWARD, {visit: predicate});
-        const node = treeWalker.next().node;
-        assertEquals(null, node);
-
-        // Log in again and confirm that the button is back and gets focus
-        // again.
-        EventGenerator.sendKeyPress(KeyCode.T);
-        EventGenerator.sendKeyPress(KeyCode.E);
-        EventGenerator.sendKeyPress(KeyCode.S);
-        EventGenerator.sendKeyPress(KeyCode.T);
-        EventGenerator.sendKeyPress(KeyCode.ZERO);
-        EventGenerator.sendKeyPress(KeyCode.ZERO);
-        EventGenerator.sendKeyPress(KeyCode.ZERO);
-        EventGenerator.sendKeyPress(KeyCode.ZERO);
-        EventGenerator.sendKeyPress(KeyCode.RETURN);
-
-        button =
-            await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
-        assertEquals('kitties!', button.automationNode.name);
-      });
-    });

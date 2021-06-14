@@ -56,7 +56,6 @@
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
-#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1351,22 +1350,6 @@ void AccessibilityControllerImpl::OnActiveUserPrefServiceChanged(
   ObservePrefs(prefs);
 }
 
-void AccessibilityControllerImpl::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  // Everything behind the lock screen is in
-  // kShellWindowId_NonLockScreenContainersContainer. If the session state is
-  // changed to block the user session due to the lock screen or similar,
-  // everything in that window should be made invisible for accessibility.
-  // This keeps a11y features from being able to access parts of the tree
-  // that are visibly hidden behind the lock screen.
-  aura::Window* container =
-      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
-                          kShellWindowId_NonLockScreenContainersContainer);
-  container->SetProperty(
-      ui::kAXConsiderInvisibleAndIgnoreChildren,
-      Shell::Get()->session_controller()->IsUserSessionBlocked());
-}
-
 AccessibilityEventRewriter*
 AccessibilityControllerImpl::GetAccessibilityEventRewriterForTest() {
   return accessibility_event_rewriter_;
@@ -1776,8 +1759,8 @@ void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
     base::UmaHistogramEnumeration(uma_name, uma_value);
   }
 
-  accessibility_event_rewriter_->SetKeyCodesForSwitchAccessCommand(key_codes,
-                                                                   command);
+    accessibility_event_rewriter_->SetKeyCodesForSwitchAccessCommand(key_codes,
+                                                                     command);
 }
 
 void AccessibilityControllerImpl::UpdateSwitchAccessAutoScanEnabledFromPref() {

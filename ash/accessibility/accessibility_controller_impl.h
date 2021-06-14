@@ -402,7 +402,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
-  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // Test helpers:
   AccessibilityEventRewriter* GetAccessibilityEventRewriterForTest();

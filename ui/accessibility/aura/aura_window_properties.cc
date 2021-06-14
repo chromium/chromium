@@ -18,6 +18,4 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ax::mojom::Role,
                              kAXRoleOverride,
                              ax::mojom::Role::kNone)
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAXConsiderInvisibleAndIgnoreChildren, false)
-
 }  // namespace ui

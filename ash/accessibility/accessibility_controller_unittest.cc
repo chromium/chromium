@@ -24,7 +24,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -1201,33 +1200,6 @@ TEST_P(AccessibilityControllerSigninTest, SwitchAccessPrefsSyncToSignIn) {
   // has no effect on the user profile.
   signin_prefs->Set(kAccessibilitySwitchAccessEnabled, base::Value(false));
   EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilitySwitchAccessEnabled));
-}
-
-TEST_P(AccessibilityControllerSigninTest,
-       UpdatesNonLoginWindowVisibilityOnLogin) {
-  aura::Window* container =
-      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
-                          kShellWindowId_NonLockScreenContainersContainer);
-
-  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
-  EXPECT_TRUE(
-      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
-
-  UnblockUserSession();
-  EXPECT_FALSE(
-      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
-
-  BlockUserSession(BLOCKED_BY_LOGIN_SCREEN);
-  EXPECT_TRUE(
-      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
-
-  UnblockUserSession();
-  EXPECT_FALSE(
-      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
-
-  BlockUserSession(BLOCKED_BY_USER_ADDING_SCREEN);
-  EXPECT_TRUE(
-      container->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren));
 }
 
 }  // namespace ash
