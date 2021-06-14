@@ -8,6 +8,7 @@ blink_modules_sources("webtransport") {
   sources = [
     "bidirectional_stream.cc",
     "bidirectional_stream.h",
+    "datagram_duplex_stream.cc",
     "datagram_duplex_stream.h",
     "incoming_stream.cc",
     "incoming_stream.h",
@@ -27,6 +28,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bidirectional_stream_test.cc",
+    "datagram_duplex_stream_test.cc",
     "incoming_stream_test.cc",
     "outgoing_stream_test.cc",
     "test_utils.cc",

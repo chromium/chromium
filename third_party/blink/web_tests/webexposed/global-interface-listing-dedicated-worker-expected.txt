@@ -385,9 +385,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method item
 [Worker] interface DatagramDuplexStream
 [Worker]     attribute @@toStringTag
+[Worker]     getter incomingHighWaterMark
+[Worker]     getter incomingMaxAge
+[Worker]     getter outgoingHighWaterMark
+[Worker]     getter outgoingMaxAge
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method constructor
+[Worker]     setter incomingHighWaterMark
+[Worker]     setter incomingMaxAge
+[Worker]     setter outgoingHighWaterMark
+[Worker]     setter outgoingMaxAge
 [Worker] interface DecompressionStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter readable

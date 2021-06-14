@@ -1657,9 +1657,17 @@ interface DataTransferItemList
     method remove
 interface DatagramDuplexStream
     attribute @@toStringTag
+    getter incomingHighWaterMark
+    getter incomingMaxAge
+    getter outgoingHighWaterMark
+    getter outgoingMaxAge
     getter readable
     getter writable
     method constructor
+    setter incomingHighWaterMark
+    setter incomingMaxAge
+    setter outgoingHighWaterMark
+    setter outgoingMaxAge
 interface DecompressionStream
     attribute @@toStringTag
     getter readable
