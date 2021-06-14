@@ -62,6 +62,13 @@ public class AdaptiveToolbarStatePredictor {
      * use cached result, but seems unnecessary.
      */
     public void recomputeUiState(Callback<UiState> callback) {
+        // Early return if the feature isn't enabled.
+        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+            callback.onResult(new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
+                    AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN));
+            return;
+        }
+
         int manualOverride = readManualOverrideFromPrefs();
         int finchDefault = AdaptiveToolbarFeatures.getSegmentationDefault();
         boolean toolbarToggle = readToolbarToggleStateFromPrefs();
