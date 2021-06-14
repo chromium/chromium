@@ -739,9 +739,11 @@ bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
           kGpuFeatureStatusEnabled ||
       gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] !=
           kGpuFeatureStatusEnabled) {
-    // This setting makes WebGL run on legacy SwiftShader GL when true and
-    // SwANGLE when false.
     bool legacy_software_gl = true;
+#if defined(OS_LINUX) || defined(OS_WIN)
+    // This setting makes WebGL run on SwANGLE instead of SwiftShader GL.
+    legacy_software_gl = false;
+#endif
     gl::SetSoftwareWebGLCommandLineSwitches(command_line, legacy_software_gl);
     return true;
   }
