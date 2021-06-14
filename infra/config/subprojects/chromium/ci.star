@@ -4015,6 +4015,7 @@ ci.fyi_windows_builder(
     ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
+    reclient_profiler_service = "reclient-win",
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.WINDOWS_DEFAULT,

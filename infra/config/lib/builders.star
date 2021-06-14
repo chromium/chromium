@@ -264,7 +264,7 @@ def _isolated_property(*, isolated_server):
 
     return isolated or None
 
-def _reclient_property(*, instance, service, jobs, rewrapper_env):
+def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
     if instance:
@@ -283,6 +283,9 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env):
                 fail("Environment variables in rewrapper_env must start with " +
                      "'RBE_', got '%s'" % k)
         reclient["rewrapper_env"] = rewrapper_env
+    profiler_service = defaults.get_value("reclient_profiler_service", profiler_service)
+    if profiler_service:
+        reclient["profiler_service"] = profiler_service
     return reclient or None
 
 ################################################################################
@@ -324,6 +327,7 @@ defaults = args.defaults(
     reclient_service = None,
     reclient_jobs = None,
     reclient_rewrapper_env = None,
+    reclient_profiler_service = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -370,6 +374,7 @@ def builder(
         reclient_service = args.DEFAULT,
         reclient_jobs = args.DEFAULT,
         reclient_rewrapper_env = args.DEFAULT,
+        reclient_profiler_service = args.DEFAULT,
         experiments = None,
         **kwargs):
     """Define a builder.
@@ -503,6 +508,8 @@ def builder(
         compilations to run when using re-client as the compiler.
       * reclient_rewrapper_env - a map that sets the rewrapper flags via the
         environment variables. All such vars must start with the "RBE_" prefix.
+      * reclient_profiler_service - a string indicating service name for
+        re-client's cloud profiler.
       * experiments - a dict of experiment name to the percentage chance (0-100)
         that it will apply to builds generated from this builder.
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
@@ -648,6 +655,7 @@ def builder(
         service = reclient_service,
         jobs = reclient_jobs,
         rewrapper_env = reclient_rewrapper_env,
+        profiler_service = reclient_profiler_service,
     )
     if reclient != None:
         properties["$build/reclient"] = reclient
