@@ -601,11 +601,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
     base::RunLoop run_loop;
     async_drop_closure_ = run_loop.QuitClosure();
 
-    int left =
+    float left =
         EvalJs(contents,
                "document.getElementById('target').getBoundingClientRect().left")
             .ExtractInt();
-    int top =
+    float top =
         EvalJs(contents,
                "document.getElementById('target').getBoundingClientRect().top")
             .ExtractInt();

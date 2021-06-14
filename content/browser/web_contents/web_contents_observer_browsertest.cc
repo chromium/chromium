@@ -234,7 +234,7 @@ class CookieTracker : public WebContentsObserver {
 
     ContextType context_type;
     GlobalRoutingID frame_id;
-    int navigation_id = -1;
+    int64_t navigation_id = -1;
 
     GURL url;
     GURL first_party_url;

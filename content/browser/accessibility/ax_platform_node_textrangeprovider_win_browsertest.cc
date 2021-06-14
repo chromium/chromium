@@ -861,8 +861,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // |view_offset| is necessary to account for differences in the shell
   // between platforms (e.g. title bar height) because the results of
   // |GetBoundingRectangles| are in screen coordinates.
-  gfx::Vector2d view_offset =
-      node->manager()->GetViewBoundsInScreenCoordinates().OffsetFromOrigin();
+  gfx::Vector2dF view_offset(
+      node->manager()->GetViewBoundsInScreenCoordinates().OffsetFromOrigin());
   std::vector<double> expected_values = {
       8 + view_offset.x(), 16 + view_offset.y(), 49, 17,
       8 + view_offset.x(), 34 + view_offset.y(), 44, 17};
@@ -2607,9 +2607,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
 
-  gfx::Vector2d view_offset = text_before_list->manager()
-                                  ->GetViewBoundsInScreenCoordinates()
-                                  .OffsetFromOrigin();
+  gfx::Vector2dF view_offset(text_before_list->manager()
+                                 ->GetViewBoundsInScreenCoordinates()
+                                 .OffsetFromOrigin());
   std::vector<double> expected_values = {85 + view_offset.x(),
                                          16 + view_offset.y(), 20, 17};
   EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
@@ -2956,20 +2956,20 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // |view_offset| is necessary to account for differences in the shell
   // between platforms (e.g. title bar height) because the results of
   // |GetBoundingRectangles| are in screen coordinates.
-  gfx::Vector2d view_offset = text_node->manager()
-                                  ->GetViewBoundsInScreenCoordinates()
-                                  .OffsetFromOrigin();
+  gfx::Vector2dF view_offset(text_node->manager()
+                                 ->GetViewBoundsInScreenCoordinates()
+                                 .OffsetFromOrigin());
 
   // The offset from top based on CSS style absolute position (200px) + viewport
   // offset.
-  const int total_top_offset = 216 + view_offset.y();
+  const double total_top_offset = 216 + view_offset.y();
   // The offset from left based on CSS style absolute position (100px) +
   // viewport offset.
-  const int total_left_offset = 100 + view_offset.x();
+  const double total_left_offset = 100 + view_offset.x();
 
   // The bounding box for character width and height with font-size: 11px.
-  const int bounding_box_char_height = 16;
-  const int bounding_box_char_width = 32;
+  constexpr double bounding_box_char_height = 16;
+  constexpr double bounding_box_char_width = 32;
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*text_node, &text_range_provider);

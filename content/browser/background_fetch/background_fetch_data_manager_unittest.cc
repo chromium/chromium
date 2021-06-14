@@ -1759,9 +1759,9 @@ TEST_F(BackgroundFetchDataManagerTest, MatchRequests) {
   int64_t sw_id = RegisterServiceWorker();
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, sw_id);
 
-  size_t num_requests = 2u;
+  constexpr size_t kNumRequests = 2u;
   std::vector<blink::mojom::FetchAPIRequestPtr> requests =
-      CreateValidRequests(storage_key().origin(), num_requests);
+      CreateValidRequests(storage_key().origin(), kNumRequests);
   auto options = blink::mojom::BackgroundFetchOptions::New();
   blink::mojom::BackgroundFetchError error;
   BackgroundFetchRegistrationId registration_id(
@@ -1786,9 +1786,9 @@ TEST_F(BackgroundFetchDataManagerTest, MatchRequests) {
                 /* cache_query_options= */ nullptr, /* match_all= */ true,
                 &error, &settled_fetches);
   EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
-  EXPECT_EQ(settled_fetches.size(), num_requests);
+  EXPECT_EQ(settled_fetches.size(), kNumRequests);
 
-  for (size_t i = 0; i < num_requests; i++) {
+  for (size_t i = 0; i < kNumRequests; i++) {
     scoped_refptr<BackgroundFetchRequestInfo> request_info;
     PopNextRequest(registration_id, &error, &request_info);
     EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
@@ -1803,7 +1803,7 @@ TEST_F(BackgroundFetchDataManagerTest, MatchRequests) {
   EXPECT_EQ(
       GetRequestStats(sw_id),
       (ResponseStateStats{/* pending_requests= */ 0, /* active_requests= */ 0,
-                          /* completed_requests= */ num_requests}));
+                          /* completed_requests= */ kNumRequests}));
 
   MatchRequests(registration_id, /* request_to_match= */ nullptr,
                 /* cache_query_options= */ nullptr, /* match_all= */ true,
@@ -1811,7 +1811,7 @@ TEST_F(BackgroundFetchDataManagerTest, MatchRequests) {
 
   EXPECT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
   // We are marking the responses as failed in Download Manager.
-  EXPECT_EQ(settled_fetches.size(), num_requests);
+  EXPECT_EQ(settled_fetches.size(), kNumRequests);
 }
 
 TEST_F(BackgroundFetchDataManagerTest, MatchRequestsWithBody) {
