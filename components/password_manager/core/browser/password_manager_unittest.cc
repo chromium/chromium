@@ -3558,6 +3558,7 @@ TEST_P(PasswordManagerTest, FormSubmittedOnMainFrame) {
 
   // Simulate finish loading of some iframe. Check that the prompt is shown.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_));
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   manager()->OnPasswordFormsRendered(&driver_, {} /* observed */,
                                      true /* did stop loading */);
 }
@@ -3588,6 +3589,7 @@ TEST_P(PasswordManagerTest, FormSubmittedOnIFrame) {
   // Simulate finish loading of the submitted form iframe. Check that the prompt
   // is shown.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_));
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   manager()->OnPasswordFormsRendered(&iframe_driver, {} /* observed */,
                                      true /* did stop loading */);
 }

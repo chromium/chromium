@@ -45,7 +45,6 @@ class FormStructure;
 
 namespace password_manager {
 
-class BrowserSavePasswordProgressLogger;
 class PasswordManagerClient;
 class PasswordManagerDriver;
 class PasswordFormManagerForUI;
@@ -290,8 +289,7 @@ class PasswordManager : public PasswordManagerInterface {
   // |main_frame_url_|.
   void RecordProvisionalSaveFailure(
       PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
-      const GURL& form_origin,
-      BrowserSavePasswordProgressLogger* logger);
+      const GURL& form_origin);
 
   // Returns the manager which manages |form_id|. |driver| is needed to
   // determine the match. Returns nullptr when no matched manager is found.
