@@ -53,7 +53,8 @@ declare_args() {
       proprietary_codecs && (is_chromecast || is_fuchsia || use_fuzzing_engine)
 
   enable_platform_encrypted_hevc =
-      use_chromeos_protected_media || (is_win && is_chrome_branded)
+      proprietary_codecs &&
+      (use_chromeos_protected_media || (is_win && is_chrome_branded))
 
   # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
   # decoding must be provided by the platform. Note some Dolby Vision profiles
