@@ -33,10 +33,13 @@ class PaymentRequestSecurityPolicyBrowsertest
 IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPViolation) {
   NavigateTo("a.com", "/payment_request_csp_violation.html");
 
-  EXPECT_TRUE(content::ExecJs(
-      GetActiveWebContents(),
-      content::JsReplace("buildPaymentRequest($1)",
-                         https_server()->GetURL("bobpay.com", "/csp-test"))));
+  // The CSP check happens in buildPaymentRequest. We only call canMakePayment
+  // to ensure the promise resolves before metrics are checked.
+  EXPECT_EQ(false, content::EvalJs(
+                       GetActiveWebContents(),
+                       content::JsReplace(
+                           "buildPaymentRequest($1).canMakePayment()",
+                           https_server()->GetURL("bobpay.com", "/csp-test"))));
 
   ExpectPaymentRequestCSPViolationRecorded(true);
 }
@@ -45,10 +48,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPViolation) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPAllowAll) {
   NavigateTo("a.com", "/payment_request_csp_allow_all.html");
 
-  EXPECT_TRUE(content::ExecJs(
-      GetActiveWebContents(),
-      content::JsReplace("buildPaymentRequest($1)",
-                         https_server()->GetURL("bobpay.com", "/csp-test"))));
+  // The CSP check happens in buildPaymentRequest. We only call canMakePayment
+  // to ensure the promise resolves before metrics are checked.
+  EXPECT_EQ(false, content::EvalJs(
+                       GetActiveWebContents(),
+                       content::JsReplace(
+                           "buildPaymentRequest($1).canMakePayment()",
+                           https_server()->GetURL("bobpay.com", "/csp-test"))));
 
   ExpectPaymentRequestCSPViolationRecorded(false);
 }
@@ -58,10 +64,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest,
                        CSPAllowSpecific) {
   NavigateTo("a.com", "/payment_request_csp_allow_specific.html");
 
-  EXPECT_TRUE(content::ExecJs(
-      GetActiveWebContents(),
-      content::JsReplace("buildPaymentRequest($1)",
-                         https_server()->GetURL("bobpay.com", "/csp-test"))));
+  // The CSP check happens in buildPaymentRequest. We only call canMakePayment
+  // to ensure the promise resolves before metrics are checked.
+  EXPECT_EQ(false, content::EvalJs(
+                       GetActiveWebContents(),
+                       content::JsReplace(
+                           "buildPaymentRequest($1).canMakePayment()",
+                           https_server()->GetURL("bobpay.com", "/csp-test"))));
 
   ExpectPaymentRequestCSPViolationRecorded(false);
 }
