@@ -1009,15 +1009,16 @@ class WPTExpectationsUpdater(object):
             'python',
             blink_tool,
             'rebaseline-cl',
-            '--verbose',
             '--no-trigger-jobs',
             '--fill-missing',
         ]
+        if self.options.verbose:
+            command.append('--verbose')
         if self.patchset:
             command.append('--patchset=' + str(self.patchset))
         command += tests_to_rebaseline
         rebaseline_output = self.host.executive.run_command(command)
-        _log.debug(
+        _log.info(
             "Output of rebaseline-cl:\n%s\n--end of rebaseline-cl output --" %
             rebaseline_output)
         return tests_to_rebaseline, test_results
