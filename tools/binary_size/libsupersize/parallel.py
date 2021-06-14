@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Helpers related to multiprocessing."""
 
-import atexit
 import builtins
 import itertools
 import logging
@@ -18,13 +17,29 @@ DISABLE_ASYNC = os.environ.get('SUPERSIZE_DISABLE_ASYNC') == '1'
 if DISABLE_ASYNC:
   logging.debug('Running in synchronous mode.')
 
-_all_pools = None
 _is_child_process = False
 _silence_exceptions = False
 
 # Used to pass parameters to forked processes without pickling.
 _fork_params = None
 _fork_kwargs = None
+
+
+# Avoid printing backtrace for every worker for Ctrl-C.
+def _PatchMultiprocessing():
+  from multiprocessing import process
+  old_run = process.BaseProcess.run
+
+  def new_run(self):
+    try:
+      return old_run(self)
+    except (BrokenPipeError, KeyboardInterrupt):
+      sys.exit(1)
+
+  process.BaseProcess.run = new_run
+
+
+_PatchMultiprocessing()
 
 
 class _ImmediateResult(object):
@@ -68,7 +83,7 @@ class _FuncWrapper(object):
   def __call__(self, index, _=None):
     try:
       return self._func(*_fork_params[index], **_fork_kwargs)
-    except Exception as e:
+    except BaseException as e:
       # Only keep the exception type for builtin exception types or else risk
       # further marshalling exceptions.
       exception_type = None
@@ -77,21 +92,17 @@ class _FuncWrapper(object):
       # multiprocessing is supposed to catch and return exceptions automatically
       # but it doesn't seem to work properly :(.
       return _ExceptionWrapper(traceback.format_exc(), exception_type)
-    except:  # pylint: disable=bare-except
-      return _ExceptionWrapper(traceback.format_exc())
 
 
 class _WrappedResult(object):
   """Allows for host-side logic to be run after child process has terminated.
 
-  * Unregisters associated pool _all_pools.
   * Raises exception caught by _FuncWrapper.
   * Allows for custom unmarshalling of return value.
   """
 
-  def __init__(self, result, pool=None, decode_func=None):
+  def __init__(self, result, decode_func=None):
     self._result = result
-    self._pool = pool
     self._decode_func = decode_func
 
   def get(self):
@@ -104,43 +115,12 @@ class _WrappedResult(object):
 
   def wait(self):
     self._result.wait()
-    if self._pool:
-      _all_pools.remove(self._pool)
-      self._pool = None
 
   def ready(self):
     return self._result.ready()
 
   def successful(self):
     return self._result.successful()
-
-
-def _TerminatePools():
-  """Calls .terminate() on all active process pools.
-
-  Not supposed to be necessary according to the docs, but seems to be required
-  when child process throws an exception or Ctrl-C is hit.
-  """
-  global _silence_exceptions
-  _silence_exceptions = True
-  # Child processes cannot have pools, but atexit runs this function because
-  # it was registered before fork()ing.
-  if _is_child_process:
-    return
-
-  def close_pool(pool):
-    try:
-      pool.terminate()
-    except:  # pylint: disable=bare-except
-      pass
-
-  for i, pool in enumerate(_all_pools):
-    # Without calling terminate() on a separate thread, the call can block
-    # forever.
-    thread = threading.Thread(
-        name='Pool-Terminate-{}'.format(i), target=close_pool, args=(pool, ))
-    thread.daemon = True
-    thread.start()
 
 
 def _CheckForException(value):
@@ -154,7 +134,6 @@ def _CheckForException(value):
 
 
 def _MakeProcessPool(job_params, **job_kwargs):
-  global _all_pools
   global _fork_params
   global _fork_kwargs
   assert _fork_params is None
@@ -165,10 +144,6 @@ def _MakeProcessPool(job_params, **job_kwargs):
   ret = multiprocessing.Pool(pool_size)
   _fork_params = None
   _fork_kwargs = None
-  if _all_pools is None:
-    _all_pools = []
-    atexit.register(_TerminatePools)
-  _all_pools.append(ret)
   return ret
 
 
@@ -179,13 +154,12 @@ def ForkAndCall(func, args, decode_func=None):
     A Result object (call .get() to get the return value)
   """
   if DISABLE_ASYNC:
-    pool = None
     result = _ImmediateResult(func(*args))
   else:
     pool = _MakeProcessPool([args])  # Omit |kwargs|.
     result = pool.apply_async(_FuncWrapper(func), (0, ))
     pool.close()
-  return _WrappedResult(result, pool=pool, decode_func=decode_func)
+  return _WrappedResult(result, decode_func=decode_func)
 
 
 def BulkForkAndCall(func, arg_tuples, **kwargs):
@@ -214,7 +188,6 @@ def BulkForkAndCall(func, arg_tuples, **kwargs):
   finally:
     pool.close()
     pool.join()
-    _all_pools.remove(pool)
 
 
 def CallOnThread(func, *args, **kwargs):

@@ -25,8 +25,8 @@ def UnzipToTemp(zip_path, inner_path):
   """
   try:
     _, suffix = os.path.splitext(inner_path)
-    # Can't use NamedTemporaryFile() because it uses atexit, which does not play
-    # well with fork().
+    # Can't use NamedTemporaryFile() because it deletes via __del__, which will
+    # trigger in both this and the fork()'ed processes.
     fd, temp_file = tempfile.mkstemp(suffix=suffix)
     logging.debug('Extracting %s', inner_path)
     with zipfile.ZipFile(zip_path) as z:
