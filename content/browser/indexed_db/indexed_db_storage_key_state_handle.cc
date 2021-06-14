@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/indexed_db_origin_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
 
-#include "content/browser/indexed_db/indexed_db_origin_state.h"
+#include "content/browser/indexed_db/indexed_db_storage_key_state.h"
 
 namespace content {
 

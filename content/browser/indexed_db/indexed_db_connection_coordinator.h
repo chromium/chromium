@@ -12,7 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/indexed_db/indexed_db_origin_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/list_set.h"
 #include "content/common/content_export.h"

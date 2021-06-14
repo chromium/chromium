@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_ORIGIN_STATE_H_
-#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_ORIGIN_STATE_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_H_
+#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_H_
 
 #include <stdint.h>
 #include <memory>
@@ -17,7 +17,7 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
-#include "content/browser/indexed_db/indexed_db_origin_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -252,4 +252,4 @@ class CONTENT_EXPORT IndexedDBOriginState {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_ORIGIN_STATE_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_STORAGE_KEY_STATE_H_
