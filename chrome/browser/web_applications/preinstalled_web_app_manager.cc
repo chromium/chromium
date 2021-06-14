@@ -220,12 +220,20 @@ absl::optional<std::string> GetDisableReason(
     }
   }
 
-  // Remove if any apps to replace are blocked by admin policy.
+  // Remove if any apps to replace are blocked or force installed by admin
+  // policy.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExtensionBlockedByPolicy(profile, app_id)) {
       return options.install_url.spec() +
              " disabled due to admin policy blocking replacement "
              "Extension.";
+    }
+    std::u16string reason;
+    if (extensions::IsExtensionForceInstalled(profile, app_id, &reason)) {
+      return options.install_url.spec() +
+             " disabled due to admin policy force installing replacement "
+             "Extension: " +
+             base::UTF16ToUTF8(reason);
     }
   }
 
@@ -444,7 +452,6 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 
   // Set common install options.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
-    ALLOW_UNUSED_LOCAL(options);
     DCHECK_EQ(options.install_source, ExternalInstallSource::kExternalDefault);
 
     options.require_manifest = true;
@@ -474,23 +481,22 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   bool is_new_user = IsNewUser();
   std::string user_type = apps::DetermineUserType(profile_);
   size_t disabled_count = 0;
-  base::EraseIf(parsed_configs.options_list,
-                [&](const ExternalInstallOptions& options) {
-                  absl::optional<std::string> disable_reason =
-                      GetDisableReason(options, profile_, registrar_,
-                                       preinstalled_apps_enabled_in_prefs,
-                                       is_new_user, user_type);
-                  if (disable_reason) {
-                    VLOG(1) << *disable_reason;
-                    ++disabled_count;
-                    if (debug_info_) {
-                      debug_info_->disabled_configs.emplace_back(
-                          std::move(options), std::move(*disable_reason));
-                    }
-                    return true;
-                  }
-                  return false;
-                });
+  base::EraseIf(
+      parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
+        absl::optional<std::string> disable_reason = GetDisableReason(
+            options, profile_, registrar_, preinstalled_apps_enabled_in_prefs,
+            is_new_user, user_type);
+        if (disable_reason) {
+          VLOG(1) << *disable_reason;
+          ++disabled_count;
+          if (debug_info_) {
+            debug_info_->disabled_configs.emplace_back(
+                std::move(options), std::move(*disable_reason));
+          }
+          return true;
+        }
+        return false;
+      });
 
   if (debug_info_) {
     debug_info_->parse_errors = parsed_configs.errors;

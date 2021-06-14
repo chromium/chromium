@@ -248,6 +248,12 @@ TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
   PolicyUpdater(prefs).SetIndividualExtensionInstallationAllowed(kExtensionId,
                                                                  false);
   expect_not_present();
+
+  // Force installing the replaced extension also blocks the replacement.
+  PolicyUpdater(prefs).SetIndividualExtensionAutoInstalled(
+      kExtensionId, /*update_url=*/{}, /*forced=*/true);
+
+  expect_present();
 }
 
 // Only Chrome OS parses config files.

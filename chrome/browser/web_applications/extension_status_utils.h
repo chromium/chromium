@@ -25,6 +25,12 @@ bool IsExtensionBlockedByPolicy(content::BrowserContext* context,
 bool IsExtensionInstalled(content::BrowserContext* context,
                           const std::string& extension_id);
 
+// Returns whether the extension with `extension_id` is force installed by
+// policy, and fills `reason` (if non-null) with expository text.
+bool IsExtensionForceInstalled(content::BrowserContext* context,
+                               const std::string& extension_id,
+                               std::u16string* reason);
+
 // Returns whether the user has uninstalled an externally installed extension
 // with |extension_id|.
 bool IsExternalExtensionUninstalled(content::BrowserContext* context,
