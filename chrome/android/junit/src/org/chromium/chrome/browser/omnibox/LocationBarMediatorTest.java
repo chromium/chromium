@@ -58,7 +58,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lens.LensController;
@@ -69,7 +68,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -97,8 +96,7 @@ import java.util.List;
 @Config(shadows = {LocationBarMediatorTest.ShadowUrlUtilities.class,
                 LocationBarMediatorTest.ShadowGeolocationHeader.class,
                 LocationBarMediatorTest.ObjectAnimatorShadow.class,
-                LocationBarMediatorTest.GSAStateShadow.class,
-                LocationBarMediatorTest.DownloadUtilsShadow.class})
+                LocationBarMediatorTest.GSAStateShadow.class})
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
 @Features.DisableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
 public class LocationBarMediatorTest {
@@ -149,14 +147,6 @@ public class LocationBarMediatorTest {
         }
     }
 
-    @Implements(DownloadUtils.class)
-    static class DownloadUtilsShadow {
-        @Implementation
-        public static boolean isAllowedToDownloadPage(Tab tab) {
-            return true;
-        }
-    }
-
     private static final String TEST_URL = "http://www.example.org";
 
     private static int sGeoHeaderPrimeCount;
@@ -193,7 +183,7 @@ public class LocationBarMediatorTest {
     @Mock
     private StatusCoordinator mStatusCoordinator;
     @Mock
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    private PrivacyPreferencesManager mPrivacyPreferencesManager;
     @Mock
     private OmniboxPrerender.Natives mPrerenderJni;
     @Mock
