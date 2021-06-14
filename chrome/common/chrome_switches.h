@@ -140,6 +140,7 @@ extern const char kOpenInNewWindow[];
 extern const char kPackExtension[];
 extern const char kPackExtensionKey[];
 extern const char kPredictionServiceMockLikelihood[];
+extern const char kPreinstalledWebAppsDir[];
 extern const char kPrivetIPv6Only[];
 extern const char kProductVersion[];
 extern const char kProfileDirectory[];
