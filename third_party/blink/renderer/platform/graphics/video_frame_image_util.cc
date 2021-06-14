@@ -225,8 +225,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     resource_provider = local_resource_provider.get();
   }
 
-  // TODO(crbug.com/1186864): Accelerated CanvasResourceProviders don't always
-  // handle orientation correctly, so disable orientation tagging.
   if (resource_provider->IsAccelerated())
     prefer_tagged_orientation = false;
 
@@ -287,8 +285,8 @@ bool DrawVideoFrameIntoResourceProvider(
   }
 
   video_renderer->Paint(
-      frame.get(), resource_provider->Canvas(), gfx::RectF(dest_rect),
-      media_flags,
+      frame.get(), resource_provider->Canvas(/*needs_will_draw*/ true),
+      gfx::RectF(dest_rect), media_flags,
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation),

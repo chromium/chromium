@@ -1261,8 +1261,12 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
   return canvas_image_provider_.get();
 }
 
-cc::PaintCanvas* CanvasResourceProvider::Canvas() {
-  WillDrawIfNeeded();
+cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
+  // TODO(https://crbug.com/1211912): Video frames don't work without
+  // WillDrawIfNeeded(), but we are getting memory leak on CreatePattern
+  // with it. There should be a better way to solve this.
+  if (needs_will_draw)
+    WillDrawIfNeeded();
 
   if (!recorder_) {
     // A raw pointer is safe here because the callback is only used by the
