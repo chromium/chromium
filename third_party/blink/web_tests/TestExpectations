@@ -2513,7 +2513,6 @@ crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/h
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-no-port.sub.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
-crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
@@ -2867,7 +2866,6 @@ crbug.com/626703 [ Mac10.15 ] virtual/transform-interop/external/wpt/css/css-tra
 crbug.com/626703 [ Mac11.0 ] virtual/transform-interop/external/wpt/css/css-transforms/parsing/rotate-parsing-valid.html [ Failure Crash ]
 crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-deep-different-site.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/content-security-policy/securitypolicyviolation/source-file-data-scheme.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/Create-protocols-repeated-case-insensitive.any.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/basic-auth.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wpt_flags=h2 [ Failure Timeout ]
@@ -6904,3 +6902,7 @@ crbug.com/1218484 [ Linux ] virtual/plz-service-worker/external/wpt/html/cross-o
 # Sheriff 2021-06-11
 crbug.com/1218667 [ Win ] virtual/portals/wpt_internal/portals/portals-dangling-markup.sub.html [ Pass Timeout ]
 crbug.com/1218714 [ Win ] virtual/scroll-unification/fast/forms/select-popup/popup-menu-scrollbar-button-scrolls.html [ Pass Timeout ]
+
+# Sheriff 2021-06-14
+crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Pass Failure Timeout ]
+crbug.com/1219499 [ Win ] external/wpt/websockets/Create-blocked-port.any.html?wss [ Pass Timeout ]
