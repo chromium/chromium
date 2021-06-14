@@ -353,6 +353,10 @@ test("ios_chrome_unittests") {
     "//ios/testing:http_server_bundle_data",
   ]
 
+  if (ios_enable_widget_kit_extension) {
+    deps += [ "//ios/chrome/browser/widget_kit:unit_tests" ]
+  }
+
   if (ios_enable_search_widget_extension) {
     deps += [ "//ios/chrome/search_widget_extension:unit_tests" ]
   }
