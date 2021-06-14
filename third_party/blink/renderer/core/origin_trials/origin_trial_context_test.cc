@@ -49,6 +49,8 @@ const char kTokenPlaceholder[] = "The token contents are not used";
 class MockTokenValidator : public TrialTokenValidator {
  public:
   MockTokenValidator() = default;
+  MockTokenValidator(const MockTokenValidator&) = delete;
+  MockTokenValidator& operator=(const MockTokenValidator&) = delete;
   ~MockTokenValidator() override = default;
 
   // blink::WebTrialTokenValidator implementation
@@ -96,8 +98,6 @@ class MockTokenValidator : public TrialTokenValidator {
   bool is_third_party_;
 
   mutable int call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTokenValidator);
 };
 }  // namespace
 
