@@ -75,7 +75,10 @@ void ArcAppWindow::SetDescription(const std::string& title,
 
 bool ArcAppWindow::IsActive() const {
   return widget()->IsActive() &&
-         owner_->GetActiveTaskId() == arc::GetWindowTaskId(GetNativeWindow());
+         (owner_->GetActiveTaskId() ==
+              arc::GetWindowTaskId(GetNativeWindow()) ||
+          owner_->GetActiveSessionId() ==
+              arc::GetWindowSessionId(GetNativeWindow()));
 }
 
 void ArcAppWindow::Close() {

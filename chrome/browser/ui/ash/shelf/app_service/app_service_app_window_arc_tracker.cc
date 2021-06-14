@@ -99,6 +99,12 @@ void AppServiceAppWindowArcTracker::HandleWindowVisibilityChanged(
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 }
 
+void AppServiceAppWindowArcTracker::HandleWindowActivatedChanged(
+    aura::Window* window) {
+  OnTaskSetActive(active_task_id_);
+  active_session_id_ = arc::GetWindowSessionId(window).value_or(arc::kNoTaskId);
+}
+
 void AppServiceAppWindowArcTracker::HandleWindowDestroying(
     aura::Window* window) {
   app_service_controller_->UnregisterWindow(window);
@@ -111,8 +117,11 @@ void AppServiceAppWindowArcTracker::HandleWindowDestroying(
     info->set_window(nullptr);
 
   auto session_id = arc::GetWindowSessionId(window);
-  if (session_id.has_value())
+  if (session_id.has_value()) {
     session_id_to_arc_app_window_info_.erase(*session_id);
+    if (session_id == active_session_id_)
+      active_session_id_ = arc::kNoTaskId;
+  }
 }
 
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
@@ -146,11 +155,14 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
       arc_app_shelf_id, intent, package_name);
 
   // If there is a ghost window for `session_id`, reuse the ghost window info,
-  // and clear the ghost window info from `session_id_to_arc_app_window_info_`.
+  // and clear the ghost window info from `session_id_to_arc_app_window_info_`,
+  // and reset `active_session_id_`.
   auto it = session_id_to_arc_app_window_info_.find(session_id);
   if (it != session_id_to_arc_app_window_info_.end()) {
     task_id_to_arc_app_window_info_[task_id]->set_window(it->second->window());
     session_id_to_arc_app_window_info_.erase(it);
+    if (session_id == active_session_id_)
+      active_session_id_ = arc::kNoTaskId;
   }
 
   // Hide from shelf if there already is some task representing the window.

@@ -76,6 +76,7 @@ class AppServiceAppWindowShelfController
 
   // ArcAppWindowDelegate:
   int GetActiveTaskId() const override;
+  int GetActiveSessionId() const override;
 
   // Removes an AppWindowBase from its AppWindowShelfItemController by
   // |window|.

@@ -314,7 +314,7 @@ void AppServiceAppWindowShelfController::OnWindowActivated(
   AppWindowShelfController::OnWindowActivated(reason, new_active, old_active);
 
   if (arc_tracker_)
-    arc_tracker_->OnTaskSetActive(arc_tracker_->active_task_id());
+    arc_tracker_->HandleWindowActivatedChanged(new_active);
 
   SetWindowActivated(new_active, /*active*/ true);
   SetWindowActivated(old_active, /*active*/ false);
@@ -399,6 +399,12 @@ void AppServiceAppWindowShelfController::OnInstanceRegistryWillBeDestroyed(
 int AppServiceAppWindowShelfController::GetActiveTaskId() const {
   if (arc_tracker_)
     return arc_tracker_->active_task_id();
+  return arc::kNoTaskId;
+}
+
+int AppServiceAppWindowShelfController::GetActiveSessionId() const {
+  if (arc_tracker_)
+    return arc_tracker_->active_session_id();
   return arc::kNoTaskId;
 }
 
