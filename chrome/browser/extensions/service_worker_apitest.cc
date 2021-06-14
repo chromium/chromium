@@ -81,6 +81,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/url_constants.h"
@@ -88,6 +89,8 @@
 namespace extensions {
 
 namespace {
+
+using ::testing::HasSubstr;
 
 class WebContentsLoadStopObserver : content::WebContentsObserver {
  public:
@@ -415,8 +418,65 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   const ErrorList& error_list =
       error_console->GetErrorsForExtension(extension->id());
   ASSERT_EQ(kErrorsExpected, error_list.size());
-  ASSERT_EQ(error_list[0]->message(),
-            std::u16string(u"Service worker registration failed"));
+  ASSERT_EQ(
+      error_list[0]->message(),
+      std::u16string(u"Uncaught (in promise) TypeError: import() is disallowed "
+                     u"on ServiceWorkerGlobalScope by the HTML specification. "
+                     u"See https://github.com/w3c/ServiceWorker/issues/1356."));
+}
+
+// Tests that an error is generated if there is a syntax error in the service
+// worker script.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, SyntaxError) {
+  ErrorConsole* error_console = ErrorConsole::Get(profile());
+  // Error is observed on extension UI for developer mode only.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  const size_t kErrorsExpected = 1u;
+  ErrorObserver observer(kErrorsExpected, error_console);
+
+  ExtensionTestMessageListener test_listener("ready", true);
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_based_background/syntax_error"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(test_listener.WaitUntilSatisfied());
+  test_listener.Reply("");
+  observer.WaitForErrors();
+
+  const ErrorList& error_list =
+      error_console->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(kErrorsExpected, error_list.size());
+  EXPECT_EQ(ExtensionError::RUNTIME_ERROR, error_list[0]->type());
+  EXPECT_THAT(base::UTF16ToUTF8(error_list[0]->message()),
+              HasSubstr("Error handling response: TypeError: "
+                        "console.lg is not a function"));
+}
+
+// Tests that an error is generated if there is an undefined variable in the
+// service worker script.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, UndefinedVariable) {
+  ErrorConsole* error_console = ErrorConsole::Get(profile());
+  // Error is observed on extension UI for developer mode only.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  const size_t kErrorsExpected = 1u;
+  ErrorObserver observer(kErrorsExpected, error_console);
+
+  ExtensionTestMessageListener test_listener("ready", true);
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_based_background/undefined_variable"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(test_listener.WaitUntilSatisfied());
+  test_listener.Reply("");
+  observer.WaitForErrors();
+
+  const ErrorList& error_list =
+      error_console->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(kErrorsExpected, error_list.size());
+  EXPECT_EQ(ExtensionError::RUNTIME_ERROR, error_list[0]->type());
+  EXPECT_THAT(base::UTF16ToUTF8(error_list[0]->message()),
+              HasSubstr("Error handling response: ReferenceError: "
+                        "undefined_variable is not defined"));
 }
 
 // Tests chrome.runtime.onInstalled fires for extension service workers.

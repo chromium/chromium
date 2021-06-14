@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/service_worker_context_observer.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -25,6 +26,7 @@
 
 namespace content {
 class BrowserContext;
+class ServiceWorkerContext;
 }
 
 namespace extensions {
@@ -73,7 +75,8 @@ class Extension;
 //
 // TODO(lazyboy): Clean up queue when extension is unloaded/uninstalled.
 class ServiceWorkerTaskQueue : public KeyedService,
-                               public LazyContextTaskQueue {
+                               public LazyContextTaskQueue,
+                               public content::ServiceWorkerContextObserver {
  public:
   explicit ServiceWorkerTaskQueue(content::BrowserContext* browser_context);
   ~ServiceWorkerTaskQueue() override;
@@ -122,6 +125,12 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // activated.
   absl::optional<ActivationSequence> GetCurrentSequence(
       const ExtensionId& extension_id) const;
+
+  // content::ServiceWorkerContextObserver:
+  void OnReportConsoleMessage(int64_t version_id,
+                              const GURL& scope,
+                              const content::ConsoleMessage& message) override;
+  void OnDestruct(content::ServiceWorkerContext* context) override;
 
   class TestObserver {
    public:
@@ -196,6 +205,8 @@ class ServiceWorkerTaskQueue : public KeyedService,
   WorkerState* GetWorkerState(const SequencedContextId& context_id);
 
   int next_activation_sequence_ = 0;
+
+  std::multiset<content::ServiceWorkerContext*> observing_worker_contexts_;
 
   // The state of worker of each activated extension.
   std::map<SequencedContextId, WorkerState> worker_state_map_;

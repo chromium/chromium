@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -82,7 +83,10 @@ enum class RendererState {
 ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-ServiceWorkerTaskQueue::~ServiceWorkerTaskQueue() {}
+ServiceWorkerTaskQueue::~ServiceWorkerTaskQueue() {
+  for (auto* const service_worker_context : observing_worker_contexts_)
+    service_worker_context->RemoveObserver(this);
+}
 
 ServiceWorkerTaskQueue::TestObserver::TestObserver() {}
 
@@ -228,6 +232,19 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
   SequencedContextId context_id(
       LazyContextId(browser_context_, extension_id, service_worker_scope),
       activation_sequence);
+
+  content::StoragePartition* partition =
+      util::GetStoragePartitionForExtensionId(extension_id, browser_context_);
+
+  content::ServiceWorkerContext* service_worker_context =
+      partition->GetServiceWorkerContext();
+
+  if (observing_worker_contexts_.find(service_worker_context) ==
+      observing_worker_contexts_.end()) {
+    service_worker_context->AddObserver(this);
+  }
+  observing_worker_contexts_.insert(service_worker_context);
+
   const WorkerId worker_id = {extension_id, render_process_id,
                               service_worker_version_id, thread_id};
   WorkerState* worker_state = GetWorkerState(context_id);
@@ -268,6 +285,22 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
   SequencedContextId context_id(
       LazyContextId(browser_context_, extension_id, service_worker_scope),
       activation_sequence);
+
+  content::StoragePartition* partition =
+      util::GetStoragePartitionForExtensionId(extension_id, browser_context_);
+
+  content::ServiceWorkerContext* service_worker_context =
+      partition->GetServiceWorkerContext();
+
+  if (observing_worker_contexts_.find(service_worker_context) !=
+      observing_worker_contexts_.end()) {
+    observing_worker_contexts_.erase(service_worker_context);
+  }
+
+  if (observing_worker_contexts_.find(service_worker_context) ==
+      observing_worker_contexts_.end()) {
+    service_worker_context->RemoveObserver(this);
+  }
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -571,6 +604,39 @@ absl::optional<ActivationSequence> ServiceWorkerTaskQueue::GetCurrentSequence(
   if (iter == activation_sequences_.end())
     return absl::nullopt;
   return iter->second;
+}
+
+void ServiceWorkerTaskQueue::OnReportConsoleMessage(
+    int64_t version_id,
+    const GURL& scope,
+    const content::ConsoleMessage& message) {
+  if (message.message_level != blink::mojom::ConsoleMessageLevel::kError) {
+    // We don't report certain low-severity errors.
+    return;
+  }
+
+  auto error_instance = std::make_unique<RuntimeError>(
+      scope.host(), browser_context_->IsOffTheRecord(),
+      base::UTF8ToUTF16(content::MessageSourceToString(message.source)),
+      message.message,
+      StackTrace(1, StackFrame(message.line_number, 1,
+                               base::UTF8ToUTF16(message.source_url.spec()),
+                               u"")) /* Construct a trace to contain
+                                        one frame with the error */
+      ,
+      message.source_url,
+      content::ConsoleMessageLevelToLogSeverity(message.message_level),
+      -1 /* a service worker does not have a render_view_id */,
+      -1 /* TODO(crbug.com/1218812): Retrieve render_process_id */);
+
+  ExtensionsBrowserClient::Get()->ReportError(browser_context_,
+                                              std::move(error_instance));
+}
+
+void ServiceWorkerTaskQueue::OnDestruct(
+    content::ServiceWorkerContext* context) {
+  context->RemoveObserver(this);
+  observing_worker_contexts_.erase(context);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

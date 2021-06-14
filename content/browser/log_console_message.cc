@@ -7,30 +7,10 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
-
-logging::LogSeverity ConsoleMessageLevelToLogSeverity(
-    blink::mojom::ConsoleMessageLevel level) {
-  logging::LogSeverity log_severity = logging::LOG_VERBOSE;
-  switch (level) {
-    case blink::mojom::ConsoleMessageLevel::kVerbose:
-      log_severity = logging::LOG_VERBOSE;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kInfo:
-      log_severity = logging::LOG_INFO;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kWarning:
-      log_severity = logging::LOG_WARNING;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kError:
-      log_severity = logging::LOG_ERROR;
-      break;
-  }
-
-  return log_severity;
-}
 
 void LogConsoleMessage(blink::mojom::ConsoleMessageLevel log_level,
                        const std::u16string& message,

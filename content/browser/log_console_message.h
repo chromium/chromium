@@ -12,9 +12,6 @@
 
 namespace content {
 
-logging::LogSeverity ConsoleMessageLevelToLogSeverity(
-    blink::mojom::ConsoleMessageLevel level);
-
 // Optionally logs a message from the console, depending on the set logging
 // levels and incognito state.
 void LogConsoleMessage(blink::mojom::ConsoleMessageLevel log_level,

@@ -7,10 +7,17 @@
 
 #include <string>
 
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+
+CONTENT_EXPORT const char* MessageSourceToString(
+    blink::mojom::ConsoleMessageSource source);
+
+CONTENT_EXPORT logging::LogSeverity ConsoleMessageLevelToLogSeverity(
+    blink::mojom::ConsoleMessageLevel level);
 
 // A collection of information about a message that has been added to the
 // console.

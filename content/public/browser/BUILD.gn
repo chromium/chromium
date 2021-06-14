@@ -103,6 +103,7 @@ source_set("browser_sources") {
     "client_hints.h",
     "client_hints_controller_delegate.h",
     "color_chooser.h",
+    "console_message.cc",
     "console_message.h",
     "contacts_picker_properties_requested.h",
     "content_browser_client.cc",
