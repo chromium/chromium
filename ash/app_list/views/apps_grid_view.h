@@ -778,14 +778,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // The index of the drag_view_ when the drag starts.
   GridIndex drag_view_init_index_;
 
-  // The point where the drag started in AppListItemView coordinates.
-  gfx::Point drag_view_offset_;
-
   // The point where the drag started in GridView coordinates.
   gfx::Point drag_start_grid_view_;
-
-  // Page the drag started on.
-  int drag_start_page_ = -1;
 
   Pointer drag_pointer_ = NONE;
 

@@ -440,8 +440,6 @@ void AppsGridView::InitiateDrag(AppListItemView* view,
   // https://crbug.com/834682.
   drag_view_->RequestFocus();
   drag_view_init_index_ = GetIndexOfView(drag_view_);
-  drag_view_offset_ = location;
-  drag_start_page_ = pagination_model_.selected_page();
   reorder_placeholder_ = drag_view_init_index_;
   ExtractDragLocation(root_location, &drag_start_grid_view_);
   drag_view_start_ = gfx::Point(drag_view_->x(), drag_view_->y());
@@ -752,7 +750,6 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   if (!folder_delegate_)
     view_structure_.Add(drag_view_, GetLastTargetIndex());
 
-  drag_start_page_ = pagination_model_.selected_page();
   drag_start_grid_view_ = drag_point;
 
   drag_view_start_ = drag_view_->origin();
@@ -795,8 +792,6 @@ void AppsGridView::ClearDragState() {
   drop_target_ = GridIndex();
   reorder_placeholder_ = GridIndex();
   drag_start_grid_view_ = gfx::Point();
-  drag_start_page_ = -1;
-  drag_view_offset_ = gfx::Point();
 
   // Drag may end before |host_drag_start_timer_| gets fired.
   if (host_drag_start_timer_.IsRunning())
