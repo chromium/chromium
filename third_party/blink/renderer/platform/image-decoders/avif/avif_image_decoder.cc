@@ -763,41 +763,43 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   // |angle| * 90 specifies the angle of anti-clockwise rotation in degrees.
   // Legal values: [0-3].
   int angle = 0;
-  if (container->transformFlags & AVIF_TRANSFORM_IROT)
+  if (container->transformFlags & AVIF_TRANSFORM_IROT) {
     angle = container->irot.angle;
-  // |axis| specifies the axis for the mirroring operation.
+    CHECK_LT(angle, 4);
+  }
+  // |mode| specifies how the mirroring is performed.
   //   -1: No mirroring.
-  //    0: Mirror about a vertical axis ("left-to-right").
-  //    1: Mirror about a horizontal axis ("top-to-bottom").
-  int axis = -1;
-  if (container->transformFlags & AVIF_TRANSFORM_IMIR)
-    axis = container->imir.axis;
+  //    0: The top and bottom parts of the image are exchanged.
+  //    1: The left and right parts of the image are exchanged.
+  int mode = -1;
+  if (container->transformFlags & AVIF_TRANSFORM_IMIR) {
+    mode = container->imir.mode;
+    CHECK_LT(mode, 2);
+  }
   // MIAF Section 7.3.6.7 (Clean aperture, rotation and mirror) says:
   //   These properties, if used, shall be indicated to be applied in the
   //   following order: clean aperture first, then rotation, then mirror.
   //
-  // In the kAxisAngleToOrientation array, the first dimension is axis (with an
+  // In the kModeAngleToOrientation array, the first dimension is mode (with an
   // offset of 1). The second dimension is angle.
-  constexpr ImageOrientationEnum kAxisAngleToOrientation[3][4] = {
+  constexpr ImageOrientationEnum kModeAngleToOrientation[3][4] = {
       // No mirroring.
       {ImageOrientationEnum::kOriginTopLeft,
        ImageOrientationEnum::kOriginLeftBottom,
        ImageOrientationEnum::kOriginBottomRight,
        ImageOrientationEnum::kOriginRightTop},
-      // Mirror about a vertical axis ("left-to-right"). Change Left<->Right in
-      // the first row.
-      {ImageOrientationEnum::kOriginTopRight,
-       ImageOrientationEnum::kOriginRightBottom,
-       ImageOrientationEnum::kOriginBottomLeft,
-       ImageOrientationEnum::kOriginLeftTop},
-      // Mirror about a horizontal axis ("top-to-bottom"). Change Top<->Bottom
-      // in the first row.
+      // Top-to-bottom mirroring. Change Top<->Bottom in the first row.
       {ImageOrientationEnum::kOriginBottomLeft,
        ImageOrientationEnum::kOriginLeftTop,
        ImageOrientationEnum::kOriginTopRight,
        ImageOrientationEnum::kOriginRightBottom},
+      // Left-to-right mirroring. Change Left<->Right in the first row.
+      {ImageOrientationEnum::kOriginTopRight,
+       ImageOrientationEnum::kOriginRightBottom,
+       ImageOrientationEnum::kOriginBottomLeft,
+       ImageOrientationEnum::kOriginLeftTop},
   };
-  orientation_ = kAxisAngleToOrientation[axis + 1][angle];
+  orientation_ = kModeAngleToOrientation[mode + 1][angle];
 
   // Determine whether the image can be decoded to YUV.
   // * Alpha channel is not supported.
