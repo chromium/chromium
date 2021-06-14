@@ -18,12 +18,12 @@ class CORE_EXPORT GrammarMarker final : public SpellCheckMarker {
   GrammarMarker(unsigned start_offset,
                 unsigned end_offset,
                 const String& description);
+  GrammarMarker(const GrammarMarker&) = delete;
+  GrammarMarker& operator=(const GrammarMarker&) = delete;
 
  private:
   // DocumentMarker implementations
   MarkerType GetType() const final;
-
-  DISALLOW_COPY_AND_ASSIGN(GrammarMarker);
 };
 
 }  // namespace blink

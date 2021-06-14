@@ -32,7 +32,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -56,6 +55,8 @@ class CORE_EXPORT DocumentMarkerController final
       public SynchronousMutationObserver {
  public:
   explicit DocumentMarkerController(Document&);
+  DocumentMarkerController(const DocumentMarkerController&) = delete;
+  DocumentMarkerController& operator=(const DocumentMarkerController&) = delete;
 
   void Clear();
   void AddSpellingMarker(const EphemeralRange&,
@@ -210,8 +211,6 @@ class CORE_EXPORT DocumentMarkerController final
   // without going through the map.
   DocumentMarker::MarkerTypes possibly_existing_marker_types_;
   const Member<Document> document_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentMarkerController);
 };
 
 }  // namespace blink

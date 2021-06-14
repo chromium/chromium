@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_CARET_DISPLAY_ITEM_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_CARET_DISPLAY_ITEM_CLIENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -44,6 +43,8 @@ struct PaintInvalidatorContext;
 class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
  public:
   CaretDisplayItemClient();
+  CaretDisplayItemClient(const CaretDisplayItemClient&) = delete;
+  CaretDisplayItemClient& operator=(const CaretDisplayItemClient&) = delete;
   ~CaretDisplayItemClient() override;
 
   // Called indirectly from LayoutBlock::willBeDestroyed().
@@ -110,8 +111,6 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
 
   bool needs_paint_invalidation_ = false;
   bool is_visible_if_active_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(CaretDisplayItemClient);
 };
 
 }  // namespace blink

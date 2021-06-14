@@ -23,6 +23,8 @@ class CORE_EXPORT StyleableMarker : public DocumentMarker {
                   ui::mojom::ImeTextSpanUnderlineStyle,
                   Color text_color,
                   Color background_color);
+  StyleableMarker(const StyleableMarker&) = delete;
+  StyleableMarker& operator=(const StyleableMarker&) = delete;
 
   // StyleableMarker-specific
   Color UnderlineColor() const;
@@ -40,8 +42,6 @@ class CORE_EXPORT StyleableMarker : public DocumentMarker {
   const ui::mojom::ImeTextSpanThickness thickness_;
   const ui::mojom::ImeTextSpanUnderlineStyle underline_style_;
   const Color text_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(StyleableMarker);
 };
 
 bool CORE_EXPORT IsStyleableMarker(const DocumentMarker&);

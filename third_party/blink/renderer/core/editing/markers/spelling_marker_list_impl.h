@@ -14,11 +14,10 @@ class CORE_EXPORT SpellingMarkerListImpl final
     : public SpellCheckMarkerListImpl {
  public:
   SpellingMarkerListImpl() = default;
+  SpellingMarkerListImpl(const SpellingMarkerListImpl&) = delete;
+  SpellingMarkerListImpl& operator=(const SpellingMarkerListImpl&) = delete;
 
   DocumentMarker::MarkerType MarkerType() const final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpellingMarkerListImpl);
 };
 
 }  // namespace blink

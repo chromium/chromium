@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/editing/commands/replace_selection_command.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"

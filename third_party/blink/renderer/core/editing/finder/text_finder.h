@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_TEXT_FINDER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -118,6 +117,8 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
                      bool finished_whole_request);
 
   explicit TextFinder(WebLocalFrameImpl& owner_frame);
+  TextFinder(const TextFinder&) = delete;
+  TextFinder& operator=(const TextFinder&) = delete;
 
   class FindMatch {
     DISALLOW_NEW();
@@ -278,8 +279,6 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   bool find_match_rects_are_valid_;
 
   base::CancelableOnceClosure scroll_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextFinder);
 };
 
 }  // namespace blink

@@ -21,6 +21,8 @@ class DocumentMarker;
 class CORE_EXPORT DocumentMarkerList
     : public GarbageCollected<DocumentMarkerList> {
  public:
+  DocumentMarkerList(const DocumentMarkerList&) = delete;
+  DocumentMarkerList& operator=(const DocumentMarkerList&) = delete;
   virtual ~DocumentMarkerList();
 
   // Returns the single marker type supported by the list implementation.
@@ -65,9 +67,6 @@ class CORE_EXPORT DocumentMarkerList
 
  protected:
   DocumentMarkerList();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DocumentMarkerList);
 };
 
 }  // namespace blink

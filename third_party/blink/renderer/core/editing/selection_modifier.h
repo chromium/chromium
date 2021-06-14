@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_MODIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_MODIFIER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
@@ -51,6 +50,8 @@ class CORE_EXPORT SelectionModifier {
                     const SelectionInDOMTree&,
                     LayoutUnit);
   SelectionModifier(const LocalFrame&, const SelectionInDOMTree&);
+  SelectionModifier(const SelectionModifier&) = delete;
+  SelectionModifier& operator=(const SelectionModifier&) = delete;
 
   LayoutUnit XPosForVerticalArrowNavigation() const {
     return x_pos_for_vertical_arrow_navigation_;
@@ -130,8 +131,6 @@ class CORE_EXPORT SelectionModifier {
   SelectionInFlatTree current_selection_;
   LayoutUnit x_pos_for_vertical_arrow_navigation_;
   bool selection_is_directional_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionModifier);
 };
 
 LayoutUnit NoXPosForVerticalArrowNavigation();

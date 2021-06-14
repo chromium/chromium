@@ -46,6 +46,8 @@ class CORE_EXPORT TextMatchMarker final : public TextMarkerBase {
   enum class MatchStatus { kInactive, kActive };
 
   TextMatchMarker(unsigned start_offset, unsigned end_offset, MatchStatus);
+  TextMatchMarker(const TextMatchMarker&) = delete;
+  TextMatchMarker& operator=(const TextMatchMarker&) = delete;
 
   // DocumentMarker implementations
   MarkerType GetType() const final;
@@ -69,8 +71,6 @@ class CORE_EXPORT TextMatchMarker final : public TextMarkerBase {
   MatchStatus match_status_;
   LayoutStatus layout_status_ = LayoutStatus::kInvalid;
   PhysicalRect rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextMatchMarker);
 };
 
 template <>

@@ -25,6 +25,9 @@ class ColdModeSpellCheckRequester
     : public GarbageCollected<ColdModeSpellCheckRequester> {
  public:
   explicit ColdModeSpellCheckRequester(LocalDOMWindow&);
+  ColdModeSpellCheckRequester(const ColdModeSpellCheckRequester&) = delete;
+  ColdModeSpellCheckRequester& operator=(const ColdModeSpellCheckRequester&) =
+      delete;
 
   void SetNeedsMoreInvocationForTesting() {
     needs_more_invocation_for_testing_ = true;
@@ -60,8 +63,6 @@ class ColdModeSpellCheckRequester
 
   // A test-only flag for forcing lifecycle advancing.
   mutable bool needs_more_invocation_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ColdModeSpellCheckRequester);
 };
 }
 

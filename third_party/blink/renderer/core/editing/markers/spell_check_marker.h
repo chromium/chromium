@@ -19,13 +19,13 @@ class CORE_EXPORT SpellCheckMarker : public DocumentMarker {
   SpellCheckMarker(unsigned start_offset,
                    unsigned end_offset,
                    const String& description);
+  SpellCheckMarker(const SpellCheckMarker&) = delete;
+  SpellCheckMarker& operator=(const SpellCheckMarker&) = delete;
 
   const String& Description() const { return description_; }
 
  private:
   const String description_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckMarker);
 };
 
 bool CORE_EXPORT IsSpellCheckMarker(const DocumentMarker&);

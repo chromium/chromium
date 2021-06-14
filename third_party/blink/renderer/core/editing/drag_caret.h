@@ -29,7 +29,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -45,6 +44,8 @@ class DragCaret final : public GarbageCollected<DragCaret>,
                         public SynchronousMutationObserver {
  public:
   DragCaret();
+  DragCaret(const DragCaret&) = delete;
+  DragCaret& operator=(const DragCaret&) = delete;
   virtual ~DragCaret();
 
   // Paint invalidation methods delegating to CaretDisplayItemClient.
@@ -74,8 +75,6 @@ class DragCaret final : public GarbageCollected<DragCaret>,
 
   PositionWithAffinity position_;
   const std::unique_ptr<CaretDisplayItemClient> display_item_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragCaret);
 };
 
 }  // namespace blink

@@ -32,6 +32,8 @@ class CORE_EXPORT SuggestionMarker final : public StyleableMarker {
   SuggestionMarker(unsigned start_offset,
                    unsigned end_offset,
                    const SuggestionMarkerProperties&);
+  SuggestionMarker(const SuggestionMarker&) = delete;
+  SuggestionMarker& operator=(const SuggestionMarker&) = delete;
 
   // DocumentMarker implementations
   MarkerType GetType() const final;
@@ -59,8 +61,6 @@ class CORE_EXPORT SuggestionMarker final : public StyleableMarker {
   const SuggestionType suggestion_type_;
   const RemoveOnFinishComposing remove_on_finish_composing_;
   const Color suggestion_highlight_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionMarker);
 };
 
 template <>

@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -47,6 +46,8 @@ class CORE_EXPORT SelectionController final
       public ExecutionContextLifecycleObserver {
  public:
   explicit SelectionController(LocalFrame&);
+  SelectionController(const SelectionController&) = delete;
+  SelectionController& operator=(const SelectionController&) = delete;
   ~SelectionController() override;
   void Trace(Visitor*) const override;
 
@@ -146,8 +147,6 @@ class CORE_EXPORT SelectionController final
     kExtendedSelection
   };
   SelectionState selection_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionController);
 };
 
 bool IsSelectionOverLink(const MouseEventWithHitTestResults&);

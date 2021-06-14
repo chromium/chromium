@@ -18,12 +18,12 @@ class CORE_EXPORT SpellingMarker final : public SpellCheckMarker {
   SpellingMarker(unsigned start_offset,
                  unsigned end_offset,
                  const String& description);
+  SpellingMarker(const SpellingMarker&) = delete;
+  SpellingMarker& operator=(const SpellingMarker&) = delete;
 
  private:
   // DocumentMarker implementations
   MarkerType GetType() const final;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellingMarker);
 };
 
 }  // namespace blink

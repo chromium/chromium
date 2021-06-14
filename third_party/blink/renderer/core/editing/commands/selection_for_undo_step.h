@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_SELECTION_FOR_UNDO_STEP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_SELECTION_FOR_UNDO_STEP_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"

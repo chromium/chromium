@@ -28,7 +28,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_EDITOR_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -44,6 +43,8 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
                               public SynchronousMutationObserver {
  public:
   explicit SelectionEditor(LocalFrame&);
+  SelectionEditor(const SelectionEditor&) = delete;
+  SelectionEditor& operator=(const SelectionEditor&) = delete;
   virtual ~SelectionEditor();
   void Dispose();
 
@@ -126,8 +127,6 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   mutable uint64_t style_version_for_absolute_bounds_ =
       static_cast<uint64_t>(-1);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionEditor);
 };
 
 }  // namespace blink

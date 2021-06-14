@@ -173,11 +173,11 @@ struct OldSelectedNodes {
     selected_map = std::move(other.selected_map);
   }
 
+  OldSelectedNodes(const OldSelectedNodes&) = delete;
+  OldSelectedNodes& operator=(const OldSelectedNodes&) = delete;
+
   SelectionPaintRange* paint_range;
   HeapHashMap<Member<const Node>, SelectionState> selected_map;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OldSelectedNodes);
 };
 
 std::ostream& operator<<(std::ostream&, const OldSelectedNodes&);
@@ -200,6 +200,10 @@ struct NewPaintRangeAndSelectedNodes {
     selected_objects = std::move(other.selected_objects);
   }
 
+  NewPaintRangeAndSelectedNodes(const NewPaintRangeAndSelectedNodes&) = delete;
+  NewPaintRangeAndSelectedNodes& operator=(
+      const NewPaintRangeAndSelectedNodes&) = delete;
+
   void AssertSanity() const {
 #if DCHECK_IS_ON()
     paint_range->AssertSanity();
@@ -214,9 +218,6 @@ struct NewPaintRangeAndSelectedNodes {
 
   SelectionPaintRange* paint_range;
   HeapHashSet<Member<const Node>> selected_objects;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NewPaintRangeAndSelectedNodes);
 };
 
 std::ostream& operator<<(std::ostream&, const NewPaintRangeAndSelectedNodes&);

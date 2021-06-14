@@ -144,6 +144,8 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     unsigned mask_;
   };
 
+  DocumentMarker(const DocumentMarker&) = delete;
+  DocumentMarker& operator=(const DocumentMarker&) = delete;
   virtual ~DocumentMarker();
 
   virtual MarkerType GetType() const = 0;
@@ -174,8 +176,6 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
  private:
   unsigned start_offset_;
   unsigned end_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentMarker);
 };
 
 using DocumentMarkerVector = HeapVector<Member<DocumentMarker>>;

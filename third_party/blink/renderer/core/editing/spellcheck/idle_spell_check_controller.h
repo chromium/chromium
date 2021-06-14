@@ -30,10 +30,10 @@ class SpellCheckRequester;
 class CORE_EXPORT IdleSpellCheckController final
     : public GarbageCollected<IdleSpellCheckController>,
       public ExecutionContextLifecycleObserver {
-  DISALLOW_COPY_AND_ASSIGN(IdleSpellCheckController);
-
  public:
   explicit IdleSpellCheckController(LocalDOMWindow&, SpellCheckRequester&);
+  IdleSpellCheckController(const IdleSpellCheckController&) = delete;
+  IdleSpellCheckController& operator=(const IdleSpellCheckController&) = delete;
   ~IdleSpellCheckController() override;
 
   enum class State {

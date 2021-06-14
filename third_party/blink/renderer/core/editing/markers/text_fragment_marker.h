@@ -15,15 +15,14 @@ namespace blink {
 class CORE_EXPORT TextFragmentMarker final : public TextMarkerBase {
  public:
   TextFragmentMarker(unsigned start_offset, unsigned end_offset);
+  TextFragmentMarker(const TextFragmentMarker&) = delete;
+  TextFragmentMarker& operator=(const TextFragmentMarker&) = delete;
 
   // DocumentMarker implementations
   MarkerType GetType() const final;
 
   // TextMarkerBase implementations
   bool IsActiveMatch() const final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextFragmentMarker);
 };
 
 template <>

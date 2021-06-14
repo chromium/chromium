@@ -16,6 +16,9 @@ namespace blink {
 class CORE_EXPORT CompositionMarkerListImpl final : public DocumentMarkerList {
  public:
   CompositionMarkerListImpl() = default;
+  CompositionMarkerListImpl(const CompositionMarkerListImpl&) = delete;
+  CompositionMarkerListImpl& operator=(const CompositionMarkerListImpl&) =
+      delete;
 
   // DocumentMarkerList implementations
   DocumentMarker::MarkerType MarkerType() const final;
@@ -43,8 +46,6 @@ class CORE_EXPORT CompositionMarkerListImpl final : public DocumentMarkerList {
 
  private:
   HeapVector<Member<DocumentMarker>> markers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositionMarkerListImpl);
 };
 
 }  // namespace blink

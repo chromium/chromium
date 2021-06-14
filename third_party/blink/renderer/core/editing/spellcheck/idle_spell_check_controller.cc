@@ -45,6 +45,8 @@ class IdleSpellCheckController::IdleCallback final : public IdleTask {
  public:
   explicit IdleCallback(IdleSpellCheckController* controller)
       : controller_(controller) {}
+  IdleCallback(const IdleCallback&) = delete;
+  IdleCallback& operator=(const IdleCallback&) = delete;
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(controller_);
@@ -55,8 +57,6 @@ class IdleSpellCheckController::IdleCallback final : public IdleTask {
   void invoke(IdleDeadline* deadline) final { controller_->Invoke(deadline); }
 
   const Member<IdleSpellCheckController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleCallback);
 };
 
 IdleSpellCheckController::~IdleSpellCheckController() = default;

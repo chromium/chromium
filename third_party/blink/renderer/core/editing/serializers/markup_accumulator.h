@@ -29,7 +29,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -50,6 +49,8 @@ class MarkupAccumulator {
                     SerializationType,
                     IncludeShadowRoots,
                     ClosedRootsSet = ClosedRootsSet());
+  MarkupAccumulator(const MarkupAccumulator&) = delete;
+  MarkupAccumulator& operator=(const MarkupAccumulator&) = delete;
   virtual ~MarkupAccumulator();
 
   template <typename Strategy>
@@ -123,8 +124,6 @@ class MarkupAccumulator {
 
   // https://w3c.github.io/DOM-Parsing/#dfn-generated-namespace-prefix-index
   uint32_t prefix_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(MarkupAccumulator);
 };
 
 extern template String MarkupAccumulator::SerializeNodes<EditingStrategy>(

@@ -44,6 +44,8 @@ class CORE_EXPORT TextIteratorTextState {
 
  public:
   explicit TextIteratorTextState(const TextIteratorBehavior&);
+  TextIteratorTextState(const TextIteratorTextState&) = delete;
+  TextIteratorTextState& operator=(const TextIteratorTextState&) = delete;
 
   // Return properties of the current text.
   unsigned length() const { return text_length_; }
@@ -157,8 +159,6 @@ class CORE_EXPORT TextIteratorTextState {
   // any other content
   bool has_emitted_ = false;
   UChar last_character_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TextIteratorTextState);
 };
 
 }  // namespace blink

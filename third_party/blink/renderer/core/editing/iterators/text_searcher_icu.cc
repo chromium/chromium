@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
 
 #include <unicode/usearch.h>
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
@@ -61,6 +60,9 @@ class ICULockableSearcher {
   STACK_ALLOCATED();
 
  public:
+  ICULockableSearcher(const ICULockableSearcher&) = delete;
+  ICULockableSearcher& operator=(const ICULockableSearcher&) = delete;
+
   static UStringSearch* AcquireSearcher() {
     Instance().lock();
     return Instance().searcher_;
@@ -95,8 +97,6 @@ class ICULockableSearcher {
 #if DCHECK_IS_ON()
   bool locked_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ICULockableSearcher);
 };
 
 }  // namespace

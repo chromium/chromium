@@ -20,6 +20,8 @@ class CORE_EXPORT TextMatchMarkerListImpl final
     : public TextMarkerBaseListImpl {
  public:
   TextMatchMarkerListImpl() = default;
+  TextMatchMarkerListImpl(const TextMatchMarkerListImpl&) = delete;
+  TextMatchMarkerListImpl& operator=(const TextMatchMarkerListImpl&) = delete;
 
   // DocumentMarkerList implementations
   DocumentMarker::MarkerType MarkerType() const final;
@@ -31,9 +33,6 @@ class CORE_EXPORT TextMatchMarkerListImpl final
   bool SetTextMatchMarkersActive(unsigned start_offset,
                                  unsigned end_offset,
                                  bool);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextMatchMarkerListImpl);
 };
 
 template <>

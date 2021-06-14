@@ -59,6 +59,8 @@ class CORE_EXPORT SuggestionMarkerProperties::Builder final {
  public:
   explicit Builder(const SuggestionMarkerProperties&);
   Builder();
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
 
   SuggestionMarkerProperties Build() const;
 
@@ -74,8 +76,6 @@ class CORE_EXPORT SuggestionMarkerProperties::Builder final {
 
  private:
   SuggestionMarkerProperties data_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 }  // namespace blink

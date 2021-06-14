@@ -19,6 +19,10 @@
 namespace blink {
 
 class SelectionControllerTest : public EditingTestBase {
+ public:
+  SelectionControllerTest(const SelectionControllerTest&) = delete;
+  SelectionControllerTest& operator=(const SelectionControllerTest&) = delete;
+
  protected:
   using AppendTrailingWhitespace =
       SelectionController::AppendTrailingWhitespace;
@@ -59,9 +63,6 @@ class SelectionControllerTest : public EditingTestBase {
   void SetCaretAtHitTestResult(const HitTestResult&);
   void SetNonDirectionalSelectionIfNeeded(const SelectionInFlatTree&,
                                           TextGranularity);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectionControllerTest);
 };
 
 bool SelectionControllerTest::SelectClosestWordFromHitTestResult(

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECK_REQUESTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECK_REQUESTER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -83,6 +82,8 @@ class CORE_EXPORT SpellCheckRequester final
     : public GarbageCollected<SpellCheckRequester> {
  public:
   explicit SpellCheckRequester(LocalDOMWindow&);
+  SpellCheckRequester(const SpellCheckRequester&) = delete;
+  SpellCheckRequester& operator=(const SpellCheckRequester&) = delete;
   ~SpellCheckRequester();
   void Trace(Visitor*) const;
 
@@ -124,8 +125,6 @@ class CORE_EXPORT SpellCheckRequester final
 
   typedef HeapDeque<Member<SpellCheckRequest>> RequestQueue;
   RequestQueue request_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckRequester);
 };
 
 }  // namespace blink

@@ -58,6 +58,8 @@ class CORE_EXPORT SetSelectionOptions::Builder final {
  public:
   explicit Builder(const SetSelectionOptions&);
   Builder();
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
 
   SetSelectionOptions Build() const;
 
@@ -74,8 +76,6 @@ class CORE_EXPORT SetSelectionOptions::Builder final {
 
  private:
   SetSelectionOptions data_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 }  // namespace blink

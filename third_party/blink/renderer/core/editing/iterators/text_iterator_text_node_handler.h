@@ -26,6 +26,9 @@ class TextIteratorTextNodeHandler {
  public:
   TextIteratorTextNodeHandler(const TextIteratorBehavior&,
                               TextIteratorTextState*);
+  TextIteratorTextNodeHandler(const TextIteratorTextNodeHandler&) = delete;
+  TextIteratorTextNodeHandler& operator=(const TextIteratorTextNodeHandler&) =
+      delete;
 
   const Text* GetNode() const { return text_node_; }
 
@@ -111,8 +114,6 @@ class TextIteratorTextNodeHandler {
 
   // Contains state of emitted text.
   TextIteratorTextState& text_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextIteratorTextNodeHandler);
 };
 
 }  // namespace blink

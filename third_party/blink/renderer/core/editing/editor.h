@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -67,6 +66,8 @@ enum class EditorCommandSource { kMenuOrKeyBinding, kDOM };
 class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
  public:
   explicit Editor(LocalFrame&);
+  Editor(const Editor&) = delete;
+  Editor& operator=(const Editor&) = delete;
   ~Editor();
 
   CompositeEditCommand* LastEditCommand() { return last_edit_command_.Get(); }
@@ -251,8 +252,6 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   FrameSelection& GetFrameSelection() const;
 
   bool HandleEditingKeyboardEvent(KeyboardEvent*);
-
-  DISALLOW_COPY_AND_ASSIGN(Editor);
 };
 
 inline void Editor::SetStartNewKillRingSequence(bool flag) {

@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STACK_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -49,6 +48,8 @@ class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack> {
 
  public:
   UndoStack();
+  UndoStack(const UndoStack&) = delete;
+  UndoStack& operator=(const UndoStack&) = delete;
 
   void RegisterUndoStep(UndoStep*);
   void RegisterRedoStep(UndoStep*);
@@ -88,8 +89,6 @@ class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack> {
   UndoStepStack undo_stack_;
   UndoStepStack redo_stack_;
   bool in_redo_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UndoStack);
 };
 
 }  // namespace blink

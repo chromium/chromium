@@ -43,6 +43,9 @@ class ElementInnerTextCollector final {
 
  public:
   ElementInnerTextCollector() = default;
+  ElementInnerTextCollector(const ElementInnerTextCollector&) = delete;
+  ElementInnerTextCollector& operator=(const ElementInnerTextCollector&) =
+      delete;
 
   String RunOn(const Element& element);
 
@@ -51,6 +54,8 @@ class ElementInnerTextCollector final {
   class Result final {
    public:
     Result() = default;
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
 
     void EmitChar16(UChar code_point);
     void EmitNewline();
@@ -64,8 +69,6 @@ class ElementInnerTextCollector final {
 
     StringBuilder builder_;
     int required_line_break_count_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(Result);
   };
 
   static bool HasDisplayContentsStyle(const Node& node);
@@ -87,8 +90,6 @@ class ElementInnerTextCollector final {
 
   // Result character buffer.
   Result result_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementInnerTextCollector);
 };
 
 String ElementInnerTextCollector::RunOn(const Element& element) {
