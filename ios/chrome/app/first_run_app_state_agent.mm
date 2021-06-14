@@ -10,7 +10,6 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
@@ -191,9 +190,7 @@ enum class LocationPermissionsUI {
 }
 
 - (void)showFirstRunUI {
-  if (![self ignoreFirstRunStageForTesting]) {
-    DCHECK(self.appState.initStage == InitStageFirstRun);
-  }
+  DCHECK(self.appState.initStage == InitStageFirstRun);
 
   // There must be a designated presenting scene before showing the first run
   // UI.
@@ -269,9 +266,8 @@ enum class LocationPermissionsUI {
 }
 
 - (void)handleFirstRunUIWillFinish {
-  if (![self ignoreFirstRunStageForTesting]) {
-    DCHECK(self.appState.initStage == InitStageFirstRun);
-  }
+  DCHECK(self.appState.initStage == InitStageFirstRun);
+
   _firstRunUIBlocker.reset();
   [self tearDownPolicyWatcher];
   [[NSNotificationCenter defaultCenter]
@@ -292,9 +288,7 @@ enum class LocationPermissionsUI {
 
   [self maybePromptLocationWithSystemAlert];
 
-  if (![self ignoreFirstRunStageForTesting]) {
-    [self.appState queueTransitionToNextInitStage];
-  }
+  [self.appState queueTransitionToNextInitStage];
 }
 
 - (void)logLocationPermissionsExperimentForGroupShown:
@@ -342,22 +336,7 @@ enum class LocationPermissionsUI {
     [handler
         showLocationPermissionsFromViewController:self.presentingInterface.bvc];
   }
-  if (![self ignoreFirstRunStageForTesting]) {
-    [self.appState queueTransitionToNextInitStage];
-  }
-}
-
-#pragma mark - Test hooks
-
-// TODO(crbug.com/1178821): Move this to the FRE agent.
-// Determines whether the First Run stage has to be ignored because of
-// testing. When testing with first_run_egtest.mm, the First Run UI is
-// manually triggered after the browser is fully initialized, in which
-// case the code that assumes that the app is in the First Run stage when
-// showing the FRE has to be ignored to avoid unexepted failures (e.g., DCHECKs,
-// unexpected init stage transition).
-- (BOOL)ignoreFirstRunStageForTesting {
-  return tests_hook::DisableFirstRun();
+  [self.appState queueTransitionToNextInitStage];
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving

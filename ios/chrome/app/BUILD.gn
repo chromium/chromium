@@ -216,10 +216,8 @@ source_set("first_run_app_state_agent") {
   sources = [
     "first_run_app_state_agent.h",
     "first_run_app_state_agent.mm",
-    "first_run_app_state_agent_testing.h",
   ]
   deps = [
-    ":tests_hook",
     "//base",
     "//ios/chrome/app:blocking_scene_commands",
     "//ios/chrome/app/application_delegate:app_state_header",
