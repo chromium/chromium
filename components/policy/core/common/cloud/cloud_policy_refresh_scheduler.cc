@@ -152,9 +152,13 @@ void CloudPolicyRefreshScheduler::OnPolicyFetched(CloudPolicyClient* client) {
 
 void CloudPolicyRefreshScheduler::OnRegistrationStateChanged(
     CloudPolicyClient* client) {
-  error_retry_delay_ms_ = kInitialErrorRetryDelayMs;
+  if (!client->is_registered()) {
+    CancelRefresh();
+    return;
+  }
 
-  // The client might have registered, so trigger an immediate refresh.
+  // The client has registered, so trigger an immediate refresh.
+  error_retry_delay_ms_ = kInitialErrorRetryDelayMs;
   RefreshSoon();
 }
 

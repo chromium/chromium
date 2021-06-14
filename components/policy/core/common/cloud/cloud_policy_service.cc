@@ -100,8 +100,10 @@ void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
 void CloudPolicyService::OnRegistrationStateChanged(CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (unregister_state_ == UNREGISTER_PENDING)
+  if (unregister_state_ == UNREGISTER_PENDING) {
+    DCHECK(!client->is_registered());
     UnregisterCompleted(true);
+  }
 }
 
 void CloudPolicyService::OnClientError(CloudPolicyClient* client) {
