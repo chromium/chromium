@@ -16,6 +16,7 @@ class PasswordFeatureManager;
 
 namespace signin {
 enum class ReauthResult;
+class IdentityManager;
 }
 
 namespace signin_metrics {
@@ -23,15 +24,21 @@ enum class ReauthAccessPoint;
 }
 
 class SigninViewController;
-class Profile;
 
 // Responsible for triggering authentication flows related to the passwords
 // account storage. Used only by desktop.
 class AccountStorageAuthHelper {
  public:
+  // |identity_manager| can be null (e.g. in incognito).
+  // |password_feature_manager| must be non-null and outlive this object.
+  // |signin_view_controller_getter| is passed rather than SigninViewController
+  // because the controller is per window, while this helper is per tab. It
+  // may return null.
   AccountStorageAuthHelper(
-      Profile* profile,
-      password_manager::PasswordFeatureManager* password_feature_manager);
+      signin::IdentityManager* identity_manager,
+      password_manager::PasswordFeatureManager* password_feature_manager,
+      base::RepeatingCallback<SigninViewController*()>
+          signin_view_controller_getter);
   ~AccountStorageAuthHelper();
 
   AccountStorageAuthHelper(const AccountStorageAuthHelper&) = delete;
@@ -51,12 +58,6 @@ class AccountStorageAuthHelper {
   // metrics recording and represents where the sign-in was triggered.
   void TriggerSignIn(signin_metrics::AccessPoint access_point);
 
-  void SetSigninViewControllerGetterForTesting(
-      base::RepeatingCallback<SigninViewController*()>
-          signin_view_controller_getter) {
-    signin_view_controller_getter_ = std::move(signin_view_controller_getter);
-  }
-
  private:
   void OnOptInReauthCompleted(
       base::OnceCallback<
@@ -64,11 +65,11 @@ class AccountStorageAuthHelper {
           reauth_callback,
       signin::ReauthResult result);
 
-  Profile* const profile_;
+  signin::IdentityManager* const identity_manager_;
 
   password_manager::PasswordFeatureManager* const password_feature_manager_;
 
-  base::RepeatingCallback<SigninViewController*()>
+  const base::RepeatingCallback<SigninViewController*()>
       signin_view_controller_getter_;
 
   // Aborts ongoing reauths if AccountStorageAuthHelper gets destroyed.

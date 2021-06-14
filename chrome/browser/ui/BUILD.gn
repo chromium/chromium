@@ -2922,8 +2922,6 @@ static_library("ui") {
       "autofill/payments/webauthn_dialog_view.h",
       "frame/window_frame_util.cc",
       "frame/window_frame_util.h",
-      "passwords/account_storage_auth_helper.cc",
-      "passwords/account_storage_auth_helper.h",
       "signin_view_controller.cc",
       "signin_view_controller.h",
       "signin_view_controller_delegate.cc",
@@ -3076,6 +3074,8 @@ static_library("ui") {
       sources += [
         "bookmarks/bookmark_bubble_sign_in_delegate.cc",
         "bookmarks/bookmark_bubble_sign_in_delegate.h",
+        "passwords/account_storage_auth_helper.cc",
+        "passwords/account_storage_auth_helper.h",
         "signin/dice_web_signin_interceptor_delegate.cc",
         "signin/dice_web_signin_interceptor_delegate.h",
         "signin/profile_customization_bubble_sync_controller.h",

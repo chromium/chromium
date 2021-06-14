@@ -51,12 +51,11 @@
 
 class PasswordAccessoryController;
 class TouchToFillController;
-#else
-#include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/multi_profile_credentials_filter.h"
+#include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
 #else
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #endif
@@ -396,6 +395,7 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // MultiProfileCredentialsFilter requires DICE support.
   const MultiProfileCredentialsFilter credentials_filter_;
+  AccountStorageAuthHelper account_storage_auth_helper_;
 #else
   const password_manager::SyncCredentialsFilter credentials_filter_;
 #endif
@@ -414,10 +414,6 @@ class ChromePasswordManagerClient
 
   // Whether OnPaste() was called from this ChromePasswordManagerClient
   bool was_on_paste_called_ = false;
-
-#if !defined(OS_ANDROID)
-  AccountStorageAuthHelper account_storage_auth_helper_;
-#endif
 
   // Helper for performing logic that is common between
   // ChromePasswordManagerClient and IOSChromePasswordManagerClient.

@@ -5067,6 +5067,7 @@ test("unit_tests") {
       "../browser/signin/dice_web_signin_interceptor_unittest.cc",
       "../browser/signin/process_dice_header_delegate_impl_unittest.cc",
       "../browser/signin/signin_manager_unittest.cc",
+      "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
       "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
       "../browser/ui/webui/signin/dice_turn_sync_on_helper_unittest.cc",
@@ -5406,7 +5407,6 @@ test("unit_tests") {
       "../browser/ui/omnibox/clipboard_utils_unittest.cc",
       "../browser/ui/omnibox/omnibox_pedals_unittest.cc",
       "../browser/ui/page_info/permission_menu_model_unittest.cc",
-      "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/generation_confirmation_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/items_bubble_controller_unittest.cc",
@@ -5740,7 +5740,6 @@ test("unit_tests") {
   if (is_chromeos_ash) {
     sources -= [
       "../browser/signin/chrome_signin_status_metrics_provider_delegate_unittest.cc",
-      "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
       "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
 

@@ -146,6 +146,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
+#include "chrome/browser/ui/browser.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -604,17 +605,17 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
 void ChromePasswordManagerClient::TriggerReauthForPrimaryAccount(
     signin_metrics::ReauthAccessPoint access_point,
     base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
-#if defined(OS_ANDROID)
-  std::move(reauth_callback).Run(ReauthSucceeded(false));
-#else   // !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   account_storage_auth_helper_.TriggerOptInReauth(access_point,
                                                   std::move(reauth_callback));
-#endif  // defined(OS_ANDROID)
+#else
+  std::move(reauth_callback).Run(ReauthSucceeded(false));
+#endif
 }
 
 void ChromePasswordManagerClient::TriggerSignIn(
     signin_metrics::AccessPoint access_point) {
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   account_storage_auth_helper_.TriggerSignIn(access_point);
 #endif
 }
@@ -1182,11 +1183,18 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
           this,
           base::BindRepeating(&GetSyncService, profile_),
           DiceWebSigninInterceptorFactory::GetForProfile(profile_)),
+      account_storage_auth_helper_(
+          IdentityManagerFactory::GetForProfile(profile_),
+          &password_feature_manager_,
+          base::BindRepeating(
+              [](content::WebContents* web_contents) {
+                Browser* browser =
+                    chrome::FindBrowserWithWebContents(web_contents);
+                return browser ? browser->signin_view_controller() : nullptr;
+              },
+              web_contents)),
 #else
       credentials_filter_(this, base::BindRepeating(&GetSyncService, profile_)),
-#endif
-#if !defined(OS_ANDROID)
-      account_storage_auth_helper_(profile_, &password_feature_manager_),
 #endif
       helper_(this) {
   ContentPasswordManagerDriverFactory::CreateForWebContents(web_contents, this,
