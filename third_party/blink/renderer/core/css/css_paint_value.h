@@ -34,13 +34,8 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
                                 const Document&,
                                 const ComputedStyle&,
                                 const FloatSize& target_size);
-  bool IsFixedSize() const { return false; }
-  FloatSize FixedSize(const Document&) { return FloatSize(); }
 
-  bool IsPending() const { return true; }
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-
-  void LoadSubimages(const Document&) {}
 
   bool Equals(const CSSPaintValue&) const;
 
@@ -55,11 +50,6 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   void BuildInputArgumentValuesForTesting(
       Vector<std::unique_ptr<CrossThreadStyleValue>>& style_value) {
     BuildInputArgumentValues(style_value);
-  }
-
-  CSSPaintValue* ComputedCSSValue(const ComputedStyle&,
-                                  bool allow_visited_style) {
-    return this;
   }
 
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,

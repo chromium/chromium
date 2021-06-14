@@ -23,7 +23,9 @@
 
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 
+#include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_image_generator_value.h"
+#include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -31,8 +33,7 @@
 namespace blink {
 
 StyleGeneratedImage::StyleGeneratedImage(const CSSImageGeneratorValue& value)
-    : image_generator_value_(const_cast<CSSImageGeneratorValue*>(&value)),
-      fixed_size_(image_generator_value_->IsFixedSize()) {
+    : image_generator_value_(const_cast<CSSImageGeneratorValue*>(&value)) {
   is_generated_image_ = true;
   if (value.IsPaintValue())
     is_paint_image_ = true;
@@ -52,21 +53,18 @@ CSSValue* StyleGeneratedImage::CssValue() const {
 CSSValue* StyleGeneratedImage::ComputedCSSValue(
     const ComputedStyle& style,
     bool allow_visited_style) const {
-  return image_generator_value_->ComputedCSSValue(style, allow_visited_style);
+  if (auto* image_gradient_value =
+          DynamicTo<cssvalue::CSSGradientValue>(image_generator_value_.Get())) {
+    return image_gradient_value->ComputedCSSValue(style, allow_visited_style);
+  }
+  DCHECK(IsA<CSSPaintValue>(image_generator_value_.Get()));
+  return image_generator_value_;
 }
 
-FloatSize StyleGeneratedImage::ImageSize(const Document& document,
+FloatSize StyleGeneratedImage::ImageSize(const Document&,
                                          float multiplier,
                                          const FloatSize& default_object_size,
                                          RespectImageOrientationEnum) const {
-  if (fixed_size_) {
-    FloatSize unzoomed_default_object_size = default_object_size;
-    unzoomed_default_object_size.Scale(1 / multiplier);
-    return ApplyZoom(FloatSize(image_generator_value_->FixedSize(
-                         document, unzoomed_default_object_size)),
-                     multiplier);
-  }
-
   return default_object_size;
 }
 
