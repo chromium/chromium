@@ -21,7 +21,8 @@
   <message name="IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION" desc="A warning stating what the user gets exposed to by enabling one the features.">
     By enabling these features, you could lose browser data or
     compromise your security or privacy. Enabled features apply to all
-    users of this browser.
+    users of this browser. If you are an enterprise admin you should
+    not be using these flags in production.
   </message>
   <message name="IDS_FLAGS_UI_OWNER_WARNING" translateable="false" desc="A warning stating what system-wide features can only be set by the owner.">
     Flags that apply system-wide can only be set by the owner: <ph name="OWNER_EMAIL">$1<ex>owner@email.com</ex></ph>
