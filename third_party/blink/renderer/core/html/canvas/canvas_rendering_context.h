@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -59,6 +58,8 @@ class CORE_EXPORT CanvasRenderingContext
   USING_PRE_FINALIZER(CanvasRenderingContext, Dispose);
 
  public:
+  CanvasRenderingContext(const CanvasRenderingContext&) = delete;
+  CanvasRenderingContext& operator=(const CanvasRenderingContext&) = delete;
   ~CanvasRenderingContext() override = default;
 
   // A Canvas can either be "2D" or "webgl" but never both. Requesting a context
@@ -273,8 +274,6 @@ class CORE_EXPORT CanvasRenderingContext
   void DidDrawCommon();
   void RenderTaskEnded();
   bool did_draw_in_current_task_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasRenderingContext);
 };
 
 }  // namespace blink

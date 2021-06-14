@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -23,6 +22,9 @@ class CORE_EXPORT CanvasRenderingContextFactory {
 
  public:
   CanvasRenderingContextFactory() = default;
+  CanvasRenderingContextFactory(const CanvasRenderingContextFactory&) = delete;
+  CanvasRenderingContextFactory& operator=(
+      const CanvasRenderingContextFactory&) = delete;
   virtual ~CanvasRenderingContextFactory() = default;
 
   virtual CanvasRenderingContext* Create(
@@ -32,8 +34,6 @@ class CORE_EXPORT CanvasRenderingContextFactory {
   virtual CanvasRenderingContext::ContextType GetContextType() const = 0;
   virtual void OnError(HTMLCanvasElement*, const String& error) {}
   virtual void OnError(OffscreenCanvas*, const String& error) {}
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasRenderingContextFactory);
 };
 
 }  // namespace blink
