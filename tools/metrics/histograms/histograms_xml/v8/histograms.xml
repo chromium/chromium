@@ -984,6 +984,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.MaxArrayBufferCageReservationSize" units="GB"
+    expires_after="2022-06-30">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    Largest possible size of the virtual memory region for an ArrayBuffer cage.
+
+    Measured and reported at process startup, right before initializing V8, by
+    attempting to reserve memory regions with decreasing size until the
+    reservation succeeds, then immediately freeing it again.
+
+    This experiment is part of the V8 Heap Sandbox and the V8 ArrayBuffer Caging
+    proposal. Its goal is to estimate the maximum possible size of an
+    ArrayBuffer cage region.
+  </summary>
+</histogram>
+
 <histogram name="V8.MemoryExternalFragmentationCodeSpace" units="%"
     expires_after="2020-03-01">
   <owner>hpayer@chromium.org</owner>

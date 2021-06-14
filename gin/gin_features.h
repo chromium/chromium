@@ -32,6 +32,7 @@ GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayMs;
 GIN_EXPORT extern const base::FeatureParam<double> kV8ScriptDelayFraction;
 GIN_EXPORT extern const base::Feature kV8ShortBuiltinCalls;
 GIN_EXPORT extern const base::Feature kV8UntrustedCodeMitigations;
+GIN_EXPORT extern const base::Feature kV8ArrayBufferCageReservationExperiment;
 
 }  // namespace features
 

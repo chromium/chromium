@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -17,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -204,6 +206,38 @@ void SetV8FlagsFormatted(const char* format, ...) {
   v8::V8::SetFlagsFromString(buffer, length - 1);
 }
 
+void RunArrayBufferCageReservationExperiment() {
+  // TODO(1218005) remove this function once the experiment has ended.
+#if defined(ARCH_CPU_64_BITS)
+  constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
+  constexpr size_t kTeraBytes = 1024 * kGigaBytes;
+  constexpr size_t kExaBytes = 1024 * kTeraBytes;
+
+  constexpr size_t kCageMaxSize = 1 * kExaBytes;
+  constexpr size_t kCageMinSize = 8 * kGigaBytes;
+
+  void* reservation = nullptr;
+  size_t current_size = kCageMaxSize;
+  while (!reservation && current_size >= kCageMinSize) {
+    // The cage reservation will need to be 4GB aligned.
+    reservation = base::AllocPages(nullptr, current_size, 4 * kGigaBytes,
+                                   base::PageInaccessible, base::PageTag::kV8);
+    if (!reservation) {
+      current_size /= 2;
+    }
+  }
+
+  int result = current_size / kGigaBytes;
+  if (reservation) {
+    base::FreePages(reservation, current_size);
+  } else {
+    result = 0;
+  }
+
+  base::UmaHistogramSparse("V8.MaxArrayBufferCageReservationSize", result);
+#endif
+}
+
 }  // namespace
 
 // static
@@ -211,6 +245,11 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   static bool v8_is_initialized = false;
   if (v8_is_initialized)
     return;
+
+  if (base::FeatureList::IsEnabled(
+          features::kV8ArrayBufferCageReservationExperiment)) {
+    RunArrayBufferCageReservationExperiment();
+  }
 
   v8::V8::InitializePlatform(V8Platform::Get());
 
