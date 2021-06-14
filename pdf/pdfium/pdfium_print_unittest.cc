@@ -12,12 +12,11 @@
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
-#include "ppapi/c/dev/ppp_printing_dev.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -31,11 +30,20 @@ namespace {
 // Number of color channels in a BGRA bitmap.
 constexpr int kColorChannels = 4;
 
-constexpr PP_Size kUSLetterSize = {612, 792};
-constexpr PP_Rect kUSLetterRect = {{0, 0}, kUSLetterSize};
-constexpr PP_Rect kPrintableAreaRect = {{18, 18}, {576, 733}};
+constexpr gfx::Size kUSLetterSize = {612, 792};
+constexpr gfx::Rect kUSLetterRect = {{0, 0}, kUSLetterSize};
+constexpr gfx::Rect kPrintableAreaRect = {{18, 18}, {576, 733}};
 
 using ExpectedDimensions = std::vector<gfx::SizeF>;
+
+blink::WebPrintParams GetDefaultPrintParams() {
+  blink::WebPrintParams params;
+  params.print_content_area = kUSLetterRect;
+  params.printable_area = kUSLetterRect;
+  params.paper_size = kUSLetterSize;
+  params.print_scaling_option = printing::mojom::PrintScalingOption::kNone;
+  return params;
+}
 
 void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
                         const ExpectedDimensions& expected_dimensions) {
@@ -95,54 +103,39 @@ TEST_F(PDFiumPrintTest, Basic) {
 
   PDFiumPrint print(engine.get());
 
-  constexpr PP_PrintSettings_Dev print_settings = {kUSLetterRect,
-                                                   kUSLetterRect,
-                                                   kUSLetterSize,
-                                                   72,
-                                                   PP_PRINTORIENTATION_NORMAL,
-                                                   PP_PRINTSCALINGOPTION_NONE,
-                                                   PP_FALSE,
-                                                   PP_PRINTOUTPUTFORMAT_PDF};
-  constexpr PP_PdfPrintSettings_Dev pdf_print_settings = {1, 100};
+  blink::WebPrintParams print_params = GetDefaultPrintParams();
+  blink::WebPrintParams print_params_raster = print_params;
+  print_params_raster.rasterize_pdf = true;
 
   {
     // Print 2 pages.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0},
                                                     {612.0, 792.0}};
     const std::vector<int> pages = {0, 1};
-    std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                              /*raster=*/false);
+    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                                     /*raster=*/true);
+    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
   {
     // Print 1 page.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
     const std::vector<int> pages = {0};
-    std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                              /*raster=*/false);
+    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                                     /*raster=*/true);
+    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
   {
     // Print the other page.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
     const std::vector<int> pages = {1};
-    std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                              /*raster=*/false);
+    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                                     /*raster=*/true);
+    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
 }
@@ -155,15 +148,12 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
 
   PDFiumPrint print(engine.get());
 
-  PP_PrintSettings_Dev print_settings = {kPrintableAreaRect,
-                                         kUSLetterRect,
-                                         kUSLetterSize,
-                                         72,
-                                         PP_PRINTORIENTATION_NORMAL,
-                                         PP_PRINTSCALINGOPTION_NONE,
-                                         PP_FALSE,
-                                         PP_PRINTOUTPUTFORMAT_PDF};
-  constexpr PP_PdfPrintSettings_Dev pdf_print_settings = {1, 100};
+  blink::WebPrintParams print_params = GetDefaultPrintParams();
+  print_params.printable_area = kPrintableAreaRect;
+
+  blink::WebPrintParams print_params_raster = print_params;
+  print_params_raster.rasterize_pdf = true;
+
   const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
   const std::vector<int> pages = {0};
 
@@ -173,53 +163,49 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
     static constexpr char kChecksumRaster[] =
         "1ab7bfd2c59f6ffb7b1eb0885a9cf18d";
 
-    std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                              /*raster=*/false);
+    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], kChecksum);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                                     /*raster=*/true);
+    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], kChecksumRaster);
   }
   {
-    // "Fit to Page" scaling
-    print_settings.print_scaling_option =
-        PP_PRINTSCALINGOPTION_FIT_TO_PRINTABLE_AREA;
+    // "Fit to Printable Area" scaling
+    print_params.print_scaling_option =
+        printing::mojom::PrintScalingOption::kFitToPrintableArea;
+    print_params_raster.print_scaling_option =
+        printing::mojom::PrintScalingOption::kFitToPrintableArea;
 
     static constexpr char kChecksum[] = "41847e1f0c581150a84794482528f790";
     static constexpr char kChecksumRaster[] =
         "f8c460d4b1a57e6dc580b88aadc73653";
 
-    std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                              /*raster=*/false);
+    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], kChecksum);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                                     /*raster=*/true);
+    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], kChecksumRaster);
   }
   {
     // "Fit to Paper" scaling
-    print_settings.print_scaling_option = PP_PRINTSCALINGOPTION_FIT_TO_PAPER;
+    print_params.print_scaling_option =
+        printing::mojom::PrintScalingOption::kFitToPaper;
+    print_params_raster.print_scaling_option =
+        printing::mojom::PrintScalingOption::kFitToPaper;
 
     static constexpr char kChecksum[] = "3a4828228bcbae230574c057b7a0669e";
     static constexpr char kChecksumRaster[] =
         "93b20afea37f1ec437061c7affc03918";
 
-    std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                              /*raster=*/false);
+    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], kChecksum);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
-                                     /*raster=*/true);
+    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], kChecksumRaster);
   }

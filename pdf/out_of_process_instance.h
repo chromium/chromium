@@ -24,6 +24,7 @@
 #include "ppapi/cpp/image_data.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/private/find_private.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -192,27 +193,11 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // The Pepper image data that is in sync with mutable_image_data().
   pp::ImageData pepper_image_data_;
 
-  struct PrintSettings {
-    PrintSettings() { Clear(); }
+  // Assigned a value only between `PdfPrintBegin()` and `PrintEnd()` calls.
+  absl::optional<blink::WebPrintParams> print_params_;
 
-    void Clear();
-
-    // This is set to true when PdfPrintBegin() is called and false when
-    // PrintEnd() is called.
-    bool is_printing;
-
-    // To know whether this was an actual print operation, so we don't double
-    // count UMA logging.
-    bool print_pages_called;
-
-    // Generic print settings.
-    PP_PrintSettings_Dev pepper_print_settings;
-
-    // PDF-specific print settings.
-    PP_PdfPrintSettings_Dev pdf_print_settings;
-  };
-
-  PrintSettings print_settings_;
+  // For identifying actual print operations to avoid double logging of UMA.
+  bool print_pages_called_;
 
   // The PreviewModeClient used for print preview. Will be passed to
   // `preview_engine_`.

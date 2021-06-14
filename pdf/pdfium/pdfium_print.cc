@@ -13,12 +13,10 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_read.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
-#include "pdf/ppapi_migration/geometry_conversions.h"
-#include "ppapi/c/dev/ppp_printing_dev.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "printing/nup_parameters.h"
 #include "printing/page_setup.h"
 #include "printing/units.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/pdfium/public/fpdf_flatten.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
 #include "third_party/pdfium/public/fpdf_transformpage.h"
@@ -72,11 +70,12 @@ void SetPageSizeAndContentRect(bool rotated,
 }
 
 // Transform `page` contents to fit in the selected printer paper size.
-void TransformPDFPageForPrinting(FPDF_PAGE page,
-                                 float scale_factor,
-                                 PP_PrintScalingOption_Dev scaling_option,
-                                 const gfx::Size& paper_size,
-                                 const gfx::Rect& printable_area) {
+void TransformPDFPageForPrinting(
+    FPDF_PAGE page,
+    float scale_factor,
+    printing::mojom::PrintScalingOption scaling_option,
+    const gfx::Size& paper_size,
+    const gfx::Rect& printable_area) {
   // Get the source page width and height in points.
   gfx::SizeF src_page_size(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
   const int src_page_rotation = FPDFPage_GetRotation(page);
@@ -97,12 +96,12 @@ void TransformPDFPageForPrinting(FPDF_PAGE page,
   gfx::Rect gfx_printed_rect;
   bool fitted_scaling;
   switch (scaling_option) {
-    case PP_PRINTSCALINGOPTION_FIT_TO_PRINTABLE_AREA:
+    case printing::mojom::PrintScalingOption::kFitToPrintableArea:
       gfx_printed_rect = gfx::Rect(content_rect.x(), content_rect.y(),
                                    content_rect.width(), content_rect.height());
       fitted_scaling = true;
       break;
-    case PP_PRINTSCALINGOPTION_FIT_TO_PAPER:
+    case printing::mojom::PrintScalingOption::kFitToPaper:
       gfx_printed_rect = gfx::Rect(page_size.width(), page_size.height());
       fitted_scaling = true;
       break;
@@ -166,11 +165,11 @@ void TransformPDFPageForPrinting(FPDF_PAGE page,
 void FitContentsToPrintableAreaIfRequired(
     FPDF_DOCUMENT doc,
     float scale_factor,
-    PP_PrintScalingOption_Dev scaling_option,
+    printing::mojom::PrintScalingOption scaling_option,
     const gfx::Size& paper_size,
     const gfx::Rect& printable_area) {
   // Check to see if we need to fit pdf contents to printer paper size.
-  if (scaling_option == PP_PRINTSCALINGOPTION_SOURCE_SIZE)
+  if (scaling_option == printing::mojom::PrintScalingOption::kSourceSize)
     return;
 
   int num_pages = FPDF_GetPageCount(doc);
@@ -292,20 +291,21 @@ void PDFiumPrint::FitContentsToPrintableArea(FPDF_DOCUMENT doc,
                                              const gfx::Size& page_size,
                                              const gfx::Rect& printable_area) {
   FitContentsToPrintableAreaIfRequired(
-      doc, /*scale_factor=*/1.0f, PP_PRINTSCALINGOPTION_FIT_TO_PRINTABLE_AREA,
-      page_size, printable_area);
+      doc, /*scale_factor=*/1.0f,
+      printing::mojom::PrintScalingOption::kFitToPrintableArea, page_size,
+      printable_area);
 }
 
 std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
     const std::vector<int>& page_numbers,
-    const PP_PrintSettings_Dev& print_settings,
-    const PP_PdfPrintSettings_Dev& pdf_print_settings,
-    bool raster) {
+    const blink::WebPrintParams& print_params) {
   std::vector<uint8_t> buffer;
-  ScopedFPDFDocument output_doc =
-      CreatePrintPdf(page_numbers, print_settings, pdf_print_settings);
-  if (raster)
-    output_doc = CreateRasterPdf(std::move(output_doc), print_settings);
+  ScopedFPDFDocument output_doc = CreatePrintPdf(page_numbers, print_params);
+  if (print_params.rasterize_pdf) {
+    output_doc =
+        CreateRasterPdf(std::move(output_doc), print_params.printer_dpi);
+  }
+
   if (GetDocumentPageCount(output_doc.get()))
     buffer = ConvertDocToBuffer(std::move(output_doc));
   return buffer;
@@ -313,8 +313,7 @@ std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
 
 ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     const std::vector<int>& page_numbers,
-    const PP_PrintSettings_Dev& print_settings,
-    const PP_PdfPrintSettings_Dev& pdf_print_settings) {
+    const blink::WebPrintParams& print_params) {
   ScopedFPDFDocument output_doc(FPDF_CreateNewDocument());
   DCHECK(output_doc);
   FPDF_CopyViewerPreferences(output_doc.get(), engine_->doc());
@@ -325,36 +324,29 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     return nullptr;
   }
 
-  float scale_factor = pdf_print_settings.scale_factor / 100.0f;
+  float scale_factor = print_params.scale_factor / 100.0f;
   FitContentsToPrintableAreaIfRequired(
-      output_doc.get(), scale_factor, print_settings.print_scaling_option,
-      SizeFromPPSize(print_settings.paper_size),
-      RectFromPPRect(print_settings.printable_area));
+      output_doc.get(), scale_factor, print_params.print_scaling_option,
+      print_params.paper_size, print_params.printable_area);
   if (!FlattenPrintData(output_doc.get()))
     return nullptr;
 
-  uint32_t pages_per_sheet = pdf_print_settings.pages_per_sheet;
+  uint32_t pages_per_sheet = print_params.pages_per_sheet;
   if (!ShouldDoNup(pages_per_sheet))
     return output_doc;
 
-  gfx::Size page_size(print_settings.paper_size.width,
-                      print_settings.paper_size.height);
-  gfx::Rect printable_area(print_settings.printable_area.point.x,
-                           print_settings.printable_area.point.y,
-                           print_settings.printable_area.size.width,
-                           print_settings.printable_area.size.height);
   gfx::Rect symmetrical_printable_area =
-      printing::PageSetup::GetSymmetricalPrintableArea(page_size,
-                                                       printable_area);
+      printing::PageSetup::GetSymmetricalPrintableArea(
+          print_params.paper_size, print_params.printable_area);
   if (symmetrical_printable_area.IsEmpty())
     return nullptr;
-  return CreateNupPdfDocument(std::move(output_doc), pages_per_sheet, page_size,
+  return CreateNupPdfDocument(std::move(output_doc), pages_per_sheet,
+                              print_params.paper_size,
                               symmetrical_printable_area);
 }
 
-ScopedFPDFDocument PDFiumPrint::CreateRasterPdf(
-    ScopedFPDFDocument doc,
-    const PP_PrintSettings_Dev& print_settings) {
+ScopedFPDFDocument PDFiumPrint::CreateRasterPdf(ScopedFPDFDocument doc,
+                                                int dpi) {
   int page_count = GetDocumentPageCount(doc.get());
   if (page_count == 0)
     return nullptr;
@@ -369,7 +361,7 @@ ScopedFPDFDocument PDFiumPrint::CreateRasterPdf(
       return nullptr;
 
     ScopedFPDFDocument temp_doc =
-        CreateSinglePageRasterPdf(pdf_page.get(), print_settings);
+        CreateSinglePageRasterPdf(pdf_page.get(), dpi);
     if (!temp_doc)
       return nullptr;
 
@@ -382,7 +374,7 @@ ScopedFPDFDocument PDFiumPrint::CreateRasterPdf(
 
 ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
     FPDF_PAGE page_to_print,
-    const PP_PrintSettings_Dev& print_settings) {
+    int dpi) {
   ScopedFPDFDocument temp_doc(FPDF_CreateNewDocument());
   DCHECK(temp_doc);
 
@@ -391,10 +383,8 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
 
   // For computing size in pixels, use a square dpi since the source PDF page
   // has square DPI.
-  int width_in_pixels =
-      ConvertUnit(source_page_width, kPointsPerInch, print_settings.dpi);
-  int height_in_pixels =
-      ConvertUnit(source_page_height, kPointsPerInch, print_settings.dpi);
+  int width_in_pixels = ConvertUnit(source_page_width, kPointsPerInch, dpi);
+  int height_in_pixels = ConvertUnit(source_page_height, kPointsPerInch, dpi);
 
   gfx::Size bitmap_size(width_in_pixels, height_in_pixels);
   ScopedFPDFBitmap bitmap(FPDFBitmap_Create(
@@ -405,13 +395,10 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
                       bitmap_size.height(), 0xFFFFFFFF);
 
   FPDF_RenderPageBitmap(bitmap.get(), page_to_print, 0, 0, bitmap_size.width(),
-                        bitmap_size.height(), print_settings.orientation,
-                        FPDF_PRINTING);
+                        bitmap_size.height(), /*rotate=*/0, FPDF_PRINTING);
 
-  double ratio_x = ConvertUnitDouble(bitmap_size.width(), print_settings.dpi,
-                                     kPointsPerInch);
-  double ratio_y = ConvertUnitDouble(bitmap_size.height(), print_settings.dpi,
-                                     kPointsPerInch);
+  double ratio_x = ConvertUnitDouble(bitmap_size.width(), dpi, kPointsPerInch);
+  double ratio_y = ConvertUnitDouble(bitmap_size.height(), dpi, kPointsPerInch);
 
   // Add the bitmap to an image object and add the image object to the output
   // page.

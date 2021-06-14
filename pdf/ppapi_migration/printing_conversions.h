@@ -10,12 +10,22 @@
 #include <vector>
 
 struct PP_PrintPageNumberRange_Dev;
+struct PP_PrintSettings_Dev;
+struct PP_PdfPrintSettings_Dev;
+
+namespace blink {
+struct WebPrintParams;
+}  // namespace blink
 
 namespace chrome_pdf {
 
 std::vector<int> PageNumbersFromPPPrintPageNumberRange(
     const PP_PrintPageNumberRange_Dev* page_ranges,
     uint32_t page_range_count);
+
+blink::WebPrintParams WebPrintParamsFromPPPrintSettings(
+    const PP_PrintSettings_Dev& print_settings,
+    const PP_PdfPrintSettings_Dev& pdf_print_settings);
 
 }  // namespace chrome_pdf
 

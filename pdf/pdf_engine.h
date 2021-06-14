@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/callback.h"
-#include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/private/pdf.h"
 #include "ppapi/cpp/url_loader.h"
@@ -41,7 +40,6 @@ typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
                                                       size_t text_length);
 #endif
 
-struct PP_PdfPrintSettings_Dev;
 class SkBitmap;
 
 namespace base {
@@ -50,6 +48,7 @@ class Location;
 
 namespace blink {
 class WebInputEvent;
+struct WebPrintParams;
 }  // namespace blink
 
 namespace gfx {
@@ -322,8 +321,7 @@ class PDFEngine {
   virtual void PrintBegin() = 0;
   virtual std::vector<uint8_t> PrintPages(
       const std::vector<int>& page_numbers,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings) = 0;
+      const blink::WebPrintParams& print_params) = 0;
   virtual void PrintEnd() = 0;
   virtual void StartFind(const std::string& text, bool case_sensitive) = 0;
   virtual bool SelectFindResult(bool forward) = 0;

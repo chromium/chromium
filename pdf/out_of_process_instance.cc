@@ -736,9 +736,8 @@ int32_t OutOfProcessInstance::PdfPrintBegin(
   if ((print_settings->format & supported_formats) == 0)
     return 0;
 
-  print_settings_.is_printing = true;
-  print_settings_.pepper_print_settings = *print_settings;
-  print_settings_.pdf_print_settings = *pdf_print_settings;
+  print_params_ =
+      WebPrintParamsFromPPPrintSettings(*print_settings, *pdf_print_settings);
   engine()->PrintBegin();
   return ret;
 }
@@ -761,10 +760,10 @@ int32_t OutOfProcessInstance::PrintBegin(
 pp::Resource OutOfProcessInstance::PrintPages(
     const PP_PrintPageNumberRange_Dev* page_ranges,
     uint32_t page_range_count) {
-  if (!print_settings_.is_printing)
+  if (!print_params_.has_value())
     return pp::Resource();
 
-  print_settings_.print_pages_called = true;
+  print_pages_called_ = true;
   if (page_range_count == 0)
     return pp::Resource();
 
@@ -772,8 +771,7 @@ pp::Resource OutOfProcessInstance::PrintPages(
       PageNumbersFromPPPrintPageNumberRange(page_ranges, page_range_count);
 
   const std::vector<uint8_t> pdf_data =
-      engine()->PrintPages(page_numbers, print_settings_.pepper_print_settings,
-                           print_settings_.pdf_print_settings);
+      engine()->PrintPages(page_numbers, print_params_.value());
 
   // Convert buffer to Pepper type.
   pp::Buffer_Dev buffer;
@@ -786,9 +784,10 @@ pp::Resource OutOfProcessInstance::PrintPages(
 }
 
 void OutOfProcessInstance::PrintEnd() {
-  if (print_settings_.print_pages_called)
+  if (print_pages_called_)
     UserMetricsRecordAction("PDF.PrintPage");
-  print_settings_.Clear();
+  print_pages_called_ = false;
+  print_params_.reset();
   engine()->PrintEnd();
 }
 
@@ -1356,13 +1355,6 @@ void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
 
 void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
   pp::PDF::Print(this);
-}
-
-void OutOfProcessInstance::PrintSettings::Clear() {
-  is_printing = false;
-  print_pages_called = false;
-  memset(&pepper_print_settings, 0, sizeof(pepper_print_settings));
-  memset(&pdf_print_settings, 0, sizeof(pdf_print_settings));
 }
 
 }  // namespace chrome_pdf

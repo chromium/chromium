@@ -12,8 +12,9 @@
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
-struct PP_PdfPrintSettings_Dev;
-struct PP_PrintSettings_Dev;
+namespace blink {
+struct WebPrintParams;
+}  // namespace blink
 
 namespace gfx {
 class Rect;
@@ -62,23 +63,16 @@ class PDFiumPrint {
 
   std::vector<uint8_t> PrintPagesAsPdf(
       const std::vector<int>& page_numbers,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings,
-      bool raster);
+      const blink::WebPrintParams& print_params);
 
  private:
-  ScopedFPDFDocument CreatePrintPdf(
-      const std::vector<int>& page_numbers,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings);
+  ScopedFPDFDocument CreatePrintPdf(const std::vector<int>& page_numbers,
+                                    const blink::WebPrintParams& print_params);
 
-  ScopedFPDFDocument CreateRasterPdf(
-      ScopedFPDFDocument doc,
-      const PP_PrintSettings_Dev& print_settings);
+  ScopedFPDFDocument CreateRasterPdf(ScopedFPDFDocument doc, int dpi);
 
-  ScopedFPDFDocument CreateSinglePageRasterPdf(
-      FPDF_PAGE page_to_print,
-      const PP_PrintSettings_Dev& print_settings);
+  ScopedFPDFDocument CreateSinglePageRasterPdf(FPDF_PAGE page_to_print,
+                                               int dpi);
 
   PDFiumEngine* const engine_;
 };

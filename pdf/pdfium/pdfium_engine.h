@@ -99,8 +99,7 @@ class PDFiumEngine : public PDFEngine,
   void PrintBegin() override;
   std::vector<uint8_t> PrintPages(
       const std::vector<int>& page_numbers,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings) override;
+      const blink::WebPrintParams& print_params) override;
   void PrintEnd() override;
   void StartFind(const std::string& text, bool case_sensitive) override;
   bool SelectFindResult(bool forward) override;
@@ -414,13 +413,11 @@ class PDFiumEngine : public PDFEngine,
 
   std::vector<uint8_t> PrintPagesAsRasterPdf(
       const std::vector<int>& page_numbers,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings);
+      const blink::WebPrintParams& print_params);
 
   std::vector<uint8_t> PrintPagesAsPdf(
       const std::vector<int>& page_numbers,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings);
+      const blink::WebPrintParams& print_params);
 
   // Checks if `page` has selected text in a form element. If so, sets that as
   // the plugin's text selection.

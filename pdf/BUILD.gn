@@ -282,6 +282,7 @@ if (enable_pdf) {
     deps = [
       "//base",
       "//ppapi/cpp:objects",
+      "//printing/mojom",
       "//skia",
       "//third_party/blink/public:blink",
       "//third_party/blink/public/common:headers",
@@ -322,6 +323,7 @@ if (enable_pdf) {
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
       "//skia",
+      "//third_party/blink/public:blink_headers",
       "//third_party/blink/public/common:headers",
       "//ui/base",
       "//ui/base/cursor/mojom:cursor_type",

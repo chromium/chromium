@@ -62,6 +62,7 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/input/web_touch_point.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_attachment.h"
@@ -967,25 +968,19 @@ void PDFiumEngine::PrintBegin() {
 
 std::vector<uint8_t> PDFiumEngine::PrintPages(
     const std::vector<int>& page_numbers,
-    const PP_PrintSettings_Dev& print_settings,
-    const PP_PdfPrintSettings_Dev& pdf_print_settings) {
+    const blink::WebPrintParams& print_params) {
   DCHECK(!page_numbers.empty());
 
-  if ((print_settings.format & PP_PRINTOUTPUTFORMAT_PDF) &&
-      HasPermission(PERMISSION_PRINT_HIGH_QUALITY)) {
-    return PrintPagesAsPdf(page_numbers, print_settings, pdf_print_settings);
-  }
-  if (HasPermission(PERMISSION_PRINT_LOW_QUALITY)) {
-    return PrintPagesAsRasterPdf(page_numbers, print_settings,
-                                 pdf_print_settings);
-  }
-  return std::vector<uint8_t>();
+  return print_params.rasterize_pdf
+             ? PrintPagesAsRasterPdf(page_numbers, print_params)
+             : PrintPagesAsPdf(page_numbers, print_params);
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
     const std::vector<int>& page_numbers,
-    const PP_PrintSettings_Dev& print_settings,
-    const PP_PdfPrintSettings_Dev& pdf_print_settings) {
+    const blink::WebPrintParams& print_params) {
+  DCHECK(HasPermission(PERMISSION_PRINT_LOW_QUALITY));
+
   // If document is not downloaded yet, disable printing.
   if (doc() && !doc_loader_->IsDocumentComplete())
     return std::vector<uint8_t>();
@@ -994,14 +989,13 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
 
   SetLastInstance();
 
-  return print_.PrintPagesAsPdf(page_numbers, print_settings,
-                                pdf_print_settings, /*raster=*/true);
+  return print_.PrintPagesAsPdf(page_numbers, print_params);
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
     const std::vector<int>& page_numbers,
-    const PP_PrintSettings_Dev& print_settings,
-    const PP_PdfPrintSettings_Dev& pdf_print_settings) {
+    const blink::WebPrintParams& print_params) {
+  DCHECK(HasPermission(PERMISSION_PRINT_HIGH_QUALITY));
   DCHECK(doc());
 
   KillFormFocus();
@@ -1012,8 +1006,7 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
       pages_[page_number]->Unload();
   }
 
-  return print_.PrintPagesAsPdf(page_numbers, print_settings,
-                                pdf_print_settings, /*raster=*/false);
+  return print_.PrintPagesAsPdf(page_numbers, print_params);
 }
 
 void PDFiumEngine::KillFormFocus() {

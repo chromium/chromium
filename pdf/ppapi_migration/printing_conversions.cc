@@ -9,7 +9,12 @@
 #include <vector>
 
 #include "base/check.h"
+#include "pdf/ppapi_migration/geometry_conversions.h"
+#include "ppapi/c/dev/pp_print_settings_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
+#include "ppapi/c/private/ppp_pdf.h"
+#include "printing/mojom/print.mojom.h"
+#include "third_party/blink/public/web/web_print_params.h"
 
 namespace chrome_pdf {
 
@@ -27,6 +32,23 @@ std::vector<int> PageNumbersFromPPPrintPageNumberRange(
   }
 
   return page_numbers;
+}
+
+blink::WebPrintParams WebPrintParamsFromPPPrintSettings(
+    const PP_PrintSettings_Dev& print_settings,
+    const PP_PdfPrintSettings_Dev& pdf_print_settings) {
+  blink::WebPrintParams params;
+  params.print_content_area = RectFromPPRect(print_settings.content_area);
+  params.printable_area = RectFromPPRect(print_settings.printable_area);
+  params.paper_size = SizeFromPPSize(print_settings.paper_size);
+  params.printer_dpi = print_settings.dpi;
+  params.scale_factor = pdf_print_settings.scale_factor;
+  params.rasterize_pdf = print_settings.format & PP_PRINTOUTPUTFORMAT_RASTER;
+  params.print_scaling_option =
+      static_cast<printing::mojom::PrintScalingOption>(
+          print_settings.print_scaling_option);
+  params.pages_per_sheet = pdf_print_settings.pages_per_sheet;
+  return params;
 }
 
 }  // namespace chrome_pdf
