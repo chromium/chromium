@@ -4649,14 +4649,6 @@ const char kListAllDisplayModesName[] = "List all display modes";
 const char kListAllDisplayModesDescription[] =
     "Enables listing all external displays' modes in the display settings.";
 
-const char kProjectorFeaturePodName[] = "Show Projector In System Tray";
-const char kProjectorFeaturePodDescription[] =
-    "Enables showing the projector feature pod in system stray";
-
-const char kProjectorName[] = "Enable the Projector feature";
-const char kProjectorDescription[] =
-    "Enables projector feature flag to be used";
-
 const char kEnableHardwareMirrorModeName[] = "Enable Hardware Mirror Mode";
 const char kEnableHardwareMirrorModeDescription[] =
     "Enables hardware support when multiple displays are set to mirror mode.";

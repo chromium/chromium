@@ -46234,7 +46234,6 @@ from previous Chrome versions.
   <int value="-1163777157" label="ContextualSearchSimplifiedServer:disabled"/>
   <int value="-1162944097" label="enable-color-correct-rendering"/>
   <int value="-1162636562" label="ReduceHorizontalFlingVelocity:disabled"/>
-  <int value="-1162151469" label="ProjectorFeaturePod:disabled"/>
   <int value="-1161409696" label="MediaRemotingEncrypted:enabled"/>
   <int value="-1161384421" label="ContextualSuggestionsAboveArticles:enabled"/>
   <int value="-1160941363" label="AffiliationBasedMatching:disabled"/>
@@ -46883,7 +46882,6 @@ from previous Chrome versions.
       label="ClickToCallContextMenuForSelectedText:enabled"/>
   <int value="-613596048" label="new-canvas-2d-api"/>
   <int value="-613146027" label="ContinuousFeeds:disabled"/>
-  <int value="-612860466" label="Projector:disabled"/>
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
   <int value="-612480090" label="FasterLocationReload:enabled"/>
   <int value="-610411643" label="enable-printer-app-search"/>
@@ -49384,7 +49382,6 @@ from previous Chrome versions.
   <int value="1552753678" label="DnsHttpssvc:disabled"/>
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
-  <int value="1553430984" label="Projector:enabled"/>
   <int value="1553777815" label="enable-search-prefetch-service"/>
   <int value="1556554961" label="DriveFsBidirectionalNativeMessaging:enabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
@@ -49761,7 +49758,6 @@ from previous Chrome versions.
   <int value="1875156497" label="CaptureMode:enabled"/>
   <int value="1875719680" label="ArcResizeLock:disabled"/>
   <int value="1878331098" label="GuestViewCrossProcessFrames:enabled"/>
-  <int value="1880144681" label="ProjectorFeaturePod:enabled"/>
   <int value="1880955305" label="enable-preconnect-to-search"/>
   <int value="1881036528" label="disable-multilingual-spellchecker"/>
   <int value="1881174782" label="disable-brotli"/>

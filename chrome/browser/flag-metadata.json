@@ -2233,16 +2233,6 @@
     "expiry_milestone": 80
   },
   {
-    "name" : "enable-projector-feature",
-    "owners" : [ "cros-families-eng@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
-    "name" : "enable-projector-feature-pod",
-    "owners" : [ "cros-families-eng@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by network administrators to debug
