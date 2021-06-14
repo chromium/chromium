@@ -19,12 +19,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkPendingSize;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialog;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.support.test.InstrumentationRegistry;
 import android.view.View;

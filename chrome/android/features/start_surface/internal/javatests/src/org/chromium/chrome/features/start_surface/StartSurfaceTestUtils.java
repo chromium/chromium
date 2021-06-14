@@ -17,7 +17,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.fail;
 
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.support.test.InstrumentationRegistry;
 import android.view.View;

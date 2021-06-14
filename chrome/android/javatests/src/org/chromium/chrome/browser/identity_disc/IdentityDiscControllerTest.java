@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
 
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 

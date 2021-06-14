@@ -17,7 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.support.test.InstrumentationRegistry;
 

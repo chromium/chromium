@@ -9,7 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.test.util.ViewUtils.createMotionEvent;
+import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;

@@ -413,6 +413,7 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/util/UiDisableIfSkipCheck.java",
     "javatests/src/org/chromium/ui/test/util/UiRestriction.java",
     "javatests/src/org/chromium/ui/test/util/UiRestrictionSkipCheck.java",
+    "javatests/src/org/chromium/ui/test/util/ViewUtils.java",
     "javatests/src/org/chromium/ui/test/util/modelutil/FakeViewProvider.java",
     "junit/src/org/chromium/ui/base/TestActivity.java",
   ]
@@ -421,9 +422,14 @@ android_library("ui_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+
+    # For androidx.test.espresso.ViewInteraction
+    "//third_party/android_deps:espresso_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
   ]
 }

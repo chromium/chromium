@@ -234,7 +234,7 @@ public class TileGridLayoutTest {
         assertTrue(mTab.getNativePage() instanceof NewTabPage);
         NewTabPage ntp = (NewTabPage) mTab.getNativePage();
 
-        org.chromium.chrome.test.util.ViewUtils.waitForView(
+        org.chromium.ui.test.util.ViewUtils.waitForView(
                 (ViewGroup) ntp.getView(), ViewMatchers.withId(R.id.tile_grid_layout));
 
         return ntp;

@@ -33,11 +33,11 @@ import static org.chromium.chrome.browser.password_manager.settings.PasswordSett
 import static org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTestHelper.HADES_AT_UNDERWORLD;
 import static org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTestHelper.PHOBOS_AT_OLYMP;
 import static org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTestHelper.ZEUS_ON_EARTH;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_INVISIBLE;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_NULL;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Instrumentation;
 import android.content.Intent;

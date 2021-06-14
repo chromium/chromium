@@ -24,9 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
-import static org.chromium.chrome.test.util.ViewUtils.hasBackgroundColor;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.os.Build;

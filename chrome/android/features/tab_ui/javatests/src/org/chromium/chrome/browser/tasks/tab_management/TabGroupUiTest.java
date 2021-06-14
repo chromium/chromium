@@ -36,8 +36,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.ViewGroup;
 

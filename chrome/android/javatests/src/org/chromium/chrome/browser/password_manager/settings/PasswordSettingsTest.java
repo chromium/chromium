@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTestHelper.hasTextInViewHolder;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 

@@ -13,12 +13,12 @@ import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.autofill.mojom.FocusedFieldType.FILLABLE_NON_SEARCH_FIELD;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_INVISIBLE;
-import static org.chromium.chrome.test.util.ViewUtils.VIEW_NULL;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;

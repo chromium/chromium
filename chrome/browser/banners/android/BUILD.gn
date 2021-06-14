@@ -79,5 +79,6 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
     "//third_party/ub-uiautomator:ub_uiautomator_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
   ]
 }

@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.hasTintColor;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
-import static org.chromium.chrome.test.util.ViewUtils.hasBackgroundColor;
+import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
 
 import android.support.test.InstrumentationRegistry;
 

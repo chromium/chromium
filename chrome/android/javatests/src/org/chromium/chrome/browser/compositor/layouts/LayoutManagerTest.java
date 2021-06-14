@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tab.TabCreationState.LIVE_IN_BACKGROUND;
-import static org.chromium.chrome.test.util.ViewUtils.createMotionEvent;
+import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

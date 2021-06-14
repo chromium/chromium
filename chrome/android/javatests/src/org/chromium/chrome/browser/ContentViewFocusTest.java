@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.chrome.test.util.ViewUtils.createMotionEvent;
+import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.support.test.InstrumentationRegistry;
 import android.view.View;

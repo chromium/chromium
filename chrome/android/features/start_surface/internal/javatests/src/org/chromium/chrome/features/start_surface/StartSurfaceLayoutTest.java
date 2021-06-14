@@ -45,9 +45,9 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.m
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 import static org.chromium.components.embedder_support.util.UrlConstants.NTP_URL;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
