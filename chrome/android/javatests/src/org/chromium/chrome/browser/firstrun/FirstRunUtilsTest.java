@@ -79,7 +79,8 @@ public class FirstRunUtilsTest {
         addTestAccount();
 
         ContextUtils.initApplicationContextForTests(mAccountTestingContext);
-        Assert.assertTrue(FirstRunUtils.hasGoogleAccounts());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(FirstRunUtils.hasGoogleAccounts()); });
         Assert.assertTrue(FirstRunUtils.hasGoogleAccountAuthenticator());
     }
 
@@ -92,7 +93,8 @@ public class FirstRunUtilsTest {
         setUpAccountManager("Not A Google Account");
 
         ContextUtils.initApplicationContextForTests(mAccountTestingContext);
-        Assert.assertFalse(FirstRunUtils.hasGoogleAccounts());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertFalse(FirstRunUtils.hasGoogleAccounts()); });
         Assert.assertFalse(FirstRunUtils.hasGoogleAccountAuthenticator());
     }
 }

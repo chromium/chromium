@@ -71,7 +71,7 @@ public abstract class FirstRunFlowSequencer  {
      */
     public void start() {
         long childAccountStatusStart = SystemClock.elapsedRealtime();
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             ChildAccountService.checkChildAccountStatus(accounts, status -> {
                 RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
                         SystemClock.elapsedRealtime() - childAccountStatusStart);

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 
 /** Provides first run related utility functions. */
 public class FirstRunUtils {
@@ -93,7 +94,10 @@ public class FirstRunUtils {
 
     @VisibleForTesting
     static boolean hasGoogleAccounts() {
-        return !AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty();
+        return !AccountUtils
+                        .getAccountsIfFulfilledOrEmpty(
+                                AccountManagerFacadeProvider.getInstance().getAccounts())
+                        .isEmpty();
     }
 
     @SuppressLint("InlinedApi")

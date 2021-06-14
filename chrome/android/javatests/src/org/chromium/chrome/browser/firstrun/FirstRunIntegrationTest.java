@@ -31,8 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -41,6 +39,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.Promise;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -106,8 +105,7 @@ public class FirstRunIntegrationTest {
     @Mock
     private AccountManagerFacade mAccountManagerFacade;
 
-    @Captor
-    private ArgumentCaptor<Callback<List<Account>>> mGetGoogleAccountsCaptor;
+    private Promise<List<Account>> mAccountsPromise;
 
     private final Set<Class> mSupportedActivities =
             CollectionUtil.newHashSet(ChromeLauncherActivity.class, FirstRunActivity.class,
@@ -324,14 +322,18 @@ public class FirstRunIntegrationTest {
     }
 
     private void blockOnFlowIsKnown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("mAccountsPromise is already initialized!", mAccountsPromise);
+            mAccountsPromise = new Promise<>();
+        });
+        Mockito.when(mAccountManagerFacade.getAccounts()).thenReturn(mAccountsPromise);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
     }
 
     private void unblockOnFlowIsKnown() {
-        Mockito.verify(mAccountManagerFacade)
-                .tryGetGoogleAccounts(mGetGoogleAccountsCaptor.capture());
+        Mockito.verify(mAccountManagerFacade).getAccounts();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mGetGoogleAccountsCaptor.getValue().onResult(Collections.emptyList()));
+                () -> mAccountsPromise.fulfill(Collections.emptyList()));
     }
 
     @Test
