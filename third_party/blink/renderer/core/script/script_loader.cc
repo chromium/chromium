@@ -497,6 +497,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
   if (GetScriptType() == ScriptLoader::ScriptTypeAtPrepare::kModule)
     UseCounter::Count(*context_window, WebFeature::kPrepareModuleScript);
+  else if (GetScriptType() == ScriptTypeAtPrepare::kSpeculationRules)
+    UseCounter::Count(*context_window, WebFeature::kSpeculationRules);
 
   DCHECK(!prepared_pending_script_);
 

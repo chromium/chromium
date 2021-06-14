@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
@@ -430,6 +431,22 @@ TEST_F(SpeculationRuleSetTest, PrefetchIgnorePrerenderRules) {
   EXPECT_FALSE(base::ranges::any_of(candidates, [](const auto& candidate) {
     return candidate->action == mojom::blink::SpeculationAction::kPrerender;
   }));
+}
+
+// Tests that the presence of a speculationrules script is recorded.
+TEST_F(SpeculationRuleSetTest, UseCounter) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  EXPECT_FALSE(
+      page_holder.GetDocument().IsUseCounted(WebFeature::kSpeculationRules));
+
+  const String speculation_script =
+      R"({"prefetch": [{"source": "list", "urls": ["/foo"]}]})";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  EXPECT_TRUE(
+      page_holder.GetDocument().IsUseCounted(WebFeature::kSpeculationRules));
 }
 
 }  // namespace

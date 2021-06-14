@@ -32618,6 +32618,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3925" label="FontFaceLineGapOverride"/>
   <int value="3926" label="FontFaceSizeAdjust"/>
   <int value="3931" label="DocumentTransition"/>
+  <int value="3932" label="SpeculationRules"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
