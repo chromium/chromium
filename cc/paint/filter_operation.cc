@@ -8,8 +8,8 @@
 
 #include "cc/paint/filter_operation.h"
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/ranges.h"
-#include "base/stl_util.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"

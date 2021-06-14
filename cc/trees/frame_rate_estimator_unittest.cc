@@ -4,7 +4,7 @@
 
 #include "cc/trees/frame_rate_estimator.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"

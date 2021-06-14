@@ -12,8 +12,8 @@
 #include <set>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/math_util.h"

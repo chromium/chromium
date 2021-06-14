@@ -4,8 +4,8 @@
 
 #include "cc/paint/solid_color_analyzer.h"
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"

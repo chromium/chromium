@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/time/default_tick_clock.h"
 
 namespace cc {

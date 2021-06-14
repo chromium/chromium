@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

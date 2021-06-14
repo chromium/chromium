@@ -5,9 +5,10 @@
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
+
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "cc/paint/decoded_draw_image.h"
