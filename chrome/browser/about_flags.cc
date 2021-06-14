@@ -7168,6 +7168,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(::features::kFocusFollowsCursor)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"clipboard-custom-formats", flag_descriptions::kClipboardCustomFormatsName,
+     flag_descriptions::kClipboardCustomFormatsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kClipboardCustomFormats)},
+
     {"privacy-review", flag_descriptions::kPrivacyReviewName,
      flag_descriptions::kPrivacyReviewDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPrivacyReview)},

@@ -993,6 +993,10 @@ const base::Feature kDialogFocusNewSpecBehavior{
 // fill.
 const base::Feature kAutofillShadowDOM{"AutofillShadowDOM",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+// Allows read/write of custom formats with unsanitized clipboard content. See
+// crbug.com/106449.
+const base::Feature kClipboardCustomFormats{"ClipboardCustomFormats",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink

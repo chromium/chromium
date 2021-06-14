@@ -35,6 +35,11 @@ ClipboardItem::ClipboardItem(
       is_raw_(base::FeatureList::IsEnabled(features::kRawClipboard) &&
               options->raw()) {
   DCHECK(items_.size());
+  if (options->hasDirect()) {
+    for (const auto& direct_items : options->direct()) {
+      custom_format_items_.push_back(direct_items);
+    }
+  }
 }
 
 Vector<String> ClipboardItem::types() const {

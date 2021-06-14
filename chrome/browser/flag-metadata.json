@@ -612,6 +612,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "clipboard-custom-formats",
+    "owners": ["huangdarwin", "snianu@microsoft.com"],
+    "expiry_milestone": 94
+  },
+  {
     "name": "collections-card-presentation-style",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 80

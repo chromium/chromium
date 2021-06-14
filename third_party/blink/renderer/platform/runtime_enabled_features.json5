@@ -374,6 +374,10 @@
       status: "experimental",
     },
     {
+      name: "ClipboardCustomFormats",
+      status: "experimental",
+    },
+    {
       name: "ClipboardSvg",
       status: "experimental",
     },

@@ -423,6 +423,11 @@ const char kContextMenuTranslateWithGoogleLensName[] =
 const char kContextMenuTranslateWithGoogleLensDescription[] =
     "Enable a chip for a Translate intent into Google Lens when supported.";
 
+const char kClipboardCustomFormatsName[] = "Clipboard Custom Formats";
+const char kClipboardCustomFormatsDescription[] =
+    "Allows read/write of custom formats with unsanitized clipboard content. "
+    "See crbug.com/106449";
+
 const char kClickToOpenPDFName[] = "Click to open embedded PDFs";
 const char kClickToOpenPDFDescription[] =
     "When the PDF plugin is unavailable, show a click-to-open placeholder for "

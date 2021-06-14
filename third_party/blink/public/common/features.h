@@ -419,6 +419,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kDialogFocusNewSpecBehavior;
 // fill.
 BLINK_COMMON_EXPORT extern const base::Feature kAutofillShadowDOM;
 
+// Allows read/write of custom formats with unsanitized clipboard content. See
+// crbug.com/106449.
+BLINK_COMMON_EXPORT extern const base::Feature kClipboardCustomFormats;
+
 }  // namespace features
 }  // namespace blink
 

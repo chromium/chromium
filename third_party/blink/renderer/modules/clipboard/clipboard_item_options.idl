@@ -6,4 +6,5 @@
 
 dictionary ClipboardItemOptions {
   boolean raw = false;
+  [RuntimeEnabled=ClipboardCustomFormats] sequence<DOMString> direct;
 };

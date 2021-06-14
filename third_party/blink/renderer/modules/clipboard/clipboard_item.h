@@ -35,11 +35,15 @@ class ClipboardItem final : public ScriptWrappable {
     return items_;
   }
 
+  // Returns the custom formats passed to direct option.
+  const Vector<String>& CustomFormats() const { return custom_format_items_; }
+
   void Trace(Visitor*) const override;
 
  private:
   HeapVector<std::pair<String, Member<Blob>>> items_;
   const bool is_raw_;
+  Vector<String> custom_format_items_;
 };
 
 }  // namespace blink
