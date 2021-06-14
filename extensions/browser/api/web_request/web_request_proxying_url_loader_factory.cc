@@ -863,15 +863,19 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   override_headers_ = nullptr;
 
   if (for_cors_preflight_) {
-    // If this is for CORS preflight, there is no associated client. We notify
-    // the completion here, and deletes |this|.
+    // If this is for CORS preflight, there is no associated client.
     info_->AddResponseInfoFromResourceResponse(*current_response_);
+    // Do not finish proxied preflight requests that require proxy auth.
+    // The request is not finished yet, give control back to network service
+    // which will start authentication process.
+    if (info_->response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED)
+      return;
+    // We notify the completion here, and delete |this|.
     ExtensionWebRequestEventRouter::GetInstance()->OnResponseStarted(
         factory_->browser_context_, &info_.value(), net::OK);
     ExtensionWebRequestEventRouter::GetInstance()->OnCompleted(
         factory_->browser_context_, &info_.value(), net::OK);
 
-    // Deletes |this|.
     factory_->RemoveRequest(network_service_request_id_, request_id_);
     return;
   }

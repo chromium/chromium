@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -232,6 +233,11 @@ const char kPerformXhrJs[] =
 // Header values set by the server and by the extension.
 const char kHeaderValueFromExtension[] = "ValueFromExtension";
 const char kHeaderValueFromServer[] = "ValueFromServer";
+
+constexpr char kCORSUrl[] = "http://cors.test/cors";
+constexpr char kCORSProxyUser[] = "testuser";
+constexpr char kCORSProxyPass[] = "testpass";
+constexpr char kCustomPreflightHeader[] = "x-testheader";
 
 // Performs an XHR in the given |frame|, replying when complete.
 void PerformXhrInFrame(content::RenderFrameHost* frame,
@@ -4394,6 +4400,189 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest,
   EXPECT_FALSE(IdentifiabilityMetricsTestHelper::ContainsSurfaceOfType(
       merged_entries,
       blink::IdentifiableSurface::Type::kExtensionCancelRequest));
+}
+
+class ProxyCORSWebRequestApiTest : public ExtensionApiTest {
+ public:
+  ProxyCORSWebRequestApiTest() = default;
+  ~ProxyCORSWebRequestApiTest() override = default;
+
+ protected:
+  class ProceedLoginDialog : public content::NotificationObserver {
+   public:
+    ProceedLoginDialog(const std::string& user, const std::string& password)
+        : user_(base::ASCIIToUTF16(user)),
+          password_(base::ASCIIToUTF16(password)) {
+      registrar_.Add(this, chrome::NOTIFICATION_AUTH_NEEDED,
+                     content::NotificationService::AllSources());
+    }
+
+    ~ProceedLoginDialog() override = default;
+
+   private:
+    ProceedLoginDialog(const ProceedLoginDialog&) = delete;
+    ProceedLoginDialog& operator=(const ProceedLoginDialog&) = delete;
+
+    void Observe(int type,
+                 const content::NotificationSource& source,
+                 const content::NotificationDetails& details) override {
+      LoginHandler* handler =
+          content::Details<LoginNotificationDetails>(details).ptr()->handler();
+      handler->SetAuth(user_, password_);
+    }
+
+    content::NotificationRegistrar registrar_;
+    std::u16string user_;
+    std::u16string password_;
+  };
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    ASSERT_TRUE(StartEmbeddedTestServer());
+    proxy_cors_server_.RegisterRequestHandler(base::BindRepeating(
+        &ProxyCORSWebRequestApiTest::HandleProxiedCORSRequest));
+    ASSERT_TRUE(proxy_cors_server_.Start());
+
+    PrefService* pref_service = browser()->profile()->GetPrefs();
+    pref_service->Set(proxy_config::prefs::kProxy,
+                      ProxyConfigDictionary::CreateFixedServers(
+                          proxy_cors_server_.host_port_pair().ToString(),
+                          "accounts.google.com"));
+
+    // Flush the proxy configuration change to avoid any races.
+    ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+        ->FlushProxyConfigMonitorForTesting();
+    profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleProxiedCORSRequest(const net::test_server::HttpRequest& request) {
+    std::string request_url;
+    // Request url with be replaced by host:port pair of embedded proxy server
+    // in HttpRequest, extract requested url from request line instead.
+    std::vector<std::string> request_lines =
+        base::SplitString(request.all_headers, "\r\n", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    if (!request_lines.empty()) {
+      std::vector<std::string> request_line =
+          base::SplitString(request_lines[0], " ", base::TRIM_WHITESPACE,
+                            base::SPLIT_WANT_NONEMPTY);
+      if (request_line.size() > 1) {
+        request_url = request_line[1];
+      }
+    }
+    if (request_url != kCORSUrl) {
+      return nullptr;
+    }
+
+    // Handle request as proxy server.
+    const auto proxy_auth = request.headers.find("Proxy-Authorization");
+    std::string auth;
+    if (proxy_auth != request.headers.end()) {
+      auth = proxy_auth->second;
+      const std::string auth_method_prefix = "Basic ";
+      const auto prefix_pos = auth.find(auth_method_prefix);
+      EXPECT_EQ(0U, prefix_pos);
+      EXPECT_GT(auth.size(), auth_method_prefix.size());
+      if (prefix_pos == 0U && auth.size() > auth_method_prefix.size()) {
+        auth = auth.substr(auth_method_prefix.size());
+        EXPECT_TRUE(base::Base64Decode(auth, &auth));
+      } else {
+        auth.clear();
+      }
+    }
+    if (auth != base::StringPrintf("%s:%s", kCORSProxyUser, kCORSProxyPass)) {
+      std::unique_ptr<net::test_server::BasicHttpResponse> response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      response->AddCustomHeader("Proxy-Authenticate",
+                                "Basic realm=\"TestRealm\"");
+      response->set_code(net::HTTP_PROXY_AUTHENTICATION_REQUIRED);
+      return response;
+    }
+
+    // Handle request as cors server.
+    if (request.method == net::test_server::METHOD_OPTIONS) {
+      const auto preflight_method =
+          request.headers.find("Access-Control-Request-Method");
+      const auto preflight_header =
+          request.headers.find("Access-Control-Request-Headers");
+      if (preflight_method == request.headers.end() ||
+          preflight_header == request.headers.end()) {
+        ADD_FAILURE() << "Expected Access-Control-Request-* headers were not "
+                         "found in preflight request";
+        std::unique_ptr<net::test_server::BasicHttpResponse> response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_BAD_REQUEST);
+        return response;
+      }
+      EXPECT_EQ("GET", preflight_method->second);
+      EXPECT_EQ(kCustomPreflightHeader, preflight_header->second);
+
+      std::unique_ptr<net::test_server::BasicHttpResponse> response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+      response->AddCustomHeader("Access-Control-Allow-Methods", "GET");
+      response->AddCustomHeader("Access-Control-Allow-Headers",
+                                kCustomPreflightHeader);
+      response->set_code(net::HTTP_NO_CONTENT);
+      return response;
+    }
+    EXPECT_EQ(net::test_server::METHOD_GET, request.method);
+
+    std::unique_ptr<net::test_server::BasicHttpResponse> response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    response->set_content_type("text/plain");
+    response->set_content("PASS");
+    response->set_code(net::HTTP_OK);
+    return response;
+  }
+
+  net::EmbeddedTestServer proxy_cors_server_;
+};
+
+// Regression test for crbug.com/1212625
+// Test that CORS preflight request which requires proxy auth completes
+// successfully instead of being cancelled after proxy auth required response.
+IN_PROC_BROWSER_TEST_F(ProxyCORSWebRequestApiTest,
+                       PreflightCompletesSuccessfully) {
+  ProceedLoginDialog login_dialog(kCORSProxyUser, kCORSProxyPass);
+  ExtensionTestMessageListener ready_listener("ready", false);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("webrequest_cors_preflight"));
+  ASSERT_TRUE(extension) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  ExtensionTestMessageListener preflight_listener("cors-preflight-succeeded",
+                                                  false);
+  const char kCORSPreflightedRequest[] = R"(
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '%s');
+      xhr.setRequestHeader('%s', 'testvalue');
+      xhr.onload = () => {window.domAutomationController.send(true);};
+      xhr.onerror = () => {window.domAutomationController.send(false);};
+      xhr.send();)";
+  bool success = false;
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      web_contents->GetMainFrame(),
+      base::StringPrintf(kCORSPreflightedRequest, kCORSUrl,
+                         kCustomPreflightHeader),
+      &success));
+  EXPECT_TRUE(success);
+  EXPECT_TRUE(preflight_listener.WaitUntilSatisfied());
+  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
+                                          "preflightHeadersReceivedCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
+                                          "preflightProxyAuthRequiredCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
+                                          "preflightResponseStartedCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundPage(
+                   extension, profile(),
+                   "preflightResponseStartedSuccessfullyCount"));
 }
 
 }  // namespace extensions
