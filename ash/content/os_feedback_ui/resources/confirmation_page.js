@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './os_feedback_shared_css.js';
+
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
@@ -22,8 +27,6 @@ export class ConfirmationPageElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    /**TODO(xiangdongkong): remove  */
-    this.$.header.textContent = 'Thank you for your feedback';
   }
 
   close_() {

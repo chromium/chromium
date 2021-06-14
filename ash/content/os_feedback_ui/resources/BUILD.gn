@@ -17,6 +17,7 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 polymer_element_files = [
   "confirmation_page.js",
   "os_feedback_shared_css.js",
+  "help_resources_icons.js",
 ]
 
 generate_grd("build_grd") {
@@ -40,6 +41,12 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("confirmation_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("help_resources_icons") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
