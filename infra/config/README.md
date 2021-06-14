@@ -1,6 +1,6 @@
 **IMPORTANT:** This branch only has an effect for branches that have projects
 set up in
-https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/master/configs/luci-config/projects.cfg
+https://chrome-internal.googlesource.com/infradata/config/+/HEAD/configs/luci-config/projects.cfg
 
 This directory contains chromium project-wide configurations
 for Chrome Operations services.

@@ -21,7 +21,7 @@ def _project_settings(
       * project - The name of the LUCI project.
       * project_title - A string identifying the project in title contexts (e.g.
         titles of consoles).
-      * is_main - Whether this branch is main/master/trunk.
+      * is_main - Whether this branch is main/trunk.
       * is_lts_branch - Whether this branch is in the LTS channel.
       * ref - The git ref containing the code for this branch.
     """
@@ -43,7 +43,7 @@ def _generate_project_pyl(ctx):
         "# This is a non-LUCI generated file",
         "# This is consumed by presubmit checks that need to validate the config",
         repr(dict(
-            # On master, we want to ensure that we don't have source side specs
+            # On main, we want to ensure that we don't have source side specs
             # defined for non-existent builders
             # On branches, we don't want to re-generate the source side specs as
             # that would increase branch day toil and complicate cherry-picks

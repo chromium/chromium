@@ -76,7 +76,7 @@ def link(*, url, text, alt = None, branch_selector = branches.MAIN):
       text - The display text for the link.
       alt - The alt text for the link. This is supposed to be the hover text
         according to the proto
-        https://chromium.googlesource.com/infra/luci/luci-go/+/master/milo/api/config/project.proto,
+        https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/milo/api/config/project.proto,
         but doesn't appear to produce any hover text.
       branch_selector - A branch selector value controlling whether the
         link definition is executed. See branches.star for more information.

@@ -11,7 +11,7 @@ that controls what branches the definition is actually executed for. If
 the `settings` struct in '//project.star', then the resource is not defined. The
 `branch_selector` argument can be one of the following constants referring to
 the category of the branch:
-* MAIN - The resource is defined only for main/master/trunk
+* MAIN - The resource is defined only for main/trunk
     [`settings.is_main`]
 * STANDARD_BRANCHES - The resource is defined only for the beta and stable
     branches.
@@ -26,9 +26,8 @@ composing multiple categories:
     the standad release channels: trunk -> beta -> stable.
 * LTS_MILESTONE - The resource is defined for a branch as it move through the
     long-term suport release channels: trunk -> beta -> stable -> LTC -> LTR.
-* ALL_BRANCHES - The resource is defined for all branches and main/master/trunk.
-* NOT_MAIN - The resource is defined for all branches, but not for
-    main/master/trunk.
+* ALL_BRANCHES - The resource is defined for all branches and main/trunk.
+* NOT_MAIN - The resource is defined for all branches, but not for main/trunk.
 
 The `branch_selector` constants are also accessible via the `branches` struct.
 
@@ -36,8 +35,7 @@ For other uses cases where execution needs to vary by branch, the following are
 also accessible via the `branches` struct:
 * matches - Allows library code to be written that takes branch-specific
     behavior.
-* value - Allows for providing different values between main/master/trunk and
-    branches.
+* value - Allows for providing different values between main/trunk and branches.
 * exec - Allows for conditionally executing starlark modules.
 """
 
@@ -74,9 +72,9 @@ def _matches(branch_selector):
     return False
 
 def _value(*, for_main = None, for_branches = None):
-    """Provide a value that varies between main/master/trunk and branches.
+    """Provide a value that varies between main/trunk and branches.
 
-    If the current project settings indicate that this is main/master/trunk,
+    If the current project settings indicate that this is main/trunk,
     then `for_main` will be returned. Otherwise, `for_branches` will be
     returned.
     """
