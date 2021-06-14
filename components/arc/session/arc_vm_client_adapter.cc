@@ -203,7 +203,11 @@ std::vector<std::string> GenerateKernelCmdline(
   }
 
   std::vector<std::string> result = {
+      // Note: Do not change the value "bertha". This string is checked in
+      // platform2/metrics/process_meter.cc to detect ARCVM's crosvm processes,
+      // for example.
       "androidboot.hardware=bertha",
+
       "androidboot.container=1",
       base::StringPrintf("androidboot.native_bridge=%s", native_bridge.c_str()),
       base::StringPrintf("androidboot.dev_mode=%d", is_dev_mode),
