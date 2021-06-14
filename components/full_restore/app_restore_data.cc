@@ -457,6 +457,22 @@ void AppRestoreData::ClearWindowInfo() {
   status_bar_color.reset();
 }
 
+std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
+    const std::string& app_id,
+    int window_id) const {
+  auto app_launch_info = std::make_unique<AppLaunchInfo>(app_id, window_id);
+
+  app_launch_info->event_flag = event_flag;
+  app_launch_info->container = container;
+  app_launch_info->disposition = disposition;
+  app_launch_info->display_id = display_id;
+  app_launch_info->urls = urls;
+  app_launch_info->file_paths = file_paths;
+  if (intent.has_value())
+    app_launch_info->intent = intent->Clone();
+  return app_launch_info;
+}
+
 std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
   auto window_info = std::make_unique<WindowInfo>();
 

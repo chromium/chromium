@@ -67,6 +67,10 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   // Clears the window's information.
   void ClearWindowInfo();
 
+  // Gets the app launch information.
+  std::unique_ptr<AppLaunchInfo> GetAppLaunchInfo(const std::string& app_id,
+                                                  int window_id) const;
+
   // Gets the window information.
   std::unique_ptr<WindowInfo> GetWindowInfo() const;
 

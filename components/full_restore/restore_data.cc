@@ -168,6 +168,15 @@ void RestoreData::RemoveApp(const std::string& app_id) {
   chrome_app_id_to_current_window_id_.erase(app_id);
 }
 
+std::unique_ptr<AppLaunchInfo> RestoreData::GetAppLaunchInfo(
+    const std::string& app_id,
+    int window_id) {
+  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  return app_restore_data
+             ? app_restore_data->GetAppLaunchInfo(app_id, window_id)
+             : nullptr;
+}
+
 std::unique_ptr<WindowInfo> RestoreData::GetWindowInfo(
     const std::string& app_id,
     int window_id) {

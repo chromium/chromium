@@ -926,6 +926,22 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
     content::RunAllTasksUntilIdle();
   }
 
+  void VerifyGetArcAppLaunchInfo(const std::string& app_id,
+                                 int32_t session_id,
+                                 int32_t restore_window_id) {
+    auto app_launch_info =
+        ::full_restore::GetArcAppLaunchInfo(app_id, session_id);
+    ASSERT_TRUE(app_launch_info);
+
+    EXPECT_EQ(app_id, app_launch_info->app_id);
+
+    EXPECT_TRUE(app_launch_info->window_id.has_value());
+    EXPECT_EQ(restore_window_id, app_launch_info->window_id.value());
+
+    EXPECT_TRUE(app_launch_info->event_flag.has_value());
+    EXPECT_EQ(ui::EventFlags::EF_NONE, app_launch_info->event_flag.value());
+  }
+
   void VerifyWindowProperty(aura::Window* window,
                             int32_t window_id,
                             int32_t restore_window_id,
@@ -1174,6 +1190,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
                        /*restore_window_id*/ kTaskId1,
                        /*hidden=*/false);
 
+  VerifyGetArcAppLaunchInfo(app_id, session_id2, kTaskId1);
+
   // Simulate creating the task for the restored window.
   int32_t kTaskId2 = 200;
   window->SetProperty(::full_restore::kWindowIdKey, kTaskId2);
@@ -1249,6 +1267,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, SaveArcGhostWindow) {
   VerifyWindowProperty(window, /*window_id*/ 0,
                        /*restore_window_id*/ kTaskId1,
                        /*hidden=*/false);
+
+  VerifyGetArcAppLaunchInfo(app_id, session_id2, kTaskId1);
 
   WaitForAppLaunchInfoSaved();
 

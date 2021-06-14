@@ -41,6 +41,15 @@ void SaveWindowInfo(const WindowInfo& window_info) {
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
+std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
+                                                   int32_t session_id) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return nullptr;
+
+  return FullRestoreReadHandler::GetInstance()->GetArcAppLaunchInfo(app_id,
+                                                                    session_id);
+}
+
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return nullptr;

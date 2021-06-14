@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_file_handler.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/restore_data.h"
@@ -167,6 +168,14 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   return GetWindowInfo(restore_window_id);
 }
 
+std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetArcAppLaunchInfo(
+    const std::string& app_id,
+    int32_t session_id) {
+  return arc_read_handler_
+             ? arc_read_handler_->GetArcAppLaunchInfo(app_id, session_id)
+             : nullptr;
+}
+
 int32_t FullRestoreReadHandler::FetchRestoreWindowId(
     const std::string& app_id) {
   auto it = profile_path_to_restore_data_.find(active_profile_path_);
@@ -258,6 +267,17 @@ void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                         int32_t window_id) {
   DCHECK(arc_read_handler_);
   arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
+}
+
+std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetAppLaunchInfo(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t restore_window_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return nullptr;
+
+  return it->second->GetAppLaunchInfo(app_id, restore_window_id);
 }
 
 std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(

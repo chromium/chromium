@@ -128,6 +128,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   // Removes the launch list for |app_id|.
   void RemoveApp(const std::string& app_id);
 
+  // Gets the app launch information with `window_id` for `app_id`.
+  std::unique_ptr<AppLaunchInfo> GetAppLaunchInfo(const std::string& app_id,
+                                                  int window_id);
+
   // Gets the window information with |window_id| for |app_id|.
   std::unique_ptr<WindowInfo> GetWindowInfo(const std::string& app_id,
                                             int window_id);

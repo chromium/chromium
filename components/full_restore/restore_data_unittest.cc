@@ -510,8 +510,52 @@ TEST_F(RestoreDataTest, ConvertNullData) {
   EXPECT_TRUE(app_id_to_launch_list(*restore_data).empty());
 }
 
+TEST_F(RestoreDataTest, GetAppLaunchInfo) {
+  // The app id and window id doesn't exist.
+  auto app_launch_info = restore_data().GetAppLaunchInfo(kAppId1, kWindowId1);
+  EXPECT_FALSE(app_launch_info);
+
+  // Add the app launch info.
+  AddAppLaunchInfos();
+  app_launch_info = restore_data().GetAppLaunchInfo(kAppId1, kWindowId1);
+
+  // Verify the app launch info.
+  EXPECT_TRUE(app_launch_info);
+
+  EXPECT_EQ(kAppId1, app_launch_info->app_id);
+
+  EXPECT_TRUE(app_launch_info->window_id.has_value());
+  EXPECT_EQ(kWindowId1, app_launch_info->window_id.value());
+
+  EXPECT_FALSE(app_launch_info->event_flag.has_value());
+
+  EXPECT_TRUE(app_launch_info->container.has_value());
+  EXPECT_EQ(
+      static_cast<int>(apps::mojom::LaunchContainer::kLaunchContainerWindow),
+      app_launch_info->container.value());
+
+  EXPECT_TRUE(app_launch_info->disposition.has_value());
+  EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
+            app_launch_info->disposition.value());
+
+  EXPECT_FALSE(app_launch_info->arc_session_id.has_value());
+
+  EXPECT_TRUE(app_launch_info->display_id.has_value());
+  EXPECT_EQ(kDisplayId1, app_launch_info->display_id.value());
+
+  EXPECT_TRUE(app_launch_info->file_paths.has_value());
+  ASSERT_EQ(2u, app_launch_info->file_paths.value().size());
+  EXPECT_EQ(base::FilePath(kFilePath1), app_launch_info->file_paths.value()[0]);
+  EXPECT_EQ(base::FilePath(kFilePath2), app_launch_info->file_paths.value()[1]);
+
+  EXPECT_TRUE(app_launch_info->intent.has_value());
+  EXPECT_EQ(kIntentActionSend, app_launch_info->intent.value()->action);
+  EXPECT_EQ(kMimeType, app_launch_info->intent.value()->mime_type);
+  EXPECT_EQ(kShareText1, app_launch_info->intent.value()->share_text);
+}
+
 TEST_F(RestoreDataTest, GetWindowInfo) {
-  // The app id and window id doesn't exist;
+  // The app id and window id doesn't exist.
   auto window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
   EXPECT_FALSE(window_info);
 

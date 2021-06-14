@@ -5,6 +5,7 @@
 #include "components/full_restore/arc_read_handler.h"
 
 #include "base/containers/contains.h"
+#include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/window_info.h"
@@ -95,6 +96,17 @@ void ArcReadHandler::OnTaskDestroyed(int32_t task_id) {
 
 bool ArcReadHandler::HasRestoreData(int32_t window_id) {
   return base::Contains(window_id_to_app_id_, window_id);
+}
+
+std::unique_ptr<AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
+    const std::string& app_id,
+    int32_t session_id) {
+  int32_t restore_window_id = GetArcRestoreWindowIdForSessionId(session_id);
+  if (restore_window_id == 0)
+    return nullptr;
+
+  return FullRestoreReadHandler::GetInstance()->GetAppLaunchInfo(
+      profile_path_, app_id, restore_window_id);
 }
 
 std::unique_ptr<WindowInfo> ArcReadHandler::GetWindowInfo(

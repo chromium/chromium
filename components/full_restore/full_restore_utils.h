@@ -89,6 +89,12 @@ void SaveAppLaunchInfo(const base::FilePath& profile_path,
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveWindowInfo(const WindowInfo& window_info);
 
+// Gets the ARC app launch information from the full restore file for `app_id`
+// and `session_id`.
+COMPONENT_EXPORT(FULL_RESTORE)
+std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
+                                                   int32_t session_id);
+
 // Gets the window information from the full restore file for |window|.
 COMPONENT_EXPORT(FULL_RESTORE)
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
