@@ -25,6 +25,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -144,6 +145,7 @@ public class SigninCheckerTest {
     @MediumTest
     public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        UserActionTester actionTester = new UserActionTester();
 
         final CoreAccountInfo expectedPrimaryAccount =
                 mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
@@ -153,12 +155,15 @@ public class SigninCheckerTest {
                     mAccountManagerTestRule.getCurrentSignedInAccount());
         });
         Assert.assertEquals(2, SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests());
+        Assert.assertTrue(
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
     }
 
     @Test
     @MediumTest
     public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        UserActionTester actionTester = new UserActionTester();
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
@@ -170,6 +175,8 @@ public class SigninCheckerTest {
             return SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests() == 2;
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertFalse(
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
     }
 
     @Test
@@ -179,12 +186,15 @@ public class SigninCheckerTest {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
 
         mActivityTestRule.startMainActivityOnBlankPage();
+        UserActionTester actionTester = new UserActionTester();
 
         // The check should be done once at activity start-up
         CriteriaHelper.pollUiThread(() -> {
             return SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertFalse(
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
     }
 
     @Test
@@ -194,11 +204,14 @@ public class SigninCheckerTest {
         mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
 
         mActivityTestRule.startMainActivityOnBlankPage();
+        UserActionTester actionTester = new UserActionTester();
 
         // The check should be done once at activity start-up
         CriteriaHelper.pollUiThread(() -> {
             return SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertFalse(
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
     }
 }

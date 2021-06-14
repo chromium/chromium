@@ -12,6 +12,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -157,11 +158,11 @@ public class SigninChecker
                 };
                 boolean shouldWipeData = ChromeFeatureList.isEnabled(
                         ChromeFeatureList.WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN);
-                SyncUserDataWiper.wipeSyncUserDataIfRequired(shouldWipeData)
-                        .then((Void v)
-                                        -> mSigninManager.signinAndEnableSync(
-                                                SigninAccessPoint.FORCED_SIGNIN, account,
-                                                signInCallback));
+                SyncUserDataWiper.wipeSyncUserDataIfRequired(shouldWipeData).then((Void v) -> {
+                    RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin");
+                    mSigninManager.signinAndEnableSync(
+                            SigninAccessPoint.FORCED_SIGNIN, account, signInCallback);
+                });
                 return;
             }
         }
