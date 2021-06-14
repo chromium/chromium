@@ -215,6 +215,14 @@ Automation Inspector Chrome extension).
   - macOS: Accessibility Inspector
   - Windows: Inspect, AViewer, accProbe (and many others)
 
+### Supported Platforms and APIs
+
+* Windows: IAccessible (also known as Microsoft Active Accessibility or MSAA),
+  IAccessible2, [UI Automation](uiautomation.md). Chromium also supports
+  [mapping between IAccessible2 and UI Automation nodes](ia2_to_uia.md).
+* Mac: NSAccessibility
+* Linux: ATK
+* Android: [AccessibilityNodeInfo and AccessibilityNodeProvider](android.md)
 
 ## Chromium's multi-process architecture
 
