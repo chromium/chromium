@@ -38,9 +38,7 @@ using TestCompletionCallback =
     BrowsingDataHelperCallback<content::StorageUsageInfo>;
 
 const char kTestIdentifier1[] = "http_www.example.com_0";
-
-const char kTestIdentifierExtension[] =
-    "chrome-extension_behllobkkfkfnphdnhnkndlbkcpglgmj_0";
+const char kTestIdentifier2[] = "http_www.mysite.com_0";
 
 class DatabaseHelperTest : public content::ContentBrowserTest {
  public:
@@ -63,11 +61,11 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
               db_tracker->GetFullDBFilePath(kTestIdentifier1, db_name);
           base::CreateDirectory(db_path1.DirName());
           ASSERT_EQ(0, base::WriteFile(db_path1, nullptr, 0));
-          db_tracker->DatabaseOpened(kTestIdentifierExtension, db_name,
-                                     description, &size);
-          db_tracker->DatabaseClosed(kTestIdentifierExtension, db_name);
+          db_tracker->DatabaseOpened(kTestIdentifier2, db_name, description,
+                                     &size);
+          db_tracker->DatabaseClosed(kTestIdentifier2, db_name);
           base::FilePath db_path2 =
-              db_tracker->GetFullDBFilePath(kTestIdentifierExtension, db_name);
+              db_tracker->GetFullDBFilePath(kTestIdentifier2, db_name);
           base::CreateDirectory(db_path2.DirName());
           ASSERT_EQ(0, base::WriteFile(db_path2, nullptr, 0));
           std::vector<storage::OriginInfo> origins;
@@ -91,9 +89,13 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, FetchData) {
         run_loop.Quit();
       }));
   run_loop.Run();
-  ASSERT_EQ(1u, database_info_list.size());
+  ASSERT_EQ(2u, database_info_list.size());
+
+  auto db_info_it = database_info_list.begin();
   EXPECT_EQ(url::Origin::Create(GURL("http://www.example.com")),
-            database_info_list.begin()->origin);
+            db_info_it->origin);
+  EXPECT_EQ(url::Origin::Create(GURL("http://www.mysite.com")),
+            std::next(db_info_it)->origin);
 }
 
 IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedAddDatabase) {
