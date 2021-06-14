@@ -109,9 +109,10 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
       std::map<arc::ArcAppShelfId, AppServiceAppWindowShelfItemController*>;
 
   // Checks |arc_window_candidates_| and attaches controller when they
-  // are ARC app windows and have task id.
+  // are ARC app windows and have task id or session id.
   void CheckAndAttachControllers();
   void AttachControllerToTask(int taskId);
+  void AttachControllerToSession(int session_id);
 
   // arc::ArcSessionManagerObserver:
   void OnArcOptInManagementCheckStarted() override;
