@@ -261,6 +261,11 @@ class StartupTracingTest
   }
 
   static void CheckOutput(base::FilePath path, OutputType output_type) {
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+    // Skip checks because the thread sanitizer is often too slow to flush trace
+    // data correctly within the timeouts. We still run the tests on TSAN to
+    // catch general threading issues.
+#else // !(defined(OS_LINUX) && defined(THREAD_SANITIZER))
     std::string trace;
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::ReadFileToString(path, &trace))
@@ -274,6 +279,7 @@ class StartupTracingTest
     // as a substring.
     EXPECT_TRUE(trace.find("StartupTracingController::Start") !=
                 std::string::npos);
+#endif // !(defined(OS_LINUX) && defined(THREAD_SANITIZER))
   }
 
   void Wait() {
@@ -311,8 +317,12 @@ INSTANTIATE_TEST_SUITE_P(
             OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
 
 // TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-// TODO(crbug.com/1213441): Failing on Linux and Android.
-IN_PROC_BROWSER_TEST_P(StartupTracingTest, DISABLED_TestEnableTracing) {
+#if (defined(OS_WIN) && DCHECK_IS_ON())
+#define MAYBE_TestEnableTracing DISABLED_TestEnableTracing
+#else
+#define MAYBE_TestEnableTracing TestEnableTracing
+#endif
+IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   if (GetOutputLocation() ==
@@ -337,9 +347,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
 // TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-// TODO(crbug.com/1211717): Failing on Linux TSAN builds.
-#if (defined(OS_WIN) && DCHECK_IS_ON()) || \
-    (defined(OS_LINUX) && defined(THREAD_SANITIZER))
+#if defined(OS_WIN) && DCHECK_IS_ON()
 #define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
 #else
 #define MAYBE_StopOnUIThread StopOnUIThread
