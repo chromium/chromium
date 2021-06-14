@@ -1300,13 +1300,16 @@ TEST_F(FeaturePolicyMutationTest, TestAllowNewFeatureUnconditionally) {
 }
 
 class PermissionsPolicyViolationHistogramTest : public testing::Test {
+ public:
+  PermissionsPolicyViolationHistogramTest(
+      const PermissionsPolicyViolationHistogramTest&) = delete;
+  PermissionsPolicyViolationHistogramTest& operator=(
+      const PermissionsPolicyViolationHistogramTest&) = delete;
+
  protected:
   PermissionsPolicyViolationHistogramTest() = default;
 
   ~PermissionsPolicyViolationHistogramTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PermissionsPolicyViolationHistogramTest);
 };
 
 }  // namespace blink

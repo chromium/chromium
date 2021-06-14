@@ -20,6 +20,9 @@ class LayoutAnimationsPolicy {
   DISALLOW_NEW();
 
  public:
+  LayoutAnimationsPolicy(const LayoutAnimationsPolicy&) = delete;
+  LayoutAnimationsPolicy& operator=(const LayoutAnimationsPolicy&) = delete;
+
   // Returns a set of the CSS properties which are affected by the permissions
   // policy 'layout-animations'.
   static const HashSet<const CSSProperty*>& AffectedCSSProperties();
@@ -34,8 +37,6 @@ class LayoutAnimationsPolicy {
 
  private:
   LayoutAnimationsPolicy();
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutAnimationsPolicy);
 };
 
 }  // namespace blink
