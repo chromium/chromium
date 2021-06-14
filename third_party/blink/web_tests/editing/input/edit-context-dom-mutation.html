@@ -80,7 +80,7 @@
       });
 
       window.getSelection().selectAllChildren(div);
-      eventSender.keyDown(testcase['key'], [testcase['modifier']]);
+      eventSender.keyDown(testcase['key'], testcase['modifier']);
       assert_equals(div.childNodes[0].nodeType, Node.TEXT_NODE, "DOM shouldn't be modified, i.e. no extra <b>, <i> or <u>");
       assert_equals(got_before_input_event, true, "The beforeinput event should be fired.");
 
@@ -125,6 +125,7 @@
     formatCommands = [{'modifier': 'shiftKey', 'key': 'Insert', 'command': 'insertFromPaste'}];
   } else {
     formatCommands = [{'modifier': 'shiftKey', 'key': 'Insert', 'command': 'insertFromPaste'},
+                      {'modifier': ['shiftKey', 'ctrlKey'], 'key': 'v', 'command': 'insertFromPaste'},
                       {'modifier': 'ctrlKey', 'key': 'v', 'command': 'insertFromPaste'}];
   }
 
@@ -151,7 +152,7 @@
       eventSender.keyDown('c', ['ctrlKey']);
       window.getSelection().collapse(div);
       // paste 'abc' at the begining.
-      eventSender.keyDown(testcase['key'], [testcase['modifier']]);
+      eventSender.keyDown(testcase['key'], testcase['modifier']);
       assert_equals(div.innerText, myText, "DOM shouldn't be modified");
       assert_equals(got_before_input_event, true, "The beforeinput event should be fired.");
 

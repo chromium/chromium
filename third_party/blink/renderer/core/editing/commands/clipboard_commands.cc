@@ -525,6 +525,10 @@ bool ClipboardCommands::ExecutePasteAndMatchStyle(LocalFrame& frame,
     // 'beforeinput' event handler may destroy target frame.
     if (frame.GetDocument()->GetFrame() != frame)
       return true;
+
+    // No DOM mutation if EditContext is active.
+    if (frame.GetInputMethodController().GetActiveEditContext())
+      return true;
   }
 
   PasteAsPlainTextFromClipboard(frame, source);
