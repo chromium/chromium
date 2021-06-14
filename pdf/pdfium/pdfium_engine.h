@@ -99,8 +99,7 @@ class PDFiumEngine : public PDFEngine,
   bool HandleInputEvent(const blink::WebInputEvent& event) override;
   void PrintBegin() override;
   pp::Resource PrintPages(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
+      const std::vector<int>& page_numbers,
       const PP_PrintSettings_Dev& print_settings,
       const PP_PdfPrintSettings_Dev& pdf_print_settings) override;
   void PrintEnd() override;
@@ -416,14 +415,12 @@ class PDFiumEngine : public PDFEngine,
   bool ExtendSelection(int page_index, int char_index);
 
   pp::Buffer_Dev PrintPagesAsRasterPdf(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
+      const std::vector<int>& page_numbers,
       const PP_PrintSettings_Dev& print_settings,
       const PP_PdfPrintSettings_Dev& pdf_print_settings);
 
   pp::Buffer_Dev PrintPagesAsPdf(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
+      const std::vector<int>& page_numbers,
       const PP_PrintSettings_Dev& print_settings,
       const PP_PdfPrintSettings_Dev& pdf_print_settings);
 

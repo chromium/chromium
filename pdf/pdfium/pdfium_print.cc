@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -235,25 +234,6 @@ int GetBlockForJpeg(void* param,
   return 1;
 }
 
-std::string GetPageRangeStringFromRange(
-    const PP_PrintPageNumberRange_Dev* page_ranges,
-    uint32_t page_range_count) {
-  DCHECK(page_range_count);
-
-  std::string page_number_str;
-  for (uint32_t i = 0; i < page_range_count; ++i) {
-    if (!page_number_str.empty())
-      page_number_str.push_back(',');
-    const PP_PrintPageNumberRange_Dev& range = page_ranges[i];
-    page_number_str.append(base::NumberToString(range.first_page_number + 1));
-    if (range.first_page_number != range.last_page_number) {
-      page_number_str.push_back('-');
-      page_number_str.append(base::NumberToString(range.last_page_number + 1));
-    }
-  }
-  return page_number_str;
-}
-
 bool FlattenPrintData(FPDF_DOCUMENT doc) {
   DCHECK(doc);
 
@@ -281,22 +261,6 @@ std::vector<uint8_t> PDFiumPrint::CreateFlattenedPdf(ScopedFPDFDocument doc) {
   return ConvertDocToBuffer(std::move(doc));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// static
-std::vector<uint32_t> PDFiumPrint::GetPageNumbersFromPrintPageNumberRange(
-    const PP_PrintPageNumberRange_Dev* page_ranges,
-    uint32_t page_range_count) {
-  DCHECK(page_range_count);
-
-  std::vector<uint32_t> page_numbers;
-  for (uint32_t i = 0; i < page_range_count; ++i) {
-    for (uint32_t page_number = page_ranges[i].first_page_number;
-         page_number <= page_ranges[i].last_page_number; ++page_number) {
-      page_numbers.push_back(page_number);
-    }
-  }
-  return page_numbers;
-}
 
 // static
 std::vector<uint8_t> PDFiumPrint::CreateNupPdf(
@@ -333,14 +297,13 @@ void PDFiumPrint::FitContentsToPrintableArea(FPDF_DOCUMENT doc,
 }
 
 std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
-    const PP_PrintPageNumberRange_Dev* page_ranges,
-    uint32_t page_range_count,
+    const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings,
     bool raster) {
   std::vector<uint8_t> buffer;
-  ScopedFPDFDocument output_doc = CreatePrintPdf(
-      page_ranges, page_range_count, print_settings, pdf_print_settings);
+  ScopedFPDFDocument output_doc =
+      CreatePrintPdf(page_numbers, print_settings, pdf_print_settings);
   if (raster)
     output_doc = CreateRasterPdf(std::move(output_doc), print_settings);
   if (GetDocumentPageCount(output_doc.get()))
@@ -349,18 +312,16 @@ std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
 }
 
 ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
-    const PP_PrintPageNumberRange_Dev* page_ranges,
-    uint32_t page_range_count,
+    const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings) {
   ScopedFPDFDocument output_doc(FPDF_CreateNewDocument());
   DCHECK(output_doc);
   FPDF_CopyViewerPreferences(output_doc.get(), engine_->doc());
 
-  std::string page_number_str =
-      GetPageRangeStringFromRange(page_ranges, page_range_count);
-  if (!FPDF_ImportPages(output_doc.get(), engine_->doc(),
-                        page_number_str.c_str(), 0)) {
+  if (!FPDF_ImportPagesByIndex(output_doc.get(), engine_->doc(),
+                               page_numbers.data(), page_numbers.size(),
+                               /*index=*/0)) {
     return nullptr;
   }
 

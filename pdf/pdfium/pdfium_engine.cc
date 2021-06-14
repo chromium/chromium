@@ -970,32 +970,26 @@ void PDFiumEngine::PrintBegin() {
 }
 
 pp::Resource PDFiumEngine::PrintPages(
-    const PP_PrintPageNumberRange_Dev* page_ranges,
-    uint32_t page_range_count,
+    const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings) {
-  if (!page_range_count)
-    return pp::Resource();
+  DCHECK(!page_numbers.empty());
 
   if ((print_settings.format & PP_PRINTOUTPUTFORMAT_PDF) &&
       HasPermission(PERMISSION_PRINT_HIGH_QUALITY)) {
-    return PrintPagesAsPdf(page_ranges, page_range_count, print_settings,
-                           pdf_print_settings);
+    return PrintPagesAsPdf(page_numbers, print_settings, pdf_print_settings);
   }
   if (HasPermission(PERMISSION_PRINT_LOW_QUALITY)) {
-    return PrintPagesAsRasterPdf(page_ranges, page_range_count, print_settings,
+    return PrintPagesAsRasterPdf(page_numbers, print_settings,
                                  pdf_print_settings);
   }
   return pp::Resource();
 }
 
 pp::Buffer_Dev PDFiumEngine::PrintPagesAsRasterPdf(
-    const PP_PrintPageNumberRange_Dev* page_ranges,
-    uint32_t page_range_count,
+    const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings) {
-  DCHECK(page_range_count);
-
   // If document is not downloaded yet, disable printing.
   if (doc() && !doc_loader_->IsDocumentComplete())
     return pp::Buffer_Dev();
@@ -1004,33 +998,26 @@ pp::Buffer_Dev PDFiumEngine::PrintPagesAsRasterPdf(
 
   SetLastInstance();
 
-  return ConvertPdfToBufferDev(
-      print_.PrintPagesAsPdf(page_ranges, page_range_count, print_settings,
-                             pdf_print_settings, /*raster=*/true));
+  return ConvertPdfToBufferDev(print_.PrintPagesAsPdf(
+      page_numbers, print_settings, pdf_print_settings, /*raster=*/true));
 }
 
 pp::Buffer_Dev PDFiumEngine::PrintPagesAsPdf(
-    const PP_PrintPageNumberRange_Dev* page_ranges,
-    uint32_t page_range_count,
+    const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings) {
-  DCHECK(page_range_count);
   DCHECK(doc());
 
   KillFormFocus();
 
-  std::vector<uint32_t> page_numbers =
-      PDFiumPrint::GetPageNumbersFromPrintPageNumberRange(page_ranges,
-                                                          page_range_count);
-  for (uint32_t page_number : page_numbers) {
+  for (int page_number : page_numbers) {
     pages_[page_number]->GetPage();
     if (!IsPageVisible(page_number))
       pages_[page_number]->Unload();
   }
 
-  return ConvertPdfToBufferDev(
-      print_.PrintPagesAsPdf(page_ranges, page_range_count, print_settings,
-                             pdf_print_settings, /*raster=*/false));
+  return ConvertPdfToBufferDev(print_.PrintPagesAsPdf(
+      page_numbers, print_settings, pdf_print_settings, /*raster=*/false));
 }
 
 pp::Buffer_Dev PDFiumEngine::ConvertPdfToBufferDev(

@@ -37,6 +37,7 @@
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/input_event_conversions.h"
+#include "pdf/ppapi_migration/printing_conversions.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ppapi_migration/value_conversions.h"
 #include "ppapi/c/dev/ppb_cursor_control_dev.h"
@@ -763,7 +764,13 @@ pp::Resource OutOfProcessInstance::PrintPages(
     return pp::Resource();
 
   print_settings_.print_pages_called = true;
-  return engine()->PrintPages(page_ranges, page_range_count,
+  if (page_range_count == 0)
+    return pp::Resource();
+
+  const std::vector<int> page_numbers =
+      PageNumbersFromPPPrintPageNumberRange(page_ranges, page_range_count);
+
+  return engine()->PrintPages(page_numbers,
                               print_settings_.pepper_print_settings,
                               print_settings_.pdf_print_settings);
 }

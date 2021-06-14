@@ -24,7 +24,7 @@
 namespace chrome_pdf {
 
 using PDFiumPrintTest = PDFiumTestBase;
-using testing::ElementsAre;
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -87,23 +87,6 @@ void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
 
 }  // namespace
 
-TEST_F(PDFiumPrintTest, GetPageNumbersFromPrintPageNumberRange) {
-  std::vector<uint32_t> page_numbers;
-
-  {
-    const PP_PrintPageNumberRange_Dev page_ranges[] = {{0, 2}};
-    page_numbers = PDFiumPrint::GetPageNumbersFromPrintPageNumberRange(
-        &page_ranges[0], base::size(page_ranges));
-    EXPECT_THAT(page_numbers, ElementsAre(0, 1, 2));
-  }
-  {
-    const PP_PrintPageNumberRange_Dev page_ranges[] = {{0, 0}, {2, 2}, {4, 5}};
-    page_numbers = PDFiumPrint::GetPageNumbersFromPrintPageNumberRange(
-        &page_ranges[0], base::size(page_ranges));
-    EXPECT_THAT(page_numbers, ElementsAre(0, 2, 4, 5));
-  }
-}
-
 TEST_F(PDFiumPrintTest, Basic) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -126,45 +109,39 @@ TEST_F(PDFiumPrintTest, Basic) {
     // Print 2 pages.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0},
                                                     {612.0, 792.0}};
-    const PP_PrintPageNumberRange_Dev page_ranges[] = {{0, 1}};
+    const std::vector<int> pages = {0, 1};
     std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(&page_ranges[0], base::size(page_ranges),
-                              print_settings, pdf_print_settings,
+        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                               /*raster=*/false);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(&page_ranges[0], base::size(page_ranges),
-                                     print_settings, pdf_print_settings,
+    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                                      /*raster=*/true);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
   {
     // Print 1 page.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-    const PP_PrintPageNumberRange_Dev page_ranges[] = {{0, 0}};
+    const std::vector<int> pages = {0};
     std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(&page_ranges[0], base::size(page_ranges),
-                              print_settings, pdf_print_settings,
+        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                               /*raster=*/false);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(&page_ranges[0], base::size(page_ranges),
-                                     print_settings, pdf_print_settings,
+    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                                      /*raster=*/true);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
   {
     // Print the other page.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-    const PP_PrintPageNumberRange_Dev page_ranges[] = {{1, 1}};
+    const std::vector<int> pages = {1};
     std::vector<uint8_t> pdf_data =
-        print.PrintPagesAsPdf(&page_ranges[0], base::size(page_ranges),
-                              print_settings, pdf_print_settings,
+        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                               /*raster=*/false);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(&page_ranges[0], base::size(page_ranges),
-                                     print_settings, pdf_print_settings,
+    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                                      /*raster=*/true);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
@@ -188,21 +165,20 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
                                          PP_PRINTOUTPUTFORMAT_PDF};
   constexpr PP_PdfPrintSettings_Dev pdf_print_settings = {1, 100};
   const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-  constexpr PP_PrintPageNumberRange_Dev page_range = {0, 0};
+  const std::vector<int> pages = {0};
 
   {
     // Default scaling
     static const char md5_hash[] = "40e2e16416015cdde5c6e5735c1d06ac";
     static const char md5_hash_raster[] = "c29b9ed661143ea7f177d7af8a336ef7";
 
-    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(
-        &page_range, 1, print_settings, pdf_print_settings,
-        /*raster=*/false);
+    std::vector<uint8_t> pdf_data =
+        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
+                              /*raster=*/false);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], md5_hash);
 
-    pdf_data = print.PrintPagesAsPdf(&page_range, 1, print_settings,
-                                     pdf_print_settings,
+    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                                      /*raster=*/true);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], md5_hash_raster);
@@ -215,14 +191,13 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
     static const char md5_hash[] = "41847e1f0c581150a84794482528f790";
     static const char md5_hash_raster[] = "436354693512c8144ae51837ff9f951e";
 
-    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(
-        &page_range, 1, print_settings, pdf_print_settings,
-        /*raster=*/false);
+    std::vector<uint8_t> pdf_data =
+        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
+                              /*raster=*/false);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], md5_hash);
 
-    pdf_data = print.PrintPagesAsPdf(&page_range, 1, print_settings,
-                                     pdf_print_settings,
+    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                                      /*raster=*/true);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], md5_hash_raster);
@@ -234,14 +209,13 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
     static const char md5_hash[] = "3a4828228bcbae230574c057b7a0669e";
     static const char md5_hash_raster[] = "8834ddfb3ef4483acf8da9d27d43cf1f";
 
-    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(
-        &page_range, 1, print_settings, pdf_print_settings,
-        /*raster=*/false);
+    std::vector<uint8_t> pdf_data =
+        print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
+                              /*raster=*/false);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], md5_hash);
 
-    pdf_data = print.PrintPagesAsPdf(&page_range, 1, print_settings,
-                                     pdf_print_settings,
+    pdf_data = print.PrintPagesAsPdf(pages, print_settings, pdf_print_settings,
                                      /*raster=*/true);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
     CheckPdfRendering(pdf_data, 0, kExpectedDimensions[0], md5_hash_raster);
