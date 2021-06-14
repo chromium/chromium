@@ -109,20 +109,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
 
-  static absl::optional<ProfileState> GetStateForProfile(
-      StateSnapshot* state_snapshot,
-      Profile* profile);
-  static absl::optional<BrowserState> GetStateForBrowser(
-      StateSnapshot* state_snapshot,
-      Profile* profile,
-      Browser* browser);
-  static absl::optional<TabState> GetStateForActiveTab(
-      BrowserState browser_state);
-  static absl::optional<AppState> GetStateForAppId(
-      StateSnapshot* state_snapshot,
-      Profile* profile,
-      web_app::AppId id);
-
+  // State snapshot helpers
   // Supported scopes:
   //  * site_a
   //  * site_a/foo
@@ -133,27 +120,37 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
                                          Profile* profile,
                                          const std::string& scope);
 
-  static bool IsInspectionAction(const std::string& action);
-  static std::string StripAllWhitespace(std::string line);
-  static std::string GetCommandLineTestOverride();
+  static absl::optional<TabState> GetStateForActiveTab(
+      BrowserState browser_state);
+  static absl::optional<AppState> GetStateForAppId(
+      StateSnapshot* state_snapshot,
+      Profile* profile,
+      web_app::AppId id);
+  static absl::optional<BrowserState> GetStateForBrowser(
+      StateSnapshot* state_snapshot,
+      Profile* profile,
+      Browser* browser);
+  static absl::optional<ProfileState> GetStateForProfile(
+      StateSnapshot* state_snapshot,
+      Profile* profile);
 
   void SetUp(base::FilePath test_data_dir);
   void SetUpOnMainThread();
 
   // Test Framework
-  static base::FilePath GetTestFilePath(base::FilePath test_data_dir,
-                                        const std::string& file_name);
-  static std::vector<std::string> ReadTestInputFile(
-      base::FilePath test_data_dir,
-      const std::string& file_name);
-  static std::vector<std::string> GetPlatformIgnoredTests(
-      base::FilePath test_data_dir,
-      const std::string& file_name);
   static std::vector<std::string> BuildAllPlatformTestCaseSet(
       base::FilePath test_data_dir,
       const std::string& test_case_file_name);
-  void ParseParams(std::string action_strings);
   void ExecuteAction(const std::string& action_string);
+  static std::vector<std::string> GetPlatformIgnoredTests(
+      base::FilePath test_data_dir,
+      const std::string& file_name);
+  static base::FilePath GetTestFilePath(base::FilePath test_data_dir,
+                                        const std::string& file_name);
+  void ParseParams(std::string action_strings);
+  static std::vector<std::string> ReadTestInputFile(
+      base::FilePath test_data_dir,
+      const std::string& file_name);
 
   // Automated Testing Actions
   //
@@ -172,11 +169,10 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void ClosePWA();
   void InstallCreateShortcut(bool open_in_window);
   void InstallLocally();
-  web_app::AppId InstallOmniboxOrMenu();
+  web_app::AppId InstallOmnibox();
   void LaunchInternal(const std::string& action_param);
   void ListAppsInternal();
   void NavigateTabbedBrowserToSite(const GURL& url);
-  void RemovePolicyApp(const std::string& action_param);
   void SetOpenInTabInternal(const std::string& action_param);
   void SetOpenInWindowInternal(const std::string& action_param);
   void SwitchProfileClients();
@@ -184,6 +180,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void TurnSyncOn();
   void UninstallFromMenu();
   void UninstallInternal(const std::string& action_param);
+  void UninstallPolicyApp(const std::string& action_param);
   void ManifestUpdateDisplay(const std::string& action_scope,
                              DisplayMode display_mode);
   void UserSigninInternal();
@@ -229,7 +226,6 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
       observation_{this};
 
   StateSnapshot ConstructStateSnapshot();
-  const net::EmbeddedTestServer* embedded_test_server();
 
   // Supported params:
   //  * site_a
@@ -239,13 +235,12 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   //  * site_c
   GURL GetAppURLForManifest(const std::string& action_scope,
                             DisplayMode display_mode);
-  GURL GetNonInstallableAppURL();
-  GURL GetInScopeURL(const std::string& action_param);
-  GURL GetOutOfScopeURL(const std::string& action_param);
-  GURL GetURLForScope(const std::string& action_param);
-
   content::WebContents* GetCurrentTab(Browser* browser);
+  GURL GetInScopeURL(const std::string& action_param);
+  GURL GetNonInstallableAppURL();
+  GURL GetOutOfScopeURL(const std::string& action_param);
   WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }
+  GURL GetURLForScope(const std::string& action_param);
 
   // This action only works if no navigations to the given app_url occur
   // between app installation and calls to this action.
@@ -255,6 +250,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void MaybeWaitForManifestUpdates(Profile* profile);
 
   Browser* browser();
+  const net::EmbeddedTestServer* embedded_test_server();
   Profile* profile() {
     if (!active_profile_) {
       active_profile_ = delegate_->GetAllProfiles()[0];
