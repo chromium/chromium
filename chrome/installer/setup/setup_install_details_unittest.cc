@@ -29,6 +29,10 @@ struct TestData {
   install_static::InstallConstantIndex index;
   bool system_level;
   const wchar_t* channel;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  bool is_extended_stable_channel;
+  const wchar_t* channel_override;
+#endif
 };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -41,6 +45,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"",                           // Expect stable channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --channel=stable",  // User-level, primary mode.
@@ -49,6 +55,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,   // Expect primary mode.
         false,                          // Expect user-level.
         L"",                            // Expect stable channel.
+        false,                          // Expect not extended stable channel.
+        L"stable",                      // Expect the channel override.
     },
     {
         L"setup.exe --channel",        // User-level, primary mode.
@@ -57,6 +65,18 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"",                           // Expect stable channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
+    },
+    {
+        L"setup.exe --channel=extended",  // User-level, primary mode.
+        L"",                              // New install.
+        L"x64-stable",                    // Stable channel.
+        install_static::STABLE_INDEX,     // Expect primary mode.
+        false,                            // Expect user-level.
+        L"",                              // Expect stable channel.
+        true,                             // Expect extended stable channel.
+        L"extended",                      // Expect the channel override.
     },
     {
         L"setup.exe",                  // User-level, primary mode.
@@ -65,6 +85,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"",                           // Expect stable channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --channel=beta",   // User-level, primary mode, beta
@@ -74,6 +96,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"beta",                       // Expect beta channel.
+        false,                         // Expect not extended stable channel.
+        L"beta"                        // Expect the channel override.
     },
     {
         L"setup.exe --channel=beta",   // User-level, primary mode, beta
@@ -83,6 +107,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"beta",                       // Expect beta channel.
+        false,                         // Expect not extended stable channel.
+        L"beta",                       // Expect the channel override.
     },
     {
         L"setup.exe --channel=beta",   // User-level, primary mode, beta
@@ -92,6 +118,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"beta",                       // Expect beta channel.
+        false,                         // Expect not extended stable channel.
+        L"beta",                       // Expect the channel override.
     },
     {
         L"setup.exe --channel=dev",    // User-level, primary mode, dev channel.
@@ -100,6 +128,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"dev",                        // Expect dev channel.
+        false,                         // Expect not extended stable channel.
+        L"dev",                        // Expect the channel override.
     },
     {
         L"setup.exe --channel=dev",    // User-level, primary mode, dev channel.
@@ -108,6 +138,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"dev",                        // Expect dev channel.
+        false,                         // Expect not extended stable channel.
+        L"dev",                        // Expect the channel override.
     },
     {
         L"setup.exe --channel=dev",    // User-level, primary mode, dev channel.
@@ -116,6 +148,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"dev",                        // Expect dev channel.
+        false,                         // Expect not extended stable channel.
+        L"dev",                        // Expect the channel override.
     },
     {
         L"setup.exe --channel=bad",    // User-level, primary mode, bad channel.
@@ -124,6 +158,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"",                           // Expect stable channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --channel=bad",    // User-level, primary mode, bad channel.
@@ -132,6 +168,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"",                           // Expect stable channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe",                  // User-level, primary mode.
@@ -140,6 +178,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"beta",                       // Expect beta channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --channel=dev",    // User-level, primary mode.
@@ -148,6 +188,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         false,                         // Expect user-level.
         L"dev",                        // Expect dev channel.
+        false,                         // Expect not extended stable channel.
+        L"dev",                        // Expect the channel override.
     },
     {
         L"setup.exe --chrome-beta",  // User-level, secondary SxS beta mode.
@@ -156,6 +198,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,  // Expect SxS beta mode.
         false,                       // Expect user-level.
         L"beta",                     // Expect beta channel.
+        false,                       // Expect not extended stable channel.
+        L"",                         // Expect no channel override.
     },
     {
         L"setup.exe --chrome-beta --channel=dev",  // User-level, secondary SxS
@@ -165,6 +209,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,                // Expect SxS beta mode.
         false,                                     // Expect user-level.
         L"beta",                                   // Expect beta channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --chrome-beta --channel=dev",  // User-level, secondary SxS
@@ -174,6 +220,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,                // Expect SxS beta mode.
         false,                                     // Expect user-level.
         L"beta",                                   // Expect beta channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --chrome-beta",    // User-level, secondary SxS beta mode.
@@ -182,6 +230,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,    // Expect SxS beta mode.
         false,                         // Expect user-level.
         L"beta",                       // Expect beta channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --chrome-dev",  // User-level, secondary SxS dev mode.
@@ -190,6 +240,8 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,  // Expect SxS dev mode.
         false,                      // Expect user-level.
         L"dev",                     // Expect dev channel.
+        false,                      // Expect not extended stable channel.
+        L"",                        // Expect no channel override.
     },
     {
         L"setup.exe --chrome-dev --channel=beta",  // User-level, secondary SxS
@@ -199,6 +251,8 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,                 // Expect SxS dev mode.
         false,                                     // Expect user-level.
         L"dev",                                    // Expect dev channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --chrome-dev --channel",  // User-level, secondary SxS
@@ -208,6 +262,8 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,            // Expect SxS dev mode.
         false,                                // Expect user-level.
         L"dev",                               // Expect dev channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --chrome-dev",    // User-level, secondary SxS dev mode.
@@ -216,6 +272,8 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,    // Expect SxS dev mode.
         false,                        // Expect user-level.
         L"dev",                       // Expect dev channel.
+        false,                        // Expect not extended stable channel.
+        L"",                          // Expect no channel override.
     },
     {
         L"setup.exe --chrome-sxs",     // User-level, secondary SxS canary mode.
@@ -224,6 +282,8 @@ constexpr TestData kTestData[] = {
         install_static::CANARY_INDEX,  // Expect SxS canary mode.
         false,                         // Expect user-level.
         L"canary",                     // Expect canary channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --chrome-sxs --channel=dev",  // User-level, secondary SxS
@@ -233,6 +293,8 @@ constexpr TestData kTestData[] = {
         install_static::CANARY_INDEX,             // Expect SxS canary mode.
         false,                                    // Expect user-level.
         L"canary",                                // Expect canary channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --chrome-sxs --channel",  // User-level, secondary SxS
@@ -242,6 +304,8 @@ constexpr TestData kTestData[] = {
         install_static::CANARY_INDEX,         // Expect SxS canary mode.
         false,                                // Expect user-level.
         L"canary",                            // Expect canary channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --chrome-sxs",     // User-level, secondary SxS canary mode.
@@ -250,6 +314,8 @@ constexpr TestData kTestData[] = {
         install_static::CANARY_INDEX,  // Expect SxS canary mode.
         false,                         // Expect user-level.
         L"canary",                     // Expect canary channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     // System-level test cases.
     {
@@ -259,6 +325,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         true,                          // Expect system-level.
         L"",                           // Expect stable channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --channel=beta --system-level",  // System-level, primary
@@ -268,6 +336,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,                // Expect primary mode.
         true,                                        // Expect system-level.
         L"beta",                                     // Expect beta channel.
+        false,    // Expect not extended stable channel.
+        L"beta",  // Expect the channel override.
     },
     {
         L"setup.exe --channel=beta --system-level",  // System-level, primary
@@ -277,6 +347,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,   // Expect primary mode.
         true,                           // Expect system-level.
         L"beta",                        // Expect beta channel.
+        false,                          // Expect not extended stable channel.
+        L"beta",                        // Expect the channel override.
     },
     {
         L"setup.exe --channel=dev --system-level",  // System-level, primary
@@ -286,6 +358,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,               // Expect primary mode.
         true,                                       // Expect system-level.
         L"dev",                                     // Expect dev channel.
+        false,   // Expect not extended stable channel.
+        L"dev",  // Expect the channel override.
     },
     {
         L"setup.exe --channel=dev --system-level",  // System-level, primary
@@ -295,6 +369,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,   // Expect primary mode.
         true,                           // Expect system-level.
         L"dev",                         // Expect dev channel.
+        false,                          // Expect not extended stable channel.
+        L"dev",                         // Expect the channel override.
     },
     {
         L"setup.exe --channel=bad --system-level",  // System-level, primary
@@ -304,6 +380,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,               // Expect primary mode.
         true,                                       // Expect system-level.
         L"",                                        // Expect stable channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --channel=bad --system-level",  // System-level, primary
@@ -313,6 +391,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,   // Expect primary mode.
         true,                           // Expect system-level.
         L"",                            // Expect stable channel.
+        false,                          // Expect not extended stable channel.
+        L"",                            // Expect no channel override.
     },
     {
         L"setup.exe --system-level",    // System-level, primary mode.
@@ -321,6 +401,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,   // Expect primary mode.
         true,                           // Expect system-level.
         L"",                            // Expect stable channel.
+        false,                          // Expect not extended stable channel.
+        L"",                            // Expect no channel override.
     },
     {
         L"setup.exe --system-level",   // System-level, primary mode.
@@ -329,6 +411,8 @@ constexpr TestData kTestData[] = {
         install_static::STABLE_INDEX,  // Expect primary mode.
         true,                          // Expect system-level.
         L"beta",                       // Expect beta channel.
+        false,                         // Expect not extended stable channel.
+        L"",                           // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-beta",  // User-level, secondary SxS
@@ -338,6 +422,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,                 // Expect SxS beta mode.
         true,                                       // Expect user-level.
         L"beta",                                    // Expect beta channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-beta",  // User-level, secondary SxS
@@ -347,6 +433,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,                   // Expect SxS beta mode.
         true,                                         // Expect user-level.
         L"beta",                                      // Expect beta channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-dev",  // User-level, secondary SxS
@@ -356,6 +444,8 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,                 // Expect SxS dev mode.
         true,                                      // Expect user-level.
         L"dev",                                    // Expect dev channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-dev",  // User-level, secondary SxS
@@ -365,6 +455,8 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,                   // Expect SxS dev mode.
         true,                                        // Expect user-level.
         L"dev",                                      // Expect dev channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-beta "
@@ -374,6 +466,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,  // Expect SxS beta mode.
         true,                        // Expect user-level.
         L"beta",                     // Expect beta channel.
+        false,                       // Expect not extended stable channel.
+        L"",                         // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-beta "
@@ -383,6 +477,8 @@ constexpr TestData kTestData[] = {
         install_static::BETA_INDEX,                   // Expect SxS beta mode.
         true,                                         // Expect user-level.
         L"beta",                                      // Expect beta channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-dev "
@@ -392,6 +488,8 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,  // Expect SxS dev mode.
         true,                       // Expect user-level.
         L"dev",                     // Expect dev channel.
+        false,                      // Expect not extended stable channel.
+        L"",                        // Expect no channel override.
     },
     {
         L"setup.exe --system-level --chrome-dev "
@@ -401,6 +499,19 @@ constexpr TestData kTestData[] = {
         install_static::DEV_INDEX,                   // Expect SxS dev mode.
         true,                                        // Expect user-level.
         L"dev",                                      // Expect dev channel.
+        false,  // Expect not extended stable channel.
+        L"",    // Expect no channel override.
+    },
+    {
+        L"setup.exe --system-level "
+        L"--channel=extended",         // System-level, primary mode.
+        L"",                           // New install.
+        L"x64-stable",                 // Stable channel.
+        install_static::STABLE_INDEX,  // Expect primary mode.
+        true,                          // Expect system-level.
+        L"",                           // Expect stable channel.
+        true,                          // Expect extended stable channel.
+        L"extended",                   // Expect the channel override.
     },
 };
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -539,6 +650,11 @@ TEST_P(MakeInstallDetailsTest, Test) {
   EXPECT_THAT(details->install_mode_index(), Eq(test_data().index));
   EXPECT_THAT(details->system_level(), Eq(test_data().system_level));
   EXPECT_THAT(details->channel(), Eq(test_data().channel));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_THAT(details->is_extended_stable_channel(),
+              Eq(test_data().is_extended_stable_channel));
+  EXPECT_THAT(details->channel_override(), Eq(test_data().channel_override));
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

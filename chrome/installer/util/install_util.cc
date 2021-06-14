@@ -484,8 +484,10 @@ void InstallUtil::AppendModeAndChannelSwitches(
     command_line->AppendSwitch(install_details.install_switch());
   if (install_details.channel_origin() ==
       install_static::ChannelOrigin::kPolicy) {
+    // Use channel_override rather than simply channel so that extended stable
+    // is differentiated from regular.
     command_line->AppendSwitchNative(installer::switches::kChannel,
-                                     install_details.channel());
+                                     install_details.channel_override());
   }
 }
 

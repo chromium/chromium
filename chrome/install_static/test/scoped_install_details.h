@@ -23,6 +23,9 @@ class ScopedInstallDetails {
   // TODO(grt): replace bool and int with more obvious types (e.g., enum).
   explicit ScopedInstallDetails(bool system_level = false,
                                 int install_mode_index = 0);
+
+  // Installs `details` as the current instance.
+  explicit ScopedInstallDetails(std::unique_ptr<InstallDetails> details);
   ~ScopedInstallDetails();
 
  private:
