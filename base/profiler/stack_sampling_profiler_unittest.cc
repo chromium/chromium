@@ -47,8 +47,8 @@
 
 // STACK_SAMPLING_PROFILER_SUPPORTED is used to conditionally enable the tests
 // below for supported platforms (currently Win x64 and Mac x64).
-#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) || \
-    (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) || \
+#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) ||                      \
+    (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) || (defined(OS_IOS)) || \
     (defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
 #define STACK_SAMPLING_PROFILER_SUPPORTED 1
 #endif
@@ -507,12 +507,13 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Alloca) {
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
 // macOS ASAN is not yet supported - crbug.com/718628.
+// iOS chrome doesn't support loading native libraries.
 // Android is not supported when EXCLUDE_UNWIND_TABLES |other_library| doesn't
 // have unwind tables.
 // TODO(https://crbug.com/1100175): Enable this test again for Android with
 // ASAN. This is now disabled because the android-asan bot fails.
-#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) ||         \
-    (defined(OS_ANDROID) && BUILDFLAG(EXCLUDE_UNWIND_TABLES)) || \
+#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) || defined(OS_IOS) || \
+    (defined(OS_ANDROID) && BUILDFLAG(EXCLUDE_UNWIND_TABLES)) ||            \
     (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
 #define MAYBE_OtherLibrary DISABLED_OtherLibrary
 #else
@@ -552,7 +553,8 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_UnloadingLibrary) {
 // produces a stack, and doesn't crash.
 // macOS ASAN is not yet supported - crbug.com/718628.
 // Android is not supported since modules are found before unwinding.
-#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) || defined(OS_ANDROID)
+#if (defined(ADDRESS_SANITIZER) && defined(OS_APPLE)) || \
+    defined(OS_ANDROID) || defined(OS_IOS)
 #define MAYBE_UnloadedLibrary DISABLED_UnloadedLibrary
 #else
 #define MAYBE_UnloadedLibrary UnloadedLibrary
