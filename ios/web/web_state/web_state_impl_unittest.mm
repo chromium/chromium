@@ -1253,7 +1253,12 @@ TEST_F(WebStateImplTest, VisibilitychangeEventFired) {
 
 // Tests that WebState sessionState data doesn't load things with unsafe
 // restore.
-TEST_F(WebStateImplTest, DISABLED_MixedSafeUnsafeRestore) {
+TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
+  if (@available(iOS 15, *)) {
+  } else {
+    return;
+  }
+
   GURL urls[3] = {GURL("https://chromium.test/1"),
                   GURL("https://chromium.test/2"),
                   GURL("https://chromium.test/3")};
@@ -1280,7 +1285,11 @@ TEST_F(WebStateImplTest, DISABLED_MixedSafeUnsafeRestore) {
 }
 
 // Tests that WebState sessionState data can be read and writen.
-TEST_F(WebStateImplTest, DISABLED_ReadAndWriteSessionStateData) {
+TEST_F(WebStateImplTest, ReadAndWriteSessionStateData) {
+  if (@available(iOS 15, *)) {
+  } else {
+    return;
+  }
   web::WebState::CreateParams params(GetBrowserState());
   __block auto web_state = std::make_unique<web::WebStateImpl>(params);
   CRWWebController* web_controller = web_state->GetWebController();

@@ -193,12 +193,9 @@ class WebStateImpl;
 // multiwindow action or orientation change.
 - (void)surfaceSizeChanged;
 
-// Injects an opaque NSData block into a WKWebView to restore or serialize.
-// TODO(crbug.com/1174560) This depends on iOS TBA logic landed in WebKit's
-// opensource repository, and currently includes not-to-be-shipped logic to use
-// private APIs, so the rest of the Chromium logic can be tested. When iOS TBA
-// is released with the necessary logic, the private implementation can be
-// removed.
+// Injects an opaque NSData block into a WKWebView to restore or serialize. Only
+// supported on iOS15+. On earlier iOS versions, |setSessionStateData| is
+// a no-op, and |sessionStateData| will return nil.
 - (BOOL)setSessionStateData:(NSData*)data;
 - (NSData*)sessionStateData;
 

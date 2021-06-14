@@ -59,16 +59,12 @@ bool WebSessionStateTabHelper::IsEnabled() {
   if (!base::FeatureList::IsEnabled(web::kRestoreSessionFromCache)) {
     return false;
   }
-#if 0
-  // This API only exists on iOS_TBA.
-  if (@available(iOS TBA, *)) {
+
+  // This API is only available on iOS 15.
+  if (@available(iOS 15, *)) {
     return true;
-  } else {
-    return false;
   }
-#else
-  return BUILDFLAG(CHROMIUM_BRANDING);
-#endif
+  return false;
 }
 
 WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)

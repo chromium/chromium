@@ -6,18 +6,12 @@ import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
 import("//ios/features.gni")
 
-buildflag_header("webkit_session_restore_buildflags") {
-  header = "webkit_session_restore_buildflags.h"
-  flags = [ "WEBKIT_SESSION_RESTORE=$webkit_session_restore" ]
-}
-
 source_set("ui") {
   public_deps = [ ":web_controller_header" ]
   deps = [
     ":crw_context_menu_controller",
     ":crw_web_view_navigation_proxy",
     ":web_view_handler",
-    ":webkit_session_restore_buildflags",
     "//base",
     "//base/ios",
     "//build:branding_buildflags",

@@ -65,13 +65,16 @@ class WebSessionStateTabHelperTest : public PlatformTest {
 };
 
 // Tests that APIs do nothing when the feature is disabled.
-TEST_F(WebSessionStateTabHelperTest, DISABLED_DisableFeature) {
+TEST_F(WebSessionStateTabHelperTest, DisableFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(web::kRestoreSessionFromCache);
 
+  WebSessionStateTabHelper* helper =
+      WebSessionStateTabHelper::FromWebState(web_state_.get());
+  ASSERT_FALSE(helper->IsEnabled());
+
   // Nothing should be saved or restored when the feature is disabled.
-  ASSERT_FALSE(WebSessionStateTabHelper::FromWebState(web_state_.get())
-                   ->RestoreSessionFromCache());
+  ASSERT_FALSE(helper->RestoreSessionFromCache());
 
   web_state_->GetView();
   web_state_->SetKeepRenderProcessAlive(true);
@@ -81,7 +84,7 @@ TEST_F(WebSessionStateTabHelperTest, DISABLED_DisableFeature) {
   DCHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
     return !web_state_->IsLoading();
   }));
-  WebSessionStateTabHelper::FromWebState(web_state_.get())->SaveSessionState();
+  helper->SaveSessionState();
   FlushRunLoops();
 
   // File should not be saved.
@@ -93,7 +96,7 @@ TEST_F(WebSessionStateTabHelperTest, DISABLED_DisableFeature) {
 }
 
 // Tests session state serialize and deserialize APIs.
-TEST_F(WebSessionStateTabHelperTest, DISABLED_SessionStateRestore) {
+TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::kRestoreSessionFromCache);
 
@@ -120,13 +123,16 @@ TEST_F(WebSessionStateTabHelperTest, DISABLED_SessionStateRestore) {
       session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
   ASSERT_FALSE(base::PathExists(filePath));
 
-  WebSessionStateTabHelper::FromWebState(web_state_.get())
-      ->SaveSessionStateIfStale();
+  WebSessionStateTabHelper* helper =
+      WebSessionStateTabHelper::FromWebState(web_state_.get());
+  helper->SaveSessionStateIfStale();
   FlushRunLoops();
-  if (@available(iOS 13, *)) {
+  if (@available(iOS 15, *)) {
+    ASSERT_TRUE(
+        WebSessionStateTabHelper::FromWebState(web_state_.get())->IsEnabled());
     ASSERT_TRUE(base::PathExists(filePath));
   } else {
-    // On iOS 12, the feature is disabled.
+    // On iOS 14, the feature is disabled.
     EXPECT_FALSE(base::PathExists(filePath));
     return;
   }
