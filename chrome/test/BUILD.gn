@@ -4992,6 +4992,7 @@ test("unit_tests") {
     "//components/ukm/content",
     "//components/variations:test_support",
     "//components/version_info:generate_version_info",
+    "//components/webrtc",
     "//content/app/resources",
     "//content/public/app",
     "//content/test:test_support",

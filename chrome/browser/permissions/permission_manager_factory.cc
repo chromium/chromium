@@ -12,6 +12,7 @@
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
 #include "chrome/browser/idle/idle_detection_permission_context.h"
 #include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 #include "chrome/browser/nfc/chrome_nfc_permission_context_delegate.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
@@ -134,7 +135,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
       std::make_unique<StorageAccessGrantPermissionContext>(profile);
   permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
-      std::make_unique<CameraPanTiltZoomPermissionContext>(profile);
+      std::make_unique<CameraPanTiltZoomPermissionContext>(
+          profile, MediaCaptureDevicesDispatcher::GetInstance());
   permission_contexts[ContentSettingsType::WINDOW_PLACEMENT] =
       std::make_unique<WindowPlacementPermissionContext>(profile);
   permission_contexts[ContentSettingsType::FONT_ACCESS] =

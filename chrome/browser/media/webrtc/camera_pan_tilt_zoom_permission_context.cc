@@ -4,20 +4,23 @@
 
 #include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
 
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
+#include "components/webrtc/media_stream_device_enumerator.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
-    content::BrowserContext* browser_context)
+    content::BrowserContext* browser_context,
+    const webrtc::MediaStreamDeviceEnumerator* device_enumerator)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+                            blink::mojom::PermissionsPolicyFeature::kNotFound),
+      device_enumerator_(device_enumerator) {
+  DCHECK(device_enumerator_);
   host_content_settings_map_ =
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
   content_setting_observer_registered_by_subclass_ = true;
@@ -48,8 +51,8 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
   content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
       id.render_process_id(), id.render_frame_id());
   permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+      permissions::PermissionsClient::Get()->GetPermissionManager(
+          web_contents->GetBrowserContext());
   permission_manager->RequestPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                                         frame, requesting_frame_origin,
                                         user_gesture, std::move(callback));
@@ -143,7 +146,7 @@ bool CameraPanTiltZoomPermissionContext::HasAvailableCameraPtzDevices() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const std::vector<blink::MediaStreamDevice> devices =
-      MediaCaptureDevicesDispatcher::GetInstance()->GetVideoCaptureDevices();
+      device_enumerator_->GetVideoCaptureDevices();
   for (const blink::MediaStreamDevice& device : devices) {
     if (device.video_control_support.pan || device.video_control_support.tilt ||
         device.video_control_support.zoom) {

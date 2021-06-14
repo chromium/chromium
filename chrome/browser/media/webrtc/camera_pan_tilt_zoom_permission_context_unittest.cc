@@ -4,11 +4,12 @@
 
 #include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
 
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permissions_client.h"
+#include "components/webrtc/media_stream_device_enumerator_impl.h"
 
 namespace {
 
@@ -23,14 +24,17 @@ struct TestConfig {
 // Waits until a change is observed for a specific content setting type.
 class ContentSettingsChangeWaiter : public content_settings::Observer {
  public:
-  explicit ContentSettingsChangeWaiter(Profile* profile,
+  explicit ContentSettingsChangeWaiter(content::BrowserContext* browser_context,
                                        ContentSettingsType content_type)
-      : profile_(profile), content_type_(content_type) {
-    HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
+      : browser_context_(browser_context), content_type_(content_type) {
+    permissions::PermissionsClient::Get()
+        ->GetSettingsMap(browser_context_)
+        ->AddObserver(this);
   }
   ~ContentSettingsChangeWaiter() override {
-    HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
-        this);
+    permissions::PermissionsClient::Get()
+        ->GetSettingsMap(browser_context_)
+        ->RemoveObserver(this);
   }
 
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
@@ -45,7 +49,7 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  Profile* profile_;
+  content::BrowserContext* browser_context_;
   ContentSettingsType content_type_;
   base::RunLoop run_loop_;
 
@@ -62,7 +66,8 @@ class CameraPanTiltZoomPermissionContextTests
                          ContentSetting content_setting) {
     GURL url("https://www.example.com");
     HostContentSettingsMap* content_settings =
-        HostContentSettingsMapFactory::GetForProfile(profile());
+        permissions::PermissionsClient::Get()->GetSettingsMap(
+            browser_context());
     content_settings->SetContentSettingDefaultScope(
         url, GURL(), content_settings_type, content_setting);
   }
@@ -70,10 +75,18 @@ class CameraPanTiltZoomPermissionContextTests
   ContentSetting GetContentSetting(ContentSettingsType content_settings_type) {
     GURL url("https://www.example.com");
     HostContentSettingsMap* content_settings =
-        HostContentSettingsMapFactory::GetForProfile(profile());
+        permissions::PermissionsClient::Get()->GetSettingsMap(
+            browser_context());
     return content_settings->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
                                                content_settings_type);
   }
+
+  const webrtc::MediaStreamDeviceEnumerator* device_enumerator() const {
+    return &device_enumerator_;
+  }
+
+ private:
+  webrtc::MediaStreamDeviceEnumeratorImpl device_enumerator_;
 
   DISALLOW_COPY_AND_ASSIGN(CameraPanTiltZoomPermissionContextTests);
 };
@@ -85,8 +98,9 @@ class CameraContentSettingTests
 };
 
 TEST_P(CameraContentSettingTests, TestResetPermissionOnCameraChange) {
-  CameraPanTiltZoomPermissionContext permission_context(profile());
-  ContentSettingsChangeWaiter waiter(profile(),
+  CameraPanTiltZoomPermissionContext permission_context(browser_context(),
+                                                        device_enumerator());
+  ContentSettingsChangeWaiter waiter(browser_context(),
                                      ContentSettingsType::MEDIASTREAM_CAMERA);
 
   SetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
@@ -123,8 +137,9 @@ class CameraPanTiltZoomContentSettingTests
 
 TEST_P(CameraPanTiltZoomContentSettingTests,
        TestCameraPermissionOnCameraPanTiltZoomChange) {
-  CameraPanTiltZoomPermissionContext permission_context(profile());
-  ContentSettingsChangeWaiter waiter(profile(),
+  CameraPanTiltZoomPermissionContext permission_context(browser_context(),
+                                                        device_enumerator());
+  ContentSettingsChangeWaiter waiter(browser_context(),
                                      ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
 
   SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA, GetParam().first);
