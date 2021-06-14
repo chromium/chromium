@@ -25,7 +25,8 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 namespace {
@@ -67,6 +68,8 @@ const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
      " WITHOUT ROWID"},
     {kBucketTable,
      "(id INTEGER PRIMARY KEY,"
+     // TODO(crbug.com/1215208): Rename column to storage_key and create a DB
+     // migration for it.
      " origin TEXT NOT NULL,"
      " type INTEGER NOT NULL,"
      " name TEXT NOT NULL,"
@@ -97,14 +100,14 @@ QuotaDatabase::BucketTableEntry& QuotaDatabase::BucketTableEntry::operator=(
 
 QuotaDatabase::BucketTableEntry::BucketTableEntry(
     BucketId bucket_id,
-    url::Origin origin,
+    StorageKey storage_key,
     StorageType type,
     std::string name,
     int use_count,
     const base::Time& last_accessed,
     const base::Time& last_modified)
     : bucket_id(std::move(bucket_id)),
-      origin(std::move(origin)),
+      storage_key(std::move(storage_key)),
       type(type),
       name(std::move(name)),
       use_count(use_count),
@@ -164,7 +167,7 @@ bool QuotaDatabase::SetHostQuota(const std::string& host,
 }
 
 QuotaErrorOr<BucketId> QuotaDatabase::CreateBucket(
-    const url::Origin& origin,
+    const StorageKey& storage_key,
     const std::string& bucket_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug/1210259): Add DCHECKs for input validation.
@@ -173,7 +176,7 @@ QuotaErrorOr<BucketId> QuotaDatabase::CreateBucket(
     return open_error;
 
   // TODO(crbug/1210252): Update to not execute 2 sql statements on creation.
-  QuotaErrorOr<BucketId> bucket_result = GetBucketId(origin, bucket_name);
+  QuotaErrorOr<BucketId> bucket_result = GetBucketId(storage_key, bucket_name);
   if (!bucket_result.ok())
     return bucket_result.error();
 
@@ -198,7 +201,7 @@ QuotaErrorOr<BucketId> QuotaDatabase::CreateBucket(
   // Bucket usage is only for temporary storage types.
   static_assert(static_cast<int>(StorageType::kTemporary) == 0,
                 "The type value baked in the SQL statement above is wrong.");
-  statement.BindString(0, origin.GetURL().spec());
+  statement.BindString(0, storage_key.Serialize());
   statement.BindString(1, bucket_name);
   statement.BindTime(2, now);
   statement.BindTime(3, now);
@@ -215,7 +218,7 @@ QuotaErrorOr<BucketId> QuotaDatabase::CreateBucket(
 }
 
 QuotaErrorOr<BucketId> QuotaDatabase::GetBucketId(
-    const url::Origin& origin,
+    const StorageKey& storage_key,
     const std::string& bucket_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QuotaError open_error = LazyOpen(LazyOpenMode::kFailIfNotFound);
@@ -228,7 +231,7 @@ QuotaErrorOr<BucketId> QuotaDatabase::GetBucketId(
   static constexpr char kSql[] =
       "SELECT id FROM buckets WHERE origin = ? AND type = ? AND name = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.GetURL().spec());
+  statement.BindString(0, storage_key.Serialize());
   // Bucket usage is only for temporary storage types.
   statement.BindInt(1, static_cast<int>(StorageType::kTemporary));
   statement.BindString(2, bucket_name);
@@ -241,9 +244,9 @@ QuotaErrorOr<BucketId> QuotaDatabase::GetBucketId(
   return BucketId(statement.ColumnInt64(0));
 }
 
-bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
-                                            StorageType type,
-                                            base::Time last_accessed) {
+bool QuotaDatabase::SetStorageKeyLastAccessTime(const StorageKey& storage_key,
+                                                StorageType type,
+                                                base::Time last_accessed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
@@ -251,7 +254,7 @@ bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
   sql::Statement statement;
 
   BucketTableEntry entry;
-  if (GetOriginInfo(origin, type, &entry)) {
+  if (GetStorageKeyInfo(storage_key, type, &entry)) {
     ++entry.use_count;
     static constexpr char kSql[] =
         // clang-format off
@@ -260,7 +263,7 @@ bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
           "WHERE origin = ? AND type = ? AND name = ?";
     // clang-format on
     statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  } else  {
+  } else {
     entry.use_count = 1;
     // INSERT statement column ordering matches UPDATE statement above for
     // reuse of binding values.
@@ -283,7 +286,7 @@ bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
   }
   statement.BindInt(0, entry.use_count);
   statement.BindTime(1, last_accessed);
-  statement.BindString(2, origin.GetURL().spec());
+  statement.BindString(2, storage_key.Serialize());
   statement.BindInt(3, static_cast<int>(type));
   statement.BindString(4, kDefaultBucket);
 
@@ -320,9 +323,9 @@ bool QuotaDatabase::SetBucketLastAccessTime(const BucketId bucket_id,
   return true;
 }
 
-bool QuotaDatabase::SetOriginLastModifiedTime(const url::Origin& origin,
-                                              StorageType type,
-                                              base::Time last_modified) {
+bool QuotaDatabase::SetStorageKeyLastModifiedTime(const StorageKey& storage_key,
+                                                  StorageType type,
+                                                  base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
@@ -330,7 +333,7 @@ bool QuotaDatabase::SetOriginLastModifiedTime(const url::Origin& origin,
   sql::Statement statement;
 
   BucketTableEntry entry;
-  if (GetOriginInfo(origin, type, &entry)) {
+  if (GetStorageKeyInfo(storage_key, type, &entry)) {
     static constexpr char kSql[] =
         // clang-format off
         "UPDATE buckets "
@@ -358,7 +361,7 @@ bool QuotaDatabase::SetOriginLastModifiedTime(const url::Origin& origin,
   }
   statement.BindTime(0, last_modified);
 
-  statement.BindString(1, origin.GetURL().spec());
+  statement.BindString(1, storage_key.Serialize());
   statement.BindInt(2, static_cast<int>(type));
   statement.BindString(3, kDefaultBucket);
 
@@ -393,14 +396,14 @@ bool QuotaDatabase::SetBucketLastModifiedTime(const BucketId bucket_id,
   return true;
 }
 
-bool QuotaDatabase::RegisterInitialOriginInfo(
-    const std::set<url::Origin>& origins,
+bool QuotaDatabase::RegisterInitialStorageKeyInfo(
+    const std::set<StorageKey>& storage_keys,
     StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
 
-  for (const auto& origin : origins) {
+  for (const auto& storage_key : storage_keys) {
     static constexpr char kSql[] =
         // clang-format off
         "INSERT OR IGNORE INTO buckets("
@@ -415,7 +418,7 @@ bool QuotaDatabase::RegisterInitialOriginInfo(
           "VALUES (?, ?, ?, 0, 0, 0, ?, 0)";
     // clang-format on
     sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindString(0, origin.GetURL().spec());
+    statement.BindString(0, storage_key.Serialize());
     statement.BindInt(1, static_cast<int>(type));
     statement.BindString(2, kDefaultBucket);
     statement.BindTime(3, base::Time::Max());
@@ -428,9 +431,9 @@ bool QuotaDatabase::RegisterInitialOriginInfo(
   return true;
 }
 
-bool QuotaDatabase::GetOriginInfo(const url::Origin& origin,
-                                  StorageType type,
-                                  QuotaDatabase::BucketTableEntry* entry) {
+bool QuotaDatabase::GetStorageKeyInfo(const StorageKey& storage_key,
+                                      StorageType type,
+                                      QuotaDatabase::BucketTableEntry* entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kFailIfNotFound) != QuotaError::kNone)
     return false;
@@ -446,16 +449,15 @@ bool QuotaDatabase::GetOriginInfo(const url::Origin& origin,
         "WHERE origin = ? AND type = ? AND name = ?";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.GetURL().spec());
+  statement.BindString(0, storage_key.Serialize());
   statement.BindInt(1, static_cast<int>(type));
   statement.BindString(2, kDefaultBucket);
 
   if (!statement.Step())
     return false;
 
-  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
-  *entry = BucketTableEntry(BucketId(statement.ColumnInt64(0)), origin, type,
-                            kDefaultBucket, statement.ColumnInt(1),
+  *entry = BucketTableEntry(BucketId(statement.ColumnInt64(0)), storage_key,
+                            type, kDefaultBucket, statement.ColumnInt(1),
                             statement.ColumnTime(2), statement.ColumnTime(3));
   return true;
 }
@@ -485,12 +487,15 @@ bool QuotaDatabase::GetBucketInfo(const BucketId bucket_id,
   if (!statement.Step())
     return false;
 
-  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
-  *entry = BucketTableEntry(
-      bucket_id, url::Origin::Create(GURL(statement.ColumnString(0))),
-      static_cast<StorageType>(statement.ColumnInt(1)),
-      statement.ColumnString(2), statement.ColumnInt(3),
-      statement.ColumnTime(4), statement.ColumnTime(5));
+  absl::optional<StorageKey> storage_key =
+      StorageKey::Deserialize(statement.ColumnString(0));
+  if (!storage_key.has_value())
+    return false;
+
+  *entry = BucketTableEntry(bucket_id, std::move(storage_key).value(),
+                            static_cast<StorageType>(statement.ColumnInt(1)),
+                            statement.ColumnString(2), statement.ColumnInt(3),
+                            statement.ColumnTime(4), statement.ColumnTime(5));
   return true;
 }
 
@@ -513,8 +518,8 @@ bool QuotaDatabase::DeleteHostQuota(
   return true;
 }
 
-bool QuotaDatabase::DeleteOriginInfo(const url::Origin& origin,
-                                     StorageType type) {
+bool QuotaDatabase::DeleteStorageKeyInfo(const StorageKey& storage_key,
+                                         StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kFailIfNotFound) != QuotaError::kNone)
     return false;
@@ -522,7 +527,7 @@ bool QuotaDatabase::DeleteOriginInfo(const url::Origin& origin,
   static constexpr char kSql[] =
       "DELETE FROM buckets WHERE origin = ? AND type = ? AND name = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.GetURL().spec());
+  statement.BindString(0, storage_key.Serialize());
   statement.BindInt(1, static_cast<int>(type));
   statement.BindString(2, kDefaultBucket);
 
@@ -550,12 +555,13 @@ bool QuotaDatabase::DeleteBucketInfo(const BucketId bucket_id) {
   return true;
 }
 
-bool QuotaDatabase::GetLRUOrigin(StorageType type,
-                                 const std::set<url::Origin>& exceptions,
-                                 SpecialStoragePolicy* special_storage_policy,
-                                 absl::optional<url::Origin>* origin) {
+bool QuotaDatabase::GetLRUStorageKey(
+    StorageType type,
+    const std::set<StorageKey>& exceptions,
+    SpecialStoragePolicy* special_storage_policy,
+    absl::optional<StorageKey>* storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(origin);
+  DCHECK(storage_key);
   if (LazyOpen(LazyOpenMode::kFailIfNotFound) != QuotaError::kNone)
     return false;
 
@@ -571,28 +577,31 @@ bool QuotaDatabase::GetLRUOrigin(StorageType type,
   statement.BindString(1, kDefaultBucket);
 
   while (statement.Step()) {
-    url::Origin read_origin =
-        url::Origin::Create(GURL(statement.ColumnString(0)));
-    if (base::Contains(exceptions, read_origin))
+    absl::optional<StorageKey> read_storage_key =
+        StorageKey::Deserialize(statement.ColumnString(0));
+    if (!read_storage_key.has_value())
       continue;
 
-    GURL read_gurl = read_origin.GetURL();
+    if (base::Contains(exceptions, *read_storage_key))
+      continue;
+
+    GURL read_gurl = read_storage_key->origin().GetURL();
     if (special_storage_policy &&
         (special_storage_policy->IsStorageDurable(read_gurl) ||
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
 
-    *origin = read_origin;
+    *storage_key = std::move(read_storage_key).value();
     return true;
   }
 
-  origin->reset();
+  storage_key->reset();
   return statement.Succeeded();
 }
 
 bool QuotaDatabase::GetLRUBucket(StorageType type,
-                                 const std::set<url::Origin>& exceptions,
+                                 const std::set<StorageKey>& exceptions,
                                  SpecialStoragePolicy* special_storage_policy,
                                  absl::optional<BucketId>* bucket_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -612,14 +621,17 @@ bool QuotaDatabase::GetLRUBucket(StorageType type,
 
   while (statement.Step()) {
     int64_t read_bucket_id = statement.ColumnInt64(0);
-    url::Origin read_origin =
-        url::Origin::Create(GURL(statement.ColumnString(1)));
-    if (base::Contains(exceptions, read_origin))
+    absl::optional<StorageKey> read_storage_key =
+        StorageKey::Deserialize(statement.ColumnString(1));
+    if (!read_storage_key.has_value())
+      continue;
+
+    if (base::Contains(exceptions, *read_storage_key))
       continue;
 
     // TODO(crbug/1176774): Once BucketTable holds bucket durability info,
     // add logic to allow durable buckets to also bypass eviction.
-    GURL read_gurl = read_origin.GetURL();
+    GURL read_gurl = read_storage_key->origin().GetURL();
     if (special_storage_policy &&
         (special_storage_policy->IsStorageDurable(read_gurl) ||
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
@@ -634,12 +646,13 @@ bool QuotaDatabase::GetLRUBucket(StorageType type,
   return statement.Succeeded();
 }
 
-bool QuotaDatabase::GetOriginsModifiedBetween(StorageType type,
-                                              std::set<url::Origin>* origins,
-                                              base::Time begin,
-                                              base::Time end) {
+bool QuotaDatabase::GetStorageKeysModifiedBetween(
+    StorageType type,
+    std::set<StorageKey>* storage_keys,
+    base::Time begin,
+    base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(origins);
+  DCHECK(storage_keys);
   if (LazyOpen(LazyOpenMode::kFailIfNotFound) != QuotaError::kNone)
     return false;
 
@@ -658,9 +671,14 @@ bool QuotaDatabase::GetOriginsModifiedBetween(StorageType type,
   statement.BindTime(2, begin);
   statement.BindTime(3, end);
 
-  origins->clear();
-  while (statement.Step())
-    origins->insert(url::Origin::Create(GURL(statement.ColumnString(0))));
+  storage_keys->clear();
+  while (statement.Step()) {
+    absl::optional<StorageKey> read_storage_key =
+        StorageKey::Deserialize(statement.ColumnString(0));
+    if (!read_storage_key.has_value())
+      continue;
+    storage_keys->insert(std::move(read_storage_key).value());
+  }
 
   return statement.Succeeded();
 }
@@ -694,7 +712,7 @@ bool QuotaDatabase::GetBucketsModifiedBetween(StorageType type,
   return statement.Succeeded();
 }
 
-bool QuotaDatabase::IsOriginDatabaseBootstrapped() {
+bool QuotaDatabase::IsStorageKeyDatabaseBootstrapped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
@@ -703,7 +721,7 @@ bool QuotaDatabase::IsOriginDatabaseBootstrapped() {
   return meta_table_->GetValue(kIsOriginTableBootstrapped, &flag) && flag;
 }
 
-bool QuotaDatabase::SetOriginDatabaseBootstrapped(bool bootstrap_flag) {
+bool QuotaDatabase::SetStorageKeyDatabaseBootstrapped(bool bootstrap_flag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
@@ -948,8 +966,13 @@ bool QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   while (statement.Step()) {
-    BucketTableEntry entry(BucketId(statement.ColumnInt64(0)),
-                           url::Origin::Create(GURL(statement.ColumnString(1))),
+    BucketId bucket_id = BucketId(statement.ColumnInt64(0));
+    absl::optional<StorageKey> storage_key =
+        StorageKey::Deserialize(statement.ColumnString(1));
+    if (!storage_key.has_value())
+      continue;
+
+    BucketTableEntry entry(std::move(bucket_id), std::move(storage_key).value(),
                            static_cast<StorageType>(statement.ColumnInt(2)),
                            statement.ColumnString(3), statement.ColumnInt(4),
                            statement.ColumnTime(5), statement.ColumnTime(6));
@@ -969,8 +992,8 @@ bool operator<(const QuotaDatabase::QuotaTableEntry& lhs,
 
 bool operator<(const QuotaDatabase::BucketTableEntry& lhs,
                const QuotaDatabase::BucketTableEntry& rhs) {
-  return std::tie(lhs.origin, lhs.type, lhs.use_count, lhs.last_accessed) <
-         std::tie(rhs.origin, rhs.type, rhs.use_count, rhs.last_accessed);
+  return std::tie(lhs.storage_key, lhs.type, lhs.use_count, lhs.last_accessed) <
+         std::tie(rhs.storage_key, rhs.type, rhs.use_count, rhs.last_accessed);
 }
 
 }  // namespace storage

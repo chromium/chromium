@@ -26,6 +26,8 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/gurl.h"
 
+using ::blink::StorageKey;
+
 namespace storage {
 
 namespace {
@@ -37,11 +39,6 @@ static const blink::mojom::StorageType kPerm =
     blink::mojom::StorageType::kPersistent;
 
 const char kDefaultBucket[] = "default";
-
-// TODO(crbug.com/889590): Replace with common converter.
-url::Origin ToOrigin(const std::string& url) {
-  return url::Origin::Create(GURL(url));
-}
 
 }  // namespace
 
@@ -137,7 +134,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
       ASSERT_TRUE(statement.is_valid());
 
       statement.BindInt64(0, entry.bucket_id.value());
-      statement.BindString(1, entry.origin.GetURL().spec());
+      statement.BindString(1, entry.storage_key.Serialize());
       statement.BindInt(2, static_cast<int>(entry.type));
       statement.BindString(3, entry.name);
       statement.BindInt(4, entry.use_count);
@@ -203,15 +200,16 @@ TEST_P(QuotaDatabaseTest, HostQuota) {
 TEST_P(QuotaDatabaseTest, CreateBucket) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
-  url::Origin origin = ToOrigin("http://google/");
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
 
-  QuotaErrorOr<BucketId> result = db.CreateBucket(origin, bucket_name);
+  QuotaErrorOr<BucketId> result = db.CreateBucket(storage_key, bucket_name);
   ASSERT_TRUE(result.ok());
   ASSERT_FALSE(result.value().is_null());
 
   // Trying to create an existing bucket should return false.
-  result = db.CreateBucket(origin, bucket_name);
+  result = db.CreateBucket(storage_key, bucket_name);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kEntryExistsError);
 }
@@ -221,25 +219,27 @@ TEST_P(QuotaDatabaseTest, GetBucketId) {
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
   // Add a bucket entry into the bucket table.
-  url::Origin origin = ToOrigin("http://google/");
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  QuotaErrorOr<BucketId> result = db.CreateBucket(origin, bucket_name);
+  QuotaErrorOr<BucketId> result = db.CreateBucket(storage_key, bucket_name);
   ASSERT_TRUE(result.ok());
 
   BucketId created_bucket_id = result.value();
   ASSERT_FALSE(created_bucket_id.is_null());
 
-  db.GetBucketId(origin, bucket_name);
+  db.GetBucketId(storage_key, bucket_name);
   ASSERT_TRUE(result.ok());
   EXPECT_EQ(result.value(), created_bucket_id);
 
   // Can't retrieve buckets with name mismatch.
-  result = db.GetBucketId(origin, "does_not_exist");
+  result = db.GetBucketId(storage_key, "does_not_exist");
   ASSERT_TRUE(result.ok());
   EXPECT_TRUE(result.value().is_null());
 
-  // Can't retrieve buckets with origin mismatch.
-  result = db.GetBucketId(ToOrigin("http://example/"), bucket_name);
+  // Can't retrieve buckets with StorageKey mismatch.
+  result = db.GetBucketId(
+      StorageKey::CreateFromStringForTesting("http://example/"), bucket_name);
   ASSERT_TRUE(result.ok());
   EXPECT_TRUE(result.value().is_null());
 }
@@ -248,9 +248,10 @@ TEST_P(QuotaDatabaseTest, GetBucketIdWithNoDb) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_FALSE(LazyOpen(&db, LazyOpenMode::kFailIfNotFound));
 
-  url::Origin origin = ToOrigin("http://google/");
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  QuotaErrorOr<BucketId> result = db.GetBucketId(origin, bucket_name);
+  QuotaErrorOr<BucketId> result = db.GetBucketId(storage_key, bucket_name);
   ASSERT_TRUE(result.ok());
   EXPECT_TRUE(result.value().is_null());
 }
@@ -266,9 +267,10 @@ TEST_F(QuotaDatabaseTest, GetBucketIdWithOpenDatabaseError) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   QuotaDatabase db(temp_dir.GetPath());
 
-  url::Origin origin = ToOrigin("http://google/");
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  QuotaErrorOr<BucketId> result = db.GetBucketId(origin, bucket_name);
+  QuotaErrorOr<BucketId> result = db.GetBucketId(storage_key, bucket_name);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kDatabaseError);
 
@@ -276,81 +278,88 @@ TEST_F(QuotaDatabaseTest, GetBucketIdWithOpenDatabaseError) {
 }
 #endif  // !defined(OS_FUCHSIA)
 
-TEST_P(QuotaDatabaseTest, OriginLastAccessTimeLRU) {
+TEST_P(QuotaDatabaseTest, StorageKeyLastAccessTimeLRU) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
-  std::set<url::Origin> exceptions;
-  absl::optional<url::Origin> origin;
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
-  EXPECT_FALSE(origin.has_value());
+  std::set<StorageKey> exceptions;
+  absl::optional<StorageKey> storage_key;
+  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
+  EXPECT_FALSE(storage_key.has_value());
 
-  const url::Origin kOrigin1 = ToOrigin("http://a/");
-  const url::Origin kOrigin2 = ToOrigin("http://b/");
-  const url::Origin kOrigin3 = ToOrigin("http://c/");
-  const url::Origin kOrigin4 = ToOrigin("http://p/");
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://a/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://b/");
+  const StorageKey kStorageKey3 =
+      StorageKey::CreateFromStringForTesting("http://c/");
+  const StorageKey kStorageKey4 =
+      StorageKey::CreateFromStringForTesting("http://p/");
 
   // Adding three temporary storages, and
-  EXPECT_TRUE(db.SetOriginLastAccessTime(kOrigin1, kTemp,
-                                         base::Time::FromJavaTime(10)));
-  EXPECT_TRUE(db.SetOriginLastAccessTime(kOrigin2, kTemp,
-                                         base::Time::FromJavaTime(20)));
-  EXPECT_TRUE(db.SetOriginLastAccessTime(kOrigin3, kTemp,
-                                         base::Time::FromJavaTime(30)));
+  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey1, kTemp,
+                                             base::Time::FromJavaTime(10)));
+  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey2, kTemp,
+                                             base::Time::FromJavaTime(20)));
+  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey3, kTemp,
+                                             base::Time::FromJavaTime(30)));
 
   // one persistent.
-  EXPECT_TRUE(db.SetOriginLastAccessTime(kOrigin4, kPerm,
-                                         base::Time::FromJavaTime(40)));
+  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey4, kPerm,
+                                             base::Time::FromJavaTime(40)));
 
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
-  EXPECT_EQ(kOrigin1, origin);
+  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
+  EXPECT_EQ(kStorageKey1, storage_key.value());
 
   // Test that unlimited origins are excluded from eviction, but
   // protected origins are not excluded.
   scoped_refptr<MockSpecialStoragePolicy> policy(new MockSpecialStoragePolicy);
-  policy->AddUnlimited(kOrigin1.GetURL());
-  policy->AddProtected(kOrigin2.GetURL());
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, policy.get(), &origin));
-  EXPECT_EQ(kOrigin2, origin);
+  policy->AddUnlimited(kStorageKey1.origin().GetURL());
+  policy->AddProtected(kStorageKey2.origin().GetURL());
+  EXPECT_TRUE(
+      db.GetLRUStorageKey(kTemp, exceptions, policy.get(), &storage_key));
+  EXPECT_EQ(kStorageKey2, storage_key.value());
 
   // Test that durable origins are excluded from eviction.
-  policy->AddDurable(kOrigin2.GetURL());
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, policy.get(), &origin));
-  EXPECT_EQ(kOrigin3, origin);
+  policy->AddDurable(kStorageKey2.origin().GetURL());
+  EXPECT_TRUE(
+      db.GetLRUStorageKey(kTemp, exceptions, policy.get(), &storage_key));
+  EXPECT_EQ(kStorageKey3, storage_key.value());
 
-  exceptions.insert(kOrigin1);
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
-  EXPECT_EQ(kOrigin2, origin);
+  exceptions.insert(kStorageKey1);
+  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
+  EXPECT_EQ(kStorageKey2, storage_key.value());
 
-  exceptions.insert(kOrigin2);
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
-  EXPECT_EQ(kOrigin3, origin);
+  exceptions.insert(kStorageKey2);
+  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
+  EXPECT_EQ(kStorageKey3, storage_key.value());
 
-  exceptions.insert(kOrigin3);
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
-  EXPECT_FALSE(origin.has_value());
+  exceptions.insert(kStorageKey3);
+  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
+  EXPECT_FALSE(storage_key.has_value());
 
-  EXPECT_TRUE(db.SetOriginLastAccessTime(kOrigin1, kTemp, base::Time::Now()));
+  EXPECT_TRUE(
+      db.SetStorageKeyLastAccessTime(kStorageKey1, kTemp, base::Time::Now()));
 
-  // Delete origin/type last access time information.
-  EXPECT_TRUE(db.DeleteOriginInfo(kOrigin3, kTemp));
+  // Delete StorageKey/type last access time information.
+  EXPECT_TRUE(db.DeleteStorageKeyInfo(kStorageKey3, kTemp));
 
   // Querying again to see if the deletion has worked.
   exceptions.clear();
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
-  EXPECT_EQ(kOrigin2, origin);
+  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
+  EXPECT_EQ(kStorageKey2, storage_key.value());
 
-  exceptions.insert(kOrigin1);
-  exceptions.insert(kOrigin2);
-  EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
-  EXPECT_FALSE(origin.has_value());
+  exceptions.insert(kStorageKey1);
+  exceptions.insert(kStorageKey2);
+  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
+  EXPECT_FALSE(storage_key.has_value());
 }
 
 TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
-  std::set<url::Origin> exceptions;
+  std::set<StorageKey> exceptions;
   absl::optional<BucketId> bucket_id;
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_FALSE(bucket_id.has_value());
@@ -358,14 +367,18 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   // Insert bucket entries into BucketTable.
   base::Time now = base::Time::Now();
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry bucket1 = Entry(BucketId(1), ToOrigin("http://example-a/"), kTemp,
-                        "bucket_a", 99, now, now);
-  Entry bucket2 = Entry(BucketId(2), ToOrigin("http://example-b/"), kTemp,
-                        "bucket_b", 0, now, now);
-  Entry bucket3 = Entry(BucketId(3), ToOrigin("http://example-c/"), kTemp,
-                        "bucket_c", 1, now, now);
-  Entry bucket4 = Entry(BucketId(4), ToOrigin("http://example-d/"), kPerm,
-                        "bucket_d", 5, now, now);
+  Entry bucket1 = Entry(
+      BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
+      kTemp, "bucket_a", 99, now, now);
+  Entry bucket2 = Entry(
+      BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
+      kTemp, "bucket_b", 0, now, now);
+  Entry bucket3 = Entry(
+      BucketId(3), StorageKey::CreateFromStringForTesting("http://example-c/"),
+      kTemp, "bucket_c", 1, now, now);
+  Entry bucket4 = Entry(
+      BucketId(4), StorageKey::CreateFromStringForTesting("http://example-d/"),
+      kPerm, "bucket_d", 5, now, now);
   Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
   AssignBucketTable(&db, kTableEntries);
 
@@ -387,31 +400,31 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   // Test that unlimited origins are excluded from eviction, but
   // protected origins are not excluded.
   scoped_refptr<MockSpecialStoragePolicy> policy(new MockSpecialStoragePolicy);
-  policy->AddUnlimited(bucket1.origin.GetURL());
-  policy->AddProtected(bucket2.origin.GetURL());
+  policy->AddUnlimited(bucket1.storage_key.origin().GetURL());
+  policy->AddProtected(bucket2.storage_key.origin().GetURL());
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, policy.get(), &bucket_id));
   EXPECT_EQ(bucket2.bucket_id, bucket_id);
 
   // Test that durable origins are excluded from eviction.
-  policy->AddDurable(bucket2.origin.GetURL());
+  policy->AddDurable(bucket2.storage_key.origin().GetURL());
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, policy.get(), &bucket_id));
   EXPECT_EQ(bucket3.bucket_id, bucket_id);
 
-  exceptions.insert(bucket1.origin);
+  exceptions.insert(bucket1.storage_key);
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_EQ(bucket2.bucket_id, bucket_id);
 
-  exceptions.insert(bucket2.origin);
+  exceptions.insert(bucket2.storage_key);
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_EQ(bucket3.bucket_id, bucket_id);
 
-  exceptions.insert(bucket3.origin);
+  exceptions.insert(bucket3.storage_key);
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_FALSE(bucket_id.has_value());
 
   EXPECT_TRUE(db.SetBucketLastAccessTime(bucket1.bucket_id, base::Time::Now()));
 
-  // Delete origin/type last access time information.
+  // Delete storage_key/type last access time information.
   EXPECT_TRUE(db.DeleteBucketInfo(bucket3.bucket_id));
 
   // Querying again to see if the deletion has worked.
@@ -419,103 +432,106 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_EQ(bucket2.bucket_id, bucket_id);
 
-  exceptions.insert(bucket1.origin);
-  exceptions.insert(bucket2.origin);
+  exceptions.insert(bucket1.storage_key);
+  exceptions.insert(bucket2.storage_key);
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_FALSE(bucket_id.has_value());
 }
 
-TEST_P(QuotaDatabaseTest, OriginLastModifiedBetween) {
+TEST_P(QuotaDatabaseTest, StorageKeyLastModifiedBetween) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
-  std::set<url::Origin> origins;
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(kTemp, &origins, base::Time(),
-                                           base::Time::Max()));
-  EXPECT_TRUE(origins.empty());
+  std::set<StorageKey> storage_keys;
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kTemp, &storage_keys, base::Time(), base::Time::Max()));
+  EXPECT_TRUE(storage_keys.empty());
 
-  const url::Origin kOrigin1 = ToOrigin("http://a/");
-  const url::Origin kOrigin2 = ToOrigin("http://b/");
-  const url::Origin kOrigin3 = ToOrigin("http://c/");
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://a/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://b/");
+  const StorageKey kStorageKey3 =
+      StorageKey::CreateFromStringForTesting("http://c/");
 
-  // Report last mod time for the test origins.
-  EXPECT_TRUE(db.SetOriginLastModifiedTime(kOrigin1, kTemp,
-                                           base::Time::FromJavaTime(0)));
-  EXPECT_TRUE(db.SetOriginLastModifiedTime(kOrigin2, kTemp,
-                                           base::Time::FromJavaTime(10)));
-  EXPECT_TRUE(db.SetOriginLastModifiedTime(kOrigin3, kTemp,
-                                           base::Time::FromJavaTime(20)));
+  // Report last mod time for the test storage_keys.
+  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey1, kTemp,
+                                               base::Time::FromJavaTime(0)));
+  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey2, kTemp,
+                                               base::Time::FromJavaTime(10)));
+  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey3, kTemp,
+                                               base::Time::FromJavaTime(20)));
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(kTemp, &origins, base::Time(),
-                                           base::Time::Max()));
-  EXPECT_EQ(3U, origins.size());
-  EXPECT_EQ(1U, origins.count(kOrigin1));
-  EXPECT_EQ(1U, origins.count(kOrigin2));
-  EXPECT_EQ(1U, origins.count(kOrigin3));
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kTemp, &storage_keys, base::Time(), base::Time::Max()));
+  EXPECT_EQ(3U, storage_keys.size());
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(
-      kTemp, &origins, base::Time::FromJavaTime(5), base::Time::Max()));
-  EXPECT_EQ(2U, origins.size());
-  EXPECT_EQ(0U, origins.count(kOrigin1));
-  EXPECT_EQ(1U, origins.count(kOrigin2));
-  EXPECT_EQ(1U, origins.count(kOrigin3));
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kTemp, &storage_keys, base::Time::FromJavaTime(5), base::Time::Max()));
+  EXPECT_EQ(2U, storage_keys.size());
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(
-      kTemp, &origins, base::Time::FromJavaTime(15), base::Time::Max()));
-  EXPECT_EQ(1U, origins.size());
-  EXPECT_EQ(0U, origins.count(kOrigin1));
-  EXPECT_EQ(0U, origins.count(kOrigin2));
-  EXPECT_EQ(1U, origins.count(kOrigin3));
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kTemp, &storage_keys, base::Time::FromJavaTime(15), base::Time::Max()));
+  EXPECT_EQ(1U, storage_keys.size());
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(
-      kTemp, &origins, base::Time::FromJavaTime(25), base::Time::Max()));
-  EXPECT_TRUE(origins.empty());
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kTemp, &storage_keys, base::Time::FromJavaTime(25), base::Time::Max()));
+  EXPECT_TRUE(storage_keys.empty());
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(kTemp, &origins,
-                                           base::Time::FromJavaTime(5),
-                                           base::Time::FromJavaTime(15)));
-  EXPECT_EQ(1U, origins.size());
-  EXPECT_EQ(0U, origins.count(kOrigin1));
-  EXPECT_EQ(1U, origins.count(kOrigin2));
-  EXPECT_EQ(0U, origins.count(kOrigin3));
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(kTemp, &storage_keys,
+                                               base::Time::FromJavaTime(5),
+                                               base::Time::FromJavaTime(15)));
+  EXPECT_EQ(1U, storage_keys.size());
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(kTemp, &origins,
-                                           base::Time::FromJavaTime(0),
-                                           base::Time::FromJavaTime(20)));
-  EXPECT_EQ(2U, origins.size());
-  EXPECT_EQ(1U, origins.count(kOrigin1));
-  EXPECT_EQ(1U, origins.count(kOrigin2));
-  EXPECT_EQ(0U, origins.count(kOrigin3));
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(kTemp, &storage_keys,
+                                               base::Time::FromJavaTime(0),
+                                               base::Time::FromJavaTime(20)));
+  EXPECT_EQ(2U, storage_keys.size());
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
 
-  // Update origin1's mod time but for persistent storage.
-  EXPECT_TRUE(db.SetOriginLastModifiedTime(kOrigin1, kPerm,
-                                           base::Time::FromJavaTime(30)));
+  // Update storage key's mod time but for persistent storage.
+  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey1, kPerm,
+                                               base::Time::FromJavaTime(30)));
 
-  // Must have no effects on temporary origins info.
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(
-      kTemp, &origins, base::Time::FromJavaTime(5), base::Time::Max()));
-  EXPECT_EQ(2U, origins.size());
-  EXPECT_EQ(0U, origins.count(kOrigin1));
-  EXPECT_EQ(1U, origins.count(kOrigin2));
-  EXPECT_EQ(1U, origins.count(kOrigin3));
+  // Must have no effects on temporary storage_keys info.
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kTemp, &storage_keys, base::Time::FromJavaTime(5), base::Time::Max()));
+  EXPECT_EQ(2U, storage_keys.size());
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
 
-  // One more update for persistent origin2.
-  EXPECT_TRUE(db.SetOriginLastModifiedTime(kOrigin2, kPerm,
-                                           base::Time::FromJavaTime(40)));
+  // One more update for persistent storage key.
+  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey2, kPerm,
+                                               base::Time::FromJavaTime(40)));
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(
-      kPerm, &origins, base::Time::FromJavaTime(25), base::Time::Max()));
-  EXPECT_EQ(2U, origins.size());
-  EXPECT_EQ(1U, origins.count(kOrigin1));
-  EXPECT_EQ(1U, origins.count(kOrigin2));
-  EXPECT_EQ(0U, origins.count(kOrigin3));
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kPerm, &storage_keys, base::Time::FromJavaTime(25), base::Time::Max()));
+  EXPECT_EQ(2U, storage_keys.size());
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
 
-  EXPECT_TRUE(db.GetOriginsModifiedBetween(
-      kPerm, &origins, base::Time::FromJavaTime(35), base::Time::Max()));
-  EXPECT_EQ(1U, origins.size());
-  EXPECT_EQ(0U, origins.count(kOrigin1));
-  EXPECT_EQ(1U, origins.count(kOrigin2));
-  EXPECT_EQ(0U, origins.count(kOrigin3));
+  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
+      kPerm, &storage_keys, base::Time::FromJavaTime(35), base::Time::Max()));
+  EXPECT_EQ(1U, storage_keys.size());
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
+  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
+  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
 }
 
 TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
@@ -530,14 +546,18 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   // Insert bucket entries into BucketTable.
   base::Time now = base::Time::Now();
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry bucket1 = Entry(BucketId(1), ToOrigin("http://example-a/"), kTemp,
-                        "bucket_a", 0, now, now);
-  Entry bucket2 = Entry(BucketId(2), ToOrigin("http://example-b/"), kTemp,
-                        "bucket_b", 0, now, now);
-  Entry bucket3 = Entry(BucketId(3), ToOrigin("http://example-c/"), kTemp,
-                        "bucket_c", 0, now, now);
-  Entry bucket4 = Entry(BucketId(4), ToOrigin("http://example-d/"), kPerm,
-                        "bucket_d", 0, now, now);
+  Entry bucket1 = Entry(
+      BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
+      kTemp, "bucket_a", 0, now, now);
+  Entry bucket2 = Entry(
+      BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
+      kTemp, "bucket_b", 0, now, now);
+  Entry bucket3 = Entry(
+      BucketId(3), StorageKey::CreateFromStringForTesting("http://example-c/"),
+      kTemp, "bucket_c", 0, now, now);
+  Entry bucket4 = Entry(
+      BucketId(4), StorageKey::CreateFromStringForTesting("http://example-d/"),
+      kPerm, "bucket_d", 0, now, now);
   Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
   AssignBucketTable(&db, kTableEntries);
 
@@ -607,30 +627,36 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   EXPECT_EQ(1U, bucket_ids.count(bucket4.bucket_id));
 }
 
-TEST_P(QuotaDatabaseTest, RegisterInitialOriginInfo) {
+TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
 
-  const url::Origin kOrigins[] = {ToOrigin("http://a/"), ToOrigin("http://b/"),
-                                  ToOrigin("http://c/")};
-  std::set<url::Origin> origins(kOrigins, std::end(kOrigins));
+  const StorageKey kStorageKeys[] = {
+      StorageKey::CreateFromStringForTesting("http://a/"),
+      StorageKey::CreateFromStringForTesting("http://b/"),
+      StorageKey::CreateFromStringForTesting("http://c/")};
+  std::set<StorageKey> storage_keys(kStorageKeys, std::end(kStorageKeys));
 
-  EXPECT_TRUE(db.RegisterInitialOriginInfo(origins, kTemp));
+  EXPECT_TRUE(db.RegisterInitialStorageKeyInfo(storage_keys, kTemp));
 
   QuotaDatabase::BucketTableEntry info;
   info.use_count = -1;
-  EXPECT_TRUE(db.GetOriginInfo(ToOrigin("http://a/"), kTemp, &info));
+  EXPECT_TRUE(db.GetStorageKeyInfo(
+      StorageKey::CreateFromStringForTesting("http://a/"), kTemp, &info));
   EXPECT_EQ(0, info.use_count);
 
-  EXPECT_TRUE(db.SetOriginLastAccessTime(ToOrigin("http://a/"), kTemp,
-                                         base::Time::FromDoubleT(1.0)));
+  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(
+      StorageKey::CreateFromStringForTesting("http://a/"), kTemp,
+      base::Time::FromDoubleT(1.0)));
   info.use_count = -1;
-  EXPECT_TRUE(db.GetOriginInfo(ToOrigin("http://a/"), kTemp, &info));
+  EXPECT_TRUE(db.GetStorageKeyInfo(
+      StorageKey::CreateFromStringForTesting("http://a/"), kTemp, &info));
   EXPECT_EQ(1, info.use_count);
 
-  EXPECT_TRUE(db.RegisterInitialOriginInfo(origins, kTemp));
+  EXPECT_TRUE(db.RegisterInitialStorageKeyInfo(storage_keys, kTemp));
 
   info.use_count = -1;
-  EXPECT_TRUE(db.GetOriginInfo(ToOrigin("http://a/"), kTemp, &info));
+  EXPECT_TRUE(db.GetStorageKeyInfo(
+      StorageKey::CreateFromStringForTesting("http://a/"), kTemp, &info));
   EXPECT_EQ(1, info.use_count);
 }
 
@@ -655,12 +681,12 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
   base::Time now = base::Time::Now();
   using Entry = QuotaDatabase::BucketTableEntry;
   Entry kTableEntries[] = {
-      Entry(BucketId(1), ToOrigin("http://go/"), kTemp, kDefaultBucket,
-            2147483647, now, now),
-      Entry(BucketId(2), ToOrigin("http://oo/"), kTemp, kDefaultBucket, 0, now,
-            now),
-      Entry(BucketId(3), ToOrigin("http://gle/"), kTemp, kDefaultBucket, 1, now,
-            now),
+      Entry(BucketId(1), StorageKey::CreateFromStringForTesting("http://go/"),
+            kTemp, kDefaultBucket, 2147483647, now, now),
+      Entry(BucketId(2), StorageKey::CreateFromStringForTesting("http://oo/"),
+            kTemp, kDefaultBucket, 0, now, now),
+      Entry(BucketId(3), StorageKey::CreateFromStringForTesting("http://gle/"),
+            kTemp, kDefaultBucket, 1, now, now),
   };
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
@@ -674,11 +700,13 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
   EXPECT_TRUE(verifier.table.empty());
 }
 
-TEST_P(QuotaDatabaseTest, GetOriginInfo) {
-  const url::Origin kOrigin = ToOrigin("http://go/");
+TEST_P(QuotaDatabaseTest, GetStorageKeyInfo) {
+  const StorageKey kStorageKey =
+      StorageKey::CreateFromStringForTesting("http://go/");
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry kTableEntries[] = {Entry(BucketId(1), kOrigin, kTemp, kDefaultBucket,
-                                 100, base::Time(), base::Time())};
+  Entry kTableEntries[] = {Entry(BucketId(1), kStorageKey, kTemp,
+                                 kDefaultBucket, 100, base::Time(),
+                                 base::Time())};
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
@@ -686,9 +714,9 @@ TEST_P(QuotaDatabaseTest, GetOriginInfo) {
 
   {
     Entry entry;
-    EXPECT_TRUE(db.GetOriginInfo(kOrigin, kTemp, &entry));
+    EXPECT_TRUE(db.GetStorageKeyInfo(kStorageKey, kTemp, &entry));
     EXPECT_EQ(kTableEntries[0].type, entry.type);
-    EXPECT_EQ(kTableEntries[0].origin, entry.origin);
+    EXPECT_EQ(kTableEntries[0].storage_key, entry.storage_key);
     EXPECT_EQ(kTableEntries[0].name, entry.name);
     EXPECT_EQ(kTableEntries[0].use_count, entry.use_count);
     EXPECT_EQ(kTableEntries[0].last_accessed, entry.last_accessed);
@@ -697,16 +725,17 @@ TEST_P(QuotaDatabaseTest, GetOriginInfo) {
 
   {
     Entry entry;
-    EXPECT_FALSE(
-        db.GetOriginInfo(ToOrigin("http://notpresent.org/"), kTemp, &entry));
+    EXPECT_FALSE(db.GetStorageKeyInfo(
+        StorageKey::CreateFromStringForTesting("http://notpresent.org/"), kTemp,
+        &entry));
   }
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketInfo) {
   using Entry = QuotaDatabase::BucketTableEntry;
-  Entry kTableEntries[] = {Entry(BucketId(123), ToOrigin("http://go/"), kTemp,
-                                 "test_bucket", 100, base::Time(),
-                                 base::Time())};
+  Entry kTableEntries[] = {
+      Entry(BucketId(123), StorageKey::CreateFromStringForTesting("http://go/"),
+            kTemp, "test_bucket", 100, base::Time(), base::Time())};
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
@@ -717,7 +746,7 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
     EXPECT_TRUE(db.GetBucketInfo(kTableEntries[0].bucket_id, &entry));
     EXPECT_EQ(kTableEntries[0].bucket_id, entry.bucket_id);
     EXPECT_EQ(kTableEntries[0].type, entry.type);
-    EXPECT_EQ(kTableEntries[0].origin, entry.origin);
+    EXPECT_EQ(kTableEntries[0].storage_key, entry.storage_key);
     EXPECT_EQ(kTableEntries[0].name, entry.name);
     EXPECT_EQ(kTableEntries[0].use_count, entry.use_count);
     EXPECT_EQ(kTableEntries[0].last_accessed, entry.last_accessed);
@@ -725,6 +754,7 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
   }
 
   {
+    // BucketId 456 is not in the database.
     Entry entry;
     EXPECT_FALSE(db.GetBucketInfo(BucketId(456), &entry));
   }
@@ -734,11 +764,11 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
 TEST_F(QuotaDatabaseTest, BootstrapFlag) {
   QuotaDatabase db(DbPath());
 
-  EXPECT_FALSE(db.IsOriginDatabaseBootstrapped());
-  EXPECT_TRUE(db.SetOriginDatabaseBootstrapped(true));
-  EXPECT_TRUE(db.IsOriginDatabaseBootstrapped());
-  EXPECT_TRUE(db.SetOriginDatabaseBootstrapped(false));
-  EXPECT_FALSE(db.IsOriginDatabaseBootstrapped());
+  EXPECT_FALSE(db.IsStorageKeyDatabaseBootstrapped());
+  EXPECT_TRUE(db.SetStorageKeyDatabaseBootstrapped(true));
+  EXPECT_TRUE(db.IsStorageKeyDatabaseBootstrapped());
+  EXPECT_TRUE(db.SetStorageKeyDatabaseBootstrapped(false));
+  EXPECT_FALSE(db.IsStorageKeyDatabaseBootstrapped());
 }
 
 TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {

@@ -47,11 +47,11 @@
 #include "storage/browser/quota/quota_override_handle.h"
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"
 #include "storage/browser/quota/usage_tracker.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -85,10 +85,9 @@ namespace {
 
 // TODO(crbug.com/1215208): Remove when the QuotaDatabase and QuotaManagerImpl
 // have been migrated to use StorageKey.
-std::set<url::Origin> ToOriginSet(
-    const std::set<blink::StorageKey>& storage_keys) {
+std::set<url::Origin> ToOriginSet(const std::set<StorageKey>& storage_keys) {
   std::set<url::Origin> origins;
-  for (const blink::StorageKey& key : storage_keys)
+  for (const StorageKey& key : storage_keys)
     origins.insert(key.origin());
   return origins;
 }
@@ -106,14 +105,14 @@ QuotaErrorOr<BucketId> CreateBucketOnDBThread(const url::Origin& origin,
                                               const std::string& bucket_name,
                                               QuotaDatabase* database) {
   DCHECK(database);
-  return database->CreateBucket(origin, bucket_name);
+  return database->CreateBucket(StorageKey(origin), bucket_name);
 }
 
 QuotaErrorOr<BucketId> GetBucketIdOnDBThread(const url::Origin& origin,
                                              const std::string& bucket_name,
                                              QuotaDatabase* database) {
   DCHECK(database);
-  return database->GetBucketId(origin, bucket_name);
+  return database->GetBucketId(StorageKey(origin), bucket_name);
 }
 
 bool GetPersistentHostQuotaOnDBThread(const std::string& host,
@@ -140,7 +139,19 @@ bool GetLRUOriginOnDBThread(StorageType type,
                             absl::optional<url::Origin>* origin,
                             QuotaDatabase* database) {
   DCHECK(database);
-  database->GetLRUOrigin(type, exceptions, policy, origin);
+  DCHECK(origin);
+  // TODO(crbug.com/1215208): Remove this conversion when QuotaManagerImpl is
+  // migrated to StorageKey.
+  std::set<StorageKey> storage_key_exceptions;
+  for (const url::Origin& origin : exceptions)
+    storage_key_exceptions.insert(StorageKey(origin));
+  absl::optional<StorageKey> storage_key;
+  database->GetLRUStorageKey(type, storage_key_exceptions, policy,
+                             &storage_key);
+  if (storage_key.has_value())
+    *origin = storage_key->origin();
+  else
+    origin->reset();
   return true;
 }
 
@@ -151,10 +162,11 @@ bool DeleteOriginInfoOnDBThread(const url::Origin& origin,
   DCHECK(database);
 
   base::Time now = base::Time::Now();
+  const StorageKey storage_key(origin);
 
   if (is_eviction) {
     QuotaDatabase::BucketTableEntry entry;
-    database->GetOriginInfo(origin, type, &entry);
+    database->GetStorageKeyInfo(storage_key, type, &entry);
     UMA_HISTOGRAM_COUNTS_1M(
         QuotaManagerImpl::kEvictedOriginAccessedCountHistogram,
         entry.use_count);
@@ -163,19 +175,19 @@ bool DeleteOriginInfoOnDBThread(const url::Origin& origin,
         (now - entry.last_accessed).InDays());
   }
 
-  return database->DeleteOriginInfo(origin, type);
+  return database->DeleteStorageKeyInfo(storage_key, type);
 }
 
-bool BootstrapDatabaseOnDBThread(std::set<blink::StorageKey> storage_keys,
+bool BootstrapDatabaseOnDBThread(std::set<StorageKey> storage_keys,
                                  QuotaDatabase* database) {
   DCHECK(database);
-  if (database->IsOriginDatabaseBootstrapped())
+  if (database->IsStorageKeyDatabaseBootstrapped())
     return true;
 
-  // Register existing origins with 0 last time access.
-  if (database->RegisterInitialOriginInfo(ToOriginSet(storage_keys),
-                                          StorageType::kTemporary)) {
-    database->SetOriginDatabaseBootstrapped(true);
+  // Register existing storage keys with 0 last time access.
+  if (database->RegisterInitialStorageKeyInfo(storage_keys,
+                                              StorageType::kTemporary)) {
+    database->SetStorageKeyDatabaseBootstrapped(true);
     return true;
   }
   return false;
@@ -186,7 +198,8 @@ bool UpdateAccessTimeOnDBThread(const url::Origin& origin,
                                 base::Time accessed_time,
                                 QuotaDatabase* database) {
   DCHECK(database);
-  return database->SetOriginLastAccessTime(origin, type, accessed_time);
+  return database->SetStorageKeyLastAccessTime(StorageKey(origin), type,
+                                               accessed_time);
 }
 
 bool UpdateModifiedTimeOnDBThread(const url::Origin& origin,
@@ -194,7 +207,8 @@ bool UpdateModifiedTimeOnDBThread(const url::Origin& origin,
                                   base::Time modified_time,
                                   QuotaDatabase* database) {
   DCHECK(database);
-  return database->SetOriginLastModifiedTime(origin, type, modified_time);
+  return database->SetStorageKeyLastModifiedTime(StorageKey(origin), type,
+                                                 modified_time);
 }
 
 void DidGetUsageAndQuotaStripBreakdown(
@@ -815,7 +829,15 @@ class QuotaManagerImpl::GetModifiedSinceHelper {
                                     base::Time end,
                                     QuotaDatabase* database) {
     DCHECK(database);
-    return database->GetOriginsModifiedBetween(type, &origins_, begin, end);
+    std::set<StorageKey> storage_keys;
+    if (!database->GetStorageKeysModifiedBetween(type, &storage_keys, begin,
+                                                 end))
+      return false;
+    // TODO(crbug.com/1215208): Remove this conversion when QuotaManagerImpl is
+    // migrated to StorageKey.
+    origins_.clear();
+    origins_ = ToOriginSet(storage_keys);
+    return true;
   }
 
   void DidGetModifiedBetween(const base::WeakPtr<QuotaManagerImpl>& manager,
@@ -1108,8 +1130,8 @@ void QuotaManagerImpl::SetUsageCacheEnabled(QuotaClientType client_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
   DCHECK(GetUsageTracker(type));
-  GetUsageTracker(type)->SetUsageCacheEnabled(
-      client_id, blink::StorageKey(origin), enabled);
+  GetUsageTracker(type)->SetUsageCacheEnabled(client_id, StorageKey(origin),
+                                              enabled);
 }
 
 void QuotaManagerImpl::DeleteOriginData(const url::Origin& origin,
@@ -1338,7 +1360,7 @@ void QuotaManagerImpl::LazyInitialize() {
 
   base::PostTaskAndReplyWithResult(
       db_runner_.get(), FROM_HERE,
-      base::BindOnce(&QuotaDatabase::IsOriginDatabaseBootstrapped,
+      base::BindOnce(&QuotaDatabase::IsStorageKeyDatabaseBootstrapped,
                      base::Unretained(database_.get())),
       base::BindOnce(&QuotaManagerImpl::FinishLazyInitialize,
                      weak_factory_.GetWeakPtr()));
@@ -1357,7 +1379,7 @@ void QuotaManagerImpl::BootstrapDatabaseForEviction(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The usage cache should be fully populated now so we can
   // seed the database with storage keys we know about.
-  std::set<blink::StorageKey> storage_keys =
+  std::set<StorageKey> storage_keys =
       temporary_usage_tracker_->GetCachedStorageKeys();
   PostTaskAndReplyWithResultForDBThread(
       FROM_HERE,
@@ -1466,8 +1488,7 @@ void QuotaManagerImpl::NotifyStorageModified(QuotaClientType client_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
   DCHECK(GetUsageTracker(type));
-  GetUsageTracker(type)->UpdateUsageCache(client_id, blink::StorageKey(origin),
-                                          delta);
+  GetUsageTracker(type)->UpdateUsageCache(client_id, StorageKey(origin), delta);
 
   if (callback)
     std::move(callback).Run();
@@ -1724,16 +1745,16 @@ void QuotaManagerImpl::DidGetPersistentGlobalUsageForHistogram(
 void QuotaManagerImpl::DidDumpBucketTableForHistogram(
     const BucketTableEntries& entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<blink::StorageKey, int64_t> usage_map =
+  std::map<StorageKey, int64_t> usage_map =
       GetUsageTracker(StorageType::kTemporary)->GetCachedStorageKeysUsage();
   base::Time now = base::Time::Now();
   for (const auto& info : entries) {
     if (info.type != StorageType::kTemporary)
       continue;
 
-    // Ignore stale database entries. If there is no map entry, the origin's
-    // data has been deleted.
-    auto it = usage_map.find(blink::StorageKey(info.origin));
+    // Ignore stale database entries. If there is no map entry, the storage
+    // key's data has been deleted.
+    auto it = usage_map.find(info.storage_key);
     if (it == usage_map.end() || it->second == 0)
       continue;
 

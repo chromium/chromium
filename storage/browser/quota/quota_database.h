@@ -22,8 +22,8 @@
 #include "base/util/type_safety/id_type.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
-#include "url/origin.h"
 
 namespace sql {
 class Database;
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   struct COMPONENT_EXPORT(STORAGE_BROWSER) BucketTableEntry {
     BucketTableEntry();
     BucketTableEntry(BucketId bucket_id,
-                     url::Origin origin,
+                     blink::StorageKey storage_key,
                      blink::mojom::StorageType type,
                      std::string name,
                      int use_count,
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     BucketTableEntry& operator=(const BucketTableEntry&);
 
     BucketId bucket_id;
-    url::Origin origin;
+    blink::StorageKey storage_key;
     blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
     std::string name;
     int use_count = 0;
@@ -84,92 +84,95 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                     int64_t quota);
   bool DeleteHostQuota(const std::string& host, blink::mojom::StorageType type);
 
-  // Creates a bucket with `bucket_name` for the `origin` and returns the bucket
-  // id. Returns an QuotaError if a bucket with the same `bucket_name` for an
-  // `origin` already exists or if the operation has failed.
+  // Creates a bucket with `bucket_name` for the `storage_key` and returns the
+  // bucket id. Returns an QuotaError if a bucket with the same `bucket_name`
+  // for the `storage_key` already exists or if the operation has failed.
   // TODO(crbug/1203467): Include more policies when supported.
-  QuotaErrorOr<BucketId> CreateBucket(const url::Origin& origin,
+  QuotaErrorOr<BucketId> CreateBucket(const blink::StorageKey& storage_key,
                                       const std::string& bucket_name);
 
-  // Retrieves the bucket id of the bucket with `bucket_name` for `origin`.
+  // Retrieves the bucket id of the bucket with `bucket_name` for `storage_key`.
   // If one does not exist, it will return an empty BucketId. Returns an error
   // if the operation has failed.
-  QuotaErrorOr<BucketId> GetBucketId(const url::Origin& origin,
+  QuotaErrorOr<BucketId> GetBucketId(const blink::StorageKey& storage_key,
                                      const std::string& bucket_name);
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastAccessTime.
-  bool SetOriginLastAccessTime(const url::Origin& origin,
-                               blink::mojom::StorageType type,
-                               base::Time last_accessed);
+  bool SetStorageKeyLastAccessTime(const blink::StorageKey& storage_key,
+                                   blink::mojom::StorageType type,
+                                   base::Time last_accessed);
 
   // Called by QuotaClient implementers to update when the bucket was last
-  // accessed.
+  // accessed.  If `bucket_id` refers to a bucket with an opaque StorageKey, the
+  // bucket's last access time will not be updated and the function will return
+  // false.
   bool SetBucketLastAccessTime(BucketId bucket_id, base::Time last_accessed);
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastModifiedTime.
-  bool SetOriginLastModifiedTime(const url::Origin& origin,
-                                 blink::mojom::StorageType type,
-                                 base::Time last_modified);
+  bool SetStorageKeyLastModifiedTime(const blink::StorageKey& storage_key,
+                                     blink::mojom::StorageType type,
+                                     base::Time last_modified);
 
   // Called by QuotaClient implementers to update when the bucket was last
   // modified.
   bool SetBucketLastModifiedTime(BucketId bucket_id, base::Time last_modified);
 
-  // Register initial `origins` info `type` to the database.
+  // Register initial `storage_keys` info `type` to the database.
   // This method is assumed to be called only after the installation or
   // the database schema reset.
-  bool RegisterInitialOriginInfo(const std::set<url::Origin>& origins,
-                                 blink::mojom::StorageType type);
+  bool RegisterInitialStorageKeyInfo(
+      const std::set<blink::StorageKey>& storage_keys,
+      blink::mojom::StorageType type);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // GetBucketInfo. Gets the BucketTableEntry for `origin`. Returns whether the
-  // record for an origin's default bucket could be found.
-  bool GetOriginInfo(const url::Origin& origin,
-                     blink::mojom::StorageType type,
-                     BucketTableEntry* entry);
+  // GetBucketInfo. Gets the BucketTableEntry for `storage_key`. Returns whether
+  // the record for a storage key's default bucket could be found.
+  bool GetStorageKeyInfo(const blink::StorageKey& storage_key,
+                         blink::mojom::StorageType type,
+                         BucketTableEntry* entry);
 
   // Gets the table entry for `bucket`. Returns whether the record for an
   // origin bucket can be found.
   bool GetBucketInfo(BucketId bucket_id, BucketTableEntry* entry);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // DeleteBucketInfo. Deletes the default bucket for `origin`.
-  bool DeleteOriginInfo(const url::Origin& origin,
-                        blink::mojom::StorageType type);
+  // DeleteBucketInfo. Deletes the default bucket for `storage_key`.
+  bool DeleteStorageKeyInfo(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type);
 
   // Deletes the specified bucket.
   bool DeleteBucketInfo(BucketId bucket_id);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // GetLRUBucket. Sets `origin` to the least recently used origin of origins
-  // not included in `exceptions` and not granted the special unlimited storage
-  // right. Returns false when it fails in accessing the database.
-  // `origin` is set to nullopt when there is no matching origin.
-  // This is limited to the origin's default bucket.
-  bool GetLRUOrigin(blink::mojom::StorageType type,
-                    const std::set<url::Origin>& exceptions,
-                    SpecialStoragePolicy* special_storage_policy,
-                    absl::optional<url::Origin>* origin);
+  // GetLRUBucket. Sets `storage_key` to the least recently used storage key of
+  // storage keys not included in `exceptions` and not granted the special
+  // unlimited storage right. Returns false when it fails in accessing the
+  // database. `storage_key` is set to nullopt when there is no matching storage
+  // key. This is limited to the storage key's default bucket.
+  bool GetLRUStorageKey(blink::mojom::StorageType type,
+                        const std::set<blink::StorageKey>& exceptions,
+                        SpecialStoragePolicy* special_storage_policy,
+                        absl::optional<blink::StorageKey>* storage_key);
 
-  // Sets `bucket_id` to the least recently used bucket from origins not
+  // Sets `bucket_id` to the least recently used bucket from storage keys not
   // included in `exceptions` and not granted special unlimited storage right.
   // Returns false when it fails in accessing the database. `bucket_id` is
   // set to nullopt when there is no matching bucket.
   bool GetLRUBucket(blink::mojom::StorageType type,
-                    const std::set<url::Origin>& exceptions,
+                    const std::set<blink::StorageKey>& exceptions,
                     SpecialStoragePolicy* special_storage_policy,
                     absl::optional<BucketId>* bucket_id);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // GetBucketsModifiedBetween. Populates `origins` with the ones that have had
-  // their default bucket modified since the `begin` and until the `end`.
+  // GetBucketsModifiedBetween. Populates `storage_keys` with the ones that have
+  // had their default bucket modified since the `begin` and until the `end`.
   // Returns whether the operation succeeded.
-  bool GetOriginsModifiedBetween(blink::mojom::StorageType type,
-                                 std::set<url::Origin>* origins,
-                                 base::Time begin,
-                                 base::Time end);
+  bool GetStorageKeysModifiedBetween(blink::mojom::StorageType type,
+                                     std::set<blink::StorageKey>* storage_keys,
+                                     base::Time begin,
+                                     base::Time end);
 
   // Populates `bucket_ids` with the buckets that have been modified since the
   // `begin` and until the `end`. Returns whether the operation succeeded.
@@ -178,11 +181,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                                  base::Time begin,
                                  base::Time end);
 
-  // Returns false if SetOriginDatabaseBootstrapped has never
-  // been called before, which means existing origins may not have been
+  // Returns false if SetStorageKeyDatabaseBootstrapped has never
+  // been called before, which means existing storage keys may not have been
   // registered.
-  bool IsOriginDatabaseBootstrapped();
-  bool SetOriginDatabaseBootstrapped(bool bootstrap_flag);
+  bool IsStorageKeyDatabaseBootstrapped();
+  bool SetStorageKeyDatabaseBootstrapped(bool bootstrap_flag);
 
  private:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {

@@ -43,6 +43,7 @@
 #include "storage/browser/test/mock_quota_client.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1746,7 +1747,8 @@ TEST_F(QuotaManagerImplTest, EvictOriginData) {
 
   for (const auto& entry : bucket_entries()) {
     if (entry.type == kTemp)
-      EXPECT_NE(std::string("http://foo.com/"), entry.origin.GetURL().spec());
+      EXPECT_NE(std::string("http://foo.com/"),
+                entry.storage_key.origin().GetURL().spec());
   }
 
   GetGlobalUsage(kTemp);
@@ -1852,7 +1854,8 @@ TEST_F(QuotaManagerImplTest, EvictOriginDataWithDeletionError) {
 
   bool found_origin_in_database = false;
   for (const auto& entry : bucket_entries()) {
-    if (entry.type == kTemp && entry.origin == ToOrigin("http://foo.com/")) {
+    if (entry.type == kTemp &&
+        entry.storage_key.origin() == ToOrigin("http://foo.com/")) {
       found_origin_in_database = true;
       break;
     }
@@ -2031,10 +2034,14 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
     if (entry.type != kTemp)
       continue;
 
-    EXPECT_NE(std::string("http://foo.com/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("http://foo.com:1/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("https://foo.com/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"), entry.origin.GetURL().spec());
+    EXPECT_NE(std::string("http://foo.com/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("http://foo.com:1/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("https://foo.com/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("http://bar.com/"),
+              entry.storage_key.origin().GetURL().spec());
   }
 
   GetGlobalUsage(kTemp);
@@ -2116,10 +2123,14 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
     if (entry.type != kTemp)
       continue;
 
-    EXPECT_NE(std::string("http://foo.com/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("http://foo.com:1/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("https://foo.com/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"), entry.origin.GetURL().spec());
+    EXPECT_NE(std::string("http://foo.com/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("http://foo.com:1/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("https://foo.com/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("http://bar.com/"),
+              entry.storage_key.origin().GetURL().spec());
   }
 
   GetGlobalUsage(kTemp);
@@ -2221,8 +2232,10 @@ TEST_F(QuotaManagerImplTest, DeleteOriginDataMultiple) {
     if (entry.type != kTemp)
       continue;
 
-    EXPECT_NE(std::string("http://foo.com/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"), entry.origin.GetURL().spec());
+    EXPECT_NE(std::string("http://foo.com/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("http://bar.com/"),
+              entry.storage_key.origin().GetURL().spec());
   }
 
   GetGlobalUsage(kTemp);
@@ -2313,8 +2326,10 @@ TEST_F(QuotaManagerImplTest, DeleteOriginDataMultipleClientsDifferentTypes) {
     if (entry.type != kPerm)
       continue;
 
-    EXPECT_NE(std::string("http://foo.com/"), entry.origin.GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"), entry.origin.GetURL().spec());
+    EXPECT_NE(std::string("http://foo.com/"),
+              entry.storage_key.origin().GetURL().spec());
+    EXPECT_NE(std::string("http://bar.com/"),
+              entry.storage_key.origin().GetURL().spec());
   }
 
   GetGlobalUsage(kTemp);
@@ -2583,12 +2598,13 @@ TEST_F(QuotaManagerImplTest, DumpBucketTable) {
 
   for (const auto& entry : bucket_entries()) {
     SCOPED_TRACE(testing::Message()
-                 << "host = " << entry.origin << ", "
+                 << "host = " << entry.storage_key.origin() << ", "
                  << "type = " << static_cast<int>(entry.type) << ", "
                  << "use_count = " << entry.use_count);
-    EXPECT_EQ(1u, entries.erase(
-                      make_pair(make_pair(entry.origin.GetURL(), entry.type),
-                                entry.use_count)));
+    EXPECT_EQ(1u,
+              entries.erase(make_pair(
+                  make_pair(entry.storage_key.origin().GetURL(), entry.type),
+                  entry.use_count)));
   }
   EXPECT_TRUE(entries.empty());
 }

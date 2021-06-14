@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/quota_internals/quota_internals_handler.h"
 #include "chrome/browser/ui/webui/quota_internals/quota_internals_types.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 #include "url/origin.h"
 
@@ -144,7 +145,7 @@ void QuotaInternalsProxy::DidDumpBucketTable(
   origin_info.reserve(entries.size());
 
   for (const auto& entry : entries) {
-    PerOriginStorageInfo info(entry.origin.GetURL(), entry.type);
+    PerOriginStorageInfo info(entry.storage_key.origin().GetURL(), entry.type);
     info.set_used_count(entry.use_count);
     info.set_last_access_time(entry.last_accessed);
     info.set_last_modified_time(entry.last_modified);

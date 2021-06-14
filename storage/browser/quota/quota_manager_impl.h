@@ -77,8 +77,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
   // the current settings, capacity, and usage.
   virtual void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) = 0;
 
-  // Returns next origin to evict, or nullopt if there are no evictable
-  // origins.
+  // Returns next origin to evict, or nullopt if there are no evictable origins.
   virtual void GetEvictionOrigin(blink::mojom::StorageType type,
                                  int64_t global_quota,
                                  GetOriginCallback callback) = 0;
