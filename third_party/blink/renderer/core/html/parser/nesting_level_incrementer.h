@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_NESTING_LEVEL_INCREMENTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_NESTING_LEVEL_INCREMENTER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -40,12 +39,13 @@ class NestingLevelIncrementer {
     ++(*nesting_level_);
   }
 
+  NestingLevelIncrementer(const NestingLevelIncrementer&) = delete;
+  NestingLevelIncrementer& operator=(const NestingLevelIncrementer&) = delete;
+
   ~NestingLevelIncrementer() { --(*nesting_level_); }
 
  private:
   unsigned* nesting_level_;
-
-  DISALLOW_COPY_AND_ASSIGN(NestingLevelIncrementer);
 };
 
 }  // namespace blink

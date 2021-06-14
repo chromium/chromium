@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
@@ -42,6 +41,8 @@ class CORE_EXPORT HTMLTokenizer {
 
  public:
   explicit HTMLTokenizer(const HTMLParserOptions&);
+  HTMLTokenizer(const HTMLTokenizer&) = delete;
+  HTMLTokenizer& operator=(const HTMLTokenizer&) = delete;
   ~HTMLTokenizer();
 
   void Reset();
@@ -283,8 +284,6 @@ class CORE_EXPORT HTMLTokenizer {
   LiteralBuffer<LChar, 32> buffered_end_tag_name_;
 
   HTMLParserOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLTokenizer);
 };
 
 }  // namespace blink

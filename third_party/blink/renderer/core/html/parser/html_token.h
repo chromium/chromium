@@ -30,7 +30,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
@@ -46,14 +45,14 @@ class DoctypeData {
       : has_public_identifier_(false),
         has_system_identifier_(false),
         force_quirks_(false) {}
+  DoctypeData(const DoctypeData&) = delete;
+  DoctypeData& operator=(const DoctypeData&) = delete;
 
   bool has_public_identifier_;
   bool has_system_identifier_;
   WTF::Vector<UChar> public_identifier_;
   WTF::Vector<UChar> system_identifier_;
   bool force_quirks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DoctypeData);
 };
 
 static inline Attribute* FindAttributeInVector(Vector<Attribute>& attributes,
@@ -156,6 +155,8 @@ class HTMLToken {
   typedef LiteralBuffer<UChar, 256> DataVector;
 
   HTMLToken() { Clear(); }
+  HTMLToken(const HTMLToken&) = delete;
+  HTMLToken& operator=(const HTMLToken&) = delete;
 
   void Clear() {
     type_ = kUninitialized;
@@ -438,8 +439,6 @@ class HTMLToken {
 
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLToken);
 };
 
 #ifndef NDEBUG

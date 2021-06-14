@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_BACKGROUND_HTML_INPUT_STREAM_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -42,6 +41,9 @@ class BackgroundHTMLInputStream {
 
  public:
   BackgroundHTMLInputStream();
+  BackgroundHTMLInputStream(const BackgroundHTMLInputStream&) = delete;
+  BackgroundHTMLInputStream& operator=(const BackgroundHTMLInputStream&) =
+      delete;
 
   void Append(const String&);
   void Close();
@@ -93,8 +95,6 @@ class BackgroundHTMLInputStream {
   wtf_size_t total_checkpoint_token_count_;
 
   void UpdateTotalCheckpointTokenCount();
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundHTMLInputStream);
 };
 
 }  // namespace blink

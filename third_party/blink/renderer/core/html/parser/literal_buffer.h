@@ -10,7 +10,6 @@
 #include <type_traits>
 #include "base/bits.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"

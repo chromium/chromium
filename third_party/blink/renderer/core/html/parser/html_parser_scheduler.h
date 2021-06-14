@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_SCHEDULER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -58,6 +57,8 @@ class HTMLParserScheduler final : public GarbageCollected<HTMLParserScheduler> {
  public:
   HTMLParserScheduler(HTMLDocumentParser*,
                       scoped_refptr<base::SingleThreadTaskRunner>);
+  HTMLParserScheduler(const HTMLParserScheduler&) = delete;
+  HTMLParserScheduler& operator=(const HTMLParserScheduler&) = delete;
   ~HTMLParserScheduler();
 
   bool IsScheduledForUnpause() const;
@@ -76,8 +77,6 @@ class HTMLParserScheduler final : public GarbageCollected<HTMLParserScheduler> {
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
 
   TaskHandle cancellable_continue_parse_task_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLParserScheduler);
 };
 
 }  // namespace blink

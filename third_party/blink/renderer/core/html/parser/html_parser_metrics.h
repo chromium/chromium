@@ -19,6 +19,8 @@ namespace blink {
 class CORE_EXPORT HTMLParserMetrics {
  public:
   HTMLParserMetrics(int64_t source_id, ukm::UkmRecorder*);
+  HTMLParserMetrics(const HTMLParserMetrics&) = delete;
+  HTMLParserMetrics& operator=(const HTMLParserMetrics&) = delete;
   ~HTMLParserMetrics() = default;
 
   void AddChunk(base::TimeDelta elapsed_time, unsigned tokens_parsed);
@@ -56,8 +58,6 @@ class CORE_EXPORT HTMLParserMetrics {
   // Track total number of characters parsed in one instantiation of the
   // parser.
   unsigned input_character_count = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLParserMetrics);
 };
 
 }  // namespace blink

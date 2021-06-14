@@ -28,7 +28,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_INPUT_STREAM_PREPROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_INPUT_STREAM_PREPROCESSOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -47,6 +46,8 @@ class InputStreamPreprocessor {
  public:
   explicit InputStreamPreprocessor(Tokenizer* tokenizer)
       : tokenizer_(tokenizer) {}
+  InputStreamPreprocessor(const InputStreamPreprocessor&) = delete;
+  InputStreamPreprocessor& operator=(const InputStreamPreprocessor&) = delete;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#next-input-character
   // Returns whether we succeeded in peeking at the next character.
@@ -166,8 +167,6 @@ class InputStreamPreprocessor {
 
   Tokenizer* tokenizer_;
   bool skip_next_new_line_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InputStreamPreprocessor);
 };
 
 }  // namespace blink

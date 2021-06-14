@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/compact_html_token.h"
@@ -189,6 +188,9 @@ class CORE_EXPORT AtomicHTMLToken {
     DCHECK(UsesName());
   }
 
+  AtomicHTMLToken(const AtomicHTMLToken&) = delete;
+  AtomicHTMLToken& operator=(const AtomicHTMLToken&) = delete;
+
 #ifndef NDEBUG
   void Show() const;
 #endif
@@ -218,8 +220,6 @@ class CORE_EXPORT AtomicHTMLToken {
   bool duplicate_attribute_ = false;
 
   Vector<Attribute> attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicHTMLToken);
 };
 
 inline void AtomicHTMLToken::InitializeAttributes(

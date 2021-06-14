@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ELEMENT_STACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ELEMENT_STACK_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -45,10 +44,14 @@ class HTMLElementStack {
 
  public:
   HTMLElementStack();
+  HTMLElementStack(const HTMLElementStack&) = delete;
+  HTMLElementStack& operator=(const HTMLElementStack&) = delete;
 
   class ElementRecord final : public GarbageCollected<ElementRecord> {
    public:
     ElementRecord(HTMLStackItem*, ElementRecord*);
+    ElementRecord(const ElementRecord&) = delete;
+    ElementRecord& operator=(const ElementRecord&) = delete;
 
     Element* GetElement() const { return item_->GetElement(); }
     ContainerNode* GetNode() const { return item_->GetNode(); }
@@ -70,8 +73,6 @@ class HTMLElementStack {
 
     Member<HTMLStackItem> item_;
     Member<ElementRecord> next_;
-
-    DISALLOW_COPY_AND_ASSIGN(ElementRecord);
   };
 
   unsigned StackDepth() const { return stack_depth_; }
@@ -187,8 +188,6 @@ class HTMLElementStack {
   Member<Element> head_element_;
   Member<Element> body_element_;
   unsigned stack_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLElementStack);
 };
 
 }  // namespace blink

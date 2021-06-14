@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -140,6 +139,9 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     DCHECK(!IsEmpty());
   }
 
+  CharacterTokenBuffer(const CharacterTokenBuffer&) = delete;
+  CharacterTokenBuffer& operator=(const CharacterTokenBuffer&) = delete;
+
   ~CharacterTokenBuffer() { DCHECK(IsEmpty()); }
 
   bool IsEmpty() const { return current_ == end_; }
@@ -225,8 +227,6 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
   scoped_refptr<StringImpl> characters_;
   unsigned current_;
   unsigned end_;
-
-  DISALLOW_COPY_AND_ASSIGN(CharacterTokenBuffer);
 };
 
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,

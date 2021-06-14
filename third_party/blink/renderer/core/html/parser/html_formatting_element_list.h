@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_FORMATTING_ELEMENT_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_FORMATTING_ELEMENT_LIST_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -42,6 +41,9 @@ class HTMLFormattingElementList {
 
  public:
   HTMLFormattingElementList();
+  HTMLFormattingElementList(const HTMLFormattingElementList&) = delete;
+  HTMLFormattingElementList& operator=(const HTMLFormattingElementList&) =
+      delete;
 
   // Ideally Entry would be private, but HTMLTreeBuilder has to coordinate
   // between the HTMLFormattingElementList and HTMLElementStack and needs access
@@ -138,8 +140,6 @@ class HTMLFormattingElementList {
   void EnsureNoahsArkCondition(HTMLStackItem*);
 
   HeapVector<Entry> entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLFormattingElementList);
 };
 
 }  // namespace blink

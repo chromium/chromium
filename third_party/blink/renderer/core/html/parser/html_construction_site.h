@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
@@ -111,6 +110,8 @@ class HTMLConstructionSite final {
   HTMLConstructionSite(HTMLParserReentryPermit*,
                        Document&,
                        ParserContentPolicy);
+  HTMLConstructionSite(const HTMLConstructionSite&) = delete;
+  HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;
   ~HTMLConstructionSite();
   void Trace(Visitor*) const;
 
@@ -222,7 +223,6 @@ class HTMLConstructionSite final {
 
   class RedirectToFosterParentGuard {
     STACK_ALLOCATED();
-    DISALLOW_COPY_AND_ASSIGN(RedirectToFosterParentGuard);
 
    public:
     RedirectToFosterParentGuard(HTMLConstructionSite& tree)
@@ -230,6 +230,10 @@ class HTMLConstructionSite final {
           was_redirecting_before_(tree.redirect_attach_to_foster_parent_) {
       tree_.redirect_attach_to_foster_parent_ = true;
     }
+
+    RedirectToFosterParentGuard(const RedirectToFosterParentGuard&) = delete;
+    RedirectToFosterParentGuard& operator=(const RedirectToFosterParentGuard&) =
+        delete;
 
     ~RedirectToFosterParentGuard() {
       tree_.redirect_attach_to_foster_parent_ = was_redirecting_before_;
@@ -346,8 +350,6 @@ class HTMLConstructionSite final {
   bool redirect_attach_to_foster_parent_;
 
   bool in_quirks_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLConstructionSite);
 };
 
 }  // namespace blink

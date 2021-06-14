@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_REENTRY_PERMIT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_REENTRY_PERMIT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -39,6 +38,8 @@ class HTMLParserReentryPermit final
     : public GarbageCollected<HTMLParserReentryPermit> {
  public:
   HTMLParserReentryPermit();
+  HTMLParserReentryPermit(const HTMLParserReentryPermit&) = delete;
+  HTMLParserReentryPermit& operator=(const HTMLParserReentryPermit&) = delete;
   ~HTMLParserReentryPermit() = default;
 
   unsigned ScriptNestingLevel() const { return script_nesting_level_; }
@@ -57,6 +58,11 @@ class HTMLParserReentryPermit final
       permit_->script_nesting_level_++;
     }
 
+    ScriptNestingLevelIncrementer(const ScriptNestingLevelIncrementer&) =
+        delete;
+    ScriptNestingLevelIncrementer& operator=(
+        const ScriptNestingLevelIncrementer&) = delete;
+
     ScriptNestingLevelIncrementer(ScriptNestingLevelIncrementer&&) = default;
 
     ~ScriptNestingLevelIncrementer() {
@@ -67,8 +73,6 @@ class HTMLParserReentryPermit final
 
    private:
     HTMLParserReentryPermit* permit_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScriptNestingLevelIncrementer);
   };
 
   ScriptNestingLevelIncrementer IncrementScriptNestingLevel() {
@@ -83,8 +87,6 @@ class HTMLParserReentryPermit final
 
   // https://html.spec.whatwg.org/C/#parser-pause-flag
   bool parser_pause_flag_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLParserReentryPermit);
 };
 
 }  // namespace blink

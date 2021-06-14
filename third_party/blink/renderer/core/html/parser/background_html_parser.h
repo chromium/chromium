@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,6 +67,9 @@ class BackgroundHTMLParser {
             std::unique_ptr<CachedDocumentParameters>,
             const MediaValuesCached::MediaValuesCachedData&,
             bool priority_hints_origin_trial_enabled);
+
+  BackgroundHTMLParser(const BackgroundHTMLParser&) = delete;
+  BackgroundHTMLParser& operator=(const BackgroundHTMLParser&) = delete;
 
   struct Checkpoint {
     USING_FAST_MALLOC(Checkpoint);
@@ -128,8 +130,6 @@ class BackgroundHTMLParser {
   bool starting_script_;
 
   base::WeakPtrFactory<BackgroundHTMLParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundHTMLParser);
 };
 
 }  // namespace blink

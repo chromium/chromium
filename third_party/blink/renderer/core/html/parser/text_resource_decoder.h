@@ -25,7 +25,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
@@ -59,6 +58,8 @@ class CORE_EXPORT TextResourceDecoder {
   };
 
   explicit TextResourceDecoder(const TextResourceDecoderOptions&);
+  TextResourceDecoder(const TextResourceDecoder&) = delete;
+  TextResourceDecoder& operator=(const TextResourceDecoder&) = delete;
   ~TextResourceDecoder();
 
   void SetEncoding(const WTF::TextEncoding&, EncodingSource);
@@ -100,8 +101,6 @@ class CORE_EXPORT TextResourceDecoder {
   bool detection_completed_;
 
   std::unique_ptr<HTMLMetaCharsetParser> charset_parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextResourceDecoder);
 };
 
 }  // namespace blink

@@ -28,7 +28,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
@@ -63,6 +62,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   ParserContentPolicy,
                   const HTMLParserOptions&,
                   bool include_shadow_roots);
+  HTMLTreeBuilder(const HTMLTreeBuilder&) = delete;
+  HTMLTreeBuilder& operator=(const HTMLTreeBuilder&) = delete;
   ~HTMLTreeBuilder();
   void Trace(Visitor*) const;
 
@@ -207,6 +208,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
    public:
     FragmentParsingContext() = default;
+    FragmentParsingContext(const FragmentParsingContext&) = delete;
+    FragmentParsingContext& operator=(const FragmentParsingContext&) = delete;
     void Init(DocumentFragment*, Element* context_element);
 
     DocumentFragment* Fragment() const { return fragment_; }
@@ -224,8 +227,6 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
    private:
     Member<DocumentFragment> fragment_;
     Member<HTMLStackItem> context_element_stack_item_;
-
-    DISALLOW_COPY_AND_ASSIGN(FragmentParsingContext);
   };
 
   // https://html.spec.whatwg.org/C/#frameset-ok-flag
@@ -263,8 +264,6 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   TextPosition script_to_process_start_position_;
 
   HTMLParserOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLTreeBuilder);
 };
 
 }  // namespace blink
