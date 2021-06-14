@@ -333,7 +333,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType.{Visibility}"
-    enum="ProcessType2" expires_after="2021-07-18">
+    enum="ProcessType2" expires_after="2022-07-18">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -619,6 +619,9 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.ForegroundBatteryDrain.TimeBetweenEvents" units="ms"
     expires_after="2021-07-03">
+  <obsolete>
+    Obsolete in M93, no longer needed.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>

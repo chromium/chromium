@@ -180,12 +180,6 @@ void ReportAveragedDrain(int capacity_consumed,
     exclusive_dark_mode_histogram->AddCount(capacity_consumed_avg,
                                             num_sampling_periods);
   }
-
-  // Also report the time it took for us to detect this drop to see what the
-  // overall metric sensitivity is.
-  UMA_HISTOGRAM_LONG_TIMES_100(
-      "Power.ForegroundBatteryDrain.TimeBetweenEvents",
-      base::TimeDelta::FromSeconds(30 * num_sampling_periods));
 }
 
 }  // namespace
