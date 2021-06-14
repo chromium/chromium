@@ -110,7 +110,8 @@ class PasswordProtectionRequest
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 
   PasswordProtectionRequest(
-      scoped_refptr<base::SequencedTaskRunner> task_runner_to_delete_on,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       const GURL& main_frame_url,
       const GURL& password_form_action,
       const GURL& password_form_frame_url,
@@ -162,6 +163,7 @@ class PasswordProtectionRequest
   void CheckAllowlist();
 
   static void OnAllowlistCheckDoneOnIO(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<PasswordProtectionRequest> weak_request,
       bool match_allowlist);
 
@@ -201,6 +203,16 @@ class PasswordProtectionRequest
   // |this| will be destroyed after calling this function.
   void Finish(RequestOutcome outcome,
               std::unique_ptr<LoginReputationClientResponse> response);
+
+  // PasswordProtectionRequest passes its |ui_task_runner| construction
+  // parameter to its RefCountedDeleteOnSequence base class, which exposes its
+  // passed-in task runner as owning_task_runner(). Expose that |ui_task_runner|
+  // parameter internally as ui_task_runner() for clarity.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner() {
+    return owning_task_runner();
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   // Main frame URL of the login form.
   const GURL main_frame_url_;

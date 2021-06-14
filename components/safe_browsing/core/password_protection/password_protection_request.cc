@@ -60,7 +60,8 @@ std::vector<std::string> GetMatchingDomains(
 }  // namespace
 
 PasswordProtectionRequest::PasswordProtectionRequest(
-    scoped_refptr<base::SequencedTaskRunner> task_runner_to_delete_on,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     const GURL& main_frame_url,
     const GURL& password_form_action,
     const GURL& password_form_frame_url,
@@ -74,8 +75,9 @@ PasswordProtectionRequest::PasswordProtectionRequest(
     PasswordProtectionServiceBase* pps,
     int request_timeout_in_ms)
     : base::RefCountedDeleteOnSequence<PasswordProtectionRequest>(
-          std::move(task_runner_to_delete_on)),
+          std::move(ui_task_runner)),
       request_proto_(std::make_unique<LoginReputationClientRequest>()),
+      io_task_runner_(std::move(io_task_runner)),
       main_frame_url_(main_frame_url),
       password_form_action_(password_form_action),
       password_form_frame_url_(password_form_frame_url),
@@ -89,7 +91,7 @@ PasswordProtectionRequest::PasswordProtectionRequest(
       password_protection_service_(pps),
       request_timeout_in_ms_(request_timeout_in_ms),
       is_modal_warning_showing_(false) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
 
   DCHECK(trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type_ == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
@@ -104,12 +106,12 @@ PasswordProtectionRequest::PasswordProtectionRequest(
 PasswordProtectionRequest::~PasswordProtectionRequest() = default;
 
 void PasswordProtectionRequest::Start() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   CheckAllowlist();
 }
 
 void PasswordProtectionRequest::CheckAllowlist() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   // In order to send pings for about:blank, we skip the allowlist check for
   // URLs with unsupported schemes.
@@ -122,9 +124,10 @@ void PasswordProtectionRequest::CheckAllowlist() {
   // Start a task on the IO thread to check the allowlist. It may
   // callback immediately on the IO thread or take some time if a full-hash-
   // check is required.
-  auto result_callback = base::BindOnce(&OnAllowlistCheckDoneOnIO, AsWeakPtr());
+  auto result_callback =
+      base::BindOnce(&OnAllowlistCheckDoneOnIO, ui_task_runner(), AsWeakPtr());
   tracker_.PostTask(
-      GetTaskRunner(ThreadID::IO).get(), FROM_HERE,
+      io_task_runner_.get(), FROM_HERE,
       base::BindOnce(&AllowlistCheckerClient::StartCheckCsdAllowlist,
                      password_protection_service_->database_manager(),
                      main_frame_url_, std::move(result_callback)));
@@ -132,18 +135,18 @@ void PasswordProtectionRequest::CheckAllowlist() {
 
 // static
 void PasswordProtectionRequest::OnAllowlistCheckDoneOnIO(
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<PasswordProtectionRequest> weak_request,
     bool match_allowlist) {
   // Don't access weak_request on IO thread. Move it back to UI thread first.
-  GetTaskRunner(ThreadID::UI)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&PasswordProtectionRequest::OnAllowlistCheckDone,
-                         weak_request, match_allowlist));
+  ui_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordProtectionRequest::OnAllowlistCheckDone,
+                     weak_request, match_allowlist));
 }
 
 void PasswordProtectionRequest::OnAllowlistCheckDone(bool match_allowlist) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   if (match_allowlist) {
     if (password_protection_service_->CanSendSamplePing()) {
       FillRequestProto(/*is_sampled_ping=*/true);
@@ -159,7 +162,7 @@ void PasswordProtectionRequest::OnAllowlistCheckDone(bool match_allowlist) {
 }
 
 void PasswordProtectionRequest::CheckCachedVerdicts() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   if (!password_protection_service_) {
     Finish(RequestOutcome::SERVICE_DESTROYED, nullptr);
     return;
@@ -314,7 +317,7 @@ bool PasswordProtectionRequest::IsVisualFeaturesEnabled() {
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 void PasswordProtectionRequest::SendRequest() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   if (password_protection_service_->CanGetAccessToken() &&
       password_protection_service_->token_fetcher()) {
     password_protection_service_->token_fetcher()->Start(
@@ -328,7 +331,7 @@ void PasswordProtectionRequest::SendRequest() {
 
 void PasswordProtectionRequest::SendRequestWithToken(
     const std::string& access_token) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   MaybeAddPingToWebUI(access_token);
 
@@ -392,22 +395,21 @@ void PasswordProtectionRequest::SendRequestWithToken(
 }
 
 void PasswordProtectionRequest::StartTimeout() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   // If request is not done withing 10 seconds, we cancel this request.
   // The weak pointer used for the timeout will be invalidated (and
   // hence would prevent the timeout) if the check completes on time and
   // execution reaches Finish().
-  GetTaskRunner(ThreadID::UI)
-      ->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&PasswordProtectionRequest::Cancel, AsWeakPtr(), true),
-          base::TimeDelta::FromMilliseconds(request_timeout_in_ms_));
+  ui_task_runner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordProtectionRequest::Cancel, AsWeakPtr(), true),
+      base::TimeDelta::FromMilliseconds(request_timeout_in_ms_));
 }
 
 void PasswordProtectionRequest::OnURLLoaderComplete(
     std::unique_ptr<std::string> response_body) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
@@ -439,7 +441,7 @@ void PasswordProtectionRequest::OnURLLoaderComplete(
 void PasswordProtectionRequest::Finish(
     RequestOutcome outcome,
     std::unique_ptr<LoginReputationClientResponse> response) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   tracker_.TryCancelAll();
 
   // If the request is canceled, the PasswordProtectionServiceBase is already
@@ -469,7 +471,7 @@ void PasswordProtectionRequest::Finish(
 }
 
 void PasswordProtectionRequest::Cancel(bool timed_out) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   url_loader_.reset();
   Finish(timed_out ? RequestOutcome::TIMEDOUT : RequestOutcome::CANCELED,
          nullptr);

@@ -91,6 +91,7 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
     PasswordProtectionServiceBase* pps,
     int request_timeout_in_ms)
     : PasswordProtectionRequest(content::GetUIThreadTaskRunner({}),
+                                content::GetIOThreadTaskRunner({}),
                                 main_frame_url,
                                 password_form_action,
                                 password_form_frame_url,

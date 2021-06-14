@@ -40,6 +40,7 @@ PasswordProtectionRequestIOS::PasswordProtectionRequestIOS(
     int request_timeout_in_ms)
     : PasswordProtectionRequest(
           base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
+          base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
           main_frame_url,
           /*password_form_action=*/GURL(),
           /*password_frame_url=*/GURL(),
