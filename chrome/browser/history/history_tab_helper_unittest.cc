@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,7 +108,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
     return result;
   }
 
-  std::set<GURL> GetMostVisistedURLSet() {
+  std::set<GURL> GetMostVisitedURLSet() {
     std::set<GURL> result;
     for (const history::MostVisitedURL& mv_url : QueryMostVisitedURLs()) {
       result.insert(mv_url.url);
@@ -159,6 +160,85 @@ TEST_F(HistoryTabHelperTest, ShouldLimitTitleUpdatesPerPage) {
   EXPECT_EQ("title10", QueryPageTitleFromHistory(page_url_));
 }
 
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLMainFrameNoReferrer) {
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(GURL("http://previousurl.com"));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  EXPECT_TRUE(args.referrer.is_empty());
+}
+
+TEST_F(HistoryTabHelperTest,
+       CreateAddPageArgsReferringURLMainFrameSameOriginReferrer) {
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(
+      GURL("http://previousurl.com/abc"));
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = navigation_handle.GetPreviousMainFrameURL().GetOrigin();
+  referrer->policy = network::mojom::ReferrerPolicy::kDefault;
+  navigation_handle.SetReferrer(std::move(referrer));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  EXPECT_EQ(args.referrer, GURL("http://previousurl.com/abc"));
+}
+
+TEST_F(HistoryTabHelperTest,
+       CreateAddPageArgsReferringURLMainFrameSameOriginReferrerDifferentPath) {
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(
+      GURL("http://previousurl.com/def"));
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = GURL("http://previousurl.com/abc");
+  referrer->policy = network::mojom::ReferrerPolicy::kDefault;
+  navigation_handle.SetReferrer(std::move(referrer));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  EXPECT_EQ(args.referrer, GURL("http://previousurl.com/abc"));
+}
+
+TEST_F(HistoryTabHelperTest,
+       CreateAddPageArgsReferringURLMainFrameCrossOriginReferrer) {
+  content::MockNavigationHandle navigation_handle(web_contents());
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = GURL("http://crossorigin.com");
+  referrer->policy = network::mojom::ReferrerPolicy::kDefault;
+  navigation_handle.SetReferrer(std::move(referrer));
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(GURL("http://previousurl.com"));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  EXPECT_EQ(args.referrer, GURL("http://crossorigin.com"));
+}
+
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLNotMainFrame) {
+  content::RenderFrameHostTester* main_rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  main_rfh_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* subframe = main_rfh_tester->AppendChild("subframe");
+  content::MockNavigationHandle navigation_handle(GURL("http://someurl.com"),
+                                                  subframe);
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(GURL("http://previousurl.com"));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  // Should default to referrer if not in main frame and the referrer should not
+  // be sent to the arbitrary previous URL that is set.
+  EXPECT_NE(args.referrer, GURL("http://previousurl.com"));
+}
+
 #if defined(OS_ANDROID)
 
 TEST_F(HistoryTabHelperTest, NonFeedNavigationsDoContributeToMostVisited) {
@@ -169,7 +249,7 @@ TEST_F(HistoryTabHelperTest, NonFeedNavigationsDoContributeToMostVisited) {
   web_contents_tester()->NavigateAndCommit(new_url,
                                            ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 
-  EXPECT_THAT(GetMostVisistedURLSet(), testing::Contains(new_url));
+  EXPECT_THAT(GetMostVisitedURLSet(), testing::Contains(new_url));
 }
 
 TEST_F(HistoryTabHelperTest, FeedNavigationsDoNotContributeToMostVisited) {
@@ -179,8 +259,7 @@ TEST_F(HistoryTabHelperTest, FeedNavigationsDoNotContributeToMostVisited) {
   web_contents_tester()->NavigateAndCommit(new_url,
                                            ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 
-  EXPECT_THAT(GetMostVisistedURLSet(),
-              testing::Not(testing::Contains(new_url)));
+  EXPECT_THAT(GetMostVisitedURLSet(), testing::Not(testing::Contains(new_url)));
 }
 
 #endif

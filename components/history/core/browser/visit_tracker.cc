@@ -28,8 +28,8 @@ VisitTracker::~VisitTracker() {}
 // to optimize lookup.
 VisitID VisitTracker::GetLastVisit(ContextID context_id,
                                    int nav_entry_id,
-                                   const GURL& referrer) {
-  if (referrer.is_empty() || !context_id)
+                                   const GURL& url) {
+  if (url.is_empty() || !context_id)
     return 0;
 
   auto i = contexts_.find(context_id);
@@ -56,13 +56,13 @@ VisitID VisitTracker::GetLastVisit(ContextID context_id,
   // two out edges in our visit graph.
   for (int i = static_cast<int>(transitions.size()) - 1; i >= 0; i--) {
     if (transitions[i].nav_entry_id <= nav_entry_id &&
-            transitions[i].url == referrer) {
+        transitions[i].url == url) {
       // Found it.
       return transitions[i].visit_id;
     }
   }
 
-  // We can't find the referrer.
+  // We can't find the URL.
   return 0;
 }
 

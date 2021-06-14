@@ -82,7 +82,9 @@ class MockNavigationHandle : public NavigationHandle {
   const GURL& GetBaseURLForDataURL() override { return base_url_for_data_url_; }
   MOCK_METHOD0(IsPost, bool());
   const blink::mojom::Referrer& GetReferrer() override { return referrer_; }
-  void SetReferrer(blink::mojom::ReferrerPtr referrer) override {}
+  void SetReferrer(blink::mojom::ReferrerPtr referrer) override {
+    referrer_ = *referrer;
+  }
   MOCK_METHOD0(HasUserGesture, bool());
   ui::PageTransition GetPageTransition() override { return page_transition_; }
   MOCK_METHOD0(GetNavigationUIData, NavigationUIData*());

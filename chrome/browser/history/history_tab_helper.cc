@@ -106,15 +106,27 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       !ui::PageTransitionIsMainFrame(navigation_handle->GetPageTransition()) ||
       status_code_is_error;
 
+  // If the full referrer URL is provided, use that. Otherwise, we probably have
+  // an incomplete referrer due to referrer policy (empty or origin-only).
+  // Fall back to the previous main frame URL if the referrer policy required
+  // that only the origin be sent as the referrer and it matches the previous
+  // main frame URL.
+  GURL referrer_url = navigation_handle->GetReferrer().url;
+  if (navigation_handle->IsInMainFrame() && !referrer_url.is_empty() &&
+      referrer_url == referrer_url.GetOrigin() &&
+      referrer_url.GetOrigin() ==
+          navigation_handle->GetPreviousMainFrameURL().GetOrigin()) {
+    referrer_url = navigation_handle->GetPreviousMainFrameURL();
+  }
+
   // Note: floc_allowed is set to false initially and is later updated by the
   // floc eligibility observer. Eventually it will be removed from the history
   // service API.
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
-      navigation_handle->GetReferrer().url,
-      navigation_handle->GetRedirectChain(), page_transition, hidden,
-      history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
+      referrer_url, navigation_handle->GetRedirectChain(), page_transition,
+      hidden, history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
       /*floc_allowed=*/false,
       navigation_handle->IsSameDocument()
