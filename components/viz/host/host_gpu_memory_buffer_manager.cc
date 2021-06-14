@@ -421,7 +421,6 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
     // callback is already called with null handle.
     if (!handle.is_null()) {
       auto* gpu_service = GetGpuService();
-      DCHECK(gpu_service);
       gpu_service->DestroyGpuMemoryBuffer(handle.id, client_id,
                                           gpu::SyncToken());
     }
@@ -429,7 +428,17 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
   }
 
   auto buffer_iter = client_iter->second.find(id);
-  DCHECK(buffer_iter != client_iter->second.end());
+  if (buffer_iter == client_iter->second.end()) {
+    if (!handle.is_null()) {
+      // DestroyGpuMemoryBuffer for client_id was called followed by an
+      // AllocateGpuMemoryBuffer for a new id.
+      auto* gpu_service = GetGpuService();
+      gpu_service->DestroyGpuMemoryBuffer(handle.id, client_id,
+                                          gpu::SyncToken());
+    }
+    return;
+  }
+
   PendingBufferInfo pending_buffer = std::move(buffer_iter->second);
   client_iter->second.erase(buffer_iter);
 
