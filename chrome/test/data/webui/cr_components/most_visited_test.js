@@ -497,14 +497,18 @@ suite('Modification', () => {
   suite('add dialog', () => {
     let dialog;
     let inputName;
+
+    /** @type {!CrInputElement} */
     let inputUrl;
+
     let saveButton;
     let cancelButton;
 
     setup(() => {
       dialog = $$(mostVisited, '#dialog');
       inputName = $$(mostVisited, '#dialogInputName');
-      inputUrl = $$(mostVisited, '#dialogInputUrl');
+      inputUrl =
+          /** @type {!CrInputElement} */ ($$(mostVisited, '#dialogInputUrl'));
       saveButton = dialog.querySelector('.action-button');
       cancelButton = dialog.querySelector('.cancel-button');
 

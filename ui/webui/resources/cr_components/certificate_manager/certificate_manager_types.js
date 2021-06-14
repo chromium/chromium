@@ -7,7 +7,9 @@
  */
 
 // clang-format off
+// <if expr="chromeos">
 import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+// </if>
 import {CertificatesError, CertificatesImportError,CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 // clang-format on
 
@@ -48,6 +50,7 @@ export const CertificateAction = {
  */
 export const CertificateActionEvent = 'certificate-action';
 
+// <if expr="chromeos">
 /**
  * The payload of the 'certificate-provisioning-view-details-action' event.
  * @typedef {{
@@ -56,6 +59,7 @@ export const CertificateActionEvent = 'certificate-action';
  * }}
  */
 export let CertificateProvisioningActionEventDetail;
+// </if>
 
 /**
  * The name of the event fired when a the "View Details" action is selected on

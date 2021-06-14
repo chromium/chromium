@@ -2,8 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/crypto.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(use_nss_certs)
+
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+preprocess_src_manifest = "preprocessed_src_manifest.json"
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -21,14 +30,17 @@ js_type_check("closure_compile_module") {
     ":certificates_error_dialog",
   ]
 
-  # These are Chrome OS specific but always included because of limitations
+  # This is Chrome OS specific but always included because of limitations
   # around conditional imports (https://crbug.com/1071641#c10).
-  deps += [
-    ":certificate_provisioning_browser_proxy",
-    ":certificate_provisioning_details_dialog",
-    ":certificate_provisioning_entry",
-    ":certificate_provisioning_list",
-  ]
+  deps += [ ":certificate_provisioning_browser_proxy" ]
+
+  if (is_chromeos) {
+    deps += [
+      ":certificate_provisioning_details_dialog",
+      ":certificate_provisioning_entry",
+      ":certificate_provisioning_list",
+    ]
+  }
 }
 
 js_library("ca_trust_edit_dialog") {
@@ -187,4 +199,66 @@ html_to_js("web_components") {
     "certificate_provisioning_entry.js",
     "certificate_provisioning_list.js",
   ]
+}
+
+group("preprocess") {
+  public_deps = [
+    ":preprocess_generated",
+    ":preprocess_src",
+  ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  in_folder = "./"
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  in_files = [
+    "certificate_manager_types.js",
+    "certificates_browser_proxy.js",
+  ]
+
+  if (is_chromeos) {
+    in_files += [ "certificate_provisioning_browser_proxy.js" ]
+  }
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "ca_trust_edit_dialog.js",
+    "certificate_delete_confirmation_dialog.js",
+    "certificate_entry.js",
+    "certificate_list.js",
+    "certificate_manager.js",
+    "certificate_password_decryption_dialog.js",
+    "certificate_password_encryption_dialog.js",
+    "certificates_error_dialog.js",
+    "certificate_shared_css.js",
+    "certificate_subentry.js",
+  ]
+
+  if (is_chromeos) {
+    in_files += [
+      "certificate_provisioning_details_dialog.js",
+      "certificate_provisioning_entry.js",
+      "certificate_provisioning_list.js",
+    ]
+  }
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_certificate_manager"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [
+    ":preprocess_generated",
+    ":preprocess_src",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_gen_manifest",
+    "$target_gen_dir/$preprocess_src_manifest",
+  ]
+  resource_path_prefix = "cr_components/certificate_manager"
 }
