@@ -357,7 +357,7 @@ def _CreateJarFile(jar_path, service_provider_configuration_dir,
   logging.info('Completed jar file: %s', jar_path)
 
 
-def _OnStaleMd5(options, javac_cmd, javac_args, java_files):
+def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files):
   logging.info('Starting _OnStaleMd5')
   if options.enable_kythe_annotations:
     # Kythe requires those env variables to be set and compile_java.py does the
@@ -372,30 +372,73 @@ def _OnStaleMd5(options, javac_cmd, javac_args, java_files):
         _JAVAC_EXTRACTOR,
     ]
     try:
-      _RunCompiler(options, javac_extractor_cmd + javac_args, java_files,
-                   options.classpath, options.jar_path + '.javac_extractor',
-                   save_outputs=False),
+      # _RunCompiler()'s partial javac implementation does not support
+      # generating outputs in $KYTHE_OUTPUT_DIRECTORY.
+      _RunCompiler(changes,
+                   options,
+                   javac_extractor_cmd + javac_args,
+                   java_files,
+                   options.jar_path + '.javac_extractor',
+                   enable_partial_javac=False)
     except build_utils.CalledProcessError as e:
       # Having no index for particular target is better than failing entire
       # codesearch. Log and error and move on.
       logging.error('Could not generate kzip: %s', e)
 
+  intermediates_out_dir = None
+  jar_info_path = None
+  if not options.enable_errorprone:
+    # Delete any stale files in the generated directory. The purpose of
+    # options.generated_dir is for codesearch.
+    shutil.rmtree(options.generated_dir, True)
+    intermediates_out_dir = options.generated_dir
+
+    jar_info_path = options.jar_path + '.info'
+
   # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
   # rules run both in parallel, with Error Prone only used for checks.
-  _RunCompiler(options,
+  _RunCompiler(changes,
+               options,
                javac_cmd + javac_args,
                java_files,
-               options.classpath,
                options.jar_path,
-               save_outputs=not options.enable_errorprone)
+               jar_info_path=jar_info_path,
+               intermediates_out_dir=intermediates_out_dir,
+               enable_partial_javac=True)
   logging.info('Completed all steps in _OnStaleMd5')
 
 
-def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
-                 save_outputs=True):
+def _RunCompiler(changes,
+                 options,
+                 javac_cmd,
+                 java_files,
+                 jar_path,
+                 jar_info_path=None,
+                 intermediates_out_dir=None,
+                 enable_partial_javac=False):
+  """Runs java compiler.
+
+  Args:
+    changes: md5_check.Changes object.
+    options: Object with command line flags.
+    javac_cmd: Command to execute.
+    java_files: List of java files passed from command line.
+    jar_path: Path of output jar file.
+    jar_info_path: Path of the .info file to generate.
+        If None, .info file will not be generated.
+    intermediates_out_dir: Directory for saving intermediate outputs.
+        If None a temporary directory is used.
+    enable_partial_javac: Enables compiling only Java files which have changed
+        in the special case that no method signatures have changed. This is
+        useful for large GN targets.
+        Not supported if compiling generates outputs other than |jar_path| and
+        |jar_info_path|.
+  """
   logging.info('Starting _RunCompiler')
 
   java_files = java_files.copy()
+  java_srcjars = options.java_srcjars
+  save_info_file = jar_info_path is not None
 
   # Use jar_path's directory to ensure paths are relative (needed for goma).
   temp_dir = jar_path + '.staging'
@@ -406,24 +449,43 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
     service_provider_configuration = os.path.join(
         temp_dir, 'service_provider_configuration')
 
-    if save_outputs:
-      input_srcjars_dir = os.path.join(options.generated_dir, 'input_srcjars')
-      # Delete any stale files in the generated directory. The purpose of
-      # options.generated_dir is for codesearch.
-      shutil.rmtree(options.generated_dir, True)
+    if java_files:
+      os.makedirs(classes_dir)
+
+      if enable_partial_javac:
+        all_changed_paths_are_java = all(
+            [p.endswith(".java") for p in changes.IterChangedPaths()])
+        if (all_changed_paths_are_java and not changes.HasStringChanges()
+            and os.path.exists(jar_path)
+            and (jar_info_path is None or os.path.exists(jar_info_path))):
+          # Header jar corresponding to |java_files| did not change.
+          # As a build speed optimization (crbug.com/1170778), re-compile only
+          # java files which have changed. Re-use old jar .info file.
+          java_files = list(changes.IterChangedPaths())
+          java_srcjars = None
+
+          # Reuse old .info file.
+          save_info_file = False
+
+          build_utils.ExtractAll(jar_path, classes_dir)
+
+    if save_info_file:
       info_file_context = _InfoFileContext(options.chromium_code,
                                            options.jar_info_exclude_globs)
-    else:
-      input_srcjars_dir = os.path.join(temp_dir, 'input_srcjars')
 
-    if options.java_srcjars:
+    if intermediates_out_dir is None:
+      input_srcjars_dir = os.path.join(temp_dir, 'input_srcjars')
+    else:
+      input_srcjars_dir = os.path.join(intermediates_out_dir, 'input_srcjars')
+
+    if java_srcjars:
       logging.info('Extracting srcjars to %s', input_srcjars_dir)
       build_utils.MakeDirectory(input_srcjars_dir)
       for srcjar in options.java_srcjars:
         extracted_files = build_utils.ExtractAll(
             srcjar, no_clobber=True, path=input_srcjars_dir, pattern='*.java')
         java_files.extend(extracted_files)
-        if save_outputs:
+        if save_info_file:
           info_file_context.AddSrcJarSources(srcjar, extracted_files,
                                              input_srcjars_dir)
       logging.info('Done extracting srcjars')
@@ -438,18 +500,17 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
                              pattern='META-INF/services/*')
       logging.info('Done extracting service provider configs')
 
-    if save_outputs and java_files:
+    if save_info_file and java_files:
       info_file_context.SubmitFiles(java_files)
 
     if java_files:
       # Don't include the output directory in the initial set of args since it
       # being in a temp dir makes it unstable (breaks md5 stamping).
       cmd = list(javac_cmd)
-      os.makedirs(classes_dir)
       cmd += ['-d', classes_dir]
 
-      if classpath:
-        cmd += ['-classpath', ':'.join(classpath)]
+      if options.classpath:
+        cmd += ['-classpath', ':'.join(options.classpath)]
 
       # Pass source paths as response files to avoid extremely long command
       # lines that are tedius to debug.
@@ -471,13 +532,11 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
 
-    if save_outputs:
-      _CreateJarFile(jar_path, service_provider_configuration,
-                     options.additional_jar_files, classes_dir)
+    _CreateJarFile(jar_path, service_provider_configuration,
+                   options.additional_jar_files, classes_dir)
 
-      info_file_context.Commit(jar_path + '.info')
-    else:
-      build_utils.Touch(jar_path)
+    if save_info_file:
+      info_file_context.Commit(jar_info_path)
 
     logging.info('Completed all steps in _RunCompiler')
   finally:
@@ -693,15 +752,15 @@ def main(argv):
       options.warnings_as_errors, options.jar_info_exclude_globs
   ]
 
-  # Keep md5_check since we plan to use its changes feature to implement a build
-  # speed improvement for non-signature compiles: https://crbug.com/1170778
-  md5_check.CallAndWriteDepfileIfStale(
-      lambda: _OnStaleMd5(options, javac_cmd, javac_args, java_files),
-      options,
-      depfile_deps=depfile_deps,
-      input_paths=input_paths,
-      input_strings=input_strings,
-      output_paths=output_paths)
+  # Use md5_check for |pass_changes| feature.
+  md5_check.CallAndWriteDepfileIfStale(lambda changes: _OnStaleMd5(
+      changes, options, javac_cmd, javac_args, java_files),
+                                       options,
+                                       depfile_deps=depfile_deps,
+                                       input_paths=input_paths,
+                                       input_strings=input_strings,
+                                       output_paths=output_paths,
+                                       pass_changes=True)
 
 
 if __name__ == '__main__':
