@@ -4,6 +4,13 @@
 
 package org.chromium.components.content_creation.notes.models;
 
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
+import android.graphics.PorterDuff;
+import android.os.Build;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.ColorInt;
 
 /**
@@ -17,5 +24,16 @@ public class FooterStyle {
     public FooterStyle(@ColorInt int textColor, @ColorInt int logoColor) {
         this.textColor = textColor;
         this.logoColor = logoColor;
+    }
+
+    public void apply(TextView footerLinkView, TextView footerTitleView, ImageView iconView) {
+        footerLinkView.setTextColor(textColor);
+        footerTitleView.setTextColor(textColor);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            iconView.setColorFilter(new BlendModeColorFilter(logoColor, BlendMode.SRC_IN));
+        } else {
+            iconView.setColorFilter(logoColor, PorterDuff.Mode.SRC_IN);
+        }
     }
 }

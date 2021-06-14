@@ -18,10 +18,11 @@ public class NoteCreationCoordinatorFactory {
      * @return a NoteCreationCoordinator instance.
      */
     public static NoteCreationCoordinator create(Activity activity, Tab tab, String shareUrl,
-            String selectedText, ChromeOptionShareCallback chromeOptionShareCallback) {
+            String title, String selectedText,
+            ChromeOptionShareCallback chromeOptionShareCallback) {
         Profile profile = Profile.getLastUsedRegularProfile();
         return new NoteCreationCoordinatorImpl(activity, tab,
                 NoteServiceFactory.getForProfile(profile), chromeOptionShareCallback, shareUrl,
-                selectedText);
+                title, selectedText);
     }
 }

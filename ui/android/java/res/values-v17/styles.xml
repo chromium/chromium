@@ -258,6 +258,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="TextAppearance.TextSmallThick.Secondary.Light" parent="TextAppearance.TextSmall.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!--  Dark version  -->
     <style name="TextAppearance.Headline.Primary.Dark" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_dark</item>

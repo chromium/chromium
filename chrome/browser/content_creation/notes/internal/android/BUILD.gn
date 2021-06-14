@@ -38,6 +38,7 @@ android_library("java") {
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/content_creation/notes/android:java",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java_resources",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//ui/android:ui_java",
@@ -63,6 +64,7 @@ android_resources("java_resources") {
     "java/res/layout/creation_dialog.xml",
     "java/res/layout/top_bar.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
 }
 

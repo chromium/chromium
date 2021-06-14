@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.content_creation.notes.NoteService;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.text.DateFormat;
@@ -47,7 +48,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     private TopBarCoordinator mTopBarCoordinator;
 
     public NoteCreationCoordinatorImpl(Activity activity, Tab tab, NoteService noteService,
-            ChromeOptionShareCallback chromeOptionShareCallback, String shareUrl,
+            ChromeOptionShareCallback chromeOptionShareCallback, String shareUrl, String title,
             String selectedText) {
         mActivity = activity;
         mTab = tab;
@@ -59,8 +60,10 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         mMediator =
                 new NoteCreationMediator(mListModel, new GoogleFontService(mActivity), noteService);
 
+        String urlDomain =
+                UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mShareUrl);
         mDialog = new NoteCreationDialog();
-        mDialog.initDialog(this::onViewCreated, selectedText);
+        mDialog.initDialog(this::onViewCreated, urlDomain, title, selectedText);
     }
 
     @Override
