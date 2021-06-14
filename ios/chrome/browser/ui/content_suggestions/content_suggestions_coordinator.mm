@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -263,9 +264,11 @@
   if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
     web::NavigationManager* navigationManager =
         self.webState->GetNavigationManager();
-    web::NavigationItem* item = navigationManager->GetVisibleItem();
-    if (item) {
-      offset = item->GetPageDisplayState().scroll_state().content_offset().y;
+    if (navigationManager) {
+      web::NavigationItem* item = navigationManager->GetVisibleItem();
+      if (item) {
+        offset = item->GetPageDisplayState().scroll_state().content_offset().y;
+      }
     }
   }
 
@@ -273,7 +276,8 @@
               initWithStyle:CollectionViewControllerStyleDefault
                      offset:offset
                 feedVisible:[self isFeedVisible]
-      refactoredFeedVisible:[self isRefactoredFeedVisible]];
+      refactoredFeedVisible:[self.ntpFeedDelegate
+                                    isNTPRefactoredAndFeedVisible]];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
@@ -328,7 +332,7 @@
   // synchronizer instead.
   self.suggestionsViewController.headerProvider = self.headerController;
 
-  if ([self isRefactoredFeedVisible]) {
+  if ([self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
     self.suggestionsViewController.collectionView.accessibilityIdentifier =
         kContentSuggestionsCollectionIdentifier;
   } else {
@@ -336,7 +340,7 @@
         kNTPCollectionViewIdentifier;
   }
 
-  if (![self isRefactoredFeedVisible]) {
+  if (![self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
     self.headerCollectionInteractionHandler =
         [[ContentSuggestionsHeaderSynchronizer alloc]
             initWithCollectionController:self.suggestionsViewController
@@ -522,7 +526,8 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:NO];
-                    if ([weakSelf isRefactoredFeedVisible]) {
+                    if ([weakSelf.ntpFeedDelegate
+                                isNTPRefactoredAndFeedVisible]) {
                       [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                     }
                   }
@@ -533,7 +538,8 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:YES];
-                    if ([weakSelf isRefactoredFeedVisible]) {
+                    if ([weakSelf.ntpFeedDelegate
+                                isNTPRefactoredAndFeedVisible]) {
                       [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                     }
                   }
@@ -598,7 +604,7 @@
 
 - (void)returnToRecentTabWasAdded {
   [self.ntpCommandHandler updateDiscoverFeedLayout];
-  if ([self.ntpMediator isRefactoredFeedVisible]) {
+  if ([self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
     [self.ntpCommandHandler setContentOffsetToTop];
   } else {
     [self.suggestionsViewController setContentOffset:0];

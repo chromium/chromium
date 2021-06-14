@@ -33,6 +33,7 @@ class Browser;
 @class ContentSuggestionsMetricsRecorder;
 @class ContentSuggestionsViewController;
 @protocol LogoVendor;
+@protocol NewTabPageFeedDelegate;
 @class NewTabPageViewController;
 @protocol NTPHomeConsumer;
 @class NTPHomeMetrics;
@@ -94,10 +95,6 @@ class VoiceSearchAvailability;
 // TODO(crbug.com/1114792): Create a protocol to avoid duplication and update
 // comment.
 @property(nonatomic, weak) NewTabPageViewController* ntpViewController;
-// TODO(crbug.com/1114792): Update this comment to remove "refactored" when the
-// NTP refactors launches.
-@property(nonatomic, assign, getter=isRefactoredFeedVisible)
-    BOOL refactoredFeedVisible;
 @property(nonatomic, weak)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 // Mediator for the ContentSuggestions.
@@ -106,6 +103,9 @@ class VoiceSearchAvailability;
 @property(nonatomic, weak) id<NTPHomeConsumer> consumer;
 // The browser.
 @property(nonatomic, assign) Browser* browser;
+
+// Delegate for providing information relating to the feed.
+@property(nonatomic, weak) id<NewTabPageFeedDelegate> ntpFeedDelegate;
 
 // Inits the mediator.
 - (void)setUp;
