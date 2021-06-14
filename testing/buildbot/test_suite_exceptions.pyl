@@ -1632,6 +1632,15 @@
       },
     },
   },
+  'grit_python_unittests': {
+    'remove_from': [
+      # These tests require node, which is not supported in Win7.
+      # (https://crbug.com/1218989)
+      'Win 7 Tests x64 (1)',
+      'Win7 Tests (1)',
+      'Win7 Tests (dbg)(1)',
+    ],
+  },
   'hardware_accelerated_feature_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
