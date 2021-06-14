@@ -44,6 +44,7 @@
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/cpp/core.h"
+#include "ppapi/cpp/dev/buffer_dev.h"
 #include "ppapi/cpp/dev/memory_dev.h"
 #include "ppapi/cpp/dev/text_input_dev.h"
 #include "ppapi/cpp/dev/url_util_dev.h"
@@ -770,9 +771,18 @@ pp::Resource OutOfProcessInstance::PrintPages(
   const std::vector<int> page_numbers =
       PageNumbersFromPPPrintPageNumberRange(page_ranges, page_range_count);
 
-  return engine()->PrintPages(page_numbers,
-                              print_settings_.pepper_print_settings,
-                              print_settings_.pdf_print_settings);
+  const std::vector<uint8_t> pdf_data =
+      engine()->PrintPages(page_numbers, print_settings_.pepper_print_settings,
+                           print_settings_.pdf_print_settings);
+
+  // Convert buffer to Pepper type.
+  pp::Buffer_Dev buffer;
+  if (!pdf_data.empty()) {
+    buffer = pp::Buffer_Dev(GetPluginInstance(), pdf_data.size());
+    if (!buffer.is_null())
+      memcpy(buffer.data(), pdf_data.data(), pdf_data.size());
+  }
+  return buffer;
 }
 
 void OutOfProcessInstance::PrintEnd() {

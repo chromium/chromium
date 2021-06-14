@@ -27,7 +27,6 @@
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
 #include "ppapi/c/private/ppp_pdf.h"
-#include "ppapi/cpp/dev/buffer_dev.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -98,7 +97,7 @@ class PDFiumEngine : public PDFEngine,
   bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) override;
   bool HandleInputEvent(const blink::WebInputEvent& event) override;
   void PrintBegin() override;
-  pp::Resource PrintPages(
+  std::vector<uint8_t> PrintPages(
       const std::vector<int>& page_numbers,
       const PP_PrintSettings_Dev& print_settings,
       const PP_PdfPrintSettings_Dev& pdf_print_settings) override;
@@ -414,17 +413,15 @@ class PDFiumEngine : public PDFEngine,
 
   bool ExtendSelection(int page_index, int char_index);
 
-  pp::Buffer_Dev PrintPagesAsRasterPdf(
+  std::vector<uint8_t> PrintPagesAsRasterPdf(
       const std::vector<int>& page_numbers,
       const PP_PrintSettings_Dev& print_settings,
       const PP_PdfPrintSettings_Dev& pdf_print_settings);
 
-  pp::Buffer_Dev PrintPagesAsPdf(
+  std::vector<uint8_t> PrintPagesAsPdf(
       const std::vector<int>& page_numbers,
       const PP_PrintSettings_Dev& print_settings,
       const PP_PdfPrintSettings_Dev& pdf_print_settings);
-
-  pp::Buffer_Dev ConvertPdfToBufferDev(const std::vector<uint8_t>& pdf_data);
 
   // Checks if `page` has selected text in a form element. If so, sets that as
   // the plugin's text selection.

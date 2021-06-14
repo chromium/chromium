@@ -969,7 +969,7 @@ void PDFiumEngine::PrintBegin() {
   FORM_DoDocumentAAction(form(), FPDFDOC_AACTION_WP);
 }
 
-pp::Resource PDFiumEngine::PrintPages(
+std::vector<uint8_t> PDFiumEngine::PrintPages(
     const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings) {
@@ -983,26 +983,26 @@ pp::Resource PDFiumEngine::PrintPages(
     return PrintPagesAsRasterPdf(page_numbers, print_settings,
                                  pdf_print_settings);
   }
-  return pp::Resource();
+  return std::vector<uint8_t>();
 }
 
-pp::Buffer_Dev PDFiumEngine::PrintPagesAsRasterPdf(
+std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
     const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings) {
   // If document is not downloaded yet, disable printing.
   if (doc() && !doc_loader_->IsDocumentComplete())
-    return pp::Buffer_Dev();
+    return std::vector<uint8_t>();
 
   KillFormFocus();
 
   SetLastInstance();
 
-  return ConvertPdfToBufferDev(print_.PrintPagesAsPdf(
-      page_numbers, print_settings, pdf_print_settings, /*raster=*/true));
+  return print_.PrintPagesAsPdf(page_numbers, print_settings,
+                                pdf_print_settings, /*raster=*/true);
 }
 
-pp::Buffer_Dev PDFiumEngine::PrintPagesAsPdf(
+std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
     const std::vector<int>& page_numbers,
     const PP_PrintSettings_Dev& print_settings,
     const PP_PdfPrintSettings_Dev& pdf_print_settings) {
@@ -1016,19 +1016,8 @@ pp::Buffer_Dev PDFiumEngine::PrintPagesAsPdf(
       pages_[page_number]->Unload();
   }
 
-  return ConvertPdfToBufferDev(print_.PrintPagesAsPdf(
-      page_numbers, print_settings, pdf_print_settings, /*raster=*/false));
-}
-
-pp::Buffer_Dev PDFiumEngine::ConvertPdfToBufferDev(
-    const std::vector<uint8_t>& pdf_data) {
-  pp::Buffer_Dev buffer;
-  if (!pdf_data.empty()) {
-    buffer = pp::Buffer_Dev(GetPluginInstance(), pdf_data.size());
-    if (!buffer.is_null())
-      memcpy(buffer.data(), pdf_data.data(), pdf_data.size());
-  }
-  return buffer;
+  return print_.PrintPagesAsPdf(page_numbers, print_settings,
+                                pdf_print_settings, /*raster=*/false);
 }
 
 void PDFiumEngine::KillFormFocus() {

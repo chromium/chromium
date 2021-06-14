@@ -320,7 +320,7 @@ class PDFEngine {
   virtual bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) = 0;
   virtual bool HandleInputEvent(const blink::WebInputEvent& event) = 0;
   virtual void PrintBegin() = 0;
-  virtual pp::Resource PrintPages(
+  virtual std::vector<uint8_t> PrintPages(
       const std::vector<int>& page_numbers,
       const PP_PrintSettings_Dev& print_settings,
       const PP_PdfPrintSettings_Dev& pdf_print_settings) = 0;
