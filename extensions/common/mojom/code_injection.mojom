@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "url/mojom/url.mojom";
+
+// A struct representing a single piece of code to inject in the renderer.
+struct JSInjection {
+  // The Javascript code to execute.
+  string code;
+
+  // The URL of the script that was injected, if any.
+  url.mojom.Url script_url;
+};
+
+struct CSSInjection {
+  // The CSS code to insert.
+  string code;
+
+  // A generated injection key for the CSS, which can be used to remove it
+  // later.
+  string? key;
+};
+
+// A single CodeInjection, which is allowed to contain exactly one of
+// CSS and JS.
+union CodeInjection {
+  CSSInjection css;
+  JSInjection js;
+};

@@ -37,19 +37,6 @@ namespace extensions {
 
 namespace {
 
-// Generates an injection key based on the host ID and either the file URL, if
-// available, or the code string. The format of the key is
-// "<type><host_id><digest>", where <type> is one of "F" (file) and "C" (code),
-// <host_id> is the host ID, and <digest> is an unspecified hash digest of the
-// file URL or the code string, respectively.
-const std::string GenerateInjectionKey(const mojom::HostID& host_id,
-                                       const GURL& script_url,
-                                       const std::string& code) {
-  const std::string& source = script_url.is_valid() ? script_url.spec() : code;
-  return base::StringPrintf("%c%s%zu", script_url.is_valid() ? 'F' : 'C',
-                            host_id.id.c_str(), base::FastHash(source));
-}
-
 // A handler for a single injection request. On creation this will send the
 // injection request to the renderer, and it will be destroyed after either the
 // corresponding response comes from the renderer, or the renderer is destroyed.
@@ -285,16 +272,24 @@ ScriptExecutor::ScriptExecutor(content::WebContents* web_contents)
 
 ScriptExecutor::~ScriptExecutor() {}
 
+// static
+std::string ScriptExecutor::GenerateInjectionKey(const mojom::HostID& host_id,
+                                                 const GURL& script_url,
+                                                 const std::string& code) {
+  const std::string& source = script_url.is_valid() ? script_url.spec() : code;
+  return base::StringPrintf("%c%s%zu", script_url.is_valid() ? 'F' : 'C',
+                            host_id.id.c_str(), base::FastHash(source));
+}
+
 void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
+                                   mojom::CodeInjectionPtr injection,
                                    mojom::ActionType action_type,
-                                   const std::string& code,
                                    ScriptExecutor::FrameScope frame_scope,
                                    const std::set<int>& frame_ids,
                                    ScriptExecutor::MatchAboutBlank about_blank,
                                    mojom::RunLocation run_at,
                                    ScriptExecutor::ProcessType process_type,
                                    const GURL& webview_src,
-                                   const GURL& script_url,
                                    bool user_gesture,
                                    mojom::CSSOrigin css_origin,
                                    ScriptExecutor::ResultType result_type,
@@ -311,25 +306,23 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
     CHECK(process_type == WEB_VIEW_PROCESS);
   }
 
+  if (injection->is_css()) {
+    bool expect_injection_key =
+        host_id.type == mojom::HostID::HostType::kExtensions;
+    DCHECK_EQ(expect_injection_key, injection->get_css()->key.has_value());
+  }
+
   auto params = mojom::ExecuteCodeParams::New();
   params->host_id = host_id.Clone();
   params->action_type = action_type;
-  params->code = code;
+  params->injection = std::move(injection);
   params->match_about_blank = (about_blank == MATCH_ABOUT_BLANK);
   params->run_at = run_at;
   params->is_web_view = (process_type == WEB_VIEW_PROCESS);
   params->webview_src = webview_src;
-  params->script_url = script_url;
   params->wants_result = (result_type == JSON_SERIALIZED_RESULT);
   params->user_gesture = user_gesture;
   params->css_origin = css_origin;
-
-  // Generate the unique key that represents this CSS injection or removal
-  // from an extension (i.e. tabs.insertCSS or tabs.removeCSS).
-  if (host_id.type == mojom::HostID::HostType::kExtensions &&
-      (action_type == mojom::ActionType::kAddCss ||
-       action_type == mojom::ActionType::kRemoveCss))
-    params->injection_key = GenerateInjectionKey(host_id, script_url, code);
 
   // Handler handles IPCs and deletes itself on completion.
   new Handler(base::PassKey<ScriptExecutor>(), observer_, web_contents_,

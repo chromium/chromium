@@ -129,13 +129,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
   ScriptExecutorHelper helper;
   script_executor.ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-      mojom::ActionType::kAddJavascript, kCode,
-      ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
+      mojom::CodeInjection::NewJs(mojom::JSInjection::New(kCode, GURL())),
+      mojom::ActionType::kAddJavascript, ScriptExecutor::SPECIFIED_FRAMES,
+      {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
       ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-      GURL() /* script_url */, false /* user_gesture */,
-      mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
-      helper.GetCallback());
+      false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+      ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
   helper.Wait();
   EXPECT_EQ("New Title", base::UTF16ToUTF8(web_contents->GetTitle()));
 
@@ -211,13 +211,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::ActionType::kAddJavascript, kCode,
-        ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::CodeInjection::NewJs(mojom::JSInjection::New(kCode, GURL())),
+        mojom::ActionType::kAddJavascript, ScriptExecutor::SPECIFIED_FRAMES,
+        {frame1_id, frame2_id}, ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-        GURL() /* webview_src */, GURL() /* script_url */,
-        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
-        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
+        GURL() /* webview_src */, false /* user_gesture */,
+        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
+        helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),
@@ -232,13 +232,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::ActionType::kAddJavascript, kCode,
-        ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::CodeInjection::NewJs(mojom::JSInjection::New(kCode, GURL())),
+        mojom::ActionType::kAddJavascript, ScriptExecutor::INCLUDE_SUB_FRAMES,
+        {frame1_id, frame2_id}, ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-        GURL() /* webview_src */, GURL() /* script_url */,
-        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
-        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
+        GURL() /* webview_src */, false /* user_gesture */,
+        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
+        helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),
@@ -262,14 +262,14 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::ActionType::kAddJavascript, kCode,
-        ScriptExecutor::SPECIFIED_FRAMES,
+        mojom::CodeInjection::NewJs(mojom::JSInjection::New(kCode, GURL())),
+        mojom::ActionType::kAddJavascript, ScriptExecutor::SPECIFIED_FRAMES,
         {frame1_id, frame2_id, kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-        GURL() /* webview_src */, GURL() /* script_url */,
-        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
-        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
+        GURL() /* webview_src */, false /* user_gesture */,
+        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
+        helper.GetCallback());
     helper.Wait();
 
     base::Value frame1_result("Frame 1");
@@ -287,13 +287,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::ActionType::kAddJavascript, kCode,
-        ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::CodeInjection::NewJs(mojom::JSInjection::New(kCode, GURL())),
+        mojom::ActionType::kAddJavascript, ScriptExecutor::SPECIFIED_FRAMES,
+        {kNonExistentFrameId}, ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-        GURL() /* webview_src */, GURL() /* script_url */,
-        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
-        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
+        GURL() /* webview_src */, false /* user_gesture */,
+        mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
+        helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),

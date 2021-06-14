@@ -19,6 +19,7 @@
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -127,12 +128,28 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
       break;
   }
 
+  mojom::CodeInjectionPtr injection;
+  if (action_type == mojom::ActionType::kAddCss ||
+      action_type == mojom::ActionType::kRemoveCss) {
+    absl::optional<std::string> injection_key;
+    if (host_id_.type == mojom::HostID::HostType::kExtensions) {
+      injection_key = ScriptExecutor::GenerateInjectionKey(
+          host_id_, script_url_, code_string);
+    }
+    injection = mojom::CodeInjection::NewCss(
+        mojom::CSSInjection::New(code_string, std::move(injection_key)));
+  } else {
+    DCHECK_EQ(action_type, mojom::ActionType::kAddJavascript);
+    injection = mojom::CodeInjection::NewJs(
+        mojom::JSInjection::New(code_string, script_url_));
+  }
+
   executor->ExecuteScript(
-      host_id_, action_type, code_string, frame_scope, {root_frame_id_},
-      match_about_blank, run_at,
+      host_id_, std::move(injection), action_type, frame_scope,
+      {root_frame_id_}, match_about_blank, run_at,
       IsWebView() ? ScriptExecutor::WEB_VIEW_PROCESS
                   : ScriptExecutor::DEFAULT_PROCESS,
-      GetWebViewSrc(), script_url_, user_gesture(), css_origin,
+      GetWebViewSrc(), user_gesture(), css_origin,
       has_callback() ? ScriptExecutor::JSON_SERIALIZED_RESULT
                      : ScriptExecutor::NO_RESULT,
       base::BindOnce(&ExecuteCodeFunction::OnExecuteCodeFinished, this));

@@ -31,7 +31,19 @@ namespace extensions {
 ProgrammaticScriptInjector::ProgrammaticScriptInjector(
     mojom::ExecuteCodeParamsPtr params,
     mojom::LocalFrame::ExecuteCodeCallback callback)
-    : params_(std::move(params)), callback_(std::move(callback)) {}
+    : params_(std::move(params)), callback_(std::move(callback)) {
+  // Sanity check: we can only inject one of JS and CSS at a time, and it must
+  // match the specified `action_type`.
+  switch (params_->action_type) {
+    case (mojom::ActionType::kAddCss):
+    case (mojom::ActionType::kRemoveCss):
+      DCHECK(params_->injection->is_css());
+      break;
+    case (mojom::ActionType::kAddJavascript):
+      DCHECK(params_->injection->is_js());
+      break;
+  };
+}
 
 ProgrammaticScriptInjector::~ProgrammaticScriptInjector() {
 }
@@ -58,7 +70,8 @@ bool ProgrammaticScriptInjector::IsAddingCSS() const {
 
 const absl::optional<std::string> ProgrammaticScriptInjector::GetInjectionKey()
     const {
-  return params_->injection_key;
+  DCHECK(params_->injection->is_css());
+  return params_->injection->get_css()->key;
 }
 
 bool ProgrammaticScriptInjector::ExpectsResults() const {
@@ -123,10 +136,12 @@ std::vector<blink::WebScriptSource> ProgrammaticScriptInjector::GetJsSources(
     size_t* num_injected_js_scripts) const {
   DCHECK_EQ(params_->run_at, run_location);
   DCHECK_EQ(params_->action_type, mojom::ActionType::kAddJavascript);
+  DCHECK(params_->injection->is_js());
 
+  auto& js_injection = params_->injection->get_js();
   return std::vector<blink::WebScriptSource>(
-      1, blink::WebScriptSource(blink::WebString::FromUTF8(params_->code),
-                                params_->script_url));
+      1, blink::WebScriptSource(blink::WebString::FromUTF8(js_injection->code),
+                                js_injection->script_url));
 }
 
 std::vector<blink::WebString> ProgrammaticScriptInjector::GetCssSources(
@@ -136,9 +151,10 @@ std::vector<blink::WebString> ProgrammaticScriptInjector::GetCssSources(
   DCHECK_EQ(params_->run_at, run_location);
   DCHECK(params_->action_type == mojom::ActionType::kAddCss ||
          params_->action_type == mojom::ActionType::kRemoveCss);
+  DCHECK(params_->injection->is_css());
 
   return std::vector<blink::WebString>(
-      1, blink::WebString::FromUTF8(params_->code));
+      1, blink::WebString::FromUTF8(params_->injection->get_css()->code));
 }
 
 void ProgrammaticScriptInjector::OnInjectionComplete(

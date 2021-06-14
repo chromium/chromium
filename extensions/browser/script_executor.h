@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -97,6 +98,15 @@ class ScriptExecutor {
   using ScriptFinishedCallback =
       base::OnceCallback<void(std::vector<FrameResult> frame_results)>;
 
+  // Generates an injection key based on the host ID and either the file URL, if
+  // available, or the code string. The format of the key is
+  // "<type><host_id><digest>", where <type> is one of "F" (file) and "C"
+  // (code), <host_id> is the host ID, and <digest> is an unspecified hash
+  // digest of the file URL or the code string, respectively.
+  static std::string GenerateInjectionKey(const mojom::HostID& host_id,
+                                          const GURL& script_url,
+                                          const std::string& code);
+
   // Executes a script. The arguments match mojom::ExecuteCodeParams in
   // frame.mojom (request_id is populated automatically).
   //
@@ -109,15 +119,14 @@ class ScriptExecutor {
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
   void ExecuteScript(const mojom::HostID& host_id,
+                     mojom::CodeInjectionPtr injection,
                      mojom::ActionType action_type,
-                     const std::string& code,
                      FrameScope frame_scope,
                      const std::set<int>& frame_ids,
                      MatchAboutBlank match_about_blank,
                      mojom::RunLocation run_at,
                      ProcessType process_type,
                      const GURL& webview_src,
-                     const GURL& script_url,
                      bool user_gesture,
                      mojom::CSSOrigin css_origin,
                      ResultType result_type,

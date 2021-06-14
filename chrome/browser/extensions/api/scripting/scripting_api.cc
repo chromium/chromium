@@ -325,11 +325,13 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
 
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
-      mojom::ActionType::kAddJavascript, std::move(code_to_execute),
-      frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
-      mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
-      mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
+      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
+          std::move(code_to_execute), std::move(script_url))),
+      mojom::ActionType::kAddJavascript, frame_scope, frame_ids,
+      ScriptExecutor::MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
+      ScriptExecutor::DEFAULT_PROCESS,
+      /* webview_src */ GURL(), user_gesture(), mojom::CSSOrigin::kAuthor,
+      ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
   return true;
@@ -438,12 +440,18 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   }
   DCHECK(script_executor);
 
+  mojom::HostID host_id(mojom::HostID::HostType::kExtensions,
+                        extension()->id());
+  std::string injection_key = ScriptExecutor::GenerateInjectionKey(
+      host_id, script_url, code_to_execute);
   script_executor->ExecuteScript(
-      mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
-      mojom::ActionType::kAddCss, std::move(code_to_execute), frame_scope,
-      frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
+      std::move(host_id),
+      mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
+          std::move(code_to_execute), std::move(injection_key))),
+      mojom::ActionType::kAddCss, frame_scope, frame_ids,
+      ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
       ScriptExecutor::DEFAULT_PROCESS,
-      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
+      /* webview_src */ GURL(), user_gesture(),
       ConvertStyleOriginToCSSOrigin(injection_.origin),
       ScriptExecutor::NO_RESULT,
       base::BindOnce(&ScriptingInsertCSSFunction::OnCSSInserted, this));
@@ -506,12 +514,18 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
 
   DCHECK(code.empty() || !script_url.is_valid());
 
+  mojom::HostID host_id(mojom::HostID::HostType::kExtensions,
+                        extension()->id());
+  std::string injection_key =
+      ScriptExecutor::GenerateInjectionKey(host_id, script_url, code);
   script_executor->ExecuteScript(
-      mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
-      mojom::ActionType::kRemoveCss, std::move(code), frame_scope, frame_ids,
+      std::move(host_id),
+      mojom::CodeInjection::NewCss(
+          mojom::CSSInjection::New(std::move(code), std::move(injection_key))),
+      mojom::ActionType::kRemoveCss, frame_scope, frame_ids,
       ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
       ScriptExecutor::DEFAULT_PROCESS,
-      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
+      /* webview_src */ GURL(), user_gesture(),
       ConvertStyleOriginToCSSOrigin(injection.origin),
       ScriptExecutor::NO_RESULT,
       base::BindOnce(&ScriptingRemoveCSSFunction::OnCSSRemoved, this));
