@@ -92,6 +92,30 @@ void RecordReportsDeleted(int count) {
                             count);
 }
 
+// Returns the impression to attribute for a particular conversion.
+// `impressions` is the list of all impressions which matched the
+// conversion, and is guaranteed to be non-empty.
+const StorableImpression& GetImpressionToAttribute(
+    const std::vector<StorableImpression>& impressions) {
+  DCHECK(!impressions.empty());
+
+  // Chooses the impression with the largest priority value. In the case of
+  // ties, impression_time is used to tie break.
+  //
+  // Note that impressions which do not get a priority get defaulted to 0,
+  // meaning they can be attributed over impressions which set a negative
+  // priority.
+  return *std::max_element(
+      impressions.begin(), impressions.end(),
+      [](const StorableImpression& a, const StorableImpression& b) {
+        if (a.priority() < b.priority())
+          return true;
+        if (a.priority() > b.priority())
+          return false;
+        return a.impression_time() < b.impression_time();
+      });
+}
+
 }  // namespace
 
 // static
@@ -278,7 +302,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     return false;
 
   const StorableImpression& impression_to_attribute =
-      delegate_->GetImpressionToAttribute(impressions);
+      GetImpressionToAttribute(impressions);
 
   const uint64_t conversion_data =
       impression_to_attribute.source_type() ==

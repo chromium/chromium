@@ -1093,4 +1093,54 @@ TEST_F(ConversionStorageTest,
   EXPECT_EQ(1u, storage()->GetConversionsToReport(clock()->Now()).size());
 }
 
+TEST_F(ConversionStorageTest,
+       MultipleImpressionsPerConversion_MostRecentAttributesForSamePriority) {
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(3).Build());
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(7).Build());
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(5).Build());
+
+  EXPECT_EQ(3u, storage()->GetActiveImpressions().size());
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(5u, actual_reports[0].impression.impression_data());
+}
+
+TEST_F(ConversionStorageTest,
+       MultipleImpressionsPerConversion_HighestPriorityAttributes) {
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetPriority(100).SetData(3).Build());
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetPriority(300).SetData(5).Build());
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetPriority(200).SetData(7).Build());
+
+  EXPECT_EQ(3u, storage()->GetActiveImpressions().size());
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(5u, actual_reports[0].impression.impression_data());
+}
+
 }  // namespace content

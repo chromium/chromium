@@ -4,36 +4,11 @@
 
 #include "content/browser/conversions/conversion_storage_delegate_impl.h"
 
-#include <algorithm>
-
 namespace content {
 
 ConversionStorageDelegateImpl::ConversionStorageDelegateImpl(bool debug_mode)
     : debug_mode_(debug_mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
-const StorableImpression&
-ConversionStorageDelegateImpl::GetImpressionToAttribute(
-    const std::vector<StorableImpression>& impressions) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!impressions.empty());
-
-  // Chooses the impression with the largest priority value. In the case of
-  // ties, impression_time is used to tie break.
-  //
-  // Note that impressions which do not get a priority get defaulted to 0,
-  // meaning they can be attributed over impressions which set a negative
-  // priority.
-  return *std::max_element(
-      impressions.begin(), impressions.end(),
-      [](const StorableImpression& a, const StorableImpression& b) {
-        if (a.priority() < b.priority())
-          return true;
-        if (a.priority() > b.priority())
-          return false;
-        return a.impression_time() < b.impression_time();
-      });
 }
 
 void ConversionStorageDelegateImpl::ProcessNewConversionReport(

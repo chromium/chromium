@@ -30,8 +30,6 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   ~ConversionStorageDelegateImpl() override = default;
 
   // ConversionStorageDelegate:
-  const StorableImpression& GetImpressionToAttribute(
-      const std::vector<StorableImpression>& impressions) override;
   void ProcessNewConversionReport(ConversionReport& report) override;
   int GetMaxConversionsPerImpression(
       StorableImpression::SourceType source_type) const override;

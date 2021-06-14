@@ -81,8 +81,6 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   ~ConfigurableStorageDelegate() override;
 
   // ConversionStorage::Delegate
-  const StorableImpression& GetImpressionToAttribute(
-      const std::vector<StorableImpression>& impressions) override;
   void ProcessNewConversionReport(ConversionReport& report) override;
   int GetMaxConversionsPerImpression(
       StorableImpression::SourceType source_type) const override;

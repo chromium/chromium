@@ -89,17 +89,6 @@ void ConfigurableConversionTestBrowserClient::
 ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
-const StorableImpression& ConfigurableStorageDelegate::GetImpressionToAttribute(
-    const std::vector<StorableImpression>& impressions) {
-  DCHECK(!impressions.empty());
-
-  return *std::max_element(
-      impressions.begin(), impressions.end(),
-      [](const StorableImpression& a, const StorableImpression& b) {
-        return a.impression_time() < b.impression_time();
-      });
-}
-
 void ConfigurableStorageDelegate::ProcessNewConversionReport(
     ConversionReport& report) {
   report.report_time = report.impression.impression_time() +

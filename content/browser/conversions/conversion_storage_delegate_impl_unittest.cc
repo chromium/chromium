@@ -4,14 +4,11 @@
 
 #include "content/browser/conversions/conversion_storage_delegate_impl.h"
 
-#include <vector>
-
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -139,56 +136,6 @@ TEST_F(ConversionStorageDelegateImplTest,
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
                 base::TimeDelta::FromHours(1),
             report.report_time);
-}
-
-TEST_F(ConversionStorageDelegateImplTest,
-       TwoImpressionsPerConversion_MostRecentAttributes) {
-  base::Time now = base::Time::Now();
-  std::vector<StorableImpression> impressions = {
-      ImpressionBuilder(/*time=*/now).SetImpressionId(1).Build(),
-      ImpressionBuilder(/*time=*/now + base::TimeDelta::FromHours(100))
-          .SetImpressionId(2)
-          .Build()};
-  const StorableImpression& impression_to_attribute =
-      ConversionStorageDelegateImpl().GetImpressionToAttribute(impressions);
-  EXPECT_EQ(2, *impression_to_attribute.impression_id());
-}
-
-TEST_F(ConversionStorageDelegateImplTest,
-       TwoImpressionsPerConversion_HighestPriorityAttributes) {
-  base::Time now = base::Time::Now();
-  std::vector<StorableImpression> impressions = {
-      ImpressionBuilder(/*time=*/now)
-          .SetImpressionId(1)
-          .SetPriority(10)
-          .Build(),
-      ImpressionBuilder(/*time=*/now + base::TimeDelta::FromHours(100))
-          .SetImpressionId(2)
-          .SetPriority(5)
-          .Build()};
-  const StorableImpression& impression_to_attribute =
-      ConversionStorageDelegateImpl().GetImpressionToAttribute(impressions);
-  EXPECT_EQ(1, *impression_to_attribute.impression_id());
-}
-
-TEST_F(ConversionStorageDelegateImplTest,
-       MultipleImpressionsPerConversion_MostRecentHighestPriorityAttributes) {
-  base::Time now = base::Time::Now();
-  std::vector<StorableImpression> impressions = {
-      ImpressionBuilder(/*time=*/now)
-          .SetImpressionId(1)
-          .SetPriority(10)
-          .Build(),
-      ImpressionBuilder(/*time=*/now + base::TimeDelta::FromHours(100))
-          .SetImpressionId(2)
-          .SetPriority(10)
-          .Build(),
-      ImpressionBuilder(/*time=*/now + base::TimeDelta::FromHours(200))
-          .SetImpressionId(3)
-          .Build()};
-  const StorableImpression& impression_to_attribute =
-      ConversionStorageDelegateImpl().GetImpressionToAttribute(impressions);
-  EXPECT_EQ(2, *impression_to_attribute.impression_id());
 }
 
 }  // namespace content

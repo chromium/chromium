@@ -29,12 +29,6 @@ class ConversionStorage {
    public:
     virtual ~Delegate() = default;
 
-    // Returns the impression to attribute for a particular conversion.
-    // |impressions| is the list of all impressions which matched the
-    // conversion, and is guaranteed to be non-empty.
-    virtual const StorableImpression& GetImpressionToAttribute(
-        const std::vector<StorableImpression>& impressions) = 0;
-
     // New conversion reports will be sent through this callback for
     // pruning/modification before they are added to storage. This will be
     // called during the execution of
