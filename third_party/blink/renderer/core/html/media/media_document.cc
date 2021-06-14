@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/html/media/media_document.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/add_event_listener_options_or_boolean.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"

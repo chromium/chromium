@@ -108,9 +108,8 @@ class VideoWakeLockFrameClient : public test::MediaStubLocalFrameClient {
  public:
   explicit VideoWakeLockFrameClient(std::unique_ptr<WebMediaPlayer> player)
       : test::MediaStubLocalFrameClient(std::move(player)) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoWakeLockFrameClient);
+  VideoWakeLockFrameClient(const VideoWakeLockFrameClient&) = delete;
+  VideoWakeLockFrameClient& operator=(const VideoWakeLockFrameClient&) = delete;
 };
 
 class VideoWakeLockTest : public PageTestBase {

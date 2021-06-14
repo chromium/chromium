@@ -23,6 +23,9 @@ class CORE_EXPORT VideoFrameCallbackRequester
 
   static VideoFrameCallbackRequester* From(HTMLVideoElement&);
 
+  VideoFrameCallbackRequester(const VideoFrameCallbackRequester&) = delete;
+  VideoFrameCallbackRequester& operator=(const VideoFrameCallbackRequester&) =
+      delete;
   virtual ~VideoFrameCallbackRequester() = default;
 
   void Trace(Visitor*) const override;
@@ -33,7 +36,6 @@ class CORE_EXPORT VideoFrameCallbackRequester
 
  protected:
   explicit VideoFrameCallbackRequester(HTMLVideoElement&);
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameCallbackRequester);
 };
 
 }  // namespace blink

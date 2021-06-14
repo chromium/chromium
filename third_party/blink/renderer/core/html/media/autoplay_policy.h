@@ -57,6 +57,8 @@ class CORE_EXPORT AutoplayPolicy final
   static bool DocumentIsCapturingUserMedia(const Document&);
 
   explicit AutoplayPolicy(HTMLMediaElement*);
+  AutoplayPolicy(const AutoplayPolicy&) = delete;
+  AutoplayPolicy& operator=(const AutoplayPolicy&) = delete;
 
   void VideoWillBeDrawnToCanvas() const;
 
@@ -153,8 +155,6 @@ class CORE_EXPORT AutoplayPolicy final
   Member<AutoplayUmaHelper> autoplay_uma_helper_;
 
   absl::optional<bool> autoplay_initiated_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoplayPolicy);
 };
 
 }  // namespace blink

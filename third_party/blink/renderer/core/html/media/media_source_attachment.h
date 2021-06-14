@@ -48,6 +48,8 @@ class CORE_EXPORT MediaSourceAttachment
       const String& url);
 
   MediaSourceAttachment();
+  MediaSourceAttachment(const MediaSourceAttachment&) = delete;
+  MediaSourceAttachment& operator=(const MediaSourceAttachment&) = delete;
   ~MediaSourceAttachment() override;
 
   // This is called on the main thread when the URLRegistry unregisters the
@@ -133,8 +135,6 @@ class CORE_EXPORT MediaSourceAttachment
   friend class WTF::ThreadSafeRefCounted<MediaSourceAttachment>;
 
   static URLRegistry* registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachment);
 };
 
 }  // namespace blink
