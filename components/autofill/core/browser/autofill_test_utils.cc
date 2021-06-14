@@ -230,70 +230,49 @@ void CreateTestAddressFormData(FormData* form,
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
   FormFieldData field;
-  ServerFieldTypeSet type_set;
   test::CreateTestFormField("First Name", "firstname", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(NAME_FIRST);
-  types->push_back(type_set);
+  types->push_back({NAME_FIRST});
   test::CreateTestFormField("Middle Name", "middlename", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(NAME_MIDDLE);
-  types->push_back(type_set);
+  types->push_back({NAME_MIDDLE});
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(NAME_LAST);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForMoreStructureInNames)) {
-    type_set.insert(NAME_LAST_SECOND);
+    types->push_back({NAME_LAST, NAME_LAST_SECOND});
+  } else {
+    types->push_back({NAME_LAST});
   }
-  types->push_back(type_set);
   test::CreateTestFormField("Address Line 1", "addr1", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(ADDRESS_HOME_LINE1);
-  types->push_back(type_set);
+  types->push_back({ADDRESS_HOME_LINE1});
   test::CreateTestFormField("Address Line 2", "addr2", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(ADDRESS_HOME_LINE2);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForMoreStructureInAddresses)) {
-    type_set.insert(ADDRESS_HOME_SUBPREMISE);
+    types->push_back({ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_LINE2});
+  } else {
+    types->push_back({ADDRESS_HOME_LINE2});
   }
-  types->push_back(type_set);
   test::CreateTestFormField("City", "city", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(ADDRESS_HOME_CITY);
-  types->push_back(type_set);
+  types->push_back({ADDRESS_HOME_CITY});
   test::CreateTestFormField("State", "state", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(ADDRESS_HOME_STATE);
-  types->push_back(type_set);
+  types->push_back({ADDRESS_HOME_STATE});
   test::CreateTestFormField("Postal Code", "zipcode", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(ADDRESS_HOME_ZIP);
-  types->push_back(type_set);
+  types->push_back({ADDRESS_HOME_ZIP});
   test::CreateTestFormField("Country", "country", "", "text", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(ADDRESS_HOME_COUNTRY);
-  types->push_back(type_set);
+  types->push_back({ADDRESS_HOME_COUNTRY});
   test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(PHONE_HOME_WHOLE_NUMBER);
-  types->push_back(type_set);
+  types->push_back({PHONE_HOME_WHOLE_NUMBER});
   test::CreateTestFormField("Email", "email", "", "email", &field);
   form->fields.push_back(field);
-  type_set.clear();
-  type_set.insert(EMAIL_ADDRESS);
-  types->push_back(type_set);
+  types->push_back({EMAIL_ADDRESS});
 }
 
 void CreateTestPersonalInformationFormData(FormData* form,

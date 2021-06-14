@@ -168,6 +168,7 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   size_t index;
   if (!form_->GetFieldIndex(field, &index)) {
     form_.reset();
+    field_id_ = {};
     return;
   }
 
@@ -465,6 +466,7 @@ gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
 
 void AutofillProviderAndroid::Reset() {
   form_.reset(nullptr);
+  field_id_ = {};
   id_ = kNoQueryId;
   check_submission_ = false;
 }

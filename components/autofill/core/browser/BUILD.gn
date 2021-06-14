@@ -452,6 +452,7 @@ static_library("browser") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//sql",
+    "//third_party/abseil-cpp:absl",
     "//third_party/icu",
     "//third_party/libphonenumber",
     "//third_party/re2",

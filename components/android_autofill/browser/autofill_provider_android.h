@@ -132,7 +132,9 @@ class AutofillProviderAndroid : public AutofillProvider {
   void Reset();
 
   int32_t id_;
+  // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
+  // The field of the current session (queried input or changed select box).
   FieldGlobalId field_id_;
   base::WeakPtr<AndroidAutofillManager> manager_;
   JavaObjectWeakGlobalRef java_ref_;

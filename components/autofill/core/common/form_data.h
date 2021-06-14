@@ -104,9 +104,9 @@ struct FormData {
   FormRendererId unique_renderer_id;
   // A vector of all frames in the form.
   std::vector<FrameToken> child_frames;
-  // A vector such that encodes the upper-bound field index of the `i`th frame.
-  // More precisely, `fields[child_frame_predecessors[i]]` is the last field
-  // in this form that precedes `child_frames[i]`. If there is no such field,
+  // A vector that encodes the upper-bound field index of the `i`th frame.
+  // That is, `fields[child_frame_predecessors[i]]` is the last field in this
+  // form that precedes `child_frames[i]`. If there is no such field,
   // `child_frame_predecessors[i]` is -1.
   std::vector<int> child_frame_predecessors;
   // The type of the event that was taken as an indication that this form is

@@ -66,6 +66,9 @@ specific_include_rules = {
   "test_autofill_driver\.h": [
     "+components/autofill/content/browser/content_autofill_driver.h"
   ],
+  "credit_card_access_manager_unittest\.cc": [
+    "+content/public/test",
+  ],
   "credit_card_save_manager_unittest\.cc": [
     "+components/ukm",
   ],

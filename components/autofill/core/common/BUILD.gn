@@ -69,6 +69,7 @@ static_library("common") {
     "//components/variations",
     "//crypto",
     "//google_apis:google_apis",
+    "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/gfx/geometry",
     "//url",

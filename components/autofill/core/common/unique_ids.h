@@ -27,6 +27,7 @@ class TokenType
  public:
   using base::StrongAlias<TokenTypeMarker, base::UnguessableToken>::StrongAlias;
   bool is_empty() const { return this->value().is_empty(); }
+  explicit constexpr operator bool() const { return !is_empty(); }
   std::string ToString() const { return this->value().ToString(); }
 };
 
