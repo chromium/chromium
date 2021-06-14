@@ -188,6 +188,11 @@ Paramaterized attributes are also supported, for example:
 You can also use array operator[] to refer to an array element at a given index,
 for example `paragraph.AXChildren[0]` will refer to the first child of the paragraph.
 
+You can also rerieve `anchor` and `focus` text markers from a text marker range,
+for example:
+
+`p.AXTextMarkerRangeForUIElement(p).anchor`
+
 ### Advanced directives
 
 Normally the system waits for the document to finish loading before running

@@ -10,6 +10,13 @@
 
 using ui::AXPropertyNode;
 
+extern "C" {
+
+CFTypeRef AXTextMarkerRangeCopyStartMarker(CFTypeRef);
+
+CFTypeRef AXTextMarkerRangeCopyEndMarker(CFTypeRef);
+}  // extern "C"
+
 namespace content {
 namespace a11y {
 
@@ -98,7 +105,7 @@ OptionalNSObject AttributeInvoker::Invoke(
   while (current_node) {
     auto target_optional = InvokeFor(target, *current_node);
     if (!target_optional.IsNotNil()) {
-      LOG(ERROR) << "No target for " << current_node->ToString();
+      LOG(ERROR) << "Null result of " << current_node->ToString();
       return target_optional;
     }
     target = *target_optional;
@@ -113,6 +120,10 @@ OptionalNSObject AttributeInvoker::InvokeFor(
     const AXPropertyNode& property_node) const {
   if (IsBrowserAccessibilityCocoa(target) || IsAXUIElement(target))
     return InvokeForAXElement(target, property_node);
+
+  if (content::IsAXTextMarkerRange(target)) {
+    return InvokeForAXTextMarkerRange(target, property_node);
+  }
 
   if ([target isKindOfClass:[NSArray class]])
     return InvokeForArray(target, property_node);
@@ -146,6 +157,20 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
 
   // Unmatched attribute.
   return OptionalNSObject::NotApplicable();
+}
+
+OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
+    const id target,
+    const AXPropertyNode& property_node) const {
+  if (property_node.name_or_value == "anchor")
+    return OptionalNSObject(static_cast<id>(
+        AXTextMarkerRangeCopyStartMarker(static_cast<CFTypeRef>(target))));
+
+  if (property_node.name_or_value == "focus")
+    return OptionalNSObject(static_cast<id>(
+        AXTextMarkerRangeCopyEndMarker(static_cast<CFTypeRef>(target))));
+
+  return OptionalNSObject::Error();
 }
 
 OptionalNSObject AttributeInvoker::InvokeForArray(

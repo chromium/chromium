@@ -94,6 +94,11 @@ class CONTENT_EXPORT AttributeInvoker final {
       const id target,
       const ui::AXPropertyNode& property_node) const;
 
+  // Invokes a property node for a given AXTextMarkerRange.
+  OptionalNSObject InvokeForAXTextMarkerRange(
+      const id target,
+      const ui::AXPropertyNode& property_node) const;
+
   // Invokes a property node for a given array.
   OptionalNSObject InvokeForArray(
       const id target,

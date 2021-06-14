@@ -398,4 +398,24 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_TextRange_Anchor) {
+  TestAndCheck(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+               {{"p.AXTextMarkerRangeForUIElement(p).anchor", SCRIPT}},
+               {{"*", "*"}},
+               R"~~(p.AXTextMarkerRangeForUIElement(p).anchor={:2, 0, down}
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_TextRange_Focus) {
+  TestAndCheck(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+               {{"p.AXTextMarkerRangeForUIElement(p).focus", SCRIPT}},
+               {{"*", "*"}},
+               R"~~(p.AXTextMarkerRangeForUIElement(p).focus={:2, 9, down}
+)~~");
+}
+
 }  // namespace content
