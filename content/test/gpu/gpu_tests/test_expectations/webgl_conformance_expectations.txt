@@ -350,6 +350,7 @@ crbug.com/750896 [ win10 nvidia-0x1cb3 angle-d3d9 ] conformance/textures/video/*
 # Win / AMD D3D11 (default) failures
 crbug.com/878780 [ win amd ] conformance/textures/webgl_canvas/* [ RetryOnFailure ]
 crbug.com/1043773 [ win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
+crbug.com/1219015 [ win amd angle-d3d11 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 # Win / AMD D3D9 failures
 crbug.com/475095 [ win amd angle-d3d9 ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
@@ -445,7 +446,6 @@ crbug.com/1203167 [ mac amd angle-disabled ] conformance/extensions/oes-texture-
 crbug.com/1203167 [ mac amd angle-opengl ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-metal ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
-
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
@@ -510,6 +510,9 @@ crbug.com/1130760 [ mac apple-apple-m1 angle-metal ] conformance/ogles/GL/discar
 crbug.com/1130760 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
 crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+crbug.com/1219625 [ mac apple-apple-m1 angle-metal ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1219625 [ mac apple-apple-m1 angle-opengl ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1219625 [ mac apple-apple-m1 angle-disabled ] conformance/textures/misc/video-rotation.html [ Failure ]
 # finder:enable
 
 ####################

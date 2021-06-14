@@ -182,6 +182,7 @@ crbug.com/1198658 [ android android-pixel-2 ] deqp/functional/gles3/shaderoperat
 ####################
 
 crbug.com/1219015 [ win intel ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1219015 [ win amd ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/video/* [ RetryOnFailure ]
 crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
@@ -584,6 +585,8 @@ crbug.com/1130708 [ mac apple-apple-m1 no-passthrough ] conformance2/textures/mi
 crbug.com/1130711 [ mac apple-apple-m1 no-passthrough ] deqp/functional/gles3/negativeshaderapi.html [ Failure ]
 crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+crbug.com/1219625 [ mac apple-apple-m1 ] conformance/textures/misc/video-rotation.html [ Failure ]
+
 
 ####################
 # Linux failures   #
