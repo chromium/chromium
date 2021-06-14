@@ -91,7 +91,6 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
-    PrefsBehavior,
     WebUIListenerBehavior,
   ],
 
