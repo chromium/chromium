@@ -99,12 +99,9 @@ MicrophoneMuteNotificationDelegateImpl::GetAppAccessingMicrophone() {
 
 void MicrophoneMuteNotificationDelegateImpl::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
-  apps::mojom::OptionalBool using_mic = update.Microphone();
-  DCHECK(using_mic != apps::mojom::OptionalBool::kUnknown);
-
   base::Erase(mic_using_app_ids[active_user_account_id_], update.AppId());
 
-  if (using_mic == apps::mojom::OptionalBool::kTrue) {
+  if (update.Microphone() == apps::mojom::OptionalBool::kTrue) {
     mic_using_app_ids[active_user_account_id_].push_front(update.AppId());
   }
 }
