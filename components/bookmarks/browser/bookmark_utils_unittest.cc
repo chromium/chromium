@@ -434,7 +434,7 @@ TEST_F(BookmarkUtilsTest, GetParentForNewNodes) {
   // folder.
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(model->bookmark_bar_node());
-  size_t index = size_t{-1};
+  size_t index = static_cast<size_t>(-1);
   const BookmarkNode* real_parent =
       GetParentForNewNodes(model->bookmark_bar_node(), nodes, &index);
   EXPECT_EQ(real_parent, model->bookmark_bar_node());

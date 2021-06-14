@@ -479,7 +479,7 @@ const BookmarkNode* GetParentForNewNodes(
 
   if (index) {
     if (selection.size() == 1 && selection[0]->is_url()) {
-      *index = size_t{real_parent->GetIndexOf(selection[0]) + 1};
+      *index = static_cast<size_t>(real_parent->GetIndexOf(selection[0]) + 1);
       DCHECK_NE(0u, *index);
     } else {
       *index = real_parent->children().size();

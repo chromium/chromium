@@ -72,7 +72,8 @@ bool OmniboxPedal::TokenSequence::Erase(
     return false;
   }
   bool changed = false;
-  ptrdiff_t index = ptrdiff_t{Size()} - ptrdiff_t{erase_sequence.Size()};
+  ptrdiff_t index = static_cast<ptrdiff_t>(Size()) -
+                    static_cast<ptrdiff_t>(erase_sequence.Size());
   while (index >= 0) {
     if (MatchesAt(erase_sequence, index, 0)) {
       // Erase sequence matched by actual removal from container.
@@ -83,7 +84,8 @@ bool OmniboxPedal::TokenSequence::Erase(
       }
       changed = true;
       index = std::min(index - 1,
-                       ptrdiff_t{Size()} - ptrdiff_t{erase_sequence.Size()});
+                       static_cast<ptrdiff_t>(Size()) -
+                           static_cast<ptrdiff_t>(erase_sequence.Size()));
     } else {
       --index;
     }

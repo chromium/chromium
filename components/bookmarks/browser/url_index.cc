@@ -84,7 +84,7 @@ std::unique_ptr<BookmarkNode> UrlIndex::Remove(BookmarkNode* node,
   base::AutoLock url_lock(url_lock_);
   RemoveImpl(node, removed_urls);
   BookmarkNode* parent = node->parent();
-  return parent->Remove(size_t{parent->GetIndexOf(node)});
+  return parent->Remove(static_cast<size_t>(parent->GetIndexOf(node)));
 }
 
 void UrlIndex::SetUrl(BookmarkNode* node, const GURL& url) {
