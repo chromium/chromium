@@ -163,6 +163,58 @@ base::Value NewDescriptionValuePair(base::StringPiece desc,
   return dict;
 }
 
+// Returns the bounds of |window| in the screen before adjusting for the frame.
+bool GetUndecoratedWindowBounds(x11::Window window, gfx::Rect* rect) {
+  auto root = GetX11RootWindow();
+
+  x11::Connection* connection = x11::Connection::Get();
+  auto get_geometry = connection->GetGeometry(window);
+  auto translate_coords = connection->TranslateCoordinates({window, root});
+
+  // Sync after making both requests so only one round-trip is made.
+  // Flush so all requests are sent before waiting on any replies.
+  connection->Flush();
+  auto geometry = get_geometry.Sync();
+  auto coords = translate_coords.Sync();
+
+  if (!geometry || !coords)
+    return false;
+
+  *rect = gfx::Rect(coords->dst_x, coords->dst_y, geometry->width,
+                    geometry->height);
+  return true;
+}
+
+// Obtains the value of _{NET,GTK}_FRAME_EXTENTS as a gfx::Insets.  Returns an
+// empty gfx::Insets if the property doesn't exist or is malformed.
+gfx::Insets GetFrameExtentsProperty(x11::Window window, x11::Atom property) {
+  std::vector<int32_t> frame_extents;
+  GetArrayProperty(window, property, &frame_extents);
+  if (frame_extents.size() != 4)
+    return gfx::Insets();
+  return gfx::Insets(frame_extents[2] /* top */, frame_extents[0] /* left */,
+                     frame_extents[3] /* bottom */,
+                     frame_extents[1] /* right */);
+}
+
+// Returns the adjustment necessary to obtain the opaque bounds of |window|.
+gfx::Insets GetWindowDecorationAdjustment(x11::Window window) {
+  // _GTK_FRAME_EXTENTS is set by clients using client side decorations to
+  // subtract the window shadow from the bounds.  _NET_FRAME_EXTENTS is set by
+  // the WM to add the opaque portion of the frame to the bounds.
+  return GetFrameExtentsProperty(window, x11::GetAtom("_GTK_FRAME_EXTENTS")) -
+         GetFrameExtentsProperty(window, x11::GetAtom("_NET_FRAME_EXTENTS"));
+}
+
+// Returns the opaque bounds of |window| with it's frame.
+bool GetDecoratedWindowBounds(x11::Window window, gfx::Rect* rect) {
+  if (!GetUndecoratedWindowBounds(window, rect))
+    return false;
+
+  rect->Inset(GetWindowDecorationAdjustment(window));
+  return true;
+}
+
 }  // namespace
 
 bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
@@ -447,64 +499,16 @@ bool IsWindowVisible(x11::Window window) {
           window_desktop == kAllDesktops || window_desktop == current_desktop);
 }
 
-bool GetInnerWindowBounds(x11::Window window, gfx::Rect* rect) {
-  auto x11_window = static_cast<x11::Window>(window);
-  auto root = static_cast<x11::Window>(GetX11RootWindow());
-
-  x11::Connection* connection = x11::Connection::Get();
-  auto get_geometry = connection->GetGeometry(x11_window);
-  auto translate_coords = connection->TranslateCoordinates({x11_window, root});
-
-  // Sync after making both requests so only one round-trip is made.
-  // Flush so all requests are sent before waiting on any replies.
-  connection->Flush();
-  auto geometry = get_geometry.Sync();
-  auto coords = translate_coords.Sync();
-
-  if (!geometry || !coords)
-    return false;
-
-  *rect = gfx::Rect(coords->dst_x, coords->dst_y, geometry->width,
-                    geometry->height);
-  return true;
-}
-
-bool GetWindowExtents(x11::Window window, gfx::Insets* extents) {
-  std::vector<int32_t> insets;
-  if (!GetArrayProperty(window, x11::GetAtom("_NET_FRAME_EXTENTS"), &insets))
-    return false;
-  if (insets.size() != 4)
-    return false;
-
-  int left = insets[0];
-  int right = insets[1];
-  int top = insets[2];
-  int bottom = insets[3];
-  extents->Set(-top, -left, -bottom, -right);
-  return true;
-}
-
-bool GetOuterWindowBounds(x11::Window window, gfx::Rect* rect) {
-  if (!GetInnerWindowBounds(window, rect))
-    return false;
-
-  gfx::Insets extents;
-  if (GetWindowExtents(window, &extents))
-    rect->Inset(extents);
-  // Not all window managers support _NET_FRAME_EXTENTS so return true even if
-  // requesting the property fails.
-
-  return true;
-}
-
 bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
   TRACE_EVENT0("ui", "WindowContainsPoint");
 
-  gfx::Rect window_rect;
-  if (!GetOuterWindowBounds(window, &window_rect))
+  gfx::Rect undecorated_bounds;
+  if (!GetUndecoratedWindowBounds(window, &undecorated_bounds))
     return false;
 
-  if (!window_rect.Contains(screen_loc))
+  gfx::Rect decorated_bounds = undecorated_bounds;
+  decorated_bounds.Inset(GetWindowDecorationAdjustment(window));
+  if (!decorated_bounds.Contains(screen_loc))
     return false;
 
   if (!IsShapeExtensionAvailable())
@@ -539,8 +543,8 @@ bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
       // The ShapeInput and ShapeBounding rects are to be in window space, so we
       // have to translate by the window_rect's offset to map to screen space.
       gfx::Rect shape_rect =
-          gfx::Rect(rect.x + window_rect.x(), rect.y + window_rect.y(),
-                    rect.width, rect.height);
+          gfx::Rect(rect.x + undecorated_bounds.x(),
+                    rect.y + undecorated_bounds.y(), rect.width, rect.height);
       if (shape_rect.Contains(screen_loc)) {
         is_in_shape_rects = true;
         break;
@@ -848,7 +852,7 @@ bool IsX11WindowFullScreen(x11::Window window) {
   }
 
   gfx::Rect window_rect;
-  if (!ui::GetOuterWindowBounds(window, &window_rect))
+  if (!ui::GetDecoratedWindowBounds(window, &window_rect))
     return false;
 
   // TODO(thomasanderson): We should use

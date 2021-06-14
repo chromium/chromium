@@ -53,6 +53,7 @@ constexpr const char* kAtomsToCache[] = {
     "Enabled",
     "FAKE_SELECTION",
     "Full aspect",
+    "_GTK_FRAME_EXTENTS",
     "INCR",
     "KEYBOARD",
     "LOCK",
