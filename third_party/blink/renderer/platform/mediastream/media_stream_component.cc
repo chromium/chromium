@@ -85,6 +85,12 @@ void MediaStreamComponent::GetSettings(
   platform_track_->GetSettings(settings);
 }
 
+MediaStreamTrackPlatform::CaptureHandle
+MediaStreamComponent::GetCaptureHandle() {
+  DCHECK(platform_track_);
+  return platform_track_->GetCaptureHandle();
+}
+
 void MediaStreamComponent::SetContentHint(
     WebMediaStreamTrack::ContentHintType hint) {
   switch (hint) {

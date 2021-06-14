@@ -52,5 +52,7 @@ enum MediaStreamTrackState {
     MediaTrackCapabilities getCapabilities();
     MediaTrackConstraints getConstraints();
     MediaTrackSettings getSettings();
+    [RuntimeEnabled=CaptureHandle, MeasureAs=CaptureHandle] CaptureHandle? getCaptureHandle();
+
     [CallWith=ScriptState] Promise<void> applyConstraints(optional MediaTrackConstraints constraints = {});
 };

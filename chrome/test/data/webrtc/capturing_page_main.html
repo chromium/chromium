@@ -23,20 +23,20 @@
         // Blocks until the embedded frame's onCaptureHandleChange() unblocks.
       }
 
-      function readCaptureHandleFromSettings() {
+      function readCaptureHandle() {
         if (!capturedVideoTrack) {
           window.domAutomationController.send("error-no-video-track");
           return;
         }
 
-        let settings = capturedVideoTrack.getSettings();
-        if (!settings.captureHandle) {
+        let captureHandle = capturedVideoTrack.getCaptureHandle();
+        if (!captureHandle) {
           window.domAutomationController.send("no-capture-handle");
           return;
         }
 
         window.domAutomationController.send(
-          JSON.stringify(settings.captureHandle)
+          JSON.stringify(captureHandle)
         );
       }
 
@@ -52,10 +52,10 @@
         // window.domAutomationController.send() called by embedded page.
       }
 
-      function readCaptureHandleFromSettingsInEmbeddedFrame() {
+      function readCaptureHandleInEmbeddedFrame() {
         document
           .getElementById("embedded_frame")
-          .contentWindow.postMessage("read-settings", "*");
+          .contentWindow.postMessage("read-capture-handle", "*");
         // window.domAutomationController.send() called by embedded page.
       }
 

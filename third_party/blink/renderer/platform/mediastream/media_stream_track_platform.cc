@@ -22,4 +22,9 @@ MediaStreamTrackPlatform::MediaStreamTrackPlatform(bool is_local_track)
 
 MediaStreamTrackPlatform::~MediaStreamTrackPlatform() {}
 
+MediaStreamTrackPlatform::CaptureHandle
+MediaStreamTrackPlatform::GetCaptureHandle() {
+  return MediaStreamTrackPlatform::CaptureHandle();
+}
+
 }  // namespace blink

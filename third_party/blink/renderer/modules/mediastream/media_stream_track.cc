@@ -33,7 +33,6 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_change_event.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_change_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
@@ -691,17 +690,25 @@ MediaTrackSettings* MediaStreamTrack::getSettings() const {
     }
     settings->setCursor(value);
   }
-  if (platform_settings.capture_handle.has_value()) {
-    const auto& settings_handle = platform_settings.capture_handle.value();
-    auto* capture_handle = CaptureHandle::Create();
-    if (settings_handle.origin) {
-      capture_handle->setOrigin(settings_handle.origin);
-    }
-    capture_handle->setHandle(settings_handle.handle);
-    settings->setCaptureHandle(capture_handle);
-  }
 
   return settings;
+}
+
+CaptureHandle* MediaStreamTrack::getCaptureHandle() const {
+  MediaStreamTrackPlatform::CaptureHandle platform_capture_handle =
+      component_->GetCaptureHandle();
+
+  if (platform_capture_handle.IsEmpty()) {
+    return nullptr;
+  }
+
+  auto* capture_handle = CaptureHandle::Create();
+  if (platform_capture_handle.origin) {
+    capture_handle->setOrigin(platform_capture_handle.origin);
+  }
+  capture_handle->setHandle(platform_capture_handle.handle);
+
+  return capture_handle;
 }
 
 ScriptPromise MediaStreamTrack::applyConstraints(

@@ -27,8 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -86,6 +88,7 @@ class MODULES_EXPORT MediaStreamTrack
   MediaTrackCapabilities* getCapabilities() const;
   MediaTrackConstraints* getConstraints() const;
   MediaTrackSettings* getSettings() const;
+  CaptureHandle* getCaptureHandle() const;
   ScriptPromise applyConstraints(ScriptState*, const MediaTrackConstraints*);
 
   // This function is called when constrains have been successfully applied.

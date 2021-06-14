@@ -701,18 +701,32 @@ void MediaStreamVideoTrack::GetSettings(
     settings.display_surface = info->display_surface;
     settings.logical_surface = info->logical_surface;
     settings.cursor = info->cursor;
-    if (info->capture_handle) {
-      settings.capture_handle.emplace();
-      if (!info->capture_handle->origin.opaque()) {
-        settings.capture_handle->origin =
-            String::FromUTF8(info->capture_handle->origin.Serialize());
-      }
-      settings.capture_handle->handle =
-          WebString::FromUTF16(info->capture_handle->capture_handle);
-    } else {
-      settings.capture_handle = absl::nullopt;
-    }
   }
+}
+
+MediaStreamTrackPlatform::CaptureHandle
+MediaStreamVideoTrack::GetCaptureHandle() {
+  MediaStreamTrackPlatform::CaptureHandle capture_handle;
+
+  const MediaStreamDevice& device = source_->device();
+  if (!device.display_media_info.has_value()) {
+    return capture_handle;
+  }
+  const media::mojom::DisplayMediaInformationPtr& info =
+      device.display_media_info.value();
+
+  if (!info->capture_handle) {
+    return capture_handle;
+  }
+
+  if (!info->capture_handle->origin.opaque()) {
+    capture_handle.origin =
+        String::FromUTF8(info->capture_handle->origin.Serialize());
+  }
+  capture_handle.handle =
+      WebString::FromUTF16(info->capture_handle->capture_handle);
+
+  return capture_handle;
 }
 
 void MediaStreamVideoTrack::OnReadyStateChanged(

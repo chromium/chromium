@@ -123,19 +123,18 @@ struct TabInfo {
         StringifyCaptureHandle(web_contents, expose_origin, handle);
   }
 
-  std::string ReadCaptureHandleFromSettings() {
+  std::string ReadCaptureHandle() {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "readCaptureHandleFromSettings();",
-        &script_result));
+        web_contents->GetMainFrame(), "readCaptureHandle();", &script_result));
     return script_result;
   }
 
-  std::string ReadCaptureHandleFromSettingsInEmbeddedFrame() {
+  std::string ReadCaptureHandleInEmbeddedFrame() {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
-        "readCaptureHandleFromSettingsInEmbeddedFrame();", &script_result));
+        web_contents->GetMainFrame(), "readCaptureHandleInEmbeddedFrame();",
+        &script_result));
     return script_result;
   }
 
@@ -339,8 +338,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -353,8 +351,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   capturing_tab.StartCapturing();
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -367,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   capturing_tab.StartCapturing();
 
   // The capture handle isn't observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
@@ -400,11 +397,11 @@ IN_PROC_BROWSER_TEST_F(
   capturing_tab.StartCapturingFromEmbeddedFrame();
 
   // The capture handle isn't observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettingsInEmbeddedFrame(),
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleInEmbeddedFrame(),
             kNoEmbeddedCaptureHandle);
 
   // Even when the capture handle changes - no events are fired and the
-  // capture handle remains unobservable via getSettings.
+  // capture handle remains unobservable via getCaptureHandle.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                                       {top_level_capturer_origin.Serialize()});
 }
@@ -438,15 +435,15 @@ IN_PROC_BROWSER_TEST_F(
   capturing_tab.StartCapturingFromEmbeddedFrame();
 
   // The capture handle is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettingsInEmbeddedFrame(),
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleInEmbeddedFrame(),
             captured_tab.capture_handle);
 
   // When the capture handle changes, events are fired and the
-  // capture handle remains observable via getSettings.
+  // capture handle remains observable via getCaptureHandle.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                                       {embedded_capturer_origin.Serialize()});
   EXPECT_EQ(capturing_tab.LastEmbeddedEvent(), captured_tab.capture_handle);
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettingsInEmbeddedFrame(),
+  EXPECT_EQ(capturing_tab.ReadCaptureHandleInEmbeddedFrame(),
             captured_tab.capture_handle);
 }
 
@@ -458,8 +455,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest, CanExposeOnlyHandle) {
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -472,8 +468,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -487,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle isn't observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -499,14 +494,13 @@ IN_PROC_BROWSER_TEST_F(
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // New CaptureHandleConfig set by captured tab triggers an event, and all
-  // subsequent calls to getSettings produce the new values.
+  // subsequent calls to getCaptureHandle produce the new values.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/false, "", {});
   EXPECT_EQ(capturing_tab.LastEvent(), "{}");
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -518,16 +512,14 @@ IN_PROC_BROWSER_TEST_F(
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // New CaptureHandleConfig set by captured tab triggers an event, and all
-  // subsequent calls to getSettings produce the new values.
+  // subsequent calls to getCaptureHandle produce the new values.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                                       {"*"});
   EXPECT_EQ(capturing_tab.LastEvent(), captured_tab.capture_handle);
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -539,15 +531,13 @@ IN_PROC_BROWSER_TEST_F(
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // New CaptureHandleConfig set by captured tab triggers an event, and all
-  // subsequent calls to getSettings produce the new values.
+  // subsequent calls to getCaptureHandle produce the new values.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/false, "handle", {"*"});
   EXPECT_EQ(capturing_tab.LastEvent(), captured_tab.capture_handle);
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -559,15 +549,14 @@ IN_PROC_BROWSER_TEST_F(
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // New CaptureHandleConfig set by captured tab triggers an event, and all
-  // subsequent calls to getSettings produce the new values.
+  // subsequent calls to getCaptureHandle produce the new values.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "handle",
                                       {kArbitraryOrigin});
   EXPECT_EQ(capturing_tab.LastEvent(), "{}");
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -579,14 +568,13 @@ IN_PROC_BROWSER_TEST_F(
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 
   // New CaptureHandleConfig set by captured tab triggers an event, and all
-  // subsequent calls to getSettings produce the new values.
+  // subsequent calls to getCaptureHandle produce the new values.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "handle", {"*"});
   EXPECT_EQ(capturing_tab.LastEvent(), captured_tab.capture_handle);
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -598,15 +586,13 @@ IN_PROC_BROWSER_TEST_F(
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // The capture handle set by the captured tab is observable by the capturer.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // New CaptureHandleConfig set by captured tab triggers an event, and all
-  // subsequent calls to getSettings produce the new values.
+  // subsequent calls to getCaptureHandle produce the new values.
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "handle",
                                       {capturing_tab.GetOriginAsString()});
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -617,8 +603,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // Sanity test - there was an initial handle.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // In-document navigation does not change the capture handle (config).
   std::string navigation_result;
@@ -627,10 +612,9 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
       &navigation_result));
   ASSERT_EQ(navigation_result, "navigated");
 
-  // No event was fired (verified in teardown) and getSettings returns the
+  // No event was fired (verified in teardown) and getCaptureHandle returns the
   // same configuration as previously.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -641,8 +625,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // Sanity test - there was an initial handle.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // Cross-document navigation clears the capture handle (config).
   captured_tab.Navigate(servers_[kCapturedServer]->GetURL(kCapturedPageOther),
@@ -651,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   // Navigation cleared the the capture handle, and that fired an event
   // with the empty CaptureHandle.
   EXPECT_EQ(capturing_tab.LastEvent(), "{}");
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -662,8 +645,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
   // Sanity test - there was an initial handle.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(),
-            captured_tab.capture_handle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // Sanity over the test itself - the new server has a different origin.
   ASSERT_FALSE(url::Origin::Create(servers_[kOtherCapturedServer]->base_url())
@@ -675,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
       servers_[kOtherCapturedServer]->GetURL(kCapturedPageOther),
       /*expect_handle_reset=*/true);
   EXPECT_EQ(capturing_tab.LastEvent(), "{}");
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -685,12 +667,12 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   tab.StartCapturing();
 
   // Correct initial value read.
-  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), tab.capture_handle);
+  EXPECT_EQ(tab.ReadCaptureHandle(), tab.capture_handle);
 
   // Events correctly fired when self-capturing.
   tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle", {"*"});
   EXPECT_EQ(tab.LastEvent(), tab.capture_handle);
-  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), tab.capture_handle);
+  EXPECT_EQ(tab.ReadCaptureHandle(), tab.capture_handle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -704,12 +686,12 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   tab.StartCapturing();
 
   // Correct initial value read.
-  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(tab.ReadCaptureHandle(), kNoCaptureHandle);
 
   // No events fired when self-capturing but not allowed to observe.
   tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                              {kArbitraryOrigin});
-  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -723,10 +705,10 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 
   // Can neither observe the value when capture starts, nor receive events when
   // the capture handle changes.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                                       {"*"});
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -740,10 +722,10 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 
   // Can neither observe the value when capture starts, nor receive events when
   // the capture handle changes.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                                       {"*"});
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -757,10 +739,10 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 
   // Can neither observe the value when capture starts, nor receive events when
   // the capture handle changes.
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
   captured_tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle",
                                       {"*"});
-  EXPECT_EQ(capturing_tab.ReadCaptureHandleFromSettings(), kNoCaptureHandle);
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -773,12 +755,12 @@ IN_PROC_BROWSER_TEST_F(
   tab.StartCapturing();
 
   // Can observe the value when capture starts.
-  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), tab.capture_handle);
+  EXPECT_EQ(tab.ReadCaptureHandle(), tab.capture_handle);
 
   // Receives event of changes to the capture handle.
   tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle", {"*"});
   EXPECT_EQ(tab.LastEvent(), tab.capture_handle);
-  EXPECT_EQ(tab.ReadCaptureHandleFromSettings(), tab.capture_handle);
+  EXPECT_EQ(tab.ReadCaptureHandle(), tab.capture_handle);
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

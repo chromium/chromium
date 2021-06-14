@@ -19,11 +19,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
  public:
   enum class FacingMode { kNone, kUser, kEnvironment, kLeft, kRight };
 
-  struct CaptureHandle {
-    String origin;
-    String handle;
-  };
-
   struct Settings {
     bool HasFrameRate() const { return frame_rate >= 0.0; }
     bool HasWidth() const { return width >= 0; }
@@ -61,7 +56,13 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     absl::optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
     absl::optional<bool> logical_surface;
     absl::optional<media::mojom::CursorCaptureType> cursor;
-    absl::optional<CaptureHandle> capture_handle;
+  };
+
+  struct CaptureHandle {
+    bool IsEmpty() const { return origin.IsEmpty() && handle.IsEmpty(); }
+
+    String origin;
+    String handle;
   };
 
   explicit MediaStreamTrackPlatform(bool is_local_track);
@@ -81,6 +82,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   // TODO(hta): Make method pure virtual when all tracks have the method.
   virtual void GetSettings(Settings& settings) {}
+  virtual CaptureHandle GetCaptureHandle();
 
   bool is_local_track() const { return is_local_track_; }
 
