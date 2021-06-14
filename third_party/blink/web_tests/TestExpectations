@@ -1624,9 +1624,8 @@ crbug.com/802029 [ Mac10.13 Debug ] fast/dom/shadow/focus-controller-recursion-c
 crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
 crbug.com/836783 fast/peerconnection/RTCRtpSender-setParameters.html [ Pass Timeout ]
 
-# crbug.com/1218715 These fail when PartitionConnectionsByNetworkIsolationKey is enabled.
-crbug.com/1218715 virtual/reporting-api/external/wpt/content-security-policy/reporting-api/reporting-api-works-on-frame-ancestors.https.sub.html [ Failure ]
-crbug.com/1218715 virtual/synchronous_html_parser/external/wpt/content-security-policy/reporting-api/reporting-api-works-on-frame-ancestors.https.sub.html [ Failure ]
+# crbug.com/1218715 This fails when PartitionConnectionsByNetworkIsolationKey is enabled.
+crbug.com/1218715 external/wpt/content-security-policy/reporting-api/reporting-api-works-on-frame-ancestors.https.sub.html [ Failure ]
 
 # Sheriff 2021-05-25
 crbug.com/1209900 fast/peerconnection/RTCPeerConnection-reload-sctptransport.html [ Pass Failure ]
