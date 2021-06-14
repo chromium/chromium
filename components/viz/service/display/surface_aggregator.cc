@@ -1248,7 +1248,6 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame,
   surface->TakeCopyOutputRequests(&copy_requests);
 
   const auto& source_pass_list = frame.render_pass_list;
-  DCHECK(valid_surfaces_.count(surface->surface_id()));
   if (!valid_surfaces_.count(surface->surface_id()))
     return;
 
@@ -1368,13 +1367,6 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     bool in_moved_pixel_rp,
     PrewalkResult* result) {
   const Surface* surface = resolved_frame.surface();
-
-  if (resolved_pass.is_visited) {
-    // This render pass is an ancestor of itself and is not supported.
-    return gfx::Rect();
-  }
-
-  base::AutoReset<bool> reset_visited(&resolved_pass.is_visited, true);
   const CompositorRenderPass& render_pass = *resolved_pass.render_pass;
 
   if (render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
@@ -1599,9 +1591,7 @@ void SurfaceAggregator::ProcessResolvedFrame(
   Surface* surface = resolved_frame.surface();
   const CompositorFrame& compositor_frame =
       surface->GetActiveOrInterpolatedFrame();
-
   auto& resource_list = compositor_frame.resource_list;
-  auto& render_passes = compositor_frame.render_pass_list;
 
   int child_id = ChildIdForSurface(surface);
 
@@ -1613,48 +1603,12 @@ void SurfaceAggregator::ProcessResolvedFrame(
 
   stats_->declare_resources_count += resource_list.size();
 
-  // Figure out which resources are actually used in the render pass.
-  // Note that we first gather them in a vector, since ResourceIdSet (which we
-  // actually need) is a flat_set, which means bulk insertion we do at the end
-  // is more efficient.
-  std::vector<ResourceId> referenced_resources;
-  referenced_resources.reserve(resource_list.size());
-  const auto& child_to_parent_map = provider_->GetChildToParentMap(child_id);
-
-  // Reset and compute new render pass / quad data for this frame. This stores
-  // remapped display resource ids.
-  std::vector<ResolvedPassData> resolved_pass_list(render_passes.size());
-  for (size_t i = 0; i < render_passes.size(); ++i) {
-    auto& render_pass = render_passes[i];
-    resolved_pass_list[i].render_pass = render_pass.get();
-
-    // Loop through the quads, remapping resource ids and storing them.
-    auto& draw_quads = resolved_pass_list[i].draw_quads;
-    draw_quads.reserve(render_pass->quad_list.size());
-    for (auto* quad : render_pass->quad_list) {
-      draw_quads.emplace_back(*quad);
-      for (ResourceId& resource_id : draw_quads.back().remapped_resources) {
-        // If we're using a resource which was not declared in the
-        // |resource_list| then this is an invalid frame, we can abort.
-        auto iter = child_to_parent_map.find(resource_id);
-        if (iter == child_to_parent_map.end()) {
-          DLOG(ERROR) << "Invalid resource for " << resolved_frame.surface_id();
-          resolved_frame.SetInvalid();
-          return;
-        }
-
-        referenced_resources.push_back(resource_id);
-        resource_id = iter->second;
-      }
-    }
-  }
-
-  resolved_frame.UpdateResolvedPassData(std::move(resolved_pass_list));
+  ResourceIdSet resource_set = resolved_frame.UpdateForActiveFrame(
+      provider_->GetChildToParentMap(child_id));
 
   // Declare the used resources to the provider. This will cause all resources
   // that were received but not used in the render passes to be unreferenced in
   // the surface, and returned to the child in the resource provider.
-  ResourceIdSet resource_set(std::move(referenced_resources));
   provider_->DeclareUsedResourcesFromChild(child_id, resource_set);
 }
 
@@ -2025,7 +1979,7 @@ void SurfaceAggregator::RecordStatHistograms() {
   UMA_HISTOGRAM_COUNTS_100("Compositing.SurfaceAggregator.CopiedSurfaceCount",
                            stats_->copied_surface_count);
   UMA_HISTOGRAM_COUNTS_1000(
-      "Compositing.SurfaceAggregator.DeclareResourcesCount",
+      "Compositing.SurfaceAggregator.DeclareResourceCount",
       stats_->declare_resources_count);
 
   constexpr auto kMinTime = base::TimeDelta::FromMicroseconds(5);

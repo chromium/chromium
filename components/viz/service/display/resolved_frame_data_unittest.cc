@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -19,53 +20,83 @@
 namespace viz {
 namespace {
 
-TEST(ResolvedFrameDataTest, ResolvedRenderPassData) {
-  constexpr gfx::Rect output_rect(100, 100);
-  TestSurfaceIdAllocator surface_id(FrameSinkId(1, 1));
+constexpr gfx::Rect kOutputRect(100, 100);
 
-  ServerSharedBitmapManager shared_bitmap_manager;
-  FrameSinkManagerImpl frame_sink_manager(&shared_bitmap_manager);
-  auto support = std::make_unique<CompositorFrameSinkSupport>(
-      nullptr, &frame_sink_manager, surface_id.frame_sink_id(),
-      /*is_root=*/true);
+std::unique_ptr<CompositorRenderPass> BuildRenderPass(int id) {
+  auto render_pass = CompositorRenderPass::Create();
+  render_pass->SetNew(CompositorRenderPassId::FromUnsafeValue(id), kOutputRect,
+                      kOutputRect, gfx::Transform());
+  return render_pass;
+}
 
-  {
-    // Create a CompositorFrame and submit it to |surface_id| so there is a
-    // fully populated Surface with an active CompositorFrame.
-    CompositorRenderPassList render_passes;
-    for (int i = 0; i < 3; ++i) {
-      auto render_pass = CompositorRenderPass::Create();
-      render_pass->SetNew(CompositorRenderPassId::FromUnsafeValue(i + 100),
-                          output_rect, output_rect, gfx::Transform());
-      render_passes.push_back(std::move(render_pass));
-    }
+void AddRenderPassQuad(CompositorRenderPass* render_pass,
+                       CompositorRenderPassId render_pass_id) {
+  auto* sqs = render_pass->CreateAndAppendSharedQuadState();
+  sqs->SetAll(gfx::Transform(), kOutputRect, kOutputRect, gfx::MaskFilterInfo(),
+              absl::nullopt, /*are_contents_opaque=*/false, 1,
+              SkBlendMode::kSrcOver, 0);
+  auto* quad =
+      render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
+  quad->SetNew(sqs, kOutputRect, kOutputRect, render_pass_id,
+               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
+               gfx::PointF(), gfx::RectF(),
+               /*force_anti_aliasing_off=*/false,
+               /*backdrop_filter_quality=*/1.0f);
+}
 
-    auto frame = CompositorFrameBuilder()
-                     .SetRenderPassList(std::move(render_passes))
-                     .Build();
-    support->SubmitCompositorFrame(surface_id.local_surface_id(),
-                                   std::move(frame));
+class ResolvedFrameDataTest : public testing::Test {
+ public:
+  ResolvedFrameDataTest()
+      : support_(std::make_unique<CompositorFrameSinkSupport>(
+            nullptr,
+            &frame_sink_manager_,
+            surface_id_.frame_sink_id(),
+            /*is_root=*/true)) {}
+
+ protected:
+  // Submits a CompositorFrame so there is a fully populated surface with an
+  // active CompositorFrame. Returns the corresponding surface.
+  Surface* SubmitCompositorFrame(CompositorFrame frame) {
+    support_->SubmitCompositorFrame(surface_id_.local_surface_id(),
+                                    std::move(frame));
+
+    Surface* surface =
+        frame_sink_manager_.surface_manager()->GetSurfaceForId(surface_id_);
+    EXPECT_TRUE(surface);
+    EXPECT_TRUE(surface->HasActiveFrame());
+    return surface;
   }
 
-  Surface* surface =
-      frame_sink_manager.surface_manager()->GetSurfaceForId(surface_id);
-  EXPECT_TRUE(surface);
-  EXPECT_TRUE(surface->HasActiveFrame());
+  ServerSharedBitmapManager shared_bitmap_manager_;
+  FrameSinkManagerImpl frame_sink_manager_{&shared_bitmap_manager_};
 
-  ResolvedFrameData resolved_frame(surface_id, surface);
+  TestSurfaceIdAllocator surface_id_{FrameSinkId(1, 1)};
+  std::unique_ptr<CompositorFrameSinkSupport> support_;
 
-  // The resolved frame should be false immediately.
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>
+      child_to_parent_map_;
+};
+
+// Submits a CompositorFrame with three valid render passes then checks that
+// ResolvedPassData is valid and has the correct data.
+TEST_F(ResolvedFrameDataTest, UpdateActiveFrame) {
+  auto frame = CompositorFrameBuilder()
+                   .AddRenderPass(BuildRenderPass(101))
+                   .AddRenderPass(BuildRenderPass(102))
+                   .AddRenderPass(BuildRenderPass(103))
+                   .Build();
+
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(surface_id_, surface);
+
+  // The resolved frame should be false after construction.
   EXPECT_FALSE(resolved_frame.is_valid());
 
-  std::vector<ResolvedPassData> resolved_passes;
-  for (auto& render_pass : surface->GetActiveFrame().render_pass_list) {
-    resolved_passes.emplace_back();
-    resolved_passes.back().render_pass = render_pass.get();
-  }
-
-  // Resolved frame data should be valid after adding resolved render pass data.
-  resolved_frame.UpdateResolvedPassData(std::move(resolved_passes));
+  // Resolved frame data should be valid after adding resolved render pass data
+  // and have three render passes.
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
   EXPECT_TRUE(resolved_frame.is_valid());
+  EXPECT_EQ(resolved_frame.RenderPassCount(), 3u);
 
   // Looking up ResolvedPassData by CompositorRenderPassId should work.
   for (auto& render_pass : surface->GetActiveFrame().render_pass_list) {
@@ -79,9 +110,64 @@ TEST(ResolvedFrameDataTest, ResolvedRenderPassData) {
   EXPECT_FALSE(resolved_frame.is_valid());
 }
 
-TEST(ResolvedFrameDataTest, MarkAsUsed) {
-  TestSurfaceIdAllocator surface_id(FrameSinkId(1, 1));
-  ResolvedFrameData resolved_frame(surface_id, nullptr);
+// Constructs a CompositorFrame with two render passes that have the same id.
+// Verifies the frame is rejected as invalid.
+TEST_F(ResolvedFrameDataTest, DupliateRenderPassIds) {
+  auto frame = CompositorFrameBuilder()
+                   .AddRenderPass(BuildRenderPass(1))
+                   .AddRenderPass(BuildRenderPass(1))
+                   .Build();
+
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(surface_id_, surface);
+
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  EXPECT_FALSE(resolved_frame.is_valid());
+}
+
+// Constructs a CompositorFrame with render pass that tries to embed itself
+// forming a cycle. Verifies the frame is rejected as invalid.
+TEST_F(ResolvedFrameDataTest, RenderPassIdsSelfCycle) {
+  // Create a CompositorFrame and submit it to |surface_id| so there is a
+  // fully populated Surface with an active CompositorFrame.
+  auto render_pass = BuildRenderPass(1);
+  AddRenderPassQuad(render_pass.get(), render_pass->id);
+
+  auto frame =
+      CompositorFrameBuilder().AddRenderPass(std::move(render_pass)).Build();
+
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(surface_id_, surface);
+
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  EXPECT_FALSE(resolved_frame.is_valid());
+}
+
+// Constructs a CompositorFrame with two render pass that tries to embed each
+// other forming a cycle. Verifies the frame is rejected as invalid.
+TEST_F(ResolvedFrameDataTest, RenderPassIdsCycle) {
+  // Create a CompositorFrame and submit it to |surface_id| so there is a
+  // fully populated Surface with an active CompositorFrame.
+  auto render_pass1 = BuildRenderPass(1);
+  auto render_pass2 = BuildRenderPass(2);
+  AddRenderPassQuad(render_pass1.get(), render_pass2->id);
+  AddRenderPassQuad(render_pass2.get(), render_pass1->id);
+
+  auto frame = CompositorFrameBuilder()
+                   .AddRenderPass(std::move(render_pass1))
+                   .AddRenderPass(std::move(render_pass2))
+                   .Build();
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(surface_id_, surface);
+
+  // RenderPasses have duplicate IDs so the resolved frame should be marked as
+  // invalid.
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  EXPECT_FALSE(resolved_frame.is_valid());
+}
+
+TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
+  ResolvedFrameData resolved_frame(surface_id_, nullptr);
 
   EXPECT_TRUE(resolved_frame.MarkAsUsed());
   EXPECT_FALSE(resolved_frame.MarkAsUsed());

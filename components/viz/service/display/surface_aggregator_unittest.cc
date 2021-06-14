@@ -2578,8 +2578,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateMultiplePassWithTransform) {
                         SK_ColorWHITE, gfx::Rect(5, 5),
                         /*stretch_content_to_fill_bounds=*/false)};
   std::vector<Quad> root_quads = {Quad::SolidColorQuad(1, gfx::Rect(5, 5))};
-  std::vector<Pass> root_passes = {Pass(secondary_quads, kSurfaceSize),
-                                   Pass(root_quads, kSurfaceSize)};
+  std::vector<Pass> root_passes = {
+      Pass(secondary_quads, CompositorRenderPassId(1), kSurfaceSize),
+      Pass(root_quads, CompositorRenderPassId(2), kSurfaceSize)};
 
   CompositorFrame root_frame = MakeEmptyCompositorFrame();
   AddPasses(&root_frame.render_pass_list, root_passes,
@@ -7592,9 +7593,8 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
 }
 
-// Verifies that if a child surface is embedded in the root surface inside a
-// render pass cycle, only the first embedding of the child surface is
-// considered in the damage rect and its repeated embeddings are ignored.
+// Verifies that if a CompositorFrame contains a render pass id cycle then the
+// frame is rejected as invalid.
 TEST_F(SurfaceAggregatorValidSurfaceTest,
        AggregateDamageRectWithRenderPassCycle) {
   // Add a callback for when the surface is damaged.
@@ -7602,33 +7602,15 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   root_sink_->SetAggregatedDamageCallbackForTesting(
       aggregated_damage_callback.GetCallback());
 
-  // The child surface consists of a single render pass containing a single
-  // solid color draw quad.
-  std::vector<Quad> child_quads = {
-      Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
-  std::vector<Pass> child_passes = {Pass(child_quads, kSurfaceSize)};
-
-  CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  AddPasses(&child_frame.render_pass_list, child_passes,
-            &child_frame.metadata.referenced_surfaces);
-
-  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
-  child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
-                                     std::move(child_frame));
-
   // The root surface consists of two render passes:
-  //  1) The first render pass contains a surface draw quad referencing the
-  //     child surface and a render pass draw quad referencing the second
-  //     render pass.
-  //  2) The second render pass contains a render pass draw quad with a
-  //     transform applied that is referencing the first render pass,
-  //     creating a cycle.
+  //  1) The first render pass contains a solid color draw quad and a render
+  //     pass draw quad referencing the second render pass.
+  //  2) The second render pass contains a render pass draw quad that is
+  //     referencing the first render pass, creating a cycle.
   CompositorRenderPassId root_pass_ids[] = {CompositorRenderPassId{1},
                                             CompositorRenderPassId{2}};
   std::vector<Quad> root_quads_1 = {
-      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
-                        SK_ColorWHITE, gfx::Rect(5, 5),
-                        /*stretch_content_to_fill_bounds=*/false),
+      Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5)),
       Quad::RenderPassQuad(root_pass_ids[1], gfx::Transform(), true)};
   std::vector<Quad> root_quads_2 = {
       Quad::RenderPassQuad(root_pass_ids[0], gfx::Transform(), true)};
@@ -7640,46 +7622,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   AddPasses(&root_frame.render_pass_list, root_passes,
             &root_frame.metadata.referenced_surfaces);
 
-  auto& rpdq_2_transform = root_frame.render_pass_list.front()
-                               ->shared_quad_state_list.back()
-                               ->quad_to_target_transform;
-  rpdq_2_transform.Translate(30.f, 50.f);
-  rpdq_2_transform.Scale(2.f, 2.f);
-
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                     std::move(root_frame));
 
-  // Damage rect for the first aggregation would contain entire root surface
-  // which is just (0,0 100x100). The child surface is only embedded once
-  // and without any transform, since repeated embeddings caused by the
-  // render pass cycle are ignored.
-  EXPECT_CALL(
-      aggregated_damage_callback,
-      OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
-                         gfx::Rect(0, 0, 100, 100), next_display_time()));
+  // Verify the CompositorFrame was rejected and there is no damage.
+  EXPECT_CALL(aggregated_damage_callback, OnAggregatedDamage(_, _, _, _))
+      .Times(0);
   auto aggregated_frame = AggregateFrame(root_surface_id_);
-  testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
-
-  // For the second aggregation we only damage the child surface at
-  // (10,10 10x10). The aggregated damage rect should reflect that only for
-  // the first embedding.
-  CompositorFrame child_frame_2 = MakeEmptyCompositorFrame();
-  AddPasses(&child_frame_2.render_pass_list, child_passes,
-            &child_frame_2.metadata.referenced_surfaces);
-
-  child_frame_2.render_pass_list.back()->damage_rect =
-      gfx::Rect(10, 10, 10, 10);
-
-  child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
-                                     std::move(child_frame_2));
-
-  gfx::Rect expected_damage_rect(10, 10, 10, 10);
-  EXPECT_CALL(
-      aggregated_damage_callback,
-      OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
-                         expected_damage_rect, next_display_time()));
-  auto aggregated_frame_2 = AggregateFrame(root_surface_id_);
-  testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
+  EXPECT_TRUE(aggregated_frame.render_pass_list.empty());
 }
 
 // Verify that a SurfaceDrawQuad with !|allow_merge| won't be merged into

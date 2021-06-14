@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_RESOLVED_FRAME_DATA_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_RESOLVED_FRAME_DATA_H_
 
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -34,9 +36,6 @@ struct VIZ_SERVICE_EXPORT ResolvedPassData {
 
   CompositorRenderPass* render_pass;
   std::vector<ResolvedQuadData> draw_quads;
-
-  // Tracks if prewalk is visiting this render pass to avoid cycles.
-  bool is_visited = false;
 };
 
 // Holds computed information for a particular Surface+CompositorFrame. The
@@ -54,9 +53,24 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   bool is_valid() const { return valid_; }
   uint64_t frame_index() const { return frame_index_; }
 
-  // Update the list of resolved pass data. This will set frame index and mark
-  // as valid.
-  void UpdateResolvedPassData(std::vector<ResolvedPassData> resolved_passes);
+  // Updates resolved frame data for a new active frame. This will recompute
+  // ResolvedPassData. |child_to_parent_map| is the ResourceId mapping provided
+  // from DisplayResourceProvider which includes all of ResourceIds referenced
+  // by quads in the active frame. Returns all ResourceIds that are used in the
+  // active frame.
+  //
+  // This performs the following validation on the active CompositorFrame.
+  // 1. Checks each ResourceId was registered with DisplayResourceProvider and
+  //    is in |child_to_parent_map|.
+  // 2. Checks that CompositorRenderPasses have unique ids.
+  // 3. Checks that CompositorRenderPassDrawQuads only embed render passes that
+  //    are drawn before. This has the side effect of disallowing any cycles.
+  //
+  // If validation fails then an empty set of resources will be returned, all
+  // ResolvedPassData will be cleared and is_valid() will return false.
+  ResourceIdSet UpdateForActiveFrame(
+      const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
+          child_to_parent_map);
 
   // Sets frame index and marks as invalid. This also clears any existing
   // resolved pass data.
