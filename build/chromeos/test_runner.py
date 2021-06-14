@@ -1005,6 +1005,12 @@ def main():
                     LAB_DUT_HOSTNAME)
       return 1
 
+  if args.flash and args.public_image:
+    # The flashing tools depend on being unauthenticated with GS when flashing
+    # public images, so make sure the env var GS uses to locate its creds is
+    # unset in that case.
+    os.environ.pop('BOTO_CONFIG', None)
+
   return args.func(args, unknown_args)
 
 
