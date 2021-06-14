@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_BUFFERED_LINE_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_BUFFERED_LINE_READER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -50,6 +49,8 @@ class CORE_EXPORT BufferedLineReader {
 
  public:
   BufferedLineReader() : end_of_stream_(false), maybe_skip_lf_(false) {}
+  BufferedLineReader(const BufferedLineReader&) = delete;
+  BufferedLineReader& operator=(const BufferedLineReader&) = delete;
 
   // Append data to the internal buffer.
   void Append(const String& data) {
@@ -81,8 +82,6 @@ class CORE_EXPORT BufferedLineReader {
   StringBuilder line_buffer_;
   bool end_of_stream_;
   bool maybe_skip_lf_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedLineReader);
 };
 
 }  // namespace blink
