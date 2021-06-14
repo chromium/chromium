@@ -259,9 +259,8 @@ static const size_t kMinBucketedOrder =
 static const size_t kMaxBucketedOrder = 20;
 static const size_t kNumBucketedOrders =
     (kMaxBucketedOrder - kMinBucketedOrder) + 1;
-// Eight buckets per order (for the higher orders), e.g. order 8 is 128, 144,
-// 160, ..., 240:
-static const size_t kNumBucketsPerOrderBits = 3;
+// 4 buckets per order (for the higher orders).
+static const size_t kNumBucketsPerOrderBits = 2;
 static const size_t kNumBucketsPerOrder = 1 << kNumBucketsPerOrderBits;
 static const size_t kNumBuckets = kNumBucketedOrders * kNumBucketsPerOrder;
 static const size_t kSmallestBucket = 1 << (kMinBucketedOrder - 1);

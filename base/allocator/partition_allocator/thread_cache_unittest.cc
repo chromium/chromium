@@ -51,11 +51,11 @@ static_assert(kMediumSize <= ThreadCache::kDefaultSizeThreshold, "");
 
 class LambdaThreadDelegate : public PlatformThread::Delegate {
  public:
-  explicit LambdaThreadDelegate(OnceClosure f) : f_(std::move(f)) {}
-  void ThreadMain() override { std::move(f_).Run(); }
+  explicit LambdaThreadDelegate(RepeatingClosure f) : f_(std::move(f)) {}
+  void ThreadMain() override { f_.Run(); }
 
  private:
-  OnceClosure f_;
+  RepeatingClosure f_;
 };
 
 class DeltaCounter {
@@ -526,12 +526,8 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurge) {
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
             registry.purge_interval_for_testing());
 
-  // A lot of memory, directly go to the default interval.
-  FillThreadCacheWithMemory(
-      10 * ThreadCacheRegistry::kMinCachedMemoryForPurging + 1);
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
-  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
+  // Cannot test the very large size with only one thread, this is tested below
+  // in the multiple threads test.
 }
 
 TEST_F(PartitionAllocThreadCacheTest, PeriodicPurgeSumsOverAllThreads) {
@@ -568,12 +564,12 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurgeSumsOverAllThreads) {
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
             registry.purge_interval_for_testing());
 
-  std::atomic<bool> allocations_done{false};
+  std::atomic<int> allocations_done{0};
   std::atomic<bool> can_finish{false};
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
-    FillThreadCacheWithMemory(10 *
+    FillThreadCacheWithMemory(5 *
                               ThreadCacheRegistry::kMinCachedMemoryForPurging);
-    allocations_done.store(true, std::memory_order_release);
+    allocations_done.fetch_add(1, std::memory_order_release);
 
     // This thread needs to be alive when the next periodic purge task runs.
     while (!can_finish.load(std::memory_order_acquire)) {
@@ -582,8 +578,10 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurgeSumsOverAllThreads) {
 
   PlatformThreadHandle thread_handle;
   PlatformThread::Create(0, &delegate, &thread_handle);
+  PlatformThreadHandle thread_handle_2;
+  PlatformThread::Create(0, &delegate, &thread_handle_2);
 
-  while (!allocations_done.load(std::memory_order_acquire)) {
+  while (allocations_done.load(std::memory_order_acquire) != 2) {
   }
 
   // Many allocations on the other thread.
@@ -593,6 +591,7 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurgeSumsOverAllThreads) {
 
   can_finish.store(true, std::memory_order_release);
   PlatformThread::Join(thread_handle);
+  PlatformThread::Join(thread_handle_2);
 }
 
 TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucket) {
