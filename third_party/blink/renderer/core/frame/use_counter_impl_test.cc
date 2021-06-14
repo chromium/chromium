@@ -301,6 +301,43 @@ TEST_F(UseCounterImplTest, CSSFlexibleBoxButton) {
   EXPECT_FALSE(document.IsUseCounted(feature));
 }
 
+TEST_F(UseCounterImplTest, HTMLRootContained) {
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kHTMLRootContained;
+  EXPECT_FALSE(document.IsUseCounted(feature));
+
+  document.documentElement()->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                                     "none");
+  document.documentElement()->SetInlineStyleProperty(CSSPropertyID::kContain,
+                                                     "paint");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(feature));
+
+  document.documentElement()->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                                     "block");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_TRUE(document.IsUseCounted(feature));
+}
+
+TEST_F(UseCounterImplTest, HTMLBodyContained) {
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kHTMLBodyContained;
+  EXPECT_FALSE(document.IsUseCounted(feature));
+
+  document.body()->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  document.body()->SetInlineStyleProperty(CSSPropertyID::kContain, "paint");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(feature));
+
+  document.body()->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_TRUE(document.IsUseCounted(feature));
+}
+
 class DeprecationTest : public testing::Test {
  public:
   DeprecationTest()

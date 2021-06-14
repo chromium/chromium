@@ -135,10 +135,11 @@ scoped_refptr<const ComputedStyle> HTMLHtmlElement::LayoutStyleForElement(
   DCHECK(style);
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(GetLayoutObject());
-  if (StyleResolver::ShouldStopBodyPropagation(*this))
+  StyleResolver& resolver = GetDocument().GetStyleResolver();
+  if (resolver.ShouldStopBodyPropagation(*this))
     return style;
   if (const Element* body_element = GetDocument().FirstBodyElement()) {
-    if (StyleResolver::ShouldStopBodyPropagation(*body_element))
+    if (resolver.ShouldStopBodyPropagation(*body_element))
       return style;
     if (const ComputedStyle* body_style = body_element->GetComputedStyle()) {
       if (NeedsLayoutStylePropagation(*style, *body_style))

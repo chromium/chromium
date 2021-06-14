@@ -3248,6 +3248,8 @@ enum WebFeature {
   kV8AbortSignal_Abort_Method = 3933,
   kSelectionBackgroundColorInversion = 3934,
   kRTCPeerConnectionPlanBThrewAnException = 3935,
+  kHTMLRootContained = 3936,
+  kHTMLBodyContained = 3937,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

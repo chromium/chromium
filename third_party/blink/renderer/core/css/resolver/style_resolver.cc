@@ -1723,9 +1723,14 @@ bool StyleResolver::ShouldStopBodyPropagation(const Element& body_or_html) {
   LayoutObject* layout_object = body_or_html.GetLayoutObject();
   if (!layout_object)
     return true;
+  bool contained = layout_object->ShouldApplyAnyContainment();
+  if (contained) {
+    UseCounter::Count(GetDocument(), IsA<HTMLHtmlElement>(body_or_html)
+                                         ? WebFeature::kHTMLRootContained
+                                         : WebFeature::kHTMLBodyContained);
+  }
   if (!RuntimeEnabledFeatures::CSSContainedBodyPropagationEnabled())
     return false;
-  bool contained = layout_object->ShouldApplyAnyContainment();
   DCHECK_EQ(contained,
             layout_object->StyleRef().ShouldApplyAnyContainment(body_or_html))
       << "Applied containment must give the same result from LayoutObject and "

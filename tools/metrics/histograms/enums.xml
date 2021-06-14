@@ -32957,6 +32957,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3933" label="V8AbortSignal_Abort_Method"/>
   <int value="3934" label="SelectionBackgroundColorInversion"/>
   <int value="3935" label="RTCPeerConnectionPlanBThrewAnException"/>
+  <int value="3936" label="HTMLRootContained"/>
+  <int value="3937" label="HTMLBodyContained"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
