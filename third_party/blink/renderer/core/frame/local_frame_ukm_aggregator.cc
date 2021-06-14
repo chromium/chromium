@@ -76,12 +76,12 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
 
   // Define the UMA for the primary metric.
   primary_metric_.pre_fcp_uma_counter = std::make_unique<CustomCountHistogram>(
-      "Blink.MainFrame.UpdateTime.PreFCP", 0, 10000000, 50);
+      "Blink.MainFrame.UpdateTime.PreFCP", 1, 10000000, 50);
   primary_metric_.post_fcp_uma_counter = std::make_unique<CustomCountHistogram>(
-      "Blink.MainFrame.UpdateTime.PostFCP", 0, 10000000, 50);
+      "Blink.MainFrame.UpdateTime.PostFCP", 1, 10000000, 50);
   primary_metric_.uma_aggregate_counter =
       std::make_unique<CustomCountHistogram>(
-          "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 0, 10000000, 50);
+          "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 1, 10000000, 50);
 
   // Set up the substrings to create the UMA names
   const char* const uma_preamble = "Blink.";
@@ -110,19 +110,19 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
       pre_fcp_uma_name.Append(uma_prefcp_postscript);
       absolute_record.pre_fcp_uma_counter =
           std::make_unique<CustomCountHistogram>(
-              pre_fcp_uma_name.ToString().Utf8().c_str(), 0, 10000000, 50);
+              pre_fcp_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
       StringBuilder post_fcp_uma_name;
       post_fcp_uma_name.Append(uma_name);
       post_fcp_uma_name.Append(uma_postfcp_postscript);
       absolute_record.post_fcp_uma_counter =
           std::make_unique<CustomCountHistogram>(
-              post_fcp_uma_name.ToString().Utf8().c_str(), 0, 10000000, 50);
+              post_fcp_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
       StringBuilder aggregated_uma_name;
       aggregated_uma_name.Append(uma_name);
       aggregated_uma_name.Append(uma_pre_fcp_aggregated_postscript);
       absolute_record.uma_aggregate_counter =
           std::make_unique<CustomCountHistogram>(
-              aggregated_uma_name.ToString().Utf8().c_str(), 0, 10000000, 50);
+              aggregated_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
     }
 
     metric_index++;
