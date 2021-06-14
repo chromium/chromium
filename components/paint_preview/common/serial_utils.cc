@@ -20,14 +20,14 @@ struct SerializedRectData {
   uint32_t content_id;
 
   // The size of the subframe in the local coordinates when it was drawn.
-  int64_t subframe_width;
-  int64_t subframe_height;
+  float subframe_width;
+  float subframe_height;
 
   // The rect of the subframe in its parent frame's root coordinate system.
-  int64_t transformed_x;
-  int64_t transformed_y;
-  int64_t transformed_width;
-  int64_t transformed_height;
+  float transformed_x;
+  float transformed_y;
+  float transformed_width;
+  float transformed_height;
 };
 #pragma pack(pop)
 
@@ -134,8 +134,8 @@ sk_sp<SkPicture> DeserializePictureAsRectData(const void* data,
   auto* context = reinterpret_cast<DeserializationContext*>(ctx);
   context->insert(
       {rect_data.content_id,
-       gfx::Rect(rect_data.transformed_x, rect_data.transformed_y,
-                 rect_data.transformed_width, rect_data.transformed_height)});
+       gfx::RectF(rect_data.transformed_x, rect_data.transformed_y,
+                  rect_data.transformed_width, rect_data.transformed_height)});
   return MakeEmptyPicture();
 }
 

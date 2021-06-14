@@ -55,6 +55,10 @@ target(link_target_type, "renderer_sources") {
     "worker_thread.h",
   ]
 
+  if (enable_plugins) {
+    sources += [ "ppapi_gfx_conversion.h" ]
+  }
+
   configs += [ "//content:content_implementation" ]
 
   public_deps = [ "//media" ]

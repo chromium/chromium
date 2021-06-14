@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_PEPPER_GFX_CONVERSION_H_
-#define CONTENT_RENDERER_PEPPER_GFX_CONVERSION_H_
+#ifndef CONTENT_PUBLIC_RENDERER_PPAPI_GFX_CONVERSION_H_
+#define CONTENT_PUBLIC_RENDERER_PPAPI_GFX_CONVERSION_H_
 
 #include "ppapi/c/pp_point.h"
 #include "ppapi/c/pp_rect.h"
@@ -48,4 +48,4 @@ inline PP_Size PP_FromGfxSize(const gfx::Size& s) {
 
 }  // namespace content
 
-#endif  // CONTENT_RENDERER_PEPPER_GFX_CONVERSION_H_
+#endif  // CONTENT_PUBLIC_RENDERER_PPAPI_GFX_CONVERSION_H_

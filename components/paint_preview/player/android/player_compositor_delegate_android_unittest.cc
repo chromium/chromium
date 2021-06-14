@@ -11,6 +11,7 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -36,9 +37,10 @@ TEST(PlayerCompositorDelegateAndroidTest,
   frame_data_subframe_1->scroll_offsets = gfx::Size(55, 65);
   frame_data_subframe_2->scroll_offsets = gfx::Size(15, 25);
 
-  mojom::SubframeClipRect clip_rect1(subframe_1_guid, gfx::Rect(5, 10, 50, 60));
+  mojom::SubframeClipRect clip_rect1(subframe_1_guid,
+                                     gfx::RectF(5, 10, 50, 60));
   mojom::SubframeClipRect clip_rect2(subframe_2_guid,
-                                     gfx::Rect(15, 25, 30, 40));
+                                     gfx::RectF(15, 25, 30, 40));
   frame_data_main->subframes.push_back(clip_rect1.Clone());
   frame_data_subframe_1->subframes.push_back(clip_rect2.Clone());
 

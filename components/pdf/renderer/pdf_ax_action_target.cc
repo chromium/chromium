@@ -5,8 +5,10 @@
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
+#include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace pdf {
 
@@ -139,11 +141,8 @@ bool PdfAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
     return false;
   }
   pdf_action_data.action = PP_PdfAccessibilityAction::PP_PDF_SET_SELECTION;
-  pdf_action_data.target_rect = {
-      {target_plugin_node_.data().relative_bounds.bounds.x(),
-       target_plugin_node_.data().relative_bounds.bounds.y()},
-      {target_plugin_node_.data().relative_bounds.bounds.width(),
-       target_plugin_node_.data().relative_bounds.bounds.height()}};
+  pdf_action_data.target_rect = content::PP_FromGfxRect(
+      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds));
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
 }
@@ -168,11 +167,8 @@ bool PdfAXActionTarget::ScrollToMakeVisibleWithSubFocus(
       ConvertAXScrollToPdfScrollAlignment(horizontal_scroll_alignment);
   pdf_action_data.vertical_scroll_alignment =
       ConvertAXScrollToPdfScrollAlignment(vertical_scroll_alignment);
-  pdf_action_data.target_rect = {
-      {target_plugin_node_.data().relative_bounds.bounds.x(),
-       target_plugin_node_.data().relative_bounds.bounds.y()},
-      {target_plugin_node_.data().relative_bounds.bounds.width(),
-       target_plugin_node_.data().relative_bounds.bounds.height()}};
+  pdf_action_data.target_rect = content::PP_FromGfxRect(
+      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds));
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
 }
@@ -182,11 +178,8 @@ bool PdfAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {
   pdf_action_data.action =
       PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_GLOBAL_POINT;
   pdf_action_data.target_point = {point.x(), point.y()};
-  pdf_action_data.target_rect = {
-      {target_plugin_node_.data().relative_bounds.bounds.x(),
-       target_plugin_node_.data().relative_bounds.bounds.y()},
-      {target_plugin_node_.data().relative_bounds.bounds.width(),
-       target_plugin_node_.data().relative_bounds.bounds.height()}};
+  pdf_action_data.target_rect = content::PP_FromGfxRect(
+      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds));
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
 }

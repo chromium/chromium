@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "content/renderer/pepper/gfx_conversion.h"
+#include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"

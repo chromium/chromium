@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx:geometry_skia",
   ]
 }
 

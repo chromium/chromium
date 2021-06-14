@@ -36,6 +36,9 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/skia_util.h"
 
 namespace paint_preview {
 
@@ -64,7 +67,7 @@ void BeginCompositeCallbackImpl(
               frame.second->scroll_extents);
     size_t size = response->frames[frame.first]->subframes.size();
     EXPECT_EQ(size, frame.second->subframes.size());
-    std::vector<std::pair<base::UnguessableToken, gfx::Rect>>
+    std::vector<std::pair<base::UnguessableToken, gfx::RectF>>
         response_subframes, expected_subframes;
     for (size_t i = 0; i < size; ++i) {
       response_subframes.push_back(
@@ -115,10 +118,6 @@ SkRect ToSkRect(const gfx::Size& size) {
   return SkRect::MakeWH(size.width(), size.height());
 }
 
-SkRect ToSkRect(const gfx::Rect& rect) {
-  return SkRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height());
-}
-
 // Draw a dummy picture of size |scroll_extents|, whose origin is equal to
 // |clip_rect| and clipped by |clip_rect|'s size. The dummy picture will by
 // filled with |rect_fill_color| with a cyan border and will have an XY axis
@@ -127,11 +126,11 @@ SkRect ToSkRect(const gfx::Rect& rect) {
 void DrawDummyTestPicture(SkCanvas* canvas,
                           SkColor rect_fill_color,
                           const gfx::Size& scroll_extents,
-                          absl::optional<gfx::Rect> clip_rect = absl::nullopt,
+                          absl::optional<gfx::RectF> clip_rect = absl::nullopt,
                           gfx::Size scroll_offsets = gfx::Size()) {
   canvas->save();
   if (clip_rect.has_value()) {
-    canvas->clipRect(ToSkRect(*clip_rect));
+    canvas->clipRect(gfx::RectFToSkRect(*clip_rect));
     canvas->translate(clip_rect->x(), clip_rect->y());
   }
   canvas->translate(-scroll_offsets.width(), -scroll_offsets.height());
@@ -183,7 +182,7 @@ void PopulateFrameProto(
     bool set_is_main_frame,
     const base::FilePath& path,
     const gfx::Size& scroll_extents,
-    std::vector<std::pair<base::UnguessableToken, gfx::Rect>> subframes,
+    std::vector<std::pair<base::UnguessableToken, gfx::RectF>> subframes,
     base::flat_map<base::UnguessableToken, mojom::FrameDataPtr>* expected_data,
     gfx::Size scroll_offsets = gfx::Size(),
     SkColor picture_fill_color = SK_ColorDKGRAY) {
@@ -208,11 +207,11 @@ void PopulateFrameProto(
 
   for (const auto& subframe : subframes) {
     const base::UnguessableToken& subframe_id = subframe.first;
-    gfx::Rect clip_rect = subframe.second;
+    gfx::RectF clip_rect = subframe.second;
 
     // Record the subframe as custom data to |canvas|.
-    uint32_t content_id =
-        tracker.CreateContentForRemoteFrame(clip_rect, subframe_id);
+    uint32_t content_id = tracker.CreateContentForRemoteFrame(
+        gfx::ToEnclosingRect(clip_rect), subframe_id);
     tracker.CustomDataToSkPictureCallback(canvas, content_id);
 
     auto* content_id_embedding_token_pair =
@@ -311,19 +310,19 @@ TEST_P(PaintPreviewCompositorBeginCompositeTest, MissingSubFrameRecording) {
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
   const base::UnguessableToken kSubframe_0_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_0_scroll_extent(20, 20);
-  gfx::Rect subframe_0_0_clip_rect(10, 10, 20, 20);
+  gfx::RectF subframe_0_0_clip_rect(10, 10, 20, 20);
   const base::UnguessableToken kSubframe_0_1_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_1_scroll_extent(10, 5);
-  gfx::Rect subframe_0_1_clip_rect(10, 10, 30, 30);
+  gfx::RectF subframe_0_1_clip_rect(10, 10, 30, 30);
   const base::UnguessableToken kSubframe_1_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_1_scroll_extent(1, 1);
-  gfx::Rect subframe_1_clip_rect(0, 0, 1, 1);
+  gfx::RectF subframe_1_clip_rect(0, 0, 1, 1);
 
   PaintPreviewProto proto;
   proto.mutable_metadata()->set_url(url_.spec());
@@ -378,7 +377,7 @@ TEST_P(PaintPreviewCompositorBeginCompositeTest, DuplicateFrame) {
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
 
   PaintPreviewProto proto;
   proto.mutable_metadata()->set_url(url_.spec());
@@ -411,7 +410,7 @@ TEST_P(PaintPreviewCompositorBeginCompositeTest, FrameDependencyLoop) {
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
 
   PaintPreviewProto proto;
   proto.mutable_metadata()->set_url(url_.spec());
@@ -444,7 +443,7 @@ TEST_P(PaintPreviewCompositorBeginCompositeTest, FrameDependencyLoop) {
 TEST_P(PaintPreviewCompositorBeginCompositeTest, SelfReference) {
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
   gfx::Size root_frame_scroll_extent(100, 200);
-  gfx::Rect root_frame_clip_rect(10, 20, 30, 40);
+  gfx::RectF root_frame_clip_rect(10, 20, 30, 40);
 
   PaintPreviewProto proto;
   proto.mutable_metadata()->set_url(url_.spec());
@@ -538,7 +537,7 @@ TEST_P(PaintPreviewCompositorBeginCompositeTest, SubframeWithScrollOffsets) {
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
   gfx::Size subframe_0_scroll_offsets(34, 56);
 
   PaintPreviewProto proto;
@@ -741,7 +740,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependency) {
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
 
   PaintPreviewProto proto;
   proto.mutable_metadata()->set_url(url.spec());
@@ -798,7 +797,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependencyScrolled) {
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
   gfx::Size subframe_0_scroll_offsets(0, 5);
 
   PaintPreviewProto proto;
@@ -855,11 +854,11 @@ TEST(PaintPreviewCompositorTest,
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
   gfx::Size root_frame_scroll_extent(110, 215);
   gfx::Size root_frame_scroll_offsets(10, 15);
-  gfx::Rect root_frame_clip_rect(10, 15, 100, 200);
+  gfx::RectF root_frame_clip_rect(10, 15, 100, 200);
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
 
   PaintPreviewProto proto;
   proto.mutable_metadata()->set_url(url.spec());
@@ -887,8 +886,8 @@ TEST(PaintPreviewCompositorTest,
           mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
           kRootFrameID, std::move(expected_data)));
   float scale_factor = 1;
-  gfx::Rect rect =
-      gfx::ScaleToEnclosingRect(root_frame_clip_rect, scale_factor);
+  gfx::RectF rect = root_frame_clip_rect;
+  rect.Scale(scale_factor);
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
@@ -900,7 +899,7 @@ TEST(PaintPreviewCompositorTest,
   DrawDummyTestPicture(&canvas, SK_ColorLTGRAY, subframe_0_scroll_extent,
                        subframe_0_clip_rect);
   compositor.BitmapForMainFrame(
-      rect, scale_factor,
+      gfx::ToEnclosingRect(rect), scale_factor,
       base::BindOnce(&BitmapCallbackImpl,
                      mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
                      bitmap));
@@ -918,11 +917,11 @@ TEST(PaintPreviewCompositorTest,
   const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
   gfx::Size root_frame_scroll_extent(110, 215);
   gfx::Size root_frame_scroll_offsets(50, 20);
-  gfx::Rect root_frame_clip_rect(50, 20, 100, 200);
+  gfx::RectF root_frame_clip_rect(50, 20, 100, 200);
   const base::UnguessableToken kSubframe_0_ID =
       base::UnguessableToken::Create();
   gfx::Size subframe_0_scroll_extent(50, 75);
-  gfx::Rect subframe_0_clip_rect(10, 20, 30, 40);
+  gfx::RectF subframe_0_clip_rect(10, 20, 30, 40);
 
   PaintPreviewProto proto;
   proto.mutable_metadata()->set_url(url.spec());
@@ -952,8 +951,8 @@ TEST(PaintPreviewCompositorTest,
   float scale_factor = 1;
   root_frame_clip_rect.set_width(110 - 50);
   root_frame_clip_rect.set_height(215 - 20);
-  gfx::Rect rect =
-      gfx::ScaleToEnclosingRect(root_frame_clip_rect, scale_factor);
+  gfx::RectF rect = root_frame_clip_rect;
+  rect.Scale(scale_factor);
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   SkCanvas canvas(bitmap, SkSurfaceProps{});
@@ -965,7 +964,7 @@ TEST(PaintPreviewCompositorTest,
   DrawDummyTestPicture(&canvas, SK_ColorLTGRAY, subframe_0_scroll_extent,
                        subframe_0_clip_rect);
   compositor.BitmapForMainFrame(
-      rect, scale_factor,
+      gfx::ToEnclosingRect(rect), scale_factor,
       base::BindOnce(&BitmapCallbackImpl,
                      mojom::PaintPreviewCompositor::BitmapStatus::kSuccess,
                      bitmap));

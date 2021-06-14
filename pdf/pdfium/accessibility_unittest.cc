@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -657,10 +658,10 @@ TEST_F(AccessibilityTest, TestSetSelectionAndScroll) {
     action_data.selection_start_index.char_index = sel_action.start_char_index;
     action_data.selection_end_index.page_index = sel_action.end_page_index;
     action_data.selection_end_index.char_index = sel_action.end_char_index;
-    gfx::RectF char_bounds = engine->GetCharBounds(sel_action.start_page_index,
-                                                   sel_action.start_char_index);
+    gfx::Rect char_bounds = gfx::ToEnclosingRect(engine->GetCharBounds(
+        sel_action.start_page_index, sel_action.start_char_index));
     action_data.target_rect = {{char_bounds.x(), char_bounds.y() + 400 * index},
-                               {char_bounds.width(), char_bounds.height()}};
+                               char_bounds.size()};
 
     engine->HandleAccessibilityAction(action_data);
     Selection actual_selection;

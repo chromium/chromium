@@ -24,7 +24,7 @@ struct PaintPreviewBeginCompositeRequest {
 // A struct representing the clip rect of a subframe within its parent.
 struct SubframeClipRect {
   mojo_base.mojom.UnguessableToken frame_guid;
-  gfx.mojom.Rect clip_rect;
+  gfx.mojom.RectF clip_rect;
 };
 
 // A struct representing the scroll extents and subframes of a parent frame.

@@ -38,7 +38,7 @@ sk_sp<const SkPicture> PaintGrayPictureWithSubframes(
     gfx::Size bounds,
     PictureSerializationContext* context,
     DeserializationContext* expected_deserialization_context,
-    base::flat_map<base::UnguessableToken, gfx::Rect> subframes) {
+    base::flat_map<base::UnguessableToken, gfx::RectF> subframes) {
   SkRect sk_bounds = SkRect::MakeWH(bounds.width(), bounds.height());
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(sk_bounds);
@@ -49,7 +49,7 @@ sk_sp<const SkPicture> PaintGrayPictureWithSubframes(
 
   for (const auto& subframe : subframes) {
     const base::UnguessableToken& subframe_id = subframe.first;
-    gfx::Rect clip_rect = subframe.second;
+    gfx::RectF clip_rect = subframe.second;
     SkRect rect = SkRect::MakeXYWH(clip_rect.x(), clip_rect.y(),
                                    clip_rect.width(), clip_rect.height());
     sk_sp<SkPicture> temp = SkPicture::MakePlaceholder(rect);
@@ -221,9 +221,9 @@ TEST(PaintPreviewSerializedRecordingTest, RoundtripHasEmbeddedContent) {
                               /*is_main_frame=*/true);
 
   base::UnguessableToken subframe0 = base::UnguessableToken::Create();
-  gfx::Rect subframe0_rect = gfx::Rect(5, 10, 10, 15);
+  gfx::RectF subframe0_rect(5, 10, 10, 15);
   base::UnguessableToken subframe1 = base::UnguessableToken::Create();
-  gfx::Rect subframe1_rect = gfx::Rect(5, 10, 10, 15);
+  gfx::RectF subframe1_rect(5, 10, 10, 15);
 
   DeserializationContext expected;
   sk_sp<const SkPicture> pic = PaintGrayPictureWithSubframes(

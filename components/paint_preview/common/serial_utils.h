@@ -16,7 +16,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTypeface.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace paint_preview {
 
@@ -71,7 +71,7 @@ struct ImageSerializationContext {
 };
 
 // Maps a content ID to a clip rect.
-using DeserializationContext = base::flat_map<uint32_t, gfx::Rect>;
+using DeserializationContext = base::flat_map<uint32_t, gfx::RectF>;
 
 // A pair that contains a frame's |SkPicture| and its associated scroll offsets.
 // Used in |LoadedFramesDeserialContext| to correctly replay the scroll state
