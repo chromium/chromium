@@ -237,6 +237,18 @@ config("default_include_dirs") {
   ]
 }
 
+# Compiler instrumentation can introduce dependencies in DSOs to symbols in
+# the executable they are loaded into, so they are unresolved at link-time.
+config("no_unresolved_symbols") {
+  if (!using_sanitizer &&
+      (is_linux || is_chromeos || is_android || is_fuchsia)) {
+    ldflags = [
+      "-Wl,-z,defs",
+      "-Wl,--as-needed",
+    ]
+  }
+}
+
 # compiler ---------------------------------------------------------------------
 #
 # Base compiler configuration.
@@ -435,15 +447,6 @@ config("compiler") {
 
     if (!is_component_build) {
       ldflags += [ "-Wl,-z,now" ]
-    }
-
-    # Compiler instrumentation can introduce dependencies in DSOs to symbols in
-    # the executable they are loaded into, so they are unresolved at link-time.
-    if (!using_sanitizer) {
-      ldflags += [
-        "-Wl,-z,defs",
-        "-Wl,--as-needed",
-      ]
     }
   }
 

@@ -333,6 +333,7 @@ default_compiler_configs = [
   "//build/config/compiler:thin_archive",
   "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler:default_init_stack_vars",
+  "//build/config/compiler:no_unresolved_symbols",
   "//build/config/compiler/pgo:default_pgo_flags",
   "//build/config/coverage:default_coverage",
   "//build/config/sanitizers:default_sanitizer_flags",
