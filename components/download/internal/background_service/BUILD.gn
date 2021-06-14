@@ -7,106 +7,105 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("internal") {
-  visibility = [
-    ":*",
-    "//components/download/content/factory",
-    "//components/download/content/internal",
-    "//components/download/internal/background_service/test:test_support",
-  ]
-
-  sources = [
-    "blob_task_proxy.cc",
-    "blob_task_proxy.h",
-    "client_set.cc",
-    "client_set.h",
-    "config.cc",
-    "config.h",
-    "controller.h",
-    "controller_impl.cc",
-    "controller_impl.h",
-    "debugging_client.cc",
-    "debugging_client.h",
-    "download_blockage_status.cc",
-    "download_blockage_status.h",
-    "download_driver.h",
-    "download_service_impl.cc",
-    "download_service_impl.h",
-    "download_store.cc",
-    "download_store.h",
-    "driver_entry.cc",
-    "driver_entry.h",
-    "empty_file_monitor.cc",
-    "empty_file_monitor.h",
-    "entry.cc",
-    "entry.h",
-    "entry_utils.cc",
-    "entry_utils.h",
-    "file_monitor.h",
-    "file_monitor_impl.cc",
-    "file_monitor_impl.h",
-    "in_memory_download.cc",
-    "in_memory_download.h",
-    "in_memory_download_driver.cc",
-    "in_memory_download_driver.h",
-    "log_sink.h",
-    "log_source.h",
-    "logger_impl.cc",
-    "logger_impl.h",
-    "memory_tracker.h",
-    "model.h",
-    "model_impl.cc",
-    "model_impl.h",
-    "navigation_monitor_impl.cc",
-    "navigation_monitor_impl.h",
-    "noop_store.cc",
-    "noop_store.h",
-    "proto_conversions.cc",
-    "proto_conversions.h",
-    "scheduler/battery_status_listener.h",
-    "scheduler/battery_status_listener_impl.cc",
-    "scheduler/battery_status_listener_impl.h",
-    "scheduler/device_status.cc",
-    "scheduler/device_status.h",
-    "scheduler/device_status_listener.cc",
-    "scheduler/device_status_listener.h",
-    "scheduler/scheduler.h",
-    "scheduler/scheduler_impl.cc",
-    "scheduler/scheduler_impl.h",
-    "service_config_impl.cc",
-    "service_config_impl.h",
-    "startup_status.cc",
-    "startup_status.h",
-    "stats.cc",
-    "stats.h",
-    "store.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/download/internal/background_service/proto",
-    "//components/download/network",
-    "//components/download/public/background_service:public",
-    "//components/leveldb_proto",
-    "//net",
-    "//services/network/public/cpp",
-    "//storage/browser",
-  ]
-
-  if (is_android) {
-    sources += [
-      "android/battery_status_listener_android.cc",
-      "android/battery_status_listener_android.h",
+if (!is_ios) {
+  static_library("internal") {
+    visibility = [
+      ":*",
+      "//components/download/content/factory",
+      "//components/download/content/internal",
+      "//components/download/internal/background_service/test:test_support",
     ]
 
-    deps += [ ":jni_headers" ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "scheduler/battery_status_listener_mac.cc",
-      "scheduler/battery_status_listener_mac.h",
+    sources = [
+      "blob_task_proxy.cc",
+      "blob_task_proxy.h",
+      "client_set.cc",
+      "client_set.h",
+      "controller.h",
+      "controller_impl.cc",
+      "controller_impl.h",
+      "debugging_client.cc",
+      "debugging_client.h",
+      "download_blockage_status.cc",
+      "download_blockage_status.h",
+      "download_driver.h",
+      "download_service_impl.cc",
+      "download_service_impl.h",
+      "download_store.cc",
+      "download_store.h",
+      "driver_entry.cc",
+      "driver_entry.h",
+      "empty_file_monitor.cc",
+      "empty_file_monitor.h",
+      "entry.cc",
+      "entry.h",
+      "entry_utils.cc",
+      "entry_utils.h",
+      "file_monitor.h",
+      "file_monitor_impl.cc",
+      "file_monitor_impl.h",
+      "in_memory_download.cc",
+      "in_memory_download.h",
+      "in_memory_download_driver.cc",
+      "in_memory_download_driver.h",
+      "log_sink.h",
+      "log_source.h",
+      "logger_impl.cc",
+      "logger_impl.h",
+      "memory_tracker.h",
+      "model.h",
+      "model_impl.cc",
+      "model_impl.h",
+      "navigation_monitor_impl.cc",
+      "navigation_monitor_impl.h",
+      "noop_store.cc",
+      "noop_store.h",
+      "proto_conversions.cc",
+      "proto_conversions.h",
+      "scheduler/battery_status_listener.h",
+      "scheduler/battery_status_listener_impl.cc",
+      "scheduler/battery_status_listener_impl.h",
+      "scheduler/device_status.cc",
+      "scheduler/device_status.h",
+      "scheduler/device_status_listener.cc",
+      "scheduler/device_status_listener.h",
+      "scheduler/scheduler.h",
+      "scheduler/scheduler_impl.cc",
+      "scheduler/scheduler_impl.h",
+      "startup_status.cc",
+      "startup_status.h",
+      "stats.cc",
+      "stats.h",
+      "store.h",
     ]
+
+    deps = [
+      ":service_config",
+      "//base",
+      "//components/download/internal/background_service/proto",
+      "//components/download/network",
+      "//components/download/public/background_service:public",
+      "//components/leveldb_proto",
+      "//net",
+      "//services/network/public/cpp",
+      "//storage/browser",
+    ]
+
+    if (is_android) {
+      sources += [
+        "android/battery_status_listener_android.cc",
+        "android/battery_status_listener_android.h",
+      ]
+
+      deps += [ ":jni_headers" ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "scheduler/battery_status_listener_mac.cc",
+        "scheduler/battery_status_listener_mac.h",
+      ]
+    }
   }
 }
 
@@ -126,37 +125,65 @@ if (is_android) {
   }
 }
 
-source_set("unit_tests") {
-  testonly = true
-
+source_set("service_config") {
   sources = [
-    "client_set_unittest.cc",
-    "controller_impl_unittest.cc",
-    "download_service_impl_unittest.cc",
-    "download_store_unittest.cc",
-    "entry_utils_unittest.cc",
-    "file_monitor_unittest.cc",
-    "in_memory_download_driver_unittest.cc",
-    "in_memory_download_unittest.cc",
-    "model_impl_unittest.cc",
-    "navigation_monitor_impl_unittests.cc",
-    "proto_conversions_unittest.cc",
-    "scheduler/device_status_listener_unittest.cc",
-    "scheduler/scheduler_impl_unittest.cc",
-    "service_config_impl_unittest.cc",
+    "config.cc",
+    "config.h",
+    "service_config_impl.cc",
+    "service_config_impl.h",
+  ]
+
+  visibility = [
+    ":*",
+    "//components/download/content/factory",
+    "//components/download/internal/background_service/ios:background_service",
   ]
 
   deps = [
-    ":internal",
-    "//base/test:test_support",
-    "//components/download/internal/background_service/proto",
-    "//components/download/internal/background_service/test:test_support",
-    "//components/download/network",
-    "//components/download/public/background_service/test:test_support",
-    "//components/leveldb_proto:test_support",
-    "//services/network:test_support",
-    "//storage/browser",
+    "//base",
+    "//components/download/public/background_service:public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "service_config_impl_unittest.cc" ]
+
+  if (!is_ios) {
+    sources += [
+      "client_set_unittest.cc",
+      "controller_impl_unittest.cc",
+      "download_service_impl_unittest.cc",
+      "download_store_unittest.cc",
+      "entry_utils_unittest.cc",
+      "file_monitor_unittest.cc",
+      "in_memory_download_driver_unittest.cc",
+      "in_memory_download_unittest.cc",
+      "model_impl_unittest.cc",
+      "navigation_monitor_impl_unittests.cc",
+      "proto_conversions_unittest.cc",
+      "scheduler/device_status_listener_unittest.cc",
+      "scheduler/scheduler_impl_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":service_config",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_ios) {
+    deps += [
+      ":internal",
+      "//base/test:test_support",
+      "//components/download/internal/background_service/proto",
+      "//components/download/internal/background_service/test:test_support",
+      "//components/download/network",
+      "//components/download/public/background_service/test:test_support",
+      "//components/leveldb_proto:test_support",
+      "//services/network:test_support",
+      "//storage/browser",
+    ]
+  }
 }

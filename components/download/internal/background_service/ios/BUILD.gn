@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("background_service") {
+  assert(is_ios)
+  sources = [
+    "download_service_impl.cc",
+    "download_service_impl.h",
+  ]
+
+  visibility = [ ":*" ]
+
+  deps = [ "//components/download/internal/background_service:service_config" ]
+
+  public_deps = [ "//components/download/public/background_service:public" ]
+}

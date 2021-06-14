@@ -16,6 +16,7 @@ source_set("factory") {
     "//base",
     "//components/download/content/internal",
     "//components/download/internal/background_service:internal",
+    "//components/download/internal/background_service:service_config",
     "//components/download/internal/background_service/proto",
     "//components/download/network",
     "//components/keyed_service/content",
