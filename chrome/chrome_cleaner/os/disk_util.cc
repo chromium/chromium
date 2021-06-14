@@ -745,7 +745,7 @@ bool GetAppDataProductDirectory(base::FilePath* path) {
 }
 
 void GetProgramFilesFolders(std::set<base::FilePath>* folders) {
-  static const unsigned int kProgramFilesFolders[] = {
+  static const int kProgramFilesFolders[] = {
       // See the CSIDL_PROGRAM_FILES comment for rewrite_rules[].
       CsidlToPathServiceKey(CSIDL_PROGRAM_FILES),
       CsidlToPathServiceKey(CSIDL_PROGRAM_FILESX86),
@@ -753,7 +753,7 @@ void GetProgramFilesFolders(std::set<base::FilePath>* folders) {
   };
 
   DCHECK(folders);
-  for (unsigned int program_path : kProgramFilesFolders) {
+  for (int program_path : kProgramFilesFolders) {
     base::FilePath programfiles_folder;
     if (!base::PathService::Get(program_path, &programfiles_folder)) {
       LOG(ERROR) << "Can't get path from PathService.";
@@ -764,13 +764,14 @@ void GetProgramFilesFolders(std::set<base::FilePath>* folders) {
 }
 
 void GetProgramFilesCommonFolders(std::set<base::FilePath>* folders) {
-  static const unsigned int kCsidlProgramFileFolders[] = {
-      CSIDL_PROGRAM_FILES_COMMONX86, CSIDL_PROGRAM_FILES_COMMON,
+  static const int kCsidlProgramFileFolders[] = {
+      CSIDL_PROGRAM_FILES_COMMONX86,
+      CSIDL_PROGRAM_FILES_COMMON,
   };
   DCHECK(folders);
   // The CSIDL_PROGRAM_FILES_COMMON has no equivalent in the PathService. The
   // standard windows API is used to expand these paths.
-  for (unsigned int program_path : kCsidlProgramFileFolders) {
+  for (int program_path : kCsidlProgramFileFolders) {
     base::FilePath programfiles_folder =
         ExpandSpecialFolderPath(program_path, base::FilePath());
     if (programfiles_folder.empty()) {
@@ -793,14 +794,14 @@ void GetProgramFilesCommonFolders(std::set<base::FilePath>* folders) {
 }
 
 void GetAllProgramFolders(std::set<base::FilePath>* folders) {
-  static const unsigned int kProgramFilesFolders[] = {
+  static const int kProgramFilesFolders[] = {
       CsidlToPathServiceKey(CSIDL_APPDATA),
       CsidlToPathServiceKey(CSIDL_LOCAL_APPDATA),
       CsidlToPathServiceKey(CSIDL_COMMON_APPDATA),
   };
 
   DCHECK(folders);
-  for (unsigned int program_path : kProgramFilesFolders) {
+  for (int program_path : kProgramFilesFolders) {
     base::FilePath programfiles_folder;
     if (!base::PathService::Get(program_path, &programfiles_folder)) {
       LOG(ERROR) << "Can't get path from PathService.";

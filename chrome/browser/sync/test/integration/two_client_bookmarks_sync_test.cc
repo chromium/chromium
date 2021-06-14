@@ -2429,9 +2429,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Add initial bookmarks.
-  const size_t num_bookmarks = 5;
+  constexpr size_t kNumBookmarks = 5;
   std::vector<BookmarkNodeMatcher> matchers;
-  for (size_t i = 0; i < num_bookmarks; ++i) {
+  for (size_t i = 0; i < kNumBookmarks; ++i) {
     ASSERT_NE(nullptr, AddURL(0, i, IndexedURLTitle(i), GURL(IndexedURL(i))));
     matchers.push_back(
         IsUrlBookmarkWithTitleAndUrl(IndexedURLTitle(i), GURL(IndexedURL(i))));
@@ -2440,20 +2440,20 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
   // Make changes on client 0.
-  for (size_t i = 0; i < num_bookmarks; ++i) {
+  for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(0, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
+        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 0's bookmark " << i << " to position "
              << rand_pos;
     Move(0, node, node->parent(), rand_pos);
   }
 
   // Make changes on client 1.
-  for (size_t i = 0; i < num_bookmarks; ++i) {
+  for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(1, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
+        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 1's bookmark " << i << " to position "
              << rand_pos;
     Move(1, node, node->parent(), rand_pos);
@@ -2462,20 +2462,20 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
   // Now make changes to client 1 first.
-  for (size_t i = 0; i < num_bookmarks; ++i) {
+  for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(1, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
+        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 1's bookmark " << i << " to position "
              << rand_pos;
     Move(1, node, node->parent(), rand_pos);
   }
 
   // Make changes on client 0.
-  for (size_t i = 0; i < num_bookmarks; ++i) {
+  for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(0, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{num_bookmarks} - 1));
+        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 0's bookmark " << i << " to position "
              << rand_pos;
     Move(0, node, node->parent(), rand_pos);

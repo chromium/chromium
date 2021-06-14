@@ -29,7 +29,7 @@ const TableColumnData kColumns[] = {
      200, true, true, false},
     {IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      base::size("800 MiB") * kCharWidth,
-     base::size("Memory Footprint") * 1.5 * kCharWidth, true, false, true},
+     base::size("Memory Footprint") * kCharWidth * 3 / 2, true, false, true},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN, ui::TableColumn::RIGHT, -1, 0,

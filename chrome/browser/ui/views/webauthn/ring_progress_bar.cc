@@ -42,7 +42,7 @@ void RingProgressBar::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect content_bounds = GetContentsBounds();
   // Draw the background ring that gets progressively filled.
   gfx::PointF center(content_bounds.width() / 2, content_bounds.height() / 2);
-  const double radius =
+  const float radius =
       (std::min(content_bounds.width(), content_bounds.height()) -
        kStrokeWidth) /
       2;
