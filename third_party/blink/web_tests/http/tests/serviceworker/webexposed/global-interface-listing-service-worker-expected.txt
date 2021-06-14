@@ -1371,6 +1371,11 @@ interface Response
     method formData
     method json
     method text
+interface Scheduler
+    attribute @@toStringTag
+    getter currentTaskSignal
+    method constructor
+    method postTask
 interface SecurityPolicyViolationEvent : Event
     attribute @@toStringTag
     getter blockedURI
@@ -1474,6 +1479,20 @@ interface SyncManager
     method constructor
     method getTags
     method register
+interface TaskController : AbortController
+    attribute @@toStringTag
+    method constructor
+    method setPriority
+interface TaskPriorityChangeEvent : Event
+    attribute @@toStringTag
+    getter previousPriority
+    method constructor
+interface TaskSignal : AbortSignal
+    attribute @@toStringTag
+    getter onprioritychange
+    getter priority
+    method constructor
+    setter onprioritychange
 interface TextDecoder
     attribute @@toStringTag
     getter encoding
@@ -2953,6 +2972,7 @@ interface WorkerGlobalScope : EventTarget
     getter onunhandledrejection
     getter origin
     getter performance
+    getter scheduler
     getter self
     getter storageFoundation
     getter trustedTypes
@@ -2974,6 +2994,7 @@ interface WorkerGlobalScope : EventTarget
     setter onunhandledrejection
     setter origin
     setter performance
+    setter scheduler
 interface WorkerLocation
     attribute @@toStringTag
     getter hash

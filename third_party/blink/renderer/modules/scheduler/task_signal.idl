@@ -6,7 +6,7 @@
 // https://docs.google.com/document/d/1xU7HyNsEsbXhTgt0ZnXDbeSXm5-m5FzkLJAT6LTizEI/edit#
 
 [
-    Exposed=Window,
+    Exposed=(Window,Worker),
     ImplementedAs=DOMTaskSignal,
     RuntimeEnabled=WebScheduler
 ] interface TaskSignal : AbortSignal {

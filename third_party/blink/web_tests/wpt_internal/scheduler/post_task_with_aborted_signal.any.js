@@ -1,5 +1,5 @@
 // META: title=Scheduling API: postTask
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 promise_test(t => {

@@ -1,5 +1,5 @@
 // META: title=Scheduling API: Setting TaskController.priority
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {

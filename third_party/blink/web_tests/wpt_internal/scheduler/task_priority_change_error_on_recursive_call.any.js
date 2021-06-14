@@ -1,5 +1,5 @@
 // META: title=Scheduling API: Recursive TaskController.setPriority()
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {

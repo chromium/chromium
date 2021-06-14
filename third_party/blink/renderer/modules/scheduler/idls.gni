@@ -14,4 +14,4 @@ modules_dictionary_idl_files = [
   "task_priority_change_event_init.idl",
 ]
 
-modules_dependency_idl_files = [ "window_scheduler.idl" ]
+modules_dependency_idl_files = [ "window_or_worker_scheduler.idl" ]

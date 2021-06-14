@@ -1,5 +1,5 @@
 // META: title=Scheduling API: postTask and AbortSignal
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {

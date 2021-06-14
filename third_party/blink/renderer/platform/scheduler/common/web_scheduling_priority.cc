@@ -11,19 +11,20 @@ namespace blink {
 namespace {
 
 const AtomicString& UserBlockingPriorityKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, user_blocking_priority,
-                      ("user-blocking"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, user_blocking_priority,
+                                  ("user-blocking"));
   return user_blocking_priority;
 }
 
 const AtomicString& UserVisiblePriorityKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, user_visible_priority,
-                      ("user-visible"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, user_visible_priority,
+                                  ("user-visible"));
   return user_visible_priority;
 }
 
 const AtomicString& BackgroundPriorityKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, background_priority, ("background"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, background_priority,
+                                  ("background"));
   return background_priority;
 }
 

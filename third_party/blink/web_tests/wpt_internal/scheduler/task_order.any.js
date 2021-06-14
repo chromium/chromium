@@ -1,5 +1,5 @@
 // META: title=Scheduling API: Tasks Run in Priority Order
-// META: global=window
+// META: global=window,worker
 
 async_test(t => {
   let result = '';

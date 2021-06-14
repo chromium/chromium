@@ -1,5 +1,5 @@
 // META: title=Scheduling API: Canceling Task Rejects Task.result (Beforre Accessing Result)
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {

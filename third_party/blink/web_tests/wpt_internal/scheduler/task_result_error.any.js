@@ -1,5 +1,5 @@
 // META: title=Scheduling API: Task.result When a Task Throws an Error
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {

@@ -1,6 +1,5 @@
 // META: title=Scheduling API: Move Delayed Tasks
-// META: global=window
-
+// META: global=window,worker
 'use strict';
 
 let taskCount = 0;

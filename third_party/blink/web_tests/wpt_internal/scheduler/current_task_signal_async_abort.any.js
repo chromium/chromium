@@ -1,13 +1,14 @@
 // META: title=Scheduling API: Signal inheritance
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {
-  let ac = new AbortController()
-  scheduler.postTask(() => {
-    scheduler.postTask(() => {}, { signal : scheduler.currentTaskSignal }).then(
-        () => { assert_unreached('This task should have been aborted'); },
-        t.step_func_done());
-    ac.abort();
-  }, { signal: ac.signal });
-}, 'Test that currentTaskSignal wraps and follows an AbortSignal');
+  let tc = new TaskController("user-blocking");
+  scheduler.postTask(async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+    scheduler.postTask(() => {}, { signal: scheduler.currentTaskSignal }).then(
+      () => { assert_unreached('This task should have been aborted'); },
+      t.step_func_done());
+    tc.abort();
+  }, { signal: tc.signal });
+}, 'Test that currentTaskSignal works through promise resolution');

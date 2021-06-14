@@ -1,5 +1,5 @@
 // META: title=Scheduling API: Post Delayed Tasks
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {

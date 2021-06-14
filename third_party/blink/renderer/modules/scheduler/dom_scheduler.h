@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -50,15 +51,15 @@ class WebSchedulingTaskQueue;
  */
 class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
                                     public ExecutionContextLifecycleObserver,
-                                    public Supplement<LocalDOMWindow> {
+                                    public Supplement<ExecutionContext> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kSupplementName[];
 
-  static DOMScheduler* scheduler(LocalDOMWindow&);
+  static DOMScheduler* scheduler(ExecutionContext&);
 
-  explicit DOMScheduler(LocalDOMWindow*);
+  explicit DOMScheduler(ExecutionContext*);
 
   // postTask creates and queues a DOMTask and returns a Promise that will
   // resolve when it completes. The task will be scheduled in the queue
@@ -115,7 +116,7 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
     std::unique_ptr<WebSchedulingTaskQueue> web_scheduling_task_queue_;
   };
 
-  void CreateFixedPriorityTaskQueues(LocalDOMWindow*);
+  void CreateFixedPriorityTaskQueues(ExecutionContext*);
 
   // Create a new fixed-priority DOMTaskSignal for the given priority and set up
   // the mapping in |signal_to_task_queue_map_|.

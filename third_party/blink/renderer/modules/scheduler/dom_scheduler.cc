@@ -20,24 +20,23 @@ namespace blink {
 
 const char DOMScheduler::kSupplementName[] = "DOMScheduler";
 
-DOMScheduler* DOMScheduler::scheduler(LocalDOMWindow& window) {
+DOMScheduler* DOMScheduler::scheduler(ExecutionContext& context) {
   DOMScheduler* scheduler =
-      Supplement<LocalDOMWindow>::From<DOMScheduler>(window);
+      Supplement<ExecutionContext>::From<DOMScheduler>(context);
   if (!scheduler) {
-    scheduler = MakeGarbageCollected<DOMScheduler>(&window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, scheduler);
+    scheduler = MakeGarbageCollected<DOMScheduler>(&context);
+    Supplement<ExecutionContext>::ProvideTo(context, scheduler);
   }
   return scheduler;
 }
 
-DOMScheduler::DOMScheduler(LocalDOMWindow* window)
-    : ExecutionContextLifecycleObserver(window),
-      Supplement<LocalDOMWindow>(*window) {
-  if (window->IsContextDestroyed())
+DOMScheduler::DOMScheduler(ExecutionContext* context)
+    : ExecutionContextLifecycleObserver(context),
+      Supplement<ExecutionContext>(*context) {
+  if (context->IsContextDestroyed())
     return;
-  DCHECK(window->GetScheduler());
-  DCHECK(window->GetScheduler()->ToFrameScheduler());
-  CreateFixedPriorityTaskQueues(window);
+  DCHECK(context->GetScheduler());
+  CreateFixedPriorityTaskQueues(context);
 }
 
 void DOMScheduler::ContextDestroyed() {
@@ -50,7 +49,7 @@ void DOMScheduler::Trace(Visitor* visitor) const {
   visitor->Trace(signal_to_task_queue_map_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 ScriptPromise DOMScheduler::postTask(
@@ -128,8 +127,8 @@ DOMTaskSignal* DOMScheduler::currentTaskSignal(ScriptState* script_state) {
   return CreateTaskSignalFor(kDefaultPriority);
 }
 
-void DOMScheduler::CreateFixedPriorityTaskQueues(LocalDOMWindow* window) {
-  FrameScheduler* scheduler = window->GetScheduler()->ToFrameScheduler();
+void DOMScheduler::CreateFixedPriorityTaskQueues(ExecutionContext* context) {
+  FrameOrWorkerScheduler* scheduler = context->GetScheduler();
   for (size_t i = 0; i < kWebSchedulingPriorityCount; i++) {
     std::unique_ptr<WebSchedulingTaskQueue> task_queue =
         scheduler->CreateWebSchedulingTaskQueue(
@@ -150,8 +149,7 @@ DOMTaskSignal* DOMScheduler::CreateTaskSignalFor(
 }
 
 void DOMScheduler::CreateTaskQueueFor(DOMTaskSignal* signal) {
-  FrameScheduler* scheduler =
-      GetExecutionContext()->GetScheduler()->ToFrameScheduler();
+  FrameOrWorkerScheduler* scheduler = GetExecutionContext()->GetScheduler();
   DCHECK(scheduler);
   WebSchedulingPriority priority =
       WebSchedulingPriorityFromString(signal->priority());

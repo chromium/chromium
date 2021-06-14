@@ -1,5 +1,5 @@
 // META: title=Scheduling API: Task.result Accessed Before Task Runs
-// META: global=window
+// META: global=window,worker
 'use strict';
 
 async_test(t => {

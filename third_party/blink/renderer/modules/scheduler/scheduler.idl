@@ -5,7 +5,7 @@
 // Experimental Scheduling API Proposal:
 // https://docs.google.com/document/d/1Apz-SD-pOagGeyWxIpgOi0ARNkrCrELhPdm18eeu9tw
 [
-    Exposed=Window,
+    Exposed=(Window,Worker),
     ImplementedAs=DOMScheduler,
     RuntimeEnabled=WebScheduler
 ] interface Scheduler {
