@@ -4,6 +4,7 @@
 
 #include "components/arc/dark_theme/arc_dark_theme_bridge.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -70,7 +71,9 @@ ArcDarkThemeBridge::~ArcDarkThemeBridge() {
 void ArcDarkThemeBridge::OnConnectionReady() {
   auto* provider = ash::ColorProvider::Get();
   bool dark_theme_status = false;
-  if (provider)
+  // Checking to see if the flag is enabled because provider returns dark mode
+  // when the flag is default.
+  if (provider && ash::features::IsDarkLightModeEnabled())
     dark_theme_status = provider->IsDarkModeEnabled();
   if (!ArcDarkThemeBridge::SendDeviceDarkThemeState(dark_theme_status)) {
     LOG(ERROR) << "OnConnectionReady failed to get Dark Theme instance for "
