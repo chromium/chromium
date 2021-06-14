@@ -203,7 +203,6 @@ static constexpr const char* const kChromeUrls[] = {
     // "chrome://appcache-internals",
     "chrome://autofill-internals",
     "chrome://blob-internals",
-    "chrome://bluetooth-internals",
     "chrome://bookmarks",
     "chrome://chrome-urls",
     "chrome://components",
@@ -335,6 +334,8 @@ static constexpr const char* const kChromeUrls[] = {
 #if !defined(OS_MAC)
     "chrome://sandbox",
     "chrome://nacl",
+    // TODO(https://crbug.com/1219651): this test is flaky on mac.
+    "chrome://bluetooth-internals",
 #endif
 #if defined(OS_WIN)
     "chrome://conflicts",
