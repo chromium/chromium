@@ -110,6 +110,10 @@ const char kEngagementPrefsPrefix[] = "arc.metrics";
 // A boolean preference that indicates ARC management state.
 const char kArcIsManaged[] = "arc.is_managed";
 
+// A counter preference that indicates number of ARC resize-lock splash screen.
+const char kArcShowResizeLockSplashScreenLimits[] =
+    "arc.show_resize_lock_splash_screen_limits";
+
 // ======== LOCAL STATE PREFS ========
 
 // A boolean preference that indicates whether this device has run with the

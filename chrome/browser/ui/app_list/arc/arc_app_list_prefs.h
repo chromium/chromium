@@ -202,8 +202,8 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that task has been activated and moved to the front.
     virtual void OnTaskSetActive(int32_t task_id) {}
 
-    virtual void OnNotificationsEnabledChanged(
-        const std::string& package_name, bool enabled) {}
+    virtual void OnNotificationsEnabledChanged(const std::string& package_name,
+                                               bool enabled) {}
     // Notifies that package has been installed. This may be called in two
     // cases:
     // a) the package is being newly installed
@@ -367,6 +367,8 @@ class ArcAppListPrefs : public KeyedService,
   bool GetResizeLockNeedsConfirmation(const std::string& app_id) override;
   void SetResizeLockNeedsConfirmation(const std::string& app_id,
                                       bool is_needed) override;
+  int GetShowSplashScreenDialogCount() const override;
+  void SetShowSplashScreenDialogCount(int count) override;
 
   // KeyedService:
   void Shutdown() override;

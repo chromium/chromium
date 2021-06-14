@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/resize_toggle_menu.h"
+#include "components/arc/compat_mode/resize_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -64,6 +65,8 @@ class ArcResizeLockManager : public KeyedService,
   // Virtual for testing.
   virtual void EnableResizeLock(aura::Window* window);
   virtual void DisableResizeLock(aura::Window* window);
+
+  void MayShowSplashScreen(aura::Window* window);
 
   ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
 

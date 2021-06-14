@@ -22,6 +22,8 @@ class ArcResizeLockPrefDelegate {
   virtual bool GetResizeLockNeedsConfirmation(const std::string& app_id) = 0;
   virtual void SetResizeLockNeedsConfirmation(const std::string& app_id,
                                               bool is_needed) = 0;
+  virtual int GetShowSplashScreenDialogCount() const = 0;
+  virtual void SetShowSplashScreenDialogCount(int count) = 0;
 };
 
 }  // namespace arc

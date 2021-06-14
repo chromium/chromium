@@ -106,7 +106,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
     // Show the splash screen in current window. The splash screen is an
     // overlay covering the entire window. User can only remove the overlay
     // before closing the window.
-    ShowSplashScreenDialog(window);
+    MayShowSplashScreen(window);
   }
 
   // Setup size button override.
@@ -140,6 +140,12 @@ bool ArcResizeLockManager::OnResizeButtonPressed(views::Widget* widget) {
       std::make_unique<ResizeToggleMenu>(widget, pref_delegate_);
 
   return true;
+}
+
+void ArcResizeLockManager::MayShowSplashScreen(aura::Window* window) {
+  if (ShouldShowSplashScreenDialog(pref_delegate_)) {
+    ShowSplashScreenDialog(window);
+  }
 }
 
 }  // namespace arc

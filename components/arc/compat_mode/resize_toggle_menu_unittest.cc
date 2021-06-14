@@ -48,6 +48,8 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
 
  private:
   base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
+  int GetShowSplashScreenDialogCount() const override { return 1; }
+  void SetShowSplashScreenDialogCount(int count) override {}
 };
 
 }  // namespace

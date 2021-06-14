@@ -37,6 +37,8 @@ absl::optional<ResizeCompatMode> PredictCurrentMode(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate);
 
+bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate);
+
 }  // namespace arc
 
 #endif  // COMPONENTS_ARC_COMPAT_MODE_RESIZE_UTIL_H_

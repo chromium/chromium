@@ -23,6 +23,8 @@ namespace arc {
 namespace {
 
 constexpr char kTestAppId[] = "123";
+// Defines maximum number of showing splash screen per user.
+const int kMaxNumSplashScreen = 2;
 
 class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
  public:
@@ -55,9 +57,15 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
       base::Erase(confirmation_needed_app_ids_, app_id);
   }
 
+  int GetShowSplashScreenDialogCount() const override { return show_count_; }
+  void SetShowSplashScreenDialogCount(int count) override {
+    show_count_ = count;
+  }
+
  private:
   std::vector<std::string> confirmation_needed_app_ids_;
   base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
+  int show_count_ = kMaxNumSplashScreen;
 };
 
 }  // namespace
@@ -141,6 +149,13 @@ TEST_F(ResizeUtilTest, TestEnableResizing) {
             mojom::ArcResizeLockState::OFF);
   EXPECT_EQ(PredictCurrentMode(widget(), pref_delegate()),
             ResizeCompatMode::kResizable);
+}
+
+// Test that should show dialog screen dialog caps at a preset limit
+TEST_F(ResizeUtilTest, TestShouldShowSplashScreenDialog) {
+  for (int i = 0; i < kMaxNumSplashScreen; i++)
+    EXPECT_TRUE(ShouldShowSplashScreenDialog(pref_delegate()));
+  EXPECT_FALSE(ShouldShowSplashScreenDialog(pref_delegate()));
 }
 
 }  // namespace arc

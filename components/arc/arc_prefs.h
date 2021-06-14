@@ -34,6 +34,7 @@ ARC_EXPORT extern const char kArcProvisioningInitiatedFromOobe[];
 ARC_EXPORT extern const char kArcPushInstallAppsPending[];
 ARC_EXPORT extern const char kArcPushInstallAppsRequested[];
 ARC_EXPORT extern const char kArcSetNotificationsEnabledDeferred[];
+ARC_EXPORT extern const char kArcShowResizeLockSplashScreenLimits[];
 ARC_EXPORT extern const char kArcSignedIn[];
 ARC_EXPORT extern const char kArcSkippedReportingNotice[];
 ARC_EXPORT extern const char kArcSupervisionTransition[];

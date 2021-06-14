@@ -88,6 +88,9 @@ constexpr char kVPNProvider[] = "vpnprovider";
 constexpr char kPermissionStateGranted[] = "granted";
 constexpr char kPermissionStateManaged[] = "managed";
 
+// Defines maximum number of showing splash screen per user.
+const int kMaxNumSplashScreen = 2;
+
 // Defines current version for app icons. This is used for invalidation icons in
 // case we change how app icons are produced on Android side. Can be updated in
 // unit tests.
@@ -311,6 +314,8 @@ void ArcAppListPrefs::RegisterProfilePrefs(
                                 -1 /* default_value */);
   registry->RegisterDictionaryPref(
       arc::prefs::kArcSetNotificationsEnabledDeferred);
+  registry->RegisterIntegerPref(
+      arc::prefs::kArcShowResizeLockSplashScreenLimits, kMaxNumSplashScreen);
   ArcDefaultAppList::RegisterProfilePrefs(registry);
 }
 
@@ -1098,6 +1103,16 @@ void ArcAppListPrefs::SetResizeLockNeedsConfirmation(const std::string& app_id,
   app_dict->SetBoolKey(kResizeLockNeedsConfirmation, is_needed);
 }
 
+int ArcAppListPrefs::GetShowSplashScreenDialogCount() const {
+  return profile_->GetPrefs()->GetInteger(
+      arc::prefs::kArcShowResizeLockSplashScreenLimits);
+}
+
+void ArcAppListPrefs::SetShowSplashScreenDialogCount(int count) {
+  profile_->GetPrefs()->SetInteger(
+      arc::prefs::kArcShowResizeLockSplashScreenLimits, count);
+}
+
 void ArcAppListPrefs::Shutdown() {
   arc::ArcPolicyBridge* policy_bridge =
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
@@ -1219,18 +1234,17 @@ void ArcAppListPrefs::HandleTaskCreated(const absl::optional<std::string>& name,
   }
 }
 
-void ArcAppListPrefs::AddAppAndShortcut(
-    const std::string& name,
-    const std::string& package_name,
-    const std::string& activity,
-    const std::string& intent_uri,
-    const std::string& icon_resource_id,
-    const bool sticky,
-    const bool notifications_enabled,
-    const bool app_ready,
-    const bool suspended,
-    const bool shortcut,
-    const bool launchable) {
+void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
+                                        const std::string& package_name,
+                                        const std::string& activity,
+                                        const std::string& intent_uri,
+                                        const std::string& icon_resource_id,
+                                        const bool sticky,
+                                        const bool notifications_enabled,
+                                        const bool app_ready,
+                                        const bool suspended,
+                                        const bool shortcut,
+                                        const bool launchable) {
   const std::string app_id = shortcut ? GetAppId(package_name, intent_uri)
                                       : GetAppId(package_name, activity);
 
@@ -1571,8 +1585,8 @@ void ArcAppListPrefs::MaybeSetDefaultAppLoadingTimeout() {
   // Find at least one not installed default app package.
   for (const auto& package : default_apps_->GetActivePackages()) {
     if (!GetPackage(package)) {
-      detect_default_app_availability_timeout_.Start(FROM_HERE,
-          kDetectDefaultAppAvailabilityTimeout, this,
+      detect_default_app_availability_timeout_.Start(
+          FROM_HERE, kDetectDefaultAppAvailabilityTimeout, this,
           &ArcAppListPrefs::DetectDefaultAppAvailability);
       break;
     }

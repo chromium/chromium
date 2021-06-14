@@ -123,4 +123,13 @@ absl::optional<ResizeCompatMode> PredictCurrentMode(
   return absl::nullopt;
 }
 
+bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate) {
+  int show_count = pref_delegate->GetShowSplashScreenDialogCount();
+  if (show_count == 0)
+    return false;
+
+  pref_delegate->SetShowSplashScreenDialogCount(--show_count);
+  return true;
+}
+
 }  // namespace arc
