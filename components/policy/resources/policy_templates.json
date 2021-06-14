@@ -25151,9 +25151,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['asumaneev@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      # TODO(crbug.com/1179280): remove chrome.linux support once
-      # https://crbug.com/1169547 is finished.
-      'supported_on': ['chrome.linux:91-', 'chrome_os:91-'],
+      'supported_on': ['chrome.linux:91-92', 'chrome_os:91-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
