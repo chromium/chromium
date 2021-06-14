@@ -169,7 +169,7 @@ TEST(ZxcvbnTest, RepeatGuesses) {
   struct {
     std::string token;
     std::string base_token;
-    int repeat_count;
+    size_t repeat_count;
   } tests[] = {
       {"aa", "a", 2},
       {"999", "9", 3},
