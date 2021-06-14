@@ -37,32 +37,6 @@ public class SurveyController {
     }
 
     /**
-     * Returns if there already exists a downloaded survey from the provided site id.
-     * @deprecated Use {@link #downloadSurvey(Context, String, Runnable, Runnable)} instead.
-     * @param siteId The id of the site from where the survey should have been downloaded.
-     * @param context The context of the application.
-     * @return If the survey with a matching site id exists.
-     */
-    @Deprecated
-    public boolean doesSurveyExist(String siteId, Context context) {
-        return false;
-    }
-
-    /**
-     * Asynchronously downloads the survey using the provided parameters.
-     * @deprecated Replaced with {@link #downloadSurvey(Context, String, Runnable, Runnable)}.
-     * @param context The context used to register a broadcast receiver.
-     * @param siteId The id of the site from where the survey will be downloaded.
-     * @param onSuccessRunnable The runnable to notify when the survey is ready.
-     *                          If no survey is available, the runnable will not be run.
-     * @param siteContext Optional parameter to build the download request. Site context can be
-     *                    used for adding metadata.
-     */
-    @Deprecated
-    public void downloadSurvey(
-            Context context, String siteId, Runnable onSuccessRunnable, String siteContext) {}
-
-    /**
      * Asynchronously downloads the survey using the provided parameters.
      * @param context The context used to create the survey.
      * @param triggerId  The ID used to fetch the data for the surveys.
@@ -72,16 +46,6 @@ public class SurveyController {
      */
     public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
             Runnable onFailureRunnable) {}
-
-    /**
-     * @deprecated Use #showSurveyIfAvailable(Activity, String, boolean, int,
-     *         ActivityLifecycleDispatcher).
-     */
-    @Deprecated
-    public void showSurveyIfAvailable(
-            Activity activity, String siteId, boolean showAsBottomSheet, int displayLogoResId) {
-        this.showSurveyIfAvailable(activity, siteId, showAsBottomSheet, displayLogoResId, null);
-    }
 
     /**
      * Show the survey.
@@ -94,11 +58,4 @@ public class SurveyController {
      */
     public void showSurveyIfAvailable(Activity activity, String siteId, boolean showAsBottomSheet,
             int displayLogoResId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
-
-    /**
-     * Clears the survey cache containing responses and history.
-     * @param context The context used to clear the cache.
-     */
-    @Deprecated
-    public void clearCache(Context context) {}
 }
