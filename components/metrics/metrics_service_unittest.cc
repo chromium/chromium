@@ -216,12 +216,6 @@ class MetricsServiceTest : public testing::Test {
     return GetHistogramSampleCount(log, kOnDidCreateMetricsLogHistogramName);
   }
 
-  int GetNumberOfUserActions(MetricsLogStore* test_log_store) {
-    ChromeUserMetricsExtension log;
-    EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &log));
-    return log.user_action_event_size();
-  }
-
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
@@ -430,8 +424,7 @@ TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
       std::unique_ptr<MetricsProvider>(test_provider));
 
   service.InitializeMetricsRecordingState();
-  // Start() will create the MetricsLog object for the first ongoing log, which
-  // won't be closed until the init task is complete.
+  // Start() will create the first ongoing log.
   service.Start();
   ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
@@ -459,67 +452,14 @@ TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
   EXPECT_EQ(1, GetSampleCountOfOnDidCreateLogHistogram(test_log_store));
 }
 
-TEST_F(MetricsServiceTest, LogHasUserActions) {
-  // This test verifies that user actions are properly captured in UMA logs.
-  // In particular, it checks that the first log has actions, a behavior that
-  // was buggy in the past, plus additional checks for subsequent logs with
-  // different numbers of actions.
-  EnableMetricsReporting();
-  TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
-
-  service.InitializeMetricsRecordingState();
-
-  // Start() will create an initial log.
-  service.Start();
-  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
-
-  base::RecordAction(base::UserMetricsAction("TestAction"));
-  base::RecordAction(base::UserMetricsAction("TestAction"));
-  base::RecordAction(base::UserMetricsAction("DifferentAction"));
-
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
-  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-
-  MetricsLogStore* test_log_store = service.LogStoreForTest();
-
-  // Stage the next log, which should be the initial metrics log.
-  test_log_store->StageNextLog();
-  EXPECT_EQ(3, GetNumberOfUserActions(test_log_store));
-
-  // Log another action.
-  base::RecordAction(base::UserMetricsAction("TestAction"));
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(1, GetNumberOfUserActions(test_log_store));
-
-  // Check a log with no actions.
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(0, GetNumberOfUserActions(test_log_store));
-
-  // And another one with a couple.
-  base::RecordAction(base::UserMetricsAction("TestAction"));
-  base::RecordAction(base::UserMetricsAction("TestAction"));
-  test_log_store->DiscardStagedLog();
-  service.StageCurrentLogForTest();
-  EXPECT_EQ(2, GetNumberOfUserActions(test_log_store));
-}
-
 TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
-  // This test checks that we will create and serialize the first ongoing log
-  // before starting to send unsent logs from the past session. The latter is
-  // simulated by injecting some fake ongoing logs into the MetricsLogStore.
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
                              GetLocalState());
 
   service.InitializeMetricsRecordingState();
-  // Start() will create the MetricsLog object for the first ongoing log, which
-  // won't be closed until the init task is complete.
+  // Start() will create the first ongoing log.
   service.Start();
   ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
@@ -538,8 +478,8 @@ TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
   // Run pending tasks to finish init task and complete the first ongoing log.
   task_runner_->RunPendingTasks();
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
-  // When the init task is complete, the first ongoing log for this session
-  // should be created and added to the ongoing logs.
+  // When the init task is complete, the first ongoing log should be created
+  // and added to the ongoing logs.
   EXPECT_EQ(0u, test_log_store->initial_log_count());
   EXPECT_EQ(2u, test_log_store->ongoing_log_count());
 }
