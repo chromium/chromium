@@ -10,6 +10,7 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/arc/mojom/input_method_manager.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -27,6 +28,9 @@ ArcInputMethodState::~ArcInputMethodState() = default;
 void ArcInputMethodState::InitializeWithImeInfo(
     const std::string& proxy_ime_extension_id,
     const std::vector<mojom::ImeInfoPtr>& ime_info_array) {
+  if (ime_info_array.size() != installed_imes_.size())
+    UMA_HISTOGRAM_COUNTS_100("Arc.ImeCount", ime_info_array.size());
+
   installed_imes_.clear();
   for (const auto& info : ime_info_array) {
     installed_imes_.push_back({info->ime_id, info->enabled,

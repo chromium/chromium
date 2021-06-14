@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/input_method_manager.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -106,6 +107,26 @@ TEST(ArcInputMethodState, AllowDisallowInputMethods) {
   delegate.allowed = false;
   EXPECT_EQ(1u, state.GetActiveInputMethods().size());
   EXPECT_EQ("ime_a", state.GetActiveInputMethods()[0].id());
+}
+
+TEST(ArcInputMethodState, Histogram) {
+  base::HistogramTester histogram_tester;
+  constexpr char kHistogramName[] = "Arc.ImeCount";
+
+  FakeDelegate delegate;
+
+  ArcInputMethodState state(&delegate);
+  std::vector<mojom::ImeInfoPtr> imes;
+  imes.push_back(GenerateImeInfo("ime_a", true, true));
+  imes.push_back(GenerateImeInfo("ime_b", true, false));
+  state.InitializeWithImeInfo("ime_id", imes);
+
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+  histogram_tester.ExpectUniqueSample(kHistogramName, imes.size(), 1);
+
+  imes.clear();
+  state.InitializeWithImeInfo("ime_id", imes);
+  histogram_tester.ExpectTotalCount(kHistogramName, 2);
 }
 
 }  // namespace arc
