@@ -169,9 +169,13 @@ const base::Feature kUseNewHeaderForSavePasswordWithAccountStoreBubble{
 const base::Feature kUseOfHashAffiliationFetcher = {
     "UseOfHashAffiliationFetcher", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables support of filling and saving on username first flow.
+// Enables support of sending votes on username first flow.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables support of filling and saving on username first flow.
+const base::Feature kUsernameFirstFlowFilling = {
+    "UsernameFirstFlowFilling", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Field trial identifier for password generation requirements.
 const char kGenerationRequirementsFieldTrial[] =

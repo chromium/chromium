@@ -2549,8 +2549,14 @@ const char kUseOfHashAffiliationFetcherDescription[] =
     "All requests to the affiliation fetcher are made through the hash prefix "
     "lookup. Enables use of Hash Affiliation Service for non-synced users.";
 
-const char kUsernameFirstFlowName[] = "Username first flow";
+const char kUsernameFirstFlowName[] = "Username first flow voting";
 const char kUsernameFirstFlowDescription[] =
+    "Support of sending votes on username first flow i.e. login "
+    "flows where a user has to type username first on one page and then "
+    "password on another page";
+
+const char kUsernameFirstFlowFillingName[] = "Username first flow filling";
+const char kUsernameFirstFlowFillingDescription[] =
     "Support of username saving and filling on username first flow i.e. login "
     "flows where a user has to type username first on one page and then "
     "password on another page";

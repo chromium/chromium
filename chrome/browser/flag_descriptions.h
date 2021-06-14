@@ -896,6 +896,9 @@ extern const char kUseOfHashAffiliationFetcherDescription[];
 extern const char kUsernameFirstFlowName[];
 extern const char kUsernameFirstFlowDescription[];
 
+extern const char kUsernameFirstFlowFillingName[];
+extern const char kUsernameFirstFlowFillingDescription[];
+
 extern const char kNewCanvas2DAPIName[];
 extern const char kNewCanvas2DAPIDescription[];
 

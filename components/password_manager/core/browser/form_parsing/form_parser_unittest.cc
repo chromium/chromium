@@ -2590,6 +2590,8 @@ TEST(FormParserTest, ContradictingPasswordPredictionAndAutocomplete) {
 }
 
 TEST(FormParserTest, SingleUsernamePrediction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   CheckTestData({
       {
           .description_for_logging = "1 field",

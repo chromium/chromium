@@ -321,12 +321,15 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
         }
         break;
       case CredentialFieldType::kSingleUsername:
-        processed_field = FindField(processed_fields, prediction);
-        if (processed_field) {
-          result->username = processed_field->field;
-          result->is_single_username = true;
-          result->ClearAllPasswordFields();
-          return;
+        if (base::FeatureList::IsEnabled(
+                password_manager::features::kUsernameFirstFlowFilling)) {
+          processed_field = FindField(processed_fields, prediction);
+          if (processed_field) {
+            result->username = processed_field->field;
+            result->is_single_username = true;
+            result->ClearAllPasswordFields();
+            return;
+          }
         }
         break;
       case CredentialFieldType::kCurrentPassword:

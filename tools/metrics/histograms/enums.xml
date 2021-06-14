@@ -47238,6 +47238,7 @@ from previous Chrome versions.
   <int value="-296762162" label="ExoOrdinalMotion:enabled"/>
   <int value="-296179618" label="CookiesWithoutSameSiteMustBeSecure:enabled"/>
   <int value="-295237704" label="EnableRemovingAllThirdPartyCookies:enabled"/>
+  <int value="-291936879" label="UsernameFirstFlowFilling:disabled"/>
   <int value="-290672626" label="enable-asm-wasm"/>
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
@@ -48084,6 +48085,7 @@ from previous Chrome versions.
   <int value="453017472"
       label="IntentBlockExternalFormRedirectsNoGesture:disabled"/>
   <int value="453102772" label="OfflinePagesLoadSignalCollecting:disabled"/>
+  <int value="454106312" label="UsernameFirstFlowFilling:enabled"/>
   <int value="455140116" label="CCTIncognitoAvailableToThirdParty:disabled"/>
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>

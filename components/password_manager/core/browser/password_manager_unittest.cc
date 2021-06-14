@@ -2952,7 +2952,7 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
 // multiple forms on a page, including forms that have UsernameFirstFlow votes.
 TEST_P(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+  feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -3348,7 +3348,7 @@ TEST_P(PasswordManagerTest, StartLeakDetection) {
 // Check that a non-password form with SINGLE_USERNAME prediction is filled.
 TEST_P(PasswordManagerTest, FillSingleUsername) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+  feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -3488,7 +3488,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlow) {
 //  local predictions.
 TEST_P(PasswordManagerTest, UsernameFirstFlowFillingServerAndLocalPredictions) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+  feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(
           WithArg<1>(InvokeConsumer(store_.get(), MakeSavedForm())));

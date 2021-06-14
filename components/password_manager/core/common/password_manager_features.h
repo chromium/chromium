@@ -46,6 +46,7 @@ extern const base::Feature kUseNewHeaderForLegacySavePasswordBubble;
 extern const base::Feature kUseNewHeaderForSavePasswordWithAccountStoreBubble;
 extern const base::Feature kUseOfHashAffiliationFetcher;
 extern const base::Feature kUsernameFirstFlow;
+extern const base::Feature kUsernameFirstFlowFilling;
 
 // Field trial and corresponding parameters.
 // To manually override this, start Chrome with the following parameters:

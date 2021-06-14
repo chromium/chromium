@@ -124,10 +124,6 @@ PasswordFormManager* FindMatchedManagerByRendererId(
 #endif  // !defined(OS_IOS)
 
 bool HasSingleUsernameVote(const FormPredictions& form) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kUsernameFirstFlow)) {
-    return false;
-  }
   for (const auto& field : form.fields) {
     if (field.type == autofill::SINGLE_USERNAME)
       return true;
