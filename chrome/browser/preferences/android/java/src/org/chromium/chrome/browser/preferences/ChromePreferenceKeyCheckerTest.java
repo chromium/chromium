@@ -88,4 +88,16 @@ public class ChromePreferenceKeyCheckerTest {
     public void testPrefixedKeys_matchPattern_throwsException() {
         mSubject.checkIsKeyInUse(KEY_PREFIX1_IN_USE.createKey("*"));
     }
+
+    @Test
+    @SmallTest
+    public void testPrefix_inUse_noException() {
+        mSubject.checkIsPrefixInUse(KEY_PREFIX2_IN_USE);
+    }
+
+    @Test(expected = RuntimeException.class)
+    @SmallTest
+    public void testPrefix_notInUse_throwsException() {
+        mSubject.checkIsPrefixInUse(KEY_PREFIX3_NOT_IN_USE);
+    }
 }

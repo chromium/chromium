@@ -215,6 +215,19 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Writes the given int values to the named shared preferences.
+     * @param pairs The key/value pairs to write.
+     */
+    public void writeInts(Map<String, Integer> pairs) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        for (Map.Entry<String, Integer> pair : pairs.entrySet()) {
+            mKeyChecker.checkIsKeyInUse(pair.getKey());
+            ed.putInt(pair.getKey(), pair.getValue().intValue());
+        }
+        ed.apply();
+    }
+
+    /**
      * Reads the given int value from the named shared preference, defaulting to 0 if not found.
      * @param key The name of the preference to return.
      * @return The value of the preference.
@@ -234,6 +247,16 @@ public class SharedPreferencesManager {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ContextUtils.getAppSharedPreferences().getInt(key, defaultValue);
         }
+    }
+
+    /**
+     * Reads all int values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be returned.
+     * @return Map from the keys (in full, not just stem) to Integer values.
+     */
+    public Map<String, Integer> readIntsWithPrefix(KeyPrefix prefix) {
+        return readAllWithPrefix(prefix);
     }
 
     /**
@@ -279,6 +302,19 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Writes the given long values to the named shared preferences.
+     * @param pairs The key/value pairs to write.
+     */
+    public void writeLongs(Map<String, Long> pairs) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        for (Map.Entry<String, Long> pair : pairs.entrySet()) {
+            mKeyChecker.checkIsKeyInUse(pair.getKey());
+            ed.putLong(pair.getKey(), pair.getValue().longValue());
+        }
+        ed.apply();
+    }
+
+    /**
      * Reads the given long value from the named shared preference.
      *
      * @param key The name of the preference to return.
@@ -300,6 +336,16 @@ public class SharedPreferencesManager {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ContextUtils.getAppSharedPreferences().getLong(key, defaultValue);
         }
+    }
+
+    /**
+     * Reads all long values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be returned.
+     * @return Map from the keys (in full, not just stem) to Long values.
+     */
+    public Map<String, Long> readLongsWithPrefix(KeyPrefix prefix) {
+        return readAllWithPrefix(prefix);
     }
 
     /**
@@ -333,6 +379,19 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Writes the given float values to the named shared preferences.
+     * @param pairs The key/value pairs to write.
+     */
+    public void writeFloats(Map<String, Float> pairs) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        for (Map.Entry<String, Float> pair : pairs.entrySet()) {
+            mKeyChecker.checkIsKeyInUse(pair.getKey());
+            ed.putFloat(pair.getKey(), pair.getValue().floatValue());
+        }
+        ed.apply();
+    }
+
+    /**
      * Reads the given float value from the named shared preference.
      *
      * @param key The name of the preference to return.
@@ -347,6 +406,16 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Reads all float values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be returned.
+     * @return Map from the keys (in full, not just stem) to Float values.
+     */
+    public Map<String, Float> readFloatsWithPrefix(KeyPrefix prefix) {
+        return readAllWithPrefix(prefix);
+    }
+
+    /**
      * Writes the given double value to the named shared preference.
      *
      * @param key The name of the preference to modify.
@@ -357,6 +426,20 @@ public class SharedPreferencesManager {
         SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
         long ieee754LongValue = Double.doubleToRawLongBits(value);
         ed.putLong(key, ieee754LongValue);
+        ed.apply();
+    }
+
+    /**
+     * Writes the given double values to the named shared preferences.
+     * @param pairs The key/value pairs to write.
+     */
+    public void writeDoubles(Map<String, Double> pairs) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        for (Map.Entry<String, Double> pair : pairs.entrySet()) {
+            mKeyChecker.checkIsKeyInUse(pair.getKey());
+            long ieee754LongValue = Double.doubleToRawLongBits(pair.getValue());
+            ed.putLong(pair.getKey(), ieee754LongValue);
+        }
         ed.apply();
     }
 
@@ -377,6 +460,24 @@ public class SharedPreferencesManager {
             long ieee754LongValue = prefs.getLong(key, 0L);
             return Double.longBitsToDouble(ieee754LongValue);
         }
+    }
+
+    /**
+     * Reads all double values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be returned.
+     * @return Map from the keys (in full, not just stem) to Double values.
+     */
+    public Map<String, Double> readDoublesWithPrefix(KeyPrefix prefix) {
+        Map<String, Long> longMap = readLongsWithPrefix(prefix);
+        Map<String, Double> doubleMap = new HashMap<>();
+
+        for (Map.Entry<String, Long> longEntry : longMap.entrySet()) {
+            long ieee754LongValue = longEntry.getValue();
+            double doubleValue = Double.longBitsToDouble(ieee754LongValue);
+            doubleMap.put(longEntry.getKey(), doubleValue);
+        }
+        return doubleMap;
     }
 
     /**
@@ -409,6 +510,19 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Writes the given boolean values to the named shared preferences.
+     * @param pairs The key/value pairs to write.
+     */
+    public void writeBooleans(Map<String, Boolean> pairs) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        for (Map.Entry<String, Boolean> pair : pairs.entrySet()) {
+            mKeyChecker.checkIsKeyInUse(pair.getKey());
+            ed.putBoolean(pair.getKey(), pair.getValue().booleanValue());
+        }
+        ed.apply();
+    }
+
+    /**
      * Reads the given boolean value from the named shared preference.
      *
      * @param key The name of the preference to return.
@@ -420,6 +534,16 @@ public class SharedPreferencesManager {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ContextUtils.getAppSharedPreferences().getBoolean(key, defaultValue);
         }
+    }
+
+    /**
+     * Reads all boolean values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be returned.
+     * @return Map from the keys (in full, not just stem) to Boolean values.
+     */
+    public Map<String, Boolean> readBooleansWithPrefix(KeyPrefix prefix) {
+        return readAllWithPrefix(prefix);
     }
 
     /**
@@ -452,6 +576,19 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Writes the given String values to the named shared preferences.
+     * @param pairs The key/value pairs to write.
+     */
+    public void writeStrings(Map<String, String> pairs) {
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        for (Map.Entry<String, String> pair : pairs.entrySet()) {
+            mKeyChecker.checkIsKeyInUse(pair.getKey());
+            ed.putString(pair.getKey(), pair.getValue());
+        }
+        ed.apply();
+    }
+
+    /**
      * Reads the given String value from the named shared preference.
      *
      * @param key The name of the preference to return.
@@ -464,6 +601,16 @@ public class SharedPreferencesManager {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ContextUtils.getAppSharedPreferences().getString(key, defaultValue);
         }
+    }
+
+    /**
+     * Reads all String values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be returned.
+     * @return Map from the keys (in full, not just stem) to String values.
+     */
+    public Map<String, String> readStringsWithPrefix(KeyPrefix prefix) {
+        return readAllWithPrefix(prefix);
     }
 
     /**
@@ -486,6 +633,24 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Removes all shared preference entries with the given prefix.
+     *
+     * @param prefix The KeyPrefix for which all entries should be removed.
+     */
+    public void removeKeysWithPrefix(KeyPrefix prefix) {
+        mKeyChecker.checkIsPrefixInUse(prefix);
+        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
+        for (Map.Entry<String, ?> pref : allPrefs.entrySet()) {
+            String key = pref.getKey();
+            if (prefix.hasGenerated(key)) {
+                ed.remove(key);
+            }
+        }
+        ed.apply();
+    }
+
+    /**
      * Checks if any value was written associated to a key in shared preferences.
      *
      * @param key The key of the preference to check.
@@ -494,5 +659,18 @@ public class SharedPreferencesManager {
     public boolean contains(String key) {
         mKeyChecker.checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().contains(key);
+    }
+
+    private <T> Map<String, T> readAllWithPrefix(KeyPrefix prefix) {
+        mKeyChecker.checkIsPrefixInUse(prefix);
+        Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
+        Map<String, T> allPrefsWithPrefix = new HashMap<>();
+        for (Map.Entry<String, ?> pref : allPrefs.entrySet()) {
+            String key = pref.getKey();
+            if (prefix.hasGenerated(key)) {
+                allPrefsWithPrefix.put(key, (T) pref.getValue());
+            }
+        }
+        return allPrefsWithPrefix;
     }
 }
