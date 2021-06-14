@@ -144,6 +144,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   TestRenderFrameHost* GetSpeculativePrimaryMainFrame();
 
+  int AddPrerender(const GURL& url) override;
+  TestRenderFrameHost* AddPrerenderAndCommitNavigation(
+      const GURL& url) override;
+
  protected:
   // The deprecated WebContentsTester still needs to subclass this.
   explicit TestWebContents(BrowserContext* browser_context);

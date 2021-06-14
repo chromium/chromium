@@ -83,41 +83,32 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 TEST_F(PrerenderHostTest, Activate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
-  const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  int prerender_frame_tree_node_id =
+      web_contents->AddPrerender(kPrerenderingUrl);
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   CommitPrerenderNavigation(*prerender_host);
 
   // Perform a navigation in the primary frame tree which activates the
   // prerendered page.
-  auto sim_2 = NavigationSimulatorImpl::CreateBrowserInitiated(
-      kPrerenderingUrl, web_contents.get());
-  sim_2->Start();
-  sim_2->Commit();
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
+                                                    kPrerenderingUrl);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
 
 TEST_F(PrerenderHostTest, DontActivate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
 
   // Start the prerendering navigation, but don't activate it.
   const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+      web_contents->AddPrerender(kPrerenderingUrl);
   registry->CancelHost(prerender_frame_tree_node_id,
                        PrerenderHost::FinalStatus::kDestroyed);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
@@ -135,13 +126,11 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
 
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
-  const int prerender_ftn_id =
-      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  RenderFrameHostImpl* prerender_rfh =
+      web_contents->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
+  const int prerender_ftn_id = prerender_rfh->GetFrameTreeNodeId();
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_ftn_id);
-  CommitPrerenderNavigation(*prerender_host);
 
   std::unique_ptr<NavigationSimulatorImpl> navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
@@ -157,8 +146,6 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   // be deferred.
   // TODO(https://crbug.com/1198395): Defer or cancel in this case, which will
   // change this expectation.
-  RenderFrameHostImpl* prerender_rfh =
-      prerender_host->GetPrerenderedMainFrameHost();
   auto navigation_2 = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL("https://example2.test/"), prerender_rfh);
   navigation_2->Start();
@@ -183,13 +170,11 @@ TEST_F(PrerenderHostTest, SubframeNavigationForReservedHost) {
 
   // Start prerendering a page.
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
-  const int prerender_ftn_id =
-      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  RenderFrameHostImpl* prerender_rfh =
+      web_contents->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
+  const int prerender_ftn_id = prerender_rfh->GetFrameTreeNodeId();
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_ftn_id);
-  CommitPrerenderNavigation(*prerender_host);
 
   std::unique_ptr<NavigationSimulatorImpl> navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
@@ -203,8 +188,6 @@ TEST_F(PrerenderHostTest, SubframeNavigationForReservedHost) {
 
   // Start a cross-origin subframe navigation in the prerendered page. It
   // should be deferred.
-  RenderFrameHostImpl* prerender_rfh =
-      prerender_host->GetPrerenderedMainFrameHost();
   RenderFrameHost* subframe =
       RenderFrameHostTester::For(prerender_rfh)->AppendChild("subframe");
   std::unique_ptr<NavigationSimulatorImpl> subframe_nav_sim =

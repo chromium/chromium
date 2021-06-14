@@ -48,6 +48,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/ppapi_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1318,4 +1319,99 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest, CookieStore) {
     net::CookieList blocked_cookies = ExtractCookies(blocked);
     EXPECT_THAT(blocked_cookies, net::MatchesCookieLine("second=value"));
   }
+}
+
+class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
+ public:
+  ContentSettingsWithPrerenderingBrowserTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &ContentSettingsWithPrerenderingBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+
+  void SetUpOnMainThread() override {
+    prerender_test_helper().SetUpOnMainThread(embedded_test_server());
+    ContentSettingsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
+                       PrerenderingPageSetsCookie) {
+  const GURL main_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("/set_cookie_header.html");
+
+  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+
+  prerender_test_helper().AddPrerender(prerender_url);
+  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::RenderFrameHost* prerender_frame =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_frame, nullptr);
+
+  auto* prerender_pscs =
+      PageSpecificContentSettings::GetForFrame(prerender_frame);
+  EXPECT_TRUE(prerender_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+  EXPECT_EQ(prerender_pscs->allowed_local_shared_objects().GetObjectCount(),
+            1u);
+  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+  EXPECT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 0u);
+
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+
+  main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+  EXPECT_TRUE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
+                       PrerenderingPageIframeSetsCookie) {
+  const GURL main_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL iframe_url =
+      embedded_test_server()->GetURL("/set_cookie_header.html");
+
+  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+
+  prerender_test_helper().AddPrerender(prerender_url);
+  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::RenderFrameHost* prerender_frame =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_frame, nullptr);
+
+  content::TestNavigationManager navigation_manager(GetWebContents(),
+                                                    iframe_url);
+  EXPECT_TRUE(content::ExecJs(
+      prerender_frame,
+      content::JsReplace("const iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         iframe_url)));
+  navigation_manager.WaitForNavigationFinished();
+
+  auto* prerender_pscs =
+      PageSpecificContentSettings::GetForFrame(prerender_frame);
+  EXPECT_TRUE(prerender_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+  EXPECT_EQ(prerender_pscs->allowed_local_shared_objects().GetObjectCount(),
+            1u);
+  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+  EXPECT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
+  EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 0u);
 }

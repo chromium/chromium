@@ -162,6 +162,15 @@ class WebContentsTester {
   // Indicates if this WebContents has been frozen via a call to
   // SetPageFrozen().
   virtual bool IsPageFrozen() = 0;
+
+  // Starts prerendering a page with |url|, and returns the root frame tree node
+  // id of the page. The page has a pending navigation in the root frame tree
+  // node when this method returns.
+  virtual int AddPrerender(const GURL& url) = 0;
+  // Starts prerendering a page, simulates a navigation to |url| in the main
+  // frame and returns the main frame of the page after the navigation is
+  // complete.
+  virtual RenderFrameHost* AddPrerenderAndCommitNavigation(const GURL& url) = 0;
 };
 
 }  // namespace content

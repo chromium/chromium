@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -28,6 +29,7 @@
 #include "content/public/common/url_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -77,8 +79,7 @@ TestWebContents* TestWebContents::Create(const CreateParams& params) {
   return test_web_contents;
 }
 
-TestWebContents::~TestWebContents() {
-}
+TestWebContents::~TestWebContents() = default;
 
 TestRenderFrameHost* TestWebContents::GetMainFrame() {
   auto* instance = WebContentsImpl::GetMainFrame();
@@ -410,4 +411,25 @@ bool TestWebContents::IsBackForwardCacheSupported() {
   return back_forward_cache_supported_;
 }
 
+int TestWebContents::AddPrerender(const GURL& url) {
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = url;
+  return GetPrerenderHostRegistry()->CreateAndStartHost(std::move(attributes),
+                                                        *GetMainFrame());
+}
+
+TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
+    const GURL& url) {
+  int host_id = AddPrerender(url);
+  PrerenderHost* host =
+      GetPrerenderHostRegistry()->FindNonReservedHostById(host_id);
+  DCHECK(host);
+  {
+    std::unique_ptr<NavigationSimulatorImpl> navigation =
+        NavigationSimulatorImpl::CreateFromPendingInFrame(
+            FrameTreeNode::GloballyFindByID(host->frame_tree_node_id()));
+    navigation->Commit();
+  }
+  return static_cast<TestRenderFrameHost*>(host->GetPrerenderedMainFrameHost());
+}
 }  // namespace content

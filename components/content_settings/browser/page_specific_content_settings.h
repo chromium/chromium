@@ -486,6 +486,14 @@ class PageSpecificContentSettings
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
+  struct PendingUpdates {
+    PendingUpdates();
+    ~PendingUpdates();
+
+    std::vector<base::OnceClosure> delegate_updates;
+    bool site_data_accessed = false;
+  };
+
   explicit PageSpecificContentSettings(
       content::RenderFrameHost* rfh,
       PageSpecificContentSettings::WebContentsHandler& handler,
@@ -501,12 +509,34 @@ class PageSpecificContentSettings
   // Clears settings changed by the user via PageInfo since the last navigation.
   void ClearContentSettingsChangedViaPageInfo();
 
+  bool IsPagePrerendering() const;
+  void OnPrerenderingPageActivation();
+
+  // Delays the call of the delegate method if the page is currently
+  // prerendering until the page is activated; directly calls the method
+  // otherwise.
+  template <typename DelegateMethod, typename... Args>
+  void NotifyDelegate(DelegateMethod method, Args... args) {
+    if (IsPagePrerendering()) {
+      DCHECK(updates_queued_during_prerender_);
+      updates_queued_during_prerender_->delegate_updates.emplace_back(
+          base::BindOnce(method, base::Unretained(delegate_), args...));
+      return;
+    }
+    (*delegate_.*method)(args...);
+  }
+  // Notifies observers. Like |NotifyDelegate|, the notification is delayed for
+  // prerendering pages until the page is activated.
+  void NotifySiteDataObservers();
+
+  // Tells the delegate to update the location bar. This method is a no-op if
+  // the page is currently prerendering.
+  void MaybeUpdateLocationBar();
+
   WebContentsHandler& handler_;
   content::RenderFrameHost* main_frame_;
 
   Delegate* delegate_;
-
-  GURL visible_url_;
 
   struct ContentSettingsStatus {
     bool blocked;
@@ -552,6 +582,10 @@ class PageSpecificContentSettings
   // Stores content settings changed by the user via page info since the last
   // navigation. Used to determine whether to display the settings in page info.
   std::set<ContentSettingsType> content_settings_changed_via_page_info_;
+
+  // Calls to |delegate_| and SiteDataObservers that have been queued up while
+  // the page is prerendering. These calls are run when the page is activated.
+  std::unique_ptr<PendingUpdates> updates_queued_during_prerender_;
 
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 
