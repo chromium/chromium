@@ -3941,7 +3941,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
           proxy->GetRoutingID(), is_loading,
           proxy->frame_tree_node()->current_replication_state().Clone(),
           proxy->GetFrameToken(),
-          proxy->BindAndPassRemoteMainFrameInterfaces());
+          proxy->CreateAndBindRemoteMainFrameInterfaces());
       // Remember that a RenderFrameProxy was created as part of processing the
       // Unload message above.
       proxy->SetRenderFrameProxyCreated(true);
@@ -3974,7 +3974,7 @@ void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
   GetMojomFrameInRenderer()->Unload(
       proxy->GetRoutingID(), /*is_loading=*/false,
       frame_tree_node()->current_replication_state().Clone(),
-      proxy->GetFrameToken(), proxy->BindAndPassRemoteMainFrameInterfaces());
+      proxy->GetFrameToken(), proxy->CreateAndBindRemoteMainFrameInterfaces());
 }
 
 void RenderFrameHostImpl::DetachFromProxy() {

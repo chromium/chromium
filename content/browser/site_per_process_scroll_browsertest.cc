@@ -795,25 +795,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // SynchronizeVisualProperties. We may not use them all but we need to create
 // the interceptors as soon as the RenderFrameProxyHost is created so we don't
 // miss any messages.
-class ScrollBubblingProxyObserver {
+class ScrollBubblingProxyObserver : RenderFrameProxyHost::TestObserver {
  public:
   ScrollBubblingProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(base::BindRepeating(
-        &ScrollBubblingProxyObserver::RenderFrameProxyHostCreatedCallback,
-        weak_factory_.GetWeakPtr()));
-
-    // RenderFrameProxyHost can be deleted before the test is finished. In such
-    // case, |interceptors_| should remove the mapped interceptor to avoid a
-    // dangling pointer issue when it's destroyed.
-    RenderFrameProxyHost::SetDeletedCallbackForTesting(base::BindRepeating(
-        &ScrollBubblingProxyObserver::RenderFrameProxyHostDeletedCallback,
-        weak_factory_.GetWeakPtr()));
+    RenderFrameProxyHost::SetObserverForTesting(this);
   }
 
   // We don't need to set an empty callback to
   // RenderFrameProxyHost::Set[Created|Deleted]CallbackForTesting because we
   // already bound callbacks using a weak ptr.
-  ~ScrollBubblingProxyObserver() = default;
+  ~ScrollBubblingProxyObserver() override {
+    RenderFrameProxyHost::SetObserverForTesting(nullptr);
+  }
 
   SynchronizeVisualPropertiesInterceptor* interceptor(
       RenderFrameProxyHost* proxy) {
@@ -821,21 +814,22 @@ class ScrollBubblingProxyObserver {
   }
 
  private:
-  void RenderFrameProxyHostCreatedCallback(RenderFrameProxyHost* proxy_host) {
+  void OnCreated(RenderFrameProxyHost* proxy_host) override {
     interceptors_.emplace(
         proxy_host,
         std::make_unique<SynchronizeVisualPropertiesInterceptor>(proxy_host));
   }
 
-  void RenderFrameProxyHostDeletedCallback(RenderFrameProxyHost* proxy_host) {
+  void OnDeleted(RenderFrameProxyHost* proxy_host) override {
+    // RenderFrameProxyHost can be deleted before the test is finished. In such
+    // case, |interceptors_| should remove the mapped interceptor to avoid a
+    // dangling pointer issue when it's destroyed.
     interceptors_.erase(proxy_host);
   }
 
   std::map<RenderFrameProxyHost*,
            std::unique_ptr<SynchronizeVisualPropertiesInterceptor>>
       interceptors_;
-
-  base::WeakPtrFactory<ScrollBubblingProxyObserver> weak_factory_{this};
 };
 
 // Test that scrolling a nested out-of-process iframe bubbles unused scroll

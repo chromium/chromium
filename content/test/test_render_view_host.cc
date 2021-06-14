@@ -314,7 +314,13 @@ bool TestRenderViewHost::CreateRenderView(
   } else {
     // Pretend that mojo connections of the RemoteFrame is transferred to
     // renderer process and bound in blink.
-    ignore_result(proxy_host->BindRemoteMainFrameReceiverForTesting());
+    mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> remote_main_frame;
+    ignore_result(remote_main_frame.BindNewEndpointAndPassDedicatedReceiver());
+    proxy_host->BindRemoteMainFrameInterfaces(
+        remote_main_frame.Unbind(),
+        mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost>()
+            .BindNewEndpointAndPassDedicatedReceiver());
+
     proxy_host->SetRenderFrameProxyCreated(true);
   }
 

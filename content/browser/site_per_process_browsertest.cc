@@ -891,17 +891,14 @@ class FakeRemoteMainFrame : public blink::mojom::RemoteMainFrame {
 // This class intercepts RenderFrameProxyHost creations, and overrides their
 // respective blink::mojom::RemoteMainFrame instances, so that it can watch for
 // text autosizer page info updates.
-class UpdateTextAutosizerInfoProxyObserver {
+class UpdateTextAutosizerInfoProxyObserver
+    : public RenderFrameProxyHost::TestObserver {
  public:
   UpdateTextAutosizerInfoProxyObserver() {
-    RenderFrameProxyHost::SetBindRemoteFrameCallbackForTesting(
-        base::BindRepeating(&UpdateTextAutosizerInfoProxyObserver::
-                                RemoteFrameInterfacesBoundCallback,
-                            base::Unretained(this)));
+    RenderFrameProxyHost::SetObserverForTesting(this);
   }
-  ~UpdateTextAutosizerInfoProxyObserver() {
-    RenderFrameProxyHost::SetBindRemoteFrameCallbackForTesting(
-        RenderFrameProxyHost::BindRemoteFrameCallback());
+  ~UpdateTextAutosizerInfoProxyObserver() override {
+    RenderFrameProxyHost::SetObserverForTesting(nullptr);
   }
 
   const blink::mojom::TextAutosizerPageInfo& TextAutosizerPageInfo(
@@ -927,7 +924,7 @@ class UpdateTextAutosizerInfoProxyObserver {
     blink::mojom::TextAutosizerPageInfo page_info_;
   };
 
-  void RemoteFrameInterfacesBoundCallback(RenderFrameProxyHost* proxy_host) {
+  void OnRemoteMainFrameBound(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
   }
 

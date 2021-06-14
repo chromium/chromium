@@ -2067,16 +2067,13 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
 // This class intercepts RenderFrameProxyHost creations, and overrides their
 // respective blink::mojom::RemoteFrame instances, so that it can watch the
 // updates of opener frames.
-class UpdateOpenerProxyObserver {
+class UpdateOpenerProxyObserver : public RenderFrameProxyHost::TestObserver {
  public:
   UpdateOpenerProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(base::BindRepeating(
-        &UpdateOpenerProxyObserver::RenderFrameProxyHostCreatedCallback,
-        base::Unretained(this)));
+    RenderFrameProxyHost::SetObserverForTesting(this);
   }
-  ~UpdateOpenerProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(
-        RenderFrameProxyHost::CreatedCallback());
+  ~UpdateOpenerProxyObserver() override {
+    RenderFrameProxyHost::SetObserverForTesting(nullptr);
   }
   absl::optional<blink::FrameToken> OpenerFrameToken(
       RenderFrameProxyHost* proxy) {
@@ -2101,7 +2098,7 @@ class UpdateOpenerProxyObserver {
     absl::optional<blink::FrameToken> frame_token_;
   };
 
-  void RenderFrameProxyHostCreatedCallback(RenderFrameProxyHost* proxy_host) {
+  void OnCreated(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
   }
 
@@ -2328,19 +2325,41 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
               nodes_with_back_links.end());
 }
 
-// Stub out remote frame mojo binding. Intercepts calls to SetPageFocus
-// and marks the message as received.
-class PageFocusRemoteFrame : public content::FakeRemoteFrame {
+// This class intercepts RenderFrameProxyHost creations, and overrides their
+// respective blink::mojom::RemoteFrame instances, so that it can watch the
+// start and stop loading states.
+class PageFocusProxyObserver : public RenderFrameProxyHost::TestObserver {
  public:
-  explicit PageFocusRemoteFrame(RenderFrameProxyHost* render_frame_proxy_host) {
-    Init(render_frame_proxy_host->GetRemoteAssociatedInterfacesTesting());
+  PageFocusProxyObserver() {
+    RenderFrameProxyHost::SetObserverForTesting(this);
+  }
+  ~PageFocusProxyObserver() override {
+    RenderFrameProxyHost::SetObserverForTesting(nullptr);
+  }
+  bool IsPageFocused(RenderFrameProxyHost* proxy) {
+    return remote_frames_[proxy]->set_page_focus();
   }
 
-  void SetPageFocus(bool is_focused) override { set_page_focus_ = is_focused; }
-  bool IsPageFocused() { return set_page_focus_; }
-
  private:
-  bool set_page_focus_ = false;
+  class Remote : public content::FakeRemoteFrame {
+   public:
+    explicit Remote(RenderFrameProxyHost* proxy) {
+      Init(proxy->GetRemoteAssociatedInterfacesTesting());
+    }
+    void SetPageFocus(bool is_focused) override {
+      set_page_focus_ = is_focused;
+    }
+    bool set_page_focus() { return set_page_focus_; }
+
+   private:
+    bool set_page_focus_ = false;
+  };
+
+  void OnCreated(RenderFrameProxyHost* proxy_host) override {
+    remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
+  }
+
+  std::map<RenderFrameProxyHost*, std::unique_ptr<Remote>> remote_frames_;
 };
 
 // Check that when a window is focused/blurred, the message that sets
@@ -2354,6 +2373,9 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   // processes.
   if (!AreAllSitesIsolatedForTesting())
     return;
+
+  // Start monitoring RenderFrameProxyHost.
+  PageFocusProxyObserver proxy_observer;
 
   const GURL kUrlA("http://a.com/");
   const GURL kUrlB("http://b.com/");
@@ -2407,9 +2429,6 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
       root->render_manager()->GetRenderFrameProxyHost(host1->GetSiteInstance());
   EXPECT_TRUE(proxyB);
 
-  // Create PageFocusRemoteFrame to intercept SetPageFocus to RemoteFrame.
-  PageFocusRemoteFrame remote_frame1(proxyB);
-
   TestRenderFrameHost* host2 =
       static_cast<TestRenderFrameHost*>(NavigateToEntry(child2, &entryB));
 
@@ -2429,9 +2448,6 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   RenderFrameProxyHost* proxyC =
       root->render_manager()->GetRenderFrameProxyHost(host3->GetSiteInstance());
   EXPECT_TRUE(proxyC);
-
-  // Create PageFocusRemoteFrame to intercept SetPageFocus to RemoteFrame.
-  PageFocusRemoteFrame remote_frame3(proxyC);
 
   DidNavigateFrame(child3, host3);
 
@@ -2454,8 +2470,8 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   main_test_rfh()->GetRenderWidgetHost()->Focus();
   base::RunLoop().RunUntilIdle();
   VerifyPageFocusMessage(main_test_rfh()->GetRenderWidgetHost(), true);
-  EXPECT_TRUE(remote_frame1.IsPageFocused());
-  EXPECT_TRUE(remote_frame3.IsPageFocused());
+  EXPECT_TRUE(proxy_observer.IsPageFocused(proxyB));
+  EXPECT_TRUE(proxy_observer.IsPageFocused(proxyC));
 
   // Similarly, simulate focus loss on main page, and verify that the focus
   // message was sent to all processes.
@@ -2465,8 +2481,8 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   main_test_rfh()->GetRenderWidgetHost()->Blur();
   base::RunLoop().RunUntilIdle();
   VerifyPageFocusMessage(main_test_rfh()->GetRenderWidgetHost(), false);
-  EXPECT_FALSE(remote_frame1.IsPageFocused());
-  EXPECT_FALSE(remote_frame3.IsPageFocused());
+  EXPECT_FALSE(proxy_observer.IsPageFocused(proxyB));
+  EXPECT_FALSE(proxy_observer.IsPageFocused(proxyC));
 }
 
 // Check that page-level focus state is preserved across subframe navigations.
@@ -2479,6 +2495,9 @@ TEST_P(RenderFrameHostManagerTest,
   // processes.
   if (!AreAllSitesIsolatedForTesting())
     return;
+
+  // Start monitoring RenderFrameProxyHost.
+  PageFocusProxyObserver proxy_observer;
 
   const GURL kUrlA("http://a.com/");
   const GURL kUrlB("http://b.com/");
@@ -2529,9 +2548,6 @@ TEST_P(RenderFrameHostManagerTest,
       root->render_manager()->GetRenderFrameProxyHost(hostC->GetSiteInstance());
   EXPECT_TRUE(proxyC);
 
-  // Create PageFocusRemoteFrame to intercept SetPageFocus to RemoteFrame.
-  PageFocusRemoteFrame remote_frame(proxyC);
-
   DidNavigateFrame(child, hostC);
 
   base::RunLoop().RunUntilIdle();
@@ -2539,7 +2555,7 @@ TEST_P(RenderFrameHostManagerTest,
   // Since the B->C navigation happened while the current page was focused,
   // page focus should propagate to the new subframe process.  Check that
   // process C received the proper focus message.
-  EXPECT_TRUE(remote_frame.IsPageFocused());
+  EXPECT_TRUE(proxy_observer.IsPageFocused(proxyC));
 }
 
 // Checks that a restore navigation to a WebUI works.
@@ -2996,17 +3012,14 @@ TEST_P(RenderFrameHostManagerTest, NavigateCrossSiteBetweenWebUIs) {
 
 // This class intercepts RenderFrameProxyHost creations, and overrides their
 // respective blink::mojom::RemoteFrame instances.
-class InsecureRequestPolicyProxyObserver {
+class InsecureRequestPolicyProxyObserver
+    : public RenderFrameProxyHost::TestObserver {
  public:
   InsecureRequestPolicyProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(
-        base::BindRepeating(&InsecureRequestPolicyProxyObserver::
-                                RenderFrameProxyHostCreatedCallback,
-                            base::Unretained(this)));
+    RenderFrameProxyHost::SetObserverForTesting(this);
   }
-  ~InsecureRequestPolicyProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(
-        RenderFrameProxyHost::CreatedCallback());
+  ~InsecureRequestPolicyProxyObserver() override {
+    RenderFrameProxyHost::SetObserverForTesting(nullptr);
   }
   blink::mojom::InsecureRequestPolicy GetRequestPolicy(
       RenderFrameProxyHost* proxy_host) {
@@ -3034,7 +3047,7 @@ class InsecureRequestPolicyProxyObserver {
     blink::mojom::InsecureRequestPolicy enforce_insecure_request_policy_;
   };
 
-  void RenderFrameProxyHostCreatedCallback(RenderFrameProxyHost* proxy_host) {
+  void OnCreated(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<RemoteFrame>(proxy_host);
   }
 
@@ -3126,16 +3139,14 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
 // This class intercepts RenderFrameProxyHost creations, and overrides their
 // respective blink::mojom::RemoteFrame instances, so that it can watch the
 // start and stop loading states.
-class StartStopLoadingProxyObserver {
+class StartStopLoadingProxyObserver
+    : public RenderFrameProxyHost::TestObserver {
  public:
   StartStopLoadingProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(base::BindRepeating(
-        &StartStopLoadingProxyObserver::RenderFrameProxyHostCreatedCallback,
-        base::Unretained(this)));
+    RenderFrameProxyHost::SetObserverForTesting(this);
   }
-  ~StartStopLoadingProxyObserver() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(
-        RenderFrameProxyHost::CreatedCallback());
+  ~StartStopLoadingProxyObserver() override {
+    RenderFrameProxyHost::SetObserverForTesting(nullptr);
   }
   bool IsLoading(RenderFrameProxyHost* proxy) {
     return remote_frames_[proxy]->is_loading();
@@ -3155,7 +3166,7 @@ class StartStopLoadingProxyObserver {
     bool is_loading_ = false;
   };
 
-  void RenderFrameProxyHostCreatedCallback(RenderFrameProxyHost* proxy_host) {
+  void OnCreated(RenderFrameProxyHost* proxy_host) override {
     remote_frames_[proxy_host] = std::make_unique<Remote>(proxy_host);
   }
 
@@ -3408,20 +3419,18 @@ class AdStatusInterceptingRemoteFrame : public content::FakeRemoteFrame {
 };
 
 class RenderFrameHostManagerAdTaggingSignalTest
-    : public RenderFrameHostManagerTest {
+    : public RenderFrameHostManagerTest,
+      public RenderFrameProxyHost::TestObserver {
  public:
   RenderFrameHostManagerAdTaggingSignalTest() {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(base::BindRepeating(
-        &RenderFrameHostManagerAdTaggingSignalTest::OnProxyHostCreated,
-        base::Unretained(this)));
+    RenderFrameProxyHost::SetObserverForTesting(this);
   }
 
   ~RenderFrameHostManagerAdTaggingSignalTest() override {
-    RenderFrameProxyHost::SetCreatedCallbackForTesting(
-        RenderFrameProxyHost::CreatedCallback());
+    RenderFrameProxyHost::SetObserverForTesting(nullptr);
   }
 
-  void OnProxyHostCreated(RenderFrameProxyHost* proxy_host) {
+  void OnCreated(RenderFrameProxyHost* proxy_host) override {
     auto fake_remote_frame =
         std::make_unique<AdStatusInterceptingRemoteFrame>();
     fake_remote_frame->Init(proxy_host->GetRemoteAssociatedInterfacesTesting());

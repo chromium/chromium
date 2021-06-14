@@ -50,21 +50,7 @@ namespace content {
 
 namespace {
 
-RenderFrameProxyHost::CreatedCallback& GetProxyHostCreatedCallback() {
-  static base::NoDestructor<RenderFrameProxyHost::CreatedCallback> s_callback;
-  return *s_callback;
-}
-
-RenderFrameProxyHost::CreatedCallback& GetProxyHostDeletedCallback() {
-  static base::NoDestructor<RenderFrameProxyHost::DeletedCallback> s_callback;
-  return *s_callback;
-}
-
-RenderFrameProxyHost::BindRemoteFrameCallback& GetBindRemoteFrameCallback() {
-  static base::NoDestructor<RenderFrameProxyHost::BindRemoteFrameCallback>
-      s_callback;
-  return *s_callback;
-}
+RenderFrameProxyHost::TestObserver* g_observer_for_testing = nullptr;
 
 // The (process id, routing id) pair that identifies one RenderFrameProxy.
 typedef std::pair<int32_t, int32_t> RenderFrameProxyHostID;
@@ -113,21 +99,10 @@ bool ShouldRecordPostMessageIncomingPageUkmEvent(
 }  // namespace
 
 // static
-void RenderFrameProxyHost::SetCreatedCallbackForTesting(
-    const CreatedCallback& created_callback) {
-  GetProxyHostCreatedCallback() = created_callback;
-}
-
-// static
-void RenderFrameProxyHost::SetDeletedCallbackForTesting(
-    const DeletedCallback& deleted_callback) {
-  GetProxyHostDeletedCallback() = deleted_callback;
-}
-
-// static
-void RenderFrameProxyHost::SetBindRemoteFrameCallbackForTesting(
-    const BindRemoteFrameCallback& bind_callback) {
-  GetBindRemoteFrameCallback() = bind_callback;
+void RenderFrameProxyHost::SetObserverForTesting(TestObserver* observer) {
+  // Prevent clobbering by previously set TestObserver.
+  DCHECK(!observer || (observer && !g_observer_for_testing));
+  g_observer_for_testing = observer;
 }
 
 // static
@@ -197,13 +172,13 @@ RenderFrameProxyHost::RenderFrameProxyHost(
         std::make_unique<CrossProcessFrameConnector>(this);
   }
 
-  if (!GetProxyHostCreatedCallback().is_null())
-    GetProxyHostCreatedCallback().Run(this);
+  if (g_observer_for_testing)
+    g_observer_for_testing->OnCreated(this);
 }
 
 RenderFrameProxyHost::~RenderFrameProxyHost() {
-  if (!GetProxyHostDeletedCallback().is_null())
-    GetProxyHostDeletedCallback().Run(this);
+  if (g_observer_for_testing)
+    g_observer_for_testing->OnDeleted(this);
 
   if (GetProcess()->IsInitializedAndNotDead()) {
     // TODO(nasko): For now, don't send this IPC for top-level frames, as
@@ -306,7 +281,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
                         frame_tree_node_->tree_scope_type(),
                         frame_tree_node_->current_replication_state().Clone(),
                         frame_tree_node_->devtools_frame_token(),
-                        BindAndPassRemoteMainFrameInterfaces());
+                        CreateAndBindRemoteMainFrameInterfaces());
 
   SetRenderFrameProxyCreated(true);
 
@@ -795,21 +770,28 @@ RenderFrameProxyHost::BindRemoteMainFrameReceiverForTesting() {
 }
 
 mojom::RemoteMainFrameInterfacesPtr
-RenderFrameProxyHost::BindAndPassRemoteMainFrameInterfaces() {
+RenderFrameProxyHost::CreateAndBindRemoteMainFrameInterfaces() {
+  auto params = mojom::RemoteMainFrameInterfaces::New();
+  BindRemoteMainFrameInterfaces(
+      params->main_frame.InitWithNewEndpointAndPassRemote(),
+      params->main_frame_host.InitWithNewEndpointAndPassReceiver());
+  return params;
+}
+
+void RenderFrameProxyHost::BindRemoteMainFrameInterfaces(
+    mojo::PendingAssociatedRemote<blink::mojom::RemoteMainFrame>
+        remote_main_frame,
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrameHost>
+        remote_main_frame_host_receiver) {
   DCHECK(!remote_main_frame_.is_bound());
   DCHECK(!remote_main_frame_host_receiver_.is_bound());
 
-  auto params = mojom::RemoteMainFrameInterfaces::New();
-  params->main_frame = remote_main_frame_.BindNewEndpointAndPassReceiver();
+  remote_main_frame_.Bind(std::move(remote_main_frame));
   remote_main_frame_host_receiver_.Bind(
-      params->main_frame_host.InitWithNewEndpointAndPassReceiver());
+      std::move(remote_main_frame_host_receiver));
 
-  // This callback is only for testing which needs to intercept RemoteMainFrame
-  // interfaces.
-  if (!GetBindRemoteFrameCallback().is_null())
-    GetBindRemoteFrameCallback().Run(this);
-
-  return params;
+  if (g_observer_for_testing)
+    g_observer_for_testing->OnRemoteMainFrameBound(this);
 }
 
 void RenderFrameProxyHost::InvalidateMojoConnection() {

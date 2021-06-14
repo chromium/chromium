@@ -633,6 +633,37 @@ class BoundingBoxUpdateWaiter : public TextInputManager::Observer {
 
 #endif
 
+// Observer for RenderFrameProxyHost by setting itself through
+// RenderFrameProxyHost::SetObserverForTesting.
+class ProxyHostObserver : public RenderFrameProxyHost::TestObserver {
+ public:
+  using CreatedCallback = base::RepeatingCallback<void(RenderFrameProxyHost*)>;
+
+  ProxyHostObserver() = default;
+  ~ProxyHostObserver() override = default;
+
+  void Reset() { created_callback_ = CreatedCallback(); }
+
+  void set_created_callback(CreatedCallback callback) {
+    created_callback_ = std::move(callback);
+  }
+
+ private:
+  // RenderFrameProxyHost::TestObserver:
+  void OnCreated(RenderFrameProxyHost* rfph) override {
+    if (created_callback_)
+      created_callback_.Run(rfph);
+  }
+
+  // Callback which runs on RenderFrameProxyHost is created.
+  CreatedCallback created_callback_;
+};
+
+ProxyHostObserver* GetProxyHostObserver() {
+  static base::NoDestructor<ProxyHostObserver> observer;
+  return observer.get();
+}
+
 }  // namespace
 
 bool NavigateToURL(WebContents* web_contents, const GURL& url) {
@@ -3653,13 +3684,17 @@ void DidStartNavigationObserver::DidFinishNavigation(NavigationHandle* handle) {
 }
 
 ProxyDSFObserver::ProxyDSFObserver() {
-  RenderFrameProxyHost::SetCreatedCallbackForTesting(base::BindRepeating(
+  // Set callback and observer to track the creation of RenderFrameProxyHosts.
+  ProxyHostObserver* observer = GetProxyHostObserver();
+  observer->set_created_callback(base::BindRepeating(
       &ProxyDSFObserver::OnCreation, base::Unretained(this)));
+  RenderFrameProxyHost::SetObserverForTesting(observer);
 }
 
 ProxyDSFObserver::~ProxyDSFObserver() {
-  RenderFrameProxyHost::SetCreatedCallbackForTesting(
-      RenderFrameProxyHost::CreatedCallback());
+  // Stop observing RenderFrameProxyHosts.
+  GetProxyHostObserver()->Reset();
+  RenderFrameProxyHost::SetObserverForTesting(nullptr);
 }
 
 void ProxyDSFObserver::WaitForOneProxyHostCreation() {
