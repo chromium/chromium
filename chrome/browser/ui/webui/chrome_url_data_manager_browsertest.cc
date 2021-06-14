@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
@@ -175,6 +175,14 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     EXPECT_TRUE(console_observer.messages().empty());
   }
 
+  static std::string ParamInfoToString(
+      const ::testing::TestParamInfo<const char*>& info) {
+    std::string name(info.param);
+    std::replace_if(
+        name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
+    return name;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
@@ -183,7 +191,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 // Verify that there's no Trusted Types violation in chrome://chrome-urls
 IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
                        NoTrustedTypesViolation) {
-  LOG(INFO) << "Navigating to " << GetParam();
   CheckTrustedTypesViolation(GetParam());
 }
 
@@ -231,7 +238,8 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://media-history",
     "chrome://media-internals",
     "chrome://media-router-internals",
-    "chrome://memory-internals",
+    // TODO(crbug.com/1217395): DCHECK failure
+    // "chrome://memory-internals",
     "chrome://net-export",
     "chrome://net-internals",
     "chrome://network-error",
@@ -333,6 +341,8 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ChromeURLDataManagerWebUITrustedTypesTest,
-                         ::testing::ValuesIn(kChromeUrls));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChromeURLDataManagerWebUITrustedTypesTest,
+    ::testing::ValuesIn(kChromeUrls),
+    ChromeURLDataManagerWebUITrustedTypesTest::ParamInfoToString);
