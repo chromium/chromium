@@ -70,7 +70,6 @@ class CursorWindowControllerTest : public AshTestBase {
     // feature using it and is turned off.
     Shell::Get()->accessibility_controller()->high_contrast().SetEnabled(
         enabled);
-    Shell::Get()->UpdateCursorCompositingEnabled();
   }
 
   CursorWindowController* cursor_window_controller() {
@@ -203,12 +202,10 @@ TEST_F(CursorWindowControllerTest, ShouldEnableCursorCompositing) {
 
   // Enable large cursor, cursor compositing should be enabled.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
-  Shell::Get()->UpdateCursorCompositingEnabled();
   EXPECT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
 
   // Disable large cursor, cursor compositing should be disabled.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
-  Shell::Get()->UpdateCursorCompositingEnabled();
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
 }
 

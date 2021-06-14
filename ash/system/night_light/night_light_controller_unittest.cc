@@ -1316,7 +1316,7 @@ class NightLightCrtcTest : public NightLightTest {
     return Shell::Get()
         ->window_tree_host_manager()
         ->cursor_window_controller()
-        ->ShouldEnableCursorCompositing();
+        ->is_cursor_compositing_enabled();
   }
 
   std::string GetLoggerActionsAndClear() {
@@ -1401,13 +1401,11 @@ TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   for (const auto* const pref : {prefs::kAccessibilityLargeCursorEnabled,
                                  prefs::kAccessibilityHighContrastEnabled}) {
     user1_pref_service()->SetBoolean(pref, true);
-    Shell::Get()->UpdateCursorCompositingEnabled();
     EXPECT_TRUE(IsCursorCompositingEnabled());
 
     // Disabling the accessibility feature should revert back to the hardware
     // cursor.
     user1_pref_service()->SetBoolean(pref, false);
-    Shell::Get()->UpdateCursorCompositingEnabled();
     EXPECT_FALSE(IsCursorCompositingEnabled());
   }
 }
