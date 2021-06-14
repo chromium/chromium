@@ -140,6 +140,8 @@ void PowerModeArbiter::SetTaskRunnerForTesting(
 void PowerModeArbiter::OnTaskRunnerAvailable(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     int sequence_number) {
+  UpdateTraceObserver();
+
   // Check if there are any actionable resets and post another task to handle
   // future ones if necessary. If sequence_number is changed concurrently by
   // RemoveObserver() or ResetVoteAfterTimeout(), this has call has no effect,
@@ -363,6 +365,32 @@ void PowerModeArbiter::SetOnBatteryPowerForTesting(bool on_battery_power) {
   charging_voter_->SetOnBatteryPowerForTesting(on_battery_power);  // IN-TEST
 }
 
+void PowerModeArbiter::UpdateTraceObserver() {
+  {
+    base::AutoLock lock(lock_);
+
+    // Can't add the observer yet if the task runner isn't available.
+    if (!task_runner_)
+      return;
+  }
+
+  // Lock while adding or removing the observer, because OnTaskRunnerAvailable()
+  // may run concurrently to OnTraceLogEnabled/Disabled(). We need a different
+  // lock than |lock_| since that one is acquired by Add/RemoveObserver().
+  base::AutoLock lock(trace_observer_lock_);
+  bool power_tracing_enabled =
+      *TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("power");
+  if (power_tracing_enabled && !trace_observer_added_) {
+    trace_observer_added_ = true;
+    // Add a no-op observer which ensures that reset tasks are executing while
+    // tracing is enabled.
+    AddObserver(trace_observer_.get());
+  } else if (!power_tracing_enabled && trace_observer_added_) {
+    trace_observer_added_ = false;
+    RemoveObserver(trace_observer_.get());
+  }
+}
+
 void PowerModeArbiter::OnTraceLogEnabled() {
   {
     base::AutoLock lock(lock_);
@@ -371,17 +399,11 @@ void PowerModeArbiter::OnTraceLogEnabled() {
     active_mode_.OnTraceLogEnabled();
   }
 
-  const auto* power_tracing_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("power");
-  if (*power_tracing_enabled) {
-    // Add a no-op observer which ensures that reset tasks are executing while
-    // tracing is enabled.
-    AddObserver(trace_observer_.get());
-  }
+  UpdateTraceObserver();
 }
 
 void PowerModeArbiter::OnTraceLogDisabled() {
-  RemoveObserver(trace_observer_.get());
+  UpdateTraceObserver();
 }
 
 }  // namespace power_scheduler

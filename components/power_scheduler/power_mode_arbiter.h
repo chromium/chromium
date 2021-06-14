@@ -98,11 +98,17 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
 
   PowerMode ComputeActiveModeLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  void UpdateTraceObserver() LOCKS_EXCLUDED(lock_, trace_observer_lock_);
+
   // trace_event::TraceLog::EnabledStateObserver implementation:
   void OnTraceLogEnabled() override;
   void OnTraceLogDisabled() override;
 
-  std::unique_ptr<Observer> trace_observer_;
+  // Protects trace_observer_{,added_}. Should only be acquired when |lock_| is
+  // not held.
+  base::Lock trace_observer_lock_;
+  std::unique_ptr<Observer> trace_observer_ GUARDED_BY(trace_observer_lock_);
+  bool trace_observer_added_ GUARDED_BY(trace_observer_lock_) = false;
 
   base::Lock lock_;  // Protects subsequent members.
   scoped_refptr<base::SequencedTaskRunner> task_runner_ GUARDED_BY(lock_);
