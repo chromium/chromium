@@ -45,8 +45,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   AvatarToolbarButton::State GetState() const;
 
-  absl::optional<sync_ui_util::AvatarSyncErrorType> GetAvatarSyncErrorType()
-      const;
+  absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType() const;
 
   bool IsSyncFeatureEnabled() const;
 
@@ -139,7 +138,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
 
   // Caches the value of the last error so the class can detect when it changes
   // and notify |avatar_toolbar_button_|.
-  absl::optional<sync_ui_util::AvatarSyncErrorType> last_avatar_error_;
+  absl::optional<AvatarSyncErrorType> last_avatar_error_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 

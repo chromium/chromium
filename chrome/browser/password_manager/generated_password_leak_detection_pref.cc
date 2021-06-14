@@ -28,11 +28,11 @@ bool IsUserSignedInAndSyncing(Profile* profile) {
   if (!identity_manager)
     return false;
 
-  const sync_ui_util::StatusLabels status_labels =
-      sync_ui_util::GetStatusLabels(profile);
+  const SyncStatusLabels status_labels = GetSyncStatusLabels(profile);
   bool sync_error =
-      status_labels.message_type == sync_ui_util::SYNC_ERROR ||
-      status_labels.message_type == sync_ui_util::PASSWORDS_ONLY_SYNC_ERROR;
+      status_labels.message_type == SyncStatusMessageType::kSyncError ||
+      status_labels.message_type ==
+          SyncStatusMessageType::kPasswordsOnlySyncError;
 
   // Password leak detection only requires a signed in account and a functioning
   // sync service, it does not require sync consent.

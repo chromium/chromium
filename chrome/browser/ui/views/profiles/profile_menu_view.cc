@@ -72,33 +72,34 @@ namespace {
 
 // Helpers --------------------------------------------------------------------
 
-std::u16string GetSyncErrorButtonText(sync_ui_util::AvatarSyncErrorType error) {
+std::u16string GetSyncErrorButtonText(AvatarSyncErrorType error) {
   switch (error) {
-    case sync_ui_util::AUTH_ERROR:
-    case sync_ui_util::UNRECOVERABLE_ERROR:
+    case AvatarSyncErrorType::kAuthError:
+    case AvatarSyncErrorType::kUnrecoverableError:
       // The user was signed out. Offer them to sign in again.
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON);
-    case sync_ui_util::MANAGED_USER_UNRECOVERABLE_ERROR:
+    case AvatarSyncErrorType::kManagedUserUnrecoverableError:
       // As opposed to the corresponding error in an unmanaged account
-      // (sync_ui_util::UNRECOVERABLE_ERROR), sign-out hasn't happened here yet.
-      // The button directs to the sign-out confirmation dialog in settings.
+      // (AvatarSyncErrorType::kUnrecoverableError), sign-out hasn't happened
+      // here yet. The button directs to the sign-out confirmation dialog in
+      // settings.
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON);
-    case sync_ui_util::UPGRADE_CLIENT_ERROR:
+    case AvatarSyncErrorType::kUpgradeClientError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
-    case sync_ui_util::PASSPHRASE_ERROR:
+    case AvatarSyncErrorType::kPassphraseError:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON);
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
+    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
+    case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON);
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
+    case AvatarSyncErrorType::
+        kTrustedVaultRecoverabilityDegradedForEverythingError:
+    case AvatarSyncErrorType::
+        kTrustedVaultRecoverabilityDegradedForPasswordsError:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON);
-    case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
+    case AvatarSyncErrorType::kSettingsUnconfirmedError:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
   }
@@ -131,8 +132,7 @@ int CountBrowsersFor(Profile* profile) {
 }
 
 bool IsSyncPaused(Profile* profile) {
-  return sync_ui_util::GetAvatarSyncErrorType(profile) ==
-         sync_ui_util::AUTH_ERROR;
+  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kAuthError;
 }
 
 // TODO(crbug.com/1125474): Replace IsGuest(profile) calls with
@@ -186,8 +186,7 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   if (profile->IsOffTheRecord())
     return gfx::ImageSkia();
 
-  absl::optional<sync_ui_util::AvatarSyncErrorType> error =
-      sync_ui_util::GetAvatarSyncErrorType(profile);
+  absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
   if (!error) {
     // There's no error, so just show the sync on/off icon depending on whether
     // sync-the-feature is enabled.
@@ -201,7 +200,7 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   }
 
   ui::NativeTheme::ColorId color_id =
-      error == sync_ui_util::AUTH_ERROR
+      error == AvatarSyncErrorType::kAuthError
           ? ui::NativeTheme::kColorId_ProminentButtonColor
           : ui::NativeTheme::kColorId_AlertSeverityHigh;
   return ColoredImageForMenu(kSyncPausedCircleIcon,
@@ -282,8 +281,7 @@ void ProfileMenuView::OnSyncSettingsButtonClicked() {
   chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
 }
 
-void ProfileMenuView::OnSyncErrorButtonClicked(
-    sync_ui_util::AvatarSyncErrorType error) {
+void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, sync errors are fixed by re-signing into the OS.
   chrome::AttemptUserExit();
@@ -294,10 +292,10 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
 
   // The logic below must be consistent with GetSyncInfoForAvatarErrorType().
   switch (error) {
-    case sync_ui_util::MANAGED_USER_UNRECOVERABLE_ERROR:
+    case AvatarSyncErrorType::kManagedUserUnrecoverableError:
       chrome::ShowSettingsSubPage(browser(), chrome::kSignOutSubPage);
       break;
-    case sync_ui_util::UNRECOVERABLE_ERROR:
+    case AvatarSyncErrorType::kUnrecoverableError:
       // GetPrimaryAccountMutator() might return nullptr on some platforms.
       if (auto* account_mutator =
               IdentityManagerFactory::GetForProfile(browser()->profile())
@@ -311,28 +309,28 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
             signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
       }
       break;
-    case sync_ui_util::AUTH_ERROR:
+    case AvatarSyncErrorType::kAuthError:
       Hide();
       browser()->signin_view_controller()->ShowSignin(
           profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH,
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
       break;
-    case sync_ui_util::UPGRADE_CLIENT_ERROR:
+    case AvatarSyncErrorType::kUpgradeClientError:
       chrome::OpenUpdateChromeDialog(browser());
       break;
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
-    case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
-      sync_ui_util::OpenTabForSyncKeyRetrieval(
+    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
+    case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
+      OpenTabForSyncKeyRetrieval(
           browser(), syncer::KeyRetrievalTriggerForUMA::kProfileMenu);
       break;
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
-    case sync_ui_util::
-        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
-      sync_ui_util::OpenTabForSyncKeyRecoverabilityDegraded(browser());
+    case AvatarSyncErrorType::
+        kTrustedVaultRecoverabilityDegradedForEverythingError:
+    case AvatarSyncErrorType::
+        kTrustedVaultRecoverabilityDegradedForPasswordsError:
+      OpenTabForSyncKeyRecoverabilityDegraded(browser());
       break;
-    case sync_ui_util::PASSPHRASE_ERROR:
-    case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
+    case AvatarSyncErrorType::kPassphraseError:
+    case AvatarSyncErrorType::kSettingsUnconfirmedError:
       chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
       break;
   }
@@ -513,14 +511,13 @@ void ProfileMenuView::BuildSyncInfo() {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
-  const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
-      sync_ui_util::GetAvatarSyncErrorType(profile);
+  const absl::optional<AvatarSyncErrorType> error =
+      GetAvatarSyncErrorType(profile);
   if (error) {
     BuildSyncInfoWithCallToAction(
-        sync_ui_util::GetAvatarSyncErrorDescription(*error,
-                                                    is_sync_feature_enabled),
+        GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled),
         GetSyncErrorButtonText(*error),
-        error == sync_ui_util::AUTH_ERROR
+        error == AvatarSyncErrorType::kAuthError
             ? ui::NativeTheme::kColorId_SyncInfoContainerPaused
             : ui::NativeTheme::kColorId_SyncInfoContainerError,
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,

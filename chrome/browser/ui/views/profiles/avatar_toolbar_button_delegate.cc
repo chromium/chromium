@@ -91,7 +91,7 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     Profile* profile)
     : avatar_toolbar_button_(button),
       profile_(profile),
-      last_avatar_error_(sync_ui_util::GetAvatarSyncErrorType(profile)) {
+      last_avatar_error_(::GetAvatarSyncErrorType(profile)) {
   profile_observation_.Observe(&GetProfileAttributesStorage());
 
   if (auto* sync_service = SyncServiceFactory::GetForProfile(profile_))
@@ -175,12 +175,12 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
 
   // Show any existing sync errors (sync-the-feature or sync-the-transport).
   // |last_avatar_error_| should be checked here rather than
-  // sync_ui_util::GetAvatarSyncErrorType(), so the result agrees with
+  // ::GetAvatarSyncErrorType(), so the result agrees with
   // AvatarToolbarButtonDelegate::GetAvatarSyncErrorType().
   if (!last_avatar_error_)
     return AvatarToolbarButton::State::kNormal;
 
-  if (last_avatar_error_ == sync_ui_util::AUTH_ERROR &&
+  if (last_avatar_error_ == AvatarSyncErrorType::kAuthError &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
     return AvatarToolbarButton::State::kSyncPaused;
   }
@@ -188,7 +188,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
   return AvatarToolbarButton::State::kSyncError;
 }
 
-absl::optional<sync_ui_util::AvatarSyncErrorType>
+absl::optional<AvatarSyncErrorType>
 AvatarToolbarButtonDelegate::GetAvatarSyncErrorType() const {
   return last_avatar_error_;
 }
@@ -354,8 +354,8 @@ void AvatarToolbarButtonDelegate::OnExtendedAccountInfoRemoved(
 }
 
 void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
-  const absl::optional<sync_ui_util::AvatarSyncErrorType> error =
-      sync_ui_util::GetAvatarSyncErrorType(profile_);
+  const absl::optional<AvatarSyncErrorType> error =
+      ::GetAvatarSyncErrorType(profile_);
   if (last_avatar_error_ == error)
     return;
 

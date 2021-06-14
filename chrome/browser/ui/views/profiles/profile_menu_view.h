@@ -60,7 +60,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnGuestProfileButtonClicked();
   void OnExitProfileButtonClicked();
   void OnSyncSettingsButtonClicked();
-  void OnSyncErrorButtonClicked(sync_ui_util::AvatarSyncErrorType error);
+  void OnSyncErrorButtonClicked(AvatarSyncErrorType error);
   void OnSigninAccountButtonClicked(AccountInfo account);
   void OnCookiesClearedOnExitLinkClicked();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

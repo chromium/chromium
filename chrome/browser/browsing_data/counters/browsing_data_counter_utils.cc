@@ -59,7 +59,7 @@ bool ShouldShowCookieException(Profile* profile) {
   }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    return sync_ui_util::GetStatus(profile) == sync_ui_util::SYNCED;
+    return GetSyncStatusMessageType(profile) == SyncStatusMessageType::kSynced;
   }
 #endif
   return false;

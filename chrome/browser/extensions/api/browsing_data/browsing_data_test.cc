@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
   sync_service->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
-  ASSERT_EQ(sync_ui_util::SYNCED, sync_ui_util::GetStatus(profile));
+  ASSERT_EQ(SyncStatusMessageType::kSynced, GetSyncStatusMessageType(profile));
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
               CREDENTIALS_REJECTED_BY_SERVER));
 
   // Sync is not running.
-  ASSERT_NE(sync_ui_util::SYNCED, sync_ui_util::GetStatus(profile));
+  ASSERT_NE(SyncStatusMessageType::kSynced, GetSyncStatusMessageType(profile));
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(

@@ -330,8 +330,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(sync_ui_util::GetAvatarSyncErrorType(browser()->profile()),
-            sync_ui_util::AUTH_ERROR);
+  EXPECT_EQ(GetAvatarSyncErrorType(browser()->profile()),
+            AvatarSyncErrorType::kAuthError);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

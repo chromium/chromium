@@ -24,86 +24,85 @@ class SyncService;
 
 // Utility functions to gather current sync status information from the sync
 // service and constructs messages suitable for showing in UI.
-namespace sync_ui_util {
 
-enum MessageType {
+enum class SyncStatusMessageType {
   // User has not set up sync.
-  PRE_SYNCED,
+  kPreSynced,
   // We are synced and authenticated to a gmail account.
-  SYNCED,
+  kSynced,
   // A sync error (such as invalid credentials) has occurred.
-  SYNC_ERROR,
-  // Same as SYNC_ERROR but affecting passwords only.
-  PASSWORDS_ONLY_SYNC_ERROR,
+  kSyncError,
+  // Same as kSyncError but affecting passwords only.
+  kPasswordsOnlySyncError,
 };
 
 // The action associated with the sync status in settings.
-enum ActionType {
+enum class SyncStatusActionType {
   // No action to take.
-  NO_ACTION,
+  kNoAction,
   // User needs to reauthenticate.
-  REAUTHENTICATE,
+  kReauthenticate,
   // User needs to sign out and sign in.
-  SIGNOUT_AND_SIGNIN,
+  kSignoutAndSignin,
   // User needs to upgrade the client.
-  UPGRADE_CLIENT,
+  kUpgradeClient,
   // User needs to enter their passphrase.
-  ENTER_PASSPHRASE,
+  kEnterPassphrase,
   // User needs to go through key retrieval.
-  RETRIEVE_TRUSTED_VAULT_KEYS,
+  kRetrieveTrustedVaultKeys,
   // User needs to confirm sync settings.
-  CONFIRM_SYNC_SETTINGS,
+  kConfirmSyncSettings,
 };
 
 // Sync errors that should be exposed to the user through the avatar button.
 enum AvatarSyncErrorType {
   // Unrecoverable error for managed users.
-  MANAGED_USER_UNRECOVERABLE_ERROR,
+  kManagedUserUnrecoverableError,
   // Unrecoverable error for regular users.
-  UNRECOVERABLE_ERROR,
+  kUnrecoverableError,
   // Authentication error.
   // TODO(crbug.com/1156584): Rename to SYNC_PAUSED. That's how it's treated by
   // the UI, and it should eventually match SyncService::TransportState::PAUSED.
-  AUTH_ERROR,
+  kAuthError,
   // Out-of-date client error.
-  UPGRADE_CLIENT_ERROR,
+  kUpgradeClientError,
   // Sync passphrase error.
-  PASSPHRASE_ERROR,
+  kPassphraseError,
   // Trusted vault keys missing for all sync datatypes (encrypt everything is
   // enabled).
-  TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR,
+  kTrustedVaultKeyMissingForEverythingError,
   // Trusted vault keys missing for always-encrypted datatypes (passwords).
-  TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR,
+  kTrustedVaultKeyMissingForPasswordsError,
   // User needs to improve recoverability of the trusted vault (encrypt
   // everything is enabled).
-  TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR,
+  kTrustedVaultRecoverabilityDegradedForEverythingError,
   // User needs to improve recoverability of the trusted vault (passwords).
-  TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR,
+  kTrustedVaultRecoverabilityDegradedForPasswordsError,
   // Sync settings dialog not confirmed yet.
-  SETTINGS_UNCONFIRMED_ERROR,
+  kSettingsUnconfirmedError,
 };
 
-struct StatusLabels {
-  MessageType message_type;
+struct SyncStatusLabels {
+  SyncStatusMessageType message_type;
   int status_label_string_id;
   int button_string_id;
-  ActionType action_type;
+  SyncStatusActionType action_type;
 };
 
 // Returns the high-level sync status by querying |sync_service| and
 // |identity_manager|.
-StatusLabels GetStatusLabels(syncer::SyncService* sync_service,
-                             signin::IdentityManager* identity_manager,
-                             bool is_user_signout_allowed);
+SyncStatusLabels GetSyncStatusLabels(syncer::SyncService* sync_service,
+                                     signin::IdentityManager* identity_manager,
+                                     bool is_user_signout_allowed);
 
 // Returns the high-level sync status by querying |profile|. This is a
-// convenience version of GetStatusLabels that use the |sync_service| and
+// convenience version of GetSyncStatusLabels that use the |sync_service| and
 // |identity_manager| associated to |profile| via their respective factories.
-StatusLabels GetStatusLabels(Profile* profile);
+SyncStatusLabels GetSyncStatusLabels(Profile* profile);
 
-// Convenience version of GetStatusLabels for when you're not interested in the
-// actual labels, only in the return value.
-MessageType GetStatus(Profile* profile);
+// Convenience version of GetSyncStatusLabels for when you're only interested in
+// the message type.
+SyncStatusMessageType GetSyncStatusMessageType(Profile* profile);
 
 // Gets the error in the sync machinery (if any) that should be exposed to the
 // user through the titlebar avatar button. If absl::nullopt is returned, this
@@ -116,9 +115,8 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
 // When |error| is present, this returns the string to be shown both as the
 // tooltip of the avatar button, and in the profile menu body (the menu opened
 // by clicking the avatar button).
-std::u16string GetAvatarSyncErrorDescription(
-    sync_ui_util::AvatarSyncErrorType error,
-    bool is_sync_feature_enabled);
+std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
+                                             bool is_sync_feature_enabled);
 
 // Whether sync is currently blocked from starting because the sync
 // confirmation dialog hasn't been shown. Note that once the dialog is
@@ -127,7 +125,7 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service);
 
 // Returns whether it makes sense to show a Sync passphrase error UI, i.e.
 // whether a missing passphrase is preventing Sync from fully starting up.
-bool ShouldShowPassphraseError(const syncer::SyncService* service);
+bool ShouldShowSyncPassphraseError(const syncer::SyncService* service);
 
 // Returns whether missing trusted vault keys is preventing sync from starting
 // up encrypted datatypes.
@@ -154,7 +152,5 @@ void OpenTabForSyncKeyRecoverabilityDegraded(Browser* browser);
 // URL.
 void OpenTabForSyncTrustedVaultUserActionForTesting(Browser* browser,
                                                     const GURL& url);
-
-}  // namespace sync_ui_util
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_

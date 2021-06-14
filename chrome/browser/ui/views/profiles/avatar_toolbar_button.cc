@@ -284,17 +284,17 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
     case State::kAnimatedUserIdentity:
       return delegate_->GetShortProfileName();
     // kSyncPaused is just a type of sync error with different color, but should
-    // still use sync_ui_util::GetAvatarSyncErrorDescription() as tooltip.
+    // still use GetAvatarSyncErrorDescription() as tooltip.
     case State::kSyncError:
     case State::kSyncPaused: {
-      absl::optional<sync_ui_util::AvatarSyncErrorType> error =
+      absl::optional<AvatarSyncErrorType> error =
           delegate_->GetAvatarSyncErrorType();
       DCHECK(error);
       return l10n_util::GetStringFUTF16(
           IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP,
           delegate_->GetShortProfileName(),
-          sync_ui_util::GetAvatarSyncErrorDescription(
-              *error, delegate_->IsSyncFeatureEnabled()));
+          GetAvatarSyncErrorDescription(*error,
+                                        delegate_->IsSyncFeatureEnabled()));
     }
     case State::kNormal:
       return delegate_->GetProfileName();

@@ -147,21 +147,21 @@ void ParseConfigurationArguments(const base::ListValue* args,
     NOTREACHED();
 }
 
-std::string GetSyncErrorAction(sync_ui_util::ActionType action_type) {
+std::string GetSyncErrorAction(SyncStatusActionType action_type) {
   switch (action_type) {
-    case sync_ui_util::REAUTHENTICATE:
+    case SyncStatusActionType::kReauthenticate:
       return "reauthenticate";
-    case sync_ui_util::SIGNOUT_AND_SIGNIN:
+    case SyncStatusActionType::kSignoutAndSignin:
       return "signOutAndSignIn";
-    case sync_ui_util::UPGRADE_CLIENT:
+    case SyncStatusActionType::kUpgradeClient:
       return "upgradeClient";
-    case sync_ui_util::ENTER_PASSPHRASE:
+    case SyncStatusActionType::kEnterPassphrase:
       return "enterPassphrase";
-    case sync_ui_util::RETRIEVE_TRUSTED_VAULT_KEYS:
+    case SyncStatusActionType::kRetrieveTrustedVaultKeys:
       return "retrieveTrustedVaultKeys";
-    case sync_ui_util::CONFIRM_SYNC_SETTINGS:
+    case SyncStatusActionType::kConfirmSyncSettings:
       return "confirmSyncSettings";
-    case sync_ui_util::NO_ACTION:
+    case SyncStatusActionType::kNoAction:
       return "noAction";
   }
 
@@ -679,8 +679,8 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::ListValue* args) {
   if (!browser)
     return;
 
-  sync_ui_util::OpenTabForSyncKeyRetrieval(
-      browser, syncer::KeyRetrievalTriggerForUMA::kSettings);
+  OpenTabForSyncKeyRetrieval(browser,
+                             syncer::KeyRetrievalTriggerForUMA::kSettings);
 }
 
 void PeopleHandler::HandleGetSyncStatus(const base::ListValue* args) {
@@ -872,8 +872,7 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
           !service->GetUserSettings()->IsFirstSetupComplete() &&
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
-  const sync_ui_util::StatusLabels status_labels =
-      sync_ui_util::GetStatusLabels(profile_);
+  const SyncStatusLabels status_labels = GetSyncStatusLabels(profile_);
   // TODO(crbug.com/1027467): Consider unifying some of the fields below to
   // avoid redundancy.
   sync_status->SetString("statusText",
@@ -881,12 +880,13 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
   sync_status->SetString("statusActionText",
                          GetStringUTF16(status_labels.button_string_id));
   sync_status->SetBoolean(
-      "hasError", status_labels.message_type == sync_ui_util::SYNC_ERROR ||
-                      status_labels.message_type ==
-                          sync_ui_util::PASSWORDS_ONLY_SYNC_ERROR);
-  sync_status->SetBoolean(
-      "hasPasswordsOnlyError",
-      status_labels.message_type == sync_ui_util::PASSWORDS_ONLY_SYNC_ERROR);
+      "hasError",
+      status_labels.message_type == SyncStatusMessageType::kSyncError ||
+          status_labels.message_type ==
+              SyncStatusMessageType::kPasswordsOnlySyncError);
+  sync_status->SetBoolean("hasPasswordsOnlyError",
+                          status_labels.message_type ==
+                              SyncStatusMessageType::kPasswordsOnlySyncError);
   sync_status->SetString("statusAction",
                          GetSyncErrorAction(status_labels.action_type));
 

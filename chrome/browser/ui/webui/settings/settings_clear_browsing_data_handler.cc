@@ -342,7 +342,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   // If Sync is running, prevent it from being paused during the operation.
   // However, if Sync is in error, clearing cookies should pause it.
   if (!profile_->IsGuestSession() &&
-      sync_ui_util::GetStatus(profile_) == sync_ui_util::SYNCED) {
+      GetSyncStatusMessageType(profile_) == SyncStatusMessageType::kSynced) {
     // Settings can not be opened in incognito windows.
     DCHECK(!profile_->IsOffTheRecord());
     scoped_data_deletion = AccountReconcilorFactory::GetForProfile(profile_)
