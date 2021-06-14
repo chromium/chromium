@@ -46,11 +46,6 @@ class PLATFORM_EXPORT ActiveScriptWrappableManager final
   // Called during GC prologue. Not allowed to allocate.
   void RecomputeActiveScriptWrappables(RecomputeMode);
 
-  // Iterate the current set of active ScriptWrappable objects.
-  //
-  // Does not allocate.
-  void IterateActiveScriptWrappables(Visitor*);
-
   void Trace(Visitor* visitor) const;
 
   // NameClient implementation.

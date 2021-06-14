@@ -362,7 +362,6 @@ class GC_PLUGIN_IGNORE(
   void AddEphemeronEdgeName(Traceable backing, State* parent, State* current);
 
   void VisitPersistentHandleInternal(v8::Local<v8::Object>, uint16_t);
-  void VisitPendingActivities();
   void VisitBlinkRoots();
   void VisitTransitiveClosure();
 
@@ -422,7 +421,6 @@ void V8EmbedderGraphBuilder::BuildEmbedderGraph() {
       ThreadState::Current()->unified_heap_controller());
   tracer->IterateTracedGlobalHandles(this);
   VisitBlinkRoots();
-  VisitPendingActivities();
   VisitTransitiveClosure();
   DCHECK(worklist_.empty());
   // ephemeron_worklist_ might not be empty. We might have an ephemeron whose
@@ -622,20 +620,6 @@ void V8EmbedderGraphBuilder::VisitEphemeron(
   ephemeron_worklist_.push_back(std::make_unique<EphemeronItem>(
       current_parent_, key, value_trace_descriptor.base_object_payload,
       value_trace_descriptor.callback));
-}
-
-void V8EmbedderGraphBuilder::VisitPendingActivities() {
-  // Ownership of the new node is transferred to the graph_.
-  EmbedderNode* root =
-      static_cast<EmbedderNode*>(graph_->AddNode(std::unique_ptr<Graph::Node>(
-          new EmbedderRootNode("Pending activities"))));
-  EnsureRootState(root);
-  ParentScope parent(this, root);
-  auto* asw_manager =
-      V8PerIsolateData::From(isolate_)->GetActiveScriptWrappableManager();
-  if (asw_manager) {
-    asw_manager->IterateActiveScriptWrappables(this);
-  }
 }
 
 void V8EmbedderGraphBuilder::VisitBlinkRoots() {

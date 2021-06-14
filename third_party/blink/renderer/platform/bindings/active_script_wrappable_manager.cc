@@ -43,15 +43,6 @@ void ActiveScriptWrappableManager::RecomputeActiveScriptWrappables(
   recomputed_cnt_++;
 }
 
-void ActiveScriptWrappableManager::IterateActiveScriptWrappables(
-    Visitor* visitor) {
-  RecomputeActiveScriptWrappables(RecomputeMode::kRequired);
-  for (auto& pair : active_script_wrappables_) {
-    visitor->Trace(pair.second);
-  }
-  recomputed_cnt_ = 0;
-}
-
 void ActiveScriptWrappableManager::
     CleanupInactiveAndClearActiveScriptWrappables(
         const LivenessBroker& broker) {
