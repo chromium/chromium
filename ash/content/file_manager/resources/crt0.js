@@ -49,15 +49,6 @@ clientListener.Event = class {
   }
 };
 
-// Provides dummy implementation of chrome.notification, not available in SWA.
-window.chrome.notifications = {
-  onClicked: new clientListener.Event(),
-
-  onButtonClicked: new clientListener.Event(),
-
-  onClosed: new clientListener.Event(),
-};
-
 // Provides dummy implementation of chrome.contextMenus, not available in SWA.
 window.chrome.contextMenus = {
   create() {},
