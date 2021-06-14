@@ -93,12 +93,14 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         @Override
         public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
             // Make sure Y translation is reset on navigation.
-            if (mInfoBarContainerView != null) mInfoBarContainerView.setTranslationY(0);
+            if (mInfoBarContainerView != null && navigationHandle.isInPrimaryMainFrame()) {
+                mInfoBarContainerView.setTranslationY(0);
+            }
         }
 
         @Override
         public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (navigation.hasCommitted() && navigation.isInMainFrame()) {
+            if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()) {
                 setHidden(false);
             }
         }
