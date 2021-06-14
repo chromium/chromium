@@ -183,7 +183,7 @@ class TlmProvider {
     uint16_t metadata_index;
     metadata_index = EventBegin(metadata, event_name);
     {  // scope for dummy array (simulates a C++17 comma-fold expression)
-      bool dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
+      char dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
           EventAddField(metadata, &metadata_index, event_fields.in_type_,
                         event_fields.out_type_, event_fields.Name())...};
       DCHECK(dummy);
@@ -195,7 +195,7 @@ class TlmProvider {
     EVENT_DATA_DESCRIPTOR descriptors[kDescriptorsCount];
     uint8_t descriptors_index = 2;
     {  // scope for dummy array (simulates a C++17 comma-fold expression)
-      bool dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
+      char dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
           EventDescriptorFill(descriptors, &descriptors_index,
                               event_fields)...};
       DCHECK(dummy);

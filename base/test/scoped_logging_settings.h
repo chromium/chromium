@@ -34,7 +34,7 @@ class BASE_EXPORT ScopedLoggingSettings {
   // globals in //base/logging.cc
 
   const int min_log_level_;
-  const int logging_destination_;
+  const uint32_t logging_destination_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const LogFormat log_format_;
