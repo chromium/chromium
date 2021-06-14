@@ -417,42 +417,37 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
   // page.
   ScopedFPDFPageObject temp_img(FPDFPageObj_NewImageObj(temp_doc.get()));
 
-  bool encoded = false;
+  // Use quality = 40 as this does not significantly degrade the printed
+  // document relative to a normal bitmap and provides better compression than
+  // a higher quality setting.
+  constexpr int kQuality = 40;
+  SkImageInfo info = SkImageInfo::Make(
+      FPDFBitmap_GetWidth(bitmap.get()), FPDFBitmap_GetHeight(bitmap.get()),
+      kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
+  SkPixmap src(info, FPDFBitmap_GetBuffer(bitmap.get()),
+               FPDFBitmap_GetStride(bitmap.get()));
   std::vector<uint8_t> compressed_bitmap_data;
-  if (!(print_settings.format & PP_PRINTOUTPUTFORMAT_PDF)) {
-    // Use quality = 40 as this does not significantly degrade the printed
-    // document relative to a normal bitmap and provides better compression than
-    // a higher quality setting.
-    constexpr int kQuality = 40;
-    SkImageInfo info = SkImageInfo::Make(
-        FPDFBitmap_GetWidth(bitmap.get()), FPDFBitmap_GetHeight(bitmap.get()),
-        kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
-    SkPixmap src(info, FPDFBitmap_GetBuffer(bitmap.get()),
-                 FPDFBitmap_GetStride(bitmap.get()));
-    encoded = gfx::JPEGCodec::Encode(src, kQuality, &compressed_bitmap_data);
+  bool encoded = gfx::JPEGCodec::Encode(src, kQuality, &compressed_bitmap_data);
+
+  ScopedFPDFPage temp_page_holder(
+      FPDFPage_New(temp_doc.get(), 0, source_page_width, source_page_height));
+  FPDF_PAGE temp_page = temp_page_holder.get();
+  if (encoded) {
+    FPDF_FILEACCESS file_access = {};
+    file_access.m_FileLen =
+        static_cast<unsigned long>(compressed_bitmap_data.size());
+    file_access.m_GetBlock = &GetBlockForJpeg;
+    file_access.m_Param = &compressed_bitmap_data;
+
+    FPDFImageObj_LoadJpegFileInline(&temp_page, 1, temp_img.get(),
+                                    &file_access);
+  } else {
+    FPDFImageObj_SetBitmap(&temp_page, 1, temp_img.get(), bitmap.get());
   }
 
-  {
-    ScopedFPDFPage temp_page_holder(
-        FPDFPage_New(temp_doc.get(), 0, source_page_width, source_page_height));
-    FPDF_PAGE temp_page = temp_page_holder.get();
-    if (encoded) {
-      FPDF_FILEACCESS file_access = {};
-      file_access.m_FileLen =
-          static_cast<unsigned long>(compressed_bitmap_data.size());
-      file_access.m_GetBlock = &GetBlockForJpeg;
-      file_access.m_Param = &compressed_bitmap_data;
-
-      FPDFImageObj_LoadJpegFileInline(&temp_page, 1, temp_img.get(),
-                                      &file_access);
-    } else {
-      FPDFImageObj_SetBitmap(&temp_page, 1, temp_img.get(), bitmap.get());
-    }
-
-    FPDFImageObj_SetMatrix(temp_img.get(), ratio_x, 0, 0, ratio_y, 0, 0);
-    FPDFPage_InsertObject(temp_page, temp_img.release());
-    FPDFPage_GenerateContent(temp_page);
-  }
+  FPDFImageObj_SetMatrix(temp_img.get(), ratio_x, 0, 0, ratio_y, 0, 0);
+  FPDFPage_InsertObject(temp_page, temp_img.release());
+  FPDFPage_GenerateContent(temp_page);
 
   return temp_doc;
 }
