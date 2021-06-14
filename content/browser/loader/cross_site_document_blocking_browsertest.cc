@@ -1344,7 +1344,9 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
             bad_message_observer.WaitForBadMessage());
 }
 
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, PrefetchIsNotImpacted) {
+// https://crbug.com/1218723 this is broken by SplitCacheByNetworkIsolationKey.
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
+                       DISABLED_PrefetchIsNotImpacted) {
   // Prepare for intercepting the resource request for testing prefetching.
   const char* kPrefetchResourcePath = "/prefetch-test";
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
