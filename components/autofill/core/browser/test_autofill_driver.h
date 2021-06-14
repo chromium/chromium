@@ -70,8 +70,6 @@ class TestAutofillDriver : public ContentAutofillDriver {
       const FieldGlobalId& field,
       const mojom::AutofillState state) override;
   void PopupHidden() override;
-  gfx::RectF TransformBoundingBoxToViewportCoordinates(
-      const gfx::RectF& bounding_box) override;
   net::IsolationInfo IsolationInfo() override;
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;

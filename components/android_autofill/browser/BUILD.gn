@@ -58,6 +58,7 @@ static_library("android") {
   public_deps = [ ":browser" ]
   deps = [
     ":jni_headers",
+    "//components/autofill/content/browser",
     "//content/public/browser",
     "//ui/android",
   ]

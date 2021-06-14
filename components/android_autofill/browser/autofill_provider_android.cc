@@ -13,7 +13,7 @@
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/jni_headers/AutofillProvider_jni.h"
-#include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -158,9 +158,11 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
     return;
 
   form_ = std::make_unique<FormDataAndroid>(
-      form, base::BindRepeating(
-                &AutofillDriver::TransformBoundingBoxToViewportCoordinates,
-                base::Unretained(manager->driver())));
+      form,
+      base::BindRepeating(
+          &ContentAutofillDriver::TransformBoundingBoxToViewportCoordinates,
+          base::Unretained(
+              static_cast<ContentAutofillDriver*>(manager->driver()))));
   field_id_ = field.global_id();
 
   size_t index;

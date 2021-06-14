@@ -168,11 +168,6 @@ void AutofillDriverIOS::RendererShouldSetSuggestionAvailability(
 void AutofillDriverIOS::PopupHidden() {
 }
 
-gfx::RectF AutofillDriverIOS::TransformBoundingBoxToViewportCoordinates(
-    const gfx::RectF& bounding_box) {
-  return bounding_box;
-}
-
 net::IsolationInfo AutofillDriverIOS::IsolationInfo() {
   std::string main_web_frame_id = web::GetMainWebFrameId(web_state_);
   web::WebFrame* main_web_frame =

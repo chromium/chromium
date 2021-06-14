@@ -96,11 +96,6 @@ void TestAutofillDriver::RendererShouldSetSuggestionAvailability(
 void TestAutofillDriver::PopupHidden() {
 }
 
-gfx::RectF TestAutofillDriver::TransformBoundingBoxToViewportCoordinates(
-    const gfx::RectF& bounding_box) {
-  return bounding_box;
-}
-
 net::IsolationInfo TestAutofillDriver::IsolationInfo() {
   return isolation_info_;
 }

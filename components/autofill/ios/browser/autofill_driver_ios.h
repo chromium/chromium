@@ -80,8 +80,6 @@ class AutofillDriverIOS : public AutofillDriver {
       const FieldGlobalId& field,
       const mojom::AutofillState state) override;
   void PopupHidden() override;
-  gfx::RectF TransformBoundingBoxToViewportCoordinates(
-      const gfx::RectF& bounding_box) override;
   net::IsolationInfo IsolationInfo() override;
 
   bool is_processed() const { return processed_; }

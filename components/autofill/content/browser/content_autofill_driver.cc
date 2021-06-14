@@ -470,8 +470,8 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
                                                base::TimeTicks timestamp) {
   autofill_router_->TextFieldDidChange(
       this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box,
-      timestamp);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      TransformBoundingBoxToViewportCoordinates(bounding_box), timestamp);
 }
 
 void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
@@ -479,7 +479,8 @@ void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
                                                const gfx::RectF& bounding_box) {
   autofill_router_->TextFieldDidScroll(
       this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      TransformBoundingBoxToViewportCoordinates(bounding_box));
 }
 
 void ContentAutofillDriver::SelectControlDidChange(
@@ -488,7 +489,8 @@ void ContentAutofillDriver::SelectControlDidChange(
     const gfx::RectF& bounding_box) {
   autofill_router_->SelectControlDidChange(
       this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      TransformBoundingBoxToViewportCoordinates(bounding_box));
 }
 
 void ContentAutofillDriver::QueryFormFieldAutofill(
@@ -499,7 +501,8 @@ void ContentAutofillDriver::QueryFormFieldAutofill(
     bool autoselect_first_suggestion) {
   autofill_router_->QueryFormFieldAutofill(
       this, id, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box,
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      TransformBoundingBoxToViewportCoordinates(bounding_box),
       autoselect_first_suggestion);
 }
 
@@ -516,7 +519,8 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
                                              const gfx::RectF& bounding_box) {
   autofill_router_->FocusOnFormField(
       this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field), bounding_box);
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      TransformBoundingBoxToViewportCoordinates(bounding_box));
 }
 
 void ContentAutofillDriver::DidFillAutofillFormData(const FormData& raw_form,

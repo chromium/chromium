@@ -147,8 +147,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const std::vector<autofill::FormStructure*>& forms) override;
   void HandleParsedForms(const std::vector<const FormData*>& forms) override;
   void PopupHidden() override;
-  gfx::RectF TransformBoundingBoxToViewportCoordinates(
-      const gfx::RectF& bounding_box) override;
   net::IsolationInfo IsolationInfo() override;
 
   // AutofillDriver functions called by the browser.
@@ -269,6 +267,12 @@ class ContentAutofillDriver : public AutofillDriver,
   void DidPreviewAutofillFormDataImpl();
   void DidEndTextFieldEditingImpl();
   void SelectFieldOptionsDidChangeImpl(const FormData& form);
+
+  // Transform bounding box coordinates to real viewport coordinates. In the
+  // case of a page spanning multiple renderer processes, subframe renderers
+  // cannot do this transformation themselves.
+  gfx::RectF TransformBoundingBoxToViewportCoordinates(
+      const gfx::RectF& bounding_box);
 
   // DidNavigateFrame() is called on the frame's driver, respectively, when a
   // navigation occurs in that specific frame.

@@ -289,10 +289,7 @@ void AutofillManager::OnTextFieldDidChange(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  gfx::RectF transformed_box =
-      driver_->TransformBoundingBoxToViewportCoordinates(bounding_box);
-
-  OnTextFieldDidChangeImpl(form, field, transformed_box, timestamp);
+  OnTextFieldDidChangeImpl(form, field, bounding_box, timestamp);
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,
@@ -301,10 +298,7 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  gfx::RectF transformed_box =
-      driver_->TransformBoundingBoxToViewportCoordinates(bounding_box);
-
-  OnTextFieldDidScrollImpl(form, field, transformed_box);
+  OnTextFieldDidScrollImpl(form, field, bounding_box);
 }
 
 void AutofillManager::OnSelectControlDidChange(const FormData& form,
@@ -313,10 +307,7 @@ void AutofillManager::OnSelectControlDidChange(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  gfx::RectF transformed_box =
-      driver_->TransformBoundingBoxToViewportCoordinates(bounding_box);
-
-  OnSelectControlDidChangeImpl(form, field, transformed_box);
+  OnSelectControlDidChangeImpl(form, field, bounding_box);
 }
 
 void AutofillManager::OnQueryFormFieldAutofill(
@@ -328,10 +319,7 @@ void AutofillManager::OnQueryFormFieldAutofill(
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  gfx::RectF transformed_box =
-      driver_->TransformBoundingBoxToViewportCoordinates(bounding_box);
-
-  OnQueryFormFieldAutofillImpl(query_id, form, field, transformed_box,
+  OnQueryFormFieldAutofillImpl(query_id, form, field, bounding_box,
                                autoselect_first_suggestion);
 }
 
@@ -341,10 +329,7 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
-  gfx::RectF transformed_box =
-      driver_->TransformBoundingBoxToViewportCoordinates(bounding_box);
-
-  OnFocusOnFormFieldImpl(form, field, transformed_box);
+  OnFocusOnFormFieldImpl(form, field, bounding_box);
 }
 
 // Returns true if |live_form| does not match |cached_form|.
