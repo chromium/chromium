@@ -149,6 +149,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
 
   void CollectInlines(NGInlineNodeData*,
                       NGInlineNodeData* previous_data = nullptr) const;
+  const SvgTextChunkOffsets* FindSvgTextChunks(LayoutBlockFlow& block,
+                                               NGInlineNodeData& data) const;
   void SegmentText(NGInlineNodeData*) const;
   void SegmentScriptRuns(NGInlineNodeData*) const;
   void SegmentFontOrientation(NGInlineNodeData*) const;
