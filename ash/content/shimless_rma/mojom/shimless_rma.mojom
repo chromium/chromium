@@ -1,0 +1,386 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// NOTE: Many of the enums in this file **MUST** be in sync with the enums in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// Each synchronised enum is marked with a comment referencing the proto enum
+// and the source file.
+
+// Overview of Shimless RMA and the mojo interface.
+//
+// rmad service manages the state of shimless RMA and the webui presents the
+// user with the available options for the current state.
+// When choices have been made they are sent from the webui to the browser for
+// validation and forwarding to rmad. rmad returns the next state and
+// an error code.
+// To reduce the API surface in most cases choices map to a single parameterless
+// method.
+//
+// When the webui makes a request the current state is matched against the
+// expected state for that call before it is forwarded to rmad. If the states do
+// not match then no request is made and an error is returned.
+//
+// The webui only maintains state for the current page and is not aware of any
+// dependencies, relying on rmad to handle RMA process state.
+
+module ash.shimless_rma.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// RMA states.
+// This must remain in sync with RmadState.StateCase (generated from the member
+// `oneof state`) in //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// TODO(crbug.com/1218175): Remove Rma prefix from name.
+enum RmaState {
+  kUnknown,
+  kWelcomeScreen,
+  kConfigureNetwork,
+  // TODO(crbug.com/1218175): Rename to kUpdateOs to avoid confusion over Chrome
+  // overloading.
+  kUpdateChrome,
+  kSelectComponents,
+  kChooseDestination,
+  kChooseWriteProtectDisableMethod,
+  kEnterRSUWPDisableCode,
+  kWaitForManualWPDisable,
+  kWPDisableComplete,
+  kChooseFirmwareReimageMethod,
+  kRestock,
+  kUpdateDeviceInformation,
+  kCalibrateComponents,
+  kProvisionDevice,
+  kWaitForManualWPEnable,
+  kRepairComplete,
+};
+
+// Defined error codes.
+// This must remain in sync with RmadErrorCode in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// TODO(crbug.com/1218175): Remove Rmad prefix from name.
+enum RmadErrorCode {
+  // 0 is the default value. It should never be used.
+  kNotSet = 0,
+  // No error.
+  kOk = 1,
+  // No error, and wait for a signal.
+  KWait = 2,
+  // Need a reboot to continue.
+  KNeedReboot = 3,
+  // The device is not in RMA mode.
+  kRmaNotRequired = 4,
+  // No corresponding state handler for a state.
+  kStateHandlerMissing = 5,
+  // State handler initialization failed.
+  kStateHandlerInitializationFailed = 6,
+  // The request could not be processed (e.g. bad proto).
+  kRequestInvalid = 7,
+  // The request is missing mandatory arguments.
+  kRequestArgsMissing = 8,
+  // The request arguments are violating some rules of the state.
+  kRequestArgsViolation = 9,
+  // It is not possible to go back to the previous state at this point.
+  kTransitionFailed = 10,
+  // Failed to abort the RMA process.
+  kAbortFailed = 11,
+  // An expected component was not found.
+  kMissingComponent = 12,
+  // Cannot get the RSU challenge code.
+  kWriteProtectDisableRsuNoChallenge = 13,
+  // The RSU code was incorrect.
+  kWriteProtectDisableRsuCodeInvalid = 14,
+  // The battery was not disconnected when WP disable was required.
+  kWriteProtectDisableBatteryNotDisconnected = 15,
+  // WP was not disabled when required.
+  kWriteProtectSignalNotDetected = 16,
+  // Firmware image could not be downloaded because a network connection was
+  // unavailable.
+  kReimagingDownloadNoNetwork = 17,
+  // Firmware image download did not complete because of a network error.
+  kReimagingDownloadNetworkError = 18,
+  // The user cancelled the firmware image download.
+  kReimagingDownloadCancelled = 19,
+  // No valid USB device with a firmware image was found.
+  kReimagingUsbNotFound = 20,
+  // More than one USB device with a firmware image was found.
+  kReimagingUsbTooManyFound = 21,
+  // The firmware image found was corrupt.
+  kReimagingUsbInvalidImage = 22,
+  // The firmware image could not be written.
+  kReimagingImagingFailed = 23,
+  // An unexpected failure prevented imaging from completing.
+  kReimagingUnknownFailure = 24,
+  // The device info is incorrect.
+  kDeviceInfoInvalid = 25,
+  // Calibration failed for a component.
+  kCalibrationFailed = 26,
+  // Provisioning failed for the device.
+  kProvisioningFailed = 27,
+  // Device could not be powerwashed.
+  kPowerwashFailed = 28,
+  // Device finalization failed.
+  kFinalizationFailed = 29,
+  // Logs failed to upload because the server could not be reached.
+  kLogUploadFtpServerCannotConnect = 30,
+  // Logs failed to upload because the server refused the connection.
+  kLogUploadFtpServerConnectionRejected = 31,
+  // Logs failed to upload because the connection was interrupted.
+  kLogUploadFtpServerTransferFailed = 32,
+  // It is not possible to cancel RMA finalization process at this point.
+  kCannotCancelRma = 33,
+};
+
+// Device components
+// This must remain in sync with ComponentRepairState::Component in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+enum ComponentType {
+  kComponentUnknown = 0,
+  // NOTE: This is a special case for mainboards that will be restocked after
+  // repair. The board will stay in RMA until it is used in another device.
+  kMainboardRework = 1,
+  kKeyboard = 2,
+  kScreen = 3,
+  kTrackpad = 4,
+  kPowerButton = 5,
+  kThumbReader = 6,
+};
+
+// Component repair state
+// This must remain in sync with ComponentRepairState::RepairState in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+enum ComponentRepairState {
+  kRepairUnknown = 0,
+  kOriginal = 1,
+  kReplaced = 2,
+  kMissing = 3,
+};
+
+// A replaceable component and its repair state.
+struct Component {
+  ComponentType component;
+  ComponentRepairState state;
+};
+
+// This must remain in sync with
+// CalibrateComponentsState::CalibrateComponentsState in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+enum CalibrationComponent {
+  kCalibrateUnknown = 0,
+  kAccelerometer = 1,
+};
+
+// This must remain in sync with ProvisionDeviceState::ProvisioningStep in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+enum ProvisioningStep {
+  kProvisioningUnknown = 0,
+  kInProgress = 1,
+  kProvisioningComplete = 2,
+};
+
+// Implemented by clients to receive errors from the rmad service.
+// rmad runs a lot of asynchronous processing and errors can occur at any time.
+interface ErrorObserver {
+  // OnError is called whenever there is an error outside of a state transition.
+  OnError(RmadErrorCode error);
+};
+
+// Implemented by clients to track the progress of component calibration.
+// The observer receives the current component being calibrated and the
+// progress of all calibration in a 0 - 1 range.
+interface CalibrationObserver {
+  // OnCalibrationUpdated is called whenever there is an update in the progress
+  // of component calibration.
+  OnCalibrationUpdated(CalibrationComponent component, float progress);
+};
+
+// Implemented by clients to track the progress of device provisioning.
+// The observer receives the current provisioning step and the progress of all
+// calibration in a 0 - 1 range.
+interface ProvisioningObserver {
+  // OnProvisioningUpdated is called whenever there is an update in the progress
+  // of device provisioning.
+  OnProvisioningUpdated(ProvisioningStep step, float progress);
+};
+
+// Implemented by clients to track the current state of hardware write
+// protection.
+interface HardwareWriteProtectionStateObserver {
+  // OnHardwareWriteProtectionStateChanged is called to update the state of
+  // HWWP.
+  // It is only called while HWWP disable is required by rmad, once when disable
+  // is first required with the current state and then whenever the state
+  // changes until HWWP is disabled when it is no longer required.
+  OnHardwareWriteProtectionStateChanged(bool enabled);
+};
+
+// Implemented by clients to track the current state of power cable connection.
+interface PowerCableStateObserver {
+  // OnPowerCableStateChanged is called to update the state of power cable
+  // connection.
+  // This is only needed for battery cut off.
+  OnPowerCableStateChanged(bool plugged_in);
+};
+
+// Enables clients in the webui to manage the RMA flow.
+// This API is hosted in the web browser exposed to the Shimless RMA SWA.
+interface ShimlessRmaService {
+  // Returns the current RMA state.
+  // Used on application start to determine the location in the RMA flow.
+  // Due to reboots it may not always be the welcome screen.
+  GetCurrentState() => (RmaState state, RmadErrorCode error);
+  // Attempts to progress the RMA state.
+  // Returns the next state to display and an error code.
+  // TODO(crbug.com/1218180): For development only. Remove when all state
+  // specific functions implemented.
+  GetNextState() => (RmaState state, RmadErrorCode error);
+  // Attempt to roll back to the previous RMA state.
+  // Returns the updated state to display and an error code.
+  // TODO(crbug.com/1218175): Rename TransitionNextState for consistency with
+  // rmad d-bus API.
+  GetPrevState() => (RmaState state, RmadErrorCode error);
+
+  // Attempts to abort the RMA.
+  AbortRma() => (RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kUpdateChrome state.
+  //
+  // Returns a string representation of the OS version.
+  // TODO(crbug.com/1218175): Rename to GetCurrentOsVersion to avoid confusion
+  // over Chrome overloading.
+  GetCurrentChromeVersion() => (string version);
+  // Returns true if there is an OS update available, false otherwise.
+  // TODO(crbug.com/1218175): Rename to CheckForOsUpdates to avoid confusion
+  // over Chrome overloading.
+  CheckForChromeUpdates() => (bool update_available);
+  // Attempts to start a Chrome OS update.
+  // TODO(crbug.com/1218175): Rename to UpdateOs to avoid confusion over Chrome
+  // overloading.
+  UpdateChrome() => (RmaState state, RmadErrorCode error);
+  // Skips OS update.
+  // TODO(crbug.com/1218175): Rename to UpdateOsSkipped to avoid confusion over
+  // Chrome overloading.
+  UpdateChromeSkipped() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kChooseDestination state.
+  //
+  // Set the RMA state for the device to be kept by the current owner.
+  // Returns the next state to display and an error code.
+  SetSameOwner() => (RmaState state, RmadErrorCode error);
+  // Set the RMA state for the device to be given to a different owner.
+  // Returns the next state to display and an error code.
+  SetDifferentOwner() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kChooseWriteProtectDisableMethod state.
+  //
+  // Choose to disabled HWWP manually e.g. by disconnecting the battery
+  // If successful returns the next state and kOk followed by a signalling the
+  // HardwareWriteProtectionStateObserver when HWWP is disabled.
+  // TODO(crbug.com/1218175): Rename SetManuallyDisableWriteProtect for
+  // consistency with other methods.
+  ChooseManuallyDisableWriteProtect() => (RmaState state, RmadErrorCode error);
+  // Choose to disable HWWP using the RSU code method.
+  // Returns the next state to display and an error code.
+  // TODO(crbug.com/1218175): Rename SetRsuDisableWriteProtect for
+  // consistency with other methods.
+  ChooseRsuDisableWriteProtect() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Method for kEnterRSUWPDisableCode state.
+  //
+  // Attempt to disable HWWP using a RSU code.
+  // Returns the next state to display and an error code.
+  SetRsuDisableWriteProtectCode(string code)
+      => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kSelectComponents state.
+  //
+  // Get the list of components that could have been replaced and their current
+  // state.
+  GetComponentList() => (array<Component> components);
+  // Set the repair state of a list of components and attempt to move to the
+  // next state.
+  // This list only needs to contain the components set as repaired (any others
+  // included will be ignored by rmad service).
+  SetComponentList(array<Component> components)
+      => (RmaState state, RmadErrorCode error);
+  // Go to rework flow.
+  ReworkMainboard() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kChooseFirmwareReimageMethod state.
+  //
+  // Indicate the device requires reimaging, or if it is optional.
+  ReimageRequired() => (bool required);
+  // Indicate that the user has chosen to skip device reimaging and move to the
+  // next state.
+  // Returns the next state to display and an error code.
+  ReimageSkipped() => (RmaState state, RmadErrorCode error);
+  // TODO(gavindod): Does reimaging require an observer?
+  // Attempt to reimage by downloading the firmware.
+  // Returns the next state to display and an error code.
+  ReimageFromDownload() => (RmaState state, RmadErrorCode error);
+  // Attempt to reimage with firmware loaded from a USB drive.
+  // Returns the next state to display and an error code.
+  ReimageFromUsb() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kUpdateDeviceInformation state.
+  //
+  // Get the list of OEM regions for this device.
+  GetRegionList() => (array<string> regions);
+  // Get the list of OEM SKUs for this device.
+  GetSkuList() => (array<string> skus);
+  // Get the device serial number at RMA start.
+  GetOriginalSerialNumber() => (string serial_number);
+  // Get the current serial number.
+  GetSerialNumber() => (string serial_number);
+  // Update the current serial number.
+  SetSerialNumber(string serial_number) => (RmadErrorCode error);
+  // Get the device region index at RMA start.
+  GetOriginalRegion() => (int8 region_index);
+  // Get the current region index.
+  GetRegion() => (int8 region_index);
+  // Update the current region for.
+  SetRegion(int8 regionIndex) => (RmadErrorCode error);
+  // Get the device SKU index at RMA start.
+  GetOriginalSku() => (int8 sku_index);
+  // Get the current SKU index.
+  GetSku() => (int8 sku_index);
+  // Update the current SKU index for this device.
+  SetSku(int8 sku_index) => (RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kRepairComplete state.
+  //
+  // Complete RMA and reboot.
+  // Returns an error indicating success or a failure.
+  FinalizeAndReboot() => (RmaState state, RmadErrorCode error);
+  // Complete RMA and shutdown.
+  // Returns an error indicating success or a failure.
+  FinalizeAndShutdown() => (RmaState state, RmadErrorCode error);
+  // Attempt to cut off the device battery and shutdown.
+  // Returns an error indicating success or a failure.
+  CutoffBattery() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Observers
+  //
+  // Registers an observer for any out of band error that occurs, such as a
+  // calibration failure.
+  ObserveError(pending_remote<ErrorObserver> observer);
+  // Registers an observer for updates on progress of component calibration.
+  ObserveCalibrationProgress(pending_remote<CalibrationObserver> observer);
+  // Registers an observer for updates on progress of device provisioning.
+  ObserveProvisioningProgress(pending_remote<ProvisioningObserver> observer);
+  // Registers an observer for changes in hardware write protection state.
+  ObserveHardwareWriteProtectionState(
+      pending_remote<HardwareWriteProtectionStateObserver> observer);
+  // Registers an observer for changes in power cable connection state.
+  // The power cable state is needed to indicate if the device is ready for
+  // battery cutoff.
+  ObservePowerCableState(pending_remote<PowerCableStateObserver> observer);
+};
