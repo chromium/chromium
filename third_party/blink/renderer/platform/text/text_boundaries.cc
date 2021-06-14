@@ -32,28 +32,6 @@
 
 namespace blink {
 
-int EndOfFirstWordBoundaryContext(const UChar* characters, int length) {
-  for (int i = 0; i < length;) {
-    int first = i;
-    UChar32 ch;
-    U16_NEXT(characters, i, length, ch);
-    if (!RequiresContextForWordBoundary(ch))
-      return first;
-  }
-  return length;
-}
-
-int StartOfLastWordBoundaryContext(const UChar* characters, int length) {
-  for (int i = length; i > 0;) {
-    int last = i;
-    UChar32 ch;
-    U16_PREV(characters, 0, i, ch);
-    if (!RequiresContextForWordBoundary(ch))
-      return last;
-  }
-  return 0;
-}
-
 int FindNextWordForward(const UChar* chars, int len, int position) {
   TextBreakIterator* it = WordBreakIterator({chars, len});
 
@@ -68,7 +46,7 @@ int FindNextWordForward(const UChar* chars, int len, int position) {
     position = it->following(position);
   }
 
-    return len;
+  return len;
 }
 
 int FindNextWordBackward(const UChar* chars, int len, int position) {
@@ -86,38 +64,6 @@ int FindNextWordBackward(const UChar* chars, int len, int position) {
   }
 
   return 0;
-}
-
-std::pair<int, int> FindWordBackward(const UChar* chars,
-                                     int len,
-                                     int position) {
-  DCHECK_GE(len, 0);
-  DCHECK_LE(position, len);
-  if (len == 0)
-    return {0, 0};
-  TextBreakIterator* it = WordBreakIterator({chars, len});
-  const int start = it->preceding(position);
-  const int end = it->next();
-  if (start < 0) {
-    // There are no words at |position|.
-    return {0, 0};
-  }
-  return {start, end};
-}
-
-std::pair<int, int> FindWordForward(const UChar* chars, int len, int position) {
-  DCHECK_GE(len, 0);
-  DCHECK_LE(position, len);
-  if (len == 0)
-    return {0, 0};
-  TextBreakIterator* it = WordBreakIterator({chars, len});
-  const int end = it->following(position);
-  const int start = it->previous();
-  if (end < 0) {
-    // There are no words at |position|.
-    return {len, len};
-  }
-  return {start, end};
 }
 
 int FindWordStartBoundary(const UChar* chars, int len, int position) {

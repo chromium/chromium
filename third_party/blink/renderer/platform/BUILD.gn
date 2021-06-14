@@ -2171,7 +2171,6 @@ source_set("blink_platform_unittests_sources") {
     "text/platform_locale_test.cc",
     "text/segmented_string_test.cc",
     "text/suffix_tree_test.cc",
-    "text/text_boundaries_test.cc",
     "text/text_break_iterator_test.cc",
     "text/text_encoding_detector_test.cc",
     "text/text_run_test.cc",
