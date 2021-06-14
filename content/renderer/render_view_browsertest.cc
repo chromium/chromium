@@ -477,7 +477,7 @@ class RenderViewImplTest : public RenderViewTest {
     // WM_KEYDOWN, WM_CHAR, and WM_KEYUP.
     // WM_KEYDOWN and WM_KEYUP sends virtual-key codes. On the other hand,
     // WM_CHAR sends a composed Unicode character.
-    MSG msg1 = {NULL, WM_KEYDOWN, key_code, 0};
+    MSG msg1 = {NULL, WM_KEYDOWN, static_cast<WPARAM>(key_code), 0};
     ui::KeyEvent evt1(msg1);
     NativeWebKeyboardEvent keydown_event(evt1);
     SendNativeKeyEvent(keydown_event);
@@ -487,7 +487,7 @@ class RenderViewImplTest : public RenderViewTest {
     NativeWebKeyboardEvent char_event(evt2);
     SendNativeKeyEvent(char_event);
 
-    MSG msg3 = {NULL, WM_KEYUP, key_code, 0};
+    MSG msg3 = {NULL, WM_KEYUP, static_cast<WPARAM>(key_code), 0};
     ui::KeyEvent evt3(msg3);
     NativeWebKeyboardEvent keyup_event(evt3);
     SendNativeKeyEvent(keyup_event);

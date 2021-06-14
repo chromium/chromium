@@ -262,8 +262,10 @@ class MockFileSystemAccessContext
       SerializeHandleCallback callback) override {
     writes_.emplace_back(std::move(pending_token));
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  std::vector<uint8_t>{writes_.size() - 1}));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            std::vector<uint8_t>{static_cast<uint8_t>(writes_.size() - 1)}));
   }
 
   void DeserializeHandle(

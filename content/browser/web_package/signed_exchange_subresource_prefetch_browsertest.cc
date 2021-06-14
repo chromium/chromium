@@ -2220,7 +2220,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest, CORS) {
     requests_list_string += base::StringPrintf(
         "new Request('%s', {credentials: '%s'})", data_url.spec().c_str(),
         kTestCases[i].request_credentials);
-    const net::SHA256HashValue data_header_integrity = {{0x02 + i}};
+    const net::SHA256HashValue data_header_integrity = {
+        {static_cast<uint8_t>(0x02 + i)}};
 
     target_sxg_outer_link_header +=
         CreateAlternateLinkHeader(data_sxg_url, data_url);

@@ -1866,7 +1866,8 @@ void PepperPluginInstanceImpl::PrintPage(int page_number,
     metafile_ = metafile;
   }
 
-  PP_PrintPageNumberRange_Dev page_range = {page_number, page_number};
+  PP_PrintPageNumberRange_Dev page_range = {static_cast<uint32_t>(page_number),
+                                            static_cast<uint32_t>(page_number)};
   ranges_.push_back(page_range);
 #endif
 }

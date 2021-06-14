@@ -114,7 +114,7 @@ void DidStoreUserData(base::OnceClosure quit_closure,
 }
 
 void GetNumUserData(base::OnceClosure quit_closure,
-                    int* out_size,
+                    size_t* out_size,
                     const std::vector<std::string>& data,
                     blink::ServiceWorkerStatusCode status) {
   DCHECK(out_size);
@@ -124,9 +124,9 @@ void GetNumUserData(base::OnceClosure quit_closure,
 }
 
 struct ResponseStateStats {
-  int pending_requests = 0;
-  int active_requests = 0;
-  int completed_requests = 0;
+  size_t pending_requests = 0;
+  size_t active_requests = 0;
+  size_t completed_requests = 0;
 };
 
 bool operator==(const ResponseStateStats& s1, const ResponseStateStats& s2) {
