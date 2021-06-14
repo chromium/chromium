@@ -211,7 +211,7 @@ TEST_F(SettingsTableViewControllerMICETest, SyncPasswordError) {
 }
 
 // Verifies that the Sync icon displays the off state when the user has
-// completed the sign-in and sync flow then explcitly turned off the Sync
+// completed the sign-in and sync flow then explicitly turned off the Sync
 // setting.
 TEST_F(SettingsTableViewControllerMICETest, TurnsSyncOffAfterFirstSetup) {
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
@@ -232,12 +232,15 @@ TEST_F(SettingsTableViewControllerMICETest, TurnsSyncOffAfterFirstSetup) {
       static_cast<TableViewDetailIconItem*>(account_items[1]);
   ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
               sync_item.text);
-  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
-              sync_item.detailText);
+  ASSERT_NSEQ(nil, sync_item.detailText);
+  // Check that there is no sign-in promo when there is a sync error.
+  ASSERT_FALSE([controller().tableViewModel
+      hasSectionForSectionIdentifier:SettingsSectionIdentifier::
+                                         SettingsSectionIdentifierSignIn]);
 }
 
 // Verifies that the Sync icon displays the off state (and no detail text) when
-// the user has completed the sign-in and sync flow then explcitly turned off
+// the user has completed the sign-in and sync flow then explicitly turned off
 // all data types in the Sync settings.
 // This case can only happen for pre-MICE users who migrated with MICE.
 TEST_F(SettingsTableViewControllerMICETest,
@@ -263,4 +266,28 @@ TEST_F(SettingsTableViewControllerMICETest,
   ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
               sync_item.text);
   ASSERT_EQ(nil, sync_item.detailText);
+}
+
+// Verifies that the Sync icon displays the off state (with OFF in detail text)
+// when the user has not agreed on sync. This case is possible when using MICE
+// web sign-in.
+TEST_F(SettingsTableViewControllerMICETest, SyncSetupNotComplete) {
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+      .WillByDefault(Return(false));
+  auth_service_->SignIn(fake_identity_);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(3U, account_items.count);
+
+  TableViewDetailIconItem* sync_item =
+      static_cast<TableViewDetailIconItem*>(account_items[1]);
+  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
+              sync_item.text);
+  ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+              sync_item.detailText);
 }

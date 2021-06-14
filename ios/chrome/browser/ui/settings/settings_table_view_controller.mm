@@ -1213,7 +1213,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                             completion:nil];
           break;
         }
-        case kSyncOff:
+        case kSyncOff: {
+          DCHECK(
+              base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency));
+          [self showGoogleSync];
+          break;
+        }
         case kSyncEnabled:
         case kSyncEnabledWithError:
         case kSyncEnabledWithNoSelectedTypes: {
@@ -1598,12 +1603,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
       break;
     }
-    case kSyncConsentOff:
-    case kSyncOff: {
+    case kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
       break;
     }
+    case kSyncOff:
     case kSyncEnabledWithNoSelectedTypes: {
       googleSyncItem.detailText = nil;
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
