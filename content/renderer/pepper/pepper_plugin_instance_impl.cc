@@ -1928,10 +1928,11 @@ bool PepperPluginInstanceImpl::GetPrintPresetOptionsFromDocument(
       break;
   }
   preset_options->copies = options.copies;
-  preset_options->is_page_size_uniform =
-      PP_ToBool(options.is_page_size_uniform);
-  preset_options->uniform_page_size = gfx::Size(
-      options.uniform_page_size.width, options.uniform_page_size.height);
+
+  if (options.is_page_size_uniform) {
+    preset_options->uniform_page_size = gfx::Size(
+        options.uniform_page_size.width, options.uniform_page_size.height);
+  }
 
   return true;
 }
