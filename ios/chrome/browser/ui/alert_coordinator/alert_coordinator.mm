@@ -41,11 +41,22 @@
 @synthesize message = _message;
 @synthesize title = _title;
 
+// This API will go away and be replaced with the one below.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message {
   self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    [self commonInitWithTitle:title message:message];
+  }
+  return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                     title:(NSString*)title
+                                   message:(NSString*)message {
+  self = [self initWithBaseViewController:viewController browser:nullptr];
   if (self) {
     [self commonInitWithTitle:title message:message];
   }
