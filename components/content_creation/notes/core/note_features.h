@@ -16,12 +16,18 @@ extern const base::Feature kWebNotesStylizeEnabled;
 // of templates is randomized for each client or not.
 extern const base::FeatureParam<bool> kRandomizeOrderParam;
 
+// Feature for publishing Web Notes to the server.
+extern const base::Feature kWebNotesPublish;
+
 // Returns true if the Web Notes Stylize feature is enabled.
 bool IsStylizeEnabled();
 
 // Returns true if the order randomization parameter is set to true for the Web
 // Notes Stylize feature.
 bool IsRandomizeOrderEnabled();
+
+// Returns whether the Web Notes Publish feature is enabled.
+bool IsPublishEnabled();
 
 }  // namespace content_creation
 

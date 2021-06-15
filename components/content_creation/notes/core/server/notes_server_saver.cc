@@ -5,6 +5,7 @@
 #include "components/content_creation/notes/core/server/notes_server_saver.h"
 
 #include "base/strings/strcat.h"
+#include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/server/note.pb.h"
 #include "components/content_creation/notes/core/server/note_data.h"
 #include "components/content_creation/notes/core/server/save_note_response.h"
@@ -58,12 +59,18 @@ NotesServerSaver::NotesServerSaver(
 NotesServerSaver::~NotesServerSaver() {}
 
 void NotesServerSaver::Start() {
+  if (!IsPublishEnabled()) {
+    return;
+  }
+
   // Start fetching the access token. This will trigger the method to save the
   // note when done.
   NotesServerBase::StartAccessTokenFetch();
 }
 
 void NotesServerSaver::SendSaveNoteRequest() {
+  DCHECK(IsPublishEnabled());
+
   // Prepare the Note payload.
   web_notes::PutWebnoteRequest save_request;
   web_notes::Webnote* note_proto = save_request.mutable_webnote();

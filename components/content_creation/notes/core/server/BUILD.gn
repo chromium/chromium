@@ -18,6 +18,7 @@ static_library("server") {
   deps = [
     ":proto",
     "//base",
+    "//components/content_creation/notes/core:features",
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//net",
