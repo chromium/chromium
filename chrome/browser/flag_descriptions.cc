@@ -4373,6 +4373,10 @@ const char kEnableQuickAnswersTranslationCloudAPIName[] =
 const char kEnableQuickAnswersTranslationCloudAPIDescription[] =
     "Enable Quick Answers translation using the Cloud API.";
 
+const char kEnableQuickAnswersV2Name[] = "Enable Quick Answers V2 features";
+const char kEnableQuickAnswersV2Description[] =
+    "Enable Quick Answers V2 features.";
+
 const char kTrimOnFreezeName[] = "Trim Working Set on freeze";
 const char kTrimOnFreezeDescription[] = "Trim Working Set on all frames frozen";
 

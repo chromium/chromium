@@ -607,9 +607,9 @@ const base::Feature kQuickAnswersDogfood{"QuickAnswersDogfood",
 const base::Feature kQuickAnswersOnEditableText{
     "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to enable quick answers standalone settings section.
-const base::Feature kQuickAnswersStandaloneSettings{
-    "QuickAnswersStandaloneSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+// Controls whether to enable quick answers V2 features.
+const base::Feature kQuickAnswersV2{"QuickAnswersV2",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to enable quick answers text annotator.
 const base::Feature kQuickAnswersTextAnnotator{
@@ -955,16 +955,16 @@ bool IsQuickAnswersOnEditableTextEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersOnEditableText);
 }
 
-bool IsQuickAnswersStandaloneSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersStandaloneSettings);
-}
-
 bool IsQuickAnswersTranslationCloudAPIEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersTranslationCloudAPI);
 }
 
 bool IsQuickAnswersTranslationEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersTranslation);
+}
+
+bool IsQuickAnswersV2Enabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersV2);
 }
 
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {

@@ -16,7 +16,7 @@ QuickAnswersStateController::QuickAnswersStateController()
 QuickAnswersStateController::~QuickAnswersStateController() = default;
 
 void QuickAnswersStateController::OnFirstSessionStarted() {
-  if (!features::IsQuickAnswersStandaloneSettingsEnabled())
+  if (!features::IsQuickAnswersV2Enabled())
     return;
 
   state_.RegisterPrefChanges(

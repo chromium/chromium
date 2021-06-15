@@ -36,7 +36,7 @@ namespace settings {
 namespace {
 
 bool ShouldShowQuickAnswersSettings() {
-  return ash::features::IsQuickAnswersStandaloneSettingsEnabled();
+  return ash::features::IsQuickAnswersV2Enabled();
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {

@@ -5138,6 +5138,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersTranslationCloudAPI)},
 
+    {"enable-quick-answers-v2", flag_descriptions::kEnableQuickAnswersV2Name,
+     flag_descriptions::kEnableQuickAnswersV2Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersV2)},
+
     {kAssistantBetterOnboardingInternalName,
      flag_descriptions::kEnableAssistantBetterOnboardingName,
      flag_descriptions::kEnableAssistantBetterOnboardingDescription, kOsCrOS,

@@ -39,15 +39,14 @@ QuickAnswersState* QuickAnswersState::Get() {
 QuickAnswersState::QuickAnswersState() {
   DCHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
-  if (!chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+  if (!chromeos::features::IsQuickAnswersV2Enabled()) {
     DCHECK(AssistantState::Get());
     AssistantState::Get()->AddObserver(this);
   }
 }
 
 QuickAnswersState::~QuickAnswersState() {
-  if (!chromeos::features::IsQuickAnswersStandaloneSettingsEnabled() &&
-      AssistantState::Get()) {
+  if (!chromeos::features::IsQuickAnswersV2Enabled() && AssistantState::Get()) {
     AssistantState::Get()->RemoveObserver(this);
   }
   DCHECK_EQ(g_quick_answers_state, this);
@@ -133,7 +132,7 @@ void QuickAnswersState::UpdateUserConsented() {
 }
 
 void QuickAnswersState::UpdateEligibility() {
-  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+  if (chromeos::features::IsQuickAnswersV2Enabled()) {
     if (!pref_change_registrar_)
       return;
 

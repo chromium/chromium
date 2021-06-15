@@ -2514,6 +2514,9 @@ extern const char kEnableQuickAnswersTranslationDescription[];
 extern const char kEnableQuickAnswersTranslationCloudAPIName[];
 extern const char kEnableQuickAnswersTranslationCloudAPIDescription[];
 
+extern const char kEnableQuickAnswersV2Name[];
+extern const char kEnableQuickAnswersV2Description[];
+
 extern const char kPluginVmFullscreenName[];
 extern const char kPluginVmFullscreenDescription[];
 

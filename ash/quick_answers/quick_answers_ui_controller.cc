@@ -65,7 +65,7 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(/*is_active=*/true);
 
-  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+  if (chromeos::features::IsQuickAnswersV2Enabled()) {
     NewWindowDelegate::GetInstance()->NewTabWithUrl(
         GURL(kGoogleSearchUrlPrefix +
              net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),

@@ -2275,6 +2275,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-quick-answers-v2",
+    "owners": [ "croissant-eng" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-reader-mode",
     "owners": [ "katie", "dmazzoni" ],
     "expiry_milestone": 95

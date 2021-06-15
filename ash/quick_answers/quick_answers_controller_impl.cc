@@ -103,12 +103,12 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
 
 void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
     const chromeos::quick_answers::QuickAnswersRequest& request) {
-  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled() &&
+  if (chromeos::features::IsQuickAnswersV2Enabled() &&
       !QuickAnswersState::Get()->user_consented()) {
     ShowUserConsent(
         IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
         base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
-  } else if (!chromeos::features::IsQuickAnswersStandaloneSettingsEnabled() &&
+  } else if (!chromeos::features::IsQuickAnswersV2Enabled() &&
              ShouldShowUserNotice()) {
     ShowUserNotice(
         IntentTypeToString(request.preprocessed_output.intent_info.intent_type),

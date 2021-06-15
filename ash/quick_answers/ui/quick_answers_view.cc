@@ -349,7 +349,7 @@ void QuickAnswersView::InitLayout() {
       views::BoxLayout::CrossAxisAlignment::kStart);
 
   // Add branding icon.
-  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+  if (chromeos::features::IsQuickAnswersV2Enabled()) {
     AddGoogleIcon();
   } else {
     AddAssistantIcon();
@@ -365,7 +365,7 @@ void QuickAnswersView::InitLayout() {
                   gfx::kGoogleGrey700},
                  content_view_);
 
-  if (chromeos::features::IsQuickAnswersStandaloneSettingsEnabled()) {
+  if (chromeos::features::IsQuickAnswersV2Enabled()) {
     AddSettingsButton();
   } else if (chromeos::features::IsQuickAnswersDogfood()) {
     AddDogfoodButton();

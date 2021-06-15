@@ -235,7 +235,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kQuickAnswersDogfood;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersOnEditableText;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kQuickAnswersStandaloneSettings;
+extern const base::Feature kQuickAnswersV2;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersTextAnnotator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -348,9 +348,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorFeaturePodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersDogfood();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersOnEditableTextEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersStandaloneSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationCloudAPIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
