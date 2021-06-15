@@ -121,6 +121,7 @@ class EmbeddedTestServerTest
 
   void SetUp() override {
     server_ = std::make_unique<EmbeddedTestServer>(GetParam());
+    server_->AddDefaultHandlers();
     server_->SetConnectionListener(&connection_listener_);
   }
 
@@ -329,9 +330,14 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerComplete) {
   ASSERT_TRUE(server_->Start());
 
   TestDelegate delegate;
-  std::unique_ptr<URLRequest> request(
-      context_.CreateRequest(server_->GetURL("/non-existent"), DEFAULT_PRIORITY,
-                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  // Need to send a Keep-Alive response header since the EmbeddedTestServer only
+  // invokes OnResponseCompletedSuccessfully() if the socket is still open, and
+  // the network stack will close the socket if not reuable, resulting in
+  // potentially racilly closing the socket before
+  // OnResponseCompletedSuccessfully() is invoked.
+  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+      server_->GetURL("/set-header?Connection: Keep-Alive"), DEFAULT_PRIORITY,
+      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   request->Start();
   delegate.RunUntilComplete();

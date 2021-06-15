@@ -26,8 +26,9 @@ class EmbeddedTestServerConnectionListener {
 
   // Notified when the EmbeddedTestServer has completed a request and response
   // successfully on |socket|. The listener can take |socket| to manually handle
-  // further traffic on it (for example, if doing a proxy tunnel), otherwise
-  // |socket| is destroyed.
+  // further traffic on it (for example, if doing a proxy tunnel). Not called if
+  // the socket has already been closed by the remote side, since it can't be
+  // used to convey data if that happens.
   virtual void OnResponseCompletedSuccessfully(
       std::unique_ptr<StreamSocket> socket) {}
 
