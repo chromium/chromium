@@ -10,6 +10,8 @@
 #include <objidl.h>
 #include <shellapi.h>
 #include <shlobj.h>
+#include <cstdint>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -498,8 +500,16 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
 void ClipboardWin::ReadPng(ClipboardBuffer buffer,
                            const DataTransferEndpoint* data_dst,
                            ReadPngCallback callback) const {
-  // TODO(crbug.com/1201018): Implement this.
-  NOTIMPLEMENTED();
+  RecordRead(ClipboardFormatMetric::kPng);
+  std::vector<uint8_t> data = ReadPngInternal(buffer);
+  // On Windows, PNG and bitmap are separate formats. Read PNG if possible,
+  // otherwise fall back to reading as a bitmap.
+  if (data.empty()) {
+    SkBitmap bitmap = ReadImageInternal(buffer);
+    gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                      &data);
+  }
+  std::move(callback).Run(data);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -792,6 +802,26 @@ void ClipboardWin::WriteData(const ClipboardFormatType& format,
   WriteToClipboard(format, hdata);
 }
 
+std::vector<uint8_t> ClipboardWin::ReadPngInternal(
+    ClipboardBuffer buffer) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+
+  // Acquire the clipboard.
+  ScopedClipboard clipboard;
+  if (!clipboard.Acquire(GetClipboardWindow()))
+    return std::vector<uint8_t>();
+
+  HANDLE data = ::GetClipboardData(
+      ClipboardFormatType::GetPngType().ToFormatEtc().cfFormat);
+
+  if (!data)
+    return std::vector<uint8_t>();
+
+  std::string result(static_cast<const char*>(::GlobalLock(data)),
+                     ::GlobalSize(data));
+  ::GlobalUnlock(data);
+  return std::vector<uint8_t>(result.begin(), result.end());
+}
 
 SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
