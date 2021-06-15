@@ -8,13 +8,17 @@
 #include <iterator>
 #include <utility>
 
+#include "ash/public/cpp/desks_helper.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
 
@@ -55,6 +59,25 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
     return ShowAndActivateOrMinimize(window_to_show, windows.size() == 1);
   }
   return ash::SHELF_ACTION_NONE;
+}
+
+// Launches a new lacros window if there isn't already one on the active desk.
+bool MaybeLaunchNewWindow(const std::list<AppWindowBase*>& app_windows) {
+  if (!crosapi::browser_util::IsLacrosPrimaryBrowser())
+    return false;
+
+  // Do not launch a new window if there is already a lacros window on the
+  // current desk.
+  for (auto* window : app_windows) {
+    aura::Window* aura_window = window->GetNativeWindow();
+    if (crosapi::browser_util::IsLacrosWindow(aura_window) &&
+        ash::DesksHelper::Get()->BelongsToActiveDesk(aura_window)) {
+      return false;
+    }
+  }
+
+  ash::NewWindowDelegate::GetPrimary()->NewWindow(/*incognito=*/false);
+  return true;
 }
 
 }  // namespace
@@ -154,6 +177,17 @@ void AppWindowShelfItemController::ItemSelected(
 
   if (filtered_windows.empty()) {
     std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
+    return;
+  }
+
+  // If this app is the lacros browser, create a new window if there isn't a
+  // lacros window on the current workspace. Otherwise, fallthrough to minimize
+  // or activate or advance.
+  // TODO(sammiequon): This feature should only be for lacros browser and not
+  // lacros PWAs. Revisit when there is a way to differentiate the two.
+  if (app_id() == extension_misc::kLacrosAppId &&
+      MaybeLaunchNewWindow(filtered_windows)) {
+    std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }
 
