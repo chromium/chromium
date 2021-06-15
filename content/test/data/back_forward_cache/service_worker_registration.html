@@ -12,6 +12,18 @@ async function register(worker_url, scope) {
   }
 }
 
+async function unregister(scope) {
+  try {
+    const registration = await navigator.serviceWorker.getRegistration(scope);
+    if (!registration)
+      return 'REGISTRATION NOT FOUND';
+    registration.unregister();
+    return 'DONE';
+  } catch (error) {
+    return `${error}`;
+  }
+}
+
 async function claim() {
   try {
     const registration = await navigator.serviceWorker.ready;

@@ -179,6 +179,9 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kUnloadHandlerExistsInSubFrame:
       return "Unload handler exists in a sub frame, and the current "
              "experimental config doesn't permit it to be BFCached.";
+    case Reason::kServiceWorkerUnregistration:
+      return "ServiceWorker is unregistered while the controllee page is in "
+             "bfcache.";
   }
 }
 

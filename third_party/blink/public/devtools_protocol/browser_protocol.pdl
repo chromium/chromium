@@ -7686,7 +7686,8 @@ domain Page
       OptInUnloadHeaderNotPresent
       UnloadHandlerExistsInMainFrame
       UnloadHandlerExistsInSubFrame
-      # Blocklisted features
+      ServiceWorkerUnregistration
+      #Blocklisted features
       WebSocket
       WebRTC
       MainResourceHasCacheControlNoStore

@@ -976,6 +976,24 @@ void ServiceWorkerVersion::Doom() {
     ++iter;
     container_host->NotifyControllerLost();
   }
+  // Tell the bfcached controllees that this version is dead. Each controllee
+  // will call ServiceWorkerContainerHost:EvictFromBackForwardCache().
+  // Called when this container host's controller has been terminated and
+  // doomed. This can happen in several cases:
+  // - A fatal error when trying to start the service worker, like an installed
+  // script is unable to read from storage.
+  // - The service worker was forcibly remoevd due to ClearSiteData or browser
+  // setting.
+  // - If this is a client in the back/forward cache, the service worker may
+  // still be normally unregistered, because back/forward cached clients do not
+  // count as true controllees for service worker lifecycle purposes.
+  auto bf_iter = bfcached_controllee_map_.begin();
+  while (bf_iter != bfcached_controllee_map_.end()) {
+    ServiceWorkerContainerHost* bf_container_host = bf_iter->second;
+    ++bf_iter;
+    bf_container_host->NotifyControllerLost();
+  }
+
   // Any controllee this version had should have removed itself.
   DCHECK(!HasControllee());
 

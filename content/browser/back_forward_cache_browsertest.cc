@@ -5580,6 +5580,69 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
       {}, FROM_HERE);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
+                       EvictOnServiceWorkerUnregistration) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.RegisterRequestHandler(
+      base::BindRepeating(&RequestHandlerForUpdateWorker));
+  https_server.AddDefaultHandlers(GetTestDataFilePath());
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  SetupCrossSiteRedirector(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  Shell* tab_to_be_bfcached = shell();
+  Shell* tab_to_unregister_service_worker = CreateBrowser();
+
+  // 1) Navigate to A in |tab_to_be_bfcached|. This tab will be controlled by a
+  // service worker.
+  EXPECT_TRUE(NavigateToURL(
+      tab_to_be_bfcached,
+      https_server.GetURL("a.com",
+                          "/back_forward_cache/"
+                          "service_worker_registration.html?to_be_bfcached")));
+
+  // 2) Register a service worker for |tab_to_be_bfcached|, but with a narrow
+  // scope with URL param. This is to prevent |tab_to_unregister_service_worker|
+  // from being controlled by the service worker.
+  EXPECT_EQ("DONE",
+            EvalJs(tab_to_be_bfcached,
+                   "register('service_worker_registration.js', "
+                   "'service_worker_registration.html?to_be_bfcached')"));
+  EXPECT_EQ("DONE", EvalJs(tab_to_be_bfcached, "claim()"));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver deleted(rfh_a);
+
+  // 3) Navigate to A in |tab_to_unregister_service_worker|. This tab is not
+  // controlled by the service worker.
+  EXPECT_TRUE(NavigateToURL(
+      tab_to_unregister_service_worker,
+      https_server.GetURL(
+          "a.com", "/back_forward_cache/service_worker_registration.html")));
+
+  // 5) Navigate from A to B in |tab_to_be_bfcached|. Now |tab_to_be_bfcached|
+  // should be in bfcache.
+  EXPECT_TRUE(NavigateToURL(tab_to_be_bfcached,
+                            https_server.GetURL("b.com", "/title1.html")));
+  EXPECT_FALSE(deleted.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 6) The service worker gets unregistered. Now |tab_to_be_bfcached| should be
+  // notified of the unregistration and evicted from bfcache.
+  EXPECT_EQ(
+      "DONE",
+      EvalJs(tab_to_unregister_service_worker,
+             "unregister('service_worker_registration.html?to_be_bfcached')"));
+
+  // 7) Navigate back to A in |tab_to_be_bfcached|.
+  tab_to_be_bfcached->web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(deleted.deleted());
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kServiceWorkerUnregistration},
+                    {}, {}, {}, FROM_HERE);
+}
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CachePagesWithBeacon) {
   constexpr char kKeepalivePath[] = "/keepalive";
 

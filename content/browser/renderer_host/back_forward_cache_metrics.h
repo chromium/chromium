@@ -103,7 +103,8 @@ class BackForwardCacheMetrics
     kOptInUnloadHeaderNotPresent = 49,
     kUnloadHandlerExistsInMainFrame = 50,
     kUnloadHandlerExistsInSubFrame = 51,
-    kMaxValue = kUnloadHandlerExistsInSubFrame,
+    kServiceWorkerUnregistration = 52,
+    kMaxValue = kServiceWorkerUnregistration,
   };
 
   using NotRestoredReasons =
