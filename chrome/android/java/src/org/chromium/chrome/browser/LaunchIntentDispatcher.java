@@ -280,7 +280,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         if (intent != null && TranslateIntentHandler.ACTION_TRANSLATE_TAB.equals(intent.getAction())
                 && TranslateIntentHandler.COMPONENT_TRANSLATE_DISPATCHER.equals(
                         intent.getComponent().getClassName())) {
-            IntentHandler.addTrustedIntentExtras(intent);
+            IntentUtils.addTrustedIntentExtras(intent);
         }
     }
 

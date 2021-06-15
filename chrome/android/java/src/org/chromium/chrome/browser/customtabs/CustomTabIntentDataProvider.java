@@ -212,7 +212,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static void addReaderModeUIExtras(Intent intent) {
         intent.putExtra(EXTRA_UI_TYPE, CustomTabsUiType.READER_MODE);
-        IntentHandler.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
     }
 
     /**

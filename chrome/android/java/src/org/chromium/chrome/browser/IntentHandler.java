@@ -765,13 +765,8 @@ public class IntentHandler {
         // FLAG_ACTIVITY_NEW_TASK on pre-N versions of Android.  On N+ we can get away with
         // specifying a task ID or not specifying an options bundle.
         assert (copiedIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
-        addTrustedIntentExtras(copiedIntent);
+        IntentUtils.addTrustedIntentExtras(copiedIntent);
         appContext.startActivity(copiedIntent);
-    }
-
-    /** @see {@link IntentUtils#addTrustedIntentExtras} */
-    public static void addTrustedIntentExtras(Intent intent) {
-        IntentUtils.addTrustedIntentExtras(intent);
     }
 
     /**
@@ -1389,7 +1384,7 @@ public class IntentHandler {
         newIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         newIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         newIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
-        IntentHandler.addTrustedIntentExtras(newIntent);
+        IntentUtils.addTrustedIntentExtras(newIntent);
 
         return newIntent;
     }
@@ -1410,7 +1405,7 @@ public class IntentHandler {
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(BRING_TAB_TO_FRONT_EXTRA, tabId);
         intent.putExtra(BRING_TAB_TO_FRONT_SOURCE_EXTRA, bringToFrontSource);
-        IntentHandler.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
         return intent;
     }
 

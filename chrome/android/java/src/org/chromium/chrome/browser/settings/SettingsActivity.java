@@ -26,10 +26,10 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -331,7 +331,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment,
                     HelpAndFeedbackLauncherImpl.getInstance(), mSettingsLauncher,
                     LaunchIntentDispatcher::createCustomTabActivityIntent,
-                    IntentHandler::addTrustedIntentExtras);
+                    IntentUtils::addTrustedIntentExtras);
         } else if (fragment instanceof PasswordCheckEditFragmentView) {
             PasswordCheckEditFragmentView editFragment = (PasswordCheckEditFragmentView) fragment;
             editFragment.setCheckProvider(
@@ -363,12 +363,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof PrivacySandboxSettingsFragment) {
             ((PrivacySandboxSettingsFragment) fragment)
                     .setCctHelpers(LaunchIntentDispatcher::createCustomTabActivityIntent,
-                            IntentHandler::addTrustedIntentExtras);
+                            IntentUtils::addTrustedIntentExtras);
         }
         if (fragment instanceof FlocSettingsFragment) {
             ((FlocSettingsFragment) fragment)
                     .setCctHelpers(LaunchIntentDispatcher::createCustomTabActivityIntent,
-                            IntentHandler::addTrustedIntentExtras);
+                            IntentUtils::addTrustedIntentExtras);
         }
         if (fragment instanceof LanguageSettings) {
             ((LanguageSettings) fragment).setRestartAction(() -> {

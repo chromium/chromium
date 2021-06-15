@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -102,7 +103,7 @@ public class InstantAppsHandlerTest {
 
         Intent signedIntent = createViewIntent();
         signedIntent.setPackage(mContext.getPackageName());
-        IntentHandler.addTrustedIntentExtras(signedIntent);
+        IntentUtils.addTrustedIntentExtras(signedIntent);
 
         Assert.assertFalse(mHandler.handleIncomingIntent(mContext, signedIntent, false, true));
     }

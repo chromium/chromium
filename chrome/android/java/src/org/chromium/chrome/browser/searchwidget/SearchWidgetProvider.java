@@ -285,7 +285,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         Intent intent = new Intent(action, Uri.parse(String.valueOf(widgetId)));
         intent.setClass(context, SearchWidgetProvider.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        IntentHandler.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
         return intent;
     }
 

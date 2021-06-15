@@ -27,6 +27,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -261,7 +262,7 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID,
                 ContextUtils.getApplicationContext().getPackageName());
-        IntentHandler.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
         Mockito.when(mActivity.getIntent()).thenReturn(intent);
 
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);

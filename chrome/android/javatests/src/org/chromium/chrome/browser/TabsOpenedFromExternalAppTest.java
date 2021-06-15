@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -188,7 +189,7 @@ public class TabsOpenedFromExternalAppTest {
         if (firstParty) {
             Context context = InstrumentationRegistry.getTargetContext();
             intent.setPackage(context.getPackageName());
-            IntentHandler.addTrustedIntentExtras(intent);
+            IntentUtils.addTrustedIntentExtras(intent);
         }
 
         final Tab originalTab = testRule.getActivity().getActivityTab();
