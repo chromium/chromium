@@ -187,6 +187,7 @@
       'ToTLinuxASan': 'clang_tot_asan_lsan_static_release',
       'ToTLinuxASanLibfuzzer': 'libfuzzer_asan_clang_tot_release',
       'ToTLinuxMSan': 'clang_tot_msan_release',
+      'ToTLinuxPGO': 'clang_tot_official_pgo',
       'ToTLinuxTSan': 'clang_tot_tsan_release',
       'ToTLinuxUBSanVptr': 'clang_tot_ubsan_no_recover_hack_static_release',
       'ToTMac': 'clang_tot_minimal_symbols_shared_release',
@@ -202,6 +203,7 @@
       'ToTWin64': 'clang_tot_official_minimal_symbols_static_release',
       'ToTWin64(dbg)': 'clang_tot_shared_debug',
       'ToTWin64(dll)': 'clang_tot_shared_release_dcheck',
+      'ToTWin64PGO': 'clang_tot_official_pgo',
       'ToTWinASanLibfuzzer': 'libfuzzer_windows_asan_clang_tot_release_bot',
       'ToTWinCFI': 'clang_tot_win_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on_x86',
       'ToTWinCFI64': 'clang_tot_win_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on',
@@ -1895,6 +1897,10 @@
 
     'clang_tot_win_official_full_symbols_static': [
       'clang_tot', 'official', 'full_symbols', 'static', 'win_linker_timing',
+    ],
+
+    'clang_tot_official_pgo': [
+      'clang_tot', 'official', 'no_symbols', 'pgo_phase_1',
     ],
 
     'clang_tot_official_minimal_symbols_static_release': [

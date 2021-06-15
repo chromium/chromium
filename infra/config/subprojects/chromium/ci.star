@@ -2240,6 +2240,11 @@ clang_tot_linux_builder(
 )
 
 clang_tot_linux_builder(
+    name = "ToTLinuxPGO",
+    short_name = "pgo",
+)
+
+clang_tot_linux_builder(
     name = "ToTLinuxTSan",
     short_name = "tsn",
 )
@@ -2321,6 +2326,15 @@ ci.clang_builder(
         short_name = "win",
     ),
     executable = "recipe:chromium_clang_coverage_tot",
+    os = os.WINDOWS_ANY,
+)
+
+ci.clang_builder(
+    name = "ToTWin64PGO",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Windows|x64",
+        short_name = "pgo",
+    ),
     os = os.WINDOWS_ANY,
 )
 

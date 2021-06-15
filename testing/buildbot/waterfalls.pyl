@@ -1781,6 +1781,11 @@
           'all',
         ],
       },
+      'ToTLinuxPGO': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'ToTLinuxTSan': {
         'mixins': [
           'linux-xenial',
@@ -1923,6 +1928,11 @@
           'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
         },
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'ToTWin64PGO': {
         'additional_compile_targets': [
           'all',
         ],

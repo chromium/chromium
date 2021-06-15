@@ -18484,6 +18484,11 @@
       }
     ]
   },
+  "ToTLinuxPGO": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "ToTLinuxTSan": {
     "additional_compile_targets": [
       "all"
@@ -36673,6 +36678,11 @@
         },
         "test_id_prefix": "ninja://tools/polymer:polymer_tools_python_unittests/"
       }
+    ]
+  },
+  "ToTWin64PGO": {
+    "additional_compile_targets": [
+      "all"
     ]
   },
   "ToTWinASanLibfuzzer": {

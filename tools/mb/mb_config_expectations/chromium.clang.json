@@ -213,6 +213,17 @@
       "llvm_force_head_revision": true
     }
   },
+  "ToTLinuxPGO": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "is_chrome_branded": true,
+      "is_clang": true,
+      "is_official_build": true,
+      "llvm_force_head_revision": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 0
+    }
+  },
   "ToTLinuxTSan": {
     "gn_args": {
       "is_clang": true,
@@ -335,6 +346,17 @@
       "is_component_build": true,
       "is_debug": false,
       "llvm_force_head_revision": true
+    }
+  },
+  "ToTWin64PGO": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "is_chrome_branded": true,
+      "is_clang": true,
+      "is_official_build": true,
+      "llvm_force_head_revision": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 0
     }
   },
   "ToTWinASanLibfuzzer": {
