@@ -744,8 +744,17 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorNotificationBackgroundInactive:
       return GetBgColor("");
     case ui::kColorDialogForeground:
+      return GetFgColor("GtkLabel#label");
+
+    // Guest and Incognito Avatar
     case ui::kColorAvatarIconIncognito:
       return GetFgColor("GtkLabel#label");
+    case ui::kColorAvatarIconGuest:
+      return color_utils::DeriveDefaultIconColor(GetFgColor("GtkLabel#label"));
+    case ui::kColorAvatarHeaderArt:
+      return color_utils::AlphaBlend(GetFgColor("GtkLabel#label"),
+                                     GetBgColor(""), gfx::kGoogleGreyAlpha300);
+
     case ui::kColorBubbleFooterBackground:
     case ui::kColorSyncInfoBackground:
       return GetBgColor("#statusbar");
@@ -793,7 +802,6 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorMenuItemForegroundDisabled:
       return GetFgColor(StrCat(
           {GtkCssMenu(), " ", GtkCssMenuItem(), ":disabled GtkLabel#label"}));
-    case ui::kColorAvatarIconGuest:
     case ui::kColorMenuItemForegroundSecondary:
       if (GtkCheckVersion(3, 20)) {
         return GetFgColor(
@@ -802,7 +810,6 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetFgColor(StrCat({GtkCssMenu(), " ", GtkCssMenuItem(),
                                 " GtkLabel#label.accelerator"}));
     case ui::kColorMenuSeparator:
-    case ui::kColorAvatarHeaderArt:
       if (GtkCheckVersion(3, 20)) {
         return GetSeparatorColor(
             StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}));
