@@ -20,8 +20,8 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/pending_task.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"

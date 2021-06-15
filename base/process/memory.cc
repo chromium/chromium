@@ -13,10 +13,10 @@
 #include <string.h>
 
 #include "base/allocator/buildflags.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 #include "base/allocator/partition_allocator/page_allocator.h"
 #endif

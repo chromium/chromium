@@ -10,9 +10,9 @@
 #include <sstream>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/i18n/icu_string_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

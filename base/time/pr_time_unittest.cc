@@ -6,7 +6,7 @@
 #include <time.h>
 
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/third_party/nspr/prtime.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

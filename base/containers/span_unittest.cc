@@ -20,8 +20,8 @@
 #include <vector>
 
 #include "base/containers/checked_iterators.h"
+#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

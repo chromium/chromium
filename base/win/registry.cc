@@ -14,8 +14,8 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/threading/thread_restrictions.h"

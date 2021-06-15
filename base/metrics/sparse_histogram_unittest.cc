@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,7 +19,6 @@
 #include "base/metrics/sample_map.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"

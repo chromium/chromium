@@ -6,7 +6,7 @@
 // DO NOT EDIT.
 
 #include "base/i18n/utf8_validator_tables.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace base {
 namespace internal {

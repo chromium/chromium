@@ -21,10 +21,10 @@
 #include <type_traits>
 
 #include "base/atomic_sequence_num.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/elf_reader.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 
 namespace base {
 namespace debug {

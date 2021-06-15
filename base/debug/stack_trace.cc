@@ -10,16 +10,17 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include <pthread.h>
+
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if defined(OS_APPLE)

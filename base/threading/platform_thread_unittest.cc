@@ -5,8 +5,8 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"

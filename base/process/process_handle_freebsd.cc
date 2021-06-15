@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 
 #include <limits.h>
 #include <stddef.h>
@@ -11,6 +10,8 @@
 #include <sys/types.h>
 #include <sys/user.h>
 #include <unistd.h>
+
+#include "base/cxx17_backports.h"
 
 namespace base {
 

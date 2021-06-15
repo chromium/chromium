@@ -5,10 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/cxx17_backports.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"

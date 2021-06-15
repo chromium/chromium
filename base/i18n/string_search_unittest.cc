@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"

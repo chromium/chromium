@@ -14,7 +14,7 @@
 #include <sstream>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
     defined(OS_AIX)

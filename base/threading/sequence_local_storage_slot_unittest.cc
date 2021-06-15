@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

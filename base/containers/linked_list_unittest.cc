@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/linked_list.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

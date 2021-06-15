@@ -7,9 +7,9 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_handle.h"
 

@@ -40,6 +40,7 @@
 #endif
 
 #include "base/cfi_buildflags.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/debugger.h"
 #include "base/debug/stack_trace.h"
 #include "base/files/scoped_file.h"
@@ -48,7 +49,6 @@
 #include "base/memory/singleton.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"

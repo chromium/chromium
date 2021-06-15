@@ -16,9 +16,9 @@
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 
 namespace base {
 namespace internal {

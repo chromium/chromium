@@ -12,10 +12,10 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/mac/mach_logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 
 namespace base {
 
