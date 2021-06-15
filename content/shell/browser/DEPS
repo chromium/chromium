@@ -1,6 +1,9 @@
 include_rules = [
   "+components/keyed_service/content",
+  "+components/metrics",
   "+components/network_session_configurator/common",
+  "+components/prefs",
+  "+components/variations",
   "+services/device/public/cpp",
   "+services/network/public",
   "+services/service_manager/public/cpp",

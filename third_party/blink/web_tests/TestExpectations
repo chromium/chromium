@@ -1683,6 +1683,7 @@ crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-002.html 
 # crbug.com/1218721: These tests fail when libvpx_for_vp8 is enabled.
 crbug.com/1218721 fast/borders/border-radius-mask-video-shadow.html [ Failure ]
 crbug.com/1218721 fast/borders/border-radius-mask-video.html [ Failure ]
+crbug.com/1218721 [ Mac ] http/tests/media/video-frame-size-change.html [ Failure ]
 
 crbug.com/637055 fast/css/outline-offset-large.html [ Skip ]
 
@@ -6908,6 +6909,10 @@ crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-datachannel.
 crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-lifetime.html [ Pass Timeout ]
 crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-sdes-gcm.html [ Pass Timeout ]
 crbug.com/1215584 [ Mac11.0 ] inspector-protocol/layout-fonts/lang-fallback.js [ Pass Failure ]
+
+# Fail with field trial testing config.
+crbug.com/1219767 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snap-to-target-on-layout-change.html [ Failure ]
+crbug.com/1219767 [ Linux ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure ]
 
 # Sheriff 2021-06-03
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Failure ]

@@ -37,6 +37,7 @@ void ContentBrowserTestShellMainDelegate::PostEarlyInitialization(
   // Browser tests on Lacros requires a non-null LacrosService.
   lacros_service_ = std::make_unique<chromeos::LacrosService>(
       /*delegate=*/nullptr);
+  ShellMainDelegate::PostEarlyInitialization(is_running_tests);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

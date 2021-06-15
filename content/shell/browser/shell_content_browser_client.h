@@ -16,6 +16,8 @@
 #include "content/shell/browser/shell_speech_recognition_manager_delegate.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
+class PrefService;
+
 namespace device {
 class FakeGeolocationManager;
 }
@@ -121,6 +123,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       base::OnceCallback<void(const base::FilePath&)>) override;
   bool HasErrorPage(int http_status_code) override;
 
+  void CreateFeatureListAndFieldTrials();
+
   ShellBrowserContext* browser_context();
   ShellBrowserContext* off_the_record_browser_context();
   ShellBrowserMainParts* shell_browser_main_parts() {
@@ -180,6 +184,12 @@ class ShellContentBrowserClient : public ContentBrowserClient {
           cert_verifier_creation_params);
 
  private:
+  class ShellFieldTrials;
+
+  std::unique_ptr<PrefService> CreateLocalState();
+  // Needed so that content_shell can use fieldtrial_testing_config.
+  void SetUpFieldTrials();
+
   static bool allow_any_cors_exempt_header_for_browser_;
 
   base::OnceClosure select_client_certificate_callback_;
@@ -199,6 +209,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 
   // Owned by content::BrowserMainLoop.
   ShellBrowserMainParts* shell_browser_main_parts_ = nullptr;
+
+  std::unique_ptr<PrefService> local_state_;
+  std::unique_ptr<ShellFieldTrials> field_trials_;
 };
 
 // The delay for sending reports when running with --run-web-tests

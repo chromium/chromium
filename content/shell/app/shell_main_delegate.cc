@@ -24,6 +24,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/shell/app/shell_crash_reporter_client.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "content/shell/browser/shell_paths.h"
 #include "content/shell/common/shell_content_client.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/shell/gpu/shell_content_gpu_client.h"
@@ -181,6 +182,12 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   }
 #endif
 
+  RegisterShellPathProvider();
+
+  return false;
+}
+
+bool ShellMainDelegate::ShouldCreateFeatureList() {
   return false;
 }
 
@@ -323,6 +330,11 @@ void ShellMainDelegate::PreBrowserMain() {
 #if defined(OS_MAC)
   RegisterShellCrApp();
 #endif
+}
+
+void ShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+  // Apply field trial testing configuration.
+  browser_client_->CreateFeatureListAndFieldTrials();
 }
 
 ContentClient* ShellMainDelegate::CreateContentClient() {
