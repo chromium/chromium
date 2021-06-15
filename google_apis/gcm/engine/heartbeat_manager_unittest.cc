@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -66,8 +66,7 @@ class HeartbeatManagerTest : public testing::Test {
   void SendHeartbeatClosure();
   void TriggerReconnectClosure(ConnectionFactory::ConnectionResetReason reason);
 
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<TestHeartbeatManager> manager_;
 
@@ -76,9 +75,9 @@ class HeartbeatManagerTest : public testing::Test {
 };
 
 HeartbeatManagerTest::HeartbeatManagerTest()
-    : task_runner_(new base::TestSimpleTaskRunner()),
-      task_runner_handle_(task_runner_),
-      manager_(new TestHeartbeatManager(task_runner_, task_runner_)),
+    : manager_(
+          new TestHeartbeatManager(base::SequencedTaskRunnerHandle::Get(),
+                                   base::SequencedTaskRunnerHandle::Get())),
       heartbeats_sent_(0),
       reconnects_triggered_(0) {}
 
