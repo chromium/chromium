@@ -61,6 +61,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "incognito_profile.icon",
     "input.icon",
     "key.icon",
+    "key_crossed.icon",
     "keyboard_arrow_down.icon",
     "keyboard_arrow_right.icon",
     "keyboard_arrow_up.icon",

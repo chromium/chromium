@@ -187,16 +187,29 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
     return gfx::ImageSkia();
 
   absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
+  bool is_sync_feature_enabled =
+      IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync);
   if (!error) {
     // There's no error, so just show the sync on/off icon depending on whether
     // sync-the-feature is enabled.
-    if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
-            signin::ConsentLevel::kSync)) {
+    if (is_sync_feature_enabled) {
       return ColoredImageForMenu(
           kSyncCircleIcon, GetNativeTheme()->GetSystemColor(
                                ui::NativeTheme::kColorId_AlertSeverityLow));
     }
     return ColoredImageForMenu(kSyncPausedCircleIcon, gfx::kGoogleGrey500);
+  }
+
+  // There's an error. Usually a red sync-paused icon will be used, but some
+  // errors have special icons.
+  if ((error == AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError ||
+       error == AvatarSyncErrorType::
+                    kTrustedVaultRecoverabilityDegradedForPasswordsError) &&
+      !is_sync_feature_enabled) {
+    return ColoredImageForMenu(
+        kKeyCrossedIcon, GetNativeTheme()->GetSystemColor(
+                             ui::NativeTheme::kColorId_AlertSeverityHigh));
   }
 
   ui::NativeTheme::ColorId color_id =
