@@ -84,6 +84,7 @@ component("x") {
     "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/util",
+    "//ui/display/util:gpu_info_util",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices/x11",

@@ -35,6 +35,15 @@ component("util") {
   }
 }
 
+source_set("gpu_info_util") {
+  sources = [
+    "gpu_info_util.cc",
+    "gpu_info_util.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 fuzzer_test("edid_parser_fuzzer") {
   sources = [ "edid_parser_fuzzer.cc" ]
   deps = [

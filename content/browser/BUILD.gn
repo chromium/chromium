@@ -237,6 +237,7 @@ source_set("browser") {
     "//ui/base/ime/init",
     "//ui/display",
     "//ui/display/types",
+    "//ui/display/util:gpu_info_util",
     "//ui/events",
     "//ui/events:gesture_detection",
     "//ui/events/blink",

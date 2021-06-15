@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/linux/linux_desktop.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
+#include "ui/display/util/gpu_info_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point.h"
@@ -283,6 +285,16 @@ base::Value WaylandScreen::GetGpuExtraInfoAsListValue(
   // TODO(https://crbug.com/1138740): it'd be good to have the compositor name
   // in the about://gpu as well.
   auto list_value = GetDesktopEnvironmentInfoAsListValue();
+  DCHECK(list_value.is_list());
+  std::vector<std::string> protocols;
+  for (const auto& protocol_and_version : connection_->available_globals()) {
+    protocols.push_back(base::StringPrintf("%s:%u",
+                                           protocol_and_version.first.c_str(),
+                                           protocol_and_version.second));
+  }
+  list_value.Append(
+      display::BuildGpuInfoEntry("Interfaces exposed by the Wayland compositor",
+                                 base::JoinString(protocols, " ")));
   StorePlatformNameIntoListValue(list_value, "wayland");
   return list_value;
 }

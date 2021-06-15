@@ -457,6 +457,7 @@ component("base") {
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/dragdrop/mojom",
     "//ui/display",
+    "//ui/display/util:gpu_info_util",
     "//ui/events",
     "//ui/events/devices",
     "//ui/resources:webui_generated_resources_grd",

@@ -222,6 +222,11 @@ class WaylandConnection {
                                           uint32_t tv_sec_lo,
                                           uint32_t tv_nsec);
 
+  const std::vector<std::pair<std::string, uint32_t>>& available_globals()
+      const {
+    return available_globals_;
+  }
+
  private:
   friend class WaylandConnectionTestApi;
 
@@ -335,6 +340,10 @@ class WaylandConnection {
   EventSerial serial_;
 
   uint32_t pointer_enter_serial_ = 0;
+
+  // Global Wayland interfaces available in the current session, with their
+  // versions.
+  std::vector<std::pair<std::string, uint32_t>> available_globals_;
 };
 
 }  // namespace ui

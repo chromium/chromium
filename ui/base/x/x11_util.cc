@@ -52,6 +52,7 @@
 #include "ui/base/x/x11_cursor.h"
 #include "ui/base/x/x11_cursor_loader.h"
 #include "ui/base/x/x11_menu_list.h"
+#include "ui/display/util/gpu_info_util.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event_utils.h"
@@ -152,15 +153,6 @@ bool IsX11ScreenSaverAvailable() {
   return version && (version->server_major_version > 1 ||
                      (version->server_major_version == 1 &&
                       version->server_minor_version >= 1));
-}
-
-// Must be in sync with the copy in //content/browser/gpu/gpu_internals_ui.cc.
-base::Value NewDescriptionValuePair(base::StringPiece desc,
-                                    base::StringPiece value) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("description", base::Value(desc));
-  dict.SetKey("value", base::Value(value));
-  return dict;
 }
 
 // Returns the bounds of |window| in the screen before adjusting for the frame.
@@ -864,14 +856,14 @@ void SuspendX11ScreenSaver(bool suspend) {
 void StoreGpuExtraInfoIntoListValue(x11::VisualId system_visual,
                                     x11::VisualId rgba_visual,
                                     base::Value& list_value) {
-  list_value.Append(
-      NewDescriptionValuePair("Window manager", ui::GuessWindowManagerName()));
-  list_value.Append(NewDescriptionValuePair(
+  list_value.Append(display::BuildGpuInfoEntry("Window manager",
+                                               ui::GuessWindowManagerName()));
+  list_value.Append(display::BuildGpuInfoEntry(
       "Compositing manager", ui::IsCompositingManagerPresent() ? "Yes" : "No"));
-  list_value.Append(NewDescriptionValuePair(
+  list_value.Append(display::BuildGpuInfoEntry(
       "System visual ID",
       base::NumberToString(static_cast<uint32_t>(system_visual))));
-  list_value.Append(NewDescriptionValuePair(
+  list_value.Append(display::BuildGpuInfoEntry(
       "RGBA visual ID",
       base::NumberToString(static_cast<uint32_t>(rgba_visual))));
 }

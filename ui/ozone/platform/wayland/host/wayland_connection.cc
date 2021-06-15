@@ -666,6 +666,8 @@ void WaylandConnection::Global(void* data,
         std::make_unique<OrgKdeKwinIdle>(idle.release(), connection);
   }
 
+  connection->available_globals_.emplace_back(interface, version);
+
   connection->ScheduleFlush();
 }
 
