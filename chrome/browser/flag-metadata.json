@@ -786,6 +786,11 @@
     "expiry_milestone": 93
   },
   {
+      "name": "cross-origin-embedder-policy-credentialless",
+      "owners": ["arthursonzogni", "clamy", "mkwst"],
+      "expiry_milestone": 93
+  },
+  {
     "name": "crostini-disk-resizing",
     "owners": [ "davidmunro@google.com", "nverne" ],
     "expiry_milestone": 93

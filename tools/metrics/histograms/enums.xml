@@ -49243,6 +49243,8 @@ from previous Chrome versions.
   <int value="1427905064" label="CreditCardAutofillTouchBar:enabled"/>
   <int value="1428004502" label="PaymentRequestOptionalTotal:enabled"/>
   <int value="1428221397" label="QueryTilesInNTP:enabled"/>
+  <int value="1429031731"
+      label="CrossOriginEmbedderPolicyCredentialless:enabled"/>
   <int value="1429923065" label="enable-media-internals:enabled"/>
   <int value="1430924529" label="TranslateIntent:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>
@@ -49677,6 +49679,8 @@ from previous Chrome versions.
   <int value="1812368073" label="enable-new-app-list-mixer"/>
   <int value="1813370929"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:enabled"/>
+  <int value="1814039202"
+      label="CrossOriginEmbedderPolicyCredentialless:disabled"/>
   <int value="1814671708" label="disable-password-manager-reauthentication"/>
   <int value="1816174635" label="RequestUnbufferedDispatch:enabled"/>
   <int value="1816723085" label="SchemefulSameSite:enabled"/>

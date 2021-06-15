@@ -959,6 +959,14 @@ const char kBlockInsecurePrivateNetworkRequestsDescription[] =
     "public. This is a first step towards full enforcement of CORS-RFC1918: "
     "https://wicg.github.io/cors-rfc1918";
 
+const char kCrossOriginEmbedderPolicyCredentiallessName[] =
+    "Enable Cross-Origin-Embedder-Policy: credentialless";
+const char kCrossOriginEmbedderPolicyCredentiallessDescription[] =
+    "Credentialless is a Cross-Origin-Embedder-Policy (COEP) variant. "
+    "COEP:credentialless causes no-cors cross-origin requests not to include "
+    "credentials (cookies, client certificates, etc...). Similarly to "
+    "require-corp, it can be used to enable cross-origin-isolation.";
+
 const char kDeprecateAltClickName[] =
     "Enable Alt+Click deprecation notifications";
 const char kDeprecateAltClickDescription[] =

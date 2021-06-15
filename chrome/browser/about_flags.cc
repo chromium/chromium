@@ -4475,6 +4475,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockInsecurePrivateNetworkRequestsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kBlockInsecurePrivateNetworkRequests)},
 
+    {"cross-origin-embedder-policy-credentialless",
+     flag_descriptions::kCrossOriginEmbedderPolicyCredentiallessName,
+     flag_descriptions::kCrossOriginEmbedderPolicyCredentiallessDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         network::features::kCrossOriginEmbedderPolicyCredentialless)},
+
     {"disable-keepalive-fetch", flag_descriptions::kDisableKeepaliveFetchName,
      flag_descriptions::kDisableKeepaliveFetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kDisableKeepaliveFetch)},
