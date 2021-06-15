@@ -425,7 +425,7 @@ class FileSystemURLLoaderFactoryTest
     std::move(done_closure).Run();
   }
 
-  storage::FileSystemContext* CreateFileSystemContext(
+  scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       const base::FilePath& base_path) {
     std::vector<std::unique_ptr<storage::FileSystemBackend>>

@@ -82,7 +82,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
     int64_t quota;
   };
 
-  virtual FileSystemContext* CreateFileSystemContext(
+  virtual scoped_refptr<FileSystemContext> CreateFileSystemContext(
       QuotaManagerProxy* quota_manager_proxy,
       const base::ScopedTempDir& dir) {
     return CreateFileSystemContextForTesting(quota_manager_proxy,
@@ -322,7 +322,7 @@ class SandboxFileStreamWriterIncognitoTest
   SandboxFileStreamWriterIncognitoTest() = default;
 
  protected:
-  FileSystemContext* CreateFileSystemContext(
+  scoped_refptr<FileSystemContext> CreateFileSystemContext(
       QuotaManagerProxy* quota_manager_proxy,
       const base::ScopedTempDir& dir) override {
     return CreateIncognitoFileSystemContextForTesting(

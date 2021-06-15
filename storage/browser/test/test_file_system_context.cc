@@ -20,7 +20,7 @@
 
 namespace storage {
 
-FileSystemContext* CreateFileSystemContextForTesting(
+scoped_refptr<FileSystemContext> CreateFileSystemContextForTesting(
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     const base::FilePath& base_path) {
   std::vector<std::unique_ptr<FileSystemBackend>> additional_providers;
@@ -32,13 +32,14 @@ FileSystemContext* CreateFileSystemContextForTesting(
       base_path);
 }
 
-FileSystemContext* CreateFileSystemContextWithAdditionalProvidersForTesting(
+scoped_refptr<FileSystemContext>
+CreateFileSystemContextWithAdditionalProvidersForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     std::vector<std::unique_ptr<FileSystemBackend>> additional_providers,
     const base::FilePath& base_path) {
-  return new FileSystemContext(
+  return base::MakeRefCounted<FileSystemContext>(
       std::move(io_task_runner), std::move(file_task_runner),
       ExternalMountPoints::CreateRefCounted(),
       base::MakeRefCounted<MockSpecialStoragePolicy>(),
@@ -47,14 +48,15 @@ FileSystemContext* CreateFileSystemContextWithAdditionalProvidersForTesting(
       CreateAllowFileAccessOptions());
 }
 
-FileSystemContext* CreateFileSystemContextWithAutoMountersForTesting(
+scoped_refptr<FileSystemContext>
+CreateFileSystemContextWithAutoMountersForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     std::vector<std::unique_ptr<FileSystemBackend>> additional_providers,
     const std::vector<URLRequestAutoMountHandler>& auto_mounters,
     const base::FilePath& base_path) {
-  return new FileSystemContext(
+  return base::MakeRefCounted<FileSystemContext>(
       std::move(io_task_runner), std::move(file_task_runner),
       ExternalMountPoints::CreateRefCounted(),
       base::MakeRefCounted<MockSpecialStoragePolicy>(),
@@ -62,7 +64,7 @@ FileSystemContext* CreateFileSystemContextWithAutoMountersForTesting(
       auto_mounters, base_path, CreateAllowFileAccessOptions());
 }
 
-FileSystemContext* CreateIncognitoFileSystemContextForTesting(
+scoped_refptr<FileSystemContext> CreateIncognitoFileSystemContextForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
@@ -76,7 +78,7 @@ FileSystemContext* CreateIncognitoFileSystemContextForTesting(
       base_path);
 }
 
-FileSystemContext*
+scoped_refptr<FileSystemContext>
 CreateIncognitoFileSystemContextWithAdditionalProvidersForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
