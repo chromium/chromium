@@ -414,7 +414,9 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
   HeapVector<Member<AXObject>> related_sources;
 #if DCHECK_IS_ON()
   DCHECK(node);
-  AXObject* obj_for_node = Get(node);
+  if (obj)
+    DCHECK(!obj->IsDetached());
+  AXObject* obj_for_node = object_cache_->GetWithoutInvalidation(node);
   DCHECK(!obj || obj_for_node == obj)
       << "Object and node did not match:"
       << "\n* node = " << node << "\n* obj = " << obj->ToString(true, true)

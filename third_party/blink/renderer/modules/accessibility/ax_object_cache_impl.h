@@ -99,6 +99,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChanged(Node*) override;
   void ChildrenChanged(const LayoutObject*) override;
   void ChildrenChanged(AccessibleNode*) override;
+  void SlotAssignmentWillChange(Node*) override;
   void CheckedStateChanged(Node*) override;
   void ListboxOptionStateChanged(HTMLOptionElement*) override;
   void ListboxSelectedChildrenChanged(HTMLSelectElement*) override;
@@ -219,6 +220,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // when safe to do so.
   AXObject* Get(const Node*);
   AXObject* Get(const LayoutObject*);
+
+  // Get an AXObject* without any potential side effects, such as queuing up an
+  // invalidation for objects that need to be removed or replaced.
+  AXObject* GetWithoutInvalidation(const Node* node);
 
   // Return true if the object is still part of the tree, meaning that ancestors
   // exist or can be repaired all the way to the root.

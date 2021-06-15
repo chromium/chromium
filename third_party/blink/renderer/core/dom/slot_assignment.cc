@@ -266,7 +266,7 @@ void SlotAssignment::RecalcAssignment() {
     // during slot reassignment, so call ChildrenChanged() on all of them.
     if (AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache()) {
       for (Member<HTMLSlotElement> slot : Slots())
-        cache->ChildrenChanged(slot);
+        cache->SlotAssignmentWillChange(slot);
     }
 
     FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(

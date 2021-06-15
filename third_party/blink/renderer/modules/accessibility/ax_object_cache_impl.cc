@@ -330,12 +330,17 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
   // Outside of AXMenuList descendants, all other non-slot user agent shadow
   // nodes are relevant.
   const HTMLSlotElement* slot_element = DynamicTo<HTMLSlotElement>(node);
-  if (!slot_element)
+  if (!slot_element || !slot_element->SupportsAssignment())
     return true;
 
   // Slots are relevant if they have content.
   // However, this can only be checked during safe times.
   // During other times we must assume that the <slot> is relevant.
+  // TODO(accessibility) Consider removing this rule, but it will require
+  // a different way of dealing with these PDF test failures:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/2965317
+  // For some reason the iframe tests hang, waiting for content to change. In
+  // other words, returning true here causes some tree updates not to occur.
   return node->GetDocument().IsFlatTreeTraversalForbidden() ||
          node->GetDocument().IsSlotAssignmentRecalcForbidden() ||
          LayoutTreeBuilderTraversal::FirstChild(*slot_element);
@@ -668,6 +673,22 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   return result;
 }
 
+AXObject* AXObjectCacheImpl::GetWithoutInvalidation(const Node* node) {
+  if (!node)
+    return nullptr;
+
+  LayoutObject* layout_object = node->GetLayoutObject();
+
+  AXID layout_id = layout_object ? layout_object_mapping_.at(layout_object) : 0;
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
+  if (layout_id)
+    return objects_.at(layout_id);
+
+  AXID node_id = node_object_mapping_.at(node);
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
+  return node_id ? objects_.at(node_id) : nullptr;
+}
+
 AXObject* AXObjectCacheImpl::Get(const Node* node) {
   if (!node)
     return nullptr;
@@ -699,11 +720,12 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
     } else {
       // Layout object is irrelevant, but node object can still be relevant.
       if (!node_id) {
-        Remove(layout_object);
-        return nullptr;
+        DCHECK(layout_id);  // One of of node_id, layout_id is non-zero.
+        Invalidate(layout_object->GetDocument(), layout_id);
+      } else {
+        layout_object = nullptr;
+        layout_id = 0;
       }
-      layout_object = nullptr;
-      layout_id = 0;
     }
   }
 
@@ -1962,6 +1984,17 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
   return ancestor;
 }
 
+void AXObjectCacheImpl::SlotAssignmentWillChange(Node* node) {
+  // Use GetWithoutInvalidation(), because right before slot assignment is a
+  // dangerous time to test whether the slot must be invalidated, because
+  // this currently requires looking at the <slot> children in
+  // IsShadowContentRelevantForAccessibility(), resulting in an infinite loop
+  // as looking at the children causes slot assignment to be recalculated.
+  // TODO(accessibility) In the future this may be simplified.
+  // See crbug.com/1219311.
+  ChildrenChanged(GetWithoutInvalidation(node));
+}
+
 void AXObjectCacheImpl::ChildrenChanged(Node* node) {
   ChildrenChanged(Get(node));
 }
@@ -2045,7 +2078,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 #if DCHECK_IS_ON()
   if (obj && optional_node) {
     DCHECK_EQ(obj->GetNode(), optional_node);
-    DCHECK_EQ(obj, Get(optional_node));
+    DCHECK_EQ(obj, GetWithoutInvalidation(optional_node));
   }
   Document* document = obj ? obj->GetDocument() : &optional_node->GetDocument();
   DCHECK(document);
@@ -2313,7 +2346,7 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
         DCHECK(!obj->IsDetached());
         if (node) {
           DCHECK_EQ(node, obj->GetNode());
-          DCHECK_EQ(Get(node), obj);
+          DCHECK_EQ(GetWithoutInvalidation(node), obj);
         }
       }
     }
