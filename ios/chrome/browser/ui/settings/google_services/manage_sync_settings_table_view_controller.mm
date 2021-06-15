@@ -123,7 +123,8 @@
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.serviceDelegate didSelectItem:item];
+  CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
+  [self.serviceDelegate didSelectItem:item cellRect:cellRect];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

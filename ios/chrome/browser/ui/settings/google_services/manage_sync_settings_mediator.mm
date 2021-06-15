@@ -552,7 +552,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   [self updateSyncItemsNotifyConsumer:YES];
 }
 
-- (void)didSelectItem:(TableViewItem*)item {
+- (void)didSelectItem:(TableViewItem*)item cellRect:(CGRect)cellRect {
   SyncSettingsItemType itemType = static_cast<SyncSettingsItemType>(item.type);
   switch (itemType) {
     case EncryptionItemType:
@@ -582,7 +582,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       [self.syncErrorHandler openTrustedVaultReauth];
       break;
     case SignOutItemType:
-      [self.commandHandler showTurnOffSyncOptions];
+      [self.commandHandler showTurnOffSyncOptionsFromTargetRect:cellRect];
       break;
     case SyncEverythingItemType:
     case AutofillDataTypeItemType:
