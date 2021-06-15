@@ -460,6 +460,11 @@ const char kChromeTipsInMainMenuNewBadgeDescription[] =
     " test the value of this user education feature.";
 #endif
 
+const char kChromeWhatsNewUIName[] =
+    "Show Chrome What's New page at chrome://whats-new";
+const char kChromeWhatsNewUIDescription[] =
+    "Enables Chrome What's New page at chrome://whats-new.";
+
 const char kCompositingBasedThrottling[] = "Compositing-based Throttling";
 const char kCompositingBasedThrottlingDescription[] =
     "Enables compositing-based throttling to throttle appropriate frame sinks "

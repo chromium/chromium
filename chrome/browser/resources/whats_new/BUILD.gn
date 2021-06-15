@@ -1,0 +1,31 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/whats_new_resources.h",
+    "grit/whats_new_resources_map.cc",
+    "grit/whats_new_resources_map.h",
+    "whats_new_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "whats_new"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "whats_new.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+}

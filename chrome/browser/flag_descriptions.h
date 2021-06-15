@@ -271,6 +271,9 @@ extern const char kChromeTipsInMainMenuNewBadgeName[];
 extern const char kChromeTipsInMainMenuNewBadgeDescription[];
 #endif
 
+extern const char kChromeWhatsNewUIName[];
+extern const char kChromeWhatsNewUIDescription[];
+
 extern const char kCompositingBasedThrottling[];
 extern const char kCompositingBasedThrottlingDescription[];
 

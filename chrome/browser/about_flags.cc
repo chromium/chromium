@@ -7199,6 +7199,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabRestoreSubMenusDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabRestoreSubMenus)},
 
+    {"chrome-whats-new-ui", flag_descriptions::kChromeWhatsNewUIName,
+     flag_descriptions::kChromeWhatsNewUIDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeWhatsNewUI)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

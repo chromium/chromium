@@ -28,6 +28,8 @@ extern const base::Feature kChromeTipsInMainMenu;
 extern const base::Feature kChromeTipsInMainMenuNewBadge;
 #endif
 
+extern const base::Feature kChromeWhatsNewUI;
+
 extern const base::Feature kCommander;
 
 extern const base::Feature kEvDetailsInPageInfo;

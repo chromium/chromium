@@ -1568,6 +1568,8 @@ static_library("ui") {
       "webui/util/image_util.h",
       "webui/web_footer_experiment_ui.cc",
       "webui/web_footer_experiment_ui.h",
+      "webui/whats_new/whats_new_ui.cc",
+      "webui/whats_new/whats_new_ui.h",
       "window_sizer/window_sizer.cc",
       "window_sizer/window_sizer.h",
       "zoom/chrome_zoom_level_otr_delegate.cc",

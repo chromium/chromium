@@ -251,6 +251,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [1990],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/whats_new/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2000],
+  },
   # END chrome/browser section.
 
   # START chrome/ WebUI resources section

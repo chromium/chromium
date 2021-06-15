@@ -39,6 +39,7 @@ group("resources") {
       "read_later:resources",
       "settings:resources",
       "tab_search:resources",
+      "whats_new:resources",
     ]
     if (is_chrome_branded) {
       public_deps += [ "media_router:cast_feedback_ui_resources" ]

@@ -582,6 +582,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "chrome-whats-new-ui",
+    "owners": [ "rbpotter" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "chromeos-direct-video-decoder",
     "owners": [ "chromeos-gfx-video@google.com" ],
     // TODO(b/159825227): remove when the "old" video decoder is fully launched.

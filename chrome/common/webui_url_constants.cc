@@ -195,6 +195,7 @@ const char kChromeUIWebFooterExperimentURL[] =
     "chrome://web-footer-experiment/";
 const char kChromeUIWelcomeHost[] = "welcome";
 const char kChromeUIWelcomeURL[] = "chrome://welcome/";
+const char kChromeUIWhatsNewHost[] = "whats-new";
 
 #if defined(OS_WIN)
 // TODO(crbug.com/1003960): Remove when issue is resolved.
@@ -563,6 +564,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUINewTabPageThirdPartyHost,
     kChromeUISettingsHost,
     kChromeUISystemInfoHost,
+    kChromeUIWhatsNewHost,
 #endif
 #if defined(OS_ANDROID)
     kChromeUIExploreSitesInternalsHost,

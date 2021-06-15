@@ -26,6 +26,10 @@ const base::Feature kChromeTipsInMainMenuNewBadge{
     "ChromeTipsInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Enables "Chrome What's New" UI.
+const base::Feature kChromeWhatsNewUI{"ChromeWhatsNewUI",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables showing the EV certificate details in the Page Info bubble.
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
