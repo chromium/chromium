@@ -6956,3 +6956,7 @@ crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspect
 # Sheriff 2021-06-14
 crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Pass Failure Timeout ]
 crbug.com/1219499 [ Win ] external/wpt/websockets/Create-blocked-port.any.html?wss [ Pass Timeout ]
+
+# Temporarily suppress the flakes until
+# https://chromium-review.googlesource.com/c/chromium/src/+/2964452 lands.
+crbug.com/1218947 [ Linux ] external/wpt/websockets/remove-own-iframe-during-onerror.window.html?wss [ Pass Timeout ]
