@@ -985,5 +985,26 @@ TEST(MathUtilTest, MapClippedQuadClampWholePlaneBelow) {
   EXPECT_EQ(clipped_quad[3].z(), -1000000.0f);
 }
 
+TEST(MathUtilTest, MapClippedQuadInfiniteMatrix) {
+  // clang-format off
+  gfx::Transform transform(
+      1.0f, 0.0f, 0.0f, 0.0f,
+      0.0f, -100.0f, 0.0f, std::numeric_limits<float>::infinity(),
+      0.0f, 0.0f, 1.0f, 0.0f,
+      0.0f, 0.0f, 0.0f, 1.0f);
+  // clang-format on
+
+  gfx::QuadF src_quad(gfx::PointF(0.0f, 1.0f), gfx::PointF(1.0f, 1.0f),
+                      gfx::PointF(1.0f, 2.0f), gfx::PointF(0.0f, 2.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  // Nothing to test other than we don't fail DCHECK()s.
+}
+
 }  // namespace
 }  // namespace cc
