@@ -1475,8 +1475,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::BroadcastChannel;
     case WebSchedulerTrackedFeature::kIndexedDBConnection:
       return Page::BackForwardCacheNotRestoredReasonEnum::IndexedDBConnection;
-    case WebSchedulerTrackedFeature::kWebVR:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebVR;
     case WebSchedulerTrackedFeature::kWebXR:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebXR;
     case WebSchedulerTrackedFeature::kSharedWorker:
@@ -1615,7 +1613,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission:
     case WebSchedulerTrackedFeature::kBroadcastChannel:
     case WebSchedulerTrackedFeature::kIndexedDBConnection:
-    case WebSchedulerTrackedFeature::kWebVR:
     case WebSchedulerTrackedFeature::kWebXR:
     case WebSchedulerTrackedFeature::kSharedWorker:
     case WebSchedulerTrackedFeature::kWebLocks:

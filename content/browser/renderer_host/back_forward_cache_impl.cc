@@ -257,7 +257,6 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
       FeatureToBit(WebSchedulerTrackedFeature::kWebRTC) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebShare) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebSocket) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebVR) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebXR) |
       FeatureToBit(
           WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);

@@ -91,8 +91,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"BroadcastChannel", "requested broadcast channel permission"};
     case WebSchedulerTrackedFeature::kIndexedDBConnection:
       return {"IndexedDBConnection", "IndexedDB connection present"};
-    case WebSchedulerTrackedFeature::kWebVR:
-      return {"WebVR", "WebVR"};
     case WebSchedulerTrackedFeature::kWebXR:
       return {"WebXR", "WebXR"};
     case WebSchedulerTrackedFeature::kWebLocks:
