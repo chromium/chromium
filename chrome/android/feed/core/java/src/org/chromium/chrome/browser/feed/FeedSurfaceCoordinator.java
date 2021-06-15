@@ -446,8 +446,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (processScope != null) {
             mSurfaceScope = processScope.obtainSurfaceScope(new FeedSurfaceScopeDependencyProvider(
                     mActivity, context, mShowDarkBackground, () -> {
-                        if (mMediator.getCurrentStream() == null) return false;
-                        return mMediator.getCurrentStream().isActivityLoggingEnabled();
+                        if (mMediator.getFirstStream() == null) return false;
+                        return mMediator.getFirstStream().isActivityLoggingEnabled();
                     }));
         } else {
             mSurfaceScope = null;

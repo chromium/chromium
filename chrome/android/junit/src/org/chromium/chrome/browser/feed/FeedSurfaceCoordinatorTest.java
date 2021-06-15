@@ -341,10 +341,10 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     private boolean hasStreamBound() {
-        if (mCoordinator.getMediatorForTesting().getCurrentStream() == null) {
+        if (mCoordinator.getMediatorForTesting().getCurrentStreamForTesting() == null) {
             return false;
         }
-        return ((FeedStream) mCoordinator.getMediatorForTesting().getCurrentStream())
+        return ((FeedStream) mCoordinator.getMediatorForTesting().getCurrentStreamForTesting())
                 .getBoundStatusForTest();
     }
 

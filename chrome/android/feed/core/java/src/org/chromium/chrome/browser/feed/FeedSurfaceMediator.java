@@ -590,7 +590,14 @@ public class FeedSurfaceMediator
         unbindStream();
     }
 
-    Stream getCurrentStream() {
+    /** @return The stream that represents the 1st tab. */
+    Stream getFirstStream() {
+        if (mTabToStreamMap.isEmpty()) return null;
+        return mTabToStreamMap.get(0);
+    }
+
+    @VisibleForTesting
+    Stream getCurrentStreamForTesting() {
         return mCurrentStream;
     }
 
