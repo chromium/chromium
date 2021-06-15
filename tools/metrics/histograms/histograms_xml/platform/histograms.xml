@@ -1348,6 +1348,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Platform.UnaggregatedUsageTimeTooBig" units="seconds"
+    expires_after="2022-01-08">
+  <owner>mutexlox@chromium.org</owner>
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Use time samples that would have gone to Platform.UnaggregatedUsageTime, but
+    which are implausibly big. For example, we've seen individual samples of ~1
+    billion seconds, and many more of over 1 million seconds, which are both far
+    too large to be valid data. metrics_daemon records this metric whenever an
+    individual 5-minute usage sample exceeds 2 hours (defined by
+    kMaxAcceptableUnaggregatedUsageTime, in metrics_daemon.cc, in platform2).
+  </summary>
+</histogram>
+
 <histogram name="Platform.UncleanShutdownsDaily" units="count per day"
     expires_after="never">
 <!-- expires-never: Used to assess Chrome OS platform stability. -->
