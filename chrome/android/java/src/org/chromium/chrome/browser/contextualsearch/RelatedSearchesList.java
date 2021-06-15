@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.chromium.base.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import java.util.List;
  * UI.
  */
 class RelatedSearchesList {
+    private static final String TAG = "ContextualSearch";
     /** JSON keys sent by the server. */
     private static final String CONTENT_SUGGESTIONS = "content";
     private static final String TITLE = "title";
@@ -28,39 +31,17 @@ class RelatedSearchesList {
     /** The parsed Json suggestions. */
     private final JSONObject mJsonSuggestions;
 
-    /** A way to log warnings for the caller's benefit. */
-    @Nullable
-    private final WarningLog mWarningLog;
-
-    /**
-     * Provides a way to notify the clients of this class that something went wrong.
-     * TODO(donnd): Simplify by removing this interface and just logging directly in this class.
-     * The associated test will need to be converted from JUnit to RoboElectric for this.
-     * See https://crbug.com/1218621 to do this cleanup.
-     */
-    interface WarningLog {
-        /**
-         * Notifies the caller that something went wrong.
-         * @param warning The warning message to send to the client.
-         */
-        void notify(String warning);
-    }
-
     /**
      * Constructs an instance from a JSON string.
      * @param jsonString The JSON string for all the suggestions typically returned by the server.
-     * @param warningLog A {@link WarningLog} to report errors to, or {@code null} to ignore them.
      */
-    RelatedSearchesList(String jsonString, @Nullable WarningLog warningLog) {
-        mWarningLog = warningLog;
+    RelatedSearchesList(String jsonString) {
         JSONObject suggestions;
         try {
             suggestions = new JSONObject(jsonString);
         } catch (JSONException e) {
-            if (mWarningLog != null) {
-                mWarningLog.notify("RelatedSearchesList cannot parse JSON: " + jsonString + "\n"
-                        + e.getMessage());
-            }
+            Log.w(TAG,
+                    "RelatedSearchesList cannot parse JSON: " + jsonString + "\n" + e.getMessage());
             suggestions = new JSONObject();
         }
         mJsonSuggestions = suggestions;
@@ -80,11 +61,9 @@ class RelatedSearchesList {
             try {
                 results.add(suggestions.getJSONObject(i).getString(TITLE));
             } catch (JSONException e) {
-                if (mWarningLog != null) {
-                    mWarningLog.notify(
-                            "RelatedSearchesList cannot find a query with a title at suggestion "
-                            + "index: " + i + "\n" + e.getMessage());
-                }
+                Log.w(TAG,
+                        "RelatedSearchesList cannot find a query with a title at suggestion "
+                                + "index: " + i + "\n" + e.getMessage());
             }
         }
         return results;
@@ -105,10 +84,9 @@ class RelatedSearchesList {
             Uri searchUri = Uri.parse(searchUrl);
             return RelatedSearchesStamp.updateUriForSuggestionPosition(searchUri, suggestionIndex);
         } catch (JSONException e) {
-            if (mWarningLog != null) {
-                mWarningLog.notify("RelatedSearchesList cannot find a searchUrl in suggestion "
-                        + suggestionIndex + "\n" + e.getMessage());
-            }
+            Log.w(TAG,
+                    "RelatedSearchesList cannot find a searchUrl in suggestion " + suggestionIndex
+                            + "\n" + e.getMessage());
         }
         return null;
     }
@@ -119,9 +97,7 @@ class RelatedSearchesList {
         try {
             return mJsonSuggestions.getJSONArray(CONTENT_SUGGESTIONS);
         } catch (JSONException e) {
-            if (mWarningLog != null) {
-                mWarningLog.notify("No suggestions found!\n" + e.getMessage());
-            }
+            Log.w(TAG, "No suggestions found!\n" + e.getMessage());
             return null;
         }
     }

@@ -777,8 +777,7 @@ public class ContextualSearchManager
         boolean receivedCaptionOrThumbnail = !TextUtils.isEmpty(resolvedSearchTerm.caption())
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
 
-        mRelatedSearches = new RelatedSearchesList(
-                resolvedSearchTerm.relatedSearchesJson(), (warning) -> Log.w(TAG, warning));
+        mRelatedSearches = new RelatedSearchesList(resolvedSearchTerm.relatedSearchesJson());
         assert mSearchPanel != null;
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
