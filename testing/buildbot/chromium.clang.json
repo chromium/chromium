@@ -8678,6 +8678,11 @@
       "all"
     ]
   },
+  "ToTAndroid x86": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "ToTAndroid64": {
     "additional_compile_targets": [
       "all"

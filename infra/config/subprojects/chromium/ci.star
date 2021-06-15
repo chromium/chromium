@@ -2128,6 +2128,14 @@ ci.clang_builder(
 )
 
 ci.clang_builder(
+    name = "ToTAndroid x86",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Android",
+        short_name = "x86",
+    ),
+)
+
+ci.clang_builder(
     name = "ToTAndroid64",
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",

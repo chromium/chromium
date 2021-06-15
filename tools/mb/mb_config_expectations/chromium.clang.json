@@ -82,6 +82,17 @@
       "target_os": "android"
     }
   },
+  "ToTAndroid x86": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_clang": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "llvm_force_head_revision": true,
+      "target_cpu": "x86",
+      "target_os": "android"
+    }
+  },
   "ToTAndroid64": {
     "gn_args": {
       "is_clang": true,
