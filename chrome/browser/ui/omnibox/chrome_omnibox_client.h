@@ -83,6 +83,7 @@ class ChromeOmniboxClient : public OmniboxClient {
   void OnBookmarkLaunched() override;
   void DiscardNonCommittedNavigations() override;
   void NewIncognitoWindow() override;
+  void OpenIncognitoClearBrowsingDataDialog() override;
   void PromptPageTranslation() override;
   void OpenUpdateChromeDialog() override;
 

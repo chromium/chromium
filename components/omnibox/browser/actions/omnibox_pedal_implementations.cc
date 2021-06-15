@@ -27,17 +27,18 @@
 
 // =============================================================================
 
-class OmniboxPedalClearBrowsingData : public OmniboxPedal {
+class OmniboxPedalClearBrowsingDataBase : public OmniboxPedal {
  public:
-  OmniboxPedalClearBrowsingData()
+  explicit OmniboxPedalClearBrowsingDataBase(OmniboxPedalId id,
+                                             const char* gurl)
       : OmniboxPedal(
-            OmniboxPedalId::CLEAR_BROWSING_DATA,
+            id,
             LabelStrings(
                 IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
                 IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
-            GURL("chrome://settings/clearBrowserData")) {}
+            GURL(gurl)) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() override {
     return {
@@ -57,7 +58,34 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
   }
 
  protected:
+  ~OmniboxPedalClearBrowsingDataBase() override = default;
+};
+
+class OmniboxPedalClearBrowsingData : public OmniboxPedalClearBrowsingDataBase {
+ public:
+  OmniboxPedalClearBrowsingData()
+      : OmniboxPedalClearBrowsingDataBase(
+            OmniboxPedalId::CLEAR_BROWSING_DATA,
+            "chrome://settings/clearBrowserData") {}
+
+ protected:
   ~OmniboxPedalClearBrowsingData() override = default;
+};
+
+class OmniboxPedalIncognitoClearBrowsingData
+    : public OmniboxPedalClearBrowsingDataBase {
+ public:
+  OmniboxPedalIncognitoClearBrowsingData()
+      : OmniboxPedalClearBrowsingDataBase(
+            OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA,
+            "") {}
+
+  void Execute(ExecutionContext& context) const override {
+    context.client_.OpenIncognitoClearBrowsingDataDialog();
+  }
+
+ protected:
+  ~OmniboxPedalIncognitoClearBrowsingData() override = default;
 };
 
 // =============================================================================
@@ -454,12 +482,20 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
 // =============================================================================
 
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
-GetPedalImplementations(bool with_branding) {
+GetPedalImplementations(bool with_branding, bool incognito) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedalId id, OmniboxPedal* pedal) {
     pedals.insert(std::make_pair(id, base::WrapRefCounted(pedal)));
   };
-  add(OmniboxPedalId::CLEAR_BROWSING_DATA, new OmniboxPedalClearBrowsingData());
+
+  if (incognito) {
+    add(OmniboxPedalId::CLEAR_BROWSING_DATA,
+        new OmniboxPedalIncognitoClearBrowsingData());
+  } else {
+    add(OmniboxPedalId::CLEAR_BROWSING_DATA,
+        new OmniboxPedalClearBrowsingData());
+  }
+
   add(OmniboxPedalId::MANAGE_PASSWORDS, new OmniboxPedalManagePasswords());
   add(OmniboxPedalId::UPDATE_CREDIT_CARD, new OmniboxPedalUpdateCreditCard());
   add(OmniboxPedalId::LAUNCH_INCOGNITO, new OmniboxPedalLaunchIncognito());

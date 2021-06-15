@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -386,6 +387,20 @@ void ChromeOmniboxClient::DiscardNonCommittedNavigations() {
 
 void ChromeOmniboxClient::NewIncognitoWindow() {
   chrome::NewIncognitoWindow(profile_);
+}
+
+void ChromeOmniboxClient::OpenIncognitoClearBrowsingDataDialog() {
+  content::WebContents* contents = controller_->GetWebContents();
+  Browser* browser =
+      (contents) ? chrome::FindBrowserWithWebContents(contents) : nullptr;
+  if (browser) {
+    if (!base::FeatureList::IsEnabled(
+            features::kIncognitoClearBrowsingDataDialogForDesktop)) {
+      chrome::ShowClearBrowsingDataDialog(browser);
+    } else {
+      chrome::ShowIncognitoClearBrowsingDataDialog(browser);
+    }
+  }
 }
 
 void ChromeOmniboxClient::PromptPageTranslation() {

@@ -21,25 +21,46 @@ class OmniboxPedalImplementationsTest : public testing::Test {
       : omnibox_client_(new TestOmniboxClient),
         omnibox_edit_controller_(new TestOmniboxEditController) {}
 
+  void SetUp() override {
+    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch2,
+                                    omnibox::kOmniboxPedalsBatch2NonEnglish},
+                                   {});
+  }
+
+  GURL ExecuteContextAndReturnResult(const OmniboxPedal* pedal) {
+    OmniboxPedal::ExecutionContext context(*omnibox_client_,
+                                           *omnibox_edit_controller_, {});
+    pedal->Execute(context);
+    return omnibox_edit_controller_->destination_url();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<TestOmniboxEditController> omnibox_edit_controller_;
 };
 
 TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish},
-      {});
   MockAutocompleteProviderClient client;
   OmniboxPedalProvider provider(client, true);
+
   const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
-  base::TimeTicks match_selection_timestamp;
-  OmniboxPedal::ExecutionContext context(
-      *omnibox_client_, *omnibox_edit_controller_, match_selection_timestamp);
-  pedal->Execute(context);
-  const GURL& url = omnibox_edit_controller_->destination_url();
-  EXPECT_EQ(url, GURL("chrome://settings/clearBrowserData"));
+  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
+
+  EXPECT_EQ(GURL("chrome://settings/clearBrowserData"),
+            ExecuteContextAndReturnResult(pedal));
+}
+
+TEST_F(OmniboxPedalImplementationsTest,
+       PedalIncognitoClearBrowsingDataExecutes) {
+  MockAutocompleteProviderClient client;
+  EXPECT_CALL(client, IsOffTheRecord()).WillOnce(testing::Return(true));
+  OmniboxPedalProvider provider(client, true);
+
+  const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
+  EXPECT_EQ(OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA, pedal->id());
+
+  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
 }
 
 // Exhaustive test of unordered synonym groups for concept matches; this is
@@ -48,10 +69,6 @@ TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
 // prevent clashes between concepts for different Pedals.
 TEST_F(OmniboxPedalImplementationsTest,
        UnorderedSynonymExpressionsAreConceptMatches) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish},
-      {});
   const std::vector<std::vector<const char*>> literal_concept_expressions = {
       // clang-format off
       // Note: The lists below are auto-generated from raw synonym group data.

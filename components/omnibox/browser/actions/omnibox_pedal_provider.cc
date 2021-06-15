@@ -46,7 +46,7 @@ size_t EstimateMemoryUsage(scoped_refptr<OmniboxPedal> pedal) {
 OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client,
                                            bool with_branding)
     : client_(client),
-      pedals_(GetPedalImplementations(with_branding)),
+      pedals_(GetPedalImplementations(with_branding, client_.IsOffTheRecord())),
       ignore_group_(false, false, 0),
       match_tokens_(kMaximumMaxTokens) {
   LoadPedalConcepts();

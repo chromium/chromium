@@ -43,6 +43,7 @@ enum class OmniboxPedalId {
   MANAGE_GOOGLE_ACCOUNT = 22,
   CLEAR_YOUTUBE_HISTORY = 23,
   CHANGE_GOOGLE_PASSWORD = 24,
+  INCOGNITO_CLEAR_BROWSING_DATA = 25,
 
   // Last value, used to track the upper bounds when recording type histograms.
   // This intentionally does not have an assigned value to ensure that it's
