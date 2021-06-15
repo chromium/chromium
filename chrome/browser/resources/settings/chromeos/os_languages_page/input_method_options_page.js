@@ -141,12 +141,9 @@ Polymer({
    * @private
    */
   getPrefsPrefix_() {
-    if (this.engineId_ ===
-        settings.input_method_util.EngineId.PINYIN_CHINESE_SIMPLIFIED) {
+    if (this.engineId_ === 'zh-t-i0-pinyin') {
       return 'pinyin';
-    } else if (
-        this.engineId_ ===
-        settings.input_method_util.EngineId.ZHUYIN_CHINESE_TRADITIONAL) {
+    } else if (this.engineId_ === 'zh-hant-t-i0-und') {
       return 'zhuyin';
     }
     return this.engineId_;

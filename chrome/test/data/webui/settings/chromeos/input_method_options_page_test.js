@@ -81,8 +81,8 @@ suite('InputMethodOptionsPage', function() {
     const titles = optionsPage.shadowRoot.querySelectorAll('h2');
     assertTrue(!!titles);
     assertEquals(titles.length, 2);
-    assertEquals(titles[0].textContent, 'Basics');
-    assertEquals(titles[1].textContent, 'Advanced');
+    assertEquals(titles[0].textContent, 'Advanced');
+    assertEquals(titles[1].textContent, 'Physical keyboard');
   });
 
   test('updates options in prefs', async () => {

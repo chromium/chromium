@@ -142,16 +142,6 @@ cr.define('settings.input_method_util', function() {
     LINK: 'link',
   };
 
-  /**
-   * Enumeration for engine IDs.
-   *
-   * @enum {string}
-   */
-  /* #export */ const EngineId = {
-    PINYIN_CHINESE_SIMPLIFIED: 'zh-t-i0-pinyin',
-    ZHUYIN_CHINESE_TRADITIONAL: 'zh-hant-t-i0-und',
-  };
-
   const Settings = {
     [SettingsType.LATIN_SETTINGS]: {
       physicalKeyboard: [{
@@ -174,7 +164,49 @@ cr.define('settings.input_method_util', function() {
       ],
       basic: [],
       advanced: [],
-    }
+    },
+    [SettingsType.ZHUYIN_SETTINGS]: {
+      physicalKeyboard: [
+        {name: OptionType.ZHUYIN_KEYBOARD_LAYOUT},
+        {name: OptionType.ZHUYIN_SELECT_KEYS},
+        {name: OptionType.ZHUYIN_PAGE_SIZE},
+      ],
+      virtualKeyboard: [],
+      basic: [],
+      advanced: [],
+    },
+    [SettingsType.KOREAN_SETTINGS]: {
+      basic: [
+        {name: OptionType.KOREAN_KEYBOARD_LAYOUT}, {
+          name: OptionType.KOREAN_ENABLE_SYLLABLE_INPUT,
+          dependentOptions: [
+            OptionType.KOREAN_SHOW_HANGUL_CANDIDATE,
+          ]
+        }
+      ],
+      virtualKeyboard: [],
+      advanced: [],
+      physicalKeyboard: [],
+    },
+    [SettingsType.PINYIN_FUZZY_SETTINGS]: {
+      advanced: [{name: OptionType.PINYIN_ENABLE_FUZZY}],
+      virtualKeyboard: [],
+      basic: [],
+      physicalKeyboard: [],
+    },
+    [SettingsType.PINYIN_SETTINGS]: {
+      physicalKeyboard: [
+        {name: OptionType.XKB_LAYOUT},
+        {name: OptionType.PINYIN_ENABLE_UPPER_PAGING},
+        {name: OptionType.PINYIN_ENABLE_LOWER_PAGING},
+        {name: OptionType.PINYIN_DEFAULT_CHINESE},
+        {name: OptionType.PINYIN_FULL_WIDTH_CHARACTER},
+        {name: OptionType.PINYIN_CHINESE_PUNCTUATION},
+      ],
+      advanced: [{name: OptionType.EDIT_USER_DICT}],
+      basic: [],
+      virtualKeyboard: [],
+    },
   };
   /**
    * @param {string} id Input method ID.
@@ -195,8 +227,7 @@ cr.define('settings.input_method_util', function() {
     }
     const engineId = getFirstPartyInputMethodEngineId(id);
 
-    return engineId === EngineId.PINYIN_CHINESE_SIMPLIFIED ||
-        (!!inputMethodSettings[engineId]);
+    return !!inputMethodSettings[engineId];
   }
 
   /**
@@ -209,18 +240,6 @@ cr.define('settings.input_method_util', function() {
   /* #export */ function generateOptions(engineId) {
     const options =
         {basic: [], advanced: [], physicalKeyboard: [], virtualKeyboard: []};
-    if (engineId === EngineId.PINYIN_CHINESE_SIMPLIFIED) {
-      options.basic.push(
-          {name: OptionType.XKB_LAYOUT},
-          {name: OptionType.PINYIN_ENABLE_UPPER_PAGING},
-          {name: OptionType.PINYIN_ENABLE_LOWER_PAGING},
-          {name: OptionType.PINYIN_DEFAULT_CHINESE},
-          {name: OptionType.PINYIN_FULL_WIDTH_CHARACTER},
-          {name: OptionType.PINYIN_CHINESE_PUNCTUATION});
-      options.advanced.push(
-          {name: OptionType.PINYIN_ENABLE_FUZZY},
-          {name: OptionType.EDIT_USER_DICT});
-    } else {
       const engineSettings = inputMethodSettings[engineId];
       if (engineSettings) {
         engineSettings.forEach((settingType) => {
@@ -230,7 +249,6 @@ cr.define('settings.input_method_util', function() {
           options.physicalKeyboard.push(...settings.physicalKeyboard);
           options.virtualKeyboard.push(...settings.virtualKeyboard);
         });
-      }
     }
 
     return [
@@ -391,7 +409,6 @@ cr.define('settings.input_method_util', function() {
     OptionType,
     OPTION_DEFAULT,
     UiType,
-    EngineId,
     getFirstPartyInputMethodEngineId,
     hasOptionsPageInSettings,
     generateOptions,
