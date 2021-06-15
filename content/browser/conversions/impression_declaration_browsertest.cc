@@ -370,9 +370,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1UL, last_impression.impression_data);
 }
 
+// https://crbug.com/1219907 started flaking after Field Trial Testing Config
+// was enabled for content_browsertests.
 IN_PROC_BROWSER_TEST_F(
     ImpressionDeclarationBrowserTest,
-    ImpressionTagNavigatesFromEnterPress_ImpressionReceived) {
+    DISABLED_ImpressionTagNavigatesFromEnterPress_ImpressionReceived) {
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
@@ -536,8 +538,10 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
 // TODO(johnidel): SimulateMouseClickAt() does not work on Android, find a
 // different way to invoke the context menu that works on Android.
 #if !defined(OS_ANDROID)
+// https://crbug.com/1219907 started flaking after Field Trial Testing Config
+// was enabled for content_browsertests.
 IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
-                       ContextMenuShownForImpression_ImpressionSet) {
+                       DISABLED_ContextMenuShownForImpression_ImpressionSet) {
   // Navigate to a page with the non-https server.
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
