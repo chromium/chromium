@@ -14,23 +14,15 @@ namespace arc {
 
 namespace {
 
-std::unique_ptr<views::View> MakeOverlayDialogContainerView(
-    std::unique_ptr<views::View> dialog_view) {
+std::unique_ptr<views::View> MakeScrimBackgroundView() {
   const SkColor kScrimColor = GetShieldLayerColor(ShieldLayerType::kShield60);
 
-  auto container = views::Builder<views::FlexLayoutView>()
-                       .SetInteriorMargin(gfx::Insets(0, 32))
-                       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-                       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-                       .SetBackground(views::CreateSolidBackground(kScrimColor))
-                       .Build();
-  dialog_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
-
-  container->AddChildView(std::move(dialog_view));
-
-  return container;
+  return views::Builder<views::FlexLayoutView>()
+      .SetInteriorMargin(gfx::Insets(0, 32))
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetBackground(views::CreateSolidBackground(kScrimColor))
+      .Build();
 }
 
 }  // namespace
@@ -41,8 +33,17 @@ void ShowOverlayDialog(aura::Window* base_window,
   if (!shell_surface_base || shell_surface_base->HasOverlay())
     return;
 
-  exo::ShellSurfaceBase::OverlayParams params(
-      MakeOverlayDialogContainerView(std::move(dialog_view)));
+  auto dialog_container = MakeScrimBackgroundView();
+
+  if (dialog_view) {
+    dialog_view->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
+
+    dialog_container->AddChildView(std::move(dialog_view));
+  }
+
+  exo::ShellSurfaceBase::OverlayParams params(std::move(dialog_container));
   params.translucent = true;
   shell_surface_base->AddOverlay(std::move(params));
 }

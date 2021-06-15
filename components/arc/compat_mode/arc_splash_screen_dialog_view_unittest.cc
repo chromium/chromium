@@ -4,6 +4,8 @@
 
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/views_test_base.h"
@@ -36,16 +38,22 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
   // views::ViewsTestBase:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
-    widget_->SetBounds(gfx::Rect(800, 800));
+    parent_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+    parent_widget_->Show();
+
     auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
         base::BindRepeating(&ArcSplashScreenDialogViewTest::OnCloseCallback,
-                            base::Unretained(this)));
-    dialog_view_ = widget_->SetContentsView(std::move(dialog_view));
+                            base::Unretained(this)),
+        parent_widget_->GetNativeView(), nullptr);
+    dialog_view_ = dialog_view.get();
+    bubble_widget_ =
+        views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view));
+    bubble_widget_->Show();
   }
 
   void TearDown() override {
-    widget_.reset();
+    parent_widget_->CloseNow();
+    parent_widget_.reset();
     views::ViewsTestBase::TearDown();
   }
 
@@ -58,7 +66,8 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
 
  private:
   ArcSplashScreenDialogView* dialog_view_;
-  std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> parent_widget_;
+  views::Widget* bubble_widget_;
 };
 
 TEST_F(ArcSplashScreenDialogViewTest, TestBuildSplashScreenDialogView) {

@@ -4,6 +4,7 @@
 
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "base/bind.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
 #include "components/arc/compat_mode/style/arc_color_provider.h"
@@ -34,15 +35,6 @@ namespace arc {
 using ClickedCallback = base::RepeatingCallback<void()>;
 
 namespace {
-
-std::unique_ptr<views::BubbleBorder> CreateBorder(SkColor background_color) {
-  constexpr int kCornerRadius = 12;
-  auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      background_color);
-  border->SetCornerRadius(kCornerRadius);
-  return border;
-}
 
 std::unique_ptr<views::Button> CreateCloseButton(
     views::Button::PressedCallback close_callback) {
@@ -118,21 +110,38 @@ views::Button* ArcSplashScreenDialogView::TestApi::close_button() const {
 }
 
 ArcSplashScreenDialogView::ArcSplashScreenDialogView(
-    views::Button::PressedCallback close_callback) {
+    base::OnceClosure close_callback,
+    aura::Window* parent,
+    views::View* anchor)
+    : close_callback_(std::move(close_callback)) {
+  const auto background_color = GetDialogBackgroundBaseColor();
+
+  // Setup delegate.
+  SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  set_parent_window(parent);
+  set_title_margins(gfx::Insets());
+  set_margins(gfx::Insets());
+  SetAnchorView(anchor);
+  SetTitle(l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
+  SetShowTitle(false);
+  SetAccessibleRole(ax::mojom::Role::kDialog);
+  set_color(background_color);
+  set_adjust_if_offscreen(false);
+  set_close_on_deactivate(false);
+
+  // Setup views.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout->set_inside_border_insets(gfx::Insets(6));
-
-  const auto background_color = GetDialogBackgroundBaseColor();
-  auto border = CreateBorder(background_color);
-  SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
-  SetBorder(std::move(border));
 
   // add close button
   auto* caption = AddChildView(std::make_unique<views::BoxLayoutView>());
   caption->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   caption->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
-  auto close_button = CreateCloseButton(std::move(close_callback));
+  auto close_button = CreateCloseButton(
+      base::BindRepeating(&ArcSplashScreenDialogView::OnCloseButtonClicked,
+                          base::Unretained(this)));
   close_button_ = caption->AddChildView(std::move(close_button));
 
   // add main view
@@ -160,18 +169,26 @@ ArcSplashScreenDialogView::~ArcSplashScreenDialogView() = default;
 gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize() const {
   gfx::Size size = views::View::CalculatePreferredSize();
 
-  // Set the maximum width of this dialog view.
-  views::LayoutProvider* provider = views::LayoutProvider::Get();
-  size.set_width(provider->GetDistanceMetric(
-      views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+  const auto max_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  const auto* widget = GetWidget();
+  if (widget && widget->parent()) {
+    constexpr int kHorizontalMarginDp = 32;
+    size.set_width(
+        std::min(widget->parent()->GetWindowBoundsInScreen().width() -
+                     kHorizontalMarginDp,
+                 size.width()));
+  } else {
+    size.set_width(max_width);
+  }
   return size;
 }
 
 void ArcSplashScreenDialogView::AddedToWidget() {
-  auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
-  view_ax.OverrideRole(ax::mojom::Role::kDialog);
-  view_ax.OverrideName(
-      l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
+  constexpr int kCornerRadius = 12;
+  auto* const frame = GetBubbleFrameView();
+  if (frame)
+    frame->SetCornerRadius(kCornerRadius);
 }
 
 void ArcSplashScreenDialogView::OnLinkClicked() {
@@ -179,10 +196,23 @@ void ArcSplashScreenDialogView::OnLinkClicked() {
   NOTIMPLEMENTED();
 }
 
+void ArcSplashScreenDialogView::OnCloseButtonClicked() {
+  DCHECK(close_callback_);
+  std::move(close_callback_).Run();
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
 void ShowSplashScreenDialog(aura::Window* parent) {
+  auto* const frame_view = ash::NonClientFrameViewAsh::Get(parent);
+  DCHECK(frame_view);
+  auto* const anchor_view = frame_view->GetHeaderView();
   auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
-      base::BindRepeating(&CloseOverlayDialogIfAny, base::Unretained(parent)));
-  ShowOverlayDialog(parent, std::move(dialog_view));
+      base::BindOnce(&CloseOverlayDialogIfAny, base::Unretained(parent)),
+      parent, anchor_view);
+
+  ShowOverlayDialog(parent, /*dialog_view=*/nullptr);
+  views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
 
 }  // namespace arc

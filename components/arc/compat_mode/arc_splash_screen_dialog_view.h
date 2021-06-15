@@ -5,16 +5,26 @@
 #ifndef COMPONENTS_ARC_COMPAT_MODE_ARC_SPLASH_SCREEN_DIALOG_VIEW_H_
 #define COMPONENTS_ARC_COMPAT_MODE_ARC_SPLASH_SCREEN_DIALOG_VIEW_H_
 
-#include "ui/views/controls/button/button.h"
+#include "base/callback_forward.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace views {
+class View;
+class Button;
+}  // namespace views
 
 namespace arc {
 
-// This class creates a splash screen view looks like a dialog. The view has a
+// This class creates a splash screen view as a bubble dialog. The view has a
 // transparent background color, with a content box inserted in the middle. It
 // also has a close button on the top right corner. This view is intended to be
 // inserted into a window. The content container contains a logo, a heading
 // text, a message box in vertical alignment.
-class ArcSplashScreenDialogView : public views::View {
+class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView {
  public:
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
@@ -28,8 +38,9 @@ class ArcSplashScreenDialogView : public views::View {
     ArcSplashScreenDialogView* const view_;
   };
 
-  explicit ArcSplashScreenDialogView(
-      views::Button::PressedCallback close_callback);
+  ArcSplashScreenDialogView(base::OnceClosure close_callback,
+                            aura::Window* parent,
+                            views::View* anchor);
   ArcSplashScreenDialogView(const ArcSplashScreenDialogView&) = delete;
   ArcSplashScreenDialogView& operator=(const ArcSplashScreenDialogView&) =
       delete;
@@ -41,7 +52,9 @@ class ArcSplashScreenDialogView : public views::View {
 
  private:
   void OnLinkClicked();
+  void OnCloseButtonClicked();
 
+  base::OnceClosure close_callback_;
   views::Button* close_button_ = nullptr;
 };
 
