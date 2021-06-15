@@ -259,11 +259,15 @@ std::unique_ptr<NavigationSimulatorImpl>
 NavigationSimulatorImpl::CreateRendererInitiated(
     const GURL& original_url,
     RenderFrameHost* render_frame_host) {
-  return std::unique_ptr<NavigationSimulatorImpl>(new NavigationSimulatorImpl(
-      original_url, false /* browser_initiated */,
-      static_cast<WebContentsImpl*>(
-          WebContents::FromRenderFrameHost(render_frame_host)),
-      static_cast<TestRenderFrameHost*>(render_frame_host)));
+  std::unique_ptr<NavigationSimulatorImpl> sim =
+      std::unique_ptr<NavigationSimulatorImpl>(new NavigationSimulatorImpl(
+          original_url, false /* browser_initiated */,
+          static_cast<WebContentsImpl*>(
+              WebContents::FromRenderFrameHost(render_frame_host)),
+          static_cast<TestRenderFrameHost*>(render_frame_host)));
+
+  sim->SetInitiatorFrame(render_frame_host);
+  return sim;
 }
 
 // static
@@ -377,6 +381,12 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   // |contents_mime_type_| cannot be inferred from the request.
 
   skip_service_worker_ = request_->begin_params().skip_service_worker;
+
+  if (!browser_initiated_ && request_->GetInitiatorFrameToken().has_value()) {
+    SetInitiatorFrame(RenderFrameHostImpl::FromFrameToken(
+        request_->GetInitiatorProcessID(),
+        request_->GetInitiatorFrameToken().value()));
+  }
 
   // Add a throttle to count NavigationThrottle calls count. Bump
   // num_did_start_navigation to account for the fact that the navigation handle
@@ -718,6 +728,7 @@ void NavigationSimulatorImpl::Fail(int error_code) {
   TestNavigationURLLoader* url_loader =
       static_cast<TestNavigationURLLoader*>(request_->loader_for_testing());
   CHECK(url_loader);
+
   network::URLLoaderCompletionStatus status(error_code);
   status.resolve_error_info = resolve_error_info_;
   status.ssl_info = ssl_info_;
@@ -851,14 +862,18 @@ void NavigationSimulatorImpl::SetInitiatorFrame(
     RenderFrameHost* initiator_frame_host) {
   // Browser-initiated navigations are not associated with an initiator frame.
   CHECK(!browser_initiated_);
-  CHECK(initiator_frame_host);
 
-  // TODO(https://crbug.com/1072790): Support cross-process initiators here by
-  // using NavigationRequest::CreateBrowserInitiated() (like
-  // RenderFrameProxyHost does) for the navigation.
-  CHECK_EQ(render_frame_host_->GetProcess(), initiator_frame_host->GetProcess())
-      << "The initiator frame must belong to the same process as the frame you "
-         "are navigating";
+  if (initiator_frame_host) {
+    // TODO(https://crbug.com/1072790): Support cross-process initiators here by
+    // using NavigationRequest::CreateBrowserInitiated() (like
+    // RenderFrameProxyHost does) for the navigation.
+    CHECK_EQ(render_frame_host_->GetProcess(),
+             initiator_frame_host->GetProcess())
+        << "The initiator frame must belong to the same process as the frame "
+           "you are navigating";
+    set_initiator_origin(initiator_frame_host->GetLastCommittedOrigin());
+  }
+
   initiator_frame_host_ = initiator_frame_host;
 }
 
@@ -1211,7 +1226,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   auto common_params = CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->url = navigation_url_;
-  common_params->initiator_origin = url::Origin();
+  common_params->initiator_origin = initiator_origin_.value();
   common_params->method = initial_method_;
   common_params->referrer = referrer_.Clone();
   common_params->transition = transition_;

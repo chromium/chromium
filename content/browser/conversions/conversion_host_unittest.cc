@@ -530,6 +530,8 @@ TEST_F(ConversionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
+  // This test explicitly requires no initiator frame being set.
+  navigation->SetInitiatorFrame(nullptr);
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
