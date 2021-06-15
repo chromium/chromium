@@ -376,6 +376,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   [[self class] enableMockAuthentication];
 
+  [ChromeEarlGreyAppInterface disableDefaultBrowserPromo];
+
   // Sometimes on start up there can be infobars (e.g. restore session), so
   // ensure the UI is in a clean state.
   if (![ChromeTestCase isStartupTest]) {

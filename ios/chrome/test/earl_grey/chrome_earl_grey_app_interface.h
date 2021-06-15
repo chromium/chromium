@@ -603,6 +603,11 @@
 // Copies a chrome:// URL that doesn't require internet connection.
 + (void)copyURLToPasteBoard;
 
+// Disables default browser promo. If a test needs to check a message drop down
+// in a second window, this needs to be disabled or the popup will kill the
+// message.
++ (void)disableDefaultBrowserPromo;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_

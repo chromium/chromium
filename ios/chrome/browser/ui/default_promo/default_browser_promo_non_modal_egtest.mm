@@ -72,6 +72,7 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 - (void)tearDown {
   [super tearDown];
   [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+  [ChromeEarlGreyAppInterface disableDefaultBrowserPromo];
 }
 
 // Test that a non modal default modal promo appears when it is triggered by
