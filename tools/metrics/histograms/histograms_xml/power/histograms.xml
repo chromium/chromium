@@ -84,7 +84,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeMode{UsageScenario}"
-    enum="BatteryDischargeMode" expires_after="2021-07-18">
+    enum="BatteryDischargeMode" expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -106,7 +106,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate2{UsageScenario}"
-    units="hundredth of percent" expires_after="2021-09-26">
+    units="hundredth of percent" expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -203,7 +203,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatterySamplingDelay" units="microseconds"
-    expires_after="2021-07-18">
+    expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
   <owner>sebmarchand@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
