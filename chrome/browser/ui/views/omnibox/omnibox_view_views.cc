@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -1780,29 +1781,16 @@ void OmniboxViewViews::AppendDropFormats(
   *formats = *formats | ui::OSExchangeData::URL;
 }
 
-DragOperation OmniboxViewViews::OnDrop(const ui::OSExchangeData& data) {
-  if (HasTextBeingDragged())
-    return DragOperation::kNone;
+DragOperation OmniboxViewViews::OnDrop(const ui::DropTargetEvent& event) {
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  PerformDrop(event, output_drag_op);
+  return output_drag_op;
+}
 
-  std::u16string text;
-  if (data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
-    GURL url;
-    std::u16string title;
-    if (data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES, &url,
-                            &title)) {
-      text = StripJavascriptSchemas(base::UTF8ToUTF16(url.spec()));
-    }
-  } else if (data.HasString() && data.GetString(&text)) {
-    text = StripJavascriptSchemas(base::CollapseWhitespace(text, true));
-  } else {
-    return DragOperation::kNone;
-  }
-
-  SetUserText(text);
-  if (!HasFocus())
-    RequestFocus();
-  SelectAll(false);
-  return DragOperation::kCopy;
+views::View::DropCallback OmniboxViewViews::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  return base::BindOnce(&OmniboxViewViews::PerformDrop,
+                        weak_factory_.GetWeakPtr());
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
@@ -1907,6 +1895,33 @@ void OmniboxViewViews::OnTemplateURLServiceChanged() {
 
 void OmniboxViewViews::PermitExternalProtocolHandler() {
   ExternalProtocolHandler::PermitLaunchUrl();
+}
+
+void OmniboxViewViews::PerformDrop(const ui::DropTargetEvent& event,
+                                   ui::mojom::DragOperation& output_drag_op) {
+  if (HasTextBeingDragged())
+    output_drag_op = DragOperation::kNone;
+
+  const ui::OSExchangeData& data = event.data();
+  std::u16string text;
+  if (data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
+    GURL url;
+    std::u16string title;
+    if (data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES, &url,
+                            &title)) {
+      text = StripJavascriptSchemas(base::UTF8ToUTF16(url.spec()));
+    }
+  } else if (data.HasString() && data.GetString(&text)) {
+    text = StripJavascriptSchemas(base::CollapseWhitespace(text, true));
+  } else {
+    output_drag_op = DragOperation::kNone;
+  }
+
+  SetUserText(text);
+  if (!HasFocus())
+    RequestFocus();
+  SelectAll(false);
+  output_drag_op = DragOperation::kCopy;
 }
 
 BEGIN_METADATA(OmniboxViewViews, views::Textfield)

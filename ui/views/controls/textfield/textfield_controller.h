@@ -12,6 +12,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
@@ -84,7 +85,11 @@ class VIEWS_EXPORT TextfieldController {
   // called before regular handling of the drop. If this returns a drag
   // operation other than `ui::mojom::DragOperation::kNone`, regular handling is
   // skipped.
-  virtual ui::mojom::DragOperation OnDrop(const ui::OSExchangeData& data);
+  virtual ui::mojom::DragOperation OnDrop(const ui::DropTargetEvent& event);
+
+  // Called to get async drop callback to be run later.
+  virtual views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event);
 
   // Gives the controller a chance to modify the context menu contents.
   virtual void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {}

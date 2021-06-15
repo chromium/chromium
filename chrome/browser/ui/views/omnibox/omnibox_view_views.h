@@ -30,6 +30,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -176,6 +177,7 @@ class OmniboxViewViews : public OmniboxView,
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, FriendlyAccessibleLabel);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, DoNotNavigateOnDrop);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AyncDropCallback);
 
   enum class UnelisionGesture {
     HOME_KEY_PRESSED,
@@ -283,7 +285,9 @@ class OmniboxViewViews : public OmniboxView,
   void AppendDropFormats(
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override;
-  ui::mojom::DragOperation OnDrop(const ui::OSExchangeData& data) override;
+  ui::mojom::DragOperation OnDrop(const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
   void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -303,6 +307,10 @@ class OmniboxViewViews : public OmniboxView,
   // the omnibox. The handler needs to be informed that omnibox input should
   // always be considered "user gesture-triggered", lest it always return BLOCK.
   void PermitExternalProtocolHandler();
+
+  // Drops dragged text and updates `output_drag_op` accordingly.
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op);
 
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.

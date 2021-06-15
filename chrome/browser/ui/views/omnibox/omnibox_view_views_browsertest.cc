@@ -40,6 +40,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/mock_input_method.h"
@@ -171,7 +172,33 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DoNotNavigateOnDrop) {
   data.SetString(input);
   EXPECT_TRUE(data.HasString());
 
-  omnibox_view_views->OnDrop(data);
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+  omnibox_view_views->OnDrop(event);
+  EXPECT_EQ(input, omnibox_view_views->GetText());
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(omnibox_view_views->IsSelectAll());
+  EXPECT_FALSE(
+      browser()->tab_strip_model()->GetActiveWebContents()->IsLoading());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AyncDropCallback) {
+  OmniboxView* view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &view));
+  OmniboxViewViews* omnibox_view_views = static_cast<OmniboxViewViews*>(view);
+
+  OSExchangeData data;
+  std::u16string input = u"Foo bar baz";
+  EXPECT_FALSE(data.HasString());
+  data.SetString(input);
+  EXPECT_TRUE(data.HasString());
+
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+  auto cb = omnibox_view_views->GetDropCallback(event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(cb).Run(event, output_drag_op);
+
   EXPECT_EQ(input, omnibox_view_views->GetText());
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(omnibox_view_views->IsSelectAll());

@@ -953,7 +953,7 @@ DragOperation Textfield::OnPerformDrop(const ui::DropTargetEvent& event) {
   drop_cursor_visible_ = false;
 
   if (controller_) {
-    DragOperation drag_operation = controller_->OnDrop(event.data());
+    DragOperation drag_operation = controller_->OnDrop(event);
     if (drag_operation != DragOperation::kNone)
       return drag_operation;
   }
