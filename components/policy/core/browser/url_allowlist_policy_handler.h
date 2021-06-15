@@ -21,6 +21,10 @@ class POLICY_EXPORT URLAllowlistPolicyHandler
   explicit URLAllowlistPolicyHandler(const char* policy_name);
   ~URLAllowlistPolicyHandler() override;
 
+  // Validates that policy follows official pattern
+  // https://chromeenterprise.google/policies/url-patterns
+  bool ValidatePolicy(const std::string& policy);
+
   // ConfigurationPolicyHandler methods:
   bool CheckPolicySettings(const PolicyMap& policies,
                            PolicyErrorMap* errors) override;

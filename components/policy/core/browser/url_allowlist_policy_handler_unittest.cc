@@ -44,6 +44,9 @@ class URLAllowlistPolicyHandlerTest : public testing::Test {
     return handler_->CheckPolicySettings(policies_, &errors_);
   }
   void ApplyPolicies() { handler_->ApplyPolicySettings(policies_, &prefs_); }
+  bool ValidatePolicy(const std::string& policy) {
+    return handler_->ValidatePolicy(policy);
+  }
   base::Value GetURLAllowlistPolicyValueWithEntries(size_t len) {
     std::vector<base::Value> allowlist(len);
     for (auto& entry : allowlist)
@@ -163,6 +166,18 @@ TEST_F(URLAllowlistPolicyHandlerTest,
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(max_filters_per_policy + 1, out_list->GetSize());
+}
+
+TEST_F(URLAllowlistPolicyHandlerTest, ValidatePolicy) {
+  EXPECT_TRUE(ValidatePolicy("http://*"));
+  EXPECT_TRUE(ValidatePolicy("http:*"));
+
+  EXPECT_TRUE(ValidatePolicy("ws://example.org/component.js"));
+  EXPECT_FALSE(ValidatePolicy("wsgi:///rancom,org/"));
+
+  EXPECT_TRUE(ValidatePolicy("127.0.0.1:1"));
+  EXPECT_TRUE(ValidatePolicy("127.0.0.1:65535"));
+  EXPECT_FALSE(ValidatePolicy("127.0.0.1:65536"));
 }
 
 }  // namespace policy

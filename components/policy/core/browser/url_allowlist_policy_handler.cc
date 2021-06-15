@@ -48,12 +48,28 @@ bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                      base::NumberToString(url_util::GetMaxFiltersPerPolicy()));
   }
 
+  bool type_error = false;
+  std::string policy;
+  std::vector<std::string> invalid_policies;
   for (const auto& policy_iter : url_allowlist->GetList()) {
     if (!policy_iter.is_string()) {
-      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::STRING));
-      return true;
+      type_error = true;
+      continue;
     }
+
+    policy = policy_iter.GetString();
+    if (!ValidatePolicy(policy))
+      invalid_policies.push_back(policy);
+  }
+
+  if (type_error) {
+    errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                     base::Value::GetTypeName(base::Value::Type::STRING));
+  }
+
+  if (invalid_policies.size()) {
+    errors->AddError(policy_name(), IDS_POLICY_PROTO_PARSING_ERROR,
+                     base::JoinString(invalid_policies, ","));
   }
 
   return true;
@@ -74,6 +90,14 @@ void URLAllowlistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   prefs->SetValue(policy_prefs::kUrlAllowlist,
                   base::Value(std::move(filtered_url_allowlist)));
+}
+
+bool URLAllowlistPolicyHandler::ValidatePolicy(const std::string& policy) {
+  url_util::FilterComponents components;
+  return url_util::FilterToComponents(
+      policy, &components.scheme, &components.host,
+      &components.match_subdomains, &components.port, &components.path,
+      &components.query);
 }
 
 }  // namespace policy
