@@ -18,6 +18,8 @@ GL_EXPORT bool UseGpuVsync();
 // alongside the definition of their values in the .cc file.
 GL_EXPORT extern const base::Feature kDefaultPassthroughCommandDecoder;
 
+GL_EXPORT bool UsePassthroughCommandDecoder();
+
 }  // namespace features
 
 #endif  // UI_GL_GL_FEATURES_H_

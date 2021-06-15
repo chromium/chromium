@@ -88,8 +88,7 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
     return false;
   } else {
     // Unrecognized or missing switch, use the default.
-    return base::FeatureList::IsEnabled(
-        features::kDefaultPassthroughCommandDecoder);
+    return features::UsePassthroughCommandDecoder();
   }
 }
 
