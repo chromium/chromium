@@ -934,6 +934,15 @@
       ]
      ]
     },
+    "css-transforms": {
+     "large-matrix-crash.html": [
+      "5e8ba9ff791f06abcc805d2d9fa9157dae8cf184",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-typed-om": {
      "stylevalue-serialization": {
       "crashtests": {
@@ -974,6 +983,13 @@
       ],
       "orthogonal-scroll-percent-height-crash.html": [
        "d40ebfd6ebfadbcb89b630f629faf5da3425d78b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "wm-body-propagation-crash.html": [
+       "a4a24712f4570f661917b0911567ea5bddc7c485",
        [
         null,
         {}
@@ -156687,6 +156703,19 @@
        {}
       ]
      ],
+     "3d-rendering-context-and-inline.html": [
+      "815140d7e6dfcc2c4056734cb1d9d9def61e5038",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/transform-blank-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "3d-rendering-context-and-z-ordering-001.html": [
       "d07c59a5db229cd1ed1ee9a429ea7656cd18d3e5",
       [
@@ -159626,6 +159655,45 @@
        ]
       ]
      },
+     "perspective-children-only-abspos.html": [
+      "ce0b80ea7e15c370657dfb0090c64ed0eb975c64",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/reference/green.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "perspective-children-only-fixpos.html": [
+      "512f2032f42881c4e11e19038835beec364d8b9b",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/reference/green.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "perspective-children-only-inline.html": [
+      "c6897ad8eeb28773ad2bbdaa24ffe0d6d5b9e9c2",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/reference/green.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "perspective-containing-block-dynamic-1a.html": [
       "51e76745b5a41320058aa3669499afa85ec41e72",
       [
@@ -196096,13 +196164,26 @@
         {}
        ]
       ],
-      "summary-display-list-item.html": [
-       "c2e96e987ea943e29626e0cfd013ef6d6cae3bbc",
+      "summary-display-list-item-001.html": [
+       "8b94f10f27e58026788c94744b7574f0ef628523",
        [
         null,
         [
          [
-          "/html/rendering/the-details-element/summary-display-list-item-ref.html",
+          "/html/rendering/the-details-element/summary-display-list-item-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "summary-display-list-item-002.html": [
+       "ee32997009ccbd4116c9c256876e87e159f5d7f7",
+       [
+        null,
+        [
+         [
+          "/html/rendering/the-details-element/summary-display-list-item-002-ref.html",
           "=="
          ]
         ],
@@ -226057,6 +226138,10 @@
      ],
      "gap-010-ltr-ref.html": [
       "8c390de08d10d1e9591c5885d355514b9412aab1",
+      []
+     ],
+     "negative-overflow-expected.txt": [
+      "9a6a132abb0dbc4fb28138801fce900c9c928f72",
       []
      ],
      "order": {
@@ -270620,8 +270705,12 @@
        "f6a8b04bec38e77b6ce95cf7b182ab0588242d42",
        []
       ],
-      "summary-display-list-item-ref.html": [
+      "summary-display-list-item-001-ref.html": [
        "31e98d3fdca8fff9fe88929c8075643fca3abb40",
+       []
+      ],
+      "summary-display-list-item-002-ref.html": [
+       "317e1cfe7dfe4ab4137ff21509e7ae8649e3ec96",
        []
       ],
       "summary-in-ol-ref.html": [
@@ -284458,7 +284547,7 @@
       []
      ],
      "webxr-test.js": [
-      "ff1b5ceed0e01f9f3888d121e1f62a85b6500dfa",
+      "4e3299284f993528d2b3769ce22d3a7450fae97e",
       []
      ],
      "webxr-test.js.headers": [
@@ -293152,6 +293241,14 @@
     ],
     "RTCRtpSynchronizationSource-senderCaptureTimeOffset-expected.txt": [
      "4ccdd8f7b566b4f03ea8378d536f73ac187bd8da",
+     []
+    ],
+    "transfer-datachannel-service-worker.js": [
+     "c1919d0b9a7b1c1ef991cfd6018a8268e271eb1a",
+     []
+    ],
+    "transfer-datachannel-worker.js": [
+     "10d71f68f022f2c79d3120c07e4da8a76579bcf0",
      []
     ]
    },
@@ -484145,6 +484242,20 @@
       null,
       {}
      ]
+    ],
+    "transfer-datachannel-service-worker.https.html": [
+     "625fee4fe1ef33be0cb5b3575cc1755c0b5e6b4c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "transfer-datachannel.html": [
+     "a1e5dcec6d2777231e0db6ec7b86b5145e7cdceb",
+     [
+      null,
+      {}
+     ]
     ]
    },
    "webrtc-ice": {
@@ -498241,6 +498352,13 @@
     ],
     "xrInputSource_emulatedPosition.https.html": [
      "8a4aec48a84b35383c3b3fae885c2a470e3d7b71",
+     [
+      null,
+      {}
+     ]
+    ],
+    "xrInputSource_getPose_targetRay_grip.https.html": [
+     "bac9e9049488876c188878478bc59c37711dd963",
      [
       null,
       {}
