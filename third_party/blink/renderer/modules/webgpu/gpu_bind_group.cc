@@ -22,7 +22,6 @@ WGPUBindGroupEntry AsDawnType(const GPUBindGroupEntry* webgpu_binding) {
 
   dawn_binding.binding = webgpu_binding->binding();
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (webgpu_binding->resource()->GetContentType()) {
     case V8GPUBindingResource::ContentType::kGPUBufferBinding: {
       GPUBufferBinding* buffer =
@@ -41,27 +40,6 @@ WGPUBindGroupEntry AsDawnType(const GPUBindGroupEntry* webgpu_binding) {
           AsDawnType(webgpu_binding->resource()->GetAsGPUTextureView());
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (webgpu_binding->resource().IsGPUBufferBinding()) {
-    GPUBufferBinding* buffer =
-        webgpu_binding->resource().GetAsGPUBufferBinding();
-    dawn_binding.offset = buffer->offset();
-    dawn_binding.size = buffer->hasSize() ? buffer->size() : WGPU_WHOLE_SIZE;
-    dawn_binding.buffer = AsDawnType(buffer->buffer());
-
-  } else if (webgpu_binding->resource().IsGPUSampler()) {
-    GPUSampler* sampler = webgpu_binding->resource().GetAsGPUSampler();
-    dawn_binding.sampler = AsDawnType(sampler);
-
-  } else if (webgpu_binding->resource().IsGPUTextureView()) {
-    GPUTextureView* texture_view =
-        webgpu_binding->resource().GetAsGPUTextureView();
-    dawn_binding.textureView = AsDawnType(texture_view);
-
-  } else {
-    NOTREACHED();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   return dawn_binding;
 }

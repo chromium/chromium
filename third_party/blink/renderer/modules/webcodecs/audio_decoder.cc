@@ -73,12 +73,7 @@ AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
     DOMArrayPiece buffer(config.description());
     DOMArrayBuffer* buffer_copy =
         DOMArrayBuffer::Create(buffer.Data(), buffer.ByteLength());
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     copy->setDescription(MakeGarbageCollected<V8BufferSource>(buffer_copy));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    copy->setDescription(
-        ArrayBufferOrArrayBufferView::FromArrayBuffer(buffer_copy));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
   return copy;
 }

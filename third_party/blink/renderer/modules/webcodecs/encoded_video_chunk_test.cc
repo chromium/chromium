@@ -15,18 +15,10 @@ namespace {
 
 class EncodedVideoChunkTest : public testing::Test {
  public:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   V8BufferSource* StringToBuffer(std::string data) {
     return MakeGarbageCollected<V8BufferSource>(
         DOMArrayBuffer::Create(data.data(), data.size()));
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  ArrayBufferOrArrayBufferView StringToBuffer(std::string data) {
-    ArrayBufferOrArrayBufferView result;
-    result.SetArrayBuffer(DOMArrayBuffer::Create(data.data(), data.size()));
-    return result;
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   std::string BufferToString(DOMArrayBuffer* buffer) {
     return std::string(static_cast<char*>(buffer->Data()),

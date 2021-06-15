@@ -109,11 +109,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
   if (!is_deleted) {
     list_item->setValue(String::FromUTF8(canonical_cookie.Value()));
     if (canonical_cookie.ExpiryDate().is_null()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       list_item->setExpires(absl::nullopt);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      list_item->setExpiresToNull();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     } else {
       list_item->setExpires(ConvertSecondsToDOMTimeStamp(
           canonical_cookie.ExpiryDate().ToDoubleT()));

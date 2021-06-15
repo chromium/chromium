@@ -36,7 +36,6 @@ void Visit(IdentifiableTokenBuilder& builder, const T* range) {
   builder.AddToken(range->hasMin() ? range->min() : IdentifiableToken());
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainDouble* d) {
   if (!d) {
     builder.AddToken(IdentifiableToken());
@@ -51,22 +50,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainDouble* d) {
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder, const ConstrainDouble& d) {
-  if (d.IsDouble()) {
-    builder.AddToken(d.GetAsDouble());
-    return;
-  }
-  if (d.IsConstrainDoubleRange()) {
-    Visit(builder, d.GetAsConstrainDoubleRange());
-    return;
-  }
-  DCHECK(d.IsNull());
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainLong* l) {
   if (!l) {
     builder.AddToken(IdentifiableToken());
@@ -81,22 +65,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainLong* l) {
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder, const ConstrainLong& l) {
-  if (l.IsLong()) {
-    builder.AddToken(l.GetAsLong());
-    return;
-  }
-  if (l.IsConstrainLongRange()) {
-    Visit(builder, l.GetAsConstrainLongRange());
-    return;
-  }
-  DCHECK(l.IsNull());
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder,
            const V8UnionStringOrStringSequence* s) {
   if (!s) {
@@ -115,24 +84,7 @@ void Visit(IdentifiableTokenBuilder& builder,
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder, const StringOrStringSequence& s) {
-  if (s.IsString()) {
-    builder.AddToken(IdentifiabilityBenignStringToken(s.GetAsString()));
-    return;
-  }
-  if (s.IsStringSequence()) {
-    for (const String& str : s.GetAsStringSequence()) {
-      builder.AddToken(IdentifiabilityBenignStringToken(str));
-    }
-    return;
-  }
-  DCHECK(s.IsNull());
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainDOMString* s) {
   if (!s) {
     builder.AddToken(IdentifiableToken());
@@ -157,39 +109,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainDOMString* s) {
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder, const ConstrainDOMString& s) {
-  if (s.IsString()) {
-    builder.AddToken(IdentifiabilityBenignStringToken(s.GetAsString()));
-    return;
-  }
-  if (s.IsStringSequence()) {
-    for (const String& str : s.GetAsStringSequence()) {
-      builder.AddToken(IdentifiabilityBenignStringToken(str));
-    }
-    return;
-  }
-  if (s.IsConstrainDOMStringParameters()) {
-    const ConstrainDOMStringParameters* params =
-        s.GetAsConstrainDOMStringParameters();
-    if (params->hasExact()) {
-      Visit(builder, params->exact());
-    } else {
-      builder.AddToken(IdentifiableToken());
-    }
-    if (params->hasIdeal()) {
-      Visit(builder, params->ideal());
-    } else {
-      builder.AddToken(IdentifiableToken());
-    }
-    return;
-  }
-  DCHECK(s.IsNull());
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainBoolean* b) {
   if (!b) {
     builder.AddToken(IdentifiableToken());
@@ -211,27 +131,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainBoolean* b) {
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder, const ConstrainBoolean& b) {
-  if (b.IsBoolean()) {
-    builder.AddToken(b.GetAsBoolean());
-    return;
-  }
-  if (b.IsConstrainBooleanParameters()) {
-    const ConstrainBooleanParameters* params =
-        b.GetAsConstrainBooleanParameters();
-    builder.AddToken(params->hasExact() ? params->exact()
-                                        : IdentifiableToken());
-    builder.AddToken(params->hasIdeal() ? params->ideal()
-                                        : IdentifiableToken());
-    return;
-  }
-  DCHECK(b.IsNull());
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder,
            const V8UnionBooleanOrConstrainDouble* x) {
   if (!x) {
@@ -250,25 +150,6 @@ void Visit(IdentifiableTokenBuilder& builder,
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder,
-           const BooleanOrDoubleOrConstrainDoubleRange& x) {
-  if (x.IsBoolean()) {
-    builder.AddToken(x.GetAsBoolean());
-    return;
-  }
-  if (x.IsConstrainDoubleRange()) {
-    Visit(builder, x.GetAsConstrainDoubleRange());
-    return;
-  }
-  if (x.IsDouble()) {
-    builder.AddToken(x.GetAsDouble());
-    return;
-  }
-  DCHECK(x.IsNull());
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 void Visit(IdentifiableTokenBuilder& builder,
            const HeapVector<Member<Point2D>>& points) {
@@ -278,7 +159,6 @@ void Visit(IdentifiableTokenBuilder& builder,
   }
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainPoint2D* p) {
   if (!p) {
     builder.AddToken(IdentifiableToken());
@@ -305,37 +185,11 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainPoint2D* p) {
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder, const ConstrainPoint2D& x) {
-  if (x.IsPoint2DSequence()) {
-    Visit(builder, x.GetAsPoint2DSequence());
-    return;
-  }
-  if (x.IsConstrainPoint2DParameters()) {
-    const ConstrainPoint2DParameters* params =
-        x.GetAsConstrainPoint2DParameters();
-    if (params->hasExact()) {
-      Visit(builder, params->exact());
-    } else {
-      builder.AddToken(IdentifiableToken());
-    }
-    if (params->hasIdeal()) {
-      Visit(builder, params->ideal());
-    } else {
-      builder.AddToken(IdentifiableToken());
-    }
-    return;
-  }
-  DCHECK(x.IsNull());
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 void Visit(IdentifiableTokenBuilder& builder,
            const MediaTrackConstraintSet& set) {
   // TODO(crbug.com/1070871): As a workaround for code simplicity, we use a
   // default value of a union type if each member is not provided in input.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   Visit(builder, set.getWidthOr(nullptr));
   Visit(builder, set.getHeightOr(nullptr));
   Visit(builder, set.getAspectRatioOr(nullptr));
@@ -365,52 +219,8 @@ void Visit(IdentifiableTokenBuilder& builder,
   Visit(builder, set.getTiltOr(nullptr));
   Visit(builder, set.getZoomOr(nullptr));
   Visit(builder, set.getTorchOr(nullptr));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  Visit(builder, set.hasWidth() ? set.width() : ConstrainLong());
-  Visit(builder, set.hasHeight() ? set.height() : ConstrainLong());
-  Visit(builder, set.hasAspectRatio() ? set.aspectRatio() : ConstrainDouble());
-  Visit(builder, set.hasFrameRate() ? set.frameRate() : ConstrainDouble());
-  Visit(builder, set.hasFacingMode() ? set.facingMode() : ConstrainDOMString());
-  Visit(builder, set.hasSampleRate() ? set.sampleRate() : ConstrainLong());
-  Visit(builder, set.hasSampleSize() ? set.sampleSize() : ConstrainLong());
-  Visit(builder, set.hasEchoCancellation() ? set.echoCancellation()
-                                           : ConstrainBoolean());
-  Visit(builder,
-        set.hasAutoGainControl() ? set.autoGainControl() : ConstrainBoolean());
-  Visit(builder, set.hasLatency() ? set.latency() : ConstrainDouble());
-  Visit(builder, set.hasChannelCount() ? set.channelCount() : ConstrainLong());
-  Visit(builder, set.hasVideoKind() ? set.videoKind() : ConstrainDOMString());
-  Visit(builder, set.hasWhiteBalanceMode() ? set.whiteBalanceMode()
-                                           : ConstrainDOMString());
-  Visit(builder,
-        set.hasExposureMode() ? set.exposureMode() : ConstrainDOMString());
-  Visit(builder, set.hasFocusMode() ? set.focusMode() : ConstrainDOMString());
-  Visit(builder, set.hasPointsOfInterest() ? set.pointsOfInterest()
-                                           : ConstrainPoint2D());
-  Visit(builder, set.hasExposureCompensation() ? set.exposureCompensation()
-                                               : ConstrainDouble());
-  Visit(builder,
-        set.hasExposureTime() ? set.exposureTime() : ConstrainDouble());
-  Visit(builder,
-        set.hasColorTemperature() ? set.colorTemperature() : ConstrainDouble());
-  Visit(builder, set.hasIso() ? set.iso() : ConstrainDouble());
-  Visit(builder, set.hasBrightness() ? set.brightness() : ConstrainDouble());
-  Visit(builder, set.hasContrast() ? set.contrast() : ConstrainDouble());
-  Visit(builder, set.hasSaturation() ? set.saturation() : ConstrainDouble());
-  Visit(builder, set.hasSharpness() ? set.sharpness() : ConstrainDouble());
-  Visit(builder,
-        set.hasFocusDistance() ? set.focusDistance() : ConstrainDouble());
-  Visit(builder,
-        set.hasPan() ? set.pan() : BooleanOrDoubleOrConstrainDoubleRange());
-  Visit(builder,
-        set.hasTilt() ? set.tilt() : BooleanOrDoubleOrConstrainDoubleRange());
-  Visit(builder,
-        set.hasZoom() ? set.zoom() : BooleanOrDoubleOrConstrainDoubleRange());
-  Visit(builder, set.hasTorch() ? set.torch() : ConstrainBoolean());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 void Visit(IdentifiableTokenBuilder& builder,
            const V8UnionBooleanOrMediaTrackConstraints* constraint) {
   if (!constraint) {
@@ -438,28 +248,6 @@ void Visit(IdentifiableTokenBuilder& builder,
   }
   NOTREACHED();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-void Visit(IdentifiableTokenBuilder& builder,
-           const BooleanOrMediaTrackConstraints& constraint) {
-  if (constraint.IsBoolean()) {
-    builder.AddToken(constraint.GetAsBoolean());
-    return;
-  }
-  if (constraint.IsMediaTrackConstraints()) {
-    const MediaTrackConstraints* constraints =
-        constraint.GetAsMediaTrackConstraints();
-    if (constraints) {
-      if (constraints->hasAdvanced()) {
-        for (const auto& advanced : constraints->advanced()) {
-          Visit(builder, *advanced);
-        }
-        return;
-      }
-    }
-  }
-  builder.AddToken(IdentifiableToken());
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace
 

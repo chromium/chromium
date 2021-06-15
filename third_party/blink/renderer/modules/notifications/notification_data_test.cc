@@ -57,14 +57,9 @@ TEST(NotificationDataTest, ReflectProperties) {
   for (size_t i = 0; i < base::size(kNotificationVibration); ++i)
     vibration_pattern.push_back(kNotificationVibration[i]);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* vibration_sequence =
       MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
           vibration_pattern);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  UnsignedLongOrUnsignedLongSequence vibration_sequence;
-  vibration_sequence.SetUnsignedLongSequence(vibration_pattern);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   HeapVector<Member<NotificationAction>> actions;
   for (size_t i = 0; i < Notification::maxActions(); ++i) {
@@ -150,14 +145,9 @@ TEST(NotificationDataTest, SilentNotificationWithVibration) {
   for (size_t i = 0; i < base::size(kNotificationVibration); ++i)
     vibration_pattern.push_back(kNotificationVibration[i]);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* vibration_sequence =
       MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
           std::move(vibration_pattern));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  UnsignedLongOrUnsignedLongSequence vibration_sequence;
-  vibration_sequence.SetUnsignedLongSequence(vibration_pattern);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());
@@ -255,14 +245,9 @@ TEST(NotificationDataTest, VibrationNormalization) {
   for (size_t i = 0; i < base::size(kNotificationVibrationUnnormalized); ++i)
     unnormalized_pattern.push_back(kNotificationVibrationUnnormalized[i]);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* vibration_sequence =
       MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
           unnormalized_pattern);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  UnsignedLongOrUnsignedLongSequence vibration_sequence;
-  vibration_sequence.SetUnsignedLongSequence(unnormalized_pattern);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());

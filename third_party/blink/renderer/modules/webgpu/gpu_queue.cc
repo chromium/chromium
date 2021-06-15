@@ -33,7 +33,6 @@ namespace blink {
 
 namespace {
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(const V8GPUOrigin2D* webgpu_origin) {
   DCHECK(webgpu_origin);
 
@@ -73,45 +72,6 @@ WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(const V8GPUOrigin2D* webgpu_origin) {
 
   return dawn_origin;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(
-    const UnsignedLongEnforceRangeSequenceOrGPUOrigin2DDict* webgpu_origin) {
-  DCHECK(webgpu_origin);
-
-  WGPUOrigin3D dawn_origin = {
-      0,
-      0,
-      0,
-  };
-
-  if (webgpu_origin->IsUnsignedLongEnforceRangeSequence()) {
-    const Vector<uint32_t>& webgpu_origin_sequence =
-        webgpu_origin->GetAsUnsignedLongEnforceRangeSequence();
-    // The WebGPU spec states that if the sequence isn't big enough then the
-    // default values of 0 are used (which are set above).
-    switch (webgpu_origin_sequence.size()) {
-      default:
-        // This is a 2D origin and the depth should be 0 always.
-        dawn_origin.y = webgpu_origin_sequence[1];
-        FALLTHROUGH;
-      case 1:
-        dawn_origin.x = webgpu_origin_sequence[0];
-        FALLTHROUGH;
-      case 0:
-        break;
-    }
-  } else if (webgpu_origin->IsGPUOrigin2DDict()) {
-    const GPUOrigin2DDict* webgpu_origin_2d_dict =
-        webgpu_origin->GetAsGPUOrigin2DDict();
-    dawn_origin.x = webgpu_origin_2d_dict->x();
-    dawn_origin.y = webgpu_origin_2d_dict->y();
-  } else {
-    NOTREACHED();
-  }
-
-  return dawn_origin;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 bool IsValidExternalImageDestinationFormat(
     WGPUTextureFormat dawn_texture_format) {
@@ -175,15 +135,10 @@ bool CanUploadThroughGPU(StaticBitmapImage* image, GPUTexture* dest_texture) {
 }
 
 scoped_refptr<Image> GetImageFromExternalImage(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas*
         external_image,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const ImageBitmapOrHTMLCanvasElementOrOffscreenCanvas& external_image,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     ExceptionState& exception_state) {
   CanvasImageSource* source = nullptr;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   CanvasRenderingContextHost* canvas = nullptr;
   switch (external_image->GetContentType()) {
     case V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas::ContentType::
@@ -201,33 +156,7 @@ scoped_refptr<Image> GetImageFromExternalImage(
       canvas = external_image->GetAsOffscreenCanvas();
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (external_image.IsImageBitmap()) {
-    source = external_image.GetAsImageBitmap();
-  } else {
-    CanvasRenderingContextHost* canvas = nullptr;
-    if (external_image.IsHTMLCanvasElement()) {
-      canvas = external_image.GetAsHTMLCanvasElement();
-    } else if (external_image.IsOffscreenCanvas()) {
-      canvas = external_image.GetAsOffscreenCanvas();
-    } else {
-      NOTREACHED();
-      return nullptr;
-    }
 
-    // The rendering context is 2d or webgl/webgl2.
-    if (!(canvas->Is3d() || canvas->IsRenderingContext2D())) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kOperationError,
-          "CopyExternalImageToTexture doesn't support canvas withoug 2d, webgl "
-          "or webgl2 conext");
-      return nullptr;
-    }
-    source = canvas;
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   // The rendering context is 2d or webgl/webgl2.
   if (canvas && !(canvas->Is3d() || canvas->IsRenderingContext2D())) {
     exception_state.ThrowDOMException(
@@ -236,7 +165,6 @@ scoped_refptr<Image> GetImageFromExternalImage(
         "or webgl2 conext");
     return nullptr;
   }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // Neutered external image.
   if (source->IsNeutered()) {
@@ -490,13 +418,8 @@ void GPUQueue::copyExternalImageToTexture(GPUImageCopyExternalImage* copyImage,
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
 
   // Extract source origin
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   WGPUOrigin3D origin_in_external_image =
       GPUOrigin2DToWGPUOrigin3D(copyImage->origin());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  WGPUOrigin3D origin_in_external_image =
-      GPUOrigin2DToWGPUOrigin3D(&(copyImage->origin()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // Validate origin value
   const bool copyRectOutOfBounds =
@@ -618,13 +541,8 @@ void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
 
   // Extract imageBitmap attributes
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   WGPUOrigin3D origin_in_image_bitmap =
       GPUOrigin2DToWGPUOrigin3D(source->origin());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  WGPUOrigin3D origin_in_image_bitmap =
-      GPUOrigin2DToWGPUOrigin3D(&(source->origin()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // Validate copy depth
   if (dawn_copy_size.depthOrArrayLayers > 1) {

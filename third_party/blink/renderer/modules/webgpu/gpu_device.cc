@@ -43,18 +43,12 @@ namespace blink {
 
 namespace {
 
-#ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
 Vector<String> ToStringVector(const Vector<V8GPUFeatureName>& features) {
   Vector<String> str_features;
   for (auto&& feature : features)
     str_features.push_back(IDLEnumAsString(feature));
   return str_features;
 }
-#else
-const Vector<String>& ToStringVector(const Vector<String>& features) {
-  return features;
-}
-#endif
 
 }  // anonymous namespace
 
@@ -135,26 +129,13 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == WGPUErrorType_Validation) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     init->setError(
         MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
             MakeGarbageCollected<GPUValidationError>(message)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    auto* error = MakeGarbageCollected<GPUValidationError>(message);
-    init->setError(
-        GPUOutOfMemoryErrorOrGPUValidationError::FromGPUValidationError(error));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   } else if (errorType == WGPUErrorType_OutOfMemory) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     init->setError(
         MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
             GPUOutOfMemoryError::Create()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    GPUOutOfMemoryError* error = GPUOutOfMemoryError::Create();
-    init->setError(
-        GPUOutOfMemoryErrorOrGPUValidationError::FromGPUOutOfMemoryError(
-            error));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   } else {
     return;
   }

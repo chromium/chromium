@@ -21,7 +21,6 @@ PushEvent::PushEvent(const AtomicString& type,
                      ExceptionState& exception_state)
     : ExtendableEvent(type, initializer) {
   if (initializer->hasData()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto* message_data = initializer->data();
     if (message_data->IsArrayBuffer() || message_data->IsArrayBufferView()) {
       DOMArrayPiece array_piece =
@@ -35,22 +34,6 @@ PushEvent::PushEvent(const AtomicString& type,
         return;
       }
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const ArrayBufferOrArrayBufferViewOrUSVString& message_data =
-        initializer->data();
-    if (message_data.IsArrayBuffer() || message_data.IsArrayBufferView()) {
-      DOMArrayPiece array_piece =
-          message_data.IsArrayBuffer()
-              ? DOMArrayPiece(message_data.GetAsArrayBuffer())
-              : DOMArrayPiece(message_data.GetAsArrayBufferView().Get());
-      if (!base::CheckedNumeric<uint32_t>(array_piece.ByteLength()).IsValid()) {
-        exception_state.ThrowRangeError(
-            "The provided ArrayBuffer exceeds the maximum supported size "
-            "(4294967295)");
-        return;
-      }
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     data_ = PushMessageData::Create(initializer->data());
   }
 }

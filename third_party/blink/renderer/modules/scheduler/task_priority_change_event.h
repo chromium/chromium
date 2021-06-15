@@ -28,18 +28,10 @@ class MODULES_EXPORT TaskPriorityChangeEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   V8TaskPriority previousPriority() const;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  AtomicString previousPriority() const;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
  private:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   const V8TaskPriority previous_priority_;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  const AtomicString previous_priority_;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   DISALLOW_COPY_AND_ASSIGN(TaskPriorityChangeEvent);
 };

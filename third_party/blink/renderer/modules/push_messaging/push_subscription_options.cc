@@ -19,11 +19,7 @@ namespace {
 const int kMaxApplicationServerKeyLength = 255;
 
 Vector<uint8_t> BufferSourceToVector(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const V8UnionBufferSourceOrString* application_server_key,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const ArrayBufferOrArrayBufferViewOrString& application_server_key,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     ExceptionState& exception_state) {
   char* input;
   size_t length;
@@ -31,7 +27,6 @@ Vector<uint8_t> BufferSourceToVector(
   Vector<uint8_t> result;
 
   // Convert the input array into a string of bytes.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (application_server_key->GetContentType()) {
     case V8UnionBufferSourceOrString::ContentType::kArrayBuffer:
       input = static_cast<char*>(
@@ -56,31 +51,6 @@ Vector<uint8_t> BufferSourceToVector(
       length = decoded_application_server_key.size();
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (application_server_key.IsArrayBuffer()) {
-    input =
-        static_cast<char*>(application_server_key.GetAsArrayBuffer()->Data());
-    length = application_server_key.GetAsArrayBuffer()->ByteLength();
-  } else if (application_server_key.IsArrayBufferView()) {
-    input = static_cast<char*>(
-        application_server_key.GetAsArrayBufferView()->BaseAddress());
-    length = application_server_key.GetAsArrayBufferView()->byteLength();
-  } else if (application_server_key.IsString()) {
-    if (!Base64UnpaddedURLDecode(application_server_key.GetAsString(),
-                                 decoded_application_server_key)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidCharacterError,
-          "The provided applicationServerKey is not encoded as base64url "
-          "without padding.");
-      return result;
-    }
-    input = reinterpret_cast<char*>(decoded_application_server_key.data());
-    length = decoded_application_server_key.size();
-  } else {
-    NOTREACHED();
-    return result;
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // Check the validity of the sender info. It must either be a 65-byte
   // uncompressed VAPID key, which has the byte 0x04 as the first byte or a
@@ -113,11 +83,7 @@ PushSubscriptionOptions* PushSubscriptionOptions::FromOptionsInit(
   // has a default value, but we check |hasApplicationServerKey()| here for
   // backward compatibility.
   if (options_init->hasApplicationServerKey() &&
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       options_init->applicationServerKey()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      !options_init->applicationServerKey().IsNull()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     application_server_key.AppendVector(BufferSourceToVector(
         options_init->applicationServerKey(), exception_state));

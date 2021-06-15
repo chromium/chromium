@@ -32,8 +32,6 @@ WTF::Vector<uint8_t> GetUTF8DataFromString(const String& string) {
   return data;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 bool GetBytesOfBufferSource(const V8NDEFRecordDataSource* buffer_source,
                             WTF::Vector<uint8_t>* target,
                             ExceptionState& exception_state) {
@@ -57,47 +55,6 @@ bool GetBytesOfBufferSource(const V8NDEFRecordDataSource* buffer_source,
   target->Append(array_piece.Bytes(), checked_length);
   return true;
 }
-
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
-using NDEFRecordDataSource =
-    StringOrArrayBufferOrArrayBufferViewOrNDEFMessageInit;
-
-bool IsBufferSource(const NDEFRecordDataSource& data) {
-  return data.IsArrayBuffer() || data.IsArrayBufferView();
-}
-
-bool GetBytesOfBufferSource(const NDEFRecordDataSource& buffer_source,
-                            WTF::Vector<uint8_t>* target,
-                            ExceptionState& exception_state) {
-  DCHECK(IsBufferSource(buffer_source));
-  uint8_t* data;
-  size_t data_length;
-  if (buffer_source.IsArrayBuffer()) {
-    DOMArrayBuffer* array_buffer = buffer_source.GetAsArrayBuffer();
-    data = reinterpret_cast<uint8_t*>(array_buffer->Data());
-    data_length = array_buffer->ByteLength();
-  } else if (buffer_source.IsArrayBufferView()) {
-    const DOMArrayBufferView* array_buffer_view =
-        buffer_source.GetAsArrayBufferView().Get();
-    data = reinterpret_cast<uint8_t*>(array_buffer_view->BaseAddress());
-    data_length = array_buffer_view->byteLength();
-  } else {
-    NOTREACHED();
-    return false;
-  }
-  wtf_size_t checked_length;
-  if (!base::CheckedNumeric<wtf_size_t>(data_length)
-           .AssignIfValid(&checked_length)) {
-    exception_state.ThrowRangeError(
-        "The provided buffer source exceeds the maximum supported length");
-    return false;
-  }
-  target->Append(data, checked_length);
-  return true;
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 // https://w3c.github.io/web-nfc/#dfn-validate-external-type
 // Validates |input| as an external type.
@@ -183,13 +140,8 @@ static NDEFRecord* CreateTextRecord(const ExecutionContext* execution_context,
                                     ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#mapping-string-to-ndef
   if (
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       !record.hasData() ||
       !(record.data()->IsString() || record.data()->IsV8BufferSource())
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      !record.hasData() ||
-      !(record.data().IsString() || IsBufferSource(record.data()))
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     exception_state.ThrowTypeError(
         "The data for 'text' NDEFRecords must be a String or a BufferSource.");
@@ -213,7 +165,6 @@ static NDEFRecord* CreateTextRecord(const ExecutionContext* execution_context,
     return nullptr;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   const auto* data = record.data();
   const String& encoding_label = record.getEncodingOr("utf-8");
   WTF::Vector<uint8_t> bytes;
@@ -245,33 +196,6 @@ static NDEFRecord* CreateTextRecord(const ExecutionContext* execution_context,
       bytes.Append(utf8_string.data(), utf8_string.size());
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  const auto& data = record.data();
-  String encoding_label = record.hasEncoding() ? record.encoding() : "utf-8";
-  WTF::Vector<uint8_t> bytes;
-  if (data.IsString()) {
-    if (encoding_label != "utf-8") {
-      exception_state.ThrowTypeError(
-          "A DOMString data source is always encoded as \"utf-8\" so other "
-          "encodings are not allowed.");
-      return nullptr;
-    }
-    StringUTF8Adaptor utf8_string(data.GetAsString());
-    bytes.Append(utf8_string.data(), utf8_string.size());
-  } else {
-    DCHECK(IsBufferSource(data));
-    if (encoding_label != "utf-8" && encoding_label != "utf-16" &&
-        encoding_label != "utf-16be" && encoding_label != "utf-16le") {
-      exception_state.ThrowTypeError(
-          "Encoding must be either \"utf-8\", \"utf-16\", \"utf-16be\", or "
-          "\"utf-16le\".");
-      return nullptr;
-    }
-    if (!GetBytesOfBufferSource(data, &bytes, exception_state)) {
-      return nullptr;
-    }
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   return MakeGarbageCollected<NDEFRecord>(id, encoding_label, language,
                                           std::move(bytes));
@@ -283,11 +207,7 @@ static NDEFRecord* CreateUrlRecord(const String& id,
                                    ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#mapping-url-to-ndef
   if (
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       !record.hasData() || !record.data()->IsString()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      !record.hasData() || !record.data().IsString()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     exception_state.ThrowTypeError(
         "The data for url NDEFRecord must be a String.");
@@ -295,11 +215,7 @@ static NDEFRecord* CreateUrlRecord(const String& id,
   }
 
   // No need to check mediaType according to the spec.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   const String& url = record.data()->GetAsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  String url = record.data().GetAsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (!KURL(NullURL(), url).IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Cannot parse data for url record.");
@@ -316,11 +232,7 @@ static NDEFRecord* CreateMimeRecord(const String& id,
                                     ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#mapping-binary-data-to-ndef
   if (
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       !record.hasData() || !record.data()->IsV8BufferSource()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      !record.hasData() || !IsBufferSource(record.data())
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     exception_state.ThrowTypeError(
         "The data for 'mime' NDEFRecord must be a BufferSource.");
@@ -347,11 +259,7 @@ static NDEFRecord* CreateUnknownRecord(const String& id,
                                        const NDEFRecordInit& record,
                                        ExceptionState& exception_state) {
   if (
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       !record.hasData() || !record.data()->IsV8BufferSource()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      !record.hasData() || !IsBufferSource(record.data())
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     exception_state.ThrowTypeError(
         "The data for 'unknown' NDEFRecord must be a BufferSource.");
@@ -375,25 +283,16 @@ static NDEFRecord* CreateSmartPosterRecord(
     ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#dfn-map-smart-poster-to-ndef
   if (
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       !record.hasData() || !record.data()->IsNDEFMessageInit()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      !record.hasData() || !record.data().IsNDEFMessageInit()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     exception_state.ThrowTypeError(
         "The data for 'smart-poster' NDEFRecord must be an NDEFMessageInit.");
     return nullptr;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   NDEFMessage* payload_message = NDEFMessage::CreateAsPayloadOfSmartPoster(
       execution_context, record.data()->GetAsNDEFMessageInit(),
       exception_state);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  NDEFMessage* payload_message = NDEFMessage::CreateAsPayloadOfSmartPoster(
-      execution_context, record.data().GetAsNDEFMessageInit(), exception_state);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (exception_state.HadException())
     return nullptr;
   DCHECK(payload_message);
@@ -411,7 +310,6 @@ static NDEFRecord* CreateExternalRecord(
   const String& record_type = record.recordType();
 
   // https://w3c.github.io/web-nfc/#dfn-map-external-data-to-ndef
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (record.hasData()) {
     switch (record.data()->GetContentType()) {
       case V8NDEFRecordDataSource::ContentType::kArrayBuffer:
@@ -439,27 +337,6 @@ static NDEFRecord* CreateExternalRecord(
         break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (record.hasData() && IsBufferSource(record.data())) {
-    WTF::Vector<uint8_t> bytes;
-    if (!GetBytesOfBufferSource(record.data(), &bytes, exception_state)) {
-      return nullptr;
-    }
-    return MakeGarbageCollected<NDEFRecord>(
-        device::mojom::blink::NDEFRecordTypeCategory::kExternal, record_type,
-        id, bytes);
-  } else if (record.hasData() && record.data().IsNDEFMessageInit()) {
-    NDEFMessage* payload_message = NDEFMessage::Create(
-        execution_context, record.data().GetAsNDEFMessageInit(),
-        exception_state, /*is_embedded=*/true);
-    if (exception_state.HadException())
-      return nullptr;
-    DCHECK(payload_message);
-    return MakeGarbageCollected<NDEFRecord>(
-        device::mojom::blink::NDEFRecordTypeCategory::kExternal, record_type,
-        id, payload_message);
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   exception_state.ThrowTypeError(
       "The data for external type NDEFRecord must be a BufferSource or an "
@@ -474,7 +351,6 @@ static NDEFRecord* CreateLocalRecord(const ExecutionContext* execution_context,
   const String& record_type = record.recordType();
 
   // https://w3c.github.io/web-nfc/#dfn-map-local-type-to-ndef
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (record.hasData()) {
     switch (record.data()->GetContentType()) {
       case V8NDEFMessageSource::ContentType::kArrayBuffer:
@@ -502,27 +378,6 @@ static NDEFRecord* CreateLocalRecord(const ExecutionContext* execution_context,
         break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (record.hasData() && IsBufferSource(record.data())) {
-    WTF::Vector<uint8_t> bytes;
-    if (!GetBytesOfBufferSource(record.data(), &bytes, exception_state)) {
-      return nullptr;
-    }
-    return MakeGarbageCollected<NDEFRecord>(
-        device::mojom::blink::NDEFRecordTypeCategory::kLocal, record_type, id,
-        bytes);
-  } else if (record.hasData() && record.data().IsNDEFMessageInit()) {
-    NDEFMessage* payload_message = NDEFMessage::Create(
-        execution_context, record.data().GetAsNDEFMessageInit(),
-        exception_state, /*is_embedded=*/true);
-    if (exception_state.HadException())
-      return nullptr;
-    DCHECK(payload_message);
-    return MakeGarbageCollected<NDEFRecord>(
-        device::mojom::blink::NDEFRecordTypeCategory::kLocal, record_type, id,
-        payload_message);
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   exception_state.ThrowTypeError(
       "The data for local type NDEFRecord must be a BufferSource or an "

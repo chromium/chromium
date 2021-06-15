@@ -418,11 +418,7 @@ bool URLPattern::Match(
   String search(g_empty_string);
   String hash(g_empty_string);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   HeapVector<Member<V8URLPatternInput>> inputs;
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  HeapVector<USVStringOrURLPatternInit> inputs;
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   switch (input->GetContentType()) {
     case V8URLPatternInput::ContentType::kURLPatternInit: {
@@ -436,11 +432,7 @@ bool URLPattern::Match(
 
       URLPatternInit* init = input->GetAsURLPatternInit();
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(init));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      inputs.push_back(USVStringOrURLPatternInit::FromURLPatternInit(init));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
       // Layer the URLPatternInit values on top of the default empty strings.
       ApplyInit(init, ValueType::kURL, protocol, username, password, hostname,
@@ -461,15 +453,9 @@ bool URLPattern::Match(
 
       const String& input_string = input->GetAsUSVString();
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(input_string));
       if (base_url)
         inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(base_url));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      inputs.push_back(USVStringOrURLPatternInit::FromUSVString(input_string));
-      if (base_url)
-        inputs.push_back(USVStringOrURLPatternInit::FromUSVString(base_url));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
       // The compile the input string as a fully resolved URL.
       KURL url(parsed_base_url, input_string);

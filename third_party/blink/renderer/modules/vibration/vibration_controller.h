@@ -35,7 +35,6 @@
 namespace blink {
 
 class Navigator;
-class UnsignedLongOrUnsignedLongSequence;
 class V8UnionUnsignedLongOrUnsignedLongSequence;
 
 class MODULES_EXPORT VibrationController final
@@ -55,13 +54,8 @@ class MODULES_EXPORT VibrationController final
   explicit VibrationController(Navigator&);
   ~VibrationController() override;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   static VibrationPattern SanitizeVibrationPattern(
       const V8UnionUnsignedLongOrUnsignedLongSequence* input);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  static VibrationPattern SanitizeVibrationPattern(
-      const UnsignedLongOrUnsignedLongSequence&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   void DoVibrate(TimerBase*);
   void DidVibrate();

@@ -249,15 +249,9 @@ TEST(CredentialsContainerTest,
 
   auto* user_options = PublicKeyCredentialUserEntity::Create();
   int dummy_buffer_source = 1;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* dummy_buffer =
       MakeGarbageCollected<V8BufferSource>(DOMArrayBuffer::Create(
           &dummy_buffer_source, sizeof(dummy_buffer_source)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  auto dummy_buffer =
-      ArrayBufferOrArrayBufferView::FromArrayBuffer(DOMArrayBuffer::Create(
-          &dummy_buffer_source, sizeof(dummy_buffer_source)));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   user_options->setId(dummy_buffer);
   user_options->setIcon("invalid URL");
 

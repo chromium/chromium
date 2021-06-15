@@ -137,7 +137,6 @@ Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> ConvertAccepts(
       }
 
       mimeTypes.push_back(type);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       switch (a.second->GetContentType()) {
         case V8UnionUSVStringOrUSVStringSequence::ContentType::kUSVString:
           if (!AddExtension(a.second->GetAsUSVString(), extensions,
@@ -154,18 +153,6 @@ Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> ConvertAccepts(
           }
           break;
       }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      if (a.second.IsUSVString()) {
-        if (!AddExtension(a.second.GetAsUSVString(), extensions,
-                          exception_state))
-          return {};
-      } else {
-        for (const auto& extension : a.second.GetAsUSVStringSequence()) {
-          if (!AddExtension(extension, extensions, exception_state))
-            return {};
-        }
-      }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     }
     result.emplace_back(
         blink::mojom::blink::ChooseFileSystemEntryAcceptsOption::New(
@@ -327,7 +314,6 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
       mojom::blink::WellKnownDirectory::kDefault;
   mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
   if (options->hasStartIn()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto* start_in = options->startIn();
     switch (start_in->GetContentType()) {
       case V8UnionFileSystemHandleOrWellKnownDirectory::ContentType::
@@ -340,16 +326,6 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
             ConvertWellKnownDirectory(start_in->GetAsWellKnownDirectory());
         break;
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    auto& start_in = options->startIn();
-    if (start_in.IsWellKnownDirectory()) {
-      well_known_starting_directory =
-          ConvertWellKnownDirectory(start_in.GetAsWellKnownDirectory());
-    }
-    if (start_in.IsFileSystemHandle()) {
-      token = start_in.GetAsFileSystemHandle()->Transfer();
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
@@ -401,7 +377,6 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
       mojom::blink::WellKnownDirectory::kDefault;
   mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
   if (options->hasStartIn()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto* start_in = options->startIn();
     switch (start_in->GetContentType()) {
       case V8UnionFileSystemHandleOrWellKnownDirectory::ContentType::
@@ -414,16 +389,6 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
             ConvertWellKnownDirectory(start_in->GetAsWellKnownDirectory());
         break;
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    auto& start_in = options->startIn();
-    if (start_in.IsWellKnownDirectory()) {
-      well_known_starting_directory =
-          ConvertWellKnownDirectory(start_in.GetAsWellKnownDirectory());
-    }
-    if (start_in.IsFileSystemHandle()) {
-      token = start_in.GetAsFileSystemHandle()->Transfer();
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
@@ -465,7 +430,6 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
       mojom::blink::WellKnownDirectory::kDefault;
   mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
   if (options->hasStartIn()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto* start_in = options->startIn();
     switch (start_in->GetContentType()) {
       case V8UnionFileSystemHandleOrWellKnownDirectory::ContentType::
@@ -478,16 +442,6 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
             ConvertWellKnownDirectory(start_in->GetAsWellKnownDirectory());
         break;
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    auto& start_in = options->startIn();
-    if (start_in.IsWellKnownDirectory()) {
-      well_known_starting_directory =
-          ConvertWellKnownDirectory(start_in.GetAsWellKnownDirectory());
-    }
-    if (start_in.IsFileSystemHandle()) {
-      token = start_in.GetAsFileSystemHandle()->Transfer();
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);

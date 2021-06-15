@@ -123,11 +123,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
 
   // |data| is a required field.
   DCHECK(init->hasData());
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   DCHECK(init->data());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  DCHECK(!init->data().IsNull());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   constexpr char kNoneOption[] = "none";
   auto color_behavior = ColorBehavior::Tag();
@@ -158,20 +154,11 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   if (
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       init->data()->IsReadableStream()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      init->data().IsReadableStream()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     if (
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
         init->data()->GetAsReadableStream()->IsLocked() ||
         init->data()->GetAsReadableStream()->IsDisturbed()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-        init->data().GetAsReadableStream()->IsLocked() ||
-        init->data().GetAsReadableStream()->IsDisturbed()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     ) {
       exception_state.ThrowTypeError(
           "ImageDecoder can only accept readable streams that are not yet "
@@ -184,13 +171,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
         /*data_complete=*/false, alpha_option, color_behavior, desired_size,
         animation_option_);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
         script_state, init->data()->GetAsReadableStream());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
-        script_state, init->data().GetAsReadableStream());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
     construction_succeeded_ = true;
 
@@ -202,7 +184,6 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   }
 
   DOMArrayPiece buffer;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (init->data()->GetContentType()) {
     case V8ImageBufferSource::ContentType::kArrayBuffer:
       buffer = DOMArrayPiece(init->data()->GetAsArrayBuffer());
@@ -214,16 +195,6 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       NOTREACHED();
       return;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (init->data().IsArrayBuffer()) {
-    buffer = DOMArrayPiece(init->data().GetAsArrayBuffer());
-  } else if (init->data().IsArrayBufferView()) {
-    buffer = DOMArrayPiece(init->data().GetAsArrayBufferView().Get());
-  } else {
-    NOTREACHED();
-    return;
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   if (!buffer.ByteLength()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,

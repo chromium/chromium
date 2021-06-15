@@ -138,26 +138,6 @@ IDBKeyPath::IDBKeyPath(const V8UnionStringOrStringSequence* key_path) {
   }
 }
 
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-IDBKeyPath::IDBKeyPath(const StringOrStringSequence& key_path) {
-  if (key_path.IsNull()) {
-    type_ = mojom::IDBKeyPathType::Null;
-  } else if (key_path.IsString()) {
-    type_ = mojom::IDBKeyPathType::String;
-    string_ = key_path.GetAsString();
-    DCHECK(!string_.IsNull());
-  } else {
-    DCHECK(key_path.IsStringSequence());
-    type_ = mojom::IDBKeyPathType::Array;
-    array_ = key_path.GetAsStringSequence();
-#if DCHECK_IS_ON()
-    for (const auto& element : array_)
-      DCHECK(!element.IsNull());
-#endif
-  }
-}
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 bool IDBKeyPath::IsValid() const {
   switch (type_) {
     case mojom::IDBKeyPathType::Null:

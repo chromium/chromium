@@ -56,25 +56,6 @@ const char kInactiveDocumentError[] = "Document not active";
 const char kHandleGestureForPermissionRequest[] =
     "Must be handling a user gesture to show a permission request.";
 
-namespace {
-
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-// TODO(crbug.com/1181288): Remove the old IDL union version.
-V8BluetoothServiceUUID* ToV8BluetoothServiceUUID(
-    const StringOrUnsignedLong& uuid) {
-  if (uuid.IsString()) {
-    return MakeGarbageCollected<V8BluetoothServiceUUID>(uuid.GetAsString());
-  } else if (uuid.IsUnsignedLong()) {
-    return MakeGarbageCollected<V8BluetoothServiceUUID>(
-        uuid.GetAsUnsignedLong());
-  }
-  NOTREACHED();
-  return nullptr;
-}
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
-}  // namespace
-
 // Remind developers when they are using Web Bluetooth on unsupported platforms.
 // TODO(https://crbug.com/570344): Remove this method when all platforms are
 // supported.
@@ -108,7 +89,6 @@ static void CanonicalizeFilter(
       return;
     }
     canonicalized_filter->services.emplace();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     for (const V8UnionStringOrUnsignedLong* service : filter->services()) {
       const String& validated_service =
           BluetoothUUID::getService(service, exception_state);
@@ -116,15 +96,6 @@ static void CanonicalizeFilter(
         return;
       canonicalized_filter->services->push_back(validated_service);
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    for (const StringOrUnsignedLong& service : filter->services()) {
-      const String& validated_service = BluetoothUUID::getService(
-          ToV8BluetoothServiceUUID(service), exception_state);
-      if (exception_state.HadException())
-        return;
-      canonicalized_filter->services->push_back(validated_service);
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   if (filter->hasName()) {
@@ -265,7 +236,6 @@ static void ConvertRequestDeviceOptions(
   }
 
   if (options->hasOptionalServices()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     for (const V8UnionStringOrUnsignedLong* optional_service :
          options->optionalServices()) {
       const String& validated_optional_service =
@@ -274,16 +244,6 @@ static void ConvertRequestDeviceOptions(
         return;
       result->optional_services.push_back(validated_optional_service);
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    for (const StringOrUnsignedLong& optional_service :
-         options->optionalServices()) {
-      const String& validated_optional_service = BluetoothUUID::getService(
-          ToV8BluetoothServiceUUID(optional_service), exception_state);
-      if (exception_state.HadException())
-        return;
-      result->optional_services.push_back(validated_optional_service);
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   if (options->hasOptionalManufacturerData()) {

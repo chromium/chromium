@@ -103,11 +103,7 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
   return MakeGarbageCollected<MediaStreamTrackGenerator>(
       script_state, type,
       /*track_id=*/WTF::CreateCanonicalUUIDString(),
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       init->getSignalTargetOr(nullptr),
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      init->signalTarget(),
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       max_signal_buffer_size);
 }
 

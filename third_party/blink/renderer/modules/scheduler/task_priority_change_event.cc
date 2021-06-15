@@ -28,14 +28,8 @@ const AtomicString& TaskPriorityChangeEvent::InterfaceName() const {
   return event_interface_names::kTaskPriorityChangeEvent;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 V8TaskPriority TaskPriorityChangeEvent::previousPriority() const {
   return previous_priority_;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-AtomicString TaskPriorityChangeEvent::previousPriority() const {
-  return previous_priority_;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace blink

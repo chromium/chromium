@@ -107,8 +107,6 @@ WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent) {
   return dawn_extent;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_origin) {
   DCHECK(webgpu_origin);
 
@@ -149,99 +147,6 @@ WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_origin) {
   return dawn_origin;
 }
 
-#else  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
-WGPUExtent3D AsDawnType(
-    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict* webgpu_extent,
-    GPUDevice* device) {
-  DCHECK(webgpu_extent);
-
-  // Set all extents to their default value of 1.
-  // TODO (crbug.com/1206740): The last member of WGPUExtent3D (depth) is being
-  // removed from Dawn soon, but until it has been removed it must be set to 1
-  // or the correct value, in depthOrArrayLayers, will be ignored. Once depth
-  // has been removed from WGPUExtent3D in Dawn this can be to be updated to
-  // WGPUExtent3D dawn_extent = {1, 1, 1};
-  WGPUExtent3D dawn_extent;
-  uint32_t extent_defaults[4] = {1, 1, 1, 1};
-  memcpy(&dawn_extent, extent_defaults, sizeof(WGPUExtent3D));
-
-  if (webgpu_extent->IsUnsignedLongEnforceRangeSequence()) {
-    const Vector<uint32_t>& webgpu_extent_sequence =
-        webgpu_extent->GetAsUnsignedLongEnforceRangeSequence();
-
-    // The WebGPU spec states that if the sequence isn't big enough then the
-    // default values of 1 are used (which are set above).
-    switch (webgpu_extent_sequence.size()) {
-      default:
-        dawn_extent.depthOrArrayLayers = webgpu_extent_sequence[2];
-        FALLTHROUGH;
-      case 2:
-        dawn_extent.height = webgpu_extent_sequence[1];
-        FALLTHROUGH;
-      case 1:
-        dawn_extent.width = webgpu_extent_sequence[0];
-        FALLTHROUGH;
-      case 0:
-        break;
-    }
-
-  } else if (webgpu_extent->IsGPUExtent3DDict()) {
-    const GPUExtent3DDict* webgpu_extent_3d_dict =
-        webgpu_extent->GetAsGPUExtent3DDict();
-    dawn_extent.width = webgpu_extent_3d_dict->width();
-    dawn_extent.height = webgpu_extent_3d_dict->height();
-    dawn_extent.depthOrArrayLayers =
-        webgpu_extent_3d_dict->depthOrArrayLayers();
-  } else {
-    NOTREACHED();
-  }
-
-  return dawn_extent;
-}
-
-WGPUOrigin3D AsDawnType(
-    const UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict* webgpu_origin) {
-  DCHECK(webgpu_origin);
-
-  WGPUOrigin3D dawn_origin = {0, 0, 0};
-
-  if (webgpu_origin->IsUnsignedLongEnforceRangeSequence()) {
-    const Vector<uint32_t>& webgpu_origin_sequence =
-        webgpu_origin->GetAsUnsignedLongEnforceRangeSequence();
-
-    // The WebGPU spec states that if the sequence isn't big enough then the
-    // default values of 0 are used (which are set above).
-    switch (webgpu_origin_sequence.size()) {
-      default:
-        dawn_origin.z = webgpu_origin_sequence[2];
-        FALLTHROUGH;
-      case 2:
-        dawn_origin.y = webgpu_origin_sequence[1];
-        FALLTHROUGH;
-      case 1:
-        dawn_origin.x = webgpu_origin_sequence[0];
-        FALLTHROUGH;
-      case 0:
-        break;
-    }
-
-  } else if (webgpu_origin->IsGPUOrigin3DDict()) {
-    const GPUOrigin3DDict* webgpu_origin_3d_dict =
-        webgpu_origin->GetAsGPUOrigin3DDict();
-    dawn_origin.x = webgpu_origin_3d_dict->x();
-    dawn_origin.y = webgpu_origin_3d_dict->y();
-    dawn_origin.z = webgpu_origin_3d_dict->z();
-
-  } else {
-    NOTREACHED();
-  }
-
-  return dawn_origin;
-}
-
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
                                GPUDevice* device) {
   DCHECK(webgpu_view);
@@ -250,11 +155,7 @@ WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
   WGPUTextureCopyView dawn_view = {};
   dawn_view.texture = webgpu_view->texture()->GetHandle();
   dawn_view.mipLevel = webgpu_view->mipLevel();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   dawn_view.origin = AsDawnType(webgpu_view->origin());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  dawn_view.origin = AsDawnType(&webgpu_view->origin());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   dawn_view.aspect = AsDawnEnum<WGPUTextureAspect>(webgpu_view->aspect());
 
   return dawn_view;

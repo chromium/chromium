@@ -244,12 +244,7 @@ void GPUCanvasContext::ConfigureInternal(
     // deprecated behavior of resizing to match the canvas size each frame.
     size = IntSize(-1, -1);
   } else if (descriptor->hasSize()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     WGPUExtent3D dawn_extent = AsDawnType(descriptor->size());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    WGPUExtent3D dawn_extent =
-        AsDawnType(&descriptor->size(), descriptor->device());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     size = IntSize(dawn_extent.width, dawn_extent.height);
 
     if (dawn_extent.depthOrArrayLayers != 1) {

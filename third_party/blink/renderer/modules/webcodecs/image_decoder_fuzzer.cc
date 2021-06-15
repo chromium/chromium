@@ -124,15 +124,9 @@ DEFINE_BINARY_PROTO_FUZZER(
     image_decoder_init->setType(proto.config().type().c_str());
     Persistent<DOMArrayBuffer> data_copy = DOMArrayBuffer::Create(
         proto.config().data().data(), proto.config().data().size());
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     image_decoder_init->setData(
         MakeGarbageCollected<
             V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(data_copy));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    image_decoder_init->setData(
-        ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(
-            data_copy));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     image_decoder_init->setPremultiplyAlpha(
         ToPremultiplyAlpha(proto.config().options().premultiply_alpha()));
     image_decoder_init->setColorSpaceConversion(ToColorSpaceConversion(
@@ -167,15 +161,9 @@ DEFINE_BINARY_PROTO_FUZZER(
         ReadableStream::CreateWithCountQueueingStrategy(script_state,
                                                         underlying_source, 0);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     image_decoder_init->setData(
         MakeGarbageCollected<
             V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(stream));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    image_decoder_init->setData(
-        ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(
-            stream));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     image_decoder = ImageDecoderExternal::Create(
         script_state, image_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
     image_decoder_init = nullptr;

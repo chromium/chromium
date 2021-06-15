@@ -49,17 +49,10 @@ void IsApplicationServerKeyValid(PushSubscriptionOptions* output) {
 
 TEST(PushManagerTest, ValidSenderKey) {
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           DOMArrayBuffer::Create(kApplicationServerKey,
                                  kApplicationServerKeyLength)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromArrayBuffer(
-          DOMArrayBuffer::Create(kApplicationServerKey,
-                                 kApplicationServerKeyLength)));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =
@@ -82,14 +75,9 @@ TEST(PushManagerTest, ValidBase64URLWithoutPaddingSenderKey) {
       WTF::Base64URLEncode(reinterpret_cast<const char*>(kApplicationServerKey),
                            kApplicationServerKeyLength);
   base64_url = base64_url.RemoveCharacters(RemovePad);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           base64_url));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromString(base64_url));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =
@@ -103,15 +91,9 @@ TEST(PushManagerTest, InvalidSenderKeyLength) {
   uint8_t sender_key[kMaxKeyLength + 1];
   memset(sender_key, 0, sizeof(sender_key));
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           DOMArrayBuffer::Create(sender_key, kMaxKeyLength + 1)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromArrayBuffer(
-          DOMArrayBuffer::Create(sender_key, kMaxKeyLength + 1)));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =
@@ -125,15 +107,9 @@ TEST(PushManagerTest, InvalidSenderKeyLength) {
 TEST(PushManagerTest, InvalidBase64SenderKey) {
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           Base64Encode(kApplicationServerKey)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromString(
-          Base64Encode(kApplicationServerKey)));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =
@@ -148,18 +124,11 @@ TEST(PushManagerTest, InvalidBase64SenderKey) {
 TEST(PushManagerTest, InvalidBase64URLWithPaddingSenderKey) {
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           WTF::Base64URLEncode(
               reinterpret_cast<const char*>(kApplicationServerKey),
               kApplicationServerKeyLength)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromString(WTF::Base64URLEncode(
-          reinterpret_cast<const char*>(kApplicationServerKey),
-          kApplicationServerKeyLength)));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =

@@ -102,7 +102,6 @@ void CollectHistogramMetrics(LocalDOMWindow* window) {
 }
 
 // static
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 VibrationController::VibrationPattern
 VibrationController::SanitizeVibrationPattern(
     const V8UnionUnsignedLongOrUnsignedLongSequence* input) {
@@ -121,20 +120,6 @@ VibrationController::SanitizeVibrationPattern(
   NOTREACHED();
   return {};
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-VibrationController::VibrationPattern
-VibrationController::SanitizeVibrationPattern(
-    const UnsignedLongOrUnsignedLongSequence& input) {
-  VibrationPattern pattern;
-
-  if (input.IsUnsignedLong())
-    pattern.push_back(input.GetAsUnsignedLong());
-  else if (input.IsUnsignedLongSequence())
-    pattern = input.GetAsUnsignedLongSequence();
-
-  return sanitizeVibrationPatternInternal(pattern);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 // static
 VibrationController& VibrationController::From(Navigator& navigator) {

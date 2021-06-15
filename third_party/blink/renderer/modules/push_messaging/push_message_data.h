@@ -14,7 +14,6 @@
 
 namespace blink {
 
-class ArrayBufferOrArrayBufferViewOrUSVString;
 class Blob;
 class DOMArrayBuffer;
 class ExceptionState;
@@ -26,13 +25,8 @@ class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
 
  public:
   static PushMessageData* Create(const String& data);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   static PushMessageData* Create(
       const V8UnionArrayBufferOrArrayBufferViewOrUSVString* data);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  static PushMessageData* Create(
-      const ArrayBufferOrArrayBufferViewOrUSVString& data);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   PushMessageData(const char* data, unsigned bytes_size);
   ~PushMessageData() override;

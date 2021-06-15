@@ -26,17 +26,11 @@ PushMessageData* PushMessageData::Create(const String& message_string) {
   // be set in the PushEvent.
   if (message_string.IsNull())
     return nullptr;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   return PushMessageData::Create(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrUSVString>(
           message_string));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  return PushMessageData::Create(
-      ArrayBufferOrArrayBufferViewOrUSVString::FromUSVString(message_string));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 PushMessageData* PushMessageData::Create(
     const V8UnionArrayBufferOrArrayBufferViewOrUSVString* message_data) {
   if (!message_data)
@@ -69,34 +63,6 @@ PushMessageData* PushMessageData::Create(
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-PushMessageData* PushMessageData::Create(
-    const ArrayBufferOrArrayBufferViewOrUSVString& message_data) {
-  if (message_data.IsArrayBuffer()) {
-    DOMArrayBuffer* buffer = message_data.GetAsArrayBuffer();
-    return MakeGarbageCollected<PushMessageData>(
-        static_cast<const char*>(buffer->Data()),
-        base::checked_cast<wtf_size_t>(buffer->ByteLength()));
-  }
-
-  if (message_data.IsArrayBufferView()) {
-    DOMArrayBufferView* buffer_view = message_data.GetAsArrayBufferView().Get();
-    return MakeGarbageCollected<PushMessageData>(
-        static_cast<const char*>(buffer_view->BaseAddress()),
-        base::checked_cast<wtf_size_t>(buffer_view->byteLength()));
-  }
-
-  if (message_data.IsUSVString()) {
-    std::string encoded_string = UTF8Encoding().Encode(
-        message_data.GetAsUSVString(), WTF::kNoUnencodables);
-    return MakeGarbageCollected<PushMessageData>(
-        encoded_string.c_str(), static_cast<unsigned>(encoded_string.length()));
-  }
-
-  DCHECK(message_data.IsNull());
-  return nullptr;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 PushMessageData::PushMessageData(const char* data, unsigned bytes_size) {
   data_.Append(data, bytes_size);

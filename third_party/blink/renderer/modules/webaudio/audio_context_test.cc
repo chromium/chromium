@@ -114,60 +114,36 @@ class AudioContextTest : public PageTestBase {
 
 TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
   AudioContextOptions* interactive_options = AudioContextOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   interactive_options->setLatencyHint(
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           V8AudioContextLatencyCategory(
               V8AudioContextLatencyCategory::Enum::kInteractive)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  interactive_options->setLatencyHint(
-      AudioContextLatencyCategoryOrDouble::FromAudioContextLatencyCategory(
-          "interactive"));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   AudioContext* interactive_context = AudioContext::Create(
       GetDocument(), interactive_options, ASSERT_NO_EXCEPTION);
 
   AudioContextOptions* balanced_options = AudioContextOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   balanced_options->setLatencyHint(
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           V8AudioContextLatencyCategory(
               V8AudioContextLatencyCategory::Enum::kBalanced)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  balanced_options->setLatencyHint(
-      AudioContextLatencyCategoryOrDouble::FromAudioContextLatencyCategory(
-          "balanced"));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   AudioContext* balanced_context = AudioContext::Create(
       GetDocument(), balanced_options, ASSERT_NO_EXCEPTION);
   EXPECT_GT(balanced_context->baseLatency(),
             interactive_context->baseLatency());
 
   AudioContextOptions* playback_options = AudioContextOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   playback_options->setLatencyHint(
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           V8AudioContextLatencyCategory(
               V8AudioContextLatencyCategory::Enum::kPlayback)));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  playback_options->setLatencyHint(
-      AudioContextLatencyCategoryOrDouble::FromAudioContextLatencyCategory(
-          "playback"));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   AudioContext* playback_context = AudioContext::Create(
       GetDocument(), playback_options, ASSERT_NO_EXCEPTION);
   EXPECT_GT(playback_context->baseLatency(), balanced_context->baseLatency());
 
   AudioContextOptions* exact_too_small_options = AudioContextOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   exact_too_small_options->setLatencyHint(
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           interactive_context->baseLatency() / 2));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  exact_too_small_options->setLatencyHint(
-      AudioContextLatencyCategoryOrDouble::FromDouble(
-          interactive_context->baseLatency() / 2));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   AudioContext* exact_too_small_context = AudioContext::Create(
       GetDocument(), exact_too_small_options, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(exact_too_small_context->baseLatency(),
@@ -177,28 +153,17 @@ TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
       (interactive_context->baseLatency() + playback_context->baseLatency()) /
       2;
   AudioContextOptions* exact_ok_options = AudioContextOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   exact_ok_options->setLatencyHint(
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           exact_latency_sec));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  exact_ok_options->setLatencyHint(
-      AudioContextLatencyCategoryOrDouble::FromDouble(exact_latency_sec));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   AudioContext* exact_ok_context = AudioContext::Create(
       GetDocument(), exact_ok_options, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(exact_ok_context->baseLatency(), exact_latency_sec);
 
   AudioContextOptions* exact_too_big_options = AudioContextOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   exact_too_big_options->setLatencyHint(
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           playback_context->baseLatency() * 2));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  exact_too_big_options->setLatencyHint(
-      AudioContextLatencyCategoryOrDouble::FromDouble(
-          playback_context->baseLatency() * 2));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   AudioContext* exact_too_big_context = AudioContext::Create(
       GetDocument(), exact_too_big_options, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(exact_too_big_context->baseLatency(),

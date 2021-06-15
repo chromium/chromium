@@ -138,12 +138,8 @@ void GPUPrimitiveStateAsWGPUPrimitiveState(
   if (webgpu_desc->hasClampDepth()) {
     auto* clamp_state = &dawn_state->depth_clamping_state;
     clamp_state->chain.sType = WGPUSType_PrimitiveDepthClampingState;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     clamp_state->clampDepth = webgpu_desc->clampDepth().has_value() &&
                               webgpu_desc->clampDepth().value();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    clamp_state->clampDepth = webgpu_desc->clampDepth();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     dawn_state->dawn_desc.nextInChain =
         reinterpret_cast<WGPUChainedStruct*>(clamp_state);
   }

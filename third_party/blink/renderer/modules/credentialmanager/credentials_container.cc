@@ -292,7 +292,6 @@ bool IsIconURLNullOrSecure(const KURL& url) {
 
 // Checks if the size of the supplied ArrayBuffer or ArrayBufferView is at most
 // the maximum size allowed.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 bool IsArrayBufferOrViewBelowSizeLimit(
     const V8UnionArrayBufferOrArrayBufferView* buffer_or_view) {
   if (!buffer_or_view)
@@ -310,24 +309,6 @@ bool IsArrayBufferOrViewBelowSizeLimit(
   NOTREACHED();
   return false;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-bool IsArrayBufferOrViewBelowSizeLimit(
-    ArrayBufferOrArrayBufferView buffer_or_view) {
-  if (buffer_or_view.IsNull())
-    return true;
-
-  if (buffer_or_view.IsArrayBuffer()) {
-    return base::CheckedNumeric<wtf_size_t>(
-               buffer_or_view.GetAsArrayBuffer()->ByteLength())
-        .IsValid();
-  }
-
-  DCHECK(buffer_or_view.IsArrayBufferView());
-  return base::CheckedNumeric<wtf_size_t>(
-             buffer_or_view.GetAsArrayBufferView()->byteLength())
-      .IsValid();
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 DOMException* CredentialManagerErrorToDOMException(
     CredentialManagerError reason) {
@@ -1234,7 +1215,6 @@ ScriptPromise CredentialsContainer::create(
   }
 
   if (options->hasPassword()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     resolver->Resolve(
         options->password()->IsPasswordCredentialData()
             ? PasswordCredential::Create(
@@ -1243,15 +1223,6 @@ ScriptPromise CredentialsContainer::create(
             : PasswordCredential::Create(
                   options->password()->GetAsHTMLFormElement(),
                   exception_state));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    resolver->Resolve(
-        options->password().IsPasswordCredentialData()
-            ? PasswordCredential::Create(
-                  options->password().GetAsPasswordCredentialData(),
-                  exception_state)
-            : PasswordCredential::Create(
-                  options->password().GetAsHTMLFormElement(), exception_state));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     return promise;
   }
   if (options->hasFederated()) {

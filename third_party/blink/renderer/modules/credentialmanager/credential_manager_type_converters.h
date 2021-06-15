@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-class ArrayBufferOrArrayBufferView;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class CableRegistrationData;
@@ -53,19 +52,12 @@ struct TypeConverter<blink::mojom::blink::CredentialManagerError,
       const blink::mojom::blink::AuthenticatorStatus&);
 };
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 template <>
 struct TypeConverter<Vector<uint8_t>,
                      blink::V8UnionArrayBufferOrArrayBufferView*> {
   static Vector<uint8_t> Convert(
       const blink::V8UnionArrayBufferOrArrayBufferView*);
 };
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-template <>
-struct TypeConverter<Vector<uint8_t>, blink::ArrayBufferOrArrayBufferView> {
-  static Vector<uint8_t> Convert(const blink::ArrayBufferOrArrayBufferView&);
-};
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 template <>
 struct TypeConverter<blink::mojom::blink::PublicKeyCredentialType, String> {

@@ -103,7 +103,6 @@ AudioContext* AudioContext::Create(Document& document,
       WebFeature::kAudioContextCrossOriginIframe);
 
   WebAudioLatencyHint latency_hint(WebAudioLatencyHint::kCategoryInteractive);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (context_options->latencyHint()->GetContentType()) {
     case V8UnionAudioContextLatencyCategoryOrDouble::ContentType::
         kAudioContextLatencyCategory:
@@ -122,21 +121,6 @@ AudioContext* AudioContext::Create(Document& document,
           "WebAudio.AudioContext.latencyHintMilliSeconds",
           base::TimeDelta::FromSecondsD(latency_hint.Seconds()));
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (context_options->latencyHint().IsAudioContextLatencyCategory()) {
-    latency_hint = WebAudioLatencyHint(
-        context_options->latencyHint().GetAsAudioContextLatencyCategory());
-  } else if (context_options->latencyHint().IsDouble()) {
-    // This should be the requested output latency in seconds, without taking
-    // into account double buffering (same as baseLatency).
-    latency_hint =
-        WebAudioLatencyHint(context_options->latencyHint().GetAsDouble());
-
-    base::UmaHistogramTimes(
-        "WebAudio.AudioContext.latencyHintMilliSeconds",
-        base::TimeDelta::FromSecondsD(latency_hint.Seconds()));
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   base::UmaHistogramEnumeration(
       "WebAudio.AudioContext.latencyHintCategory", latency_hint.Category(),

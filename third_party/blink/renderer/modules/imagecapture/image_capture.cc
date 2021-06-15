@@ -92,7 +92,6 @@ WebString ToString(MeteringMode value) {
   }
 }
 
-#ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
 V8FillLightMode ToV8FillLightMode(FillLightMode value) {
   switch (value) {
     case FillLightMode::OFF:
@@ -103,18 +102,6 @@ V8FillLightMode ToV8FillLightMode(FillLightMode value) {
       return V8FillLightMode(V8FillLightMode::Enum::kFlash);
   }
 }
-#else
-String ToV8FillLightMode(FillLightMode value) {
-  switch (value) {
-    case FillLightMode::OFF:
-      return String::FromUTF8("off");
-    case FillLightMode::AUTO:
-      return String::FromUTF8("auto");
-    case FillLightMode::FLASH:
-      return String::FromUTF8("flash");
-  }
-}
-#endif
 
 WebString ToString(RedEyeReduction value) {
   switch (value) {
@@ -502,22 +489,12 @@ void ImageCapture::SetMediaTrackConstraints(
 
   // TODO(mcasas): support other Mode types beyond simple string i.e. the
   // equivalents of "sequence<DOMString>"" or "ConstrainDOMStringParameters".
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_white_balance_mode =
       constraints->hasWhiteBalanceMode() &&
       constraints->whiteBalanceMode()->IsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_white_balance_mode = constraints->hasWhiteBalanceMode() &&
-                                     constraints->whiteBalanceMode().IsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_white_balance_mode) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto white_balance_mode =
         constraints->whiteBalanceMode()->GetAsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto white_balance_mode =
-        constraints->whiteBalanceMode().GetAsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (capabilities_->whiteBalanceMode().Find(white_balance_mode) ==
         kNotFound) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -528,19 +505,10 @@ void ImageCapture::SetMediaTrackConstraints(
     temp_constraints->setWhiteBalanceMode(constraints->whiteBalanceMode());
     settings->white_balance_mode = ParseMeteringMode(white_balance_mode);
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_exposure_mode =
       constraints->hasExposureMode() && constraints->exposureMode()->IsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_exposure_mode =
-      constraints->hasExposureMode() && constraints->exposureMode().IsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_exposure_mode) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto exposure_mode = constraints->exposureMode()->GetAsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto exposure_mode = constraints->exposureMode().GetAsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (capabilities_->exposureMode().Find(exposure_mode) == kNotFound) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Unsupported exposureMode."));
@@ -550,19 +518,10 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->exposure_mode = ParseMeteringMode(exposure_mode);
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_focus_mode =
       constraints->hasFocusMode() && constraints->focusMode()->IsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_focus_mode =
-      constraints->hasFocusMode() && constraints->focusMode().IsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_focus_mode) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto focus_mode = constraints->focusMode()->GetAsString();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto focus_mode = constraints->focusMode().GetAsString();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (capabilities_->focusMode().Find(focus_mode) == kNotFound) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Unsupported focusMode."));
@@ -574,18 +533,10 @@ void ImageCapture::SetMediaTrackConstraints(
 
   // TODO(mcasas): support ConstrainPoint2DParameters.
   if (constraints->hasPointsOfInterest() &&
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       constraints->pointsOfInterest()->IsPoint2DSequence()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      constraints->pointsOfInterest().IsPoint2DSequence()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   ) {
     for (const auto& point :
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
          constraints->pointsOfInterest()->GetAsPoint2DSequence()
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-         constraints->pointsOfInterest().GetAsPoint2DSequence()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     ) {
       auto mojo_point = media::mojom::blink::Point2D::New();
       mojo_point->x = point->x();
@@ -596,23 +547,12 @@ void ImageCapture::SetMediaTrackConstraints(
   }
 
   // TODO(mcasas): support ConstrainDoubleRange where applicable.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_exposure_compensation =
       constraints->hasExposureCompensation() &&
       constraints->exposureCompensation()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_exposure_compensation =
-      constraints->hasExposureCompensation() &&
-      constraints->exposureCompensation().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_exposure_compensation) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto exposure_compensation =
         constraints->exposureCompensation()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto exposure_compensation =
-        constraints->exposureCompensation().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (exposure_compensation < capabilities_->exposureCompensation()->min() ||
         exposure_compensation > capabilities_->exposureCompensation()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -625,19 +565,10 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->exposure_compensation = exposure_compensation;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_exposure_time =
       constraints->hasExposureTime() && constraints->exposureTime()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_exposure_time =
-      constraints->hasExposureTime() && constraints->exposureTime().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_exposure_time) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto exposure_time = constraints->exposureTime()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto exposure_time = constraints->exposureTime().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (exposure_time < capabilities_->exposureTime()->min() ||
         exposure_time > capabilities_->exposureTime()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -648,21 +579,11 @@ void ImageCapture::SetMediaTrackConstraints(
     temp_constraints->setExposureTime(constraints->exposureTime());
     settings->exposure_time = exposure_time;
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_color_temperature = constraints->hasColorTemperature() &&
                                     constraints->colorTemperature()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_color_temperature = constraints->hasColorTemperature() &&
-                                    constraints->colorTemperature().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_color_temperature) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto color_temperature =
         constraints->colorTemperature()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto color_temperature =
-        constraints->colorTemperature().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (color_temperature < capabilities_->colorTemperature()->min() ||
         color_temperature > capabilities_->colorTemperature()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -673,17 +594,9 @@ void ImageCapture::SetMediaTrackConstraints(
     temp_constraints->setColorTemperature(constraints->colorTemperature());
     settings->color_temperature = color_temperature;
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_iso = constraints->hasIso() && constraints->iso()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_iso = constraints->hasIso() && constraints->iso().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_iso) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto iso = constraints->iso()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto iso = constraints->iso().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (iso < capabilities_->iso()->min() ||
         iso > capabilities_->iso()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -694,19 +607,10 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->iso = iso;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_brightness =
       constraints->hasBrightness() && constraints->brightness()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_brightness =
-      constraints->hasBrightness() && constraints->brightness().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_brightness) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto brightness = constraints->brightness()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto brightness = constraints->brightness().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (brightness < capabilities_->brightness()->min() ||
         brightness > capabilities_->brightness()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -717,19 +621,10 @@ void ImageCapture::SetMediaTrackConstraints(
     temp_constraints->setBrightness(constraints->brightness());
     settings->brightness = brightness;
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_contrast =
       constraints->hasContrast() && constraints->contrast()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_contrast =
-      constraints->hasContrast() && constraints->contrast().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_contrast) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto contrast = constraints->contrast()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto contrast = constraints->contrast().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (contrast < capabilities_->contrast()->min() ||
         contrast > capabilities_->contrast()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -740,19 +635,10 @@ void ImageCapture::SetMediaTrackConstraints(
     temp_constraints->setContrast(constraints->contrast());
     settings->contrast = contrast;
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_saturation =
       constraints->hasSaturation() && constraints->saturation()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_saturation =
-      constraints->hasSaturation() && constraints->saturation().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_saturation) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto saturation = constraints->saturation()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto saturation = constraints->saturation().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (saturation < capabilities_->saturation()->min() ||
         saturation > capabilities_->saturation()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -763,19 +649,10 @@ void ImageCapture::SetMediaTrackConstraints(
     temp_constraints->setSaturation(constraints->saturation());
     settings->saturation = saturation;
   }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_sharpness =
       constraints->hasSharpness() && constraints->sharpness()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_sharpness =
-      constraints->hasSharpness() && constraints->sharpness().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_sharpness) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto sharpness = constraints->sharpness()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto sharpness = constraints->sharpness().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (sharpness < capabilities_->sharpness()->min() ||
         sharpness > capabilities_->sharpness()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -787,19 +664,10 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->sharpness = sharpness;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_focus_distance = constraints->hasFocusDistance() &&
                                  constraints->focusDistance()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_focus_distance = constraints->hasFocusDistance() &&
-                                 constraints->focusDistance().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_focus_distance) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto focus_distance = constraints->focusDistance()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto focus_distance = constraints->focusDistance().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (focus_distance < capabilities_->focusDistance()->min() ||
         focus_distance > capabilities_->focusDistance()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -811,22 +679,14 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->focus_distance = focus_distance;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_pan = constraints->hasPan() && constraints->pan()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_pan = constraints->hasPan() && constraints->pan().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_pan) {
     if (!IsPageVisible()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, "the page is not visible"));
       return;
     }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto pan = constraints->pan()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto pan = constraints->pan().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (pan < capabilities_->pan()->min() ||
         pan > capabilities_->pan()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -837,23 +697,15 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->pan = pan;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_tilt =
       constraints->hasTilt() && constraints->tilt()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_tilt = constraints->hasTilt() && constraints->tilt().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_tilt) {
     if (!IsPageVisible()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, "the page is not visible"));
       return;
     }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto tilt = constraints->tilt()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto tilt = constraints->tilt().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (tilt < capabilities_->tilt()->min() ||
         tilt > capabilities_->tilt()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -864,23 +716,15 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->tilt = tilt;
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_zoom =
       constraints->hasZoom() && constraints->zoom()->IsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_zoom = constraints->hasZoom() && constraints->zoom().IsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_zoom) {
     if (!IsPageVisible()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, "the page is not visible"));
       return;
     }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto zoom = constraints->zoom()->GetAsDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto zoom = constraints->zoom().GetAsDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (zoom < capabilities_->zoom()->min() ||
         zoom > capabilities_->zoom()->max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -892,19 +736,10 @@ void ImageCapture::SetMediaTrackConstraints(
   }
 
   // TODO(mcasas): support ConstrainBooleanParameters where applicable.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   settings->has_torch =
       constraints->hasTorch() && constraints->torch()->IsBoolean();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  settings->has_torch =
-      constraints->hasTorch() && constraints->torch().IsBoolean();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (settings->has_torch) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const auto torch = constraints->torch()->GetAsBoolean();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const auto torch = constraints->torch().GetAsBoolean();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (torch && !capabilities_->torch()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "torch not supported"));
@@ -1150,11 +985,7 @@ void ImageCapture::OnMojoGetPhotoState(
         ToMediaSettingsRange(*photo_state->width));
   }
 
-#ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
   WTF::Vector<V8FillLightMode> fill_light_mode;
-#else
-  WTF::Vector<WTF::String> fill_light_mode;
-#endif
   for (const auto& mode : photo_state->fill_light_mode) {
     fill_light_mode.push_back(ToV8FillLightMode(mode));
   }

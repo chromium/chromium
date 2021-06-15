@@ -182,7 +182,6 @@ TypeConverter<CredentialManagerError, AuthenticatorStatus>::Convert(
 }
 
 // static helper method.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 Vector<uint8_t> ConvertFixedSizeArray(const blink::V8BufferSource* buffer,
                                       unsigned length) {
   if (blink::DOMArrayPiece(buffer).ByteLength() != length)
@@ -190,25 +189,7 @@ Vector<uint8_t> ConvertFixedSizeArray(const blink::V8BufferSource* buffer,
 
   return ConvertTo<Vector<uint8_t>>(buffer);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-Vector<uint8_t> ConvertFixedSizeArray(
-    const blink::ArrayBufferOrArrayBufferView& buffer,
-    unsigned length) {
-  if (buffer.IsArrayBuffer() &&
-      (buffer.GetAsArrayBuffer()->ByteLength() != length)) {
-    return Vector<uint8_t>();
-  }
 
-  if (buffer.IsArrayBufferView() &&
-      buffer.GetAsArrayBufferView()->byteLength() != length) {
-    return Vector<uint8_t>();
-  }
-
-  return ConvertTo<Vector<uint8_t>>(buffer);
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 // static
 Vector<uint8_t>
 TypeConverter<Vector<uint8_t>, blink::V8UnionArrayBufferOrArrayBufferView*>::
@@ -231,27 +212,6 @@ TypeConverter<Vector<uint8_t>, blink::V8UnionArrayBufferOrArrayBufferView*>::
   }
   return vector;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-// static
-Vector<uint8_t>
-TypeConverter<Vector<uint8_t>, blink::ArrayBufferOrArrayBufferView>::Convert(
-    const blink::ArrayBufferOrArrayBufferView& buffer) {
-  DCHECK(!buffer.IsNull());
-  Vector<uint8_t> vector;
-  if (buffer.IsArrayBuffer()) {
-    vector.Append(static_cast<uint8_t*>(buffer.GetAsArrayBuffer()->Data()),
-                  base::checked_cast<wtf_size_t>(
-                      buffer.GetAsArrayBuffer()->ByteLength()));
-  } else {
-    DCHECK(buffer.IsArrayBufferView());
-    vector.Append(
-        static_cast<uint8_t*>(buffer.GetAsArrayBufferView()->BaseAddress()),
-        base::checked_cast<wtf_size_t>(
-            buffer.GetAsArrayBufferView()->byteLength()));
-  }
-  return vector;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 // static
 PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(

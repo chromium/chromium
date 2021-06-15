@@ -225,7 +225,6 @@ static webrtc::PeerConnectionInterface::IceServer ConvertIceServer(
   // Prefer standardized 'urls' field over deprecated 'url' field.
   Vector<String> url_strings;
   if (ice_server->hasUrls()) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     switch (ice_server->urls()->GetContentType()) {
       case V8UnionStringOrStringSequence::ContentType::kString:
         url_strings.push_back(ice_server->urls()->GetAsString());
@@ -234,13 +233,6 @@ static webrtc::PeerConnectionInterface::IceServer ConvertIceServer(
         url_strings = ice_server->urls()->GetAsStringSequence();
         break;
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    if (ice_server->urls().IsString()) {
-      url_strings.push_back(ice_server->urls().GetAsString());
-    } else if (ice_server->urls().IsStringSequence()) {
-      url_strings = ice_server->urls().GetAsStringSequence();
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   } else if (ice_server->hasUrl()) {
     url_strings.push_back(ice_server->url());
   }

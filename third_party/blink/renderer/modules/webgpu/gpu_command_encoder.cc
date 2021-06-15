@@ -40,7 +40,6 @@ WGPURenderPassColorAttachment AsDawnType(
                                 ? webgpu_desc->resolveTarget()->GetHandle()
                                 : nullptr;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (webgpu_desc->loadValue()->GetContentType()) {
     case V8UnionGPUColorOrGPULoadOp::ContentType::kGPULoadOp:
       dawn_desc.loadOp =
@@ -57,26 +56,6 @@ WGPURenderPassColorAttachment AsDawnType(
           AsDawnColor(webgpu_desc->loadValue()->GetAsDoubleSequence());
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (webgpu_desc->loadValue().IsGPULoadOp()) {
-    const WTF::String& gpuLoadOp = webgpu_desc->loadValue().GetAsGPULoadOp();
-    dawn_desc.loadOp = AsDawnEnum<WGPULoadOp>(gpuLoadOp);
-
-  } else if (webgpu_desc->loadValue().IsDoubleSequence()) {
-    const Vector<double>& gpuColor =
-        webgpu_desc->loadValue().GetAsDoubleSequence();
-    dawn_desc.loadOp = WGPULoadOp_Clear;
-    dawn_desc.clearColor = AsDawnColor(gpuColor);
-
-  } else if (webgpu_desc->loadValue().IsGPUColorDict()) {
-    const GPUColorDict* gpuColor = webgpu_desc->loadValue().GetAsGPUColorDict();
-    dawn_desc.loadOp = WGPULoadOp_Clear;
-    dawn_desc.clearColor = AsDawnType(gpuColor);
-
-  } else {
-    NOTREACHED();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   if (webgpu_desc->hasStoreOp())
     dawn_desc.storeOp = AsDawnEnum<WGPUStoreOp>(webgpu_desc->storeOp());
@@ -98,7 +77,6 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
     dawn_desc.view = webgpu_desc->attachment()->GetHandle();
   }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (webgpu_desc->depthLoadValue()->GetContentType()) {
     case V8UnionFloatOrGPULoadOp::ContentType::kGPULoadOp:
       dawn_desc.depthLoadOp = AsDawnEnum<WGPULoadOp>(
@@ -110,25 +88,9 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
       dawn_desc.clearDepth = webgpu_desc->depthLoadValue()->GetAsFloat();
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (webgpu_desc->depthLoadValue().IsGPULoadOp()) {
-    const WTF::String& gpuLoadOp =
-        webgpu_desc->depthLoadValue().GetAsGPULoadOp();
-    dawn_desc.depthLoadOp = AsDawnEnum<WGPULoadOp>(gpuLoadOp);
-    dawn_desc.clearDepth = 1.0f;
-
-  } else if (webgpu_desc->depthLoadValue().IsFloat()) {
-    dawn_desc.depthLoadOp = WGPULoadOp_Clear;
-    dawn_desc.clearDepth = webgpu_desc->depthLoadValue().GetAsFloat();
-
-  } else {
-    NOTREACHED();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   dawn_desc.depthStoreOp = AsDawnEnum<WGPUStoreOp>(webgpu_desc->depthStoreOp());
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (webgpu_desc->stencilLoadValue()->GetContentType()) {
     case V8UnionGPULoadOpOrGPUStencilValue::ContentType::kGPULoadOp:
       dawn_desc.stencilLoadOp = AsDawnEnum<WGPULoadOp>(
@@ -141,22 +103,6 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
           webgpu_desc->stencilLoadValue()->GetAsV8GPUStencilValue();
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (webgpu_desc->stencilLoadValue().IsGPULoadOp()) {
-    const WTF::String& gpuLoadOp =
-        webgpu_desc->stencilLoadValue().GetAsGPULoadOp();
-    dawn_desc.stencilLoadOp = AsDawnEnum<WGPULoadOp>(gpuLoadOp);
-    dawn_desc.clearStencil = 0;
-
-  } else if (webgpu_desc->stencilLoadValue().IsUnsignedLong()) {
-    dawn_desc.stencilLoadOp = WGPULoadOp_Clear;
-    dawn_desc.clearStencil =
-        webgpu_desc->stencilLoadValue().GetAsUnsignedLong();
-
-  } else {
-    NOTREACHED();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   dawn_desc.stencilStoreOp =
       AsDawnEnum<WGPUStoreOp>(webgpu_desc->stencilStoreOp());
@@ -243,22 +189,11 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
       return nullptr;
     }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     if (color_attachment->loadValue()->IsDoubleSequence() &&
         color_attachment->loadValue()->GetAsDoubleSequence().size() != 4) {
       exception_state.ThrowRangeError("loadValue color size must be 4");
       return nullptr;
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const GPULoadOpOrDoubleSequenceOrGPUColorDict load_value =
-        color_attachment->loadValue();
-
-    if (load_value.IsDoubleSequence() &&
-        load_value.GetAsDoubleSequence().size() != 4) {
-      exception_state.ThrowRangeError("loadValue color size must be 4");
-      return nullptr;
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   std::string label;

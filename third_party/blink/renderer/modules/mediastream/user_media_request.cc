@@ -280,7 +280,6 @@ void CountVideoConstraintUses(ExecutionContext* context,
   }
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 MediaConstraints ParseOptions(
     ExecutionContext* execution_context,
     const V8UnionBooleanOrMediaTrackConstraints* options,
@@ -302,27 +301,6 @@ MediaConstraints ParseOptions(
   NOTREACHED();
   return MediaConstraints();
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-MediaConstraints ParseOptions(ExecutionContext* context,
-                              const BooleanOrMediaTrackConstraints& options,
-                              MediaErrorState& error_state) {
-  MediaConstraints constraints;
-
-  if (options.IsNull()) {
-    // Do nothing.
-  } else if (options.IsMediaTrackConstraints()) {
-    constraints = media_constraints_impl::Create(
-        context, options.GetAsMediaTrackConstraints(), error_state);
-  } else {
-    DCHECK(options.IsBoolean());
-    if (options.GetAsBoolean()) {
-      constraints = media_constraints_impl::Create();
-    }
-  }
-
-  return constraints;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace
 
@@ -423,11 +401,7 @@ UserMediaRequest* UserMediaRequest::Create(
     if (audio.IsNull() && video.IsNull()) {
       video = ParseOptions(
           context,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
           MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true),
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-          BooleanOrMediaTrackConstraints::FromBoolean(true),
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
           error_state);
       if (error_state.HadException())
         return nullptr;

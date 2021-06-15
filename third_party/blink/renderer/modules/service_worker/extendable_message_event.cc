@@ -135,7 +135,6 @@ ExtendableMessageEvent::ExtendableMessageEvent(
     origin_ = initializer->origin();
   if (initializer->hasLastEventId())
     last_event_id_ = initializer->lastEventId();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (initializer->hasSource() and initializer->source()) {
     switch (initializer->source()->GetContentType()) {
       case V8UnionClientOrMessagePortOrServiceWorker::ContentType::kClient:
@@ -150,16 +149,6 @@ ExtendableMessageEvent::ExtendableMessageEvent(
         break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (initializer->hasSource()) {
-    if (initializer->source().IsClient())
-      source_as_client_ = initializer->source().GetAsClient();
-    else if (initializer->source().IsServiceWorker())
-      source_as_service_worker_ = initializer->source().GetAsServiceWorker();
-    else if (initializer->source().IsMessagePort())
-      source_as_message_port_ = initializer->source().GetAsMessagePort();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (initializer->hasPorts())
     ports_ = MakeGarbageCollected<MessagePortArray>(initializer->ports());
 }
