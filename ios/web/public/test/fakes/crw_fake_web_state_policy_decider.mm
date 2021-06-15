@@ -41,27 +41,25 @@ FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
 
 #pragma mark CRWWebStatePolicyDecider methods -
 
-- (web::WebStatePolicyDecider::PolicyDecision)
-    shouldAllowRequest:(NSURLRequest*)request
-           requestInfo:
-               (const web::WebStatePolicyDecider::RequestInfo&)requestInfo {
+- (void)shouldAllowRequest:(NSURLRequest*)request
+               requestInfo:
+                   (const web::WebStatePolicyDecider::RequestInfo&)requestInfo
+           decisionHandler:(PolicyDecisionHandler)decisionHandler {
   _shouldAllowRequestInfo = std::make_unique<web::FakeShouldAllowRequestInfo>();
   _shouldAllowRequestInfo->request = request;
   _shouldAllowRequestInfo->request_info = requestInfo;
-  return web::WebStatePolicyDecider::PolicyDecision::Allow();
+  decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
-- (void)
-    decidePolicyForNavigationResponse:(NSURLResponse*)response
-                         forMainFrame:(BOOL)forMainFrame
-                    completionHandler:
-                        (void (^)(web::WebStatePolicyDecider::PolicyDecision))
-                            completionHandler {
+- (void)decidePolicyForNavigationResponse:(NSURLResponse*)response
+                             forMainFrame:(BOOL)forMainFrame
+                          decisionHandler:
+                              (PolicyDecisionHandler)decisionHandler {
   _decidePolicyForNavigationResponseInfo =
       std::make_unique<web::FakeDecidePolicyForNavigationResponseInfo>();
   _decidePolicyForNavigationResponseInfo->response = response;
   _decidePolicyForNavigationResponseInfo->for_main_frame = forMainFrame;
-  completionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
+  decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
 @end

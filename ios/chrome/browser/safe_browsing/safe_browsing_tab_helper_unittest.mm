@@ -72,8 +72,19 @@ class SafeBrowsingTabHelperTest
     web::WebStatePolicyDecider::RequestInfo request_info(
         transition, for_main_frame, /*target_frame_is_cross_origin=*/false,
         /*has_user_gesture=*/false);
-    return web_state_.ShouldAllowRequest(
-        [NSURLRequest requestWithURL:net::NSURLWithGURL(url)], request_info);
+    __block bool callback_called = false;
+    __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
+        web::WebStatePolicyDecider::PolicyDecision::Allow();
+    auto callback =
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+          policy_decision = decision;
+          callback_called = true;
+        });
+    web_state_.ShouldAllowRequest(
+        [NSURLRequest requestWithURL:net::NSURLWithGURL(url)], request_info,
+        std::move(callback));
+    EXPECT_TRUE(callback_called);
+    return policy_decision;
   }
 
   // Helper function that calls into WebState::ShouldAllowResponse with the

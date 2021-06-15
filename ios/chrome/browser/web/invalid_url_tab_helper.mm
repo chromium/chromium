@@ -47,11 +47,12 @@ InvalidUrlTabHelper::InvalidUrlTabHelper(web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state) {}
 InvalidUrlTabHelper::~InvalidUrlTabHelper() = default;
 
-web::WebStatePolicyDecider::PolicyDecision
-InvalidUrlTabHelper::ShouldAllowRequest(NSURLRequest* request,
-                                        const RequestInfo& request_info) {
+void InvalidUrlTabHelper::ShouldAllowRequest(
+    NSURLRequest* request,
+    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   if (IsUrlRequestValid(request)) {
-    return PolicyDecision::Allow();
+    return std::move(callback).Run(PolicyDecision::Allow());
   }
 
   // URL is invalid. Show error for certain browser-initiated navigations (f.e.
@@ -64,12 +65,12 @@ InvalidUrlTabHelper::ShouldAllowRequest(NSURLRequest* request,
   if (PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) ||
       PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED) ||
       PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
-    return PolicyDecision::CancelAndDisplayError([NSError
-        errorWithDomain:net::kNSErrorDomain
-                   code:net::ERR_INVALID_URL
-               userInfo:nil]);
+    return std::move(callback).Run(PolicyDecision::CancelAndDisplayError(
+        [NSError errorWithDomain:net::kNSErrorDomain
+                            code:net::ERR_INVALID_URL
+                        userInfo:nil]));
   }
-  return PolicyDecision::Cancel();
+  std::move(callback).Run(PolicyDecision::Cancel());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(InvalidUrlTabHelper)

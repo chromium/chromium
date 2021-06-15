@@ -111,24 +111,27 @@ bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
   return path_components[media_type_index] == kITunesAppPathIdentifier;
 }
 
-web::WebStatePolicyDecider::PolicyDecision
-ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
+void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info) {
+    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Don't Handle URLS in Off The record mode as this will open StoreKit with
   // Users' iTunes account. Also don't Handle navigations in iframe because they
   // may be spam, and they will be handled by other policy deciders.
   if (web_state()->GetBrowserState()->IsOffTheRecord() ||
       !request_info.target_frame_is_main) {
-    return web::WebStatePolicyDecider::PolicyDecision::Allow();
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
   GURL request_url = net::GURLWithNSURL(request.URL);
-  if (!CanHandleUrl(request_url))
-    return web::WebStatePolicyDecider::PolicyDecision::Allow();
+  if (!CanHandleUrl(request_url)) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+  }
 
   HandleITunesUrl(request_url);
-  return web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 }
 
 // private

@@ -135,12 +135,18 @@ class WebStateImpl : public WebState,
   // that is the point where MIME type is set from HTTP headers.
   void SetContentsMimeType(const std::string& mime_type);
 
-  // Returns whether the navigation corresponding to |request| should be allowed
-  // to continue by asking its policy deciders. Defaults to
-  // PolicyDecision::Allow().
-  WebStatePolicyDecider::PolicyDecision ShouldAllowRequest(
+  // Decides whether the navigation corresponding to |request| should be
+  // allowed to continue by asking its policy deciders, and calls |callback|
+  // with the decision. Defaults to PolicyDecision::Allow(). If at least one
+  // policy decider's decision is PolicyDecision::Cancel(), the final result is
+  // PolicyDecision::Cancel(). Otherwise, if at least one policy decider's
+  // decision is PolicyDecision::CancelAndDisplayError(), the final result is
+  // PolicyDecision::CancelAndDisplayError(), with the error corresponding to
+  // the first PolicyDecision::CancelAndDisplayError() result that was received.
+  void ShouldAllowRequest(
       NSURLRequest* request,
-      const WebStatePolicyDecider::RequestInfo& request_info);
+      const WebStatePolicyDecider::RequestInfo& request_info,
+      WebStatePolicyDecider::PolicyDecisionCallback callback);
 
   // Decides whether the navigation corresponding to |response| should
   // be allowed to display an error page if an error occurs, by asking its
@@ -160,7 +166,7 @@ class WebStateImpl : public WebState,
   void ShouldAllowResponse(
       NSURLResponse* response,
       bool for_main_frame,
-      base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback);
+      WebStatePolicyDecider::PolicyDecisionCallback callback);
 
   // Determines whether the given link with |link_url| should show a preview on
   // force touch.

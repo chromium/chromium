@@ -18,22 +18,22 @@ PolicyUrlBlockingTabHelper::~PolicyUrlBlockingTabHelper() = default;
 PolicyUrlBlockingTabHelper::PolicyUrlBlockingTabHelper(web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state) {}
 
-web::WebStatePolicyDecider::PolicyDecision
-PolicyUrlBlockingTabHelper::ShouldAllowRequest(
+void PolicyUrlBlockingTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info) {
-
+    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL gurl = net::GURLWithNSURL(request.URL);
   PolicyBlocklistService* blocklistService =
       PolicyBlocklistServiceFactory::GetForBrowserState(
           web_state()->GetBrowserState());
   if (blocklistService->GetURLBlocklistState(gurl) ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-    return web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
-        policy_url_blocking_util::CreateBlockedUrlError());
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
+            policy_url_blocking_util::CreateBlockedUrlError()));
   }
 
-  return web::WebStatePolicyDecider::PolicyDecision::Allow();
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(PolicyUrlBlockingTabHelper)
