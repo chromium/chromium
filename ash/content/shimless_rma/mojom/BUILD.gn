@@ -8,4 +8,44 @@ mojom("mojom") {
   sources = [ "shimless_rma.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.CdmKeyInformation"
+          cpp = "::std::unique_ptr<::media::CdmKeyInformation>"
+          move_only = true
+        },
+        {
+          mojom = "media.mojom.CdmKeyStatus"
+          cpp = "::media::CdmKeyInformation::KeyStatus"
+        },
+      ]
+      traits_headers = [ "shimless_rma_mojom_traits.h" ]
+      traits_sources = [ "shimless_rma_mojom_traits.cc" ]
+      traits_public_deps = [ "//chromeos/dbus/rmad:rmad_proto" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "shimless_rma_mojom_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus/rmad",
+    "//chromeos/dbus/rmad:rmad_proto",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/device/public/cpp:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/shell_dialogs",
+    "//ui/webui",
+  ]
 }

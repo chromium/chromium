@@ -66,6 +66,7 @@ include_rules = [
   "+chromeos/dbus/hermes",
   "+chromeos/dbus/power",
   "+chromeos/dbus/power_manager",
+  "+chromeos/dbus/rmad",
   "+chromeos/dbus/shill",
   "+chromeos/dbus/system_clock",
   "+chromeos/dbus/usb",
