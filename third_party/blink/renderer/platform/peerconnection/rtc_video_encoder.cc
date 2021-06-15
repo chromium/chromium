@@ -235,12 +235,17 @@ bool CreateSpatialLayersConfig(
       return false;
     }
   }
+  // TODO(crbug.com/1217919): Query spatial scalability support for the HW
+  // encoder instead of checking OS.
+  // Underlying encoder will check the spatial SVC encoding capability on CrOS.
+#if !defined(OS_CHROMEOS)
   if (codec_settings.codecType == webrtc::kVideoCodecVP9 &&
       codec_settings.VP9().numberOfSpatialLayers > 1) {
     DVLOG(1)
         << "VP9 SVC not yet supported by HW codecs, falling back to sofware.";
     return false;
   }
+#endif  // !defined(OS_CHROMEOS)
 
   // We fill SpatialLayer only in temporal layer or spatial layer encoding.
   switch (codec_settings.codecType) {
@@ -537,6 +542,11 @@ class RTCVideoEncoder::Impl
   absl::InlinedVector<webrtc::VideoFrameBuffer::Type,
                       webrtc::kMaxPreferredPixelFormats>
       preferred_pixel_formats_;
+
+  // The reslutions of active spatial layer, only used when |Vp9Metadata| is
+  // contained in |BitstreamBufferMetadata|. it will be updated when key frame
+  // is produced.
+  std::vector<gfx::Size> current_spatial_layer_resolutions_;
 
   // Protect |status_| and |encoder_info_|. |status_| is read or written on
   // |gpu_task_runner_| in Impl. It can be read in RTCVideoEncoder on other
@@ -925,10 +935,16 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       if (front_timestamps.media_timestamp_ == metadata.timestamp) {
         rtp_timestamp = front_timestamps.rtp_timestamp;
         capture_timestamp_ms = front_timestamps.capture_time_ms;
-        pending_timestamps_.pop_front();
+        // Remove pending timestamp at the top spatial layer in the case of SVC
+        // encoding.
+        if (!metadata.vp9 || metadata.vp9->end_of_picture) {
+          pending_timestamps_.pop_front();
+        }
         break;
       }
-      pending_timestamps_.pop_front();
+      if (!metadata.vp9 || metadata.vp9->end_of_picture) {
+        pending_timestamps_.pop_front();
+      }
     }
     DCHECK(rtp_timestamp.has_value());
   }
@@ -962,29 +978,62 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       info.codecSpecific.VP8.keyIdx = -1;
       break;
     case webrtc::kVideoCodecVP9: {
-      bool key_frame =
-          image._frameType == webrtc::VideoFrameType::kVideoFrameKey;
       webrtc::CodecSpecificInfoVP9& vp9 = info.codecSpecific.VP9;
-      info.end_of_picture = true;
       if (metadata.vp9) {
-        // Temporal layer stream.
-        vp9.first_frame_in_picture = true;
+        // Temporal and/or spatial layer stream.
+        if (!metadata.vp9->spatial_layer_resolutions.empty()) {
+          current_spatial_layer_resolutions_ =
+              metadata.vp9->spatial_layer_resolutions;
+        }
+
+        // TODO(crbug.com/1186051): Remove manually fills active layer info for
+        // temporal-SVC.
+        // Since we don't actually fills the newly added
+        // |spatial_layer_resolutions| and there is no default value for it, so
+        // currently we tentatively manually fills the active layer info.
+        if (current_spatial_layer_resolutions_.empty())
+          current_spatial_layer_resolutions_ = {input_visible_size_};
+
+        const size_t spatial_index = metadata.vp9->spatial_idx;
+        if (spatial_index >= current_spatial_layer_resolutions_.size()) {
+          LogAndNotifyError(
+              FROM_HERE, "invalid spatial index",
+              media::VideoEncodeAccelerator::kPlatformFailureError);
+          return;
+        }
+        image.SetSpatialIndex(spatial_index);
+        image._encodedWidth =
+            current_spatial_layer_resolutions_[spatial_index].width();
+        image._encodedHeight =
+            current_spatial_layer_resolutions_[spatial_index].height();
+
+        vp9.first_frame_in_picture = spatial_index == 0;
         vp9.inter_pic_predicted = metadata.vp9->has_reference;
-        vp9.flexible_mode = true;
-        vp9.non_ref_for_inter_layer_pred = false;
+        vp9.non_ref_for_inter_layer_pred =
+            !metadata.vp9->referenced_by_upper_spatial_layers;
         vp9.temporal_idx = metadata.vp9->temporal_idx;
         vp9.temporal_up_switch = metadata.vp9->temporal_up_switch;
-        vp9.inter_layer_predicted = false;
-        vp9.gof_idx = 0;
+        vp9.inter_layer_predicted =
+            metadata.vp9->reference_lower_spatial_layers;
         vp9.num_ref_pics = metadata.vp9->p_diffs.size();
         for (size_t i = 0; i < metadata.vp9->p_diffs.size(); ++i)
           vp9.p_diff[i] = metadata.vp9->p_diffs[i];
-        vp9.ss_data_available = key_frame;
-        vp9.first_active_layer = 0u;
-        vp9.spatial_layer_resolution_present = true;
-        vp9.num_spatial_layers = 1u;
-        vp9.width[0] = image._encodedWidth;
-        vp9.height[0] = image._encodedHeight;
+        vp9.ss_data_available = metadata.key_frame;
+        vp9.first_active_layer = 0;
+        vp9.num_spatial_layers = current_spatial_layer_resolutions_.size();
+        if (vp9.ss_data_available) {
+          vp9.spatial_layer_resolution_present = true;
+          vp9.gof.num_frames_in_gof = 0;
+          for (size_t i = 0; i < vp9.num_spatial_layers; ++i) {
+            vp9.width[i] =
+                current_spatial_layer_resolutions_[spatial_index].width();
+            vp9.height[i] =
+                current_spatial_layer_resolutions_[spatial_index].height();
+          }
+        }
+        vp9.flexible_mode = true;
+        vp9.gof_idx = 0;
+        info.end_of_picture = metadata.vp9->end_of_picture;
       } else {
         // Simple stream, neither temporal nor spatial layer stream.
         vp9.flexible_mode = false;
@@ -995,9 +1044,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         vp9.num_spatial_layers = 1;
         vp9.first_frame_in_picture = true;
         vp9.spatial_layer_resolution_present = false;
-        vp9.inter_pic_predicted = !key_frame;
-        vp9.ss_data_available = key_frame;
-        if (key_frame) {
+        vp9.inter_pic_predicted = !metadata.key_frame;
+        vp9.ss_data_available = metadata.key_frame;
+        if (vp9.ss_data_available) {
           vp9.spatial_layer_resolution_present = true;
           vp9.width[0] = image._encodedWidth;
           vp9.height[0] = image._encodedHeight;
@@ -1007,6 +1056,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
           vp9.gof.num_ref_pics[0] = 1;
           vp9.gof.pid_diff[0][0] = 1;
         }
+        info.end_of_picture = true;
       }
     } break;
     default:
