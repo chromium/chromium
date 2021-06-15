@@ -27,11 +27,12 @@ import jinja2
 class Modes:
     LIGHT = 'light'
     DARK = 'dark'
+    DEBUG = 'debug'
     # The mode that colors will fallback to when not specified in a
     # non-default mode. An error will be raised if a color in any mode is
     # not specified in the default mode.
     DEFAULT = LIGHT
-    ALL = [LIGHT, DARK]
+    ALL = [LIGHT, DARK, DEBUG]
 
 
 class VariableType:
@@ -137,7 +138,6 @@ class ColorModel(ModeKeyedModel):
     def _CreateValue(self, value):
         return Color(value)
 
-
 class BaseGenerator:
     '''A generic style variable generator.
 
@@ -178,7 +178,7 @@ class BaseGenerator:
         self.generator_options = {}
 
     def _SetVariableContext(self, name, context):
-        if name in self.context_map:
+        if name in self.context_map.keys():
             raise ValueError('Variable name "%s" is reused' % name)
         self.context_map[name] = context or {}
 
@@ -220,8 +220,7 @@ class BaseGenerator:
                            object_pairs_hook=collections.OrderedDict)
         # Use the generator's name to get the generator-specific context from
         # the input.
-        generator_context = data.get('options',
-                                     {}).get(self.GetContextKey(), None)
+        generator_context = data.get('options', {})
         self.in_file_to_context[in_file] = generator_context
 
         for name, value in data.get('colors', {}).items():

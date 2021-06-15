@@ -98,7 +98,8 @@ ColorName TypeToColorName(AshColorProvider::ContentLayerType type) {
 // cros_colors.json5. Colors there will also be used by ChromeOS WebUI.
 SkColor ResolveColor(AshColorProvider::ContentLayerType type,
                      bool use_dark_color) {
-  return cros_colors::ResolveColor(TypeToColorName(type), use_dark_color);
+  return cros_colors::ResolveColor(TypeToColorName(type), use_dark_color,
+                                   /*use_debug_colors=*/false);
 }
 
 // Notify all the other components besides the System UI to update on the color

@@ -3,6 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import sys
+import os
+sys.path += [os.path.dirname(os.path.dirname(__file__))]
+
 from style_variable_generator.base_generator import Modes
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
@@ -13,6 +17,7 @@ import unittest
 class BaseStyleGeneratorTest:
     def assertEqualToFile(self, value, filename):
         with open(filename, 'r') as f:
+            self.maxDiff = None
             self.assertEqual(value, f.read())
 
     def testColorTestJSON(self):
@@ -27,7 +32,7 @@ class ViewsStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator = ViewsStyleGenerator()
         self.generator.AddJSONFileToModel('colors_test_palette.json5')
         self.generator.AddJSONFileToModel('colors_test.json5')
-        self.expected_output_file = 'colors_test_expected.h'
+        self.expected_output_file = 'colors_test_expected.h.generated'
 
 
 class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
@@ -44,9 +49,16 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         }
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
-    def testCustomDarkModeSelector(self):
+    def testCustomDarkModeOnly(self):
         expected_file_name = 'colors_test_dark_only_expected.css'
         self.generator.generate_single_mode = Modes.DARK
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+    def testDebugPlaceholder(self):
+        expected_file_name = 'colors_test_debug_placeholder_expected.css'
+        self.generator.generator_options = {
+            'debug_placeholder': 'DEBUG_CSS_GOES_HERE\n'
+        }
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 

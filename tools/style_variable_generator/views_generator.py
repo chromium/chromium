@@ -4,10 +4,11 @@
 
 import os
 import math
-from style_variable_generator.base_generator import Color, Modes, BaseGenerator, VariableType
+from style_variable_generator.base_generator import Color, Modes, VariableType
+from style_variable_generator.css_generator import CSSStyleGenerator
 
 
-class ViewsStyleGenerator(BaseGenerator):
+class ViewsStyleGenerator(CSSStyleGenerator):
     '''Generator for Views Variables'''
 
     @staticmethod
@@ -31,6 +32,8 @@ class ViewsStyleGenerator(BaseGenerator):
             'cpp_color': self._CppColor,
             'alpha_to_hex': self._AlphaToHex,
             'cpp_opacity': self._CppOpacity,
+            'to_css_var_name': self.ToCSSVarName,
+            'css_color_rgb': self.CSSColorRGB,
         }
 
     def GetGlobals(self):
@@ -39,6 +42,7 @@ class ViewsStyleGenerator(BaseGenerator):
             'out_file_path': None,
             'namespace_name': None,
             'in_files': sorted(self.in_file_to_context.keys()),
+            'css_color_from_rgb_var': self.CSSColorFromRGBVar,
         }
         if self.out_file_path:
             globals['out_file_path'] = self.out_file_path
@@ -72,14 +76,15 @@ class ViewsStyleGenerator(BaseGenerator):
         assert (isinstance(c, Color))
 
         if c.var:
-            return ('ResolveColor(ColorName::%s, is_dark_mode)' %
-                    self._ToConstName(c.var))
+            return (
+                'ResolveColor(ColorName::%s, is_dark_mode, use_debug_colors)' %
+                self._ToConstName(c.var))
 
         if c.rgb_var:
-            return (
-                'SkColorSetA(ResolveColor(ColorName::%s, is_dark_mode), %s)' %
-                (self._ToConstName(c.RGBVarToVar()), self._CppOpacity(
-                    c.opacity)))
+            return ('SkColorSetA(ResolveColor(' +
+                    'ColorName::%s, is_dark_mode, use_debug_colors), %s)' %
+                    (self._ToConstName(
+                        c.RGBVarToVar()), self._CppOpacity(c.opacity)))
 
         if c.opacity.a != 1:
             return 'SkColorSetARGB(%s, 0x%X, 0x%X, 0x%X)' % (self._CppOpacity(

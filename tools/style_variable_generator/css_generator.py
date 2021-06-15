@@ -35,20 +35,22 @@ class CSSStyleGenerator(BaseGenerator):
 
     def GetFilters(self):
         return {
-            'to_css_var_name': self._ToCSSVarName,
+            'to_css_var_name': self.ToCSSVarName,
             'css_color': self._CSSColor,
             'css_opacity': self._CSSOpacity,
-            'css_color_rgb': self._CSSColorRGB,
+            'css_color_rgb': self.CSSColorRGB,
         }
 
     def GetGlobals(self):
         return {
             'css_color_from_rgb_var':
-            self._CSSColorFromRGBVar,
+            self.CSSColorFromRGBVar,
             'in_files':
             sorted(self.in_file_to_context.keys()),
             'dark_mode_selector':
             self.generator_options.get('dark_mode_selector', None),
+            'debug_placeholder':
+            self.generator_options.get('debug_placeholder', ''),
             'Modes':
             Modes,
         }
@@ -57,21 +59,22 @@ class CSSStyleGenerator(BaseGenerator):
         '''Returns generated CSS variable names (excluding the rgb versions)'''
         names = set()
         for name in self.model[VariableType.COLOR].keys():
-            names.add(self._ToCSSVarName(name))
+            names.add(self.ToCSSVarName(name))
 
         return names
 
     def _GetCSSVarPrefix(self, model_name):
-        prefix = self.context_map[model_name].get('prefix')
+        prefix = self.context_map[model_name].get(CSSStyleGenerator.GetName(),
+                                                  {}).get('prefix')
         return prefix + '-' if prefix else ''
 
-    def _ToCSSVarName(self, model_name):
+    def ToCSSVarName(self, model_name):
         return '--%s%s' % (self._GetCSSVarPrefix(model_name),
                            model_name.replace('_', '-'))
 
     def _CSSOpacity(self, opacity):
         if opacity.var:
-            return 'var(%s)' % self._ToCSSVarName(opacity.var)
+            return 'var(%s)' % self.ToCSSVarName(opacity.var)
 
         return ('%f' % opacity.a).rstrip('0').rstrip('.')
 
@@ -79,14 +82,14 @@ class CSSStyleGenerator(BaseGenerator):
         '''Returns the CSS color representation of |c|'''
         assert (isinstance(c, Color))
         if c.var:
-            return 'var(%s)' % self._ToCSSVarName(c.var)
+            return 'var(%s)' % self.ToCSSVarName(c.var)
 
         if c.rgb_var:
             if c.opacity.a != 1:
-                return 'rgba(var(%s-rgb), %g)' % (self._ToCSSVarName(
+                return 'rgba(var(%s-rgb), %g)' % (self.ToCSSVarName(
                     c.RGBVarToVar()), self._CSSOpacity(c.opacity))
             else:
-                return 'rgb(var(%s-rgb))' % self._ToCSSVarName(c.RGBVarToVar())
+                return 'rgb(var(%s-rgb))' % self.ToCSSVarName(c.RGBVarToVar())
 
         elif c.a != 1:
             return 'rgba(%d, %d, %d, %g)' % (c.r, c.g, c.b,
@@ -94,20 +97,20 @@ class CSSStyleGenerator(BaseGenerator):
         else:
             return 'rgb(%d, %d, %d)' % (c.r, c.g, c.b)
 
-    def _CSSColorRGB(self, c):
+    def CSSColorRGB(self, c):
         '''Returns the CSS rgb representation of |c|'''
         if c.var:
-            return 'var(%s-rgb)' % self._ToCSSVarName(c.var)
+            return 'var(%s-rgb)' % self.ToCSSVarName(c.var)
 
         if c.rgb_var:
-            return 'var(%s-rgb)' % self._ToCSSVarName(c.RGBVarToVar())
+            return 'var(%s-rgb)' % self.ToCSSVarName(c.RGBVarToVar())
 
         return '%d, %d, %d' % (c.r, c.g, c.b)
 
-    def _CSSColorFromRGBVar(self, model_name, color):
+    def CSSColorFromRGBVar(self, model_name, color):
         '''Returns the CSS color representation given a color name and color'''
         if color.opacity and color.opacity.a != 1:
-            return 'rgba(var(%s-rgb), %s)' % (self._ToCSSVarName(model_name),
+            return 'rgba(var(%s-rgb), %s)' % (self.ToCSSVarName(model_name),
                                               self._CSSOpacity(color.opacity))
         else:
-            return 'rgb(var(%s-rgb))' % self._ToCSSVarName(model_name)
+            return 'rgb(var(%s-rgb))' % self.ToCSSVarName(model_name)

@@ -12,10 +12,12 @@
     text_color_primary: {
       light: "$google_grey_900",
       dark: "$white",
+      debug: "$text_color_primary",
     },
     toggle_color: {
       light: "rgba($text_color_primary_rgb, 0.1)",
       dark: "rgba($text_color_primary_rgb, $disabled_opacity)",
+      debug: "$white",
     }
   },
   opacities: {

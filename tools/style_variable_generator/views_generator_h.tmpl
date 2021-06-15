@@ -14,6 +14,9 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
+#include "base/strings/strcat.h"
+#include "third_party/skia/include/core/SkColor.h"
+
 namespace {{namespace_name}} {
 
 enum class ColorName {
@@ -48,22 +51,35 @@ constexpr SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
 }
 {%- endif %}
 
-constexpr SkColor ResolveColor(ColorName color_name, bool is_dark_mode) {
+constexpr SkColor ResolveColor(ColorName color_name,
+                               bool is_dark_mode,
+                               bool use_debug_colors) {
   switch (color_name) {
 {%- for obj in colors %}
     case ColorName::{{obj.name | to_const_name}}:
-{%-   if obj.mode_values[Modes.DARK] %}
-      if (is_dark_mode) {
-        return {{obj.mode_values[Modes.DARK] | cpp_color}};
-      } else {
-        return {{obj.mode_values[Modes.LIGHT] | cpp_color}};
-      }
-{%-    else %}
-      return {{obj.mode_values[Modes.LIGHT] | cpp_color}};
+{%-   if obj.mode_values[Modes.DEBUG] %}
+      if (use_debug_colors)
+        return {{obj.mode_values[Modes.DEBUG] | cpp_color}};
+
 {%-    endif %}
+{%-   if obj.mode_values[Modes.DARK] %}
+      if (is_dark_mode)
+        return {{obj.mode_values[Modes.DARK] | cpp_color}};
+
+{%-    endif %}
+      return {{obj.mode_values[Modes.LIGHT] | cpp_color}};
 {%-  endfor %}
   }
 }
+
+constexpr char kDebugOverrideCssString[] = "html:not(body) {\n"
+{%- for obj in colors %}
+{%-   if obj.mode_values[Modes.DEBUG] %}
+    "  {{obj.name | to_css_var_name}}-rgb: {{obj.mode_values[Modes.DEBUG] | css_color_rgb}};\n"
+    "  {{obj.name | to_css_var_name}}: {{css_color_from_rgb_var(obj.name, obj.mode_values[Modes.DEBUG])}};\n"
+{%-    endif %}
+{%-  endfor %}
+    "}\n";
 
 }  // namespace {{namespace_name}}
 #endif  // {{header_guard}}

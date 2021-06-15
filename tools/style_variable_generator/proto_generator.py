@@ -31,8 +31,9 @@ class BaseProtoStyleGenerator(BaseGenerator):
         field_id_map = dict()
         field_list = []
         for ctx in self.in_file_to_context.values():
-            field_name = ctx['field_name']
-            field_id = ctx['field_id']
+            proto_ctx = ctx[self.GetContextKey()]
+            field_name = proto_ctx['field_name']
+            field_id = proto_ctx['field_id']
             if field_name in field_id_map and field_id_map.get(
                     field_name) != field_id:
                 raise Exception(
@@ -57,8 +58,8 @@ class BaseProtoStyleGenerator(BaseGenerator):
                     Modes.DARK: color_model.ResolveToRGBA(name, Modes.DARK),
                 }
             }
-            field_value_map[self.context_map[name]['field_name']].append(
-                color_item)
+            field_value_map[self.context_map[name][self.GetContextKey()]
+                            ['field_name']].append(color_item)
 
         return field_list
 

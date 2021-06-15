@@ -2,11 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
-import os
-import subprocess
 import sys
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.presubmit_support import RunGit
@@ -17,7 +13,7 @@ def FindInvalidCSSVariables(json_string, input_file, git_runner=RunGit):
     style_generator = CSSStyleGenerator()
     style_generator.AddJSONToModel(json_string, in_file=input_file)
 
-    context = style_generator.in_file_to_context[input_file]
+    context = style_generator.in_file_to_context.get(input_file, {}).get('CSS')
     if (not context or 'prefix' not in context):
         raise KeyError('This tool only works on files with a CSS prefix.')
 
