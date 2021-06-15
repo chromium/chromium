@@ -110,6 +110,7 @@ TEST_F('CrSettingsBasicPageRedesignV3Test', 'All', function() {
   runMochaSuite('SettingsBasicPageRedesign');
 });
 
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 // eslint-disable-next-line no-var
 var CrSettingsLanguagesPageV3Test = class extends CrSettingsV3BrowserTest {
   /** @override */
@@ -128,7 +129,7 @@ TEST_F('CrSettingsLanguagesPageV3Test', 'SpellcheckOfficialBuild', function() {
 });
 GEN('#endif');
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_LACROS)');
 // eslint-disable-next-line no-var
 var CrSettingsLanguagesPageRestructuredV3Test =
     class extends CrSettingsLanguagesPageV3Test {
@@ -141,15 +142,6 @@ TEST_F(
     'CrSettingsLanguagesPageRestructuredV3Test', 'RestructuredLanguageSettings',
     function() {
       mocha.grep(languages_page_tests.TestNames.RestructuredLanguageSettings)
-          .run();
-    });
-GEN('#endif');
-
-GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-TEST_F(
-    'CrSettingsLanguagesPageV3Test', 'ChromeOSLanguagesSettingsUpdate',
-    function() {
-      mocha.grep(languages_page_tests.TestNames.ChromeOSLanguagesSettingsUpdate)
           .run();
     });
 GEN('#endif');
@@ -170,7 +162,7 @@ TEST_F('CrSettingsLanguagesSubpageV3Test', 'LanguageMenu', function() {
   mocha.grep(languages_subpage_tests.TestNames.LanguageMenu).run();
 });
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_LACROS)');
 // eslint-disable-next-line no-var
 var CrSettingsLanguagesSubpageDetailedV3Test =
     class extends CrSettingsV3BrowserTest {
@@ -210,6 +202,8 @@ TEST_F(
     function() {
       runMochaSuite('LanguagesPageMetricsBrowser');
     });
+
+GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 // eslint-disable-next-line no-var
 var CrSettingsClearBrowsingDataV3Test = class extends CrSettingsV3BrowserTest {
@@ -606,7 +600,6 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['DropdownMenu', 'dropdown_menu_tests.js'],
  ['ExtensionControlledIndicator', 'extension_controlled_indicator_tests.js'],
  ['HelpPage', 'help_page_test.js'],
- ['Languages', 'languages_tests.js'],
  ['Menu', 'settings_menu_test.js'],
  ['OnStartupPage', 'on_startup_page_tests.js'],
  ['PaymentsSection', 'payments_section_test.js'],
@@ -656,10 +649,10 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 ].forEach(test => registerTest(...test));
 GEN('#endif  // BUILDFLAG(IS_CHROMEOS_ASH)');
 
-GEN('#if !defined(OS_MAC)');
+GEN('#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 [['EditDictionaryPage', 'edit_dictionary_page_test.js'],
 ].forEach(test => registerTest(...test));
-GEN('#endif  //!defined(OS_MAC)');
+GEN('#endif  // !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 [['DefaultBrowser', 'default_browser_browsertest.js'],
@@ -670,6 +663,7 @@ GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 [['ImportDataDialog', 'import_data_dialog_test.js'],
  ['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
+ ['Languages', 'languages_tests.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)');
 

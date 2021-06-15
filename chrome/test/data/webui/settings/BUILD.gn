@@ -59,14 +59,12 @@ js_type_check("closure_compile") {
     #":ensure_lazy_loaded",
     #":extension_controlled_indicator_tests",
     ":fake_input_method_private",
-    ":fake_language_settings_private",
     ":fake_settings_private",
 
     #":help_page_v3_test",
     #":idle_load_tests",
     #":import_data_dialog_test",
     #":incompatible_applications_page_test",
-    ":languages_page_metrics_test_browser",
 
     #":languages_page_tests",
     #":languages_subpage_tests",
@@ -150,8 +148,6 @@ js_type_check("closure_compile") {
 
     #":test_extension_control_browser_proxy",
     ":test_hats_browser_proxy",
-    ":test_languages_browser_proxy",
-    ":test_languages_metrics_proxy",
     ":test_lifetime_browser_proxy",
     ":test_local_data_browser_proxy",
     ":test_metrics_browser_proxy",
@@ -168,6 +164,14 @@ js_type_check("closure_compile") {
 
     #":zoom_levels_tests",
   ]
+
+  if (!is_chromeos_ash) {
+    deps += [
+      ":fake_language_settings_private",
+      ":languages_page_metrics_test_browser",
+      ":test_languages_browser_proxy",
+    ]
+  }
 }
 
 js_library("about_page_tests") {
@@ -483,13 +487,6 @@ js_library("test_languages_browser_proxy") {
     "..:test_browser_proxy.m",
     "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("test_languages_metrics_proxy") {
-  deps = [
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/settings:lazy_load",
   ]
 }
 

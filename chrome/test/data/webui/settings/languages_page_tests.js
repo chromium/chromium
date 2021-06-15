@@ -372,33 +372,3 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
   });
 
 });
-
-// TODO(crbug/1109431): Delete this.
-suite(
-    languages_page_tests.TestNames.ChromeOSLanguagesSettingsUpdate, function() {
-      test('shows correct structure if update is true', () => {
-        const page = document.createElement('settings-languages-page');
-        page.isChromeOSLanguagesSettingsUpdate_ = true;
-        document.body.appendChild(page);
-        flush();
-
-        assertTrue(!!page.$$('#openChromeOSLanguagesSettings'));
-        assertFalse(!!page.$$('cr-expand-button'));
-        assertFalse(!!page.$$('#languagesCollapse'));
-        assertFalse(!!page.$$('#enableSpellcheckingToggle'));
-        assertFalse(!!page.$$('#spellCheckCollapse'));
-      });
-
-      test('shows correct structure if update is false', () => {
-        const page = document.createElement('settings-languages-page');
-        page.isChromeOSLanguagesSettingsUpdate_ = false;
-        document.body.appendChild(page);
-        flush();
-
-        assertFalse(!!page.$$('#openChromeOSLanguagesSettings'));
-        assertTrue(!!page.$$('cr-expand-button'));
-        assertTrue(!!page.$$('#languagesCollapse'));
-        assertTrue(!!page.$$('#enableSpellcheckingToggle'));
-        assertTrue(!!page.$$('#spellCheckCollapse'));
-      });
-    });
