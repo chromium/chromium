@@ -1,7 +1,6 @@
 include_rules = [
   "+cc/base/switches.h",
   "+chromecast/activity",
-  "+chromecast/bindings",
   "+chromecast/bindings/public/mojom",
   "+chromecast/common",
   "+chromecast/common/mojom",
@@ -15,7 +14,6 @@ include_rules = [
   "+chromecast/net",
   "+chromecast/service",
   "+chromecast/ui",
-  "+components/cast",
   "+components/cdm/browser",
   "+components/crash",
   "+components/download/public/common",
