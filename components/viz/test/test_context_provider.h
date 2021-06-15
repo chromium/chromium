@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -65,6 +66,11 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
+      uint32_t usage) override;
+
+  std::vector<gpu::Mailbox> CreateSharedImageVideoPlanes(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       uint32_t usage) override;
 
   gpu::Mailbox CreateSharedImageWithAHB(

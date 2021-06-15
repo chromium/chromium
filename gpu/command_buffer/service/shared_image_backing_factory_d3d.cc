@@ -47,7 +47,8 @@ bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
   return true;
 }
 
-absl::optional<DXGI_FORMAT> VizFormatToDXGIFormat(
+// Only RGBA formats supported by CreateSharedImage.
+absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
     viz::ResourceFormat viz_resource_format) {
   switch (viz_resource_format) {
     case viz::RGBA_F16:
@@ -60,6 +61,74 @@ absl::optional<DXGI_FORMAT> VizFormatToDXGIFormat(
       NOTREACHED();
       return {};
   }
+}
+
+// Formats supported by CreateSharedImage(GMB) and CreateSharedImageVideoPlanes.
+DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
+  switch (buffer_format) {
+    case gfx::BufferFormat::RGBA_8888:
+      return DXGI_FORMAT_R8G8B8A8_UNORM;
+    case gfx::BufferFormat::BGRA_8888:
+      return DXGI_FORMAT_B8G8R8A8_UNORM;
+    case gfx::BufferFormat::RGBA_F16:
+      return DXGI_FORMAT_R16G16B16A16_FLOAT;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      return DXGI_FORMAT_NV12;
+    default:
+      NOTREACHED();
+      return DXGI_FORMAT_UNKNOWN;
+  }
+}
+
+Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    const gfx::GpuMemoryBufferHandle& handle,
+    gfx::BufferFormat format,
+    const gfx::Size& size) {
+  if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
+    DLOG(ERROR) << "Invalid handle with type: " << handle.type;
+    return nullptr;
+  }
+
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
+    DLOG(ERROR) << "Invalid image size " << size.ToString() << " for "
+                << gfx::BufferFormatToString(format);
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device1;
+  HRESULT hr = d3d11_device.As(&d3d11_device1);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to query for ID3D11Device1. Error: "
+                << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  hr = d3d11_device1->OpenSharedResource1(handle.dxgi_handle.Get(),
+                                          IID_PPV_ARGS(&d3d11_texture));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to open shared resource from DXGI handle. Error: "
+                << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  D3D11_TEXTURE2D_DESC desc;
+  d3d11_texture->GetDesc(&desc);
+
+  // TODO: Add checks for device specific limits.
+  if (desc.Width != static_cast<UINT>(size.width()) ||
+      desc.Height != static_cast<UINT>(size.height())) {
+    DLOG(ERROR) << "Size must match texture being opened";
+    return nullptr;
+  }
+
+  if (desc.Format != GetDXGIFormat(format)) {
+    DLOG(ERROR) << "Format must match texture being opened";
+    return nullptr;
+  }
+
+  return d3d11_texture;
 }
 
 }  // anonymous namespace
@@ -222,7 +291,8 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
     return nullptr;
   }
 
-  const absl::optional<DXGI_FORMAT> dxgi_format = VizFormatToDXGIFormat(format);
+  const absl::optional<DXGI_FORMAT> dxgi_format =
+      GetSupportedRGBAFormat(format);
   if (!dxgi_format.has_value()) {
     DLOG(ERROR) << "Unsupported viz format found: " << format;
     return nullptr;
@@ -301,15 +371,8 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage) {
   // TODO: Add support for shared memory GMBs.
-  DCHECK_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
-  if (!handle.dxgi_handle.IsValid()) {
-    DLOG(ERROR) << "Invalid handle type passed to CreateSharedImage";
-    return nullptr;
-  }
-
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
-    DLOG(ERROR) << "Invalid image size " << size.ToString() << " for "
-                << gfx::BufferFormatToString(format);
+  if (!GetSupportedRGBAFormat(viz::GetResourceFormat(format))) {
+    DLOG(ERROR) << "Unsupported format " << gfx::BufferFormatToString(format);
     return nullptr;
   }
   if (plane != gfx::BufferPlane::DEFAULT) {
@@ -317,33 +380,10 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
     return nullptr;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device1;
-  HRESULT hr = d3d11_device_.As(&d3d11_device1);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to query for ID3D11Device1. Error: "
-                << logging::SystemErrorCodeToString(hr);
+  auto d3d11_texture =
+      ValidateAndOpenSharedHandle(d3d11_device_, handle, format, size);
+  if (!d3d11_texture)
     return nullptr;
-  }
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  hr = d3d11_device1->OpenSharedResource1(handle.dxgi_handle.Get(),
-                                          IID_PPV_ARGS(&d3d11_texture));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Unable to open shared resource from DXGI handle. Error: "
-                << logging::SystemErrorCodeToString(hr);
-    return nullptr;
-  }
-
-  D3D11_TEXTURE2D_DESC desc;
-  d3d11_texture->GetDesc(&desc);
-
-  // TODO: Add checks for device specific limits.
-  if (desc.Width != static_cast<UINT>(size.width()) ||
-      desc.Height != static_cast<UINT>(size.height())) {
-    DLOG(ERROR)
-        << "Size passed to CreateSharedImage must match texture being opened";
-    return nullptr;
-  }
 
   auto backing = SharedImageBackingD3D::CreateFromSharedHandle(
       mailbox, viz::GetResourceFormat(format), size, color_space,
@@ -352,6 +392,29 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
   if (backing)
     backing->SetCleared();
   return backing;
+}
+
+std::vector<std::unique_ptr<SharedImageBacking>>
+SharedImageBackingFactoryD3D::CreateSharedImageVideoPlanes(
+    base::span<const Mailbox> mailboxes,
+    gfx::GpuMemoryBufferHandle handle,
+    gfx::BufferFormat format,
+    const gfx::Size& size,
+    uint32_t usage) {
+  // Only supports NV12 for now.
+  if (format != gfx::BufferFormat::YUV_420_BIPLANAR) {
+    DLOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format);
+    return {};
+  }
+
+  auto d3d11_texture =
+      ValidateAndOpenSharedHandle(d3d11_device_, handle, format, size);
+  if (!d3d11_texture)
+    return {};
+
+  return SharedImageBackingD3D::CreateFromVideoTexture(
+      mailboxes, GetDXGIFormat(format), size, usage, std::move(d3d11_texture),
+      /*array_slice=*/0, std::move(handle.dxgi_handle));
 }
 
 // Returns true if the specified GpuMemoryBufferType can be imported using

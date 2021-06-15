@@ -461,7 +461,7 @@ class SharedImageBackingFactoryD3DTest
     }
   }
 
-  void RunVideoTest(bool use_shared_handle);
+  void RunVideoTest(bool use_shared_handle, bool use_factory);
 
   scoped_refptr<SharedContextState> context_state_;
 };
@@ -1049,7 +1049,8 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
-void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle) {
+void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
+                                                    bool use_factory) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -1113,9 +1114,19 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle) {
   const gpu::Mailbox mailboxes[] = {gpu::Mailbox::GenerateForSharedImage(),
                                     gpu::Mailbox::GenerateForSharedImage()};
 
-  auto shared_image_backings = SharedImageBackingD3D::CreateFromVideoTexture(
-      mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
-      /*array_slice=*/0, std::move(shared_handle));
+  std::vector<std::unique_ptr<SharedImageBacking>> shared_image_backings;
+  if (use_factory) {
+    gfx::GpuMemoryBufferHandle gmb_handle;
+    gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
+    gmb_handle.dxgi_handle = std::move(shared_handle);
+    shared_image_backings = shared_image_factory_->CreateSharedImageVideoPlanes(
+        mailboxes, std::move(gmb_handle), gfx::BufferFormat::YUV_420_BIPLANAR,
+        size, usage);
+  } else {
+    shared_image_backings = SharedImageBackingD3D::CreateFromVideoTexture(
+        mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
+        /*array_slice=*/0, std::move(shared_handle));
+  }
   ASSERT_EQ(shared_image_backings.size(), 2u);
 
   const gfx::Size plane_sizes[] = {
@@ -1285,11 +1296,15 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle) {
 }
 
 TEST_F(SharedImageBackingFactoryD3DTest, CreateFromVideoTexture) {
-  RunVideoTest(/*use_shared_handle=*/false);
+  RunVideoTest(/*use_shared_handle=*/false, /*use_factory=*/false);
 }
 
 TEST_F(SharedImageBackingFactoryD3DTest, CreateFromVideoTextureSharedHandle) {
-  RunVideoTest(/*use_shared_handle=*/true);
+  RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/false);
+}
+
+TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageVideoPlanes) {
+  RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/true);
 }
 
 }  // anonymous namespace

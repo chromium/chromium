@@ -167,6 +167,21 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
   return mailbox;
 }
 
+std::vector<gpu::Mailbox>
+TestSharedImageInterface::CreateSharedImageVideoPlanes(
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    uint32_t usage) {
+  base::AutoLock locked(lock_);
+  auto mailboxes =
+      std::vector<gpu::Mailbox>{gpu::Mailbox::GenerateForSharedImage(),
+                                gpu::Mailbox::GenerateForSharedImage()};
+  shared_images_.insert(mailboxes[0]);
+  shared_images_.insert(mailboxes[1]);
+  most_recent_size_ = gpu_memory_buffer->GetSize();
+  return mailboxes;
+}
+
 gpu::Mailbox TestSharedImageInterface::CreateSharedImageWithAHB(
     const gpu::Mailbox& mailbox,
     uint32_t usage,

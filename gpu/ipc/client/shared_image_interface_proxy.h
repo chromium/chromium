@@ -42,6 +42,13 @@ class SharedImageInterfaceProxy {
                             SkAlphaType alpha_type,
                             uint32_t usage);
 
+#if defined(OS_WIN)
+  std::vector<Mailbox> CreateSharedImageVideoPlanes(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      uint32_t usage);
+#endif
+
 #if defined(OS_ANDROID)
   Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
                                    uint32_t usage,

@@ -307,7 +307,7 @@ SharedImageBackingD3D::CreateFromGLTexture(
 }
 
 // static
-std::vector<std::unique_ptr<SharedImageBackingD3D>>
+std::vector<std::unique_ptr<SharedImageBacking>>
 SharedImageBackingD3D::CreateFromVideoTexture(
     base::span<const Mailbox> mailboxes,
     DXGI_FORMAT dxgi_format,
@@ -316,6 +316,7 @@ SharedImageBackingD3D::CreateFromVideoTexture(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     unsigned array_slice,
     base::win::ScopedHandle shared_handle) {
+  DCHECK(d3d11_texture);
   DCHECK(SupportsVideoFormat(dxgi_format));
   DCHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
 
@@ -329,7 +330,7 @@ SharedImageBackingD3D::CreateFromVideoTexture(
   auto shared_state = base::MakeRefCounted<SharedState>(
       std::move(shared_handle), std::move(dxgi_keyed_mutex));
 
-  std::vector<std::unique_ptr<SharedImageBackingD3D>> shared_images(
+  std::vector<std::unique_ptr<SharedImageBacking>> shared_images(
       NumPlanes(dxgi_format));
   for (size_t plane_index = 0; plane_index < shared_images.size();
        plane_index++) {
