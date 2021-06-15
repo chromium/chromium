@@ -172,7 +172,10 @@ if (enable_pdf) {
 
     configs += [ ":strict" ]
 
-    public_deps = [ "//skia" ]
+    public_deps = [
+      "//printing/mojom",
+      "//skia",
+    ]
 
     deps = [
       ":accessibility_structs",
@@ -322,6 +325,7 @@ if (enable_pdf) {
       "//pdf:buildflags",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
+      "//printing/mojom",
       "//skia",
       "//third_party/blink/public/common:headers",
       "//ui/base",

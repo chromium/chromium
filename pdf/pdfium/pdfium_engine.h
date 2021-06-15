@@ -159,7 +159,7 @@ class PDFiumEngine : public PDFEngine,
       uint32_t text_run_count) override;
   bool GetPrintScaling() override;
   int GetCopiesToPrint() override;
-  int GetDuplexType() override;
+  printing::mojom::DuplexMode GetDuplexMode() override;
   absl::optional<gfx::Size> GetUniformPageSizePoints() override;
   void AppendBlankPages(size_t num_pages) override;
   void AppendPage(PDFEngine* engine, int index) override;

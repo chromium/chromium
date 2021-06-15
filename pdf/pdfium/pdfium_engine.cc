@@ -55,6 +55,7 @@
 #include "pdf/url_loader_wrapper_impl.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/private/pdf.h"
+#include "printing/mojom/print.mojom-shared.h"
 #include "printing/units.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -2610,8 +2611,17 @@ int PDFiumEngine::GetCopiesToPrint() {
   return FPDF_VIEWERREF_GetNumCopies(doc());
 }
 
-int PDFiumEngine::GetDuplexType() {
-  return static_cast<int>(FPDF_VIEWERREF_GetDuplex(doc()));
+printing::mojom::DuplexMode PDFiumEngine::GetDuplexMode() {
+  switch (FPDF_VIEWERREF_GetDuplex(doc())) {
+    case Simplex:
+      return printing::mojom::DuplexMode::kSimplex;
+    case DuplexFlipShortEdge:
+      return printing::mojom::DuplexMode::kShortEdge;
+    case DuplexFlipLongEdge:
+      return printing::mojom::DuplexMode::kLongEdge;
+    default:
+      return printing::mojom::DuplexMode::kUnknownDuplexMode;
+  }
 }
 
 absl::optional<gfx::Size> PDFiumEngine::GetUniformPageSizePoints() {

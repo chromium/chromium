@@ -22,6 +22,7 @@
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/private/pdf.h"
 #include "ppapi/cpp/url_loader.h"
+#include "printing/mojom/print.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
@@ -431,7 +432,7 @@ class PDFEngine {
   // Returns number of copies to be printed.
   virtual int GetCopiesToPrint() = 0;
   // Returns the duplex setting.
-  virtual int GetDuplexType() = 0;
+  virtual printing::mojom::DuplexMode GetDuplexMode() = 0;
   // Returns the uniform page size of the document in points. Returns
   // `absl::nullopt` if the document has more than one page size.
   virtual absl::optional<gfx::Size> GetUniformPageSizePoints() = 0;
