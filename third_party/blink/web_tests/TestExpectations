@@ -2497,6 +2497,10 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-backgrounds/border-image-repeat-space-10.html [ Failure ]
+crbug.com/626703 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-image-repeat-space-10.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-audio.https.html [ Crash ]
+crbug.com/626703 [ Linux ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/font-size-adjust-009.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Timeout ]

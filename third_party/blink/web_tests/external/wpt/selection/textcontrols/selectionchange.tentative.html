@@ -198,5 +198,15 @@
       await data.assert_empty_spin();
       assert_equals(collector.events.length, 4);
     }, `Calling setRangeText() repeatedly on ${name}`);
+
+    promise_test(async () => {
+      await data.initialize();
+
+      target.value = "";
+      target.setRangeText("foo");
+
+      await data.assert_empty_spin();
+      assert_equals(collector.events.length, 0);
+    }, `Calling setRangeText() on empty ${name}`);
   }
 </script>
