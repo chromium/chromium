@@ -31,13 +31,16 @@ constexpr base::TaskTraits kBackendTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
+constexpr char kDefaultTrustedVaultServiceURL[] =
+    "https://securitydomain-pa.googleapis.com/v1/";
+
 GURL ExtractTrustedVaultServiceURLFromCommandLine() {
   std::string string_url =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kTrustedVaultServiceURL);
   if (string_url.empty()) {
     // Command line switch is not specified or is not a valid ASCII string.
-    return GURL();
+    return GURL(kDefaultTrustedVaultServiceURL);
   }
   return GURL(string_url);
 }
