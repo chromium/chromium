@@ -11,10 +11,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -691,9 +691,8 @@ void VerdictCacheManager::CleanUpExpiredRealTimeUrlCheckVerdicts() {
 void VerdictCacheManager::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  GetTaskRunner(ThreadID::UI)
-      ->PostTask(FROM_HERE,
-                 base::BindRepeating(
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindRepeating(
                      &VerdictCacheManager::RemoveContentSettingsOnURLsDeleted,
                      GetWeakPtr(), deletion_info.IsAllHistory(),
                      deletion_info.deleted_rows()));
@@ -766,7 +765,6 @@ bool VerdictCacheManager::RemoveExpiredRealTimeUrlCheckVerdicts(
 void VerdictCacheManager::RemoveContentSettingsOnURLsDeleted(
     bool all_history,
     const history::URLRows& deleted_rows) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
   DCHECK(content_settings_);
 
   if (all_history) {
