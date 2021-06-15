@@ -49115,6 +49115,7 @@ from previous Chrome versions.
       label="TabbedAppOverflowMenuThreeButtonActionbar:enabled"/>
   <int value="1313850691" label="Metal:disabled"/>
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
+  <int value="1316142697" label="canvas-2d-layers"/>
   <int value="1317562265" label="SeccompSandboxAndroid:disabled"/>
   <int value="1318073661" label="MaterialDesignExtensions:enabled"/>
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>

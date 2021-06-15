@@ -1543,6 +1543,11 @@ const char kMutingCompromisedCredentialsName[] =
 const char kMutingCompromisedCredentialsDescription[] =
     "When enable, insecure credential muting state is respected.";
 
+const char kCanvas2DLayersName[] =
+    "Enables canvas 2D methods BeginLayer and EndLayer";
+const char kCanvas2DLayersDescription[] =
+    "Enables the canvas 2D methods BeginLayer and EndLayer.";
+
 const char kNewCanvas2DAPIName[] = "Experimental canvas 2D API features";
 const char kNewCanvas2DAPIDescription[] =
     "Enables in-progress features for the canvas 2D API. See "

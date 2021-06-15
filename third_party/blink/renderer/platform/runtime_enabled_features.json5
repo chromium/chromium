@@ -325,6 +325,9 @@
       name: "Canvas2dImageChromium",
     },
     {
+      name: "Canvas2dLayers",
+    },
+    {
       name: "Canvas2dScrollPathIntoView",
       status: "experimental",
     },

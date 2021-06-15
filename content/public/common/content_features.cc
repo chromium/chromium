@@ -228,6 +228,10 @@ const base::Feature kEarlyHintsPreloadForNavigation{
 const base::Feature kEmbeddingRequiresOptIn{"EmbeddingRequiresOptIn",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables canvas 2d methods BeginLayer and EndLayer.
+const base::Feature kEnableCanvas2DLayers{"EnableCanvas2DLayers",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables new canvas 2d api features. Enabled either with either
 // enable-experimental-canvas-features or new-canvas-2d-api runtime flags
 const base::Feature kEnableNewCanvas2DAPI{"EnableNewCanvas2DAPI",

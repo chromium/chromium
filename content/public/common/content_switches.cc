@@ -67,6 +67,9 @@ const char kDisable3DAPIs[]                 = "disable-3d-apis";
 // Disable gpu-accelerated 2d canvas.
 const char kDisableAccelerated2dCanvas[]    = "disable-accelerated-2d-canvas";
 
+// Enable in-progress canvas 2d API methods BeginLayer and EndLayer.
+const char kEnableCanvas2DLayers[] = "canvas-2d-layers";
+
 // Enable in-progress canvas 2d API features.
 const char kEnableNewCanvas2DAPI[] = "new-canvas-2d-api";
 
