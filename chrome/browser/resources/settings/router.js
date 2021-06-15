@@ -370,3 +370,11 @@ import './i18n_setup.js';
     },
   };
 
+  /** @interface */
+  export class RouteObserverBehaviorInterface {
+    /**
+     * @param {!Route|undefined} opt_newRoute
+     * @param {!Route|undefined} opt_oldRoute
+     */
+    currentRouteChanged(opt_newRoute, opt_oldRoute) {}
+  }
