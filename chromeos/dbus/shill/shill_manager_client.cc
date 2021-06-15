@@ -62,6 +62,14 @@ class ShillManagerClientImpl : public ShillManagerClient {
                    const base::Value& value,
                    base::OnceClosure callback,
                    ErrorCallback error_callback) override {
+    // This property is read-only and can only be mutated by the specialized
+    // method exposed in DBus API.
+    if (name == shill::kDNSProxyDOHProvidersProperty) {
+      SetDNSProxyDOHProviders(value, std::move(callback),
+                              std::move(error_callback));
+      return;
+    }
+
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kSetPropertyFunction);
     dbus::MessageWriter writer(&method_call);
@@ -170,6 +178,19 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
  private:
+  // Used by SetProperty call to reroute kDNSProxyDOHProviders to the underlying
+  // specialized method in the DBus API.
+  void SetDNSProxyDOHProviders(const base::Value& providers,
+                               base::OnceClosure callback,
+                               ErrorCallback error_callback) {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kSetDNSProxyDOHProvidersProperty);
+    dbus::MessageWriter writer(&method_call);
+    ShillClientHelper::AppendServiceProperties(&writer, providers);
+    helper_->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                             std::move(error_callback));
+  }
+
   dbus::ObjectProxy* proxy_ = nullptr;
   std::unique_ptr<ShillClientHelper> helper_;
 
