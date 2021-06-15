@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/memories_resources.h"
-#include "chrome/grit/memories_resources_map.h"
+#include "chrome/grit/history_clusters_resources.h"
+#include "chrome/grit/history_clusters_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -38,19 +38,16 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
 
   // TODO(crbug.com/1173908): Replace these with localized strings.
   source->AddString("clearLabel", u"Clear search");
-  source->AddString("searchPrompt", u"Search memories");
-  source->AddString("memoryTitleDescription",
-                    u"Based on previous web activity");
-  source->AddString("topVisitsSectionHeader", u"From Chrome History");
-  source->AddString("relatedTabGroupsAndBookmarksSectionHeader",
-                    u"From tab groups and bookmarks");
-  source->AddString("tabGroupTileCaption", u"Recent tab group");
+  source->AddString("searchPrompt", u"Search clusters");
+  source->AddString("titleDescription", u"Based on previous web activity");
+  source->AddString("visitsSectionHeader", u"From Chrome History");
   source->AddString("relatedSearchesSectionHeader", u"Try searching for");
   source->AddString("removeAllFromHistory", u"Remove all from history");
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),
-      IDR_MEMORIES_MEMORIES_HTML);
+      source,
+      base::make_span(kHistoryClustersResources, kHistoryClustersResourcesSize),
+      IDR_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
 
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));

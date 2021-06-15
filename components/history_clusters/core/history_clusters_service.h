@@ -37,11 +37,11 @@ class HistoryClustersService : public KeyedService {
 
   struct QueryMemoriesResponse {
     QueryMemoriesResponse(mojom::QueryParamsPtr query_params,
-                          std::vector<mojom::MemoryPtr> clusters);
+                          std::vector<mojom::ClusterPtr> clusters);
     QueryMemoriesResponse(QueryMemoriesResponse&& other);
     ~QueryMemoriesResponse();
     mojom::QueryParamsPtr query_params;
-    std::vector<mojom::MemoryPtr> clusters;
+    std::vector<mojom::ClusterPtr> clusters;
   };
 
   explicit HistoryClustersService(

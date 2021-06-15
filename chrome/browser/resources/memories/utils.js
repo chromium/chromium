@@ -6,7 +6,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 /**
  * @fileoverview This file provides shared utility functions used by the custom
- * elements in the Memories landing page.
+ * elements in the Clusters landing page.
  */
 
 /**

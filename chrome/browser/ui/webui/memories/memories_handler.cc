@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,19 +37,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/search_engines/template_url_service.h"
 #include "ui/base/l10n/time_format.h"
-
-namespace {
-
-GURL GetRandomlySizedThumbnailUrl() {
-  const std::vector<int> dimensions = {150, 160, 170, 180, 190, 200};
-  auto random_dimension = [&dimensions]() {
-    return dimensions[rand() % dimensions.size()];
-  };
-  return GURL(base::StringPrintf("https://via.placeholder.com/%dX%d",
-                                 random_dimension(), random_dimension()));
-}
-
-}  // namespace
 #endif
 
 MemoriesHandler::MemoriesHandler(
@@ -77,11 +63,10 @@ void MemoriesHandler::SetPage(
   page_.Bind(std::move(pending_page));
 }
 
-void MemoriesHandler::QueryMemories(
+void MemoriesHandler::QueryClusters(
     history_clusters::mojom::QueryParamsPtr query_params) {
-  auto result_mojom = history_clusters::mojom::MemoriesResult::New();
+  auto result_mojom = history_clusters::mojom::QueryResult::New();
   result_mojom->title = query_params->query;
-  result_mojom->thumbnail_url = GetRandomlySizedThumbnailUrl();
   if (!query_params->recency_threshold.has_value()) {
     // The default value for the recency threshold should be the present time.
     query_params->recency_threshold = base::Time::Now();
@@ -91,7 +76,7 @@ void MemoriesHandler::QueryMemories(
     result_mojom->is_continuation = true;
   }
   auto result_callback =
-      base::BindOnce(&MemoriesHandler::OnMemoriesQueryResult,
+      base::BindOnce(&MemoriesHandler::OnClustersQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result_mojom));
   if (history_clusters::RemoteModelEndpoint().is_valid()) {
     // Cancel pending queries, if any.
@@ -103,7 +88,7 @@ void MemoriesHandler::QueryMemories(
         base::BindOnce(
             [](base::OnceCallback<void(
                    history_clusters::mojom::QueryParamsPtr,
-                   std::vector<history_clusters::mojom::MemoryPtr>)> callback,
+                   std::vector<history_clusters::mojom::ClusterPtr>)> callback,
                history_clusters::HistoryClustersService::QueryMemoriesResponse
                    response) {
               std::move(callback).Run(std::move(response.query_params),
@@ -113,8 +98,7 @@ void MemoriesHandler::QueryMemories(
         &query_task_tracker_);
   } else {
 #if defined(CHROME_BRANDED)
-    page_->OnMemoriesQueryResult(
-        history_clusters::mojom::MemoriesResult::New());
+    page_->OnClustersQueryResult(history_clusters::mojom::QueryResult::New());
 #else
     // Cancel pending queries, if any.
     query_task_tracker_.TryCancelAll();
@@ -125,7 +109,7 @@ void MemoriesHandler::QueryMemories(
 }
 
 void MemoriesHandler::RemoveVisits(
-    std::vector<history_clusters::mojom::VisitPtr> visits,
+    std::vector<history_clusters::mojom::URLVisitPtr> visits,
     RemoveVisitsCallback callback) {
   // Reject the request if a pending task exists or the set of visits is empty.
   if (remove_task_tracker_.HasTrackedTasks() || visits.empty()) {
@@ -159,25 +143,25 @@ void MemoriesHandler::OnMemoriesDebugMessage(const std::string& message) {
   }
 }
 
-void MemoriesHandler::OnMemoriesQueryResult(
-    history_clusters::mojom::MemoriesResultPtr result_mojom,
+void MemoriesHandler::OnClustersQueryResult(
+    history_clusters::mojom::QueryResultPtr result_mojom,
     history_clusters::mojom::QueryParamsPtr continuation_query_params,
-    std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms) {
+    std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms) {
   result_mojom->continuation_query_params =
       std::move(continuation_query_params);
-  result_mojom->memories = std::move(memory_mojoms);
-  page_->OnMemoriesQueryResult(std::move(result_mojom));
+  result_mojom->clusters = std::move(memory_mojoms);
+  page_->OnClustersQueryResult(std::move(result_mojom));
 }
 
 void MemoriesHandler::OnVisitsRemoved(
-    std::vector<history_clusters::mojom::VisitPtr> visits) {
+    std::vector<history_clusters::mojom::URLVisitPtr> visits) {
   page_->OnVisitsRemoved(std::move(visits));
 }
 
 #if !defined(CHROME_BRANDED)
 void MemoriesHandler::QueryHistoryService(
     history_clusters::mojom::QueryParamsPtr query_params,
-    std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
+    std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
     MemoriesQueryResultsCallback callback) {
   const size_t max_count =
       query_params->max_count ? query_params->max_count : -1;
@@ -209,7 +193,7 @@ void MemoriesHandler::QueryHistoryService(
 
 void MemoriesHandler::OnHistoryQueryResults(
     history_clusters::mojom::QueryParamsPtr query_params,
-    std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
+    std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
     MemoriesQueryResultsCallback callback,
     history::QueryResults results) {
   if (results.empty()) {
@@ -219,8 +203,8 @@ void MemoriesHandler::OnHistoryQueryResults(
     return;
   }
 
-  auto memory_mojom = history_clusters::mojom::Memory::New();
-  memory_mojom->id = base::UnguessableToken::Create();
+  auto memory_mojom = history_clusters::mojom::Cluster::New();
+  memory_mojom->id = rand();
 
   const TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -229,8 +213,16 @@ void MemoriesHandler::OnHistoryQueryResults(
   const SearchTermsData& search_terms_data =
       template_url_service->search_terms_data();
 
-  // Keep track of the visited URLs and their titles in this memory.
-  std::set<std::pair<GURL, std::u16string>> visited_urls;
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+
+  // Keep track of related searches in this cluster.
+  std::set<std::u16string> related_searches;
+
+  // Keep track of visits in this cluster.
+  std::vector<history_clusters::mojom::URLVisitPtr> visits;
 
   for (const auto& result : results) {
     // Last visit time of the Memory is the visit time of most recently visited
@@ -242,7 +234,17 @@ void MemoriesHandler::OnHistoryQueryResults(
       break;
     }
 
-    visited_urls.insert(std::make_pair(result.url(), result.title()));
+    auto visit = history_clusters::mojom::URLVisit::New();
+    visit->id = result.id();
+    visit->url = result.url();
+    visit->page_title = base::UTF16ToUTF8(result.title());
+    visit->time = result.visit_time();
+    visit->first_visit_time = result.visit_time();
+    visit->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
+        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+        base::Time::Now() - visit->time));
+    visit->time_of_day =
+        base::UTF16ToUTF8(base::TimeFormatTimeOfDay(visit->time));
 
     // Check if the URL is a valid search URL.
     std::u16string search_terms;
@@ -252,129 +254,82 @@ void MemoriesHandler::OnHistoryQueryResults(
             result.url(), search_terms_data, &search_terms) &&
         !search_terms.empty();
     if (is_valid_search_url) {
-      // If the URL is a valid search URL, try to create a related search query.
+      visit->annotations.push_back(
+          history_clusters::mojom::Annotation::kSearchResultsPage);
+
+      // Try to create a related search query.
       const std::u16string& search_query =
           base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
-      const std::string search_query_utf8 = base::UTF16ToUTF8(search_query);
-
-      // Skip duplicate search queries.
-      if (base::Contains(memory_mojom->related_searches, search_query_utf8,
-                         [](const auto& search_query_ptr) {
-                           return search_query_ptr->query;
-                         })) {
-        continue;
-      }
-
-      TemplateURLRef::SearchTermsArgs search_terms_args(search_query);
-      const TemplateURLRef& search_url_ref = default_search_provider->url_ref();
-      const std::string& search_url = search_url_ref.ReplaceSearchTerms(
-          search_terms_args, search_terms_data);
-      auto search_query_mojom = history_clusters::mojom::SearchQuery::New();
-      search_query_mojom->query = search_query_utf8;
-      search_query_mojom->url = GURL(search_url);
-      memory_mojom->related_searches.push_back(std::move(search_query_mojom));
-    } else {  // !is_valid_search_url
-      // If the URL is not a search URL, try to add the visit to the top visits.
-      auto visit = history_clusters::mojom::Visit::New();
-      // TODO(mahmadi): URLResult does not contain visit_id.
-      visit->url = result.url();
-      visit->page_title = base::UTF16ToUTF8(result.title());
-      visit->thumbnail_url = GetRandomlySizedThumbnailUrl();
-      visit->time = result.visit_time();
-      visit->first_visit_time = result.visit_time();
-      visit->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
-          ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-          base::Time::Now() - visit->time));
-      visit->time_of_day =
-          base::UTF16ToUTF8(base::TimeFormatTimeOfDay(visit->time));
-
-      std::function<void(std::vector<history_clusters::mojom::VisitPtr>&, bool)>
-          add_visit;
-      add_visit = [&visit, &add_visit](auto& visits, bool are_top_visits) {
-        // Count `visit` toward duplicate visits if the same URL is seen before.
-        auto duplicate_visit_it = std::find_if(
-            visits.begin(), visits.end(), [&visit](const auto& visit_ptr) {
-              return visit_ptr->url == visit->url;
-            });
-        if (duplicate_visit_it != visits.end()) {
-          (*duplicate_visit_it)->num_duplicate_visits++;
-          (*duplicate_visit_it)->first_visit_time = visit->time;
-          return;
-        }
-        // For the top visits, if the domain name is seen before, add `visit` to
-        // the related visits of the respective top visit recursively.
-        if (are_top_visits) {
-          auto related_visit_it = std::find_if(
-              visits.begin(), visits.end(), [&visit](const auto& visit_ptr) {
-                return visit_ptr->url.host() == visit->url.host();
-              });
-          if (related_visit_it != visits.end()) {
-            add_visit((*related_visit_it)->related_visits, false);
-            return;
-          }
-        }
-        // Otherwise, simply add `visit` to the list of visits.
-        visits.push_back(std::move(visit));
-      };
-      add_visit(memory_mojom->top_visits, true);
+      related_searches.insert(search_query);
     }
-  }
 
-  // Add related tab groups (tab groups containing any of the visited URLs).
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  if (browser) {
-    const TabStripModel* tab_strip_model = browser->tab_strip_model();
-    const TabGroupModel* group_model = tab_strip_model->group_model();
-    for (const auto& group_id : group_model->ListTabGroups()) {
-      const TabGroup* tab_group = group_model->GetTabGroup(group_id);
-      bool tab_group_has_url_in_memory = false;
-      gfx::Range tabs = tab_group->ListTabs();
-      for (uint32_t index = tabs.start(); index < tabs.end(); ++index) {
-        content::WebContents* web_contents =
-            tab_strip_model->GetWebContentsAt(index);
-        const GURL& url = web_contents->GetLastCommittedURL();
-        if (base::Contains(visited_urls, url,
-                           [](const auto& pair) { return pair.first; })) {
-          tab_group_has_url_in_memory = true;
-          break;
-        }
-      }
-      if (tab_group_has_url_in_memory) {
-        auto tab_group_mojom = history_clusters::mojom::TabGroup::New();
-        tab_group_mojom->id = tab_group->id().token();
-        tab_group_mojom->title =
-            base::UTF16ToUTF8(tab_group->visual_data()->title());
+    // Check if the URL is in a tab group.
+    if (browser) {
+      const TabStripModel* tab_strip_model = browser->tab_strip_model();
+      const TabGroupModel* group_model = tab_strip_model->group_model();
+      for (const auto& group_id : group_model->ListTabGroups()) {
+        const TabGroup* tab_group = group_model->GetTabGroup(group_id);
+        gfx::Range tabs = tab_group->ListTabs();
         for (uint32_t index = tabs.start(); index < tabs.end(); ++index) {
           content::WebContents* web_contents =
               tab_strip_model->GetWebContentsAt(index);
-          auto webpage = history_clusters::mojom::WebPage::New();
-          webpage->url = web_contents->GetLastCommittedURL();
-          webpage->title = base::UTF16ToUTF8(web_contents->GetTitle());
-          webpage->thumbnail_url = GetRandomlySizedThumbnailUrl();
-          tab_group_mojom->pages.push_back(std::move(webpage));
+          if (result.url() == web_contents->GetLastCommittedURL()) {
+            visit->annotations.push_back(
+                history_clusters::mojom::Annotation::kTabGrouped);
+            break;
+          }
         }
-        memory_mojom->related_tab_groups.push_back(std::move(tab_group_mojom));
       }
+    }
+
+    // Check if the URL is bookmarked.
+    if (model && model->loaded()) {
+      std::vector<bookmarks::UrlAndTitle> bookmarks;
+      model->GetBookmarks(&bookmarks);
+      for (const auto& bookmark : bookmarks) {
+        if (result.url() == bookmark.url) {
+          visit->annotations.push_back(
+              history_clusters::mojom::Annotation::kBookmarked);
+          break;
+        }
+      }
+    }
+
+    // Count `visit` toward duplicate visits if the same URL is seen before.
+    auto duplicate_visit_it = std::find_if(
+        visits.begin(), visits.end(), [&visit](const auto& visit_ptr) {
+          return visit_ptr->url == visit->url;
+        });
+    if (duplicate_visit_it != visits.end()) {
+      (*duplicate_visit_it)->num_duplicate_visits++;
+      (*duplicate_visit_it)->first_visit_time = visit->time;
+    } else {
+      visits.push_back(std::move(visit));
     }
   }
 
-  // Add related bookmarks (bookmarked URLs among the visited URLs).
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(profile_);
-  if (model && model->loaded()) {
-    std::vector<bookmarks::UrlAndTitle> bookmarks;
-    model->GetBookmarks(&bookmarks);
-    for (const auto& bookmark : bookmarks) {
-      auto matching_visited_url_it = std::find_if(
-          visited_urls.begin(), visited_urls.end(),
-          [&bookmark](const auto& pair) { return pair.first == bookmark.url; });
-      if (matching_visited_url_it != visited_urls.end()) {
-        auto webpage = history_clusters::mojom::WebPage::New();
-        webpage->url = matching_visited_url_it->first;
-        webpage->title = base::UTF16ToUTF8(matching_visited_url_it->second);
-        webpage->thumbnail_url = GetRandomlySizedThumbnailUrl();
-        memory_mojom->bookmarks.push_back(std::move(webpage));
+  // Add the visits and the related searches to the cluster.
+  for (auto& visit : visits) {
+    if (memory_mojom->visits.empty()) {
+      // The first visit will be featured prominently and have related searches.
+      memory_mojom->visits.push_back(std::move(visit));
+
+      for (auto& search_query : related_searches) {
+        const std::string search_query_utf8 = base::UTF16ToUTF8(search_query);
+        TemplateURLRef::SearchTermsArgs search_terms_args(search_query);
+        const TemplateURLRef& search_url_ref =
+            default_search_provider->url_ref();
+        const std::string& search_url = search_url_ref.ReplaceSearchTerms(
+            search_terms_args, search_terms_data);
+        auto search_query_mojom = history_clusters::mojom::SearchQuery::New();
+        search_query_mojom->query = search_query_utf8;
+        search_query_mojom->url = GURL(search_url);
+        memory_mojom->visits[0]->related_searches.push_back(
+            std::move(search_query_mojom));
       }
+    } else {
+      // The rest of the visits will related visits of the first one.
+      memory_mojom->visits[0]->related_visits.push_back(std::move(visit));
     }
   }
 

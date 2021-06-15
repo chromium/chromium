@@ -12,14 +12,13 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + mojom_js_args
-  deps = [ ":memories" ]
+  deps = [ ":history_clusters" ]
 }
 
 js_library("app") {
   deps = [
     ":browser_proxy",
-    ":memory_card",
-    ":page_thumbnail",
+    ":cluster",
     ":router",
     "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
@@ -42,15 +41,13 @@ js_library("browser_proxy") {
   ]
 }
 
-js_library("memories") {
+js_library("history_clusters") {
   deps = [ ":app" ]
 }
 
-js_library("memory_card") {
+js_library("cluster") {
   deps = [
-    ":memory_tile",
     ":page_favicon",
-    ":page_thumbnail",
     ":search_query",
     ":top_visit",
     ":utils",
@@ -60,25 +57,10 @@ js_library("memory_card") {
   ]
 }
 
-js_library("memory_tile") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//url/mojom:url_mojom_origin_webui_js",
-  ]
-}
-
 js_library("page_favicon") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:icon.m",
-    "//url/mojom:url_mojom_origin_webui_js",
-  ]
-}
-
-js_library("page_thumbnail") {
-  deps = [
-    "//components/history_clusters/core:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
 }
@@ -126,10 +108,8 @@ js_library("visit_row") {
 html_to_js("web_components_local") {
   js_files = [
     "app.js",
-    "memory_card.js",
-    "memory_tile.js",
+    "cluster.js",
     "page_favicon.js",
-    "page_thumbnail.js",
     "router.js",
     "search_query.js",
     "shared_vars.js",
@@ -142,7 +122,7 @@ group("web_components") {
   public_deps = [ ":web_components_local" ]
 }
 
-grd_prefix = "memories"
+grd_prefix = "history_clusters"
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
@@ -154,7 +134,7 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "browser_proxy.js",
-    "memories.js",
+    "history_clusters.js",
     "utils.js",
   ]
 }
@@ -166,10 +146,8 @@ preprocess_if_expr("preprocess_gen") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "app.js",
-    "memory_card.js",
-    "memory_tile.js",
+    "cluster.js",
     "page_favicon.js",
-    "page_thumbnail.js",
     "router.js",
     "search_query.js",
     "shared_vars.js",
@@ -179,9 +157,9 @@ preprocess_if_expr("preprocess_gen") {
   deps = [ ":web_components" ]
 }
 
-generate_grd("build_memories_api_mojo_grdp") {
+generate_grd("build_history_clusters_api_mojo_grdp") {
   grd_prefix = "$grd_prefix" + "_API"
-  out_grd = "$target_gen_dir/memories_api_mojo_resources.grdp"
+  out_grd = "$target_gen_dir/clusters_api_mojo_resources.grdp"
   input_files = [ "memories.mojom-webui.js" ]
   resource_path_rewrites = [ "memories.mojom-webui.js|chrome/browser/ui/webui/memories/memories.mojom-webui.js" ]
   input_files_base_dir =
@@ -189,9 +167,9 @@ generate_grd("build_memories_api_mojo_grdp") {
                   root_build_dir)
 }
 
-generate_grd("build_memories_definition_mojo_grdp") {
+generate_grd("build_history_clusters_definition_mojo_grdp") {
   grd_prefix = "$grd_prefix" + "_DEFINITION"
-  out_grd = "$target_gen_dir/memories_definition_mojo_resources.grdp"
+  out_grd = "$target_gen_dir/clusters_definition_mojo_resources.grdp"
   input_files = [ "memories.mojom-webui.js" ]
   resource_path_rewrites = [ "memories.mojom-webui.js|components/history_clusters/core/memories.mojom-webui.js" ]
   input_files_base_dir =
@@ -202,15 +180,15 @@ generate_grd("build_memories_definition_mojo_grdp") {
 generate_grd("build_grd") {
   grd_prefix = "$grd_prefix"
   out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "memories.html" ]
+  input_files = [ "history_clusters.html" ]
   input_files_base_dir = rebase_path(".", "//")
   grdp_files = [
-    "$target_gen_dir/memories_api_mojo_resources.grdp",
-    "$target_gen_dir/memories_definition_mojo_resources.grdp",
+    "$target_gen_dir/clusters_api_mojo_resources.grdp",
+    "$target_gen_dir/clusters_definition_mojo_resources.grdp",
   ]
   deps = [
-    ":build_memories_api_mojo_grdp",
-    ":build_memories_definition_mojo_grdp",
+    ":build_history_clusters_api_mojo_grdp",
+    ":build_history_clusters_definition_mojo_grdp",
     ":preprocess",
     ":preprocess_gen",
   ]
@@ -230,10 +208,10 @@ grit("resources") {
     "//components/history_clusters/core:mojo_bindings_webui_js",
   ]
   outputs = [
-    "grit/memories_resources.h",
-    "grit/memories_resources_map.cc",
-    "grit/memories_resources_map.h",
-    "memories_resources.pak",
+    "grit/history_clusters_resources.h",
+    "grit/history_clusters_resources_map.cc",
+    "grit/history_clusters_resources_map.h",
+    "history_clusters_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
 }

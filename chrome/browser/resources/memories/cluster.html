@@ -1,0 +1,49 @@
+<style include="cr-shared-style">
+  :host {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--pill-border-radius);
+    box-sizing: border-box;
+    display: block;
+    padding: var(--history-cluster-padding);
+    width: var(--history-cluster-width);
+  }
+
+  .section:not(:last-of-type) {
+    margin-bottom: 16px;
+  }
+
+  .section .header {
+    font-size: 0.875rem;  /* 14px */
+    line-height: 20px;
+  }
+
+  #queries {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  search-query {
+    margin-top: 10px;
+  }
+
+  search-query:not(:last-of-type) {
+    margin-inline-end: 10px;
+  }
+</style>
+<div class="section" hidden="[[!cluster.relatedSearches.length]]">
+  <div class="header">$i18n{relatedSearchesSectionHeader}</div>
+  <div id="queries">
+    <template is="dom-repeat" items="[[cluster.relatedSearches]]">
+      <search-query search-query="[[item]]"></search-query>
+    </template>
+  </div>
+</div>
+<div class="section" hidden="[[!cluster.visits.length]]">
+  <div class="header">$i18n{visitsSectionHeader}</div>
+  <div id="top-visits">
+    <template is="dom-repeat" items="[[cluster.visits]]">
+      <top-visit visit="[[item]]"></top-visit>
+    </template>
+  </div>
+</div>

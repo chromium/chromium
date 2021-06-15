@@ -7,12 +7,12 @@ import './visit_row.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
-import {Visit} from '/components/history_clusters/core/memories.mojom-webui.js';
+import {URLVisit} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a top visit
- * within a Memory. A top visit is a featured, i.e., visible, visit with an
+ * within a Cluster. A top visit is a featured, i.e., visible, visit with an
  * optional set of related visits which are not visible by default.
  */
 
@@ -33,7 +33,7 @@ class TopVisitElement extends PolymerElement {
 
       /**
        * The top visit to display
-       * @type {!Visit}
+       * @type {!URLVisit}
        */
       visit: Object,
 

@@ -4,7 +4,6 @@
 
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
-
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -12,9 +11,9 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
  * parameters of the page URL to the search query.
  */
 
-class MemoriesRouterElement extends PolymerElement {
+class ClustersRouterElement extends PolymerElement {
   static get is() {
-    return 'memories-router';
+    return 'clusters-router';
   }
 
   static get template() {
@@ -77,4 +76,4 @@ class MemoriesRouterElement extends PolymerElement {
   }
 }
 
-customElements.define(MemoriesRouterElement.is, MemoriesRouterElement);
+customElements.define(ClustersRouterElement.is, ClustersRouterElement);

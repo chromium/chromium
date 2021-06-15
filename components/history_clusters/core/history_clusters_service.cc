@@ -60,9 +60,9 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 //  common non-mojom response.
 // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
 // Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
-history_clusters::mojom::VisitPtr VisitToMojom(
+history_clusters::mojom::URLVisitPtr VisitToMojom(
     const history::AnnotatedVisit& visit) {
-  auto visit_mojom = history_clusters::mojom::Visit::New();
+  auto visit_mojom = history_clusters::mojom::URLVisit::New();
   visit_mojom->id = visit.visit_row.visit_id;
   visit_mojom->url = visit.url_row.url();
   visit_mojom->time = visit.visit_row.visit_time;
@@ -70,17 +70,17 @@ history_clusters::mojom::VisitPtr VisitToMojom(
   return visit_mojom;
 }
 
-// Translate a vector of `Cluster`s to a vector of `mojom::MemoryPtr`s.
-std::vector<history_clusters::mojom::MemoryPtr> ClustersToMojom(
+// Translate a vector of `Cluster`s to a vector of `mojom::ClusterPtr`s.
+std::vector<history_clusters::mojom::ClusterPtr> ClustersToMojom(
     const std::vector<history::Cluster>& clusters) {
-  std::vector<history_clusters::mojom::MemoryPtr> clusters_mojom;
+  std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
   for (const auto& cluster : clusters) {
-    auto cluster_mojom = history_clusters::mojom::Memory::New();
-    cluster_mojom->id = base::UnguessableToken::Create();
+    auto cluster_mojom = history_clusters::mojom::Cluster::New();
+    cluster_mojom->id = cluster.cluster_id;
     for (const auto& keyword : cluster.keywords)
       cluster_mojom->keywords.push_back(keyword);
     for (const auto& visit : cluster.annotated_visits)
-      cluster_mojom->top_visits.push_back(VisitToMojom(visit));
+      cluster_mojom->visits.push_back(VisitToMojom(visit));
     clusters_mojom.emplace_back(std::move(cluster_mojom));
   }
   return clusters_mojom;
@@ -88,10 +88,10 @@ std::vector<history_clusters::mojom::MemoryPtr> ClustersToMojom(
 
 // Form a `QueryMemoriesResponse` containing `clusters` and continuation query
 // params meant to be used in a follow-up request. `query_params` are the params
-// used to get `clusters` from `QueryMemories()`.
-// TODO(mahmadi): At the moment, the recency threshold of `query_params` is
-//  ignored and continuation query params is set to nullptr. The service does
-//  not support paging.
+// used to get `clusters` from `QueryClusters()`.
+// TODO(tommycli): At the moment, the recency threshold of `query_params` is
+// ignored and continuation query params is set to nullptr. The service does
+// not support paging.
 HistoryClustersService::QueryMemoriesResponse FormQueryMemoriesResponse(
     mojom::QueryParamsPtr query_params,
     const std::vector<history::Cluster>& clusters) {
@@ -102,7 +102,7 @@ HistoryClustersService::QueryMemoriesResponse FormQueryMemoriesResponse(
 
 HistoryClustersService::QueryMemoriesResponse::QueryMemoriesResponse(
     mojom::QueryParamsPtr query_params,
-    std::vector<mojom::MemoryPtr> clusters)
+    std::vector<mojom::ClusterPtr> clusters)
     : query_params(std::move(query_params)), clusters(std::move(clusters)) {}
 
 HistoryClustersService::QueryMemoriesResponse::QueryMemoriesResponse(

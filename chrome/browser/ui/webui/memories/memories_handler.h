@@ -47,9 +47,9 @@ class MemoriesHandler
   // history_clusters::mojom::PageHandler:
   void SetPage(
       mojo::PendingRemote<history_clusters::mojom::Page> pending_page) override;
-  void QueryMemories(
+  void QueryClusters(
       history_clusters::mojom::QueryParamsPtr query_params) override;
-  void RemoveVisits(std::vector<history_clusters::mojom::VisitPtr> visits,
+  void RemoveVisits(std::vector<history_clusters::mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
 
   // history_clusters::HistoryClustersService::Observer:
@@ -61,25 +61,26 @@ class MemoriesHandler
   // created in anticipation of a continuation query. Subsequently, the bound
   // partially constructed `result_mojom` parameter is supplied with
   // `memory_mojoms` and `continuation_query_params` and sent to the JS.
-  void OnMemoriesQueryResult(
-      history_clusters::mojom::MemoriesResultPtr result_mojom,
+  void OnClustersQueryResult(
+      history_clusters::mojom::QueryResultPtr result_mojom,
       history_clusters::mojom::QueryParamsPtr continuation_query_params,
-      std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms);
+      std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
-  void OnVisitsRemoved(std::vector<history_clusters::mojom::VisitPtr> visits);
+  void OnVisitsRemoved(
+      std::vector<history_clusters::mojom::URLVisitPtr> visits);
 
 #if !defined(CHROME_BRANDED)
-  using MemoriesQueryResultsCallback =
-      base::OnceCallback<void(history_clusters::mojom::QueryParamsPtr,
-                              std::vector<history_clusters::mojom::MemoryPtr>)>;
+  using MemoriesQueryResultsCallback = base::OnceCallback<void(
+      history_clusters::mojom::QueryParamsPtr,
+      std::vector<history_clusters::mojom::ClusterPtr>)>;
   void QueryHistoryService(
       history_clusters::mojom::QueryParamsPtr query_params,
-      std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
+      std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
       MemoriesQueryResultsCallback callback);
   void OnHistoryQueryResults(
       history_clusters::mojom::QueryParamsPtr query_params,
-      std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
+      std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
       MemoriesQueryResultsCallback callback,
       history::QueryResults results);
 #endif

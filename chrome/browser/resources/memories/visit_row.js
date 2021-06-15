@@ -4,22 +4,21 @@
 
 import './page_favicon.js';
 import './shared_vars.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {Visit} from '/components/history_clusters/core/memories.mojom-webui.js';
+import {URLVisit} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getHostnameFromUrl} from './utils.js';
 
-
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
- * page within a Memory. A visit features the page favicon, title, a timestamp,
+ * page within a Cluster. A visit features the page favicon, title, a timestamp,
  * as well as an action menu.
  */
 
@@ -40,7 +39,7 @@ class VisitRowElement extends PolymerElement {
 
       /**
        * The visit to display.
-       * @type {!Visit}
+       * @type {!URLVisit}
        */
       visit: Object,
 
@@ -154,7 +153,7 @@ class VisitRowElement extends PolymerElement {
   }
 
   /**
-   * @param {!Visit} visit
+   * @param {!URLVisit} visit
    * @return {string} Time of day or relative date of visit, e.g., "1 day ago",
    *     depending on if the visit is a top visit.
    * @private

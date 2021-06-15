@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './memory_card.js';
-import './page_thumbnail.js';
+import './cluster.js';
 import './router.js';
 import './shared_vars.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -13,28 +12,26 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
-import {MemoriesResult, PageCallbackRouter, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
-import {Visit} from '/components/history_clusters/core/memories.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, QueryResult} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
+import {URLVisit} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 
 /**
- * @fileoverview This file provides the root custom element for the Memories
+ * @fileoverview This file provides the root custom element for the Clusters
  * landing page.
  */
 
 /** @type {number} */
 const RESULTS_PER_PAGE = 5;
 
-class MemoriesAppElement extends PolymerElement {
+class HistoryClustersAppElement extends PolymerElement {
   static get is() {
-    return 'memories-app';
+    return 'clusters-app';
   }
 
   static get template() {
@@ -48,7 +45,7 @@ class MemoriesAppElement extends PolymerElement {
       //========================================================================
 
       /**
-       * The current query for which related Memories are requested and shown.
+       * The current query for which related Clusters are requested and shown.
        * @private {string}
        */
       query_: {
@@ -57,19 +54,19 @@ class MemoriesAppElement extends PolymerElement {
       },
 
       /**
-       * Contains 1) the Memories returned by the browser in response to a
-       * request for the freshest Memories related to a given query until a
+       * Contains 1) the Clusters returned by the browser in response to a
+       * request for the freshest Clusters related to a given query until a
        * given time threshold and 2) the optional continuation query parameters
-       * returned alongside the Memories to be used in the follow-up request to
-       * load older Memories
-       * @private {MemoriesResult}
+       * returned alongside the Clusters to be used in the follow-up request to
+       * load older Clusters.
+       * @private {QueryResult}
        */
       result_: Object,
 
       /**
        * The list of visits to be removed. A non-empty array indicates a pending
        * remove request to the browser.
-       * @private {!Array<!Visit>}
+       * @private {!Array<!URLVisit>}
        */
       visitsToBeRemoved_: {
         type: Object,
@@ -85,7 +82,7 @@ class MemoriesAppElement extends PolymerElement {
     /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
     /** @private {?number} */
-    this.onMemoriesQueryResultListenerId_ = null;
+    this.onClustersQueryResultListenerId_ = null;
     /** @private {?number} */
     this.onVisitsRemovedListenerId_ = null;
   }
@@ -93,9 +90,9 @@ class MemoriesAppElement extends PolymerElement {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.onMemoriesQueryResultListenerId_ =
-        this.callbackRouter_.onMemoriesQueryResult.addListener(
-            this.onMemoriesQueryResult_.bind(this));
+    this.onClustersQueryResultListenerId_ =
+        this.callbackRouter_.onClustersQueryResult.addListener(
+            this.onClustersQueryResult_.bind(this));
     this.onVisitsRemovedListenerId_ =
         this.callbackRouter_.onVisitsRemoved.addListener(
             this.onVisitsRemoved_.bind(this));
@@ -105,8 +102,8 @@ class MemoriesAppElement extends PolymerElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
-        assert(this.onMemoriesQueryResultListenerId_));
-    this.onMemoriesQueryResultListenerId_ = null;
+        assert(this.onClustersQueryResultListenerId_));
+    this.onClustersQueryResultListenerId_ = null;
     this.callbackRouter_.removeListener(
         assert(this.onVisitsRemovedListenerId_));
     this.onVisitsRemovedListenerId_ = null;
@@ -145,22 +142,22 @@ class MemoriesAppElement extends PolymerElement {
   }
 
   /**
-   * @param {CustomEvent<!UnguessableToken>} event Event received from an empty
-   *     Memory whose visits have been removed entirely and it should also be
-   *     removed from the page. Contains the id of the Memory to be removed.
+   * @param {CustomEvent<bigint>} event Event received from an empty
+   *     Cluster whose visits have been removed entirely and it should also be
+   *     removed from the page. Contains the id of the Cluster to be removed.
    * @private
    */
-  onRemoveEmptyMemoryEement_(event) {
-    const index = this.result_.memories.findIndex((memory) => {
-      return memory.id === event.detail;
+  onRemoveEmptyClusterElement_(event) {
+    const index = this.result_.clusters.findIndex((cluster) => {
+      return cluster.id === event.detail;
     });
     if (index > -1) {
-      this.splice('result_.memories', index, 1);
+      this.splice('result_.clusters', index, 1);
     }
   }
 
   /**
-   * @param {CustomEvent<!Array<!Visit>>} event Event received from a visit
+   * @param {CustomEvent<!Array<!URLVisit>>} event Event received from a visit
    *     requesting to be removed. The array may contain the related visits of
    *     the said visit, if applicable.
    * @private
@@ -196,7 +193,7 @@ class MemoriesAppElement extends PolymerElement {
         .clearTriggers();
 
     if (this.result_ && this.result_.continuationQueryParams) {
-      this.pageHandler_.queryMemories(this.result_.continuationQueryParams);
+      this.pageHandler_.queryClusters(this.result_.continuationQueryParams);
       // Invalidate the existing continuation query params.
       this.result_.continuationQueryParams = null;
     }
@@ -205,15 +202,6 @@ class MemoriesAppElement extends PolymerElement {
   //============================================================================
   // Helper methods
   //============================================================================
-
-  /**
-   * @param {Url} thumbnailUrl
-   * @return {!{thumbnailUrl: Url}} WebPage with the thumbnailUrl property only.
-   * @private
-   */
-  createPageWithThumbnail_(thumbnailUrl) {
-    return {thumbnailUrl};
-  }
 
   /**
    * @return {!CrToolbarSearchFieldElement}
@@ -237,13 +225,13 @@ class MemoriesAppElement extends PolymerElement {
 
   /**
    * @private
-   * @param {!MemoriesResult} result
+   * @param {!QueryResult} result
    */
-  onMemoriesQueryResult_(result) {
+  onClustersQueryResult_(result) {
     if (result.isContinuation) {
       // Do not replace the existing result. `result` contains a partial set of
-      // memories that should be appended to the existing ones.
-      this.push('result_.memories', ...result.memories);
+      // clusters that should be appended to the existing ones.
+      this.push('result_.clusters', ...result.clusters);
       this.result_.continuationQueryParams = result.continuationQueryParams;
     } else {
       this.$.container.scrollTop = 0;
@@ -260,12 +248,12 @@ class MemoriesAppElement extends PolymerElement {
     }
 
     this.onBrowserIdle_().then(() => {
-      // Request up to `RESULTS_PER_PAGE` of the freshest Memories until now.
+      // Request up to `RESULTS_PER_PAGE` of the freshest Clusters until now.
       const queryParams = {
         query: this.query_.trim(),
         maxCount: RESULTS_PER_PAGE,
       };
-      this.pageHandler_.queryMemories(queryParams);
+      this.pageHandler_.queryClusters(queryParams);
       // Invalidate the existing continuation query params, if any.
       if (this.result_) {
         this.result_.continuationQueryParams = null;
@@ -282,4 +270,4 @@ class MemoriesAppElement extends PolymerElement {
   }
 }
 
-customElements.define(MemoriesAppElement.is, MemoriesAppElement);
+customElements.define(HistoryClustersAppElement.is, HistoryClustersAppElement);
