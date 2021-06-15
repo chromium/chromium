@@ -25,9 +25,7 @@ bool RegisterWakeTask(const base::CommandLine& run_command);
 void UnregisterWakeTask();
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid);
-std::wstring GetComServiceClsid();
-std::wstring GetComServiceClsidRegistryPath();
-std::wstring GetComServiceAppidRegistryPath();
+std::wstring GetComServerAppidRegistryPath(REFGUID appid);
 std::wstring GetComIidRegistryPath(REFIID iid);
 std::wstring GetComTypeLibRegistryPath(REFIID iid);
 
@@ -43,11 +41,11 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can be installed side-by-side with other instances of the updater.
-std::vector<GUID> GetSideBySideInterfaces();
+std::vector<IID> GetSideBySideInterfaces();
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can only be installed for the active instance of the updater.
-std::vector<GUID> GetActiveInterfaces();
+std::vector<IID> GetActiveInterfaces();
 
 // Returns the CLSIDs of servers that can be installed side-by-side with other
 // instances of the updater.
@@ -56,6 +54,15 @@ std::vector<CLSID> GetSideBySideServers();
 // Returns the CLSIDs of servers that can only be installed for the active
 // instance of the updater.
 std::vector<CLSID> GetActiveServers();
+
+// Helper function that joins two vectors and returns the resultant vector.
+template <typename T>
+std::vector<T> JoinVectors(const std::vector<T>& vector1,
+                           const std::vector<T>& vector2) {
+  std::vector<T> joined_vector = vector1;
+  joined_vector.insert(joined_vector.end(), vector2.begin(), vector2.end());
+  return joined_vector;
+}
 
 // Adds work items to `list` to install the interface `iid`.
 void AddInstallComInterfaceWorkItems(HKEY root,

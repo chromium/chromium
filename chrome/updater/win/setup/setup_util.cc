@@ -80,14 +80,14 @@ void UnregisterWakeTask() {
   task_scheduler->DeleteTask(kTaskName);
 }
 
-std::vector<GUID> GetSideBySideInterfaces() {
+std::vector<IID> GetSideBySideInterfaces() {
   return {
       __uuidof(IUpdaterInternal),
       __uuidof(IUpdaterInternalCallback),
   };
 }
 
-std::vector<GUID> GetActiveInterfaces() {
+std::vector<IID> GetActiveInterfaces() {
   return {__uuidof(IAppBundleWeb),
           __uuidof(IAppWeb),
           __uuidof(ICompleteStatus),
@@ -223,16 +223,9 @@ std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {
       {L"Software\\Classes\\CLSID\\", base::win::WStringFromGUID(clsid)});
 }
 
-std::wstring GetComServiceClsid() {
-  return base::win::WStringFromGUID(__uuidof(UpdaterServiceClass));
-}
-
-std::wstring GetComServiceClsidRegistryPath() {
-  return base::StrCat({L"Software\\Classes\\CLSID\\", GetComServiceClsid()});
-}
-
-std::wstring GetComServiceAppidRegistryPath() {
-  return base::StrCat({L"Software\\Classes\\AppID\\", GetComServiceClsid()});
+std::wstring GetComServerAppidRegistryPath(REFGUID appid) {
+  return base::StrCat(
+      {L"Software\\Classes\\AppID\\", base::win::WStringFromGUID(appid)});
 }
 
 std::wstring GetComIidRegistryPath(REFIID iid) {

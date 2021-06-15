@@ -37,9 +37,9 @@ namespace updater {
 namespace {
 
 void DeleteComServer(HKEY root) {
-  for (const auto& clsid :
-       {__uuidof(UpdaterClass), __uuidof(UpdaterInternalClass),
-        __uuidof(GoogleUpdate3WebUserClass)}) {
+  // TODO(crbug.com/1175095): Support candidate-specific uninstallation.
+  for (const CLSID& clsid :
+       JoinVectors(GetSideBySideServers(), GetActiveServers())) {
     InstallUtil::DeleteRegistryKey(root, GetComServerClsidRegistryPath(clsid),
                                    WorkItem::kWow64Default);
   }
@@ -48,27 +48,23 @@ void DeleteComServer(HKEY root) {
 void DeleteComService() {
   DCHECK(::IsUserAnAdmin());
 
-  InstallUtil::DeleteRegistryKey(HKEY_LOCAL_MACHINE,
-                                 GetComServiceClsidRegistryPath(),
-                                 WorkItem::kWow64Default);
-  InstallUtil::DeleteRegistryKey(HKEY_LOCAL_MACHINE,
-                                 GetComServiceAppidRegistryPath(),
-                                 WorkItem::kWow64Default);
+  // TODO(crbug.com/1175095): Support candidate-specific uninstallation.
+  for (const GUID& appid :
+       JoinVectors(GetSideBySideServers(), GetActiveServers())) {
+    InstallUtil::DeleteRegistryKey(HKEY_LOCAL_MACHINE,
+                                   GetComServerAppidRegistryPath(appid),
+                                   WorkItem::kWow64Default);
+  }
+
   if (!installer::InstallServiceWorkItem::DeleteService(
-          kWindowsServiceName, base::ASCIIToWide(UPDATER_KEY),
-          {__uuidof(UpdaterServiceClass)}, {}))
+          kWindowsServiceName, base::ASCIIToWide(UPDATER_KEY), {}, {}))
     LOG(WARNING) << "DeleteService failed.";
 }
 
 void DeleteComInterfaces(HKEY root) {
-  for (const auto& iid : GetActiveInterfaces()) {
-    for (const auto& reg_path :
-         {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
-      InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
-    }
-  }
   // TODO(crbug.com/1175095): Support candidate-specific uninstallation.
-  for (const auto& iid : GetSideBySideInterfaces()) {
+  for (const IID& iid :
+       JoinVectors(GetSideBySideInterfaces(), GetActiveInterfaces())) {
     for (const auto& reg_path :
          {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
       InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
