@@ -1361,9 +1361,6 @@ base::Value SerializeRTThreatInfo(
       "cache_duration_sec",
       base::Value(static_cast<double>(threat_info.cache_duration_sec())));
 
-  threat_info_dict.SetKey("cache_expression",
-                          base::Value(threat_info.cache_expression()));
-
   std::string verdict_type;
   switch (threat_info.verdict_type()) {
     case RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED:

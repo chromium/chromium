@@ -299,8 +299,7 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
                                   base::Unretained(cache_manager_), url,
-                                  response, base::Time::Now(),
-                                  /* store_old_cache */ false));
+                                  response, base::Time::Now()));
   }
 }
 

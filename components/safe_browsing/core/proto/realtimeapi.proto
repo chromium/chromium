@@ -96,7 +96,8 @@ message RTLookupResponse {
     // This field is only used by previous versions of Chrome(M81 Canary and
     // Dev) that only support "COVERING_MATCH". This field is deprecated in
     // favor of "cache_expression_using_match_type" below.
-    optional string cache_expression = 3;
+    // Deprecated in M93.
+    optional string cache_expression = 3 [deprecated = true];
 
     // Type of verdicts issued by the server. Different levels of verdicts from
     // 1 to 100 can be added in future based on the confidence of the verdict.

@@ -195,8 +195,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
     threat_info->set_cache_expression_match_type(
         safe_browsing::RTLookupResponse::ThreatInfo::COVERING_MATCH);
     VerdictCacheManagerFactory::GetForBrowserState(browser_state_.get())
-        ->CacheRealTimeUrlVerdict(bad_url, response, base::Time::Now(),
-                                  /*store_old_cache=*/false);
+        ->CacheRealTimeUrlVerdict(bad_url, response, base::Time::Now());
   }
 
  protected:

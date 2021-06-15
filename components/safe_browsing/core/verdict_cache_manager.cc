@@ -252,13 +252,6 @@ std::string GetCacheExpression(T verdict) {
 template <>
 std::string GetCacheExpression<RTLookupResponse::ThreatInfo>(
     RTLookupResponse::ThreatInfo verdict) {
-  // The old cache doesn't have |cache_expression_using_match_type| field
-  // setup, so it should fallback to |cache_expression| field. This check
-  // should be removed once |cache_expression| field is deprecated in
-  // RTLookupResponse.
-  if (verdict.cache_expression_match_type() ==
-      RTLookupResponse::ThreatInfo::MATCH_TYPE_UNSPECIFIED)
-    return verdict.cache_expression();
   return verdict.cache_expression_using_match_type();
 }
 
@@ -523,23 +516,18 @@ size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
 void VerdictCacheManager::CacheRealTimeUrlVerdict(
     const GURL& url,
     const RTLookupResponse& verdict,
-    const base::Time& receive_time,
-    bool store_old_cache) {
+    const base::Time& receive_time) {
   std::vector<std::string> visited_cache_expressions;
   for (const auto& threat_info : verdict.threat_info()) {
     // If |cache_expression_match_type| is unspecified, ignore this entry.
     if (threat_info.cache_expression_match_type() ==
-            RTLookupResponse::ThreatInfo::MATCH_TYPE_UNSPECIFIED &&
-        !store_old_cache) {
+        RTLookupResponse::ThreatInfo::MATCH_TYPE_UNSPECIFIED) {
       continue;
     }
-    std::string cache_expression = store_old_cache
-                                       ? threat_info.cache_expression()
-                                       : GetCacheExpression(threat_info);
-    // TODO(crbug.com/1033692): For the same cache_expression, threat_info is in
-    // decreasing order of severity. To avoid lower severity threat being
-    // overridden by higher one, only store threat info that is first seen for a
-    // cache expression.
+    std::string cache_expression = GetCacheExpression(threat_info);
+    // For the same cache_expression, threat_info is in decreasing order of
+    // severity. To avoid lower severity threat being overridden by higher one,
+    // only store threat info that is first seen for a cache expression.
     if (base::Contains(visited_cache_expressions, cache_expression))
       continue;
 
@@ -874,8 +862,7 @@ void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict() {
       RTLookupResponse::ThreatInfo::EXACT_MATCH);
   RemoveContentSettingsOnURLsDeleted(/*all_history=*/false,
                                      {history::URLRow(artificial_unsafe_url)});
-  CacheRealTimeUrlVerdict(artificial_unsafe_url, response, base::Time::Now(),
-                          /*store_old_cache=*/false);
+  CacheRealTimeUrlVerdict(artificial_unsafe_url, response, base::Time::Now());
 }
 
 void VerdictCacheManager::CacheArtificialPhishGuardVerdict() {

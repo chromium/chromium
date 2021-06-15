@@ -73,14 +73,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   // Stores |verdict| in |content_settings_| based on its |url|, |verdict| and
   // |receive_time|.
-  // |store_old_cache| is used for compatibility test. It is set to true only
-  // when we need to store an old cache for testing.
-  // TODO(crbug.com/1049376): |store_old_cache| should be removed once
-  // |cache_expression| field is deprecated.
   void CacheRealTimeUrlVerdict(const GURL& url,
                                const RTLookupResponse& verdict,
-                               const base::Time& receive_time,
-                               bool store_old_cache);
+                               const base::Time& receive_time);
 
   // Looks up |content_settings_| to find the cached verdict response. If
   // verdict is not available or is expired, return VERDICT_TYPE_UNSPECIFIED.
