@@ -267,7 +267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.BookmarkAppLaunchSource" enum="AppLaunchSource"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
@@ -975,7 +975,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DisableReason" enum="ExtensionDisableReason"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1485,7 +1485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
-    enum="ExtensionNoUpdatesInfo" expires_after="2021-10-10">
+    enum="ExtensionNoUpdatesInfo" expires_after="2021-12-12">
   <owner>snijhara@google.com</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
@@ -2394,7 +2394,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.InstallPrompt.Type2"
-    enum="ExtensionInstallPromptType" expires_after="2021-10-10">
+    enum="ExtensionInstallPromptType" expires_after="2021-12-12">
   <owner>meacer@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>

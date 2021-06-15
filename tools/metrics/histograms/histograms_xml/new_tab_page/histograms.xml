@@ -34,7 +34,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>justincohen@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -1394,7 +1394,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.SearchAvailableLoadTime2.ColdStart" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>fgorski@chromium.org</owner>
   <owner>ender@google.com</owner>
   <owner>yyushkina@chromium.org</owner>

@@ -848,7 +848,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.OpenIn.DownloadResult" enum="IOSOpenInDownloadResult"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>mrefaat@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

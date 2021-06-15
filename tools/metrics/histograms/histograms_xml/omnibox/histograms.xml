@@ -232,7 +232,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.Requests"
-    enum="OmniboxDocumentSuggestRequests" expires_after="M95">
+    enum="OmniboxDocumentSuggestRequests" expires_after="2021-12-12">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -620,7 +620,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.OnDeviceHeadSuggest.AsyncQueryTime" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>cch@chromium.org</owner>
   <owner>suggest-2g@google.com</owner>
   <summary>

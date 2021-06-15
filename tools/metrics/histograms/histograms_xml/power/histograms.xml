@@ -75,7 +75,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery charge health percentage. Sampled once when device starts
@@ -122,7 +122,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery discharge rate in mW while the system was suspended,
@@ -142,7 +142,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2021-10-10">
+<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2021-12-12">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -194,7 +194,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryRemainingWhenChargeStarts" units="%"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
@@ -728,7 +728,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.IdleSuspendCountDaily" units="count"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -1010,7 +1010,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerButtonPressInTabletMode"
-    enum="PowerButtonPressType" expires_after="2021-10-10">
+    enum="PowerButtonPressType" expires_after="2021-12-12">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -1109,7 +1109,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of suspend attempts on Chrome OS. Samples are reported before
@@ -1119,7 +1119,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeCancel" units="units"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of suspend attempts performed for a single suspend request (e.g.
@@ -1130,7 +1130,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeSuccess" units="units"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of suspend attempts performed for a single suspend request (e.g.
@@ -1140,7 +1140,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The results of suspend attempts on Chrome OS. Samples are reported after
@@ -1250,7 +1250,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimComponent.VersionType"
-    enum="PowerMLSmartDimComponentVersionType" expires_after="2021-10-10">
+    enum="PowerMLSmartDimComponentVersionType" expires_after="2021-12-12">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>

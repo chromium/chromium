@@ -811,7 +811,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Desks.MoveWindowFromActiveDesk"
-    enum="DesksMoveWindowFromActiveDeskSource" expires_after="2021-10-10">
+    enum="DesksMoveWindowFromActiveDeskSource" expires_after="2021-12-12">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -1383,7 +1383,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Login.UserClicks" enum="LoginScreenUserClickTarget"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1556,7 +1556,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.NumberOfVisibleWindowsInPrimaryDisplay" units="Windows"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>jamescook@chromium.org</owner>
   <summary>
     An upper bound on the number of windows visible to the user on the primary
@@ -1987,7 +1987,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"
-    expires_after="2021-10-04">
+    expires_after="2021-12-12">
   <owner>oshima@chromium.org</owner>
   <owner>wutao@chromium.org</owner>
   <summary>
@@ -2322,7 +2322,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SplitView.TimeInSplitView" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>xdai@chromium.org</owner>
   <summary>
     The amount of time that the user spent in split view mode. The time is
@@ -2407,7 +2407,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SwipeHomeToOverviewGesture"
-    enum="SwipeHomeToOverviewResult" expires_after="2021-10-10">
+    enum="SwipeHomeToOverviewResult" expires_after="2021-12-12">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -2551,13 +2551,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.TouchView.TouchViewActivePercentage" units="%"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>girard@chromium.org</owner>
   <summary>The proportion of time spent in TouchView during a session.</summary>
 </histogram>
 
 <histogram name="Ash.TouchView.TouchViewActiveTotal" units="minutes"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>girard@chromium.org</owner>
   <summary>The total time that TouchView is active during a session.</summary>
 </histogram>
@@ -2638,7 +2638,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Wallpaper.CustomLayout" enum="WallpaperLayout"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>xdai@chromium.org</owner>
   <summary>
     The custom wallpaper layout type. Recorded when the user sets a new custom
@@ -2667,7 +2667,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Wallpaper.Source" enum="WallpaperType"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>xdai@chromium.org</owner>
   <summary>
     Recorded when a new wallpaper is set, either by the built-in Wallpaper
@@ -2677,7 +2677,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Wallpaper.Type" enum="WallpaperType"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>kuscher@google.com</owner>
   <summary>The wallpaper type. Recorded at user login.</summary>
 </histogram>
@@ -2808,7 +2808,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.TimeBetweenTaskSwitches"
-    units="seconds" expires_after="2021-10-10">
+    units="seconds" expires_after="2021-12-12">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
@@ -2831,7 +2831,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Show" units="%"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>yjliu@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>

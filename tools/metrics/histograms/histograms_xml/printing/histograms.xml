@@ -290,7 +290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusQueryResult"
-    enum="PrinterStatusQueryResult" expires_after="2021-10-10">
+    enum="PrinterStatusQueryResult" expires_after="2021-12-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -299,7 +299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusReasons"
-    enum="PrinterStatusReasons" expires_after="2021-10-10">
+    enum="PrinterStatusReasons" expires_after="2021-12-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

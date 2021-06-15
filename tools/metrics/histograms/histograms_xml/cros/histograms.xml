@@ -34,7 +34,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>
@@ -44,7 +44,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>
@@ -54,7 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>
@@ -74,7 +74,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>

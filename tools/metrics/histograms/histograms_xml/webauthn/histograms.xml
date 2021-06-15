@@ -39,7 +39,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV1DiscoveryEvent"
-    enum="WebAuthenticationCableV1DiscoveryEvent" expires_after="2021-10-10">
+    enum="WebAuthenticationCableV1DiscoveryEvent" expires_after="2021-12-12">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

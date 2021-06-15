@@ -59,7 +59,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppInfoDialog.CreateExtensionShortcutSuccess"
-    enum="Boolean" expires_after="M95">
+    enum="Boolean" expires_after="2021-12-12">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -70,7 +70,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppInfoDialog.CreateWebAppShortcutSuccess" enum="Boolean"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -978,7 +978,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListAppMovingType" enum="AppListAppMovingType"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -1109,7 +1109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListPageOpened" enum="AppListPage"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>calamity@chromium.org</owner>
   <owner>src/ash/app_list/OWNERS</owner>
   <summary>
@@ -1297,7 +1297,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchQueryLength" units="characters"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>calamity@chromium.org</owner>
@@ -1573,7 +1573,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Apps.DefaultAppLaunch" enum="DefaultAppName"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
 <!-- Name completed by histogram_suffixes name="DefaultAppLaunchSource" -->
 
   <owner>dominickn@chromium.org</owner>
@@ -1648,7 +1648,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.Launcher.InstallAppFromLinkResult"
-    enum="WebAppInstallResultCode" expires_after="M95">
+    enum="WebAppInstallResultCode" expires_after="2021-12-12">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1658,7 +1658,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.Launcher.InstallLocallyShortcutsCreated" enum="Boolean"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1970,7 +1970,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.NumberOfPages" units="page(s)" expires_after="2021-10-10">
+<histogram name="Apps.NumberOfPages" units="page(s)" expires_after="2021-12-12">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -1980,7 +1980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.NumberOfPagesNotFull" units="page(s)"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

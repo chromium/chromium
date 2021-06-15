@@ -309,14 +309,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.AutoCorrectLevel" enum="IMECorrectionLevel"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>The auto-correction level for suggestion engine.</summary>
 </histogram>
 
 <histogram name="InputMethod.Category" enum="InputMethodCategory"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -340,7 +340,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Commit.Index" units="units"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -350,7 +350,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Commit.Type2" enum="IMECommitType2"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -449,7 +449,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.ID2" enum="InputMethodID2" expires_after="M95">
+<histogram name="InputMethod.ID2" enum="InputMethodID2"
+    expires_after="2021-12-12">
   <owner>tranbaoduy@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -474,7 +475,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.ImeMenu.EmojiHandwritingVoiceButton"
-    enum="ImeMenuButtonType" expires_after="M95">
+    enum="ImeMenuButtonType" expires_after="2021-12-12">
   <owner>dvallet@chromium.org</owner>
   <owner>azurewei@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
@@ -486,7 +487,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.ImeSwitch" enum="IMESwitchType"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -494,7 +495,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.KeyEventLatency" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>Time taken by the engine to handle a key event.</summary>
@@ -668,7 +669,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.PkCommit.Type" enum="IMECommitType2"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>dvallet@chromium.org</owner>
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -719,7 +720,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.BackspaceCount" units="units"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -763,7 +764,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.CharactersCommitted" units="units"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -801,7 +802,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ContainerBehavior"
-    enum="VirtualKeyboardContainerType" expires_after="M95">
+    enum="VirtualKeyboardContainerType" expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -822,7 +823,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Duration" units="seconds"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>How long the virtual keyboard was visible.</summary>
@@ -838,7 +839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Emoji.TriggerType"
-    enum="VirtualKeyboardEmojiTriggerType" expires_after="M95">
+    enum="VirtualKeyboardEmojiTriggerType" expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>How emojis were inserted.</summary>
@@ -934,7 +935,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Layout" enum="IMEVKLayout"
-    expires_after="M95">
+    expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -967,7 +968,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.PreferredLayoutForStylus"
-    enum="IMEVKLayout" expires_after="M95">
+    enum="IMEVKLayout" expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

@@ -396,7 +396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="M95">
+    enum="LevelDBCorruptionTypes" expires_after="2021-12-12">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -800,14 +800,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.Scripts.Async.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2021-10-10">
+    enum="NotStreamingReason" expires_after="2021-12-12">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Reason for not streaming an async script.</summary>
 </histogram>
 
 <histogram name="WebCore.Scripts.Async.StartedStreaming" enum="BooleanStreamed"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Whether an async script was streamed or not.</summary>

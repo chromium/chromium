@@ -166,7 +166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>meilinw@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>

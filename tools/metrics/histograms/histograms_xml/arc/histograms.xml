@@ -22,14 +22,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Arc.AbiMigration.BootTime" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>vraheja@chromium.org</owner>
   <owner>arc-core@google.com</owner>
   <summary>Time taken for ARC to boot during an Abi Migration event.</summary>
 </histogram>
 
 <histogram name="Arc.AbiMigration.DowngradeDelay" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>vraheja@chromium.org</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -39,7 +39,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AbiMigration.Event" enum="ArcCorePriAbiMigEvent"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>vraheja@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -48,7 +48,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AbiMigration.FailedAttempts" units="units"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>vraheja@chromium.org</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Auth.MainAccountResolution.Status"
-    enum="ArcAuthMainAccountResolutionStatus" expires_after="2021-10-10">
+    enum="ArcAuthMainAccountResolutionStatus" expires_after="2021-12-12">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>Contains the status of main account resolution.</summary>
@@ -482,7 +482,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Background" units="ms"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>maajid@google.com</owner>
   <owner>shaochuan@google.com</owner>
   <owner>shihuis@google.com</owner>
@@ -751,7 +751,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode.SecondaryAccount"
-    enum="ArcOptInSilentAuthCode" expires_after="2021-10-10">
+    enum="ArcOptInSilentAuthCode" expires_after="2021-12-12">
   <owner>khmel@google.com</owner>
   <summary>
     Arc Silent Auth Code status. This status is set during the minting of an
@@ -820,7 +820,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PlayStoreSearch.ReturnedAppsTotal" units="apps"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>hejq@chromium.org</owner>
   <summary>
     The total number of returned apps of a Play Store app discovery query.
@@ -1113,7 +1113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.SdkVersionUpgradeType" enum="ArcSdkVersionUpgradeType"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>niwa@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>

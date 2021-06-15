@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.EulaScreen.UserActions" enum="EulaScreenUserAction"
-    expires_after="2021-10-04">
+    expires_after="2021-12-12">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.Behavior" enum="SyncConsentBehavior"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>jamescook@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -354,7 +354,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>jamescook@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

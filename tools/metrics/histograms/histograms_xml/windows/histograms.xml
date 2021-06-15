@@ -59,7 +59,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ChromeDllPrefetchResult" enum="FilePrefetchResult"
-    expires_after="2021-10-04">
+    expires_after="2021-12-12">
   <owner>brucedawson@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -155,7 +155,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.HypervPresent" enum="BooleanEnabled"
-    expires_after="2021-10-04">
+    expires_after="2021-12-12">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -343,7 +343,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2021-10-04">
+    expires_after="2021-12-12">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -355,7 +355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2021-10-04">
+    enum="BooleanEnabled" expires_after="2021-12-12">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -365,7 +365,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ServiceStatus.SSP" units="WindowsServiceStatus"
-    expires_after="2021-10-04">
+    expires_after="2021-12-12">
   <owner>wfh@chromium.org</owner>
   <owner>ajgo@chromium.org</owner>
   <summary>

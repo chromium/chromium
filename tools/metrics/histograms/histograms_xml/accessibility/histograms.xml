@@ -603,7 +603,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.ModalDialogAccepted"
-    enum="BooleanAccepted" expires_after="2021-10-10">
+    enum="BooleanAccepted" expires_after="2021-12-12">
   <owner>katie@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <summary>
@@ -626,7 +626,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.RequestLanguage" enum="LanguageCode"
-    expires_after="2021-10-10">
+    expires_after="2021-12-12">
   <owner>katie@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1144,7 +1144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Shortcuts.CrosDockedMagnifier"
-    enum="BooleanEnabled" expires_after="2021-10-10">
+    enum="BooleanEnabled" expires_after="2021-12-12">
   <owner>amraboelkher@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
@@ -1217,7 +1217,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
-    expires_after="2021-09-19">
+    expires_after="2021-12-12">
   <owner>dmazzoni@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1247,7 +1247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.WinHighContrastTheme"
-    enum="AccessibilityHighContrastColorScheme" expires_after="2021-09-19">
+    enum="AccessibilityHighContrastColorScheme" expires_after="2021-12-12">
   <owner>dmazzoni@chromium.org</owner>
   <owner>almaher@microsoft.com</owner>
   <owner>weblayoutdev@microsoft.com</owner>
@@ -1439,7 +1439,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
-    enum="ReaderModeEntryPoint" expires_after="2021-10-10">
+    enum="ReaderModeEntryPoint" expires_after="2021-12-12">
   <owner>katie@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
