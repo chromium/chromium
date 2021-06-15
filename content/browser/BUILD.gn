@@ -853,6 +853,8 @@ source_set("browser") {
     "feature_observer.h",
     "federated_learning/floc_service_impl.cc",
     "federated_learning/floc_service_impl.h",
+    "fenced_frame/fenced_frame_url_mapping.cc",
+    "fenced_frame/fenced_frame_url_mapping.h",
     "field_trial_recorder.cc",
     "field_trial_recorder.h",
     "field_trial_synchronizer.cc",

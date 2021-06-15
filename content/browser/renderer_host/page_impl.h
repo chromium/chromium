@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/public/browser/page.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
@@ -44,6 +45,10 @@ class PageImpl : public Page {
     favicon_urls_ = std::move(favicon_urls);
   }
 
+  FencedFrameURLMapping& fenced_frame_urls_map() {
+    return fenced_frame_urls_map_;
+  }
+
  private:
   // True if we've received a notification that the onload() handler has
   // run for main frame document.
@@ -56,6 +61,10 @@ class PageImpl : public Page {
   // Candidate favicon URLs. Each page may have a collection and will be
   // displayed when active (i.e., upon activation for prerendering).
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls_;
+
+  // Fenced frames:
+  // Any fenced frames created within this page will access this map.
+  FencedFrameURLMapping fenced_frame_urls_map_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.

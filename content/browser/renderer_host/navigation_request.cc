@@ -1498,6 +1498,32 @@ void NavigationRequest::BeginNavigation() {
 
   SetState(WILL_START_NAVIGATION);
 
+  // if this is a fenced frame with a urn:uuid then convert it to a url before
+  // starting the request.
+  if (blink::features::IsFencedFramesEnabled() &&
+      frame_tree_node_->frame_tree()->IsFencedFrameTree() &&
+      common_params_->url.is_valid() &&
+      common_params_->url.scheme() == url::kUrnScheme) {
+    // TODO(crbug.com/1123606): Add CHECK for this being the root of the fenced
+    // frame tree once fenced frames are integrated with MPArch. Also make sure
+    // that the mapping is retrieved from the primary root instead of this
+    // tree's root.
+    absl::optional<GURL> mapped_url =
+        frame_tree_node_->current_frame_host()
+            ->GetPage()
+            .fenced_frame_urls_map()
+            .ConvertFencedFrameURNToURL(common_params_->url);
+    if (!mapped_url) {
+      OnRequestFailedInternal(
+          network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
+          true /* skip_throttles */, absl::nullopt /* error_page_content*/,
+          false /* collapse_frame */);
+      return;
+    }
+    common_params_->url = mapped_url.value();
+    commit_params_->original_url = mapped_url.value();
+  }
+
 #if defined(OS_ANDROID)
   base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
   bool should_override_url_loading = false;

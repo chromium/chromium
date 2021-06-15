@@ -390,6 +390,12 @@ class CONTENT_EXPORT FrameTree {
   // Must be called before FrameTree is destroyed.
   void Shutdown();
 
+  // Returns true if this is a fenced frame tree.
+  // TODO(crbug.com/1123606): Integrate this with the MPArch based fenced frame
+  // code once that lands.
+  bool IsFencedFrameTree() const { return is_fenced_frame_tree_; }
+  void SetFencedFrameTreeForTesting() { is_fenced_frame_tree_ = true; }
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -437,6 +443,10 @@ class CONTENT_EXPORT FrameTree {
 
   // Indicates type of frame tree.
   const Type type_;
+
+  // TODO(crbug.com/1123606): Integrate this with the MPArch based fenced frame
+  // code once that lands. Possibly this will then be part of |type_|.
+  bool is_fenced_frame_tree_ = false;
 
 #if DCHECK_IS_ON()
   // Whether Shutdown() was called.

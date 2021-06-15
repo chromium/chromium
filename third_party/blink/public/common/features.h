@@ -65,6 +65,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 
+// Fenced Frames:
+BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
+
 BLINK_COMMON_EXPORT extern const base::Feature
     kPreviewsResourceLoadingHintsSpecificResourceTypes;
 BLINK_COMMON_EXPORT extern const base::Feature

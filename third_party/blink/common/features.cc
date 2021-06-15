@@ -196,6 +196,10 @@ bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
 }
 
+bool IsFencedFramesEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
+}
+
 // Enable limiting previews loading hints to specific resource types.
 const base::Feature kPreviewsResourceLoadingHintsSpecificResourceTypes{
     "PreviewsResourceLoadingHintsSpecificResourceTypes",

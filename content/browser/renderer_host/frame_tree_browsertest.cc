@@ -5,7 +5,9 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -33,6 +35,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "url/url_constants.h"
 
@@ -799,6 +802,75 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
 
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());
+}
+
+class FencedFrameTreeBrowserTest : public FrameTreeBrowserTest {
+ public:
+  FencedFrameTreeBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kFencedFrames);
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+// Tests that the fenced frame gets navigated to an actual url given a urn:uuid.
+IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
+                       CheckFencedFrameNavigationWithUUID) {
+  GURL main_url(embedded_test_server()->GetURL("/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  {
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('fencedframe');"
+                       "document.body.appendChild(f);"));
+  }
+  EXPECT_EQ(1U, root->child_count());
+
+  // Simulate one of the nested frames as fenced frames.
+  // TODO(crbug.com/1123606): Use an actual fenced frame tree based on MPArch
+  // once that code lands.
+  root->child_at(0)->frame_tree()->SetFencedFrameTreeForTesting();
+
+  https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+
+  {
+    TestFrameNavigationObserver observer(root->child_at(0));
+    EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
+    observer.Wait();
+  }
+
+  EXPECT_EQ(https_url,
+            root->child_at(0)->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(https_url),
+            root->child_at(0)->current_frame_host()->GetLastCommittedOrigin());
+
+  // Parent will still see the src as the urn_uuid and not the mapped url.
+  EXPECT_EQ(urn_uuid.spec(), EvalJs(root, "f.src"));
+
+  // The parent will not be able to access window.frames[0] as fenced frames are
+  // not visible via frames[].
+  EXPECT_FALSE(ExecJs(root, "window.frames[0].location"));
+  EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
 }
 
 class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
