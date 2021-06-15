@@ -19,10 +19,10 @@ import node_modules
 def Minify(source):
   # Open two temporary files, so that uglify can read the input from one and
   # write its output to the other.
-  with tempfile.NamedTemporaryFile(suffix='.js') as infile, \
-       tempfile.NamedTemporaryFile(suffix='.js') as outfile:
+  with tempfile.NamedTemporaryFile(mode="w+", suffix='.js') as infile, \
+       tempfile.NamedTemporaryFile(mode="r+", suffix='.js') as outfile:
     infile.write(source)
-    infile.flush();
+    infile.flush()
     node.RunNode(
         [node_modules.PathToTerser(), infile.name, '--output', outfile.name])
     result = outfile.read()
