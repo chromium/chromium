@@ -3253,6 +3253,7 @@ enum WebFeature {
   kXRFrameGetJointPose = 3938,
   kXRFrameFillJointRadii = 3939,
   kXRFrameFillPoses = 3940,
+  kWindowOpenNewPopupBehaviorMismatch = 3941,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
