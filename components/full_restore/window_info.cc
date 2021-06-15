@@ -32,6 +32,13 @@ std::string ToPrefixedString(absl::optional<chromeos::WindowStateType> val,
   return ToPrefixedString(new_val, prefix);
 }
 
+std::string ToPrefixedString(absl::optional<ui::WindowShowState> val,
+                             const std::string& prefix) {
+  absl::optional<int> new_val =
+      val ? absl::make_optional(static_cast<int>(*val)) : absl::nullopt;
+  return ToPrefixedString(new_val, prefix);
+}
+
 }  // namespace
 
 WindowInfo::ArcExtraInfo::ArcExtraInfo() = default;
@@ -51,6 +58,8 @@ std::string WindowInfo::ToString() const {
                           "Visible on all workspaces") +
          ToPrefixedString(current_bounds, "Current bounds") +
          ToPrefixedString(window_state_type, "Window state") +
+         ToPrefixedString(pre_minimized_show_state_type,
+                          "Pre minimized show state") +
          ToPrefixedString(display_id, "Display id");
 }
 

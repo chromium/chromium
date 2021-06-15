@@ -793,5 +793,30 @@ TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   EXPECT_TRUE(child.IsVisible());
 }
 
+// Tests that widgets that are created minimized have the correct restore
+// bounds.
+TEST_F(NativeWidgetAuraTest, MinimizedWidgetRestoreBounds) {
+  const gfx::Rect restore_bounds(300, 300);
+
+  Widget widget;
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  params.context = root_window();
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.bounds = restore_bounds;
+
+  widget.Init(std::move(params));
+  widget.Show();
+
+  aura::Window* window = widget.GetNativeWindow();
+  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED,
+            window->GetProperty(aura::client::kShowStateKey));
+  EXPECT_EQ(restore_bounds,
+            *window->GetProperty(aura::client::kRestoreBoundsKey));
+
+  widget.Restore();
+  EXPECT_EQ(restore_bounds, window->bounds());
+}
+
 }  // namespace
 }  // namespace views

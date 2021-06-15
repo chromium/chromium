@@ -63,9 +63,16 @@ constexpr gfx::Rect kCurrentBounds3(51, 61, 151, 161);
 constexpr chromeos::WindowStateType kWindowStateType1 =
     chromeos::WindowStateType::kMaximized;
 constexpr chromeos::WindowStateType kWindowStateType2 =
-    chromeos::WindowStateType::kInactive;
+    chromeos::WindowStateType::kMinimized;
 constexpr chromeos::WindowStateType kWindowStateType3 =
     chromeos::WindowStateType::kFullscreen;
+
+constexpr ui::WindowShowState kPreMinimizedWindowStateType1 =
+    ui::SHOW_STATE_DEFAULT;
+constexpr ui::WindowShowState kPreMinimizedWindowStateType2 =
+    ui::SHOW_STATE_MAXIMIZED;
+constexpr ui::WindowShowState kPreMinimizedWindowStateType3 =
+    ui::SHOW_STATE_DEFAULT;
 
 constexpr gfx::Size kMaxSize1(600, 800);
 constexpr gfx::Size kMinSize1(100, 50);
@@ -149,6 +156,7 @@ class RestoreDataTest : public testing::Test {
     window_info2.desk_id = kDeskId2;
     window_info2.current_bounds = kCurrentBounds2;
     window_info2.window_state_type = kWindowStateType2;
+    window_info2.pre_minimized_show_state_type = kPreMinimizedWindowStateType2;
     window_info2.display_id = kDisplayId1;
     window_info2.arc_extra_info = WindowInfo::ArcExtraInfo();
     window_info2.arc_extra_info->minimum_size = kMinSize2;
@@ -185,6 +193,7 @@ class RestoreDataTest : public testing::Test {
                             bool visible_on_all_workspaces,
                             const gfx::Rect& current_bounds,
                             chromeos::WindowStateType window_state_type,
+                            ui::WindowShowState pre_minimized_show_state_type,
                             absl::optional<gfx::Size> max_size,
                             absl::optional<gfx::Size> min_size,
                             absl::optional<std::u16string> title,
@@ -227,8 +236,16 @@ class RestoreDataTest : public testing::Test {
     EXPECT_TRUE(data->current_bounds.has_value());
     EXPECT_EQ(current_bounds, data->current_bounds.value());
 
-    EXPECT_TRUE(data->window_state_type.has_value());
+    ASSERT_TRUE(data->window_state_type.has_value());
     EXPECT_EQ(window_state_type, data->window_state_type.value());
+
+    // This field should only be written if we are in minimized window state.
+    if (data->window_state_type.value() ==
+        chromeos::WindowStateType::kMinimized) {
+      EXPECT_TRUE(data->pre_minimized_show_state_type.has_value());
+      EXPECT_EQ(pre_minimized_show_state_type,
+                data->pre_minimized_show_state_type.value());
+    }
 
     if (max_size.has_value()) {
       EXPECT_TRUE(data->maximum_size.has_value());
@@ -286,8 +303,8 @@ class RestoreDataTest : public testing::Test {
                                     base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
         kActivationIndex1, kDeskId1, kVisibleOnAllWorkspaces1, kCurrentBounds1,
-        kWindowStateType1, kMaxSize1, kMinSize1, std::u16string(kTitle1),
-        kPrimaryColor1, kStatusBarColor1);
+        kWindowStateType1, kPreMinimizedWindowStateType1, kMaxSize1, kMinSize1,
+        std::u16string(kTitle1), kPrimaryColor1, kStatusBarColor1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -298,8 +315,8 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
         kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kCurrentBounds2,
-        kWindowStateType2, absl::nullopt, kMinSize2, std::u16string(kTitle2),
-        kPrimaryColor2, kStatusBarColor2);
+        kWindowStateType2, kPreMinimizedWindowStateType2, absl::nullopt,
+        kMinSize2, std::u16string(kTitle2), kPrimaryColor2, kStatusBarColor2);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -315,7 +332,8 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
         kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3, kCurrentBounds3,
-        kWindowStateType3, absl::nullopt, absl::nullopt, absl::nullopt, 0, 0);
+        kWindowStateType3, kPreMinimizedWindowStateType3, absl::nullopt,
+        absl::nullopt, absl::nullopt, 0, 0);
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -376,8 +394,9 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
                        std::vector<base::FilePath>{base::FilePath(kFilePath2)},
                        CreateIntent(kIntentActionView, kMimeType, kShareText2),
                        kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2,
-                       kCurrentBounds2, kWindowStateType2, absl::nullopt,
-                       kMinSize2, kTitle2, kPrimaryColor2, kStatusBarColor2);
+                       kCurrentBounds2, kWindowStateType2,
+                       kPreMinimizedWindowStateType2, absl::nullopt, kMinSize2,
+                       kTitle2, kPrimaryColor2, kStatusBarColor2);
 
   // Verify the restore data for |kAppId2| still exists.
   const auto launch_list_it2 =

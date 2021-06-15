@@ -29,6 +29,7 @@ constexpr char kDeskIdKey[] = "desk_id";
 constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
+constexpr char kPreMinimizedShowStateTypeKey[] = "pre_min_state";
 constexpr char kMinimumSizeKey[] = "min_size";
 constexpr char kMaximumSizeKey[] = "max_size";
 constexpr char kTitleKey[] = "title";
@@ -212,6 +213,14 @@ absl::optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
              : absl::nullopt;
 }
 
+absl::optional<ui::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
+    const base::DictionaryValue& dict) {
+  return dict.HasKey(kPreMinimizedShowStateTypeKey)
+             ? absl::make_optional(static_cast<ui::WindowShowState>(
+                   dict.FindIntKey(kPreMinimizedShowStateTypeKey).value()))
+             : absl::nullopt;
+}
+
 }  // namespace
 
 AppRestoreData::AppRestoreData() = default;
@@ -237,6 +246,8 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
       GetBoolValueFromDict(*data_dict, kVisibleOnAllWorkspacesKey);
   current_bounds = GetBoundsRectFromDict(*data_dict, kCurrentBoundsKey);
   window_state_type = GetWindowStateTypeFromDict(*data_dict);
+  pre_minimized_show_state_type =
+      GetPreMinimizedShowStateTypeFromDict(*data_dict);
   maximum_size = GetSizeFromDict(*data_dict, kMaximumSizeKey);
   minimum_size = GetSizeFromDict(*data_dict, kMinimumSizeKey);
   title = GetU16StringValueFromDict(*data_dict, kTitleKey);
@@ -306,6 +317,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (window_state_type.has_value())
     data->window_state_type = window_state_type.value();
+
+  if (pre_minimized_show_state_type.has_value())
+    data->pre_minimized_show_state_type = pre_minimized_show_state_type.value();
 
   if (maximum_size.has_value())
     data->maximum_size = maximum_size.value();
@@ -385,6 +399,12 @@ base::Value AppRestoreData::ConvertToValue() const {
                                static_cast<int>(window_state_type.value()));
   }
 
+  if (pre_minimized_show_state_type.has_value()) {
+    launch_info_dict.SetIntKey(
+        kPreMinimizedShowStateTypeKey,
+        static_cast<int>(pre_minimized_show_state_type.value()));
+  }
+
   if (maximum_size.has_value()) {
     launch_info_dict.SetKey(kMaximumSizeKey,
                             ConvertSizeToValue(maximum_size.value()));
@@ -428,6 +448,11 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
   if (window_info.window_state_type.has_value())
     window_state_type = window_info.window_state_type.value();
 
+  if (window_info.pre_minimized_show_state_type.has_value()) {
+    pre_minimized_show_state_type =
+        window_info.pre_minimized_show_state_type.value();
+  }
+
   if (window_info.display_id.has_value())
     display_id = window_info.display_id.value();
 
@@ -450,6 +475,7 @@ void AppRestoreData::ClearWindowInfo() {
   visible_on_all_workspaces.reset();
   current_bounds.reset();
   window_state_type.reset();
+  pre_minimized_show_state_type.reset();
   minimum_size.reset();
   maximum_size.reset();
   title.reset();
@@ -490,6 +516,11 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
 
   if (window_state_type.has_value())
     window_info->window_state_type = window_state_type.value();
+
+  if (pre_minimized_show_state_type.has_value()) {
+    window_info->pre_minimized_show_state_type =
+        pre_minimized_show_state_type.value();
+  }
 
   if (maximum_size.has_value() || minimum_size.has_value() ||
       title.has_value()) {

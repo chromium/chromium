@@ -247,6 +247,11 @@ void FullRestoreReadHandler::ModifyWidgetParams(
     out_params->show_state =
         chromeos::ToWindowShowState(*window_info->window_state_type);
   }
+  if (window_info->pre_minimized_show_state_type) {
+    out_params->init_properties_container.SetProperty(
+        aura::client::kPreMinimizedShowStateKey,
+        *window_info->pre_minimized_show_state_type);
+  }
 
   // Register to track when the widget has initialized. If a delegate is not
   // set, then the widget creator is responsible for calling

@@ -8,6 +8,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace full_restore {
@@ -51,6 +52,10 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
 
   // Window state, minimized, maximized, inactive, etc.
   absl::optional<chromeos::WindowStateType> window_state_type;
+
+  // Show state of a window before it was minimized. Empty for non-minimized
+  // windows.
+  absl::optional<ui::WindowShowState> pre_minimized_show_state_type;
 
   // Display id to launch an app.
   absl::optional<int64_t> display_id;

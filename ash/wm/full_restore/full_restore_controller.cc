@@ -366,10 +366,15 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
 
   // Unless minimized, snap state and activation unblock are done when the
   // window is first shown, which will be async for exo apps.
-  if (WindowState::Get(window)->IsMinimized())
+  if (WindowState::Get(window)->IsMinimized()) {
     window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, false);
-  else
+  } else {
     to_be_shown_windows_.insert(window);
+
+    // Clear the pre minimized show state key in case for any reason the window
+    // did not restore its minimized state.
+    window->ClearProperty(aura::client::kPreMinimizedShowStateKey);
+  }
 
   int32_t* activation_index =
       window->GetProperty(full_restore::kActivationIndexKey);
@@ -468,6 +473,12 @@ void FullRestoreController::SaveWindowImpl(
             ? chromeos::ToWindowStateType(
                   window->GetProperty(aura::client::kPreFullscreenShowStateKey))
             : window_state->GetStateType();
+  }
+
+  // Populate the pre minimized show state field if the window is minimized.
+  if (window_state->IsMinimized()) {
+    window_info.pre_minimized_show_state_type =
+        window->GetProperty(aura::client::kPreMinimizedShowStateKey);
   }
 
   window_info.display_id =

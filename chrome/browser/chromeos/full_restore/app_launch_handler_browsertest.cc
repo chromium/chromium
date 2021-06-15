@@ -142,20 +142,35 @@ class TestFullRestoreInfoObserver
 // Creates a WindowInfo object and then saves it.
 void CreateAndSaveWindowInfo(int desk_id,
                              const gfx::Rect& current_bounds,
-                             chromeos::WindowStateType window_state_type) {
+                             chromeos::WindowStateType window_state_type,
+                             ui::WindowShowState pre_minimized_show_state,
+                             int32_t window_id) {
   // A window is needed for SaveWindowInfo, but all it needs is a layer and
-  // kWindowIdKey to be set. |window| needs to be alive when save is called for
+  // kWindowIdKey to be set. `window` needs to be alive when save is called for
   // SaveWindowInfo to work.
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
-  window->SetProperty(::full_restore::kWindowIdKey, kWindowId1);
+  window->SetProperty(::full_restore::kWindowIdKey, window_id);
 
   ::full_restore::WindowInfo window_info;
   window_info.window = window.get();
   window_info.desk_id = desk_id;
   window_info.current_bounds = current_bounds;
   window_info.window_state_type = window_state_type;
+
+  if (pre_minimized_show_state != ui::SHOW_STATE_DEFAULT) {
+    DCHECK_EQ(chromeos::WindowStateType::kMinimized, window_state_type);
+    window_info.pre_minimized_show_state_type = pre_minimized_show_state;
+  }
+
   ::full_restore::SaveWindowInfo(window_info);
+}
+
+void CreateAndSaveWindowInfo(int desk_id,
+                             const gfx::Rect& current_bounds,
+                             chromeos::WindowStateType window_state_type) {
+  CreateAndSaveWindowInfo(desk_id, current_bounds, window_state_type,
+                          ui::SHOW_STATE_DEFAULT, kWindowId1);
 }
 
 void SaveWindowInfo(aura::Window* window) {
@@ -299,15 +314,15 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
     proxy->FlushMojoCallsForTesting();
   }
 
-  bool FindWebAppWindow() {
+  aura::Window* FindWebAppWindow() {
     for (auto* browser : *BrowserList::GetInstance()) {
       aura::Window* window = browser->window()->GetNativeWindow();
       if (window->GetProperty(::full_restore::kRestoreWindowIdKey) ==
           kWindowId2) {
-        return true;
+        return window;
       }
     }
-    return false;
+    return nullptr;
   }
 
   void SaveChromeAppLaunchInfo(const std::string& app_id) {
@@ -378,6 +393,44 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndAddApp) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_TRUE(FindWebAppWindow());
+}
+
+// Tests that restoring windows that are minimized will restore their
+// pre-minimized window state when unminimizing.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, PreMinimizedState) {
+  // Add app launch info.
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(),
+      std::make_unique<::full_restore::AppLaunchInfo>(
+          kAppId, kWindowId2,
+          apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+          std::vector<base::FilePath>{}, nullptr));
+  CreateAndSaveWindowInfo(kDeskId, kCurrentBounds,
+                          chromeos::WindowStateType::kMinimized,
+                          ui::SHOW_STATE_MAXIMIZED, kWindowId2);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Create AppLaunchHandler, and set should restore.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  app_launch_handler->SetShouldRestore();
+
+  // The web app window should be attainable.
+  CreateWebApp();
+  content::RunAllTasksUntilIdle();
+  aura::Window* app_window = FindWebAppWindow();
+  ASSERT_TRUE(app_window);
+
+  // The current window state should be minimized, and when we unminimize it
+  // should be maximized.
+  ash::WindowState* window_state = ash::WindowState::Get(app_window);
+  ASSERT_TRUE(window_state->IsMinimized());
+  window_state->Unminimize();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  window_state->Restore();
+  EXPECT_EQ(kCurrentBounds, app_window->GetBoundsInScreen());
 }
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, AddAppAndRestore) {

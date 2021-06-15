@@ -12,6 +12,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -94,6 +95,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   absl::optional<gfx::Rect> restore_bounds;
   absl::optional<gfx::Rect> current_bounds;
   absl::optional<chromeos::WindowStateType> window_state_type;
+  absl::optional<ui::WindowShowState> pre_minimized_show_state_type;
 
   // Extra ARC window's information.
   absl::optional<gfx::Size> minimum_size;
