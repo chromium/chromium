@@ -253,6 +253,9 @@ TEST_F(ESimProfileTest, InstallProfile) {
       HermesResponseStatus::kErrorNeedConfirmationCode,
       /*expected_count=*/1);
 
+  // Adding a pending profile causes a list change.
+  EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
+
   // Verify that installing pending profile returns proper results
   // and updates esim_profile properties.
   install_result = InstallProfile(esim_profile, /*wait_for_connect=*/true,
@@ -264,7 +267,9 @@ TEST_F(ESimProfileTest, InstallProfile) {
       GetESimProfileProperties(esim_profile);
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
   EXPECT_NE(mojo_properties->state, mojom::ProfileState::kPending);
-  EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
+
+  // Installing a profile causes a list change.
+  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
 
   histogram_tester.ExpectTotalCount(kPendingProfileLatencyHistogram, 1);
   histogram_tester.ExpectBucketCount(kPendingProfileInstallHistogram,
@@ -374,9 +379,17 @@ TEST_F(ESimProfileTest, UninstallProfile) {
   // Verify that uninstall removes the profile and notifies observers properly.
   observer()->Reset();
   result = UninstallProfile(active_esim_profile);
+
+  // The state change of the ESim profile from kActive to kInactive causes a
+  // list change observer event.
+  ASSERT_EQ(1u, observer()->profile_list_change_calls().size());
+
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::ESimOperationResult::kSuccess, result);
-  ASSERT_EQ(1u, observer()->profile_list_change_calls().size());
+
+  // The removal of the ESim profile causes a list change observer event.
+  ASSERT_EQ(2u, observer()->profile_list_change_calls().size());
+
   EXPECT_EQ(1u, GetProfileList(GetEuiccForEid(ESimTestBase::kTestEid)).size());
   histogram_tester.ExpectTotalCount(kProfileUninstallationResultHistogram, 2);
   histogram_tester.ExpectBucketCount(kProfileUninstallationResultHistogram,

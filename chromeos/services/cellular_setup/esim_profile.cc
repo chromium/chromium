@@ -242,6 +242,7 @@ void ESimProfile::UpdateProperties(
   properties_->activation_code = esim_profile_state.activation_code();
   if (notify) {
     esim_manager_->NotifyESimProfileChanged(this);
+    esim_manager_->NotifyESimProfileListChanged(euicc_);
   }
 }
 

@@ -233,6 +233,10 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
   base::RunLoop().RunUntilIdle();
   HermesProfileClient::Properties* dbus_properties =
       HermesProfileClient::Get()->GetProperties(profile_path);
+
+  // Adding a pending profile causes a list change.
+  EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
+
   InstallResultPair result_pair = InstallProfileFromActivationCode(
       euicc, dbus_properties->activation_code().value(),
       /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
@@ -244,7 +248,9 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
   mojom::ESimProfilePropertiesPtr mojo_properties =
       GetESimProfileProperties(esim_profile);
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
-  EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
+
+  // Installing a profile causes a list change.
+  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
 }
 
 TEST_F(EuiccTest, RequestPendingProfiles) {
