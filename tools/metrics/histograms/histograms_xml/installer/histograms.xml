@@ -150,6 +150,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Installer.PowerwashDays" units="powerwashdays"
+    expires_after="2022-05-29">
+  <owner>qianwan@google.com</owner>
+  <owner>chromeos-data@google.com</owner>
+  <summary>
+    How many calendar(UTC) days that powerwash occurred before the date that the
+    metric is recorded. The histogram is recorded on the next restart after
+    powerwash. The purpose of this metric is to get the date when the powerwash
+    happened. This histogram is 1 based instead of 0 based and 1 means the
+    device was restarted immediately after powerwash completed. The value for
+    marjority cases is 1, but some edge cases may greater than 1 which means the
+    device was shutdown immediately (by user manually) after the powerwash
+    completed and then restarted more than 1 days later. The powerwash date and
+    the metric recorded date are all get from client device.
+  </summary>
+</histogram>
+
 <histogram name="Installer.RebootToNewPartitionAttempt" units="count"
     expires_after="2019-01-30">
   <obsolete>
