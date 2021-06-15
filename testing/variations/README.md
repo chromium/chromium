@@ -5,7 +5,9 @@ which is used to ensure test coverage of active field trials.
 
 For each study, the first available experiment after platform filtering is used
 as the default experiment for Chromium builds. This experiment is also used for
-perf bots and browser tests in the waterfall.
+perf bots and various browser tests in the waterfall (e.g. browser_tests,
+components_browsertests, content_browsertests, extensions_browsertests, interactive_ui_tests and
+sync_integration_tests). It is not used by unit test targets.
 
 > Note: This configuration applies specifically to Chromium developer builds.
 > Chrome branded / official builds do not use these definitions.
@@ -13,9 +15,6 @@ perf bots and browser tests in the waterfall.
 > Note: Non-developer builds of Chromium (for example, non-Chrome browsers,
 > or Chromium builds provided by Linux distros) should disable the testing
 > config via the GN flag `fieldtrial_testing_like_official_build=true`.
-
-> Note: This configuration is NOT used for content_browsertests or other test
-> targets based on content_shell.
 
 ## Config File Format
 
