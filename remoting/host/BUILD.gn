@@ -798,6 +798,8 @@ if (enable_remoting_host) {
         "setup/host_starter.h",
         "setup/host_stopper.cc",
         "setup/host_stopper.h",
+        "setup/start_host_as_root.cc",
+        "setup/start_host_as_root.h",
         "setup/start_host_main.cc",
         "setup/start_host_main.h",
       ]
