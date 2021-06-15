@@ -6,13 +6,15 @@ package org.chromium.webview_ui_test.test;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.web.sugar.Web.onWebView;
+
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_VISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import androidx.test.filters.MediumTest;
 
@@ -25,7 +27,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.webview_ui_test.WebViewUiTestActivity;
 import org.chromium.webview_ui_test.test.util.UseLayout;
 import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
-
 
 /**
  * This test suite is a collection of tests that loads Javascripts and interact with WebView.
@@ -51,11 +52,11 @@ public class WebViewJSTest {
         mWebViewActivityRule.loadFileSync("alert.html", false);
         mWebViewActivityRule.loadJavaScriptSync(
                 "document.getElementById('alert-button').click();", false);
-        onView(withText("Clicked"))
-                .inRoot(withDecorView(isEnabled()));
+        onView(isRoot()).check(waitForView(withText("Clicked"), VIEW_VISIBLE));
         onView(withText("OK"))
                 .check(matches(isDisplayed()))
                 .perform(click());
-        onView(withText("OK")).check(doesNotExist());
+        // "OK" should disappear once we've clicked on it. Wait for that to happen.
+        onView(isRoot()).check(waitForView(withText("OK"), VIEW_NULL));
     }
 }

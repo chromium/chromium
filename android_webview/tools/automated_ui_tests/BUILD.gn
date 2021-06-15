@@ -67,6 +67,7 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/ub-uiautomator:ub_uiautomator_java",
+    "//ui/android:ui_java_test_support",
   ]
   data = [ "test/data/" ]
   use_webview_provider = system_webview_apk_target
