@@ -16,6 +16,8 @@ preprocess_src_manifest = "preprocessed_src_manifest.json"
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = default_closure_args +
+                  [ "js_module_root=./gen/ui/webui/resources/preprocessed/" ]
   deps = [
     ":ca_trust_edit_dialog",
     ":certificate_delete_confirmation_dialog",
@@ -30,12 +32,9 @@ js_type_check("closure_compile_module") {
     ":certificates_error_dialog",
   ]
 
-  # This is Chrome OS specific but always included because of limitations
-  # around conditional imports (https://crbug.com/1071641#c10).
-  deps += [ ":certificate_provisioning_browser_proxy" ]
-
   if (is_chromeos) {
     deps += [
+      ":certificate_provisioning_browser_proxy",
       ":certificate_provisioning_details_dialog",
       ":certificate_provisioning_entry",
       ":certificate_provisioning_list",
@@ -88,7 +87,9 @@ js_library("certificates_browser_proxy") {
 }
 
 js_library("certificate_manager_types") {
+  sources = [ "$preprocess_folder/certificate_manager_types.js" ]
   deps = [ ":certificates_browser_proxy" ]
+  extra_deps = [ ":preprocess_src" ]
 }
 
 js_library("certificates_error_dialog") {
@@ -101,40 +102,42 @@ js_library("certificates_error_dialog") {
   ]
 }
 
-js_library("certificate_provisioning_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
+if (is_chromeos) {
+  js_library("certificate_provisioning_browser_proxy") {
+    deps = [ "//ui/webui/resources/js:cr.m" ]
+  }
 
-js_library("certificate_provisioning_details_dialog") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificate_provisioning_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
+  js_library("certificate_provisioning_details_dialog") {
+    deps = [
+      ":certificate_manager_types",
+      ":certificate_provisioning_browser_proxy",
+      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+      "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+      "//ui/webui/resources/js:i18n_behavior.m",
+      "//ui/webui/resources/js:load_time_data.m",
+    ]
+  }
 
-js_library("certificate_provisioning_entry") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificate_provisioning_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
+  js_library("certificate_provisioning_entry") {
+    deps = [
+      ":certificate_manager_types",
+      ":certificate_provisioning_browser_proxy",
+      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+      "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+      "//ui/webui/resources/js:i18n_behavior.m",
+      "//ui/webui/resources/js:load_time_data.m",
+    ]
+  }
 
-js_library("certificate_provisioning_list") {
-  deps = [
-    ":certificate_provisioning_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
+  js_library("certificate_provisioning_list") {
+    deps = [
+      ":certificate_provisioning_browser_proxy",
+      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+      "//ui/webui/resources/js:i18n_behavior.m",
+      "//ui/webui/resources/js:load_time_data.m",
+      "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    ]
+  }
 }
 
 js_library("certificate_password_decryption_dialog") {
@@ -192,13 +195,13 @@ html_to_js("web_components") {
     "certificates_error_dialog.js",
   ]
 
-  # These are Chrome OS specific but always included because of limitations
-  # around conditional imports (https://crbug.com/1071641#c10).
-  js_files += [
-    "certificate_provisioning_details_dialog.js",
-    "certificate_provisioning_entry.js",
-    "certificate_provisioning_list.js",
-  ]
+  if (is_chromeos) {
+    js_files += [
+      "certificate_provisioning_details_dialog.js",
+      "certificate_provisioning_entry.js",
+      "certificate_provisioning_list.js",
+    ]
+  }
 }
 
 group("preprocess") {

@@ -18,12 +18,6 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 
-// <if expr="chromeos">
-// TODO(https://crbug.com/1071641): When it is possible to have conditional
-// imports in ui/webui/resources/cr_components/, this file should be
-// conditionally imported. Until then, it is imported unconditionally but its
-// contents are omitted for non-ChromeOS platforms.
-
 Polymer({
   is: 'certificate-provisioning-entry',
 
@@ -61,5 +55,3 @@ Polymer({
         }));
   },
 });
-
-// </if>

@@ -30,12 +30,6 @@ export let CertificateProvisioningProcess;
 
 /** @interface */
 export class CertificateProvisioningBrowserProxy {
-  // <if expr="chromeos">
-  // TODO(https://crbug.com/1071641): When it is possible to have conditional
-  // imports in ui/webui/resources/cr_components/, this file should be
-  // conditionally imported. Until then, it is imported unconditionally but its
-  // non-exported code is omitted for non-ChromeOS platforms.
-
   /**
    * Refreshes the list of client certificate processes.
    * Triggers the 'certificate-provisioning-processes-changed' event.
@@ -51,8 +45,6 @@ export class CertificateProvisioningBrowserProxy {
    * @param {boolean} isDeviceWide
    */
   triggerCertificateProvisioningProcessUpdate(certProfileId, isDeviceWide) {}
-
-  // </if>
 }
 
 /** @implements {CertificateProvisioningBrowserProxy} */

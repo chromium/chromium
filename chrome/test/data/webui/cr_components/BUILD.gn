@@ -10,6 +10,7 @@ js_type_check("closure_compile") {
   closure_flags = default_closure_args + mojom_js_args + [
                     "browser_resolver_prefix_replacements=\"chrome://settings/=../../chrome/browser/resources/settings/\"",
                     "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page//\"",
+                    "js_module_root=./gen/ui/webui/resources/preprocessed/",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
@@ -35,6 +36,7 @@ if (use_nss_certs) {
       deps = [
         "..:chai_assert",
         "..:test_browser_proxy.m",
+        "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_browser_proxy",
         "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_details_dialog",
         "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_entry",
         "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_list",
@@ -54,7 +56,6 @@ if (use_nss_certs) {
       "//ui/webui/resources/cr_components/certificate_manager:certificate_manager_types",
       "//ui/webui/resources/cr_components/certificate_manager:certificate_password_decryption_dialog",
       "//ui/webui/resources/cr_components/certificate_manager:certificate_password_encryption_dialog",
-      "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_browser_proxy",
       "//ui/webui/resources/cr_components/certificate_manager:certificate_subentry",
       "//ui/webui/resources/cr_components/certificate_manager:certificates_browser_proxy",
       "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
