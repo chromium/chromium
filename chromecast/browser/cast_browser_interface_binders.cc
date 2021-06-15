@@ -60,18 +60,36 @@ void BindMediaRemotingRemotee(
 // registrations below.
 bool HandleGenericReceiver(content::RenderFrameHost* frame_host,
                            mojo::GenericPendingReceiver& receiver) {
+  // All of the following error scenarios will intentionally crash the render
+  // process as a security precaution. On Cast, the errors below are generally
+  // safe since the interface endpoints don't expose sensitive functionality.
+  // TODO(b/185843831): Just return true in all cases to prevent the crash.
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
+  if (!web_contents) {
+    LOG(ERROR) << "Could not find target WebContents for receiver.";
     return false;
+  }
 
   // Only WebContents created for Cast Webviews will have a CastWebContents
   // object associated with them. We ignore these requests for any other
   // WebContents.
   auto* cast_web_contents = CastWebContents::FromWebContents(web_contents);
-  if (!cast_web_contents || !cast_web_contents->can_bind_interfaces())
+  if (!cast_web_contents) {
+    LOG(ERROR) << "Could not find target CastWebContents for receiver.";
     return false;
+  }
 
-  return cast_web_contents->TryBindReceiver(receiver);
+  if (!cast_web_contents->can_bind_interfaces()) {
+    LOG(ERROR) << "Target CastWebContents cannot bind receivers.";
+    return false;
+  }
+
+  if (!cast_web_contents->TryBindReceiver(receiver)) {
+    LOG(ERROR) << "Attempt to bind receiver to CastWebContents failed.";
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
