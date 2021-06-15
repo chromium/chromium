@@ -1263,9 +1263,10 @@ class SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest
   base::test::ScopedFeatureList override_features_;
 };
 
+// TODO(crbug.com/1218713): Flaky on various platforms.
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
-    ShouldAcceptEncryptionKeysFromTheWeb) {
+    DISABLED_ShouldAcceptEncryptionKeysFromTheWeb) {
   // Mimic the account using a trusted vault passphrase.
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
@@ -1308,9 +1309,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
 }
 
+// TODO(crbug.com/1218713): Flaky on various platforms.
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
-    ShouldReportDegradedTrustedVaultRecoverability) {
+    DISABLED_ShouldReportDegradedTrustedVaultRecoverability) {
   // Mimic the account using a trusted vault passphrase.
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
