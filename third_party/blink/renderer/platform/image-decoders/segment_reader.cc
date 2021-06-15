@@ -277,14 +277,20 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
     // not be parked while it is locked, so the buffer is valid for the whole
     // lifetime of the SkData. We add the ref so that the ParkableImage has a
     // longer limetime than the SkData.
-    parkable_image_->Lock();
     parkable_image_->AddRef();
+    parkable_image_->Lock();
     return SkData::MakeWithProc(
         iter.data(), available_,
         [](const void* ptr, void* context) -> void {
           auto* parkable_image = static_cast<ParkableImage*>(context);
-          MutexLocker lock(parkable_image->lock_);
-          parkable_image->Unlock();
+          {
+            MutexLocker lock(parkable_image->lock_);
+            parkable_image->Unlock();
+          }
+          // Don't hold the mutex while we call |Release|, since |Release| can
+          // free the ParkableImage, if this is the last reference to it;
+          // Freeing the ParkableImage while the mutex is held causes a UAF when
+          // the dtor for MutexLocker is called.
           parkable_image->Release();
         },
         parkable_image_.get());
