@@ -954,7 +954,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 #pragma mark - GoogleServicesSettingsServiceDelegate
 
-- (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
+- (void)toggleSwitchItem:(TableViewItem*)item
+               withValue:(BOOL)value
+              targetRect:(CGRect)targetRect {
   SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
   syncSwitchItem.on = value;
   ItemType type = static_cast<ItemType>(item.type);
@@ -962,10 +964,15 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case AllowChromeSigninItemType: {
       if (self.isAuthenticated) {
         __weak GoogleServicesSettingsMediator* weakSelf = self;
-        [self.commandHandler showSignOut:^(BOOL success) {
-          weakSelf.allowChromeSigninPreference.value = success ? value : !value;
-          [weakSelf updateNonPersonalizedSectionWithNotification:YES];
-        }];
+        [self.commandHandler
+            showSignOutFromTargetRect:targetRect
+                           completion:^(BOOL success) {
+                             weakSelf.allowChromeSigninPreference.value =
+                                 success ? value : !value;
+                             [weakSelf
+                                 updateNonPersonalizedSectionWithNotification:
+                                     YES];
+                           }];
       } else {
         self.allowChromeSigninPreference.value = value;
       }

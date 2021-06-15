@@ -270,7 +270,8 @@ using signin_metrics::PromoAction;
         baseViewController:self.googleServicesSettingsViewController];
 }
 
-- (void)showSignOut:(signin_ui::CompletionCallback)completion {
+- (void)showSignOutFromTargetRect:(CGRect)targetRect
+                       completion:(signin_ui::CompletionCallback)completion {
   DCHECK(completion);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
@@ -290,7 +291,7 @@ using signin_metrics::PromoAction;
                          browser:self.browser
                            title:title
                          message:message
-                            rect:self.viewController.view.frame
+                            rect:targetRect
                             view:self.viewController.view];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   [self.signOutCoordinator
@@ -301,8 +302,7 @@ using signin_metrics::PromoAction;
                       [[SignoutActionSheetCoordinator alloc]
                           initWithBaseViewController:weakSelf.viewController
                                              browser:weakSelf.browser
-                                                rect:weakSelf.viewController
-                                                         .view.frame
+                                                rect:targetRect
                                                 view:weakSelf.viewController
                                                          .view];
                   weakSelf.dataRetentionStrategyCoordinator.completion =
