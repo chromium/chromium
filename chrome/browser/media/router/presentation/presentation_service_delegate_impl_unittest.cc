@@ -43,6 +43,7 @@ using blink::mojom::PresentationInfo;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
@@ -147,7 +148,7 @@ class MockLocalPresentationManager : public LocalPresentationManager {
 
 std::unique_ptr<KeyedService> BuildMockLocalPresentationManager(
     content::BrowserContext* context) {
-  return std::make_unique<MockLocalPresentationManager>();
+  return std::make_unique<NiceMock<MockLocalPresentationManager>>();
 }
 
 class PresentationServiceDelegateImplTest
@@ -535,7 +536,8 @@ TEST_F(PresentationServiceDelegateImplTest, GetMediaRoutes) {
   EXPECT_EQ(delegate_impl_->GetMediaRoutes().size(), 1u);
   EXPECT_EQ(delegate_impl_->GetMediaRoutes()[0], media_route);
 
-  base::MockCallback<content::PresentationConnectionStateChangedCallback>
+  NiceMock<
+      base::MockCallback<content::PresentationConnectionStateChangedCallback>>
       mock_callback;
   PresentationInfo connection(presentation_url1_, kPresentationId);
   delegate_impl_->ListenForConnectionStateChange(
@@ -721,7 +723,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
                          "mediaSinkId", "", true, true);
 
   mojo::Remote<PresentationConnection> connection_remote;
-  MockPresentationConnectionProxy mock_proxy;
+  NiceMock<MockPresentationConnectionProxy> mock_proxy;
   mojo::Receiver<PresentationConnection> receiver(&mock_proxy);
   auto success_cb =
       [&receiver, &connection_remote](PresentationConnectionResultPtr result) {

@@ -11,11 +11,11 @@ namespace media_router {
 // static
 std::unique_ptr<KeyedService> MockMediaRouter::Create(
     content::BrowserContext* context) {
-  return std::make_unique<MockMediaRouter>();
+  return std::make_unique<::testing::NiceMock<MockMediaRouter>>();
 }
 
-MockMediaRouter::MockMediaRouter() {}
+MockMediaRouter::MockMediaRouter() = default;
 
-MockMediaRouter::~MockMediaRouter() {}
+MockMediaRouter::~MockMediaRouter() = default;
 
 }  // namespace media_router
