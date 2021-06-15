@@ -18,10 +18,6 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-namespace browser_sync {
-class ChromeSyncClient;
-}  // namespace browser_sync
-
 namespace syncer {
 class SyncServiceImpl;
 class SyncService;
@@ -29,10 +25,6 @@ class SyncService;
 
 class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
-  using SyncClientFactory =
-      base::RepeatingCallback<std::unique_ptr<browser_sync::ChromeSyncClient>(
-          Profile*)>;
-
   // Returns the SyncService for the given profile.
   static syncer::SyncService* GetForProfile(Profile* profile);
   // Returns the SyncServiceImpl for the given profile. DO NOT USE unless
@@ -51,9 +43,6 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static SyncServiceFactory* GetInstance();
 
-  // Overrides how the SyncClient is created for testing purposes.
-  static void SetSyncClientFactoryForTest(SyncClientFactory* client_factory);
-
   // Iterates over all profiles that have been loaded so far and extract their
   // SyncService if present. Returned pointers are guaranteed to be not null.
   static std::vector<const syncer::SyncService*> GetAllSyncServices();
@@ -69,10 +58,6 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  // A factory function for overriding the way the SyncClient is created.
-  // This is a raw pointer so it can be statically initialized.
-  static SyncClientFactory* client_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncServiceFactory);
 };

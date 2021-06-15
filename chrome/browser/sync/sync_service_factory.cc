@@ -190,12 +190,8 @@ KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  std::unique_ptr<browser_sync::ChromeSyncClient> sync_client =
-      client_factory_
-          ? client_factory_->Run(profile)
-          : std::make_unique<browser_sync::ChromeSyncClient>(profile);
-
-  init_params.sync_client = std::move(sync_client);
+  init_params.sync_client =
+      std::make_unique<browser_sync::ChromeSyncClient>(profile);
   init_params.network_time_update_callback =
       base::BindRepeating(&UpdateNetworkTime);
   init_params.url_loader_factory = profile->GetDefaultStoragePartition()
@@ -323,13 +319,3 @@ SyncServiceFactory::GetAllSyncServices() {
   }
   return sync_services;
 }
-
-// static
-void SyncServiceFactory::SetSyncClientFactoryForTest(
-    SyncClientFactory* client_factory) {
-  client_factory_ = client_factory;
-}
-
-// static
-SyncServiceFactory::SyncClientFactory* SyncServiceFactory::client_factory_ =
-    nullptr;
