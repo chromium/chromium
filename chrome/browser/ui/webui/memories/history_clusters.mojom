@@ -4,7 +4,7 @@
 
 module history_clusters.mojom;
 
-import "components/history_clusters/core/memories.mojom";
+import "components/history_clusters/core/history_clusters.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a set of Clusters returned by the browser in response to a request

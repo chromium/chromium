@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
+import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/history_clusters.mojom-webui.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**

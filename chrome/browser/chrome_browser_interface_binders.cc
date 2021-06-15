@@ -127,7 +127,7 @@
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
-#include "chrome/browser/ui/webui/memories/memories.mojom.h"
+#include "chrome/browser/ui/webui/memories/history_clusters.mojom.h"
 #include "chrome/browser/ui/webui/memories/memories_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"

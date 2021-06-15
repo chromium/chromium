@@ -160,8 +160,8 @@ preprocess_if_expr("preprocess_gen") {
 generate_grd("build_history_clusters_api_mojo_grdp") {
   grd_prefix = "$grd_prefix" + "_API"
   out_grd = "$target_gen_dir/clusters_api_mojo_resources.grdp"
-  input_files = [ "memories.mojom-webui.js" ]
-  resource_path_rewrites = [ "memories.mojom-webui.js|chrome/browser/ui/webui/memories/memories.mojom-webui.js" ]
+  input_files = [ "history_clusters.mojom-webui.js" ]
+  resource_path_rewrites = [ "history_clusters.mojom-webui.js|chrome/browser/ui/webui/memories/history_clusters.mojom-webui.js" ]
   input_files_base_dir =
       rebase_path("$root_gen_dir/mojom-webui/chrome/browser/ui/webui/memories",
                   root_build_dir)
@@ -170,8 +170,8 @@ generate_grd("build_history_clusters_api_mojo_grdp") {
 generate_grd("build_history_clusters_definition_mojo_grdp") {
   grd_prefix = "$grd_prefix" + "_DEFINITION"
   out_grd = "$target_gen_dir/clusters_definition_mojo_resources.grdp"
-  input_files = [ "memories.mojom-webui.js" ]
-  resource_path_rewrites = [ "memories.mojom-webui.js|components/history_clusters/core/memories.mojom-webui.js" ]
+  input_files = [ "history_clusters.mojom-webui.js" ]
+  resource_path_rewrites = [ "history_clusters.mojom-webui.js|components/history_clusters/core/history_clusters.mojom-webui.js" ]
   input_files_base_dir =
       rebase_path("$root_gen_dir/mojom-webui/components/history_clusters/core",
                   root_build_dir)
