@@ -274,6 +274,22 @@ class ContentAutofillDriver : public AutofillDriver,
   gfx::RectF TransformBoundingBoxToViewportCoordinates(
       const gfx::RectF& bounding_box);
 
+  // Triggers a reparse of the new forms in the AutofillAgent. This is necessary
+  // when a form is seen in a child frame and it is not known which form is its
+  // parent.
+  //
+  // Generally, this may happen because AutofillAgent is only notified about
+  // newly created form control elements.
+  //
+  // For example, consider a parent frame with a form that contains an <iframe>.
+  // Suppose the parent form is seen (processed by AutofillDriver::FormsSeen())
+  // before the iframe is loaded. Loading a cross-origin page into the iframe
+  // changes the iframe's frame token. Then, the frame token in the parent
+  // form's FormData::child_frames is outdated. When a form is seen in the child
+  // frame, it is not known *which* form in the parent frame is its parent
+  // form. In this scenario, a reparse is triggered.
+  virtual void TriggerReparse();
+
   // DidNavigateFrame() is called on the frame's driver, respectively, when a
   // navigation occurs in that specific frame.
   void DidNavigateFrame(content::NavigationHandle* navigation_handle);

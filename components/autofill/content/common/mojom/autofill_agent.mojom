@@ -10,6 +10,10 @@ import "mojo/public/mojom/base/string16.mojom";
 // There is one instance of this interface per render frame in the render
 // process. All methods are called by browser on renderer.
 interface AutofillAgent {
+  // Triggers a reparse of the new forms. This is done when a form is seen in
+  // a subframe and it is not known which form is its parent.
+  TriggerReparse();
+
   // Instructs the renderer to fill the active form with the given form data.
   // Please refer AutofillDriver.QueryFormFieldAutofill comments about the |id|.
   FillForm(int32 id, FormData form);

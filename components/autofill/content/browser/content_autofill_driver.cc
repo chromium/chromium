@@ -109,6 +109,10 @@ ContentAutofillDriver::ContentAutofillDriver(
 
 ContentAutofillDriver::~ContentAutofillDriver() = default;
 
+void ContentAutofillDriver::TriggerReparse() {
+  GetAutofillAgent()->TriggerReparse();
+}
+
 // static
 ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {

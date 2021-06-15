@@ -77,6 +77,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   GetPasswordManagerDriver();
 
   // mojom::AutofillAgent:
+  void TriggerReparse() override;
   void FillForm(int32_t id, const FormData& form) override;
   void PreviewForm(int32_t id, const FormData& form) override;
   void FieldTypePredictionsAvailable(
@@ -365,7 +366,9 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   bool was_last_action_fill_ = false;
 
+  // Timers for throttling handling of frequent events.
   base::OneShotTimer on_select_update_timer_;
+  base::OneShotTimer reparse_timer_;
 
   // Will be set when accessibility mode changes, depending on what the new mode
   // is.

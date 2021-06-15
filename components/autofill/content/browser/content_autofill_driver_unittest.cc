@@ -163,6 +163,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // mojom::AutofillAgent:
+  void TriggerReparse() override {}
+
   void FillForm(int32_t id, const FormData& form) override {
     fill_form_id_ = id;
     fill_form_form_ = form;

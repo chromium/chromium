@@ -835,6 +835,14 @@ void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
   previewed_elements_.push_back(*node);
 }
 
+void AutofillAgent::TriggerReparse() {
+  if (!reparse_timer_.IsRunning()) {
+    reparse_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(100),
+                         base::BindRepeating(&AutofillAgent::ProcessForms,
+                                             weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
 void AutofillAgent::ProcessForms() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   std::vector<FormData> forms =
