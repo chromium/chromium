@@ -114,6 +114,17 @@
       "use_goma": true
     }
   },
+  "Win Builder Goma RBE Canary (clobber)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
   "Win Builder Goma RBE Latest Client": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",

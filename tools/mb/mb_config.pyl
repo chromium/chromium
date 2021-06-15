@@ -370,6 +370,7 @@
 
       'Win Builder (dbg) Goma RBE Canary': 'gpu_tests_debug_bot_x86_no_symbols',
       'Win Builder Goma RBE Canary': 'gpu_tests_release_bot_x86_minimal_symbols',
+      'Win Builder Goma RBE Canary (clobber)': 'gpu_tests_release_bot_x86_minimal_symbols',
       'Win Builder (dbg) Goma RBE ATS Canary': 'gpu_tests_debug_bot_x86_no_symbols',
       'Win Builder Goma RBE ATS Canary': 'gpu_tests_release_bot_x86_minimal_symbols',
       'Win Builder (dbg) Goma RBE Latest Client': 'gpu_tests_debug_bot_x86_no_symbols',
