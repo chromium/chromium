@@ -19,8 +19,6 @@ class GURL;
 
 namespace remoting {
 
-class ScopedUrlForwarder;
-
 class RemoteOpenUrlMessageHandler final
     : public mojom::RemoteUrlOpener,
       public protocol::NamedMessagePipeHandler {
@@ -48,8 +46,6 @@ class RemoteOpenUrlMessageHandler final
 
   MojoIpcServer<mojom::RemoteUrlOpener> ipc_server_{
       GetRemoteOpenUrlIpcChannelName(), 0, this};
-
-  std::unique_ptr<ScopedUrlForwarder> scoped_url_forwarder_;
 
   static_assert(
       std::is_same<

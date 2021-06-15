@@ -32,6 +32,7 @@
 #include "remoting/host/remote_open_url_message_handler.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
+#include "remoting/host/url_forwarder_control_message_handler.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/audio_stream.h"
@@ -206,6 +207,11 @@ void ClientSession::SetCapabilities(
         kRemoteOpenUrlDataChannelName,
         base::BindRepeating(&ClientSession::CreateRemoteOpenUrlMessageHandler,
                             base::Unretained(this)));
+    data_channel_manager_.RegisterCreateHandlerCallback(
+        UrlForwarderControlMessageHandler::kDataChannelName,
+        base::BindRepeating(
+            &ClientSession::CreateUrlForwarderControlMessageHandler,
+            base::Unretained(this)));
   }
 
   std::vector<ActionRequest::Action> supported_actions;
@@ -895,6 +901,15 @@ void ClientSession::CreateRemoteOpenUrlMessageHandler(
   // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
   // up.
   new RemoteOpenUrlMessageHandler(channel_name, std::move(pipe));
+}
+
+void ClientSession::CreateUrlForwarderControlMessageHandler(
+    const std::string& channel_name,
+    std::unique_ptr<protocol::MessagePipe> pipe) {
+  // UrlForwarderControlMessageHandler manages its own lifetime and is tied to
+  // the lifetime of |pipe|. Once |pipe| is closed, this instance will be
+  // cleaned up.
+  new UrlForwarderControlMessageHandler(channel_name, std::move(pipe));
 }
 
 }  // namespace remoting

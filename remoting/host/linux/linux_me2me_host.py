@@ -95,8 +95,6 @@ else:
 
 USER_SESSION_PATH = os.path.join(SCRIPT_DIR, "user-session")
 
-SETUP_URL_FORWARDER_PATH = os.path.join(SCRIPT_DIR, "setup-url-forwarder")
-
 CHROME_REMOTING_GROUP_NAME = "chrome-remote-desktop"
 
 HOME_DIR = os.environ["HOME"]
@@ -827,21 +825,6 @@ class Desktop:
     finally:
       self.host_proc.stdin.close()
 
-  def restore_default_browser(self):
-    # Restores the previous default browser settings in case the host crashes
-    # during a remote session. It's noop if the current default browser is not
-    # the CRD URL forwarder.
-
-    if not os.path.exists(SETUP_URL_FORWARDER_PATH):
-      print('Cannot find the URL forwarder setup script', file=sys.stderr)
-      return
-    print('Attempting to restore previous default browser...')
-    retcode = subprocess.call([SETUP_URL_FORWARDER_PATH, "--restore"],
-                              env=self.child_env)
-    if retcode != 0:
-      print('URL forwarder setup script returned a non-zero code:', retcode,
-            file=sys.stderr)
-
   def shutdown_all_procs(self):
     """Send SIGTERM to all procs and wait for them to exit. Will fallback to
     SIGKILL if a process doesn't exit within 10 seconds.
@@ -1301,7 +1284,6 @@ def cleanup():
 
   global g_desktop
   if g_desktop is not None:
-    g_desktop.restore_default_browser()
     g_desktop.shutdown_all_procs()
     if g_desktop.xorg_conf is not None:
       os.remove(g_desktop.xorg_conf)
@@ -1851,11 +1833,6 @@ Web Store: https://chrome.google.com/remotedesktop"""
                                          backoff_time)
       if desktop.host_proc is None:
         logging.info("Launching host process")
-
-        # Restore the previous default browser in case the daemon script has
-        # crashed or the system has been rebooted in the middle of a remote
-        # session.
-        desktop.restore_default_browser()
 
         extra_start_host_args = []
         if HOST_EXTRA_PARAMS_ENV_VAR in os.environ:

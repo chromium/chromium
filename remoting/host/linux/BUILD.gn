@@ -59,7 +59,7 @@ if (enable_me2me_host) {
   }
 
   copy("remoting_me2me_host_copy_setup_url_forwarder_script") {
-    sources = [ "setup_url_forwarder.py" ]
+    sources = [ "configure_url_forwarder.py" ]
     outputs = [ "$root_build_dir/remoting/setup-url-forwarder" ]
   }
 
