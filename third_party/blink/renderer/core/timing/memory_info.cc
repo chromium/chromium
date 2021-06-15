@@ -32,7 +32,6 @@
 
 #include <limits>
 
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -63,6 +62,8 @@ class HeapSizeCache {
 
  public:
   HeapSizeCache() : clock_(base::DefaultTickClock::GetInstance()) {}
+  HeapSizeCache(const HeapSizeCache&) = delete;
+  HeapSizeCache& operator=(const HeapSizeCache&) = delete;
 
   void GetCachedHeapSize(HeapInfo& info, MemoryInfo::Precision precision) {
     MaybeUpdate(precision);
@@ -109,7 +110,6 @@ class HeapSizeCache {
   const base::TickClock* clock_;
 
   HeapInfo info_;
-  DISALLOW_COPY_AND_ASSIGN(HeapSizeCache);
 };
 
 // We quantize the sizes to make it more difficult for an attacker to see

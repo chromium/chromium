@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_TIME_CLAMPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_TIME_CLAMPER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -22,6 +21,8 @@ class CORE_EXPORT TimeClamper {
   static constexpr int kFineResolutionMicroseconds = 5;
 
   TimeClamper();
+  TimeClamper(const TimeClamper&) = delete;
+  TimeClamper& operator=(const TimeClamper&) = delete;
 
   // Deterministically clamp the time value |time_microseconds| to a fixed
   // interval to prevent timing attacks. See
@@ -41,8 +42,6 @@ class CORE_EXPORT TimeClamper {
   static inline uint64_t MurmurHash3(uint64_t value);
 
   uint64_t secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeClamper);
 };
 
 }  // namespace blink

@@ -32,6 +32,8 @@ class CORE_EXPORT EventTiming final {
                        base::TimeTicks event_timestamp,
                        WindowPerformance* performance,
                        bool should_log);
+  EventTiming(const EventTiming&) = delete;
+  EventTiming& operator=(const EventTiming&) = delete;
 
   // Notifies the Performance object that the event has been dispatched.
   void DidDispatchEvent(const Event&, Document& document);
@@ -51,8 +53,6 @@ class CORE_EXPORT EventTiming final {
   Persistent<WindowPerformance> performance_;
 
   bool should_log_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTiming);
 };
 
 }  // namespace blink
