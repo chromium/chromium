@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -156,4 +156,4 @@ TEST_F(InMemoryHostLocatorTest, AddHostsShouldKeepPreviousHostsAndOverwrite) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

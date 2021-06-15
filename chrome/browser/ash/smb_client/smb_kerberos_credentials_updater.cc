@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/smb_client/smb_kerberos_credentials_updater.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 SmbKerberosCredentialsUpdater::SmbKerberosCredentialsUpdater(
@@ -34,4 +34,4 @@ bool SmbKerberosCredentialsUpdater::IsKerberosEnabled() const {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

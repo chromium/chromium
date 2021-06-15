@@ -15,7 +15,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -163,4 +163,4 @@ std::vector<SmbShareInfo> SmbPersistedShareRegistry::GetAll() const {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

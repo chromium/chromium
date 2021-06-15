@@ -14,7 +14,7 @@
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -439,4 +439,4 @@ TEST_F(NetBiosHostLocatorTest, SecondIPUsedForResults) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

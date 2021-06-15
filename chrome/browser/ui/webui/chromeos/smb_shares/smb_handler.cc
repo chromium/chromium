@@ -102,7 +102,7 @@ void SmbHandler::HandleSmbMount(const base::ListValue* args) {
 }
 
 void SmbHandler::HandleSmbMountResponse(const std::string& callback_id,
-                                        SmbMountResult result) {
+                                        smb_client::SmbMountResult result) {
   AllowJavascript();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(static_cast<int>(result)));

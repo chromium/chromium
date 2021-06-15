@@ -11,7 +11,7 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 SmbFsFileSystemBackendDelegate::SmbFsFileSystemBackendDelegate(Profile* profile)
@@ -59,4 +59,4 @@ void SmbFsFileSystemBackendDelegate::GetRedirectURLForContents(
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

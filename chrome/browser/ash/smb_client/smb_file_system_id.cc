@@ -16,7 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -92,4 +92,4 @@ absl::optional<std::string> GetUserFromFileSystemId(
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

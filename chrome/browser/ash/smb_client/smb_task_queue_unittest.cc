@@ -12,10 +12,9 @@
 #include "base/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
-
 constexpr size_t kTaskQueueCapacity = 3;
 }
 // SmbTaskQueue is used to test SmbTaskQueue. Tasks are added to the task queue
@@ -245,4 +244,4 @@ TEST_F(SmbTaskQueueTest, AbortOperationRemovesUnrunTasksOfRunningOperation) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

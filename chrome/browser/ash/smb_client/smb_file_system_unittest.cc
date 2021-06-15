@@ -22,7 +22,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::WithArg;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -122,4 +122,4 @@ TEST_F(SmbFileSystemTest, DeleteEntry_NonRecursiveFailed) {
 
 }  // namespace
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

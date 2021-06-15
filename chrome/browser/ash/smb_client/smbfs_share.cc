@@ -19,7 +19,7 @@
 #include "crypto/sha2.h"
 #include "storage/browser/file_system/external_mount_points.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -323,7 +323,7 @@ std::string SmbFsShare::GenerateStableMountIdInput() const {
 
   // Shares are unique based on the user the profile is owned by.
   mount_id_hash_components.push_back(
-      chromeos::ProfileHelper::Get()->GetUserIdHashFromProfile(profile_));
+      ProfileHelper::Get()->GetUserIdHashFromProfile(profile_));
 
   // The hostname in the URL should be that entered by the user or
   // specified in the preconfigured share policy. It should not have
@@ -348,4 +348,4 @@ std::string SmbFsShare::GenerateStableMountIdInput() const {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

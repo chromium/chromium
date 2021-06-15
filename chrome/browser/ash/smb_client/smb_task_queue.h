@@ -9,7 +9,7 @@
 #include "base/containers/queue.h"
 #include "chromeos/dbus/smb_provider_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // An SmbTask is a call to SmbProviderClient with a bound SmbFileSystem callback
@@ -112,6 +112,6 @@ class SmbTaskQueue {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_TASK_QUEUE_H_

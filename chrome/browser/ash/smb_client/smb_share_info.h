@@ -10,7 +10,7 @@
 
 #include "chrome/browser/ash/smb_client/smb_url.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // Common parameters for SMB shares.
@@ -50,6 +50,6 @@ class SmbShareInfo {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SHARE_INFO_H_

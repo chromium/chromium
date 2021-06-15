@@ -11,13 +11,11 @@
 #include "chrome/browser/ash/smb_client/discovery/netbios_client_interface.h"
 
 namespace net {
-
 class IPAddress;
 class IPEndPoint;
-
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // FakeNetBiosClient is used for testing the NetBiosHostLocator.
@@ -46,6 +44,6 @@ class FakeNetBiosClient : public NetBiosClientInterface {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_FAKE_NETBIOS_CLIENT_H_

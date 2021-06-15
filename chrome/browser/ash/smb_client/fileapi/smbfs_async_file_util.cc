@@ -17,7 +17,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/local_file_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -140,4 +140,4 @@ void SmbFsAsyncFileUtil::DeleteRecursively(
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

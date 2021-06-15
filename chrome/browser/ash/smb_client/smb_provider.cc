@@ -17,7 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 SmbProvider::SmbProvider(
@@ -75,4 +75,4 @@ bool SmbProvider::RequestMount(Profile* profile) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

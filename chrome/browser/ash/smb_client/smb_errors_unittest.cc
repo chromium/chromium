@@ -8,7 +8,7 @@
 #include "chromeos/dbus/smbprovider/directory_entry.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 class SmbErrorsTest : public ::testing::Test {
@@ -175,4 +175,4 @@ TEST_F(SmbErrorsTest, FileErrorToMountResult) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

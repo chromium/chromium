@@ -3731,7 +3731,7 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
       std::make_unique<arc::ArcDocumentsProviderBackendDelegate>(),
       std::make_unique<drive::DriveFsFileSystemBackendDelegate>(
           Profile::FromBrowserContext(browser_context)),
-      std::make_unique<chromeos::smb_client::SmbFsFileSystemBackendDelegate>(
+      std::make_unique<ash::smb_client::SmbFsFileSystemBackendDelegate>(
           Profile::FromBrowserContext(browser_context)),
       external_mount_points, storage::ExternalMountPoints::GetSystemInstance());
   backend->AddSystemMountPoints();

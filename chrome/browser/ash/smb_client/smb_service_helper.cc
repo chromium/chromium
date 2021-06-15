@@ -7,7 +7,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 bool ParseUserPrincipalName(const std::string& user_principal_name,
@@ -61,4 +61,4 @@ bool ParseUserName(const std::string& name,
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

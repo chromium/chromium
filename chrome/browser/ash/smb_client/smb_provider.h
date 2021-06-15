@@ -16,7 +16,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 class SmbProvider : public file_system_provider::ProviderInterface {
@@ -59,6 +59,6 @@ class SmbProvider : public file_system_provider::ProviderInterface {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_PROVIDER_H_

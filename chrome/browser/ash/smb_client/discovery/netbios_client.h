@@ -10,29 +10,24 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/smb_client/discovery/netbios_client_interface.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chromeos/network/firewall_hole.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 
 namespace net {
-
 class IPEndPoint;
-
 }  // namespace net
 
 namespace network {
 namespace mojom {
-
 class NetworkContext;
-
 }  // namespace mojom
 }  // namespace network
 
-namespace chromeos {
-
-class FirewallHole;
-
+namespace ash {
 namespace smb_client {
 
 // NetBiosClient handles a NetBios Name Query Request.
@@ -113,6 +108,6 @@ class NetBiosClient : public network::mojom::UDPSocketListener,
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_NETBIOS_CLIENT_H_

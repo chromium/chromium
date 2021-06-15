@@ -10,7 +10,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -184,4 +184,4 @@ std::vector<uint8_t> NetBiosClient::GenerateBroadcastPacket() {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

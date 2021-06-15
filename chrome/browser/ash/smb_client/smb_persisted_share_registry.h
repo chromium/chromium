@@ -14,9 +14,9 @@ class Profile;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 class SmbUrl;
@@ -53,6 +53,6 @@ class SmbPersistedShareRegistry {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_PERSISTED_SHARE_REGISTRY_H_

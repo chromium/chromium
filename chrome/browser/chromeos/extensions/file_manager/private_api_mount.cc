@@ -142,7 +142,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
           volume->mount_path(), base::DoNothing());
       break;
     case file_manager::VOLUME_TYPE_SMB:
-      chromeos::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
+      ash::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
           volume->mount_path());
       break;
     default:

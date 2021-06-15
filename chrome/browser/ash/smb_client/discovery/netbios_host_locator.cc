@@ -14,7 +14,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_change_notifier.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -197,4 +197,4 @@ bool NetBiosHostLocator::WouldOverwriteResult(
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

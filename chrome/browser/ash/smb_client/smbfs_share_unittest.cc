@@ -32,7 +32,7 @@ using testing::AllOf;
 using testing::Property;
 using testing::Unused;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -438,7 +438,7 @@ TEST_F(SmbFsShareTest, GenerateStableMountIdInput) {
   TestSmbFsImpl smbfs;
 
   std::string profile_user_hash =
-      chromeos::ProfileHelper::Get()->GetUserIdHashFromProfile(&profile_);
+      ProfileHelper::Get()->GetUserIdHashFromProfile(&profile_);
 
   smbfs::SmbFsMounter::MountOptions options1;
   options1.username = kShareUsername;
@@ -496,4 +496,4 @@ TEST_F(SmbFsShareTest, GenerateStableMountId) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

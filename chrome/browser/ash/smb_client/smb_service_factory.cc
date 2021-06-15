@@ -18,7 +18,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -28,7 +28,7 @@ bool IsAllowedByPolicy(const Profile* profile) {
 }
 
 bool DoesProfileHaveUser(const Profile* profile) {
-  return chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  return ProfileHelper::Get()->GetUserByProfile(profile);
 }
 
 }  // namespace
@@ -87,4 +87,4 @@ void SmbServiceFactory::RegisterProfilePrefs(
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

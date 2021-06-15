@@ -14,7 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 TempFileManager::TempFileManager() {
@@ -75,4 +75,4 @@ base::ScopedFD TempFileManager::CreateTempFile() {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

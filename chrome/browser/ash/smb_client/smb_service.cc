@@ -46,7 +46,7 @@
 #include "net/base/network_interfaces.h"
 #include "url/url_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -149,8 +149,7 @@ SmbService::SmbService(Profile* profile,
       profile_(profile),
       tick_clock_(std::move(tick_clock)),
       registry_(profile) {
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
   SmbProviderClient* client = GetSmbProviderClient();
@@ -331,8 +330,7 @@ void SmbService::Mount(const file_system_provider::MountOptions& options,
   std::string password;
   std::string workgroup;
 
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
   if (use_kerberos) {
@@ -436,8 +434,7 @@ void SmbService::MountInternal(
     bool save_credentials,
     bool skip_connect,
     MountInternalCallback callback) {
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
   if (IsSmbFsEnabled()) {
@@ -660,8 +657,7 @@ void SmbService::Remount(
   std::string workgroup;
   std::string username;
 
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
   if (is_kerberos_chromad) {
     DCHECK(user->IsActiveDirectoryUser());
@@ -1027,4 +1023,4 @@ void SmbService::RecordMountCount() const {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

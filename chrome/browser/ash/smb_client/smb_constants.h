@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_CONSTANTS_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 extern const char kSmbScheme[];
@@ -14,6 +14,6 @@ extern const char kSmbSchemePrefix[];
 constexpr int kNetBiosDiscoveryTimeoutSeconds = 1;
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_CONSTANTS_H_

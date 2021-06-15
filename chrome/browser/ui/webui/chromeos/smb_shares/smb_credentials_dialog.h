@@ -66,4 +66,11 @@ class SmbCredentialsDialogUI : public ui::WebDialogUI {
 }  // namespace smb_dialog
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace smb_dialog {
+using ::chromeos::smb_dialog::SmbCredentialsDialog;
+}  // namespace smb_dialog
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_CREDENTIALS_DIALOG_H_

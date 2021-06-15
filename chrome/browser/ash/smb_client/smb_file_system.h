@@ -18,8 +18,6 @@
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
-// TODO(https://crbug.com/1164001): forward declare when moved to ash.
-#include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_task_queue.h"
@@ -33,7 +31,12 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
+
+namespace file_system_manager {
+class RequestManager;
+}  // namespace file_system_manager
+
 namespace smb_client {
 
 // SMB provided file system implementation. For communication with SMB
@@ -376,6 +379,6 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_FILE_SYSTEM_H_

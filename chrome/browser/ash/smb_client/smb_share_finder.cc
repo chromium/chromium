@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 SmbShareFinder::SmbShareFinder(SmbProviderClient* client) : client_(client) {}
@@ -204,4 +204,4 @@ void SmbShareFinder::InsertDiscoveryCallback(
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

@@ -276,4 +276,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) SmbProviderClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when move to ash
+namespace ash {
+using ::chromeos::SmbProviderClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_SMB_PROVIDER_CLIENT_H_

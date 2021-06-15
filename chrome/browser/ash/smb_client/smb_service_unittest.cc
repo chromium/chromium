@@ -60,7 +60,7 @@ using ::testing::NiceMock;
 using ::testing::WithArg;
 using ::testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -788,4 +788,4 @@ TEST_F(SmbServiceWithSmbfsTest, MountDuplicate) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

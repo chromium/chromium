@@ -18,8 +18,6 @@ class Profile;
 namespace chromeos {
 namespace smb_dialog {
 
-using smb_client::SmbMountResult;
-
 class SmbHandler : public content::WebUIMessageHandler {
  public:
   using UpdateCredentialsCallback =
@@ -44,7 +42,7 @@ class SmbHandler : public content::WebUIMessageHandler {
 
   // Callback handler for SmbMount.
   void HandleSmbMountResponse(const std::string& callback_id,
-                              SmbMountResult result);
+                              smb_client::SmbMountResult result);
 
   // Callback handler for StartDiscovery.
   void HandleGatherSharesResponse(

@@ -11,13 +11,11 @@
 #include "base/macros.h"
 
 namespace net {
-
 class IPAddress;
 class IPEndPoint;
-
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 using NetBiosResponseCallback = base::RepeatingCallback<
@@ -40,6 +38,6 @@ class NetBiosClientInterface {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_NETBIOS_CLIENT_INTERFACE_H_

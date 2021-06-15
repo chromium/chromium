@@ -660,10 +660,10 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
   }
 
   // Force external URL for smbfs.
-  chromeos::smb_client::SmbService* smb_service =
-      chromeos::smb_client::SmbServiceFactory::Get(primary_profile);
+  ash::smb_client::SmbService* smb_service =
+      ash::smb_client::SmbServiceFactory::Get(primary_profile);
   if (smb_service) {
-    chromeos::smb_client::SmbFsShare* share =
+    ash::smb_client::SmbFsShare* share =
         smb_service->GetSmbFsShareForPath(path);
     if (share && share->mount_path().AppendRelativePath(path, &relative_path)) {
       force_external = true;

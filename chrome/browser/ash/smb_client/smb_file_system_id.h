@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // Creates a FileSystemId by concatenating a random filesystem identifier and
@@ -43,6 +43,6 @@ absl::optional<std::string> GetUserFromFileSystemId(
     const std::string& file_system_id);
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_FILE_SYSTEM_ID_H_

@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 SmbShareInfo::SmbShareInfo(const SmbUrl& share_url,
@@ -32,4 +32,4 @@ SmbShareInfo::SmbShareInfo(const SmbShareInfo&) = default;
 SmbShareInfo& SmbShareInfo::operator=(const SmbShareInfo&) = default;
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

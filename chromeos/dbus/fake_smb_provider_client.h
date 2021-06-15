@@ -172,4 +172,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSmbProviderClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::FakeSmbProviderClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_FAKE_SMB_PROVIDER_CLIENT_H_

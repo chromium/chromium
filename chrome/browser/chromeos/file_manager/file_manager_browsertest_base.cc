@@ -1496,8 +1496,8 @@ class SmbfsTestVolume : public LocalTestVolume {
       return false;
     }
 
-    chromeos::smb_client::SmbService* smb_service =
-        chromeos::smb_client::SmbServiceFactory::Get(profile);
+    ash::smb_client::SmbService* smb_service =
+        ash::smb_client::SmbServiceFactory::Get(profile);
     {
       base::RunLoop run_loop;
       smb_service->OnSetupCompleteForTesting(run_loop.QuitClosure());
@@ -1510,9 +1510,9 @@ class SmbfsTestVolume : public LocalTestVolume {
       smb_service->GatherSharesInNetwork(
           base::DoNothing(),
           base::BindLambdaForTesting(
-              [&run_loop](const std::vector<chromeos::smb_client::SmbUrl>&
-                              shares_gathered,
-                          bool done) {
+              [&run_loop](
+                  const std::vector<ash::smb_client::SmbUrl>& shares_gathered,
+                  bool done) {
                 if (done) {
                   run_loop.Quit();
                 }
@@ -1534,12 +1534,10 @@ class SmbfsTestVolume : public LocalTestVolume {
         "" /* password */, false /* use_chromad_kerberos */,
         false /* should_open_file_manager_after_mount */,
         false /* save_credentials */,
-        base::BindLambdaForTesting(
-            [&](chromeos::smb_client::SmbMountResult result) {
-              success =
-                  (result == chromeos::smb_client::SmbMountResult::kSuccess);
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](ash::smb_client::SmbMountResult result) {
+          success = (result == ash::smb_client::SmbMountResult::kSuccess);
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return success;
   }
@@ -1550,7 +1548,7 @@ class SmbfsTestVolume : public LocalTestVolume {
   std::unique_ptr<smbfs::SmbFsMounter> CreateMounter(
       const std::string& share_path,
       const std::string& mount_dir_name,
-      const chromeos::smb_client::SmbFsShare::MountOptions& options,
+      const ash::smb_client::SmbFsShare::MountOptions& options,
       smbfs::SmbFsHost::Delegate* delegate) {
     std::unique_ptr<MockSmbFsMounter> mock_mounter =
         std::make_unique<MockSmbFsMounter>();

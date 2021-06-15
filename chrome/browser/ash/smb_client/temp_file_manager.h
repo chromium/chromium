@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // Helper class to handle construction and deletion of a temporary directory
@@ -42,6 +42,6 @@ class TempFileManager {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_TEMP_FILE_MANAGER_H_

@@ -60,4 +60,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FirewallHole {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::FirewallHole;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_FIREWALL_HOLE_H_

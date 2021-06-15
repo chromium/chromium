@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 const char kSmbScheme[] = "smb";
 const char kSmbSchemePrefix[] = "smb://";
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

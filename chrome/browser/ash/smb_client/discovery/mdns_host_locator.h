@@ -15,7 +15,7 @@
 #include "base/single_thread_task_runner.h"
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // Removes .local from |raw_hostname| if located at the end of the string and
@@ -60,6 +60,6 @@ class MDnsHostLocator : public HostLocator {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_MDNS_HOST_LOCATOR_H_

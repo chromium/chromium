@@ -17,7 +17,7 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -349,4 +349,4 @@ void MDnsHostLocator::Impl::FireCallback(bool success) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

@@ -8,11 +8,11 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/smb_client/smb_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
-
-class SmbService;
 
 class SmbServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -44,6 +44,13 @@ class SmbServiceFactory : public BrowserContextKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
+}  // namespace smb_client
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace smb_client {
+using ::ash::smb_client::SmbServiceFactory;
 }  // namespace smb_client
 }  // namespace chromeos
 

@@ -13,7 +13,7 @@
 
 using ::testing::MatchesRegex;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -121,4 +121,4 @@ TEST_F(SmbFileSystemIdTest, GetUserFromFileSystemId_NoUser) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

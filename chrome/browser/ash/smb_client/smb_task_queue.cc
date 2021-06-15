@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 SmbTaskQueue::SmbTaskQueue(size_t max_pending) : max_pending_(max_pending) {}
@@ -101,4 +101,4 @@ bool SmbTaskQueue::IsValidOperationId(OperationId operation_id) const {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

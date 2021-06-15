@@ -11,8 +11,7 @@
 #include "base/callback.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace smb_client {
 
 // Updates Kerberos credentials in SmbService after receiving
@@ -48,6 +47,6 @@ class SmbKerberosCredentialsUpdater
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_KERBEROS_CREDENTIALS_UPDATER_H_

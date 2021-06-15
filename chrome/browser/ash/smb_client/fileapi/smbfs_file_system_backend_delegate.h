@@ -11,7 +11,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 class SmbFsAsyncFileUtil;
@@ -45,6 +45,6 @@ class SmbFsFileSystemBackendDelegate
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_FILEAPI_SMBFS_FILE_SYSTEM_BACKEND_DELEGATE_H_

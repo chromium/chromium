@@ -9,7 +9,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 namespace {
 
@@ -157,4 +157,4 @@ TEST_F(SmbPersistedShareRegistryTest, Delete) {
 
 }  // namespace
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

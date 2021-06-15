@@ -16,7 +16,7 @@
 #include "chromeos/dbus/smb_provider_client.h"
 #include "net/base/network_interfaces.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // Calculates the broadcast address of a network interface.
@@ -113,6 +113,6 @@ class NetBiosHostLocator : public HostLocator,
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_NETBIOS_HOST_LOCATOR_H_

@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "url/url_canon_stdstring.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 namespace {
@@ -196,4 +196,4 @@ void SmbUrl::Reset() {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

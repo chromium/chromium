@@ -21,7 +21,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // Represents an SMB share mounted using smbfs. Handles mounting, unmounting,
@@ -151,6 +151,6 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMBFS_SHARE_H_

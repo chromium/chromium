@@ -8,7 +8,7 @@
 #include "base/files/file.h"
 #include "chromeos/dbus/smb_provider_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // These values are written to logs. New enum values may be added, but existing
@@ -50,6 +50,13 @@ SmbMountResult TranslateErrorToMountResult(smbprovider::ErrorType error);
 // Translates a base::File::Error to an SmbMountResult.
 SmbMountResult TranslateErrorToMountResult(base::File::Error error);
 
+}  // namespace smb_client
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace smb_client {
+using ::ash::smb_client::SmbMountResult;
 }  // namespace smb_client
 }  // namespace chromeos
 

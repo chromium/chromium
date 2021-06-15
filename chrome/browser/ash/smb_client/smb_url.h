@@ -9,7 +9,7 @@
 
 #include "url/third_party/mozilla/url_parse.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // Represents an SMB URL.
@@ -71,6 +71,13 @@ class SmbUrl {
   std::string share_;
 };
 
+}  // namespace smb_client
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace smb_client {
+using ::ash::smb_client::SmbUrl;
 }  // namespace smb_client
 }  // namespace chromeos
 

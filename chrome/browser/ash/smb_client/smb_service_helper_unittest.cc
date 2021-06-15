@@ -8,7 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 class SmbServiceHelperTest : public ::testing::Test {
@@ -26,22 +26,22 @@ class SmbServiceHelperTest : public ::testing::Test {
   bool ParseUserPrincipalName(const char* user_principal_name_) {
     user_name_ = "";
     realm_ = "";
-    return ::chromeos::smb_client::ParseUserPrincipalName(user_principal_name_,
-                                                          &user_name_, &realm_);
+    return ::ash::smb_client::ParseUserPrincipalName(user_principal_name_,
+                                                     &user_name_, &realm_);
   }
 
   bool ParseDownLevelLogonName(const char* down_level_logon_name) {
     user_name_ = "";
     realm_ = "";
-    return ::chromeos::smb_client::ParseDownLevelLogonName(
-        down_level_logon_name, &user_name_, &realm_);
+    return ::ash::smb_client::ParseDownLevelLogonName(down_level_logon_name,
+                                                      &user_name_, &realm_);
   }
 
   bool ParseUserName(const char* down_level_logon_name) {
     user_name_ = "";
     realm_ = "";
-    return ::chromeos::smb_client::ParseUserName(down_level_logon_name,
-                                                 &user_name_, &realm_);
+    return ::ash::smb_client::ParseUserName(down_level_logon_name, &user_name_,
+                                            &realm_);
   }
 };
 
@@ -147,4 +147,4 @@ TEST_F(SmbServiceHelperTest, ParseUserName) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

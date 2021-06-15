@@ -36,7 +36,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 class SmbKerberosCredentialsUpdater;
@@ -324,6 +324,13 @@ class SmbService : public KeyedService,
   SmbFsShare::MounterCreationCallback smbfs_mounter_creation_callback_;
 };
 
+}  // namespace smb_client
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace smb_client {
+using ::ash::smb_client::SmbService;
 }  // namespace smb_client
 }  // namespace chromeos
 

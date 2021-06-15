@@ -22,7 +22,7 @@
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "net/base/io_buffer.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -940,4 +940,4 @@ void SmbFileSystem::RetryStartReadDir(
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

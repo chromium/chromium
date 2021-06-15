@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chromeos/dbus/smb_provider_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // The callback run to indicate the scan for hosts on the network is complete.
@@ -107,6 +107,6 @@ class SmbShareFinder : public base::SupportsWeakPtr<SmbShareFinder> {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SHARE_FINDER_H_

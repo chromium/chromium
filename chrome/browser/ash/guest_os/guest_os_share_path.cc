@@ -238,9 +238,8 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
       drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
   base::FilePath drivefs_mount_point_path;
   base::FilePath drivefs_mount_name;
-  chromeos::smb_client::SmbService* smb_service =
-      chromeos::smb_client::SmbServiceFactory::Get(profile_);
-  chromeos::smb_client::SmbFsShare* smb_share = nullptr;
+  auto* smb_service = ash::smb_client::SmbServiceFactory::Get(profile_);
+  ash::smb_client::SmbFsShare* smb_share = nullptr;
   base::FilePath smbfs_mount_point_path;
   base::FilePath smbfs_mount_name;
 

@@ -7,7 +7,7 @@
 #include <map>
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 InMemoryHostLocator::InMemoryHostLocator() = default;
@@ -45,4 +45,4 @@ void InMemoryHostLocator::RunCallback() {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash

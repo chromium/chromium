@@ -45,9 +45,8 @@ class PrefRegistrySyncable;
 namespace ash {
 namespace file_system_provider {
 
-// TODO(https://crbug.com/1164001): forward declare ProvidedFileSystemInterface
-// when //c/b/chromeos/smb_client is moved to ash.
 class ProvidedFileSystemInfo;
+class ProvidedFileSystemInterface;
 class RegistryInterface;
 struct MountOptions;
 

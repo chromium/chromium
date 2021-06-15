@@ -10,7 +10,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 // The implementation of storage::AsyncFileUtil for SmbFs. This forwards to a
@@ -50,6 +50,6 @@ class SmbFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_FILEAPI_SMBFS_ASYNC_FILE_UTIL_H_

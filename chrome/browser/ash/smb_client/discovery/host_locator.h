@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "net/base/ip_address.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 using Hostname = std::string;
@@ -40,6 +40,6 @@ class HostLocator {
 };
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_HOST_LOCATOR_H_
