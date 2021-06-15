@@ -35,10 +35,20 @@ namespace blink {
 bool IsValidConfig(const AudioDecoderConfig& config,
                    media::AudioType& out_audio_type,
                    String& out_console_message) {
+  // Match codec strings from the codec registry:
+  // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
+  if (config.codec() == "ulaw") {
+    out_audio_type = {media::kCodecPCM_MULAW};
+    return true;
+  } else if (config.codec() == "alaw") {
+    out_audio_type = {media::kCodecPCM_ALAW};
+    return true;
+  }
+
   media::AudioCodec codec = media::kUnknownAudioCodec;
   bool is_codec_ambiguous = true;
-  bool parse_succeeded = ParseAudioCodecString("", config.codec().Utf8(),
-                                               &is_codec_ambiguous, &codec);
+  const bool parse_succeeded = ParseAudioCodecString(
+      "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
 
   if (!parse_succeeded) {
     out_console_message = "Failed to parse codec string.";

@@ -146,14 +146,17 @@ promise_setup(async () => {
   }[location.search];
 
   // Don't run any tests if the codec is not supported.
+  let supported = false;
   try {
     // TODO(sandersd): To properly support H.264 in AVC format, this should
     // include the `description`. For now this test assumes that H.264 Annex B
     // support is the same as H.264 AVC support.
-    await VideoDecoder.isConfigSupported({codec: data.config.codec});
+    const support =
+        await VideoDecoder.isConfigSupported({codec: data.config.codec});
+    supported = support.supported;
   } catch (e) {
-    assert_implements_optional(false, data.config.codec + ' unsupported');
   }
+  assert_implements_optional(supported, data.config.codec + ' unsupported');
 
   // Fetch the media data and prepare buffers.
   const response = await fetch(data.src);

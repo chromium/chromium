@@ -94,6 +94,36 @@ ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec h264 -tune 
 ffmpeg -i h264.mp4 -codec copy -bsf:v h264_mp4toannexb -f h264 h264.annexb
 ```
 
+### sfx.adts
+```
+sox -n -r 48000 sfx.wav synth 1 sine 480
+ffmpeg -i sfx.wav -frames:a 10 -acodec aac -b:a 96K sfx.adts
+```
+
+### sfx-alaw.wav
+```
+sox -n -r 48000 sfx.wav synth 1 sine 480
+ffmpeg -i sfx.wav -frames:a 10 -acodec pcm_alaw sfx-alaw.wav
+```
+
+### sfx.mp3
+```
+sox -n -r 48000 sfx.wav synth 1 sine 480
+ffmpeg -i sfx.wav -frames:a 10 -acodec libmp3lame -b:a 96K sfx.mp3
+```
+
+### sfx-aac.mp4
+```
+sox -n -r 48000 sfx.wav synth 1 sine 480
+ffmpeg -i sfx.wav -frames:a 10 -acodec aac -b:a 96K sfx-aac.mp4
+```
+
+### sfx-mulaw.wav
+```
+sox -n -r 48000 sfx.wav synth 1 sine 480
+ffmpeg -i sfx.wav -frames:a 10 -acodec pcm_mulaw sfx-mulaw.wav
+```
+
 ### sfx-opus.ogg
 ```
 sox -n -r 48000 sfx.wav synth 1 sine 480
