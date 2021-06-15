@@ -66,6 +66,7 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
           feedwire::Capability::DOWNLOAD_LINK,
           feedwire::Capability::INFINITE_FEED,
           feedwire::Capability::DISMISS_COMMAND,
+          feedwire::Capability::MATERIAL_NEXT_BASELINE,
           feedwire::Capability::UI_THEME_V2,
           feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
           feedwire::Capability::PREFETCH_METADATA,
@@ -111,6 +112,7 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
           feedwire::Capability::DOWNLOAD_LINK,
           feedwire::Capability::DISMISS_COMMAND, feedwire::Capability::SHARE,
+          feedwire::Capability::MATERIAL_NEXT_BASELINE,
           feedwire::Capability::UI_THEME_V2,
           feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
           feedwire::Capability::PREFETCH_METADATA));
