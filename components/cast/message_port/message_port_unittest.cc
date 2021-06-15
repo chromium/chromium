@@ -11,7 +11,6 @@
 
 #if defined(OS_FUCHSIA)
 #include "components/cast/message_port/message_port_fuchsia.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 #else
 #include "components/cast/message_port/message_port_cast.h"  // nogncheck
 #include "third_party/blink/public/common/messaging/web_message_port.h"  // nogncheck

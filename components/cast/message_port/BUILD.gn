@@ -37,8 +37,10 @@ if (is_fuchsia) {
 
     public_deps = [
       ":public",
-      "//fuchsia:cast_fidl",
+
+      # TODO(crbug.com/1120731): Remove dependencies on //fuchsia.
       "//fuchsia/base",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     ]
 
     deps = [ "//base" ]
