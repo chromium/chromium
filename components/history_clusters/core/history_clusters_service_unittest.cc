@@ -545,6 +545,8 @@ TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
     auto& incomplete_visit_context_annotations =
         history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
             0);
+    incomplete_visit_context_annotations.url_row.set_id(1);
+    incomplete_visit_context_annotations.visit_row.visit_id = 1;
     incomplete_visit_context_annotations.status = status;
     history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
     EXPECT_NE(
@@ -598,6 +600,8 @@ TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
     auto& incomplete_visit_context_annotations =
         history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
             0);
+    incomplete_visit_context_annotations.url_row.set_id(1);
+    incomplete_visit_context_annotations.visit_row.visit_id = 1;
     incomplete_visit_context_annotations.status = status;
     EXPECT_DCHECK_DEATH(
         history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0));
