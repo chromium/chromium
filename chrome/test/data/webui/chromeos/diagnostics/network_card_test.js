@@ -4,6 +4,10 @@
 
 import 'chrome://diagnostics/network_card.js';
 
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
+import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
@@ -13,6 +17,14 @@ export function networkCardTestSuite() {
   /** @type {?NetworkCardElement} */
   let networkCardElement = null;
 
+  /** @type {?FakeNetworkHealthProvider} */
+  let provider = null;
+
+  suiteSetup(() => {
+    provider = new FakeNetworkHealthProvider();
+    setNetworkHealthProviderForTesting(provider);
+  });
+
   setup(() => {
     document.body.innerHTML = '';
   });
@@ -20,24 +32,33 @@ export function networkCardTestSuite() {
   teardown(() => {
     networkCardElement.remove();
     networkCardElement = null;
+    provider.reset();
   });
 
-  function initializeNetworkCard() {
+  /**
+   * @param {string} guid
+   */
+  function initializeNetworkCard(guid) {
     assertFalse(!!networkCardElement);
+    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
+    provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
+    provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
+    provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
 
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
     assertTrue(!!networkCardElement);
+    networkCardElement.guid = guid;
     document.body.appendChild(networkCardElement);
 
     return flushTasks();
   }
 
-  test('NetworkCardInitialized', () => {
-    return initializeNetworkCard().then(() => {
+  test('CardTitleInitializedCorrectly', () => {
+    return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Network');
+          networkCardElement.$$('#cardTitle'), 'WiFi');
     });
   });
 }

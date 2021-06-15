@@ -9,6 +9,10 @@ import './network_info.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver} from './diagnostics_types.js';
+import {getNetworkType} from './diagnostics_utils.js';
+import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+
 /**
  * @fileoverview
  * 'network-card' is a styling wrapper for a network-info element.
@@ -18,11 +22,71 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  /**
+   * @private {?NetworkHealthProviderInterface}
+   */
+  networkHealthProvider_: null,
+
+  /**
+   * Receiver responsible for observing a single active network connection.
+   * @private {?NetworkStateObserverReceiver}
+   */
+  networkStateObserverReceiver_: null,
+
   properties: {
     /** @type {string} */
     guid: {
       type: String,
       value: '',
     },
+
+    /** @private {string} */
+    networkType_: {
+      type: String,
+      value: '',
+    },
+
+    /** @type {!Network} */
+    network: {
+      type: Object,
+    },
+  },
+
+  observers: ['observeNetwork_(guid)'],
+
+  /** @override */
+  created() {
+    this.networkHealthProvider_ = getNetworkHealthProvider();
+  },
+
+  /** @private */
+  observeNetwork_() {
+    if (!this.guid) {
+      return;
+    }
+
+    if (this.networkStateObserverReceiver_) {
+      this.networkStateObserverReceiver_.$.close();
+      this.networkStateObserverReceiver_ = null;
+    }
+
+    this.networkStateObserverReceiver_ = new NetworkStateObserverReceiver(
+        /**
+         * @type {!NetworkStateObserverInterface}
+         */
+        (this));
+
+    this.networkHealthProvider_.observeNetwork(
+        this.networkStateObserverReceiver_.$.bindNewPipeAndPassRemote(),
+        this.guid);
+  },
+
+  /**
+   * Implements NetworkStateObserver.onNetworkStateChanged
+   * @param {!Network} network
+   */
+  onNetworkStateChanged(network) {
+    this.networkType_ = getNetworkType(network.type);
+    this.set('network', network);
   },
 });

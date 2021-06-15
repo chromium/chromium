@@ -8,9 +8,13 @@ import './diagnostics_shared_css.js';
 import './network_info.js';
 import './routine_section.js';
 
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RoutineType} from './diagnostics_types.js';
+import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
+import {getNetworkType} from './diagnostics_utils.js';
+import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+
 
 /**
  * @fileoverview
@@ -20,6 +24,17 @@ Polymer({
   is: 'connectivity-card',
 
   _template: html`{__html_template__}`,
+
+  /**
+   * @private {?NetworkHealthProviderInterface}
+   */
+  networkHealthProvider_: null,
+
+  /**
+   * Receiver responsible for observing a single active network connection.
+   * @private {?NetworkStateObserverReceiver}
+   */
+  networkStateObserverReceiver_: null,
 
   properties: {
     /** @type {boolean} */
@@ -57,6 +72,55 @@ Polymer({
     isActive: {
       type: Boolean,
     },
+
+    /** @type {!Network} */
+    network: {
+      type: Object,
+    },
+
+    /** @private {string} */
+    networkType_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  observers: ['observeNetwork_(activeGuid)'],
+
+  /** @override */
+  created() {
+    this.networkHealthProvider_ = getNetworkHealthProvider();
+  },
+
+  /** @private */
+  observeNetwork_() {
+    if (!this.activeGuid) {
+      return;
+    }
+
+    if (this.networkStateObserverReceiver_) {
+      this.networkStateObserverReceiver_.$.close();
+      this.networkStateObserverReceiver_ = null;
+    }
+
+    this.networkStateObserverReceiver_ = new NetworkStateObserverReceiver(
+        /**
+         * @type {!NetworkStateObserverInterface}
+         */
+        (this));
+
+    this.networkHealthProvider_.observeNetwork(
+        this.networkStateObserverReceiver_.$.bindNewPipeAndPassRemote(),
+        this.activeGuid);
+  },
+
+  /**
+   * Implements NetworkStateObserver.onNetworkStateChanged
+   * @param {!Network} network
+   */
+  onNetworkStateChanged(network) {
+    this.networkType_ = getNetworkType(network.type);
+    this.set('network', network);
   },
 
   /** @protected */

@@ -4,9 +4,8 @@
 
 import 'chrome://diagnostics/network_info.js';
 
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
-import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
-import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {Network} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
@@ -17,14 +16,6 @@ export function networkInfoTestSuite() {
   /** @type {?NetworkInfoElement} */
   let networkInfoElement = null;
 
-  /** @type {?FakeNetworkHealthProvider} */
-  let provider = null;
-
-  suiteSetup(() => {
-    provider = new FakeNetworkHealthProvider();
-    setNetworkHealthProviderForTesting(provider);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
   });
@@ -32,40 +23,35 @@ export function networkInfoTestSuite() {
   teardown(() => {
     networkInfoElement.remove();
     networkInfoElement = null;
-    provider.reset();
   });
 
   /**
-   * @param {string} guid
+   * @param {!Network} network
    */
-  function initializeNetworkInfo(guid) {
+  function initializeNetworkInfo(network) {
     assertFalse(!!networkInfoElement);
-    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
-    provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
-    provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
-    provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
 
     // Add the network info to the DOM.
     networkInfoElement = /** @type {!NetworkInfoElement} */ (
         document.createElement('network-info'));
     assertTrue(!!networkInfoElement);
-    networkInfoElement.guid = guid;
+    networkInfoElement.network = network;
     document.body.appendChild(networkInfoElement);
 
     return flushTasks();
   }
 
   /**
-   * @param {string} guid
+   * @param {!Network} network
    * @return {!Promise}
    */
-  function changeGuid(guid) {
-    networkInfoElement.guid = guid;
+  function changeNetwork(network) {
+    networkInfoElement.network = network;
     return flushTasks();
   }
 
   test('CorrectInfoElementShown', () => {
-    return initializeNetworkInfo('wifiGuid')
+    return initializeNetworkInfo(fakeWifiNetwork)
         .then(() => {
           // wifi-info should be visible.
           assertTrue(
@@ -74,7 +60,7 @@ export function networkInfoTestSuite() {
               isVisible(dx_utils.getEthernetInfoElement(networkInfoElement)));
           assertFalse(
               isVisible(dx_utils.getCellularInfoElement(networkInfoElement)));
-          return changeGuid('cellularGuid');
+          return changeNetwork(fakeCellularNetwork);
         })
         .then(() => {
           // cellular-info should be visible.
@@ -85,7 +71,7 @@ export function networkInfoTestSuite() {
               isVisible(dx_utils.getWifiInfoElement(networkInfoElement)));
           assertFalse(
               isVisible(dx_utils.getEthernetInfoElement(networkInfoElement)));
-          return changeGuid('ethernetGuid');
+          return changeNetwork(fakeEthernetNetwork);
         })
         .then(() => {
           // ethernet-info should be visible.

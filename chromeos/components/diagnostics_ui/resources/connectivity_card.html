@@ -7,12 +7,12 @@
 
 <diagnostics-card is-networking-card="true">
     <!-- TODO(michaelcheco): Add localized strings. -->
-  <div id="cardTitle" slot="title">Connectivity</div>
+  <div id="cardTitle" slot="title">[[networkType_]]</div>
   <div id="defaultConnectionChip" slot="chip" class="diagnostics-chip"
       aria-hidden="true">
     Default connection
   </div>
-  <network-info slot="body" guid="[[activeGuid]]"></network-info>
+  <network-info network="[[network]]" slot="body" guid="[[activeGuid]]"></network-info>
   <routine-section slot="left-panel" routines="[[routines_]]"
   is-test-running="{{isTestRunning}}"
   run-tests-button-text="Run Network test"
