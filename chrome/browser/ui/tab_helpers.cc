@@ -124,11 +124,9 @@
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/android/autofill_assistant/autofill_assistant_tab_helper.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "chrome/browser/video_tutorials/video_tutorial_tab_helper.h"
-#include "components/autofill_assistant/browser/features.h"
 #else
 #include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -367,11 +365,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   SearchGeolocationDisclosureTabHelper::CreateForWebContents(web_contents);
   video_tutorials::VideoTutorialTabHelper::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(
-          autofill_assistant::features::kAutofillAssistantWithTabHelper)) {
-    autofill_assistant::AutofillAssistantTabHelper::CreateForWebContents(
-        web_contents);
-  }
 #else
   if (accuracy_tips::AccuracyWebContentsObserver::IsEnabled(web_contents)) {
     accuracy_tips::AccuracyWebContentsObserver::CreateForWebContents(
