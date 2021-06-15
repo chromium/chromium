@@ -88,15 +88,18 @@ class NGTableConstraintSpaceData
     Cell(NGBoxStrut border_box_borders,
          LayoutUnit block_size,
          wtf_size_t start_column,
+         bool has_grown,
          bool is_constrained)
         : border_box_borders(border_box_borders),
           block_size(block_size),
           start_column(start_column),
+          has_grown(has_grown),
           is_constrained(is_constrained) {}
     bool operator==(const Cell& other) const {
       return border_box_borders == other.border_box_borders &&
              block_size == other.block_size &&
              start_column == other.start_column &&
+             has_grown == other.has_grown &&
              is_constrained == other.is_constrained;
     }
     bool operator!=(const Cell& other) const { return !(*this == other); }
@@ -105,6 +108,7 @@ class NGTableConstraintSpaceData
     // Size of the cell. Need this for cells that span multiple rows.
     LayoutUnit block_size;
     wtf_size_t start_column;
+    bool has_grown;
     bool is_constrained;
   };
 

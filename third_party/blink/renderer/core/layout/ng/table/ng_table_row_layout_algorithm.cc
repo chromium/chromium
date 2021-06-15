@@ -58,10 +58,11 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     const LayoutUnit cell_block_size =
         row_is_collapsed ? LayoutUnit() : cell_data.block_size;
 
-    // Percentage block resolution size is only valid if cell block-size is
-    // specified, or the table block-size is specified.
-    const bool is_fixed_block_size_indefinite =
-        !cell_data.is_constrained && !table_data.is_table_block_size_specified;
+    // Our initial block-size is definite if this cell has a fixed block-size,
+    // or we have grown and the table has a specified block-size.
+    bool is_fixed_block_size_definite =
+        cell_data.is_constrained ||
+        (cell_data.has_grown && table_data.is_table_block_size_specified);
 
     const bool is_hidden_for_paint =
         table_data.column_locations[*cell_location_start_column].is_collapsed &&
@@ -70,7 +71,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     return NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
         table_data.table_writing_direction, cell, cell_data.border_box_borders,
         {cell_inline_size, cell_block_size}, container_builder_.InlineSize(),
-        row_baseline, start_column, is_fixed_block_size_indefinite,
+        row_baseline, start_column, !is_fixed_block_size_definite,
         table_data.is_table_block_size_specified, is_hidden_for_paint,
         table_data.has_collapsed_borders, NGCacheSlot::kLayout);
   };
