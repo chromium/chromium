@@ -1565,6 +1565,8 @@ crbug.com/1139693 virtual/text-antialias/hyphens/midword-break-priority.html [ F
 
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-control-chars-001.html [ Failure ]
 crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-001.html [ Failure ]
+crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-002.html [ Failure ]
+crbug.com/921318 external/wpt/css/css-text/tab-size/tab-size-spacing-003.html [ Failure ]
 crbug.com/970200 external/wpt/css/css-text/text-indent/text-indent-tab-positions-001.html [ Failure ]
 crbug.com/1030452 external/wpt/css/css-text/text-transform/text-transform-upperlower-016.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-capitalize-026.html [ Failure ]
@@ -2528,8 +2530,6 @@ crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-spacing-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-spacing-003.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/layout_ng_svg_text/external/wpt/svg/path/property/mpath.svg [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/layout_ng_svg_text/external/wpt/svg/path/property/mpath.svg [ Failure ]
 crbug.com/626703 [ Win10 ] virtual/layout_ng_svg_text/external/wpt/svg/path/property/mpath.svg [ Failure ]
