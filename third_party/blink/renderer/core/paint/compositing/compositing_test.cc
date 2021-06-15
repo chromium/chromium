@@ -1004,11 +1004,6 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
 // so that the browser controls movement adjustments needed by bottom-fixed
 // elements will work.
 TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
-  // TODO(bokan): This test will have to be reevaluated for CAP. It looks like
-  // the fixed layer isn't composited in CAP.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1026,10 +1021,6 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
 
   auto* fixed_element = GetElementById("fixed");
   auto* fixed_element_layer = CcLayerByDOMElementId("fixed");
-  DCHECK_EQ(fixed_element_layer->element_id(),
-            CompositorElementIdFromUniqueObjectId(
-                fixed_element->GetLayoutObject()->UniqueId(),
-                CompositorElementIdNamespace::kPrimary));
 
   // Fix the DIV to the bottom of the viewport. Since the viewport height will
   // expand/contract, the fixed element will need to be moved as the bounds
@@ -1110,12 +1101,6 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
 // This test is similar to |LayerSubtreeTransformPropertyChanged| but for
 // effect property node changes.
 TEST_P(CompositingSimTest, LayerSubtreeEffectPropertyChanged) {
-  // TODO(crbug.com/765003): CAP may make different layerization decisions and
-  // we cannot guarantee that both divs will be composited in this test. When
-  // CAP gets closer to launch, this test should be updated to pass.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1142,16 +1127,7 @@ TEST_P(CompositingSimTest, LayerSubtreeEffectPropertyChanged) {
 
   auto* outer_element = GetElementById("outer");
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
-  DCHECK_EQ(outer_element_layer->element_id(),
-            CompositorElementIdFromUniqueObjectId(
-                outer_element->GetLayoutObject()->UniqueId(),
-                CompositorElementIdNamespace::kPrimary));
-  auto* inner_element = GetElementById("inner");
   auto* inner_element_layer = CcLayerByDOMElementId("inner");
-  DCHECK_EQ(inner_element_layer->element_id(),
-            CompositorElementIdFromUniqueObjectId(
-                inner_element->GetLayoutObject()->UniqueId(),
-                CompositorElementIdNamespace::kPrimary));
 
   // Initially, no layer should have |subtree_property_changed| set.
   EXPECT_FALSE(outer_element_layer->subtree_property_changed());
@@ -1163,11 +1139,9 @@ TEST_P(CompositingSimTest, LayerSubtreeEffectPropertyChanged) {
   // both layers.
   outer_element->setAttribute(html_names::kStyleAttr, "filter: blur(20px)");
   UpdateAllLifecyclePhases();
-  // TODO(wangxianzhu): Probably avoid setting this flag on transform change.
   EXPECT_TRUE(outer_element_layer->subtree_property_changed());
   // Set by blink::PropertyTreeManager.
   EXPECT_TRUE(GetEffectNode(outer_element_layer)->effect_changed);
-  // TODO(wangxianzhu): Probably avoid setting this flag on transform change.
   EXPECT_TRUE(inner_element_layer->subtree_property_changed());
   EXPECT_FALSE(GetEffectNode(inner_element_layer)->effect_changed);
 
@@ -1231,12 +1205,6 @@ TEST_P(CompositingSimTest, LayerSubtreeClipPropertyChanged) {
 }
 
 TEST_P(CompositingSimTest, LayerSubtreeOverflowClipPropertyChanged) {
-  // TODO(crbug.com/765003): CAP may make different layerization decisions and
-  // we cannot guarantee that both divs will be composited in this test. When
-  // CAP gets closer to launch, this test should be updated to pass.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1264,12 +1232,7 @@ TEST_P(CompositingSimTest, LayerSubtreeOverflowClipPropertyChanged) {
 
   auto* outer_element = GetElementById("outer");
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
-  auto* inner_element = GetElementById("inner");
   auto* inner_element_layer = CcLayerByDOMElementId("inner");
-  DCHECK_EQ(inner_element_layer->element_id(),
-            CompositorElementIdFromUniqueObjectId(
-                inner_element->GetLayoutObject()->UniqueId(),
-                CompositorElementIdNamespace::kPrimary));
 
   // Initially, no layer should have |subtree_property_changed| set.
   EXPECT_FALSE(outer_element_layer->subtree_property_changed());
@@ -1484,11 +1447,6 @@ TEST_P(CompositingSimTest, RootScrollingContentsSafeOpaqueBackgroundColor) {
 }
 
 TEST_P(CompositingSimTest, NonDrawableLayersIgnoredForRenderSurfaces) {
-  // TODO(crbug.com/765003): CAP may make different layerization decisions. When
-  // CAP gets closer to launch, this test should be updated to pass.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -1748,13 +1706,6 @@ TEST_P(CompositingTest, EffectNodesShouldHaveStableIds) {
 }
 
 TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
-  // TODO(crbug.com/1046544): This test fails with CompositeAfterPaint because
-  // PaintArtifactCompositor::Update is run for scroll offset changes. When we
-  // have an early-out to avoid SetNeedsCommit for non-changing interest-rects,
-  // this test will pass.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
     <div id='scroller' style='will-change: transform; overflow: scroll;
         width: 100px; height: 100px'>
