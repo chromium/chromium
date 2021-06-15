@@ -4,6 +4,10 @@
 
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -78,6 +82,9 @@ class CastMediaSinkServiceImplTest : public ::testing::Test {
     mock_cast_socket_service_->SetTaskRunnerForTest(mock_time_task_runner_);
     media_sink_service_impl_.AddObserver(&observer_);
   }
+  CastMediaSinkServiceImplTest(CastMediaSinkServiceImplTest&) = delete;
+  CastMediaSinkServiceImplTest& operator=(CastMediaSinkServiceImplTest&) =
+      delete;
 
   void SetUp() override {
     auto mock_timer = std::make_unique<base::MockOneShotTimer>();
@@ -129,8 +136,6 @@ class CastMediaSinkServiceImplTest : public ::testing::Test {
   base::MockOneShotTimer* mock_timer_;
   CastMediaSinkServiceImpl media_sink_service_impl_;
   testing::NiceMock<MockObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaSinkServiceImplTest);
 };
 
 // static

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,6 +21,7 @@
 using media_router::MediaRoute;
 using media_router::RouteControllerType;
 using testing::_;
+using testing::NiceMock;
 
 namespace {
 
@@ -91,9 +94,9 @@ class CastMediaNotificationProducerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<CastMediaNotificationProducer> notification_producer_;
-  MockMediaNotificationController notification_controller_;
-  media_router::MockMediaRouter router_;
-  MockClosure items_changed_callback_;
+  NiceMock<MockMediaNotificationController> notification_controller_;
+  NiceMock<media_router::MockMediaRouter> router_;
+  NiceMock<MockClosure> items_changed_callback_;
 };
 
 // TODO(b/185139027): Remove this class once
@@ -134,7 +137,7 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
   notification_producer_->OnRoutesUpdated({route}, {});
   auto* item = static_cast<CastMediaNotificationItem*>(
       notification_producer_->GetNotificationItem(route_id).get());
-  MockMediaNotificationView view;
+  NiceMock<MockMediaNotificationView> view;
   item->SetView(&view);
 
   const std::string new_sink = "new sink";
