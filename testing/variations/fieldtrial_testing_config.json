@@ -4257,7 +4257,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnableIncognitoBrandConsistencyForDesktop",
+                        "IncognitoBrandConsistencyForDesktop",
                         "InheritNativeThemeFromParentWidget"
                     ]
                 }
