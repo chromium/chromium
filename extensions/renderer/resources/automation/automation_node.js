@@ -1218,9 +1218,16 @@ AutomationNodeImpl.prototype = {
     if (!nodeImpl.rootImpl)
       return;
 
-    var listeners = nodeImpl.listeners[event.type];
-    if (!listeners)
+    var originalListeners = nodeImpl.listeners[event.type];
+    if (!originalListeners)
       return;
+
+    // Make a copy of the original listeners since calling any of them can cause
+    // the list to be modified.
+    var listeners = [];
+    for (var i = 0; i < originalListeners.length; i++)
+      listeners.push(originalListeners[i]);
+
     var eventPhase = event.eventPhase;
     for (var i = 0; i < listeners.length; i++) {
       if (eventPhase == Event.CAPTURING_PHASE && !listeners[i].capture)
