@@ -7,7 +7,6 @@
 #include <cstdint>
 
 #include "base/time/time.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

@@ -116,7 +116,6 @@ blink_modules_sources("xr") {
     "xr_webgl_depth_information.h",
     "xr_webgl_layer.cc",
     "xr_webgl_layer.h",
-    "xr_webgl_rendering_context.h",
   ]
 
   deps = [

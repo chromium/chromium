@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
 #include "base/cxx17_backports.h"
-#include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"

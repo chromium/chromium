@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_SERVICE_DATA_MAP_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_unsigned_long.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

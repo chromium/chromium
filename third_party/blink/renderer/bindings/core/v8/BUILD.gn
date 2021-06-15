@@ -152,25 +152,12 @@ aggregate_generated_bindings("generate_bindings_core_v8_all_interfaces") {
   public_deps = [ ":generate_bindings_core_v8_interfaces" ]
 }
 
-idl_impl("bindings_core_impl_generated") {
-  if (use_blink_v8_binding_new_idl_dictionary) {
-    dict_idls = []
-  } else {
-    dict_idls = core_dictionary_idl_files + core_testing_dictionary_idl_files
-  }
-  non_dict_outputs = bindings_core_generated_union_type_files
-  if (!use_blink_v8_binding_new_idl_callback_function) {
-    non_dict_outputs += generated_core_testing_callback_function_files +
-                        generated_core_callback_function_files
-  }
-  non_dict_output_dir = bindings_core_v8_output_dir
-  target_component = "core"
+group("bindings_core_impl_generated") {
 }
 
 # Compile the non-test sources generated above.
 blink_core_sources("bindings_core_impl") {
-  sources = get_target_outputs(":bindings_core_impl_generated") +
-            bindings_core_generated_interface_files
+  sources = bindings_core_generated_interface_files
 
   if (!use_blink_v8_binding_new_idl_callback_function) {
     sources -= generated_core_testing_callback_function_files

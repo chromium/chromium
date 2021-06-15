@@ -8,15 +8,16 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/renderer/bindings/modules/v8/boolean_or_constrain_boolean_parameters.h"
-#include "third_party/blink/renderer/bindings/modules/v8/boolean_or_double_or_constrain_double_range.h"
-#include "third_party/blink/renderer/bindings/modules/v8/boolean_or_media_track_constraints.h"
-#include "third_party/blink/renderer/bindings/modules/v8/double_or_constrain_double_range.h"
-#include "third_party/blink/renderer/bindings/modules/v8/long_or_constrain_long_range.h"
-#include "third_party/blink/renderer/bindings/modules/v8/point_2d_sequence_or_constrain_point_2d_parameters.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_string_sequence_or_constrain_dom_string_parameters.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_double_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_point_2d_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraint_set.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
@@ -24,12 +25,6 @@
 namespace blink {
 
 namespace {
-
-using ConstrainLong = LongOrConstrainLongRange;
-using ConstrainDouble = DoubleOrConstrainDoubleRange;
-using ConstrainBoolean = BooleanOrConstrainBooleanParameters;
-using ConstrainDOMString = StringOrStringSequenceOrConstrainDOMStringParameters;
-using ConstrainPoint2D = Point2DSequenceOrConstrainPoint2DParameters;
 
 template <typename T>
 void Visit(IdentifiableTokenBuilder& builder, const T* range) {

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_NUMERIC_VALUE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/double_or_css_numeric_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -25,7 +24,6 @@ class CSSNumericValue;
 class CSSUnitValue;
 class ExceptionState;
 
-using CSSNumberish = DoubleOrCSSNumericValue;
 using CSSNumericValueVector = HeapVector<Member<CSSNumericValue>>;
 
 class CORE_EXPORT CSSNumericValue : public CSSStyleValue {

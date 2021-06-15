@@ -122,18 +122,7 @@ if (!use_blink_v8_binding_new_idl_callback_interface ||
   }
 }
 
-idl_impl("bindings_modules_impl_generated") {
-  if (use_blink_v8_binding_new_idl_dictionary) {
-    dict_idls = []
-  } else {
-    dict_idls = modules_dictionary_idl_files
-  }
-  non_dict_outputs = bindings_modules_generated_union_type_files
-  if (!use_blink_v8_binding_new_idl_callback_function) {
-    non_dict_outputs += generated_modules_callback_function_files
-  }
-  non_dict_output_dir = bindings_modules_v8_output_dir
-  target_component = "modules"
+group("bindings_modules_impl_generated") {
 }
 
 if (use_blink_v8_binding_new_idl_interface) {
@@ -226,31 +215,7 @@ group("generate_mojo_bindings") {
   ]
 }
 
-blink_modules_sources("bindings_modules_impl") {
-  # ":generate_bindings_modules_v8_partial_interfaces_for_testing" is not
-  # included here.
-  sources = get_target_outputs(":bindings_modules_impl_generated")
-
-  if (!use_blink_v8_binding_new_idl_callback_interface ||
-      !use_blink_v8_binding_new_idl_dictionary ||
-      !use_blink_v8_binding_new_idl_interface) {
-    sources += get_target_outputs(":generate_bindings_modules_v8_interfaces")
-  }
-  if (!use_blink_v8_binding_new_idl_interface) {
-    sources +=
-        get_target_outputs(":generate_bindings_modules_v8_partial_interfaces") +
-        get_target_outputs(":bindings_modules_v8_generated_init_partial") +
-        get_target_outputs(":bindings_modules_origin_trial_features")
-  }
-
-  deps = [
-    ":bindings_modules_origin_trial_features",
-    ":bindings_modules_v8_generated",
-    ":generate_mojo_bindings",
-    ":generated",
-    "//third_party/blink/renderer/modules/mediarecorder:buildflags",
-    "//third_party/dawn/src/dawn:dawn_headers",
-  ]
+group("bindings_modules_impl") {
 }
 
 action("generate_v8_context_snapshot_external_references") {
