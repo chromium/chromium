@@ -7,6 +7,7 @@
 #include <wayland-cursor.h>
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -255,6 +256,9 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
   if (bounds_px_ == adjusted_bounds_px)
     return;
   bounds_px_ = adjusted_bounds_px;
+
+  pending_buffer_scale_.emplace_back(
+      std::make_pair(bounds_px_.size(), window_scale()));
 
   if (update_visual_size_immediately_)
     UpdateVisualSize(bounds_px.size());
@@ -736,6 +740,27 @@ bool WaylandWindow::CommitOverlays(
     connection_->buffer_manager_host()->StartFrame(root_surface());
   }
 
+  // Update buffer scale before subsurfaces are configured.
+  {
+    auto main_overlay = split;
+    if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
+      main_overlay = overlays.begin();
+
+    // Either use current scale of the window or pending scale whenever visual
+    // size updates. window_scale() won't be used if we are in process of
+    // changing bounds.
+    int32_t buffer_scale = window_scale();
+    auto result =
+        std::find_if(pending_buffer_scale_.begin(), pending_buffer_scale_.end(),
+                     [&visual_size = (*main_overlay)->bounds_rect.size()](
+                         auto& item) { return visual_size == item.first; });
+    if (result != pending_buffer_scale_.end()) {
+      buffer_scale = result->second;
+      pending_buffer_scale_.erase(pending_buffer_scale_.begin(), ++result);
+    }
+    root_surface()->SetSurfaceBufferScale(buffer_scale);
+  }
+
   {
     // Iterate through |subsurface_stack_below_|, setup subsurfaces and place
     // them in corresponding order. Commit wl_buffers once a subsurface is
@@ -756,7 +781,7 @@ bool WaylandWindow::CommitOverlays(
         }
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
-            (*overlay_iter)->bounds_rect, (*overlay_iter)->surface_scale_factor,
+            (*overlay_iter)->bounds_rect, root_surface()->buffer_scale(),
             (*overlay_iter)->enable_blend, nullptr, reference_above);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
@@ -787,7 +812,7 @@ bool WaylandWindow::CommitOverlays(
         }
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
-            (*overlay_iter)->bounds_rect, (*overlay_iter)->surface_scale_factor,
+            (*overlay_iter)->bounds_rect, root_surface()->buffer_scale(),
             (*overlay_iter)->enable_blend, reference_below, nullptr);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
@@ -805,7 +830,6 @@ bool WaylandWindow::CommitOverlays(
   if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
     split = overlays.begin();
 
-  root_surface_->SetSurfaceBufferScale((*split)->surface_scale_factor);
   UpdateVisualSize((*split)->bounds_rect.size());
 
   if (!wayland_overlay_delegation_enabled_) {
@@ -834,7 +858,7 @@ bool WaylandWindow::CommitOverlays(
         (*split)->transform, (*split)->crop_rect,
         (*split)->crop_rect == gfx::RectF(1.f, 1.f) ? gfx::Rect()
                                                     : (*split)->bounds_rect,
-        (*split)->surface_scale_factor, (*split)->enable_blend, nullptr,
+        root_surface()->buffer_scale(), (*split)->enable_blend, nullptr,
         nullptr);
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,

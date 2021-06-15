@@ -353,6 +353,9 @@ class WaylandWindow : public PlatformWindow,
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
+  // Stores pending buffer_scale pair, where the key is the visual size.
+  std::vector<std::pair<gfx::Size, int32_t>> pending_buffer_scale_;
+
   base::WeakPtrFactory<WaylandWindow> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WaylandWindow);

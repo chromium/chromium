@@ -52,6 +52,8 @@ class WaylandSurface {
     explicit_release_callback_ = callback;
   }
 
+  int32_t buffer_scale() const { return buffer_scale_; }
+
   // Returns an id that identifies the |wl_surface_|.
   uint32_t GetSurfaceId() const;
   // Returns a gfx::AcceleratedWidget that identifies the WaylandWindow that
