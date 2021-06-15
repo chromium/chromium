@@ -135,12 +135,11 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
     /**
      * TasksSurface implementation.
-     * @param refreshMVTiles Whether to refresh MV Tiles if exists.
      */
     @Override
-    public void initialize(boolean refreshMVTiles) {
+    public void initialize() {
         assert LibraryLoader.getInstance().isInitialized();
-        if (!mIsMVTilesInitialized && mMostVisitedList != null && refreshMVTiles) {
+        if (!mIsMVTilesInitialized && mMostVisitedList != null) {
             mMostVisitedList.initWithNative();
             mIsMVTilesInitialized = true;
         }
@@ -234,5 +233,11 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public boolean isMVTilesCleanedUp() {
         assert mMostVisitedList != null;
         return mMostVisitedList.isMVTilesCleanedUp();
+    }
+
+    @VisibleForTesting
+    @Override
+    public boolean isMVTilesInitialized() {
+        return mIsMVTilesInitialized;
     }
 }

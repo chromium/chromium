@@ -29,9 +29,8 @@ public interface TasksSurface {
      * It should be called before showing.
      * It should not be called in the critical startup process since it will do expensive work.
      * It might be called many times.
-     * @param refreshMVTiles Whether to refresh MV Tiles if exists.
      */
-    void initialize(boolean refreshMVTiles);
+    void initialize();
 
     /**
      * Set the listener to get the {@link Layout#onTabSelecting} event from the Grid Tab Switcher.
@@ -109,6 +108,10 @@ public interface TasksSurface {
     void onHide();
 
     @VisibleForTesting
-    /** Returns whether the cleanup of MV Tiles has been done after hiding the Start surface. */
+    /** Returns whether the cleanup of MV tiles has been done after hiding the Start surface. */
     boolean isMVTilesCleanedUp();
+
+    @VisibleForTesting
+    /** Returns whether the MV tiles has been initialized. */
+    boolean isMVTilesInitialized();
 }
