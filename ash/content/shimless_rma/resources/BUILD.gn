@@ -17,10 +17,11 @@ polymer_element_files = [
   "onboarding_choose_wp_disable_method_page.js",
   "onboarding_enter_rsu_wp_disable_code_page.js",
   "onboarding_landing_page.js",
+  "onboarding_network_page.js",
   "onboarding_select_components_page.js",
   "onboarding_update_page.js",
   "onboarding_wait_for_manual_wp_disable_page.js",
-  "onboarding_network_page.js",
+  "onboarding_wp_disable_complete_page.js",
   "shimless_rma.js",
   "shimless_rma_shared_css.js",
 ]
@@ -55,6 +56,7 @@ js_type_check("closure_compile_module") {
     ":onboarding_select_components_page",
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",
+    ":onboarding_wp_disable_complete_page",
     ":shimless_rma",
     ":shimless_rma_types",
   ]
@@ -70,6 +72,7 @@ js_library("shimless_rma") {
     ":onboarding_select_components_page",
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",
+    ":onboarding_wp_disable_complete_page",
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -160,6 +163,12 @@ js_library("onboarding_update_page") {
 }
 
 js_library("onboarding_wait_for_manual_wp_disable_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("onboarding_wp_disable_complete_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

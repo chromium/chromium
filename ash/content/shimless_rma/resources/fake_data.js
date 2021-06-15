@@ -15,6 +15,7 @@ export const fakeStates = [
   {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
   {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
   {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
+  {state: RmaState.kWPDisableComplete, error: RmadErrorCode.kOk},
   {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
 ];
 
