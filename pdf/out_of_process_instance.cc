@@ -59,9 +59,9 @@
 #include "ppapi/cpp/size.h"
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
-#include "printing/mojom/print.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -622,29 +622,8 @@ void OutOfProcessInstance::DidChangeFocus(bool has_focus) {
 
 void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
     PP_PdfPrintPresetOptions_Dev* options) {
-  options->is_scaling_disabled = PP_FromBool(IsPrintScalingDisabled());
-  options->copies = engine()->GetCopiesToPrint();
-
-  switch (engine()->GetDuplexMode()) {
-    case printing::mojom::DuplexMode::kUnknownDuplexMode:
-      options->duplex = PP_PRIVATEDUPLEXMODE_NONE;
-      break;
-    case printing::mojom::DuplexMode::kSimplex:
-      options->duplex = PP_PRIVATEDUPLEXMODE_SIMPLEX;
-      break;
-    case printing::mojom::DuplexMode::kLongEdge:
-      options->duplex = PP_PRIVATEDUPLEXMODE_LONG_EDGE;
-      break;
-    case printing::mojom::DuplexMode::kShortEdge:
-      options->duplex = PP_PRIVATEDUPLEXMODE_SHORT_EDGE;
-      break;
-  }
-
-  absl::optional<gfx::Size> uniform_page_size =
-      engine()->GetUniformPageSizePoints();
-  options->is_page_size_uniform = PP_FromBool(uniform_page_size.has_value());
-  options->uniform_page_size = PPSizeFromSize(
-      uniform_page_size.has_value() ? uniform_page_size.value() : gfx::Size());
+  *options =
+      PPPdfPrintPresetOptionsFromWebPrintPresetOptions(GetPrintPresetOptions());
 }
 
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,

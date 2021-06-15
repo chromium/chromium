@@ -61,6 +61,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/cursor/cursor.h"
@@ -317,6 +318,12 @@ void PdfViewWebPlugin::DidFinishLoading() {}
 void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
 bool PdfViewWebPlugin::SupportsPaginatedPrint() {
+  return true;
+}
+
+bool PdfViewWebPlugin::GetPrintPresetOptionsFromDocument(
+    blink::WebPrintPresetOptions* print_preset_options) {
+  *print_preset_options = GetPrintPresetOptions();
   return true;
 }
 

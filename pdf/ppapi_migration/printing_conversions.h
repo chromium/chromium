@@ -11,10 +11,12 @@
 
 struct PP_PrintPageNumberRange_Dev;
 struct PP_PrintSettings_Dev;
+struct PP_PdfPrintPresetOptions_Dev;
 struct PP_PdfPrintSettings_Dev;
 
 namespace blink {
 struct WebPrintParams;
+struct WebPrintPresetOptions;
 }  // namespace blink
 
 namespace chrome_pdf {
@@ -22,6 +24,9 @@ namespace chrome_pdf {
 std::vector<int> PageNumbersFromPPPrintPageNumberRange(
     const PP_PrintPageNumberRange_Dev* page_ranges,
     uint32_t page_range_count);
+
+PP_PdfPrintPresetOptions_Dev PPPdfPrintPresetOptionsFromWebPrintPresetOptions(
+    const blink::WebPrintPresetOptions& print_preset_options);
 
 blink::WebPrintParams WebPrintParamsFromPPPrintSettings(
     const PP_PrintSettings_Dev& print_settings,

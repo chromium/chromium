@@ -31,6 +31,7 @@ class Value;
 
 namespace blink {
 class WebInputEvent;
+struct WebPrintPresetOptions;
 }  // namespace blink
 
 namespace chrome_pdf {
@@ -255,6 +256,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // renderer.
   virtual void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) = 0;
+
+  // Returns the print preset options for the document.
+  blink::WebPrintPresetOptions GetPrintPresetOptions();
 
   // Begins a print session with the given `print_params`. A call to
   // `PrintPages()` can only be made after after a successful call to

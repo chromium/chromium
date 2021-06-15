@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -559,6 +560,15 @@ void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
 
   if (accessibility_state_ == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
+}
+
+blink::WebPrintPresetOptions PdfViewPluginBase::GetPrintPresetOptions() {
+  blink::WebPrintPresetOptions options;
+  options.is_scaling_disabled = !engine_->GetPrintScaling();
+  options.copies = engine_->GetCopiesToPrint();
+  options.duplex_mode = engine_->GetDuplexMode();
+  options.uniform_page_size = engine_->GetUniformPageSizePoints();
+  return options;
 }
 
 int PdfViewPluginBase::PrintBegin(const blink::WebPrintParams& print_params) {

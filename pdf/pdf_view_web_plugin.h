@@ -110,6 +110,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
   bool SupportsPaginatedPrint() override;
+  bool GetPrintPresetOptionsFromDocument(
+      blink::WebPrintPresetOptions* print_preset_options) override;
   int PrintBegin(const blink::WebPrintParams& print_params) override;
   void PrintPage(int page_number, cc::PaintCanvas* canvas) override;
   void PrintEnd() override;
