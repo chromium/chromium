@@ -72,7 +72,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   ~AXObjectCacheImpl() override;
   void Trace(Visitor*) const override;
 
-  Document& GetDocument() { return *document_; }
+  Document& GetDocument() const { return *document_; }
   AXObject* FocusedObject();
 
   const ui::AXMode& GetAXMode() override;
@@ -371,7 +371,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Will result in a new object with the same AXID, and will also call
   // ChildrenChanged() on the parent of invalidated objects. Automatically
   // de-dupes extra object refreshes and ChildrenChanged() calls.
-  void Invalidate(AXID);
+  void Invalidate(Document&, AXID);
 
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);
@@ -427,6 +427,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
     void Trace(Visitor* visitor) const { visitor->Trace(node); }
   };
+  typedef HeapVector<Member<TreeUpdateParams>> TreeUpdateCallbackQueue;
 
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
@@ -477,7 +478,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool has_been_disposed_ = false;
 #endif
 
-  HeapVector<Member<AXEventParams>> notifications_to_post_;
+  HeapVector<Member<AXEventParams>> notifications_to_post_main_;
+  HeapVector<Member<AXEventParams>> notifications_to_post_popup_;
 
   // Call the queued callback methods that do processing which must occur when
   // layout is clean. These callbacks are stored in tree_update_callback_queue_,
@@ -602,6 +604,20 @@ class MODULES_EXPORT AXObjectCacheImpl
   // GetAllObjectsWithChangedBounds.
   void InvalidateBoundingBoxForFixedOrStickyPosition();
 
+  // Return true if this is the popup document. There can only be one popup
+  // document at a time. If it is not the popup document, it's the main
+  // document stored in |document_|.
+  bool IsPopup(Document& document) const;
+
+  // Get the invalidated objects for the passed-in document.
+  HashSet<AXID>& GetInvalidatedIds(Document& document);
+
+  // Get the queued tree update callbacks for the passed-in document
+  TreeUpdateCallbackQueue& GetTreeUpdateCallbackQueue(Document& document);
+
+  // Get the event notifications to post for the passed-in document.
+  HeapVector<Member<AXEventParams>>& GetNotificationsToPost(Document& document);
+
   // Whether the user has granted permission for the user to install event
   // listeners for accessibility events using the AOM.
   mojom::PermissionStatus accessibility_event_permission_;
@@ -612,8 +628,9 @@ class MODULES_EXPORT AXObjectCacheImpl
       permission_observer_receiver_;
 
   // Queued callbacks.
-  typedef HeapVector<Member<TreeUpdateParams>> TreeUpdateCallbackQueue;
-  TreeUpdateCallbackQueue tree_update_callback_queue_;
+  TreeUpdateCallbackQueue tree_update_callback_queue_main_;
+  TreeUpdateCallbackQueue tree_update_callback_queue_popup_;
+
   HeapHashSet<WeakMember<Node>> nodes_with_pending_children_changed_;
 
   // If tree_update_callback_queue_ gets improbably large, stop
@@ -647,7 +664,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool is_frozen_ = false;  // Used with Freeze(), Thaw() and IsFrozen() above.
 
   // Set of ID's of current AXObjects that need to be destroyed and recreated.
-  HashSet<AXID> invalidated_ids_;
+  HashSet<AXID> invalidated_ids_main_;
+  HashSet<AXID> invalidated_ids_popup_;
 
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.
