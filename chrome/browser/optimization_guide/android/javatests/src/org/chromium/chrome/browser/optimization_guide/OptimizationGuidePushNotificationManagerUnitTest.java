@@ -36,6 +36,8 @@ import org.chromium.components.optimization_guide.proto.HintsProto.KeyRepresenta
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,9 +112,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         setFeatureStatusForTest(true);
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
-        Assert.assertFalse(OptimizationGuidePushNotificationManager
-                                   .didNotificationCacheOverflowForOptimizationType(
-                                           OptimizationType.PERFORMANCE_HINTS));
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager
+                        .getOptTypesThatOverflowedPushNotifications());
 
         HintNotificationPayload[] cached =
                 OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
@@ -161,9 +163,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
-        Assert.assertFalse(OptimizationGuidePushNotificationManager
-                                   .didNotificationCacheOverflowForOptimizationType(
-                                           OptimizationType.PERFORMANCE_HINTS));
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager
+                        .getOptTypesThatOverflowedPushNotifications());
 
         HintNotificationPayload[] cached =
                 OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
@@ -220,19 +222,18 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE.setForTesting(overflowSize);
 
         for (int i = 1; i <= overflowSize; i++) {
-            Assert.assertFalse(String.format("Iteration %d", i),
+            Assert.assertEquals(String.format("Iteration %d", i), new ArrayList<OptimizationType>(),
                     OptimizationGuidePushNotificationManager
-                            .didNotificationCacheOverflowForOptimizationType(
-                                    OptimizationType.PERFORMANCE_HINTS));
+                            .getOptTypesThatOverflowedPushNotifications());
             OptimizationGuidePushNotificationManager.onPushNotification(
                     HintNotificationPayload.newBuilder(NOTIFICATION_WITH_PAYLOAD)
                             .setHintKey("hint " + i)
                             .build());
         }
 
-        Assert.assertTrue(OptimizationGuidePushNotificationManager
-                                  .didNotificationCacheOverflowForOptimizationType(
-                                          OptimizationType.PERFORMANCE_HINTS));
+        Assert.assertEquals(Arrays.asList(OptimizationType.PERFORMANCE_HINTS),
+                OptimizationGuidePushNotificationManager
+                        .getOptTypesThatOverflowedPushNotifications());
 
         HintNotificationPayload[] cached =
                 OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
@@ -257,9 +258,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
             OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
         }
 
-        Assert.assertFalse(OptimizationGuidePushNotificationManager
-                                   .didNotificationCacheOverflowForOptimizationType(
-                                           OptimizationType.PERFORMANCE_HINTS));
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager
+                        .getOptTypesThatOverflowedPushNotifications());
 
         HintNotificationPayload[] cached =
                 OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(

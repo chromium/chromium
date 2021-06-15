@@ -97,11 +97,24 @@ OptimizationGuideBridge::GetCachedNotifications(
 }
 
 // static
-bool OptimizationGuideBridge::DidOptimizationTypeOverflow(
-    proto::OptimizationType opt_type) {
+base::flat_set<proto::OptimizationType>
+OptimizationGuideBridge::GetOptTypesThatOverflowedPushNotifications() {
   JNIEnv* env = AttachCurrentThread();
-  return Java_OptimizationGuideBridge_didPushNotificationCacheOverflow(
-      env, static_cast<int>(opt_type));
+  std::vector<int> overflowed_int_types;
+  JavaIntArrayToIntVector(
+      env,
+      Java_OptimizationGuideBridge_getOptTypesThatOverflowedPushNotifications(
+          env),
+      &overflowed_int_types);
+
+  base::flat_set<proto::OptimizationType> overflowed_types;
+  for (int int_type : overflowed_int_types) {
+    // Handles parsing of reserved tag numbers.
+    if (proto::OptimizationType_IsValid(int_type)) {
+      overflowed_types.insert(static_cast<proto::OptimizationType>(int_type));
+    }
+  }
+  return overflowed_types;
 }
 
 // static

@@ -157,16 +157,18 @@ public class OptimizationGuideBridge {
     }
 
     /**
-     * Returns whether or not the given optimization type's push notifications overflowed the
-     * maximum cache size.
+     * Returns an array of all the optimization types that overflowed their cache for push
+     * notifications.
      */
     @CalledByNative
-    private static boolean didPushNotificationCacheOverflow(int optimizationTypeInt) {
-        OptimizationType optimizationType = OptimizationType.forNumber(optimizationTypeInt);
-        if (optimizationType == null) return false;
-
-        return OptimizationGuidePushNotificationManager
-                .didNotificationCacheOverflowForOptimizationType(optimizationType);
+    private static int[] getOptTypesThatOverflowedPushNotifications() {
+        List<OptimizationType> overflows = OptimizationGuidePushNotificationManager
+                                                   .getOptTypesThatOverflowedPushNotifications();
+        int[] intOverflows = new int[overflows.size()];
+        for (int i = 0; i < overflows.size(); i++) {
+            intOverflows[i] = overflows.get(i).getNumber();
+        }
+        return intOverflows;
     }
 
     /**

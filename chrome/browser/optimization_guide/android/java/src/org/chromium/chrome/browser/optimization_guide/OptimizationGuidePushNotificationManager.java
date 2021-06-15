@@ -18,7 +18,9 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -129,13 +131,16 @@ public class OptimizationGuidePushNotificationManager {
     }
 
     /**
-     * Signals whether the cached notifications for the given optimization type overflowed.
-     * @param optimizationType the optimization to check for cache overflow
-     * @return true if the cache overflowed.
+     * Returns a list of all the optimization types that overflowed their push notification caches.
      */
-    public static boolean didNotificationCacheOverflowForOptimizationType(
-            OptimizationType optimizationType) {
-        return checkForOverflow(getStringCacheForOptimizationType(optimizationType));
+    public static List<OptimizationType> getOptTypesThatOverflowedPushNotifications() {
+        List<OptimizationType> overflows = new ArrayList<OptimizationType>();
+        for (OptimizationType type : OptimizationType.values()) {
+            if (checkForOverflow(getStringCacheForOptimizationType(type))) {
+                overflows.add(type);
+            }
+        }
+        return overflows;
     }
 
     private static String cacheKey(OptimizationType optimizationType) {

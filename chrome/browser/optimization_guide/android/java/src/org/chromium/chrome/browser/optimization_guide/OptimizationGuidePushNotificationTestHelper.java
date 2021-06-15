@@ -54,9 +54,13 @@ public class OptimizationGuidePushNotificationTestHelper {
 
     @CalledByNative
     public static boolean didOverflow(int optType) {
-        return OptimizationGuidePushNotificationManager
-                .didNotificationCacheOverflowForOptimizationType(
-                        OptimizationType.forNumber(optType));
+        for (OptimizationType type : OptimizationGuidePushNotificationManager
+                                             .getOptTypesThatOverflowedPushNotifications()) {
+            if (type.getNumber() == optType) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @CalledByNative

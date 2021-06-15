@@ -141,34 +141,15 @@ void AndroidPushNotificationManager::OnDelegateReady() {
 
   // Quickly check that nothing overflowed. That way we don't risk some
   // notifications being processed just before a purge sweeps everything out.
-  ScopedBooleanHistogramRecorder overflow_recorder(
-      "OptimizationGuide.PushNotifications.DidOverflow");
-  for (int int_opt_type = proto::OptimizationType_MIN;
-       int_opt_type <= proto::OptimizationType_MAX; int_opt_type++) {
-    if (!proto::OptimizationType_IsValid(int_opt_type)) {
-      // Handles parsing to reserved tag numbers.
-      continue;
-    }
-    proto::OptimizationType opt_type =
-        static_cast<proto::OptimizationType>(int_opt_type);
-
-    // TODO(crbug/1199123): Rework this to reduce the number of JNI calls. Maybe
-    // just fetch a list of all overflowed types and all types with
-    // notifications.
-
-    if (OptimizationGuideBridge::DidOptimizationTypeOverflow(opt_type)) {
-      // The whole store will be purged in this case, because checking each
-      // stored hint's optimization types is too expensive and we presume that a
-      // cache overflow likely means native hasn't been started in a long time
-      // so the store is probably mostly expired anyways.
-      OnNeedToPurgeStore();
-
-      overflow_recorder.SetSample(true);
-
-      return;
-    }
+  base::flat_set<proto::OptimizationType> overflowed_types =
+      OptimizationGuideBridge::GetOptTypesThatOverflowedPushNotifications();
+  bool did_overflow = !overflowed_types.empty();
+  base::UmaHistogramBoolean("OptimizationGuide.PushNotifications.DidOverflow",
+                            did_overflow);
+  if (did_overflow) {
+    OnNeedToPurgeStore();
+    return;
   }
-  overflow_recorder.SetSample(false);
 
   size_t cached_notifications_total = 0;
   for (int int_opt_type = proto::OptimizationType_MIN;
