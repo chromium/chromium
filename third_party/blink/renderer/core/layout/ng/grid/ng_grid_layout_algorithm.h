@@ -299,7 +299,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGBlockNode& node,
       const NGGridData& grid_data,
       const ComputedStyle& grid_style,
-      const WritingMode& container_writing_mode,
+      const WritingMode container_writing_mode,
       const NGBoxStrut& borders,
       const LogicalSize& border_box_size,
       const LayoutUnit block_size);
@@ -324,7 +324,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridItemData& grid_item,
       GridTrackSizingDirection track_direction,
       GridItemContributionType contribution_type,
-      bool* needs_additional_pass) const;
+      bool* needs_additional_pass,
+      bool* has_block_size_dependent_item) const;
 
   wtf_size_t ComputeAutomaticRepetitions(
       GridTrackSizingDirection track_direction) const;
@@ -356,17 +357,16 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Returns 'true' if it's possible to layout a grid item.
   bool CanLayoutGridItem(const GridItemData& grid_item,
-                         const GridTrackSizingDirection track_direction,
-                         const NGConstraintSpace space,
-                         const SizingConstraint sizing_constraint) const;
+                         const NGConstraintSpace& space,
+                         const GridTrackSizingDirection track_direction) const;
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |grid_geometry|.
-  void CalculateAlignmentBaselines(GridTrackSizingDirection track_direction,
-                                   SizingConstraint sizing_constraint,
-                                   GridGeometry* grid_geometry,
-                                   GridItems* grid_items,
-                                   bool* needs_additional_pass = nullptr) const;
+  void CalculateAlignmentBaselines(
+      const GridTrackSizingDirection track_direction,
+      GridGeometry* grid_geometry,
+      GridItems* grid_items,
+      bool* needs_additional_pass) const;
 
   // Initializes the given track collection, and returns the base set geometry.
   SetGeometry InitializeTrackSizes(
@@ -378,7 +378,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       GridItems* grid_items,
-      bool* needs_additional_pass) const;
+      bool* needs_additional_pass,
+      bool* has_block_size_dependent_item = nullptr) const;
 
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
@@ -386,7 +387,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       GridItems* grid_items,
-      bool* needs_additional_pass) const;
+      bool* needs_additional_pass,
+      bool* has_block_size_dependent_item) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
       const GridGeometry& grid_geometry,
@@ -395,22 +397,24 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const bool is_group_spanning_flex_track,
       GridItemContributionType contribution_type,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      bool* needs_additional_pass) const;
+      bool* needs_additional_pass,
+      bool* has_block_size_dependent_item) const;
 
   void MaximizeTracks(
       SizingConstraint sizing_constraint,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
-  void StretchAutoTracks(SizingConstraint sizing_constraint,
-                         NGGridLayoutAlgorithmTrackCollection* track_collection,
-                         bool* needs_additional_pass) const;
+  void StretchAutoTracks(
+      SizingConstraint sizing_constraint,
+      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
   void ExpandFlexibleTracks(
       SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       GridItems* grid_items,
-      bool* needs_additional_pass) const;
+      bool* needs_additional_pass,
+      bool* has_block_size_dependent_item) const;
 
   SetGeometry ComputeSetGeometry(
       const NGGridLayoutAlgorithmTrackCollection& track_collection) const;

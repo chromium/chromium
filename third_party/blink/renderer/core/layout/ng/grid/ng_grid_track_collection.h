@@ -214,7 +214,11 @@ class CORE_EXPORT NGGridSet {
   bool IsInfinitelyGrowable() const { return is_infinitely_growable_; }
 
   void SetBaseSize(LayoutUnit base_size);
+  void InitBaseSize(LayoutUnit base_size);
   void SetGrowthLimit(LayoutUnit growth_limit);
+  void InitGrowthLimit(LayoutUnit growth_limit) {
+    growth_limit_ = growth_limit;
+  }
   void SetPlannedIncrease(LayoutUnit planned_increase) {
     planned_increase_ = planned_increase;
   }
