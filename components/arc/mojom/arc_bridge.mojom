@@ -237,7 +237,7 @@ interface ArcBridgeHost {
 
   // Notifies Chrome that the PrintSpoolerInstance interface is ready.
   [MinVersion=45] OnPrintSpoolerInstanceReady@150(
-                      pending_remote<PrintSpoolerInstance> instance_remote);
+      pending_remote<PrintSpoolerInstance> instance_remote);
 
   // Notifies Chrome that the ProcessInstance interface is ready.
   OnProcessInstanceReady@104(pending_remote<ProcessInstance> instance_remote);
@@ -260,7 +260,7 @@ interface ArcBridgeHost {
 
   // Notifies Chrome that the SharesheetInstance interface is ready.
   [MinVersion=52] OnSharesheetInstanceReady@157(
-                      pending_remote<SharesheetInstance> instance_remote);
+      pending_remote<SharesheetInstance> instance_remote);
 
   // Notifies Chrome that the SmartCardManagerInstance interface is ready.
   [MinVersion=48] OnSmartCardManagerInstanceReady@153(
