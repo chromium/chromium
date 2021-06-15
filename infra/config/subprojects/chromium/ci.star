@@ -422,7 +422,7 @@ consoles.console_view(
     ("ToTWin", "ToT Windows", "rel"),
     ("ToTWin64", "ToT Windows|x64", "rel"),
     ("ToTWinOfficial", "ToT Windows", "ofi"),
-    ("ToTWinThinLTO64", "ToT Windows|x64", "lto"),
+    ("ToTWinOfficial64", "ToT Windows|x64", "ofi"),
     ("clang-tot-device", "iOS|internal", "dev"),
 )]
 
@@ -2234,11 +2234,6 @@ clang_tot_linux_builder(
 clang_tot_linux_builder(
     name = "ToTLinuxTSan",
     short_name = "tsn",
-)
-
-clang_tot_linux_builder(
-    name = "ToTLinuxThinLTO",
-    short_name = "lto",
 )
 
 clang_tot_linux_builder(

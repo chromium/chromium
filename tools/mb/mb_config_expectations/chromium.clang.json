@@ -210,17 +210,6 @@
       "llvm_force_head_revision": true
     }
   },
-  "ToTLinuxThinLTO": {
-    "gn_args": {
-      "is_clang": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "llvm_force_head_revision": true,
-      "symbol_level": 1,
-      "thin_lto_enable_optimizations": true,
-      "use_thin_lto": true
-    }
-  },
   "ToTLinuxUBSanVptr": {
     "gn_args": {
       "is_clang": true,
@@ -389,11 +378,10 @@
       "llvm_force_head_revision": true,
       "symbol_level": 2,
       "target_cpu": "x86",
-      "use_thin_lto": true,
       "win_linker_timing": true
     }
   },
-  "ToTWinThinLTO64": {
+  "ToTWinOfficial64": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_clang": true,
@@ -401,7 +389,6 @@
       "is_official_build": true,
       "llvm_force_head_revision": true,
       "symbol_level": 2,
-      "use_thin_lto": true,
       "win_linker_timing": true
     }
   },

@@ -1788,18 +1788,6 @@
           'isolated_scripts': 'chrome_sizes',
         },
       },
-      'ToTLinuxThinLTO': {
-        'mixins': [
-          'linux-xenial',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chrome_sizes',
-        },
-      },
       'ToTLinuxUBSanVptr': {
         'mixins': [
           'linux-xenial',
@@ -1969,7 +1957,7 @@
           'chrome_official_builder',
         ],
       },
-      'ToTWinThinLTO64': {
+      'ToTWinOfficial64': {
         'mixins': [
           'chrome-tester-service-account',
         ],

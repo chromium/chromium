@@ -2251,12 +2251,12 @@
       'ToTWin(dbg)',
       'ToTWin(dll)',
       'ToTWinOfficial',
+      'ToTWinOfficial64',
       'ToTWin64',
       'ToTWin64(dbg)',
       'ToTWin64(dll)',
       'ToTWinCFI',
       'ToTWinCFI64',
-      'ToTWinThinLTO64',
     ],
   },
   'ozone_unittests': {
