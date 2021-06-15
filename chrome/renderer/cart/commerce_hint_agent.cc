@@ -54,6 +54,11 @@ constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
     // This regex does not match anything.
     "\\b\\B"};
 
+constexpr base::FeatureParam<std::string> kSkipAddToCartMapping{
+    &ntp_features::kNtpChromeCartModule, "skip-add-to-cart-mapping",
+    // Empty JSON string.
+    ""};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -327,6 +332,25 @@ bool IsSameDomainXHR(const std::string& host,
   return url.DomainIs(host);
 }
 
+const std::map<std::string, std::string>& GetSkipAddToCartMapping() {
+  static base::NoDestructor<std::map<std::string, std::string>> skip_map([] {
+    const base::Value json(
+        base::JSONReader::Read(
+            kSkipAddToCartMapping.Get().empty()
+                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+                      IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON)
+                : kSkipAddToCartMapping.Get())
+            .value());
+    DCHECK(json.is_dict());
+    std::map<std::string, std::string> map;
+    for (const auto& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second.GetString())});
+    }
+    return map;
+  }());
+  return *skip_map;
+}
+
 void DetectAddToCart(content::RenderFrame* render_frame,
                      const blink::WebURLRequest& request) {
   blink::WebLocalFrame* frame = render_frame->GetWebFrame();
@@ -367,18 +391,10 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     return;
   }
 
-  // Per-site hard-coded exclusion rules:
-  if (navigation_url.DomainIs("costco.com") && url.DomainIs("clicktale.net"))
+  if (CommerceHintAgent::ShouldSkipAddToCartRequest(navigation_url, url)) {
     return;
-  if (navigation_url.DomainIs("lululemon.com") &&
-      url.DomainIs("launchdarkly.com"))
-    return;
-  if (navigation_url.DomainIs("qvc.com"))
-    return;
-  if (navigation_url.DomainIs("hsn.com") && url.DomainIs("granify.com"))
-    return;
-  if (navigation_url.DomainIs(kElectronicExpressDomain))
-    return;
+  }
+
   if (IsCartHeuristicsImprovementEnabled()) {
     if (navigation_url.DomainIs("abebooks.com"))
       return;
@@ -690,5 +706,27 @@ void CommerceHintAgent::DidObserveLayoutShift(double score,
     DVLOG(1) << "In-cart layout shift: " << url;
     ExtractProducts();
   }
+}
+
+bool CommerceHintAgent::ShouldSkipAddToCartRequest(const GURL& navigation_url,
+                                                   const GURL& request_url) {
+  const std::map<std::string, std::string>& skip_string_map =
+      GetSkipAddToCartMapping();
+  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
+      skip_regex_map;
+  const std::string& navigation_domain = eTLDPlusOne(navigation_url);
+  if (skip_string_map.find(navigation_domain) == skip_string_map.end()) {
+    return false;
+  }
+  static re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  if (skip_regex_map->find(navigation_domain) == skip_regex_map->end()) {
+    skip_regex_map->insert(
+        {navigation_domain,
+         std::make_unique<re2::RE2>(skip_string_map.at(navigation_domain),
+                                    options)});
+  }
+  return RE2::FullMatch(re2::StringPiece(eTLDPlusOne(request_url)),
+                        *skip_regex_map->at(navigation_domain));
 }
 }  // namespace cart

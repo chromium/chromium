@@ -17,6 +17,7 @@
       <include name="IDR_PLUGIN_POSTER_HTML" file="plugins/plugin_poster.html" flattenhtml="true" type="BINDATA" />
       <include name="IDR_CART_PRODUCT_EXTRACTION_JS" file="cart/cart-product-extraction.js" type="BINDATA"/>
       <include name="IDR_CART_DOMAIN_CART_URL_REGEX_JSON" file="cart/cart_domain_cart_url_regex.json" type="BINDATA"/>
+      <include name="IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON" file="cart/skip_add_to_cart_request_domain_mapping.json" type="BINDATA"/>
 
       <!-- Extension libraries. -->
       <if expr="enable_extensions">
