@@ -727,32 +727,40 @@ class Generator(generator.Generator):
 
   def _IsFullHeaderRequiredForImport(self, imported_module):
     """Determines whether a given import module requires a full header include,
-    or if the forward header is sufficient. The full header is required if any
-    imported structs, unions, or typemapped types are referenced by
-    the module we're generating bindings for; or if an imported enum is used as
-    a map key."""
+    or if the forward header is sufficient."""
 
-    def requires_full_header(kind):
-      if (mojom.IsUnionKind(kind) or mojom.IsStructKind(kind)
-          or self._IsTypemappedKind(kind)):
-        return True
+    # Type-mapped kinds don't have forward declarations, and nested kinds cannot
+    # be forward declared.
+    # TODO(hans): Use forward declarations for type-mapped kinds.
+    if any(kind.module == imported_module and (
+        self._IsTypemappedKind(kind) or kind.parent_kind != None)
+           for kind in self.module.imported_kinds.values()):
+      return True
 
-      if mojom.IsEnumKind(kind):
-        # Blink bindings need the full header for an enum used as a map key.
-        # This is uncommon enough that we set the requirement generically for
-        # Blink and non-Blink bindings.
-        return any(
-            mojom.IsMapKind(k) and k.key_kind == kind
-            for k in self.module.kinds.values())
-      return False
+    # For most kinds, whether or not a full definition is needed depends on how
+    # the kind is used.
+    for kind in self.module.structs + self.module.unions:
+      for field in kind.fields:
 
-    for spec, kind in imported_module.kinds.items():
-      if kind.module != imported_module:
-        # If it wasn't defined directly in the imported module, it doesn't
-        # affect whether we need the module or not.
-        continue
-      if spec in self.module.imported_kinds and requires_full_header(kind):
-        return True
+        # Peel array kinds.
+        kind = field.kind
+        while mojom.IsArrayKind(kind):
+          kind = kind.kind
+
+        if kind.module == imported_module:
+          # Need full def for struct/union fields, even when not inlined.
+          if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
+            return True
+
+    for kind in self.module.kinds.values():
+      if mojom.IsMapKind(kind):
+        if kind.key_kind.module == imported_module:
+          # Map keys need the full definition.
+          return True
+        if self.for_blink and kind.value_kind.module == imported_module:
+          # For Blink, map values need the full definition for tracing.
+          return True
+
     return False
 
   def _IsReceiverKind(self, kind):
