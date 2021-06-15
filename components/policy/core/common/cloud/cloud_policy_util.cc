@@ -163,7 +163,7 @@ std::string GetOSVersion() {
 #elif defined(OS_WIN)
   base::win::OSInfo::VersionNumber version_number =
       base::win::OSInfo::GetInstance()->version_number();
-  return base::StringPrintf("%d.%d.%d.%d", version_number.major,
+  return base::StringPrintf("%u.%u.%u.%u", version_number.major,
                             version_number.minor, version_number.build,
                             version_number.patch);
 #elif defined(OS_ANDROID)

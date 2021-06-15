@@ -39,7 +39,7 @@ int GetPhysicalMemoryGB() {
 std::string GetOSVersion() {
 #if defined(OS_WIN)
   const auto ver = base::win::OSInfo::GetInstance()->version_number();
-  return base::StringPrintf("%d.%d.%d.%d", ver.major, ver.minor, ver.build,
+  return base::StringPrintf("%u.%u.%u.%u", ver.major, ver.minor, ver.build,
                             ver.patch);
 #else
   return base::SysInfo().OperatingSystemVersion();

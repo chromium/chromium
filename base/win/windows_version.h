@@ -74,10 +74,10 @@ enum VersionType {
 class BASE_EXPORT OSInfo {
  public:
   struct VersionNumber {
-    int major;
-    int minor;
-    int build;
-    int patch;
+    uint32_t major;
+    uint32_t minor;
+    uint32_t build;
+    uint32_t patch;
   };
 
   struct ServicePack {
@@ -168,7 +168,9 @@ class BASE_EXPORT OSInfo {
   ~OSInfo();
 
   // Returns a Version value for a given OS version tuple.
-  static Version MajorMinorBuildToVersion(int major, int minor, int build);
+  static Version MajorMinorBuildToVersion(uint32_t major,
+                                          uint32_t minor,
+                                          uint32_t build);
 
   Version version_;
   VersionNumber version_number_;

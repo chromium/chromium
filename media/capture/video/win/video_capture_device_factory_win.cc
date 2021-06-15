@@ -565,7 +565,7 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
 void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(
     std::vector<VideoCaptureDeviceInfo> devices_info,
     GetDevicesInfoCallback result_callback) {
-  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240);
+  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
   VideoCaptureDeviceFactoryWin* factory = this;
   scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner =

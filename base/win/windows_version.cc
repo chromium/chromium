@@ -258,7 +258,9 @@ OSInfo::WOW64Status OSInfo::GetWOW64StatusForProcess(HANDLE process_handle) {
 // With the exception of Server 2003, server variants are treated the same as
 // the corresponding workstation release.
 // static
-Version OSInfo::MajorMinorBuildToVersion(int major, int minor, int build) {
+Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
+                                         uint32_t minor,
+                                         uint32_t build) {
   if (major == 10) {
     if (build >= 19043)
       return Version::WIN10_21H1;
@@ -300,7 +302,7 @@ Version OSInfo::MajorMinorBuildToVersion(int major, int minor, int build) {
       case 2:
         return Version::WIN8;
       default:
-        DCHECK_EQ(minor, 3);
+        DCHECK_EQ(minor, 3u);
         return Version::WIN8_1;
     }
   }

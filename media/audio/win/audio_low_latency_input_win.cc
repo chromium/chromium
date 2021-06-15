@@ -230,7 +230,7 @@ bool InitializeUWPSupport() {
       DLOG(WARNING) << "AudioCaptureEffectsManager requires Windows 10";
       return false;
     }
-    DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240);
+    DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
     // Provide access to Core WinRT/UWP functions and load all required HSTRING
     // functions available from Win8 and onwards. ScopedHString is a wrapper

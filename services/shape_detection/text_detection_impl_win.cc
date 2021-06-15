@@ -50,7 +50,7 @@ void TextDetectionImpl::Create(
     DVLOG(1) << "Optical character recognition not supported before Windows 10";
     return;
   }
-  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240);
+  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
   // Loads functions dynamically at runtime to prevent library dependencies.
   if (!(base::win::ResolveCoreWinRTDelayload() &&
