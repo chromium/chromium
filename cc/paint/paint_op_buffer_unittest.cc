@@ -288,8 +288,8 @@ TEST(PaintOpBufferTest, SaveDrawTextBlobRestore) {
 
   PaintFlags paint_flags;
   EXPECT_TRUE(paint_flags.SupportsFoldingAlpha());
-  buffer.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()), 0, 0,
-                              paint_flags);
+  buffer.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()), 0.0f,
+                              0.0f, paint_flags);
   buffer.push<RestoreOp>();
 
   SaveCountingCanvas canvas;
@@ -3888,8 +3888,8 @@ TEST(PaintOpBufferTest, HasDrawOpsAndHasDrawTextOps) {
   buffer2->push<DrawRecordOp>(std::move(buffer1));
   EXPECT_TRUE(buffer2->has_draw_ops());
   EXPECT_FALSE(buffer2->has_draw_text_ops());
-  buffer2->push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()), 0,
-                                0, PaintFlags());
+  buffer2->push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()),
+                                0.0f, 0.0f, PaintFlags());
   EXPECT_TRUE(buffer2->has_draw_ops());
   EXPECT_TRUE(buffer2->has_draw_text_ops());
   buffer2->push<DrawRectOp>(SkRect::MakeWH(4, 5), PaintFlags());
@@ -3927,14 +3927,14 @@ TEST(PaintOpBufferTest, HasEffectsPreventingLCDTextForSaveLayerAlpha) {
 
 TEST(PaintOpBufferTest, NeedsAdditionalInvalidationForLCDText) {
   auto buffer1 = sk_make_sp<PaintOpBuffer>();
-  buffer1->push<SaveLayerAlphaOp>(nullptr, 100);
+  buffer1->push<SaveLayerAlphaOp>(nullptr, uint8_t{100});
   EXPECT_FALSE(buffer1->has_draw_text_ops());
   EXPECT_TRUE(buffer1->has_save_layer_alpha_ops());
   EXPECT_FALSE(buffer1->has_effects_preventing_lcd_text_for_save_layer_alpha());
 
   auto buffer2 = sk_make_sp<PaintOpBuffer>();
-  buffer2->push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()), 0,
-                                0, PaintFlags());
+  buffer2->push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()),
+                                0.0f, 0.0f, PaintFlags());
   buffer2->push<SaveLayerOp>(nullptr, nullptr);
   EXPECT_TRUE(buffer2->has_draw_ops());
   EXPECT_FALSE(buffer2->has_save_layer_alpha_ops());
@@ -3957,7 +3957,7 @@ TEST(PaintOpBufferTest, NeedsAdditionalInvalidationForLCDText) {
   }
   {
     buffer1->push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()),
-                                  0, 0, PaintFlags());
+                                  0.0f, 0.0f, PaintFlags());
     EXPECT_TRUE(buffer1->has_draw_text_ops());
     EXPECT_TRUE(buffer1->has_save_layer_alpha_ops());
     EXPECT_FALSE(

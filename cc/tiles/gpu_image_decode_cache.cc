@@ -2236,8 +2236,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
         return;
       }
 
-      size_t image_width = uploaded_y_image->width();
-      size_t image_height = uploaded_y_image->height();
+      int image_width = uploaded_y_image->width();
+      int image_height = uploaded_y_image->height();
       uploaded_image = CreateImageFromYUVATexturesInternal(
           uploaded_y_image.get(), uploaded_u_image.get(),
           uploaded_v_image.get(), image_width, image_height,
@@ -2950,8 +2950,8 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
     const SkImage* uploaded_y_image,
     const SkImage* uploaded_u_image,
     const SkImage* uploaded_v_image,
-    const size_t image_width,
-    const size_t image_height,
+    const int image_width,
+    const int image_height,
     const SkYUVAInfo::PlaneConfig yuva_plane_config,
     const SkYUVAInfo::Subsampling yuva_subsampling,
     const SkYUVColorSpace yuv_color_space,
@@ -3053,8 +3053,8 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
       return;
     }
 
-    size_t width = image_y_with_mips_owned->width();
-    size_t height = image_y_with_mips_owned->height();
+    int width = image_y_with_mips_owned->width();
+    int height = image_y_with_mips_owned->height();
     sk_sp<SkColorSpace> color_space =
         SupportsColorSpaceConversion() &&
                 draw_image.target_color_space().IsValid()

@@ -120,7 +120,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
   if (has_draw_text_op_) {
     display_list->StartPaint();
     display_list->push<DrawTextBlobOp>(
-        SkTextBlob::MakeFromString("any", SkFont()), 0, 0, PaintFlags());
+        SkTextBlob::MakeFromString("any", SkFont()), 0.0f, 0.0f, PaintFlags());
     display_list->EndPaintOfUnpaired(PaintableRegion());
   }
 

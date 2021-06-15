@@ -1863,14 +1863,14 @@ class OopTextBlobPixelTest
       filter = nullptr;
     }
     if (strategy == TextBlobStrategy::kDirect) {
-      display_list->push<DrawTextBlobOp>(std::move(text_blob), 0u, kTextBlobY,
+      display_list->push<DrawTextBlobOp>(std::move(text_blob), 0.0f, kTextBlobY,
                                          text_flags);
       return;
     }
 
     // All remaining strategies add the DrawTextBlobOp to an inner paint record.
     auto paint_record = sk_make_sp<PaintOpBuffer>();
-    paint_record->push<DrawTextBlobOp>(std::move(text_blob), 0u, kTextBlobY,
+    paint_record->push<DrawTextBlobOp>(std::move(text_blob), 0.0f, kTextBlobY,
                                        text_flags);
     if (strategy == TextBlobStrategy::kDrawRecord) {
       display_list->push<DrawRecordOp>(std::move(paint_record));
@@ -2031,7 +2031,7 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
   flags.setColor(SK_ColorGREEN);
-  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_1), 0u,
+  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_1), 0.0f,
                                           kTextBlobY, flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();
@@ -2039,7 +2039,7 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   // Create another list with a different typeface.
   auto display_item_list_2 = base::MakeRefCounted<DisplayItemList>();
   display_item_list_2->StartPaint();
-  display_item_list_2->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_2), 0u,
+  display_item_list_2->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_2), 0.0f,
                                             kTextBlobY, flags);
   display_item_list_2->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list_2->Finalize();
@@ -2072,7 +2072,7 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
   flags.setColor(SK_ColorGREEN);
-  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0u, kTextBlobY,
+  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0.0f, kTextBlobY,
                                           flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();

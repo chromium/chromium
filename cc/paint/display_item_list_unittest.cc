@@ -1147,30 +1147,30 @@ TEST_F(DisplayItemListTest, AreaOfDrawText) {
   auto text_blob2_area = text_blob2_size.width() * text_blob2_size.height();
 
   sub_list->StartPaint();
-  sub_list->push<DrawTextBlobOp>(text_blob1, 0, 0, PaintFlags());
+  sub_list->push<DrawTextBlobOp>(text_blob1, 0.0f, 0.0f, PaintFlags());
   sub_list->EndPaintOfUnpaired(gfx::Rect());
   auto record = sub_list->ReleaseAsRecord();
 
   list->StartPaint();
   list->push<SaveOp>();
-  list->push<TranslateOp>(100, 100);
+  list->push<TranslateOp>(100.0f, 100.0f);
   list->push<DrawRecordOp>(record);
   list->push<RestoreOp>();
   list->EndPaintOfUnpaired(gfx::Rect(gfx::Point(100, 100), text_blob1_size));
 
   list->StartPaint();
   list->push<SaveOp>();
-  list->push<TranslateOp>(100, 400);
+  list->push<TranslateOp>(100.0f, 400.0f);
   list->push<DrawRecordOp>(record);
   list->push<RestoreOp>();
   list->EndPaintOfUnpaired(gfx::Rect(gfx::Point(100, 400), text_blob1_size));
 
   list->StartPaint();
-  list->push<DrawTextBlobOp>(text_blob2, 10, 20, PaintFlags());
+  list->push<DrawTextBlobOp>(text_blob2, 10.0f, 20.0f, PaintFlags());
   list->EndPaintOfUnpaired(gfx::Rect(text_blob2_size));
 
   list->StartPaint();
-  list->push<DrawTextBlobOp>(text_blob2, 400, 100, PaintFlags());
+  list->push<DrawTextBlobOp>(text_blob2, 400.0f, 100.0f, PaintFlags());
   list->EndPaintOfUnpaired(gfx::Rect(gfx::Point(400, 100), text_blob2_size));
 
   list->StartPaint();

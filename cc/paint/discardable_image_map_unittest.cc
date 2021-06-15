@@ -408,13 +408,13 @@ TEST_F(DiscardableImageMapTest, RestoreSavedTransformedLayers) {
       CreateDiscardablePaintImage(gfx::Size(25, 25));
   PaintImage discardable_image3 =
       CreateDiscardablePaintImage(gfx::Size(25, 25));
-  display_list->push<TranslateOp>(25, 25);
+  display_list->push<TranslateOp>(25.0f, 25.0f);
   display_list->push<DrawImageOp>(discardable_image1, 0.f, 0.f);
   display_list->push<SaveLayerOp>(nullptr, &paint);
-  display_list->push<TranslateOp>(100, 100);
+  display_list->push<TranslateOp>(100.0f, 100.0f);
   display_list->push<DrawImageOp>(discardable_image2, 0.f, 0.f);
   display_list->push<RestoreOp>();
-  display_list->push<TranslateOp>(0, 100);
+  display_list->push<TranslateOp>(0.0f, 100.0f);
   display_list->push<DrawImageOp>(discardable_image3, 0.f, 0.f);
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
