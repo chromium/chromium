@@ -11,6 +11,7 @@ generate usable language bindings.
 """
 
 import argparse
+import builtins
 import codecs
 import errno
 import json
@@ -19,6 +20,7 @@ import multiprocessing
 import os
 import os.path
 import sys
+import traceback
 from collections import defaultdict
 
 from mojom.generate import module
@@ -172,8 +174,7 @@ def _CollectAllowedImportsFromBuildMetadata(build_metadata_filename):
 
 
 # multiprocessing helper.
-def _ParseAstHelper(args):
-  mojom_abspath, enabled_features = args
+def _ParseAstHelper(mojom_abspath, enabled_features):
   with codecs.open(mojom_abspath, encoding='utf-8') as f:
     ast = parser.Parse(f.read(), mojom_abspath)
     conditional_features.RemoveDisabledDefinitions(ast, enabled_features)
@@ -181,8 +182,7 @@ def _ParseAstHelper(args):
 
 
 # multiprocessing helper.
-def _SerializeHelper(args):
-  mojom_abspath, mojom_path = args
+def _SerializeHelper(mojom_abspath, mojom_path):
   module_path = os.path.join(_SerializeHelper.output_root_path,
                              _GetModuleFilename(mojom_path))
   module_dir = os.path.dirname(module_path)
@@ -199,12 +199,33 @@ def _SerializeHelper(args):
     _SerializeHelper.loaded_modules[mojom_abspath].Dump(f)
 
 
-def _Shard(target_func, args, processes=None):
-  args = list(args)
+class _ExceptionWrapper:
+  def __init__(self):
+    # Do not capture exception object to ensure pickling works.
+    self.formatted_trace = traceback.format_exc()
+
+
+class _FuncWrapper:
+  """Marshals exceptions and spreads args."""
+
+  def __init__(self, func):
+    self._func = func
+
+  def __call__(self, args):
+    # multiprocessing does not gracefully handle excptions.
+    # https://crbug.com/1219044
+    try:
+      return self._func(*args)
+    except:  # pylint: disable=bare-except
+      return _ExceptionWrapper()
+
+
+def _Shard(target_func, arg_list, processes=None):
+  arg_list = list(arg_list)
   if processes is None:
     processes = multiprocessing.cpu_count()
   # Seems optimal to have each process perform at least 2 tasks.
-  processes = min(processes, len(args) // 2)
+  processes = min(processes, len(arg_list) // 2)
 
   if sys.platform == 'win32':
     # TODO(crbug.com/1190269) - we can't use more than 56
@@ -213,13 +234,17 @@ def _Shard(target_func, args, processes=None):
 
   # Don't spin up processes unless there is enough work to merit doing so.
   if not _ENABLE_MULTIPROCESSING or processes < 2:
-    for result in map(target_func, args):
-      yield result
+    for arg_tuple in arg_list:
+      yield target_func(*arg_tuple)
     return
 
   pool = multiprocessing.Pool(processes=processes)
   try:
-    for result in pool.imap_unordered(target_func, args):
+    wrapped_func = _FuncWrapper(target_func)
+    for result in pool.imap_unordered(wrapped_func, arg_list):
+      if isinstance(result, _ExceptionWrapper):
+        sys.stderr.write(result.formatted_trace)
+        sys.exit(1)
       yield result
   finally:
     pool.close()
