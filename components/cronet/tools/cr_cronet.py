@@ -45,7 +45,11 @@ def build(out_dir, build_target, extra_options=None):
 
 def install(out_dir):
   cmd = ['build/android/adb_install_apk.py']
-  env = {'BUILDTYPE': out_dir[4:]}
+  # Propagate PATH to avoid issues with missing tools http://crbug/1217979
+  env = {
+      'BUILDTYPE': out_dir[4:],
+      'PATH': os.environ.get('PATH', '')
+  }
   return run(cmd + ['CronetTestInstrumentation.apk'], env=env) or \
       run(cmd + ['ChromiumNetTestSupport.apk'], env=env)
 
