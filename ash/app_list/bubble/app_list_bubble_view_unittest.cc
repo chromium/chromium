@@ -4,11 +4,15 @@
 
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 
+#include <memory>
+
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +42,19 @@ testing::AssertionResult IsNear(const gfx::Point& a, const gfx::Point& b) {
   return testing::AssertionFailure()
          << a.ToString() << " is more than " << kNearDistanceDips
          << " dips away from " << b.ToString();
+}
+
+void AddAppItems(int num_apps) {
+  int num_apps_already_added = Shell::Get()
+                                   ->app_list_controller()
+                                   ->GetModel()
+                                   ->top_level_item_list()
+                                   ->item_count();
+  for (int i = 0; i < num_apps; i++) {
+    Shell::Get()->app_list_controller()->GetModel()->AddItem(
+        std::make_unique<AppListItem>(
+            /*app_id=*/base::NumberToString(i + num_apps_already_added)));
+  }
 }
 
 class AppListBubbleViewTest : public AshTestBase {
@@ -125,6 +142,44 @@ TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
   // AppListBubble and the top of the screen is greater than the shelf size.
   EXPECT_GE(client_view->GetBoundsInScreen().y(),
             ShelfConfig::Get()->shelf_size());
+}
+
+// Test that the AppListBubbleView scales up with more apps on a larger display.
+TEST_F(AppListBubbleViewTest, BubbleSizedForLargeDisplay) {
+  UpdateDisplay("2000x2000");
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  int no_apps_bubble_view_height = presenter->bubble_view_for_test()->height();
+
+  // Add 30 apps to the AppListBubble and reopen.
+  presenter->Dismiss();
+  AddAppItems(30);
+  presenter->Show(GetPrimaryDisplay().id());
+
+  int thirty_apps_bubble_view_height =
+      presenter->bubble_view_for_test()->height();
+
+  // The AppListBubbleView should be larger after apps have neen added to it.
+  EXPECT_GT(thirty_apps_bubble_view_height, no_apps_bubble_view_height);
+
+  // Add 50 more apps to the AppListBubble and reopen.
+  presenter->Dismiss();
+  AddAppItems(50);
+  presenter->Show(GetPrimaryDisplay().id());
+
+  int eighty_apps_bubble_view_height =
+      presenter->bubble_view_for_test()->height();
+
+  // With more apps added, the height of the AppListBubble should increase.
+  EXPECT_GT(eighty_apps_bubble_view_height, thirty_apps_bubble_view_height);
+
+  // The AppListBubble height should not be larger than half the display height.
+  EXPECT_LE(eighty_apps_bubble_view_height, 1000);
+
+  // The AppListBubble should be contained within the display bounds.
+  EXPECT_TRUE(GetPrimaryDisplay().work_area().Contains(
+      presenter->bubble_view_for_test()->bounds()));
 }
 
 }  // namespace

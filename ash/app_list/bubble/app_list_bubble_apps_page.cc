@@ -45,13 +45,13 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   SetUseDefaultFillLayout(true);
 
   // The entire page scrolls.
-  auto* scroll = AddChildView(std::make_unique<views::ScrollView>());
-  scroll->ClipHeightTo(0, std::numeric_limits<int>::max());
-  scroll->SetDrawOverflowIndicator(false);
-  scroll->SetHorizontalScrollBarMode(
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
+  scroll_view_->SetDrawOverflowIndicator(false);
+  scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   // Don't paint a background. The bubble already has one.
-  scroll->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(absl::nullopt);
 
   auto scroll_contents = std::make_unique<views::View>();
   auto* layout = scroll_contents->SetLayoutManager(
@@ -96,7 +96,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
   scrollable_apps_grid_view_->ResetForShowApps();
 
-  scroll->SetContents(std::move(scroll_contents));
+  scroll_view_->SetContents(std::move(scroll_contents));
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() = default;

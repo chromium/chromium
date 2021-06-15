@@ -4,6 +4,7 @@
 
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
@@ -24,6 +25,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -105,11 +107,11 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
   // TODO(https://crbug.com/1204551): Replace with real search box.
-  auto* textfield = AddChildView(std::make_unique<views::Textfield>());
-  SetInitiallyFocusedView(textfield);
+  textfield_ = AddChildView(std::make_unique<views::Textfield>());
+  SetInitiallyFocusedView(textfield_);
 
   // TODO(https://crbug.com/1204551): Remove when search box is hooked up.
-  AddChildView(std::make_unique<views::MdTextButton>(
+  text_button_ = AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&AppListBubbleView::FlipPage, base::Unretained(this)),
       u"Flip page"));
 
@@ -133,12 +135,25 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           GetWidget()->GetNativeWindow());
 
-  // TODO(https://crbug.com/1210522): When display height is greater than 1200
-  // then the height can be geater than kDefaultHeight. Make sure in this case
-  // that the height is limited by the number of apps.
   if (display.bounds().height() < 800) {
     height = display.work_area().height() - margins().height() -
              ShelfConfig::Get()->shelf_size() - kExtraTopOfScreenSpacing;
+  } else if (display.bounds().height() > 1200) {
+    // Calculate the height required to fit the contents of the AppListBubble
+    // with no scrolling.
+    int height_to_fit_all_apps =
+        apps_page_->scroll_view()->contents()->bounds().height() +
+        textfield_->GetPreferredSize().height() +
+        text_button_->GetPreferredSize().height();
+
+    int max_height =
+        (display.work_area().height() - margins().height() -
+         ShelfConfig::Get()->shelf_size() + kExtraTopOfScreenSpacing) /
+        2;
+
+    height =
+        base::ClampToRange(height_to_fit_all_apps,
+                           kDefaultHeight - margins().height(), max_height);
   }
 
   return gfx::Size(width, height);

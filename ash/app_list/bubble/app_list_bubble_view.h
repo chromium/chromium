@@ -45,6 +45,8 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView {
   // TODO(https://crbug.com/1204551): Delete this when search box is hooked up.
   int visible_page_ = 0;
 
+  views::View* textfield_ = nullptr;
+  views::View* text_button_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;
   AppListBubbleSearchPage* search_page_ = nullptr;
   AppListBubbleAssistantPage* assistant_page_ = nullptr;
