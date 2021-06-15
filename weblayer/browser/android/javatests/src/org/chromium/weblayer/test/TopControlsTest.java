@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer.test;
 
+import android.os.Build.VERSION_CODES;
 import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
@@ -37,7 +39,10 @@ public class TopControlsTest {
 
     @Test
     @SmallTest
-    public void testZeroHeight() throws Exception {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q,
+            supported_abis_includes = "arm64-v8a", message = "crbug.com/1219507")
+    public void
+    testZeroHeight() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Fragment fragment = WebLayer.createBrowserFragment(null);
