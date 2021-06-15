@@ -392,8 +392,10 @@ DedicatedOrSharedWorkerFetchContextImpl::WrapURLLoaderFactory(
 }
 
 std::unique_ptr<WebCodeCacheLoader>
-DedicatedOrSharedWorkerFetchContextImpl::CreateCodeCacheLoader() {
-  return blink::WebCodeCacheLoader::CreateForWorker(terminate_sync_load_event_);
+DedicatedOrSharedWorkerFetchContextImpl::CreateCodeCacheLoader(
+    blink::mojom::CodeCacheHost* code_cache_host) {
+  return blink::WebCodeCacheLoader::CreateForWorker(code_cache_host,
+                                                    terminate_sync_load_event_);
 }
 
 void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(

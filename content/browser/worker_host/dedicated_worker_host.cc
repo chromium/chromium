@@ -11,7 +11,9 @@
 #include "base/callback_helpers.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/loader/content_security_notifier.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -583,6 +585,17 @@ void DedicatedWorkerHost::BindWebOTPServiceReceiver(
   }
 
   ancestor_render_frame_host->BindWebOTPServiceReceiver(std::move(receiver));
+}
+
+void DedicatedWorkerHost::CreateCodeCacheHost(
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  RenderProcessHost* rph = GetProcessHost();
+  code_cache_host_receivers_.Add(
+      std::make_unique<CodeCacheHostImpl>(
+          rph->GetID(), rph,
+          rph->GetStoragePartition()->GetGeneratedCodeCacheContext()),
+      std::move(receiver));
 }
 
 #if !defined(OS_ANDROID)

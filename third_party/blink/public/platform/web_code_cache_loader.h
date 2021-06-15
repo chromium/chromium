@@ -27,6 +27,7 @@ class BLINK_PLATFORM_EXPORT WebCodeCacheLoader {
   static std::unique_ptr<WebCodeCacheLoader> CreateForFrame(
       blink::mojom::CodeCacheHost* code_cache_host);
   static std::unique_ptr<WebCodeCacheLoader> CreateForWorker(
+      blink::mojom::CodeCacheHost* code_cache_host,
       base::WaitableEvent* terminate_sync_load_event);
 
   // Fetched code cache corresponding to |url| synchronously and returns

@@ -85,7 +85,12 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // Returns a WebCodeCacheLoader that fetches data from code caches. If
   // a nullptr is returned then data would not be fetched from the code
   // cache.
-  virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() {
+  // TODO(mythria): Currently, code_cache_host can be a nullptr when fetching
+  // cached code from worklets. For these cases we use a per-process mojo
+  // interface. Update worklets to use context specific interface and check that
+  // code_cache_host is not a nullptr.
+  virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader(
+      blink::mojom::CodeCacheHost* code_cache_host) {
     return nullptr;
   }
 

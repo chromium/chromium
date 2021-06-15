@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -158,6 +159,12 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   // TODO(crbug.com/1146824): Remove this once PlzDedicatedWorker and
   // PlzServiceWorker ship.
   virtual bool IsInitialized() const = 0;
+
+  // TODO(crbug/964467): Currently all workers fetch cached code but only
+  // services workers use them. Dedicated / Shared workers don't use the cached
+  // code since we don't create a CachedMetadataHandler. We need to fix this by
+  // creating a cached metadta handler for all workers.
+  virtual blink::mojom::CodeCacheHost* GetCodeCacheHost() { return nullptr; }
 
   Deprecation& GetDeprecation() { return deprecation_; }
 

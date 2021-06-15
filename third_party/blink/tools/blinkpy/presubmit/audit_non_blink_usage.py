@@ -905,8 +905,15 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/core/loader/document_loader.cc',
             'third_party/blink/renderer/core/loader/document_loader.h',
+            'third_party/blink/renderer/core/workers/worker_global_scope.cc',
+            'third_party/blink/renderer/core/workers/worker_global_scope.h',
+            'third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h',
         ],
         'allowed': [
+            # TODO(mythria): Allow use of non-blink mojo interface for now. Once
+            # we move the CodeCacheHost interface from per-frame to
+            # per-navigation update all uses to
+            # blink::mojom::blink::CodeCacheHost.
             'blink::mojom::CodeCacheHost',
         ],
     },

@@ -695,4 +695,12 @@ FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
   return font_matching_metrics_.get();
 }
 
+blink::mojom::CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
+  if (!code_cache_host_) {
+    GetBrowserInterfaceBroker().GetInterface(
+        code_cache_host_.BindNewPipeAndPassReceiver());
+  }
+  return code_cache_host_.get();
+}
+
 }  // namespace blink

@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -120,6 +122,18 @@ net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
 
 const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {
   return version_->reporting_source();
+}
+
+void ServiceWorkerHost::CreateCodeCacheHost(
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  auto* process =
+      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  code_cache_host_receivers_.Add(
+      std::make_unique<CodeCacheHostImpl>(
+          version_->embedded_worker()->process_id(), process,
+          process->GetStoragePartition()->GetGeneratedCodeCacheContext()),
+      std::move(receiver));
 }
 
 base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {

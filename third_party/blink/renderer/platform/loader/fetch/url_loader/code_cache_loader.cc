@@ -135,8 +135,9 @@ std::unique_ptr<WebCodeCacheLoader> WebCodeCacheLoader::CreateForFrame(
 
 // static
 std::unique_ptr<WebCodeCacheLoader> WebCodeCacheLoader::CreateForWorker(
+    mojom::CodeCacheHost* code_cache_host,
     base::WaitableEvent* terminate_sync_load_event) {
-  return std::make_unique<CodeCacheLoader>(/*code_cache_host*/ nullptr,
+  return std::make_unique<CodeCacheLoader>(code_cache_host,
                                            terminate_sync_load_event);
 }
 

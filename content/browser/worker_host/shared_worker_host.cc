@@ -13,8 +13,10 @@
 #include "base/task/post_task.h"
 #include "base/unguessable_token.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
@@ -400,6 +402,17 @@ void SharedWorkerHost::BindCacheStorage(
   GetProcessHost()->BindCacheStorage(cross_origin_embedder_policy,
                                      std::move(coep_reporter), origin,
                                      std::move(receiver));
+}
+
+void SharedWorkerHost::CreateCodeCacheHost(
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  RenderProcessHost* rph = GetProcessHost();
+  code_cache_host_receivers_.Add(
+      std::make_unique<CodeCacheHostImpl>(
+          rph->GetID(), rph,
+          rph->GetStoragePartition()->GetGeneratedCodeCacheContext()),
+      std::move(receiver));
 }
 
 void SharedWorkerHost::Destruct() {
