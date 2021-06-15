@@ -120,6 +120,13 @@ class StubCellularNetworksProviderTest : public testing::Test {
     EXPECT_EQ(GenerateStubCellularServicePath(iccid), service_path);
   }
 
+  void DisableCellularTechnology() {
+    helper_.network_state_handler()->SetTechnologyEnabled(
+        NetworkTypePattern::Cellular(), /*enabled=*/false,
+        /*error_callback=*/base::DoNothing());
+    base::RunLoop().RunUntilIdle();
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_;
@@ -184,6 +191,30 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
   network_list.push_back(std::move(test_network));
   AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
   EXPECT_EQ(1u, network_list.size());
+}
+
+TEST_F(StubCellularNetworksProviderTest, RemoveStubWhenCellularDisabled) {
+  SetPSimSlotInfo(kTestPSimIccid);
+  AddEuicc(/*euicc_num=*/1);
+  Init();
+  dbus::ObjectPath profile_path =
+      AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
+                 /*activation_code=*/"code1");
+
+  NetworkStateHandler::ManagedStateList network_list, new_stub_networks;
+
+  // Verify that stub services are created for eSIM profiles and pSIM iccids
+  // on sim slot info.
+  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
+  EXPECT_EQ(2u, new_stub_networks.size());
+
+  // Verify the stub networks are removed when cellular technology is disabled.
+  network_list = std::move(new_stub_networks);
+  new_stub_networks.clear();
+  DisableCellularTechnology();
+  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
+  EXPECT_EQ(0u, network_list.size());
+  EXPECT_EQ(0u, new_stub_networks.size());
 }
 
 }  // namespace chromeos

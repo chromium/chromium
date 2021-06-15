@@ -63,9 +63,13 @@ bool StubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
     NetworkStateHandler::ManagedStateList& network_list,
     NetworkStateHandler::ManagedStateList& new_stub_networks,
     const DeviceState* cellular_device) {
-  // Do not create any new stub networks if there is no cellular device.
-  if (!cellular_device)
-    return false;
+  // Remove any existing stub networks if there is no cellular device or
+  // cellular technology is not enabled.
+  if (!cellular_device || !network_state_handler_->IsTechnologyEnabled(
+                              NetworkTypePattern::Cellular())) {
+    return RemoveStubCellularNetworks(/*esim_and_slot_metadata=*/nullptr,
+                                      /*shill_iccids=*/nullptr, network_list);
+  }
 
   base::flat_set<std::string> all_iccids, shill_iccids;
   GetIccids(network_list, &all_iccids, &shill_iccids);
@@ -77,7 +81,7 @@ bool StubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
   network_list_changed |= AddStubNetworks(
       cellular_device, esim_and_slot_metadata, all_iccids, new_stub_networks);
   network_list_changed |= RemoveStubCellularNetworks(
-      esim_and_slot_metadata, shill_iccids, network_list);
+      &esim_and_slot_metadata, &shill_iccids, network_list);
 
   return network_list_changed;
 }
@@ -174,26 +178,29 @@ bool StubCellularNetworksProvider::AddStubNetworks(
 }
 
 bool StubCellularNetworksProvider::RemoveStubCellularNetworks(
-    const std::vector<IccidEidPair>& esim_and_slot_metadata,
-    const base::flat_set<std::string>& shill_iccids,
+    const std::vector<IccidEidPair>* esim_and_slot_metadata,
+    const base::flat_set<std::string>* shill_iccids,
     NetworkStateHandler::ManagedStateList& network_list) {
   bool network_removed = false;
+  const bool remove_all = !esim_and_slot_metadata && !shill_iccids;
 
   base::flat_set<std::string> esim_and_slot_iccids;
-  for (const auto& iccid_eid_pair : esim_and_slot_metadata)
-    esim_and_slot_iccids.insert(iccid_eid_pair.first);
+  if (!remove_all) {
+    for (const auto& iccid_eid_pair : *esim_and_slot_metadata)
+      esim_and_slot_iccids.insert(iccid_eid_pair.first);
+  }
 
   auto it = network_list.begin();
   while (it != network_list.end()) {
     const NetworkState* network = (*it)->AsNetworkState();
 
-    // Non-Shill networks are not stubs and thus should not be removed.
+    // Shill backed networks are not stubs and thus should not be removed.
     if (!network->IsNonShillCellularNetwork()) {
       ++it;
       continue;
     }
 
-    if (shill_iccids.contains(network->iccid()) ||
+    if (remove_all || shill_iccids->contains(network->iccid()) ||
         !esim_and_slot_iccids.contains(network->iccid())) {
       NET_LOG(EVENT) << "Removing stub cellular network for ICCID="
                      << network->iccid() << " EID=" << network->eid();
