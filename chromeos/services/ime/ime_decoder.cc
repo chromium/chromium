@@ -13,6 +13,9 @@ namespace chromeos {
 namespace ime {
 
 namespace {
+
+absl::optional<ImeDecoder::EntryPoints> g_fake_decoder_entry_points_for_testing;
+
 const char kCrosImeDecoderLib[] = "libimedecoder.so";
 
 // TODO(b/161491092): Add test image path based on value of
@@ -55,6 +58,13 @@ bool IsEntryPointsLoaded(ImeDecoder::EntryPoints entry) {
 }  // namespace
 
 ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
+  if (g_fake_decoder_entry_points_for_testing) {
+    entry_points_ = *g_fake_decoder_entry_points_for_testing;
+    status_ = Status::kSuccess;
+    entry_points_.is_ready = true;
+    return;
+  }
+
   base::FilePath path = GetImeDecoderLibPath();
 
   if (!base::PathExists(path)) {
@@ -117,6 +127,11 @@ ImeDecoder::Status ImeDecoder::GetStatus() const {
 ImeDecoder::EntryPoints ImeDecoder::GetEntryPoints() {
   DCHECK(status_ == Status::kSuccess);
   return entry_points_;
+}
+
+void FakeDecoderEntryPointsForTesting(  // IN-TEST
+    const ImeDecoder::EntryPoints& decoder_entry_points) {
+  g_fake_decoder_entry_points_for_testing = decoder_entry_points;
 }
 
 }  // namespace ime

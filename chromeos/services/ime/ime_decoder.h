@@ -68,6 +68,10 @@ class ImeDecoder {
   DISALLOW_COPY_AND_ASSIGN(ImeDecoder);
 };
 
+// Only used in tests to set a fake `ImeDecoder::EntryPoints`.
+void FakeDecoderEntryPointsForTesting(
+    const ImeDecoder::EntryPoints& decoder_entry_points);
+
 }  // namespace ime
 }  // namespace chromeos
 

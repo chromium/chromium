@@ -18,8 +18,6 @@ namespace ime {
 
 namespace {
 
-absl::optional<ImeDecoder::EntryPoints> g_fake_decoder_entry_points_for_testing;
-
 using ReplyCallback =
     base::RepeatingCallback<void(const std::vector<uint8_t>&,
                                  mojo::Remote<mojom::InputChannel>& delegate)>;
@@ -79,18 +77,9 @@ std::vector<uint8_t> WrapAndSerializeMessage(PublicMessage message) {
 
 }  // namespace
 
-void FakeDecoderEntryPointsForTesting(  // IN-TEST
-    const ImeDecoder::EntryPoints& decoder_entry_points) {
-  g_fake_decoder_entry_points_for_testing = decoder_entry_points;
-}
-
 SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
-  if (g_fake_decoder_entry_points_for_testing) {
-    decoder_entry_points_ = g_fake_decoder_entry_points_for_testing;
-  } else {
-    if (!TryLoadDecoder()) {
-      LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
-    }
+  if (!TryLoadDecoder()) {
+    LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
   }
 }
 
