@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/desktop_linux_browser_frame_view_layout.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 
 #include <memory>
 
@@ -37,8 +37,12 @@ static gfx::ImageSkia GetTestImageForSize(gfx::Size size) {
 
 class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
  public:
-  TestLayoutDelegate() {}
-  ~TestLayoutDelegate() override {}
+  TestLayoutDelegate() = default;
+
+  TestLayoutDelegate(const TestLayoutDelegate&) = delete;
+  TestLayoutDelegate& operator=(const TestLayoutDelegate&) = delete;
+
+  ~TestLayoutDelegate() override = default;
 
   // OpaqueBrowserFrameViewLayoutDelegate:
   bool ShouldShowWindowIcon() const override { return false; }
@@ -67,16 +71,13 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLayoutDelegate);
 };
 
 class TestNavButtonProvider : public views::NavButtonProvider {
  public:
-  TestNavButtonProvider() {}
+  TestNavButtonProvider() = default;
 
-  ~TestNavButtonProvider() override {}
+  ~TestNavButtonProvider() override = default;
 
   void RedrawImages(int top_area_height, bool maximized, bool active) override {
     ASSERT_EQ(false, maximized);  // This only tests the restored state.
@@ -121,17 +122,23 @@ class TestNavButtonProvider : public views::NavButtonProvider {
 
 }  // namespace
 
-class DesktopLinuxBrowserFrameViewLayoutTest : public ChromeViewsTestBase {
+class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
  public:
-  DesktopLinuxBrowserFrameViewLayoutTest() {}
-  ~DesktopLinuxBrowserFrameViewLayoutTest() override {}
+  BrowserFrameViewLayoutLinuxNativeTest() = default;
+
+  BrowserFrameViewLayoutLinuxNativeTest(
+      const BrowserFrameViewLayoutLinuxNativeTest&) = delete;
+  BrowserFrameViewLayoutLinuxNativeTest& operator=(
+      const BrowserFrameViewLayoutLinuxNativeTest&) = delete;
+
+  ~BrowserFrameViewLayoutLinuxNativeTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
     delegate_ = std::make_unique<TestLayoutDelegate>();
     nav_button_provider_ = std::make_unique<::TestNavButtonProvider>();
-    auto layout = std::make_unique<DesktopLinuxBrowserFrameViewLayout>(
+    auto layout = std::make_unique<BrowserFrameViewLayoutLinuxNative>(
         nav_button_provider_.get());
     layout->set_delegate(delegate_.get());
     layout->set_forced_window_caption_spacing_for_test(0);
@@ -188,7 +195,7 @@ class DesktopLinuxBrowserFrameViewLayoutTest : public ChromeViewsTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   views::View* root_view_ = nullptr;
-  DesktopLinuxBrowserFrameViewLayout* layout_manager_ = nullptr;
+  BrowserFrameViewLayoutLinuxNative* layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
   std::unique_ptr<views::NavButtonProvider> nav_button_provider_;
 
@@ -197,12 +204,10 @@ class DesktopLinuxBrowserFrameViewLayoutTest : public ChromeViewsTestBase {
   views::ImageButton* maximize_button_ = nullptr;
   views::ImageButton* restore_button_ = nullptr;
   views::ImageButton* close_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopLinuxBrowserFrameViewLayoutTest);
 };
 
 // Tests layout of native navigation buttons.
-TEST_F(DesktopLinuxBrowserFrameViewLayoutTest, NativeNavButtons) {
+TEST_F(BrowserFrameViewLayoutLinuxNativeTest, NativeNavButtons) {
   std::vector<views::FrameButton> leading_buttons;
   std::vector<views::FrameButton> trailing_buttons;
   leading_buttons.push_back(views::FrameButton::kClose);

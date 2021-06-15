@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/desktop_linux_browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_linux_native.h"
 
-#include "chrome/browser/ui/views/frame/desktop_linux_browser_frame_view_layout.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/window/frame_background.h"
 
-bool DesktopLinuxBrowserFrameView::DrawFrameButtonParams::operator==(
+bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
     const DrawFrameButtonParams& other) const {
   return top_area_height == other.top_area_height &&
          maximized == other.maximized && active == other.active;
 }
 
-DesktopLinuxBrowserFrameView::DesktopLinuxBrowserFrameView(
+BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
     BrowserFrame* frame,
     BrowserView* browser_view,
-    OpaqueBrowserFrameViewLayout* layout,
+    BrowserFrameViewLayoutLinux* layout,
     std::unique_ptr<views::NavButtonProvider> nav_button_provider)
-    : OpaqueBrowserFrameView(frame, browser_view, layout),
+    : BrowserFrameViewLinux(frame, browser_view, layout),
       nav_button_provider_(std::move(nav_button_provider)) {}
 
-DesktopLinuxBrowserFrameView::~DesktopLinuxBrowserFrameView() = default;
+BrowserFrameViewLinuxNative::~BrowserFrameViewLinuxNative() = default;
 
-void DesktopLinuxBrowserFrameView::Layout() {
+void BrowserFrameViewLinuxNative::Layout() {
   // Calling MaybeUpdateCachedFrameButtonImages() from Layout() is sufficient to
   // catch all cases that could update the appearance, since
   // DesktopWindowTreeHostPlatform::On{Window,Activation}StateChanged() does a
@@ -32,12 +33,12 @@ void DesktopLinuxBrowserFrameView::Layout() {
   OpaqueBrowserFrameView::Layout();
 }
 
-DesktopLinuxBrowserFrameView::FrameButtonStyle
-DesktopLinuxBrowserFrameView::GetFrameButtonStyle() const {
+BrowserFrameViewLinuxNative::FrameButtonStyle
+BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
   return FrameButtonStyle::kImageButton;
 }
 
-void DesktopLinuxBrowserFrameView::MaybeUpdateCachedFrameButtonImages() {
+void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
   DrawFrameButtonParams params{
       GetTopAreaHeight() - layout()->FrameTopThickness(!IsMaximized()),
       IsMaximized(), ShouldPaintAsActive()};
@@ -65,7 +66,7 @@ void DesktopLinuxBrowserFrameView::MaybeUpdateCachedFrameButtonImages() {
   }
 }
 
-views::Button* DesktopLinuxBrowserFrameView::GetButtonFromDisplayType(
+views::Button* BrowserFrameViewLinuxNative::GetButtonFromDisplayType(
     views::NavButtonProvider::FrameButtonDisplayType type) {
   switch (type) {
     case views::NavButtonProvider::FrameButtonDisplayType::kMinimize:

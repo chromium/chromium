@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/desktop_linux_browser_frame_view_layout.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 
 #include "ui/views/linux_ui/nav_button_provider.h"
 
-DesktopLinuxBrowserFrameViewLayout::DesktopLinuxBrowserFrameViewLayout(
+BrowserFrameViewLayoutLinuxNative::BrowserFrameViewLayoutLinuxNative(
     views::NavButtonProvider* nav_button_provider)
     : nav_button_provider_(nav_button_provider) {}
 
-int DesktopLinuxBrowserFrameViewLayout::CaptionButtonY(
+BrowserFrameViewLayoutLinuxNative::~BrowserFrameViewLayoutLinuxNative() =
+    default;
+
+int BrowserFrameViewLayoutLinuxNative::CaptionButtonY(
     views::FrameButton button_id,
     bool restored) const {
   auto button_type = GetButtonDisplayType(button_id);
@@ -19,7 +22,7 @@ int DesktopLinuxBrowserFrameViewLayout::CaptionButtonY(
 }
 
 OpaqueBrowserFrameViewLayout::TopAreaPadding
-DesktopLinuxBrowserFrameViewLayout::GetTopAreaPadding(
+BrowserFrameViewLayoutLinuxNative::GetTopAreaPadding(
     bool has_leading_buttons,
     bool has_trailing_buttons) const {
   gfx::Insets insets =
@@ -32,7 +35,7 @@ DesktopLinuxBrowserFrameViewLayout::GetTopAreaPadding(
           has_trailing_buttons ? trailing : padding};
 }
 
-int DesktopLinuxBrowserFrameViewLayout::GetWindowCaptionSpacing(
+int BrowserFrameViewLayoutLinuxNative::GetWindowCaptionSpacing(
     views::FrameButton button_id,
     bool leading_spacing,
     bool is_leading_button) const {
@@ -47,7 +50,7 @@ int DesktopLinuxBrowserFrameViewLayout::GetWindowCaptionSpacing(
 }
 
 views::NavButtonProvider::FrameButtonDisplayType
-DesktopLinuxBrowserFrameViewLayout::GetButtonDisplayType(
+BrowserFrameViewLayoutLinuxNative::GetButtonDisplayType(
     views::FrameButton button_id) const {
   switch (button_id) {
     case views::FrameButton::kMinimize:

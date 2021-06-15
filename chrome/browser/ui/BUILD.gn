@@ -4496,10 +4496,14 @@ static_library("ui") {
     if (is_linux || is_chromeos_lacros) {
       sources += [
         "views/chrome_views_delegate_linux.cc",
-        "views/frame/desktop_linux_browser_frame_view.cc",
-        "views/frame/desktop_linux_browser_frame_view.h",
-        "views/frame/desktop_linux_browser_frame_view_layout.cc",
-        "views/frame/desktop_linux_browser_frame_view_layout.h",
+        "views/frame/browser_frame_view_layout_linux.cc",
+        "views/frame/browser_frame_view_layout_linux.h",
+        "views/frame/browser_frame_view_layout_linux_native.cc",
+        "views/frame/browser_frame_view_layout_linux_native.h",
+        "views/frame/browser_frame_view_linux.cc",
+        "views/frame/browser_frame_view_linux.h",
+        "views/frame/browser_frame_view_linux_native.cc",
+        "views/frame/browser_frame_view_linux_native.h",
         "views/frame/opaque_browser_frame_view_linux.cc",
         "views/frame/opaque_browser_frame_view_linux.h",
       ]
