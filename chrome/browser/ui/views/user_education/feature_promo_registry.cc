@@ -193,7 +193,7 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     // kIPHDesktopTabGroupsNewGroupFeature:
     FeaturePromoBubbleParams params;
     params.body_string_specifier = IDS_TAB_GROUPS_NEW_GROUP_PROMO;
-    params.arrow = views::BubbleBorder::TOP_LEFT;
+    params.arrow = views::BubbleBorder::TOP_CENTER;
 
     // Turn on IPH Snooze for Tab Group.
     if (base::FeatureList::IsEnabled(

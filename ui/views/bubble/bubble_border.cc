@@ -593,7 +593,7 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
   flags.setColor(kBorderColor);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-  flags.setStrokeWidth(1.5);
+  flags.setStrokeWidth(1.3);
   canvas->DrawPath(
       GetVisibleArrowPath(arrow_, arrow_bounds, BubbleArrowPart::kBorder),
       flags);
