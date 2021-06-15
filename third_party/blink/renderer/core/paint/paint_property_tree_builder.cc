@@ -2186,7 +2186,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // to describe the bounds of the scrollable content.
       auto* frame_view = object_.GetFrameView();
       if (frame_view->HasStickyViewportConstrainedObject()) {
-        // TODO(crbug.com/1099379): Implement better sticky overlap testing.
+        // TODO(crbug.com/1117658): Implement better sticky overlap testing.
         frame_view->SetPaintArtifactCompositorNeedsUpdate();
       } else if (frame_view->HasViewportConstrainedObjects() &&
                  !frame_view->GetLayoutView()
