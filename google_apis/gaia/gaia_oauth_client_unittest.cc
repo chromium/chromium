@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -87,6 +88,17 @@ class ResponseInjector {
     } else {
       ADD_FAILURE() << "Unexpected state in GetUploadData";
       return "";
+    }
+  }
+
+  const net::HttpRequestHeaders GetRequestHeaders() {
+    const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
+        *url_loader_factory_->pending_requests();
+    if (pending.size() == 1) {
+      return pending[0].request.headers;
+    } else {
+      ADD_FAILURE() << "Unexpected state in GetRequestHeaders";
+      return {};
     }
   }
 
@@ -503,8 +515,17 @@ TEST_F(GaiaOAuthClientTest, GetAccountCapabilities) {
                               {"capability1", "capability2", "capability3"}, 1,
                               &delegate);
 
+  std::string actual_authorization_header;
+  EXPECT_TRUE(injector.GetRequestHeaders().GetHeader(
+      "Authorization", &actual_authorization_header));
+  EXPECT_EQ(actual_authorization_header, "Bearer some_token");
+  std::string actual_method_override_header;
+  EXPECT_TRUE(injector.GetRequestHeaders().GetHeader(
+      "X-HTTP-Method-Override", &actual_method_override_header));
+  EXPECT_EQ(actual_method_override_header, "GET");
   EXPECT_EQ(injector.GetUploadData(),
             "names=capability1&names=capability2&names=capability3");
+
   injector.Finish();
   FlushNetwork();
 

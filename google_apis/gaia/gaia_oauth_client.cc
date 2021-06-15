@@ -120,6 +120,7 @@ class GaiaOAuthClient::Core
       const GURL& url,
       std::string post_body /* may be empty if not needed*/,
       std::string authorization_header /* empty if not needed */,
+      std::string http_method_override_header /* empty if not needed */,
       int max_retries,
       GaiaOAuthClient::Delegate* delegate,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
@@ -144,6 +145,7 @@ class GaiaOAuthClient::Core
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   std::string post_body_;
   std::string authorization_header_;
+  std::string http_method_override_header_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   GaiaOAuthClient::Delegate* delegate_;
@@ -199,8 +201,9 @@ void GaiaOAuthClient::Core::GetTokensFromAuthCode(
         })"));
   MakeRequest(TOKENS_FROM_AUTH_CODE,
               GURL(GaiaUrls::GetInstance()->oauth2_token_url()), post_body,
-              /* authorization_header = */ std::string(), max_retries, delegate,
-              traffic_annotation);
+              /* authorization_header = */ std::string(),
+              /* http_method_override_header = */ std::string(), max_retries,
+              delegate, traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::RefreshToken(
@@ -252,8 +255,9 @@ void GaiaOAuthClient::Core::RefreshToken(
         })"));
   MakeRequest(REFRESH_TOKEN, GURL(GaiaUrls::GetInstance()->oauth2_token_url()),
               post_body,
-              /* authorization_header = */ std::string(), max_retries, delegate,
-              traffic_annotation);
+              /* authorization_header = */ std::string(),
+              /* http_method_override_header = */ std::string(), max_retries,
+              delegate, traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::GetUserEmail(const std::string& oauth_access_token,
@@ -308,8 +312,9 @@ void GaiaOAuthClient::Core::GetUserInfoImpl(
         })"));
   std::string auth = "OAuth " + oauth_access_token;
   MakeRequest(type, GaiaUrls::GetInstance()->oauth_user_info_url(),
-              /* post_body = */ std::string(), auth, max_retries, delegate,
-              traffic_annotation);
+              /* post_body = */ std::string(), auth,
+              /* http_method_override_header = */ std::string(), max_retries,
+              delegate, traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
@@ -353,8 +358,9 @@ void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
         })"));
   MakeRequest(TOKEN_INFO,
               GURL(GaiaUrls::GetInstance()->oauth2_token_info_url()), post_body,
-              /* authorization_header = */ std::string(), max_retries, delegate,
-              traffic_annotation);
+              /* authorization_header = */ std::string(),
+              /* http_method_override_header = */ std::string(), max_retries,
+              delegate, traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::GetAccountCapabilities(
@@ -407,7 +413,8 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
 
   MakeRequest(ACCOUNT_CAPABILITIES,
               GURL(GaiaUrls::GetInstance()->account_capabilities_url()),
-              post_body, auth, max_retries, delegate, traffic_annotation);
+              post_body, auth, /*http_method_override_header=*/"GET",
+              max_retries, delegate, traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::MakeRequest(
@@ -415,6 +422,7 @@ void GaiaOAuthClient::Core::MakeRequest(
     const GURL& url,
     std::string post_body,
     std::string authorization_header,
+    std::string http_method_override_header,
     int max_retries,
     GaiaOAuthClient::Delegate* delegate,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
@@ -427,6 +435,7 @@ void GaiaOAuthClient::Core::MakeRequest(
   traffic_annotation_ = traffic_annotation;
   post_body_ = std::move(post_body);
   authorization_header_ = std::move(authorization_header);
+  http_method_override_header_ = std::move(http_method_override_header);
   SendRequest();
 }
 
@@ -451,6 +460,10 @@ void GaiaOAuthClient::Core::SendRequestImpl() {
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   if (!authorization_header_.empty())
     resource_request->headers.SetHeader("Authorization", authorization_header_);
+  if (!http_method_override_header_.empty()) {
+    resource_request->headers.SetHeader("X-HTTP-Method-Override",
+                                        http_method_override_header_);
+  }
 
   request_ = network::SimpleURLLoader::Create(
       std::move(resource_request),
