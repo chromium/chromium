@@ -36,6 +36,10 @@ namespace webshare {
 
 constexpr base::TimeDelta PrepareDirectoryTask::kSharedFileLifetime;
 
+PrepareDirectoryTask::PrepareDirectoryTask(base::FilePath directory,
+                                           uint64_t required_space)
+    : directory_(std::move(directory)), required_space_(required_space) {}
+
 PrepareDirectoryTask::PrepareDirectoryTask(
     base::FilePath directory,
     uint64_t required_space,
@@ -54,6 +58,16 @@ void PrepareDirectoryTask::Start() {
                      required_space_),
       base::BindOnce(&PrepareDirectoryTask::OnPrepareDirectory,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PrepareDirectoryTask::StartWithCallback(
+    PrepareDirectoryCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&PrepareDirectoryTask::PrepareDirectory, directory_,
+                     required_space_),
+      std::move(callback));
 }
 
 // static
@@ -109,9 +123,11 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
 
 void PrepareDirectoryTask::OnPrepareDirectory(base::File::Error result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback_).Run((result == base::File::FILE_OK)
-                               ? blink::mojom::ShareError::OK
-                               : blink::mojom::ShareError::PERMISSION_DENIED);
+  if (callback_) {
+    std::move(callback_).Run((result == base::File::FILE_OK)
+                                 ? blink::mojom::ShareError::OK
+                                 : blink::mojom::ShareError::PERMISSION_DENIED);
+  }
 }
 
 }  // namespace webshare
