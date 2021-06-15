@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/internal_util.h"
-#include "chromeos/assistant/internal/proto/google3/assistant/api/client_op/device_args.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/device_args.pb.h"
 #include "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

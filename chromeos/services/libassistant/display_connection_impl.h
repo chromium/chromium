@@ -9,7 +9,7 @@
 
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "chromeos/assistant/internal/proto/google3/libassistant/display/proto/display_connection.pb.h"
+#include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "libassistant/shared/internal_api/display_connection.h"
 

@@ -4,7 +4,7 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/internal_util.h"
-#include "chromeos/assistant/internal/proto/google3/libassistant/display/proto/display_connection.pb.h"
+#include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
