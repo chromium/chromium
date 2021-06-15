@@ -50,7 +50,7 @@ static_assert(
 struct DeferredUnmap {
   void* reservation_start = nullptr;
   size_t reservation_size = 0;
-  bool use_brp_pool = false;
+  pool_handle giga_cage_pool;
 
   // In most cases there is no page to unmap and reservation_start == nullptr.
   // This function is inlined to avoid the overhead of a function call in the

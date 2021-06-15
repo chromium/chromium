@@ -33,6 +33,7 @@
 #include <atomic>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -369,15 +370,23 @@ struct BASE_EXPORT PartitionRoot {
     return total_size_of_committed_pages.load(std::memory_order_relaxed);
   }
 
-  bool UseBRPPool() const {
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-    return allow_ref_count;
-#else
-    // This is counterintuitive, but when BRP isn't used, make all normal bucket
-    // allocations fall into the same pool, and BRP pool is a good place for
-    // that. PCScan requires this.
-    return true;
+  internal::pool_handle ChooseGigaCagePool(bool is_direct_map) const {
+#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+    // If this is a direct map request and BRP support for direct map isn't on,
+    // use non-BRP pool. This is true regardless of BRP support.
+    if (is_direct_map) {
+      return internal::GetNonBRPPool();
+    }
 #endif
+
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    return allow_ref_count ? internal::GetBRPPool() : internal::GetNonBRPPool();
+#else
+    // This is counterintuitive, but when BRP isn't used, make all allocations
+    // fall into the same pool, and BRP pool is a good place for that. PCScan
+    // requires this.
+    return internal::GetBRPPool();
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   }
 
   ALWAYS_INLINE bool IsQuarantineAllowed() const {

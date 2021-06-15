@@ -100,11 +100,11 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
     for (int i = 0; i < kMaxRandomAddressTries; ++i) {
       if (!ptr || AreAllowedSuperPagesForBRPPool(ptr, ptr + requested_size))
         break;
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(GetBRPPool(), ptr,
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool, ptr,
                                                               requested_size);
       // No longer try to honor |requested_address|, because it didn't work for
       // us last time.
-      ptr = AddressPoolManager::GetInstance()->Reserve(GetBRPPool(), nullptr,
+      ptr = AddressPoolManager::GetInstance()->Reserve(pool, nullptr,
                                                        requested_size);
     }
 
@@ -120,17 +120,17 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
          ptr_to_try += kSuperPageSize) {
       if (!ptr || AreAllowedSuperPagesForBRPPool(ptr, ptr + requested_size))
         break;
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(GetBRPPool(), ptr,
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool, ptr,
                                                               requested_size);
       // Reserve() can return a different pointer than attempted.
       ptr = AddressPoolManager::GetInstance()->Reserve(
-          GetBRPPool(), reinterpret_cast<void*>(ptr_to_try), requested_size);
+          pool, reinterpret_cast<void*>(ptr_to_try), requested_size);
     }
 
     // If the loop ends naturally, the last allocated region hasn't been
     // verified. Do it now.
     if (ptr && !AreAllowedSuperPagesForBRPPool(ptr, ptr + requested_size)) {
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(GetBRPPool(), ptr,
+      AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool, ptr,
                                                               requested_size);
       ptr = nullptr;
     }
@@ -227,11 +227,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
     // BackupRefPtr support.
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-    pool_handle pool = root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool();
-#else
-    pool_handle pool = GetNonBRPPool();
-#endif
+    pool_handle pool = root->ChooseGigaCagePool(/* is_direct_map= */ true);
     char* reservation_start =
         ReserveMemoryFromGigaCage(pool, nullptr, reservation_size);
     if (UNLIKELY(!reservation_start)) {
@@ -533,7 +529,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   char* requested_address = root->next_super_page;
   // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
   // BackupRefPtr support.
-  pool_handle pool = root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool();
+  pool_handle pool = root->ChooseGigaCagePool(/* is_direct_map= */ false);
   char* super_page =
       ReserveMemoryFromGigaCage(pool, requested_address, kSuperPageSize);
   if (UNLIKELY(!super_page))
