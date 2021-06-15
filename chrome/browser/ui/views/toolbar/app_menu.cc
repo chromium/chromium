@@ -713,8 +713,12 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
     model_->SetMenuModelDelegate(nullptr);
   }
 
-  const gfx::FontList* GetLabelFontListAt(int index) const {
-    return model_->GetLabelFontListAt(index);
+  const gfx::FontList* GetLabelFontListForCommandId(int command_id) const {
+    ui::MenuModel* model = model_;
+    int index;
+    AppMenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
+    DCHECK(index);
+    return model->GetLabelFontListAt(index);
   }
 
   // ui::MenuModelDelegate implementation:
@@ -854,8 +858,8 @@ bool AppMenu::IsShowing() const {
 void AppMenu::GetLabelStyle(int command_id, LabelStyle* style) const {
   if (IsRecentTabsCommand(command_id)) {
     const gfx::FontList* font_list =
-        recent_tabs_menu_model_delegate_->GetLabelFontListAt(
-            ModelIndexFromCommandId(command_id));
+        recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
+            command_id);
     // Only fill in |*color| if there's a font list - otherwise this method will
     // override the color for every recent tab item, not just the header.
     if (font_list) {
