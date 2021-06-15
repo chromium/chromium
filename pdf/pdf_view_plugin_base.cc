@@ -561,6 +561,40 @@ void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
     PrepareAndSetAccessibilityViewportInfo();
 }
 
+int PdfViewPluginBase::PrintBegin(const blink::WebPrintParams& print_params) {
+  // The returned value is always equal to the number of pages in the PDF
+  // document irrespective of the printable area.
+  int32_t ret = engine()->GetNumberOfPages();
+  if (!ret)
+    return 0;
+
+  const bool can_print =
+      engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY) ||
+      (print_params.rasterize_pdf &&
+       engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY));
+
+  if (!can_print)
+    return 0;
+
+  print_params_ = print_params;
+  engine()->PrintBegin();
+  return ret;
+}
+
+std::vector<uint8_t> PdfViewPluginBase::PrintPages(
+    const std::vector<int>& page_numbers) {
+  print_pages_called_ = true;
+  return engine()->PrintPages(page_numbers, print_params_.value());
+}
+
+void PdfViewPluginBase::PrintEnd() {
+  if (print_pages_called_)
+    UserMetricsRecordAction("PDF.PrintPage");
+  print_pages_called_ = false;
+  print_params_.reset();
+  engine_->PrintEnd();
+}
+
 void PdfViewPluginBase::UpdateGeometryOnViewChanged(
     const gfx::Rect& new_view_rect,
     float new_device_scale) {

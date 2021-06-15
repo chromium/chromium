@@ -969,7 +969,8 @@ void PDFiumEngine::PrintBegin() {
 std::vector<uint8_t> PDFiumEngine::PrintPages(
     const std::vector<int>& page_numbers,
     const blink::WebPrintParams& print_params) {
-  DCHECK(!page_numbers.empty());
+  if (page_numbers.empty())
+    return std::vector<uint8_t>();
 
   return print_params.rasterize_pdf
              ? PrintPagesAsRasterPdf(page_numbers, print_params)

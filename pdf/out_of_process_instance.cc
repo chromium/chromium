@@ -726,20 +726,8 @@ void OutOfProcessInstance::Redo() {
 int32_t OutOfProcessInstance::PdfPrintBegin(
     const PP_PrintSettings_Dev* print_settings,
     const PP_PdfPrintSettings_Dev* pdf_print_settings) {
-  // For us num_pages is always equal to the number of pages in the PDF
-  // document irrespective of the printable area.
-  int32_t ret = engine()->GetNumberOfPages();
-  if (!ret)
-    return 0;
-
-  uint32_t supported_formats = QuerySupportedPrintOutputFormats();
-  if ((print_settings->format & supported_formats) == 0)
-    return 0;
-
-  print_params_ =
-      WebPrintParamsFromPPPrintSettings(*print_settings, *pdf_print_settings);
-  engine()->PrintBegin();
-  return ret;
+  return PdfViewPluginBase::PrintBegin(
+      WebPrintParamsFromPPPrintSettings(*print_settings, *pdf_print_settings));
 }
 
 uint32_t OutOfProcessInstance::QuerySupportedPrintOutputFormats() {
@@ -760,18 +748,8 @@ int32_t OutOfProcessInstance::PrintBegin(
 pp::Resource OutOfProcessInstance::PrintPages(
     const PP_PrintPageNumberRange_Dev* page_ranges,
     uint32_t page_range_count) {
-  if (!print_params_.has_value())
-    return pp::Resource();
-
-  print_pages_called_ = true;
-  if (page_range_count == 0)
-    return pp::Resource();
-
-  const std::vector<int> page_numbers =
-      PageNumbersFromPPPrintPageNumberRange(page_ranges, page_range_count);
-
-  const std::vector<uint8_t> pdf_data =
-      engine()->PrintPages(page_numbers, print_params_.value());
+  const std::vector<uint8_t> pdf_data = PdfViewPluginBase::PrintPages(
+      PageNumbersFromPPPrintPageNumberRange(page_ranges, page_range_count));
 
   // Convert buffer to Pepper type.
   pp::Buffer_Dev buffer;
@@ -784,11 +762,7 @@ pp::Resource OutOfProcessInstance::PrintPages(
 }
 
 void OutOfProcessInstance::PrintEnd() {
-  if (print_pages_called_)
-    UserMetricsRecordAction("PDF.PrintPage");
-  print_pages_called_ = false;
-  print_params_.reset();
-  engine()->PrintEnd();
+  PdfViewPluginBase::PrintEnd();
 }
 
 bool OutOfProcessInstance::IsPrintScalingDisabled() {

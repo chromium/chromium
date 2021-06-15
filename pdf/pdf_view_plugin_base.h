@@ -16,6 +16,8 @@
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -254,6 +256,20 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) = 0;
 
+  // Begins a print session with the given `print_params`. A call to
+  // `PrintPages()` can only be made after after a successful call to
+  // `PrintBegin()`. Returns the number of pages required for the print output.
+  // A returned value of 0 indicates failure.
+  int PrintBegin(const blink::WebPrintParams& print_params);
+
+  // Prints the pages specified by `page_numbers` using the parameters passed to
+  // `PrintBegin()` Returns a vector of bytes containing the printed output. An
+  // empty returned value indicates failure.
+  std::vector<uint8_t> PrintPages(const std::vector<int>& page_numbers);
+
+  // Ends the print session. Further calls to `PrintPages()` will fail.
+  void PrintEnd();
+
   static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;
   }
@@ -483,6 +499,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Whether the document is in edit mode.
   bool edit_mode_ = false;
+
+  // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
+  absl::optional<blink::WebPrintParams> print_params_;
+
+  // For identifying actual print operations to avoid double logging of UMA.
+  bool print_pages_called_;
 };
 
 }  // namespace chrome_pdf
