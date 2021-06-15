@@ -74,8 +74,14 @@ scoped_refptr<media::VideoFrame> LowLatencyVideoRendererAlgorithm::Render(
 
   if (number_of_frames_to_render > 0) {
     SelectNextAvailableFrameAndUpdateLastDeadline(deadline_min);
+    // |number_of_frames_to_render| may be greater than
+    // |fractional_frames_to_render| if the queue is full so that all frames are
+    // dropped. If this happens, set |unrendered_fractional_frames_| to zero so
+    // that the next available frame is rendered.
     unrendered_fractional_frames_ =
-        fractional_frames_to_render - number_of_frames_to_render;
+        fractional_frames_to_render >= number_of_frames_to_render
+            ? fractional_frames_to_render - number_of_frames_to_render
+            : 0.0;
     stats_.dropped_frames += number_of_frames_to_render - 1;
     ++stats_.render_frame;
   }

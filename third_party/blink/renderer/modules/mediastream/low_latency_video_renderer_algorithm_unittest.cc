@@ -245,6 +245,13 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest,
   ASSERT_TRUE(rendered_frame);
   EXPECT_EQ(frames_dropped, kInitialQueueSize - 1);
   EXPECT_EQ(rendered_frame->unique_id(), last_id);
+
+  // The following frame should be rendered as normal.
+  last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+  rendered_frame = RenderAndStep(&frames_dropped);
+  ASSERT_TRUE(rendered_frame);
+  EXPECT_EQ(frames_dropped, 0u);
+  EXPECT_EQ(rendered_frame->unique_id(), last_id);
 }
 
 TEST_F(LowLatencyVideoRendererAlgorithmTest, EnterDrainMode60Hz) {
