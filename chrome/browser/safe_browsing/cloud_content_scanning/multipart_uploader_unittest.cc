@@ -316,6 +316,7 @@ TEST_F(MultipartUploadRequestTest, FileRetries) {
                                      std::make_unique<std::string>("response"));
         });
     mock_request.Start();
+    task_environment_.FastForwardUntilNoTasksRemain();
     run_loop.Run();
   }
   {
@@ -348,6 +349,7 @@ TEST_F(MultipartUploadRequestTest, FileRetries) {
               std::make_unique<std::string>("response"));
         });
     mock_request.Start();
+    task_environment_.FastForwardUntilNoTasksRemain();
     run_loop.Run();
   }
 }
