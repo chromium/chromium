@@ -128,17 +128,6 @@ void RecordLongTaskUkm(ExecutionContext* execution_context,
       .Record(execution_context->UkmRecorder());
 }
 
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-V8UnionDoubleOrString* StringOrDoubleToV8UnionDoubleOrString(
-    const StringOrDouble& value) {
-  if (value.IsString())
-    return MakeGarbageCollected<V8UnionDoubleOrString>(value.GetAsString());
-  if (value.IsDouble())
-    return MakeGarbageCollected<V8UnionDoubleOrString>(value.GetAsDouble());
-  return nullptr;
-}
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 }  // namespace
 
 using PerformanceObserverVector = HeapVector<Member<PerformanceObserver>>;
@@ -904,26 +893,12 @@ PerformanceMeasure* Performance::MeasureInternal(
       return nullptr;
     }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     V8UnionDoubleOrString* start = options->getStartOr(nullptr);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    V8UnionDoubleOrString* start = nullptr;
-    if (options->hasStart()) {
-      start = StringOrDoubleToV8UnionDoubleOrString(options->start());
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     absl::optional<double> duration;
     if (options->hasDuration()) {
       duration = options->duration();
     }
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     V8UnionDoubleOrString* end = options->getEndOr(nullptr);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    V8UnionDoubleOrString* end = nullptr;
-    if (options->hasEnd()) {
-      end = StringOrDoubleToV8UnionDoubleOrString(options->end());
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
     return MeasureWithDetail(
         script_state, measure_name, start, duration, end,

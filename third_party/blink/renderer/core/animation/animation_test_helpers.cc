@@ -90,7 +90,6 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   cascade.Apply();
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 V8ScrollTimelineOffset* OffsetFromString(Document& document,
                                          const String& string) {
   const CSSValue* value = css_test_helpers::ParseValue(
@@ -105,24 +104,6 @@ V8ScrollTimelineOffset* OffsetFromString(Document& document,
   }
   return MakeGarbageCollected<V8ScrollTimelineOffset>(string);
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-ScrollTimelineOffsetValue OffsetFromString(Document& document,
-                                           const String& string) {
-  ScrollTimelineOffsetValue result;
-
-  const CSSValue* value = css_test_helpers::ParseValue(
-      document, "<length-percentage> | auto", string);
-
-  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(value))
-    result.SetCSSNumericValue(CSSNumericValue::FromCSSValue(*primitive));
-  else if (DynamicTo<CSSIdentifierValue>(value))
-    result.SetCSSKeywordValue(CSSKeywordValue::Create("auto"));
-  else
-    result.SetString(string);
-
-  return result;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace animation_test_helpers
 }  // namespace blink

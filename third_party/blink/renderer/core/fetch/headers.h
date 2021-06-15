@@ -60,9 +60,6 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
   // These methods should only be called when size() would return 0.
   void FillWith(const Headers*, ExceptionState&);
   void FillWith(const V8HeadersInit* init, ExceptionState& exception_state);
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  void FillWith(const HeadersInit&, ExceptionState&);
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // https://fetch.spec.whatwg.org/#concept-headers-remove-privileged-no-cors-request-headers
   void RemovePrivilegedNoCorsRequestHeaders();

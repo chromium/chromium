@@ -1510,14 +1510,9 @@ TEST_P(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
             animation->CheckCanStartAnimationOnCompositor(nullptr));
 
   OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDuration(
       MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
           std::numeric_limits<double>::infinity()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  effect_timing->setDuration(UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-      std::numeric_limits<double>::infinity()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   animation->effect()->updateTiming(effect_timing);
   EXPECT_EQ(CompositorAnimations::kEffectHasUnsupportedTimingParameters,
             animation->CheckCanStartAnimationOnCompositor(nullptr));
@@ -1689,13 +1684,8 @@ TEST_P(AnimationAnimationTestCompositing,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* time_range =
       MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  DoubleOrScrollTimelineAutoKeyword time_range =
-      DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -1763,13 +1753,8 @@ TEST_P(AnimationAnimationTestCompositing,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* time_range =
       MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  DoubleOrScrollTimelineAutoKeyword time_range =
-      DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -1847,13 +1832,8 @@ TEST_P(AnimationAnimationTestNoCompositing, ScrollLinkedAnimationCreation) {
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* time_range =
       MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  DoubleOrScrollTimelineAutoKeyword time_range =
-      DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -1908,13 +1888,8 @@ TEST_P(AnimationAnimationTestCompositing,
 
   // Create ScrollTimeline
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* time_range =
       MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  DoubleOrScrollTimelineAutoKeyword time_range =
-      DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -2260,13 +2235,8 @@ TEST_P(AnimationAnimationTestCompositing,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   auto* time_range =
       MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(100);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  DoubleOrScrollTimelineAutoKeyword time_range =
-      DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   options->setTimeRange(time_range);
   options->setScrollSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =

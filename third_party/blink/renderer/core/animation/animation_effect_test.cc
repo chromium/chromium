@@ -790,25 +790,12 @@ TEST(AnimationAnimationEffectTest, UpdateTiming) {
   effect->updateTiming(effect_timing);
   EXPECT_EQ("ease-in-out", effect->getTiming()->easing());
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ("auto", effect->getTiming()->duration()->GetAsString());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  EXPECT_EQ("auto", effect->getTiming()->duration().GetAsString());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing = OptionalEffectTiming::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDuration(
       MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(2.5));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  effect_timing->setDuration(
-      UnrestrictedDoubleOrString::FromUnrestrictedDouble(2.5));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect->updateTiming(effect_timing);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   EXPECT_EQ(2.5, effect->getTiming()->duration()->GetAsUnrestrictedDouble());
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  EXPECT_EQ(2.5, effect->getTiming()->duration().GetAsUnrestrictedDouble());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
 TEST(AnimationAnimationEffectTest, UpdateTimingThrowsWhenExpected) {
@@ -839,26 +826,16 @@ TEST(AnimationAnimationEffectTest, UpdateTimingThrowsWhenExpected) {
   // If it is a number, duration must be non-negative and non-null.
   exception_state.ClearException();
   effect_timing = OptionalEffectTiming::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDuration(
       MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(-100));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  effect_timing->setDuration(
-      UnrestrictedDoubleOrString::FromUnrestrictedDouble(-100));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect->updateTiming(effect_timing, exception_state);
   EXPECT_TRUE(exception_state.HadException());
 
   exception_state.ClearException();
   effect_timing = OptionalEffectTiming::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDuration(
       MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
           std::numeric_limits<double>::quiet_NaN()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  effect_timing->setDuration(UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-      std::numeric_limits<double>::quiet_NaN()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect->updateTiming(effect_timing, exception_state);
   EXPECT_TRUE(exception_state.HadException());
 
@@ -920,13 +897,8 @@ TEST(AnimationAnimationEffectTest, UpdateTimingNoChange) {
 
   effect_timing = OptionalEffectTiming::Create();
   effect_timing->setIterations(3);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDuration(
       MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(2000));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  effect_timing->setDuration(
-      UnrestrictedDoubleOrString::FromUnrestrictedDouble(2000));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDirection("alternate-reverse");
   effect->updateTiming(effect_timing);
 

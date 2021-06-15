@@ -103,11 +103,7 @@ static std::unique_ptr<protocol::Animation::AnimationEffect>
 BuildObjectForAnimationEffect(KeyframeEffect* effect) {
   ComputedEffectTiming* computed_timing = effect->getComputedTiming();
   double delay = computed_timing->delay();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   double duration = computed_timing->duration()->GetAsUnrestrictedDouble();
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  double duration = computed_timing->duration().GetAsUnrestrictedDouble();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   String easing = effect->SpecifiedTiming().timing_function->ToString();
 
   std::unique_ptr<protocol::Animation::AnimationEffect> animation_object =
@@ -389,14 +385,8 @@ Response InspectorAnimationAgent::setTiming(const String& animation_id,
   NonThrowableExceptionState exception_state;
 
   OptionalEffectTiming* timing = OptionalEffectTiming::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   timing->setDuration(
       MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(duration));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  UnrestrictedDoubleOrString unrestricted_duration;
-  unrestricted_duration.SetUnrestrictedDouble(duration);
-  timing->setDuration(unrestricted_duration);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   timing->setDelay(delay);
   animation->effect()->updateTiming(timing, exception_state);
   return Response::Success();

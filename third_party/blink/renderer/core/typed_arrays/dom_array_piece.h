@@ -10,7 +10,6 @@
 
 namespace blink {
 
-class ArrayBufferOrArrayBufferView;
 class DOMArrayBufferView;
 class V8UnionArrayBufferOrArrayBufferView;
 
@@ -35,10 +34,6 @@ class CORE_EXPORT DOMArrayPiece {
   // NOLINTNEXTLINE(google-explicit-constructor)
   DOMArrayPiece(
       const V8UnionArrayBufferOrArrayBufferView* array_buffer_or_view);
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  DOMArrayPiece(const ArrayBufferOrArrayBufferView&);
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   bool operator==(const DOMArrayBuffer& other) const {
     return ByteLength() == other.ByteLength() &&

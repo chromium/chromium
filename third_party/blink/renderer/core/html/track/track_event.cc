@@ -43,7 +43,6 @@ TrackEvent::TrackEvent(const AtomicString& type,
   if (!initializer->hasTrack())
     return;
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   const V8UnionAudioTrackOrTextTrackOrVideoTrack* track = initializer->track();
   switch (track->GetContentType()) {
     case V8UnionAudioTrackOrTextTrackOrVideoTrack::ContentType::kAudioTrack:
@@ -56,17 +55,6 @@ TrackEvent::TrackEvent(const AtomicString& type,
       track_ = track->GetAsVideoTrack();
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  const VideoTrackOrAudioTrackOrTextTrack& track = initializer->track();
-  if (track.IsVideoTrack())
-    track_ = track.GetAsVideoTrack();
-  else if (track.IsAudioTrack())
-    track_ = track.GetAsAudioTrack();
-  else if (track.IsTextTrack())
-    track_ = track.GetAsTextTrack();
-  else
-    NOTREACHED();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 }
 
 TrackEvent::~TrackEvent() = default;

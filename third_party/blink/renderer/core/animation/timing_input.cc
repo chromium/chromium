@@ -28,7 +28,6 @@ Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
   return Timing::PlaybackDirection::NORMAL;
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 absl::optional<AnimationTimeDelta> ConvertIterationDuration(
     const V8UnionStringOrUnrestrictedDouble* duration) {
   if (duration->IsUnrestrictedDouble()) {
@@ -37,16 +36,6 @@ absl::optional<AnimationTimeDelta> ConvertIterationDuration(
   }
   return absl::nullopt;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-absl::optional<AnimationTimeDelta> ConvertIterationDuration(
-    const UnrestrictedDoubleOrString& duration) {
-  if (duration.IsUnrestrictedDouble()) {
-    return AnimationTimeDelta::FromMillisecondsD(
-        duration.GetAsUnrestrictedDouble());
-  }
-  return absl::nullopt;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 Timing ConvertEffectTiming(const EffectTiming* timing_input,
                            Document* document,
@@ -90,15 +79,9 @@ Timing TimingInput::Convert(
       //   Let timing input be a new EffectTiming object with all members set to
       //   their default values and duration set to options.
       EffectTiming* timing_input = EffectTiming::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       timing_input->setDuration(
           MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
               options->GetAsUnrestrictedDouble()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      timing_input->setDuration(
-          UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-              options->GetAsUnrestrictedDouble()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
   }
@@ -126,15 +109,9 @@ Timing TimingInput::Convert(
       //   Let timing input be a new EffectTiming object with all members set to
       //   their default values and duration set to options.
       EffectTiming* timing_input = EffectTiming::Create();
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       timing_input->setDuration(
           MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
               options->GetAsUnrestrictedDouble()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      timing_input->setDuration(
-          UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-              options->GetAsUnrestrictedDouble()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
   }
@@ -169,7 +146,6 @@ bool TimingInput::Update(Timing& timing,
   // https://github.com/w3c/csswg-drafts/issues/247 .
   if (input->hasDuration()) {
     const char* error_message = "duration must be non-negative or auto";
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     switch (input->duration()->GetContentType()) {
       case V8UnionStringOrUnrestrictedDouble::ContentType::kString:
         if (input->duration()->GetAsString() != "auto") {
@@ -187,18 +163,6 @@ bool TimingInput::Update(Timing& timing,
         break;
       }
     }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    if (input->duration().IsUnrestrictedDouble()) {
-      double duration = input->duration().GetAsUnrestrictedDouble();
-      if (std::isnan(duration) || duration < 0) {
-        exception_state.ThrowTypeError(error_message);
-        return false;
-      }
-    } else if (input->duration().GetAsString() != "auto") {
-      exception_state.ThrowTypeError(error_message);
-      return false;
-    }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   // 4. If the easing member of input is present but cannot be parsed using the

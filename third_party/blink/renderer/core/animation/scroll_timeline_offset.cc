@@ -66,20 +66,8 @@ bool ElementBasedOffsetsEqual(ScrollTimelineElementBasedOffset* o1,
          o1->threshold() == o2->threshold();
 }
 
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-CSSKeywordValue* GetCSSKeywordValue(const ScrollTimelineOffsetValue& offset) {
-  if (offset.IsCSSKeywordValue())
-    return offset.GetAsCSSKeywordValue();
-  // CSSKeywordish:
-  if (offset.IsString() && !offset.GetAsString().IsEmpty())
-    return CSSKeywordValue::Create(offset.GetAsString());
-  return nullptr;
-}
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 }  // namespace
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 // static
 ScrollTimelineOffset* ScrollTimelineOffset::Create(
     const V8ScrollTimelineOffset* offset) {
@@ -119,38 +107,6 @@ ScrollTimelineOffset* ScrollTimelineOffset::Create(
   NOTREACHED();
   return nullptr;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-// static
-ScrollTimelineOffset* ScrollTimelineOffset::Create(
-    const ScrollTimelineOffsetValue& input_offset) {
-  if (input_offset.IsCSSNumericValue()) {
-    auto* numeric = input_offset.GetAsCSSNumericValue();
-    const auto& offset = To<CSSPrimitiveValue>(*numeric->ToCSSValue());
-    bool matches_length_percentage = offset.IsLength() ||
-                                     offset.IsPercentage() ||
-                                     offset.IsCalculatedPercentageWithLength();
-    if (!matches_length_percentage)
-      return nullptr;
-    return MakeGarbageCollected<ScrollTimelineOffset>(&offset);
-  }
-
-  if (input_offset.IsScrollTimelineElementBasedOffset()) {
-    auto* offset = input_offset.GetAsScrollTimelineElementBasedOffset();
-    if (!ValidateElementBasedOffset(offset))
-      return nullptr;
-
-    return MakeGarbageCollected<ScrollTimelineOffset>(offset);
-  }
-
-  if (auto* keyword = GetCSSKeywordValue(input_offset)) {
-    if (keyword->KeywordValueID() != CSSValueID::kAuto)
-      return nullptr;
-    return MakeGarbageCollected<ScrollTimelineOffset>();
-  }
-
-  return nullptr;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 absl::optional<double> ScrollTimelineOffset::ResolveOffset(
     Node* scroll_source,

@@ -50,11 +50,7 @@ void EnsureInterpolatedValueCached(ActiveInterpolations*, Document&, Element*);
 //   <length-percentage>.
 // - A CSSKeywordValue. if the incoming string can be parsed as 'auto'.
 // - Otherwise, the incoming string.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 V8ScrollTimelineOffset* OffsetFromString(Document&, const String&);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-ScrollTimelineOffsetValue OffsetFromString(Document&, const String&);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
 }  // namespace animation_test_helpers
 }  // namespace blink

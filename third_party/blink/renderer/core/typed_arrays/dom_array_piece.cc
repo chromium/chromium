@@ -38,20 +38,6 @@ DOMArrayPiece::DOMArrayPiece(
   InitNull();
 }
 
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-DOMArrayPiece::DOMArrayPiece(
-    const ArrayBufferOrArrayBufferView& array_buffer_or_view) {
-  if (array_buffer_or_view.IsArrayBuffer()) {
-    DOMArrayBuffer* array_buffer = array_buffer_or_view.GetAsArrayBuffer();
-    InitWithArrayBuffer(array_buffer);
-  } else if (array_buffer_or_view.IsArrayBufferView()) {
-    DOMArrayBufferView* array_buffer_view =
-        array_buffer_or_view.GetAsArrayBufferView().Get();
-    InitWithArrayBufferView(array_buffer_view);
-  }
-}
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 bool DOMArrayPiece::IsNull() const {
   return is_null_;
 }

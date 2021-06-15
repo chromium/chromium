@@ -94,7 +94,6 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
   effect_timing->setFill(FillModeString(fill_mode));
   effect_timing->setIterationStart(iteration_start);
   effect_timing->setIterations(iteration_count);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   V8UnionStringOrUnrestrictedDouble* duration;
   if (iteration_duration) {
     duration = MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
@@ -103,15 +102,6 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
     duration = MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>("auto");
   }
   effect_timing->setDuration(duration);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  UnrestrictedDoubleOrString duration;
-  if (iteration_duration) {
-    duration.SetUnrestrictedDouble(iteration_duration->InMillisecondsF());
-  } else {
-    duration.SetString("auto");
-  }
-  effect_timing->setDuration(duration);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   effect_timing->setDirection(PlaybackDirectionString(direction));
   effect_timing->setEasing(timing_function->ToString());
 
@@ -124,32 +114,16 @@ ComputedEffectTiming* Timing::getComputedTiming(
   ComputedEffectTiming* computed_timing = ComputedEffectTiming::Create();
 
   // ComputedEffectTiming members.
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   computed_timing->setEndTime(MakeGarbageCollected<V8CSSNumberish>(
       EndTimeInternal().InMillisecondsF()));
   computed_timing->setActiveDuration(
       MakeGarbageCollected<V8CSSNumberish>(ActiveDuration().InMillisecondsF()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  computed_timing->setEndTime(
-      CSSNumberish::FromDouble(EndTimeInternal().InMillisecondsF()));
-  computed_timing->setActiveDuration(
-      CSSNumberish::FromDouble(ActiveDuration().InMillisecondsF()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   if (calculated_timing.local_time) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     computed_timing->setLocalTime(MakeGarbageCollected<V8CSSNumberish>(
         calculated_timing.local_time->InMillisecondsF()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    computed_timing->setLocalTime(CSSNumberish::FromDouble(
-        calculated_timing.local_time->InMillisecondsF()));
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   } else {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     computed_timing->setLocalTime(nullptr);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    computed_timing->setLocalTime(CSSNumberish());
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   if (calculated_timing.is_in_effect) {
@@ -159,13 +133,8 @@ ComputedEffectTiming* Timing::getComputedTiming(
     computed_timing->setCurrentIteration(
         calculated_timing.current_iteration.value());
   } else {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     computed_timing->setProgress(absl::nullopt);
     computed_timing->setCurrentIteration(absl::nullopt);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    computed_timing->setProgressToNull();
-    computed_timing->setCurrentIterationToNull();
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   }
 
   // For the EffectTiming members, getComputedTiming is equivalent to getTiming
@@ -179,15 +148,9 @@ ComputedEffectTiming* Timing::getComputedTiming(
   computed_timing->setIterationStart(iteration_start);
   computed_timing->setIterations(iteration_count);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   computed_timing->setDuration(
       MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
           IterationDuration().InMillisecondsF()));
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  UnrestrictedDoubleOrString duration;
-  duration.SetUnrestrictedDouble(IterationDuration().InMillisecondsF());
-  computed_timing->setDuration(duration);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   computed_timing->setDirection(Timing::PlaybackDirectionString(direction));
   computed_timing->setEasing(timing_function->ToString());

@@ -258,13 +258,9 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
   goto_promise_resolver_ = nullptr;
   base::AutoReset<ScriptValue> event_info(
       &navigate_event_info_,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       options->getNavigateInfoOr(
           ScriptValue(script_state->GetIsolate(),
                       v8::Undefined(script_state->GetIsolate())))
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      options->navigateInfo()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   );
   WebFrameLoadType frame_load_type = options->replace()
                                          ? WebFrameLoadType::kReplaceCurrentItem
@@ -334,13 +330,9 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
   goto_promise_resolver_ = nullptr;
   base::AutoReset<ScriptValue> event_info(
       &navigate_event_info_,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
       options->getNavigateInfoOr(
           ScriptValue(script_state->GetIsolate(),
                       v8::Undefined(script_state->GetIsolate())))
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-      options->navigateInfo()
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   );
   AppHistoryEntry* destination = entries_[keys_to_indices_.at(key)];
   // TODO(japhet): Right now this is the only kind of back/forward navigation

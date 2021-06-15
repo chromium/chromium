@@ -14,24 +14,12 @@
 
 namespace blink {
 
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-class
-    CSSNumericValueOrStringOrCSSKeywordValueOrScrollTimelineElementBasedOffset;
-
-using ScrollTimelineOffsetValue =
-    CSSNumericValueOrStringOrCSSKeywordValueOrScrollTimelineElementBasedOffset;
-#endif  // !defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
 // Represent a scroll timeline start/end offset which can be an
 // scroll offset or an element based offset
 class CORE_EXPORT ScrollTimelineOffset final
     : public GarbageCollected<ScrollTimelineOffset> {
  public:
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   static ScrollTimelineOffset* Create(const V8ScrollTimelineOffset* offset);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  static ScrollTimelineOffset* Create(const ScrollTimelineOffsetValue& offset);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // Create a default offset representing 'auto'.
   ScrollTimelineOffset() = default;

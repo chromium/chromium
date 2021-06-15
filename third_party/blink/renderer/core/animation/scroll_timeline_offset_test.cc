@@ -28,12 +28,7 @@ class ScrollTimelineOffsetTest : public PageTestBase {
     auto* inner = CreateElementBasedOffset(target, edge, threshold);
     if (!inner)
       return nullptr;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     auto* param = MakeGarbageCollected<V8ScrollTimelineOffset>(inner);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    ScrollTimelineOffsetValue param;
-    param.SetScrollTimelineElementBasedOffset(inner);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     return ScrollTimelineOffset::Create(param);
   }
 

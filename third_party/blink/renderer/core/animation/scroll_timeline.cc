@@ -98,6 +98,7 @@ Node* ResolveScrollSource(Element* scroll_source) {
   }
   return scroll_source;
 }
+
 }  // namespace
 
 ScrollTimeline* ScrollTimeline::Create(Document& document,
@@ -136,15 +137,9 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   }
 
   absl::optional<double> time_range;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (options->timeRange()->IsDouble()) {
     time_range = absl::make_optional(options->timeRange()->GetAsDouble());
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (options->timeRange().IsDouble()) {
-    time_range = absl::make_optional(options->timeRange().GetAsDouble());
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   // The scrollingElement depends on style/layout-tree in quirks mode. Update
   // such that subsequent calls to ScrollingElementNoLayout returns up-to-date

@@ -134,14 +134,9 @@ void ParseMargin(String margin_parameter,
 }
 
 void ParseThresholds(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const V8UnionDoubleOrDoubleSequence* threshold_parameter,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const DoubleOrDoubleSequence& threshold_parameter,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     Vector<float>& thresholds,
     ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (threshold_parameter->GetContentType()) {
     case V8UnionDoubleOrDoubleSequence::ContentType::kDouble:
       thresholds.push_back(
@@ -152,15 +147,6 @@ void ParseThresholds(
         thresholds.push_back(base::MakeClampedNum<float>(threshold_value));
       break;
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (threshold_parameter.IsDouble()) {
-    thresholds.push_back(
-        base::MakeClampedNum<float>(threshold_parameter.GetAsDouble()));
-  } else {
-    for (auto threshold_value : threshold_parameter.GetAsDoubleSequence())
-      thresholds.push_back(base::MakeClampedNum<float>(threshold_value));
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   if (thresholds.IsEmpty())
     thresholds.push_back(0.f);
@@ -192,7 +178,6 @@ IntersectionObserver* IntersectionObserver::Create(
     IntersectionObserverDelegate& delegate,
     ExceptionState& exception_state) {
   Node* root = nullptr;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   if (observer_init->root()) {
     switch (observer_init->root()->GetContentType()) {
       case V8UnionDocumentOrElement::ContentType::kDocument:
@@ -203,13 +188,6 @@ IntersectionObserver* IntersectionObserver::Create(
         break;
     }
   }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (observer_init->root().IsElement()) {
-    root = observer_init->root().GetAsElement();
-  } else if (observer_init->root().IsDocument()) {
-    root = observer_init->root().GetAsDocument();
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 
   DOMHighResTimeStamp delay = 0;
   bool track_visibility = false;
