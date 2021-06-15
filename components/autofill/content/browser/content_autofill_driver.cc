@@ -58,6 +58,13 @@ bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
   return false;
 }
 
+GURL StripAuth(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  return gurl.ReplaceComponents(rep);
+}
+
 GURL StripAuthAndParams(const GURL& gurl) {
   GURL::Replacements rep;
   rep.ClearUsername();
@@ -640,7 +647,7 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(FormData& form) const {
   form.host_frame =
       LocalFrameToken(render_frame_host_->GetFrameToken().value());
   form.url = StripAuthAndParams(render_frame_host_->GetLastCommittedURL());
-  form.full_url = render_frame_host_->GetLastCommittedURL();
+  form.full_url = StripAuth(render_frame_host_->GetLastCommittedURL());
   if (auto* main_rfh = render_frame_host_->GetMainFrame())
     form.main_frame_origin = main_rfh->GetLastCommittedOrigin();
   else

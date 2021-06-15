@@ -51,6 +51,22 @@ void LogSiteIsolationMetricsForSubmittedForm(
       render_frame_host->GetSiteInstance()->RequiresDedicatedProcess());
 }
 
+GURL StripAuth(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  return gurl.ReplaceComponents(rep);
+}
+
+GURL StripAuthAndParams(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  rep.ClearQuery();
+  rep.ClearRef();
+  return gurl.ReplaceComponents(rep);
+}
+
 }  // namespace
 
 namespace password_manager {
@@ -131,11 +147,12 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
 }
 
 void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
-    const autofill::FormData& form_data,
+    const autofill::FormData& raw_form,
     autofill::FieldRendererId generation_element_id,
     const std::u16string& password) {
   GetPasswordManager()->OnGeneratedPasswordAccepted(
-      this, form_data, generation_element_id, password);
+      this, GetFormWithFrameAndFormMetaData(raw_form), generation_element_id,
+      password);
 }
 
 void ContentPasswordManagerDriver::TouchToFillClosed(
@@ -214,38 +231,47 @@ void ContentPasswordManagerDriver::GeneratePassword(
 }
 
 void ContentPasswordManagerDriver::PasswordFormsParsed(
-    const std::vector<autofill::FormData>& forms_data) {
+    const std::vector<autofill::FormData>& raw_forms) {
+  std::vector<autofill::FormData> forms = raw_forms;
+  for (auto& form : forms)
+    SetFrameAndFormMetaData(form);
+
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
-          render_frame_host_, forms_data,
+          render_frame_host_, forms,
           BadMessageReason::CPMD_BAD_ORIGIN_FORMS_PARSED))
     return;
-  GetPasswordManager()->OnPasswordFormsParsed(this, forms_data);
+  GetPasswordManager()->OnPasswordFormsParsed(this, forms);
 }
 
 void ContentPasswordManagerDriver::PasswordFormsRendered(
-    const std::vector<autofill::FormData>& visible_forms_data,
+    const std::vector<autofill::FormData>& raw_forms,
     bool did_stop_loading) {
+  std::vector<autofill::FormData> forms = raw_forms;
+  for (auto& form : forms)
+    SetFrameAndFormMetaData(form);
+
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
-          render_frame_host_, visible_forms_data,
+          render_frame_host_, forms,
           BadMessageReason::CPMD_BAD_ORIGIN_FORMS_RENDERED))
     return;
-  GetPasswordManager()->OnPasswordFormsRendered(this, visible_forms_data,
-                                                did_stop_loading);
+  GetPasswordManager()->OnPasswordFormsRendered(this, forms, did_stop_loading);
 }
 
 void ContentPasswordManagerDriver::PasswordFormSubmitted(
-    const autofill::FormData& form_data) {
+    const autofill::FormData& raw_form) {
+  autofill::FormData form_data = GetFormWithFrameAndFormMetaData(raw_form);
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           render_frame_host_, form_data.url,
           BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED))
     return;
-  GetPasswordManager()->OnPasswordFormSubmitted(this, form_data);
+  GetPasswordManager()->OnPasswordFormSubmitted(this, std::move(form_data));
 
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
 }
 
 void ContentPasswordManagerDriver::InformAboutUserInput(
-    const autofill::FormData& form_data) {
+    const autofill::FormData& raw_form) {
+  autofill::FormData form_data = GetFormWithFrameAndFormMetaData(raw_form);
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           render_frame_host_, form_data.url,
           BadMessageReason::CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE))
@@ -275,8 +301,9 @@ void ContentPasswordManagerDriver::DynamicFormSubmission(
 }
 
 void ContentPasswordManagerDriver::PasswordFormCleared(
-    const autofill::FormData& form_data) {
-  GetPasswordManager()->OnPasswordFormCleared(this, form_data);
+    const autofill::FormData& raw_form) {
+  GetPasswordManager()->OnPasswordFormCleared(
+      this, GetFormWithFrameAndFormMetaData(raw_form));
 }
 
 void ContentPasswordManagerDriver::RecordSavePasswordProgress(
@@ -333,6 +360,27 @@ void ContentPasswordManagerDriver::LogFirstFillingResult(
     autofill::FormRendererId form_renderer_id,
     int32_t result) {
   GetPasswordManager()->LogFirstFillingResult(this, form_renderer_id, result);
+}
+
+void ContentPasswordManagerDriver::SetFrameAndFormMetaData(
+    autofill::FormData& form) const {
+  form.host_frame =
+      autofill::LocalFrameToken(render_frame_host_->GetFrameToken().value());
+
+  form.url = StripAuthAndParams(render_frame_host_->GetLastCommittedURL());
+  form.full_url = StripAuth(render_frame_host_->GetLastCommittedURL());
+
+  if (auto* main_rfh = render_frame_host_->GetMainFrame())
+    form.main_frame_origin = main_rfh->GetLastCommittedOrigin();
+  else
+    form.main_frame_origin = url::Origin();
+}
+
+autofill::FormData
+ContentPasswordManagerDriver::GetFormWithFrameAndFormMetaData(
+    autofill::FormData form) const {
+  SetFrameAndFormMetaData(form);
+  return form;
 }
 
 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&

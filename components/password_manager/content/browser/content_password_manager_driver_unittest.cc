@@ -237,6 +237,26 @@ TEST_F(ContentPasswordManagerDriverTest, ClearPasswordsOnAutofill) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
+  NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
+
+  std::unique_ptr<ContentPasswordManagerDriver> driver(
+      new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_,
+                                       &autofill_client_));
+  autofill::FormData form;
+  autofill::FormData form2 = driver->GetFormWithFrameAndFormMetaData(form);
+
+  EXPECT_EQ(form2.host_frame,
+            autofill::LocalFrameToken(
+                web_contents()->GetMainFrame()->GetFrameToken().value()));
+  EXPECT_EQ(form2.url, GURL("https://hostname/path"));
+  EXPECT_EQ(form2.full_url, GURL("https://hostname/path?query#hash"));
+  EXPECT_EQ(form2.main_frame_origin,
+            web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(form2.main_frame_origin,
+            url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ContentPasswordManagerDriverTest,
                          testing::Values(true, false));
