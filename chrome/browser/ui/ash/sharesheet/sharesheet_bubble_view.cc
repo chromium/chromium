@@ -258,6 +258,7 @@ void SharesheetBubbleView::ShowNearbyShareBubble(
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {
   close_callback_ = std::move(close_callback);
+  user_selection_made_ = true;  // Disable close when clicking outside bubble.
   ShowBubble({}, std::move(intent), std::move(delivered_callback));
   if (delivered_callback_) {
     std::move(delivered_callback_)
