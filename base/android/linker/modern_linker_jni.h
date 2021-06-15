@@ -53,12 +53,6 @@ class NativeLibInfo {
 
   void set_load_address(uintptr_t a) { load_address_ = a; }
 
-  // Whether to use memfd_create(2) when creating shared memory regions.
-  void set_use_memfd(bool use_memfd) {
-    use_memfd_initialized_ = true;
-    use_memfd_ = use_memfd;
-  }
-
   uintptr_t load_address() const { return load_address_; }
 
   // Loads the native library using android_dlopen_ext and invokes JNI_OnLoad().
@@ -156,8 +150,6 @@ class NativeLibInfo {
   int relro_fd_ = kInvalidFd;
   JNIEnv* const env_;
   const jobject java_object_;
-  bool use_memfd_initialized_ = false;
-  bool use_memfd_;
 };
 
 // JNI_OnLoad() initialization hook for the modern linker.

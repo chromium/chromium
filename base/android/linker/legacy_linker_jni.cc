@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This is the version of the Android-specific Chromium linker that uses
-// the crazy linker to load libraries.
-
-// This source code *cannot* depend on anything from base/ or the C++
-// STL, to keep the final library small, and avoid ugly dependency issues.
+// This is a part of the Android-specific Chromium dynamic linker.
+//
+// See linker_jni.h for more details and the dependency rules.
 
 #include "base/android/linker/legacy_linker_jni.h"
 

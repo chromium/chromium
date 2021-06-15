@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This is the Android-specific Chromium linker, a tiny shared library
-// implementing a custom dynamic linker that can be used to load the
-// real Chromium libraries.
-
-// The main point of this linker is to be able to share the RELRO
-// section of libcontentshell.so (or equivalent) between the browser and
-// renderer process.
-
-// This source code *cannot* depend on anything from base/ or the C++
-// STL, to keep the final library small, and avoid ugly dependency issues.
+// This is the Android-specific Chromium dynamic linker (loader of dynamic
+// libraries), a tiny shared library implementing a custom dynamic linker that
+// can be used to load the real Chromium libraries.
+//
+// The purpose of this custom linker is to be able to share the RELRO section of
+// libcontentshell.so (or equivalent) between the browser process and all other
+// processes it asks to create.
+//
+// This source code *cannot* depend on anything from //base or the C++ standard
+// library to keep this DSO small and avoid dependency issues. An exception is
+// made for std::unique_ptr as a risky header-only definition.
 
 #ifndef BASE_ANDROID_LINKER_LINKER_JNI_H_
 #define BASE_ANDROID_LINKER_LINKER_JNI_H_
@@ -92,7 +93,8 @@ class String {
   size_t size_;
 };
 
-// Return true iff |address| is a valid address for the target CPU.
+// Returns true iff casting a java-side |address| to uintptr_t does not lose
+// bits.
 inline bool IsValidAddress(jlong address) {
   return static_cast<jlong>(static_cast<uintptr_t>(address)) == address;
 }
@@ -100,9 +102,7 @@ inline bool IsValidAddress(jlong address) {
 // Find the jclass JNI reference corresponding to a given |class_name|.
 // |env| is the current JNI environment handle.
 // On success, return true and set |*clazz|.
-extern bool InitClassReference(JNIEnv* env,
-                               const char* class_name,
-                               jclass* clazz);
+bool InitClassReference(JNIEnv* env, const char* class_name, jclass* clazz);
 
 // Initialize a jfieldID corresponding to the field of a given |clazz|,
 // with name |field_name| and signature |field_sig|.
