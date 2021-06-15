@@ -2448,6 +2448,11 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="DIRECT"/>
 </enum>
 
+<enum name="AndroidWebViewSafeModeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+</enum>
+
 <enum name="AndroidWebViewSingleOrMultiProcess">
   <int value="0" label="SINGLE_PROCESS"/>
   <int value="1" label="MULTI_PROCESS"/>
