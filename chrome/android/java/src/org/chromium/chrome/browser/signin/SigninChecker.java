@@ -60,7 +60,7 @@ public class SigninChecker
     }
 
     private void validateAccountSettings() {
-        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
+        mAccountManagerFacade.getAccounts().then(accounts -> {
             mAccountTrackerService.seedAccountsIfNeeded(() -> {
                 mSigninManager.runAfterOperationInProgress(() -> {
                     validatePrimaryAccountExists(accounts);
