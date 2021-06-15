@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS e.style['font-size-adjust'] = "none" should set the property value
+PASS e.style['font-size-adjust'] = "0.5" should set the property value
+FAIL e.style['font-size-adjust'] = "ex 0.5" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['font-size-adjust'] = "cap 0.8" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['font-size-adjust'] = "ch 0.4" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['font-size-adjust'] = "ic 0.9" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

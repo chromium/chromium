@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Property font-size-adjust value 'none'
+PASS Property font-size-adjust value '0.5'
+FAIL Property font-size-adjust value 'ex 0.5' assert_true: 'ex 0.5' is a supported value for font-size-adjust. expected true got false
+FAIL Property font-size-adjust value 'cap 0.8' assert_true: 'cap 0.8' is a supported value for font-size-adjust. expected true got false
+FAIL Property font-size-adjust value 'ch 0.4' assert_true: 'ch 0.4' is a supported value for font-size-adjust. expected true got false
+FAIL Property font-size-adjust value 'ic 0.9' assert_true: 'ic 0.9' is a supported value for font-size-adjust. expected true got false
+Harness: the test ran to completion.
+

@@ -781,6 +781,20 @@
        ]
       ]
      },
+     "multicol-table-collapsed-border-crash.html": [
+      "499a12107714503853a0779d371933de6f169a95",
+      [
+       null,
+       {}
+      ]
+     ],
+     "multicol-table-crash.html": [
+      "a67167c161bdedddddd77348d6decfe2f4fb2634",
+      [
+       null,
+       {}
+      ]
+     ],
      "visibility-collapse-colspan-crash.html": [
       "591fbd9a9941648f1456b41aeee1e23ed660a1ed",
       [
@@ -101168,6 +101182,19 @@
        {}
       ]
      ],
+     "font-size-adjust-001.html": [
+      "1397d33f2528e61e0b80679e1c4ab1dda9cfbeb4",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-size-adjust-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-size-adjust-002.html": [
       "e4d87538c8c9c91a8b689e7dd71ea139fcf1fcb5",
       [
@@ -101227,6 +101254,45 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-size-adjust-009.html": [
+      "108e15e4b220363282dca6645b9f4db54179798b",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-size-adjust-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-size-adjust-010.html": [
+      "d3d385985c2acbe2b15d71d068eb0cda5ebcf77b",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-size-adjust-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-size-adjust-011.html": [
+      "5e5c1a71a2138067319c20114384f8741375e88c",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-size-adjust-009-ref.html",
          "=="
         ]
        ],
@@ -140735,6 +140801,19 @@
        {}
       ]
      ],
+     "percent-height-table-cell-child.html": [
+      "acf9205259a91f216fca1af1040ec62e46808d1e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "percent-width-cell-dynamic.html": [
       "5c7ef3bf8a2b7eac7371c7d86594f52cfb42815d",
       [
@@ -169162,7 +169241,7 @@
       ]
      ],
      "ex-unit-001.html": [
-      "eff0dbe2ebdeb85a8d9b9b907cd510193792dccf",
+      "b147c1cc987f26696a735f9d0ca2348b58389c22",
       [
        null,
        [
@@ -226805,6 +226884,10 @@
       []
      ],
      "animations": {
+      "font-size-adjust-interpolation-expected.txt": [
+       "3dd91183e8044b0477ae8d47fb26a49a5c955e2c",
+       []
+      ],
       "font-stretch-interpolation-expected.txt": [
        "58896db21f6fc5aae1b974758d57009479337334",
        []
@@ -226974,6 +227057,10 @@
      ],
      "font-size-adjust-002-ref.html": [
       "7bfa3bad5accf9a740281f90d3dc910704b827fd",
+      []
+     ],
+     "font-size-adjust-009-ref.html": [
+      "b0d269a49aec2440878aac4f33aa35eed018e4dc",
       []
      ],
      "font-size-monospace-adjust-ref.html": [
@@ -227417,6 +227504,14 @@
       ],
       "font-language-override-valid-expected.txt": [
        "2acc510d2d23c28a952753bdb54017eff2af8632",
+       []
+      ],
+      "font-size-adjust-computed-expected.txt": [
+       "cf6646f2555cbb36421e3a254136fe978e33e2bd",
+       []
+      ],
+      "font-size-adjust-valid-expected.txt": [
+       "5139a3280fed530d12437a20375abef39d183269",
        []
       ],
       "font-style-computed-expected.txt": [
@@ -249178,7 +249273,7 @@
        []
       ],
       "ex-unit-001-ref.html": [
-       "daf375e43bf7c1c991c6e7b112cfffc9ab42e830",
+       "33b241f58c0501172006de6222bb3a77a0e680b3",
        []
       ],
       "ex-unit-002-ref.html": [
@@ -290671,7 +290766,7 @@
    "urlpattern": {
     "resources": {
      "urlpatterntestdata.json": [
-      "be78ec211fc6ff39112515f33b2bdb2b571e7736",
+      "66e79b23edba779e1eefb1c0929767042532c562",
       []
      ]
     }
@@ -331502,7 +331597,7 @@
     "css-fonts": {
      "animations": {
       "font-size-adjust-interpolation.html": [
-       "fd89da3b969c2ad2f8fb522c600bddc740d8146b",
+       "dbb246ba658f8a1b9c20ac36fa081cc8486e36bf",
        [
         null,
         {}
@@ -331830,21 +331925,21 @@
        ]
       ],
       "font-size-adjust-computed.html": [
-       "4abf011d91e07f0d33f85ae98c56b51b0bfd6504",
+       "ec6afcb2beeae32209d2909768f51308c590bc1e",
        [
         null,
         {}
        ]
       ],
       "font-size-adjust-invalid.html": [
-       "8e83052eb0608c68d6a1fce15ac773e84e52fddd",
+       "f36a7ad2a917431e514b621ec7bd3418616ae9a8",
        [
         null,
         {}
        ]
       ],
       "font-size-adjust-valid.html": [
-       "1e4d0aebe1147beba0ce37e2773125a0b742501e",
+       "676eb0265c5364d5190849fd960b3a1f2ed61b55",
        [
         null,
         {}
@@ -432712,7 +432807,21 @@
      ]
     ],
     "setactionhandler.html": [
-     "8ab0723ec4ea472f4dda0f075e1b33b304b80315",
+     "80dee47a4c28a5addd2929504f787e16934477f9",
+     [
+      null,
+      {}
+     ]
+    ],
+    "setcameraactive.html": [
+     "d5cd6a93f12b6c0532d02d328ee66cb2db365d74",
+     [
+      null,
+      {}
+     ]
+    ],
+    "setmicrophoneactive.html": [
+     "fbb4c612d9f133f94993fb50d7e1b20957a1b898",
      [
       null,
       {}
@@ -480017,7 +480126,7 @@
        ]
       ],
       "biquad-automation.html": [
-       "54b2142cea250cdbfe084df6fb9e1d42eac96cd2",
+       "d459d16fb1ad6774553e896f88c47968c6da5917",
        [
         null,
         {}
@@ -480205,7 +480314,7 @@
        ]
       ],
       "test-constantsourcenode.html": [
-       "f789fe5e940251df8c3ffbcd8e14355498db7847",
+       "04f61106c11b5338af87a362c2888ceccb07e8f0",
        [
         null,
         {}
@@ -480291,7 +480400,7 @@
        ]
       ],
       "realtime-conv.html": [
-       "930728dc369e434c832ff23cb7cc3cacc8fc4baa",
+       "8668e9d5ac9933cf92c6cc84cb22e24f03b6e045",
        [
         null,
         {}
@@ -516594,13 +516703,6 @@
     "css-fonts": {
      "font-face-unicode-range.html": [
       "a5523131504f768930748e404506e5ab83b0abe2",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-size-adjust-001.html": [
-      "047b73619cfdab059d876d29981b873a88d9c33d",
       [
        null,
        {}
