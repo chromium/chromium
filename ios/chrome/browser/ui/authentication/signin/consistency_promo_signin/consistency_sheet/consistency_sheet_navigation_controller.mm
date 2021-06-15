@@ -7,8 +7,9 @@
 #import <algorithm>
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/common/ui/util/background_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -69,6 +70,7 @@ constexpr CGFloat kCornerRadius = 12.;
   self.backgroundView.frame = self.view.bounds;
   self.view.layer.masksToBounds = YES;
   self.view.clipsToBounds = YES;
+  self.view.accessibilityIdentifier = kWebSigninAccessibilityIdentifier;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

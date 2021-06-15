@@ -75,12 +75,12 @@ void SignOutAndClearIdentities() {
     ChromeBrowserState* browser_state = GetOriginalBrowserState();
     DCHECK(browser_state);
 
-    // Sign out current user.
+    // Sign out current user and clear all browsing data on the device.
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state);
     if (authentication_service->IsAuthenticated()) {
       authentication_service->SignOut(signin_metrics::SIGNOUT_TEST,
-                                      /*force_clear_browsing_data=*/false, nil);
+                                      /*force_clear_browsing_data=*/true, nil);
     }
 
     // Clear last signed in user preference.

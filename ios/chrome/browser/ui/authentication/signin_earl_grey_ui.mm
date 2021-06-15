@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
@@ -301,6 +302,14 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
                          kRecentTabsTableViewControllerAccessibilityIdentifier),
                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+}
+
++ (void)verifyWebSigninIsVisible:(BOOL)isVisible {
+  id<GREYMatcher> visibilityMatcher =
+      isVisible ? grey_sufficientlyVisible() : grey_notVisible();
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kWebSigninAccessibilityIdentifier)]
+      assertWithMatcher:visibilityMatcher];
 }
 
 #pragma mark - Private

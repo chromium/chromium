@@ -220,6 +220,7 @@ source_set("eg_test_support+eg2") {
     "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication/cells:constants",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/unified_consent:constants",
     "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",

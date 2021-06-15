@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -174,6 +175,8 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   // Add primary button.
   self.continueAsButton =
       PrimaryActionButton(/* pointer_interaction_enabled */ YES);
+  self.continueAsButton.accessibilityIdentifier =
+      kWebSigninContinueAsButtonAccessibilityIdentifier;
   self.continueAsButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.continueAsButton addTarget:self
                             action:@selector(signInWithDefaultIdentityAction:)

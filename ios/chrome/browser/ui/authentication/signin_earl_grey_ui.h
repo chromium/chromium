@@ -98,6 +98,9 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Checks that the sign-in promo view is not visible.
 + (void)verifySigninPromoNotVisible;
 
+// Checks that the web sign-in consistency sheet visibility matches |isVisible|.
++ (void)verifyWebSigninIsVisible:(BOOL)isVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_UI_H_

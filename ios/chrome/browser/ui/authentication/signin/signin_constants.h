@@ -44,6 +44,11 @@ extern NSString* const kAddAccountAccessibilityIdentifier;
 extern NSString* const kConfirmationAccessibilityIdentifier;
 // Name of accessibility identifier for the more button in the sign-in flow.
 extern NSString* const kMoreAccessibilityIdentifier;
+// Name of accessibility identifier for the web sign-in consistency sheet.
+extern NSString* const kWebSigninAccessibilityIdentifier;
+// Name of accessiblity identifier for "Continue As..." button that signs in
+// the primary account user for the web sign-in consistency sheet.
+extern NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier;
 
 // Action that is required to do to complete the sign-in. This action is in
 // charge of the SigninCoordinator's owner.
