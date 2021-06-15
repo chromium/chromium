@@ -269,6 +269,40 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
 
   EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+
+  // Verify the set restore notification is not shown.
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */,
+                     false /* has_set_restore_notification */);
+}
+
+// If the system is crash, and the restore option has been selected 3 times,
+// show the crash notification, and verify the restore flag when click the
+// restore button, without showing the set restore notification.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
+       CrashAndRestoreWithoutSetRestorePrefNotification) {
+  profile()->set_last_session_exited_cleanly(false);
+
+  // Set |kRestoreSelectedCountPrefName| = 3 to simulate the restore option has
+  // been selected 3 times.
+  profile()->GetPrefs()->SetInteger(kRestoreSelectedCountPrefName, 3);
+
+  CreateFullRestoreServiceForTesting();
+
+  VerifyNotification(true /* has_crash_notification */,
+                     false /* has_restore_notification */,
+                     false /* has_set_restore_notification */);
+
+  SimulateClick(kRestoreForCrashNotificationId,
+                RestoreNotificationButtonIndex::kRestore);
+
+  EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
+  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+
+  // Verify the set restore notification is not shown.
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */,
+                     false /* has_set_restore_notification */);
 }
 
 // If the system is crash, show the crash notification, and verify the restore

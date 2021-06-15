@@ -172,15 +172,18 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
     return;
   }
 
-  int count = GetRestoreSelectedCountPref(profile_->GetPrefs());
+  // For the restore notification, check how many times the user selected the
+  // 'Restore' button. If the user selects the 'restore' button for more than 3
+  // times, show the set restore pref notification.
+  if (notification_->id() == kRestoreNotificationId) {
+    int count = GetRestoreSelectedCountPref(profile_->GetPrefs());
 
-  if (count < kMaxConsecutiveRestoreSelectionCount)
-    SetRestoreSelectedCountPref(profile_->GetPrefs(), ++count);
+    if (count < kMaxConsecutiveRestoreSelectionCount)
+      SetRestoreSelectedCountPref(profile_->GetPrefs(), ++count);
 
-  // If the user selects the 'restore' button for more than 3 times, show the
-  // set restore pref notification.
-  if (count >= kMaxConsecutiveRestoreSelectionCount)
-    ShowRestoreNotification(kSetRestorePrefNotificationId);
+    if (count >= kMaxConsecutiveRestoreSelectionCount)
+      ShowRestoreNotification(kSetRestorePrefNotificationId);
+  }
 
   Restore();
 }
