@@ -27,7 +27,7 @@ class POLICY_EXPORT URLBlocklistPolicyHandler
   ~URLBlocklistPolicyHandler() override;
 
   // Validates that policy follows official pattern
-  // https://www.chromium.org/administrators/url-blocklist-filter-format
+  // https://chromeenterprise.google/policies/url-patterns
   bool ValidatePolicy(const std::string& policy);
 
   // ConfigurationPolicyHandler methods:
