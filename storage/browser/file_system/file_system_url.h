@@ -79,17 +79,13 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
  public:
   FileSystemURL();
-  FileSystemURL(const FileSystemURL& other);
-  // Constructs FileSystemURL with the contents of |other|, which is left in
-  // valid but unspecified state.
-  FileSystemURL(FileSystemURL&& other);
+
+  FileSystemURL(const FileSystemURL&);
+  FileSystemURL(FileSystemURL&&) noexcept;
+  FileSystemURL& operator=(const FileSystemURL&);
+  FileSystemURL& operator=(FileSystemURL&&) noexcept;
+
   ~FileSystemURL();
-
-  // Replaces the contents with those of |rhs|, which is left in valid but
-  // unspecified state.
-  FileSystemURL& operator=(FileSystemURL&& rhs);
-
-  FileSystemURL& operator=(const FileSystemURL& rhs);
 
   // Methods for creating FileSystemURL without attempting to crack them.
   // Should be used only in tests.

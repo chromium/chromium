@@ -22,13 +22,15 @@ FileSystemURL::FileSystemURL()
       type_(kFileSystemTypeUnknown),
       mount_option_(FlushPolicy::NO_FLUSH_ON_COMPLETION) {}
 
-FileSystemURL::FileSystemURL(const FileSystemURL& other) = default;
+FileSystemURL::FileSystemURL(const FileSystemURL&) = default;
 
-FileSystemURL::FileSystemURL(FileSystemURL&& other) = default;
+FileSystemURL::FileSystemURL(FileSystemURL&&) noexcept = default;
 
-FileSystemURL& FileSystemURL::operator=(FileSystemURL&& rhs) = default;
+FileSystemURL& FileSystemURL::operator=(const FileSystemURL&) = default;
 
-FileSystemURL& FileSystemURL::operator=(const FileSystemURL& rhs) = default;
+FileSystemURL& FileSystemURL::operator=(FileSystemURL&&) noexcept = default;
+
+FileSystemURL::~FileSystemURL() = default;
 
 // static
 FileSystemURL FileSystemURL::CreateForTest(const GURL& url) {
@@ -97,8 +99,6 @@ FileSystemURL::FileSystemURL(const url::Origin& origin,
       path_(cracked_path.NormalizePathSeparators()),
       filesystem_id_(filesystem_id),
       mount_option_(mount_option) {}
-
-FileSystemURL::~FileSystemURL() = default;
 
 GURL FileSystemURL::ToGURL() const {
   if (!is_valid_)
