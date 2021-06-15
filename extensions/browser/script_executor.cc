@@ -283,7 +283,6 @@ std::string ScriptExecutor::GenerateInjectionKey(const mojom::HostID& host_id,
 
 void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
                                    mojom::CodeInjectionPtr injection,
-                                   mojom::ActionType action_type,
                                    ScriptExecutor::FrameScope frame_scope,
                                    const std::set<int>& frame_ids,
                                    ScriptExecutor::MatchAboutBlank about_blank,
@@ -311,7 +310,6 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
 
   auto params = mojom::ExecuteCodeParams::New();
   params->host_id = host_id.Clone();
-  params->action_type = action_type;
   params->injection = std::move(injection);
   params->match_about_blank = (about_blank == MATCH_ABOUT_BLANK);
   params->run_at = run_at;

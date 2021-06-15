@@ -33,7 +33,6 @@
 #include "extensions/common/extension_guid.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/message_bundle.h"
-#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -62,9 +61,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::RunLocation,
                           extensions::mojom::RunLocation::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::ActionType,
-                          extensions::mojom::ActionType::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::MessagingEndpoint::Type,
                           extensions::MessagingEndpoint::Type::kLast)

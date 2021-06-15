@@ -39,7 +39,6 @@ if (enable_extensions) {
     disable_variants = true
 
     sources = [
-      "mojom/action_type.mojom",
       "mojom/activation_sequence.mojom",
       "mojom/api_permission_id.mojom",
       "mojom/app_window.mojom",

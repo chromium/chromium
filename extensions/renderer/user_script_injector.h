@@ -44,8 +44,7 @@ class UserScriptInjector : public ScriptInjector,
   mojom::InjectionType script_type() const override;
   bool IsUserGesture() const override;
   mojom::CSSOrigin GetCssOrigin() const override;
-  bool IsRemovingCSS() const override;
-  bool IsAddingCSS() const override;
+  mojom::CSSInjection::Operation GetCSSInjectionOperation() const override;
   const absl::optional<std::string> GetInjectionKey() const override;
   bool ExpectsResults() const override;
   bool ShouldInjectJs(

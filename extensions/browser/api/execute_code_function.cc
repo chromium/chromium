@@ -16,7 +16,6 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
-#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -82,12 +81,6 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
 
   DCHECK(!(ShouldInsertCSS() && ShouldRemoveCSS()));
 
-  auto action_type = mojom::ActionType::kAddJavascript;
-  if (ShouldInsertCSS())
-    action_type = mojom::ActionType::kAddCss;
-  else if (ShouldRemoveCSS())
-    action_type = mojom::ActionType::kRemoveCss;
-
   ScriptExecutor::FrameScope frame_scope =
       details_->all_frames.get() && *details_->all_frames
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
@@ -129,25 +122,27 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
   }
 
   mojom::CodeInjectionPtr injection;
-  if (action_type == mojom::ActionType::kAddCss ||
-      action_type == mojom::ActionType::kRemoveCss) {
+  bool is_css_injection = ShouldInsertCSS() || ShouldRemoveCSS();
+  if (is_css_injection) {
     absl::optional<std::string> injection_key;
     if (host_id_.type == mojom::HostID::HostType::kExtensions) {
       injection_key = ScriptExecutor::GenerateInjectionKey(
           host_id_, script_url_, code_string);
     }
+    mojom::CSSInjection::Operation operation =
+        ShouldInsertCSS() ? mojom::CSSInjection::Operation::kAdd
+                          : mojom::CSSInjection::Operation::kRemove;
     injection = mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
-        code_string, std::move(injection_key), css_origin));
+        code_string, std::move(injection_key), css_origin, operation));
   } else {
-    DCHECK_EQ(action_type, mojom::ActionType::kAddJavascript);
     bool wants_result = has_callback();
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
         code_string, script_url_, wants_result, user_gesture()));
   }
 
   executor->ExecuteScript(
-      host_id_, std::move(injection), action_type, frame_scope,
-      {root_frame_id_}, match_about_blank, run_at,
+      host_id_, std::move(injection), frame_scope, {root_frame_id_},
+      match_about_blank, run_at,
       IsWebView() ? ScriptExecutor::WEB_VIEW_PROCESS
                   : ScriptExecutor::DEFAULT_PROCESS,
       GetWebViewSrc(),

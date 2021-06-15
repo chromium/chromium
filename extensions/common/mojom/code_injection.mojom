@@ -25,6 +25,11 @@ struct JSInjection {
 };
 
 struct CSSInjection {
+  enum Operation {
+    kAdd,
+    kRemove,
+  };
+
   // The CSS code to insert.
   string code;
 
@@ -34,6 +39,9 @@ struct CSSInjection {
 
   // The origin of the CSS.
   CSSOrigin css_origin;
+
+  // The type of operation to perform.
+  Operation operation;
 };
 
 // A single CodeInjection, which is allowed to contain exactly one of

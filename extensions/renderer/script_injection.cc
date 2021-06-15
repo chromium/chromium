@@ -424,22 +424,22 @@ void ScriptInjection::InjectOrRemoveCss(
   //
   // TODO(https://crbug.com/1116061): Extend this API's capabilities to also
   // remove CSS added by content scripts?
-  bool adding_css = injector_->IsAddingCSS();
-  bool removing_css = injector_->IsRemovingCSS();
-  DCHECK(!(adding_css && removing_css)) << "Operations are mutually exclusive.";
-  DCHECK(adding_css || removing_css)
-      << "At least one of the operations must happen for InjectOrRemoveCss() "
-         "to be called.";
+  mojom::CSSInjection::Operation injection_type =
+      injector_->GetCSSInjectionOperation();
 
-  if (removing_css) {
-    web_frame->GetDocument().RemoveInsertedStyleSheet(style_sheet_key,
-                                                      blink_css_origin);
-  } else {
-    DCHECK(adding_css);
-    for (const blink::WebString& css : css_sources)
-      web_frame->GetDocument().InsertStyleSheet(
-          css, &style_sheet_key, blink_css_origin,
-          blink::BackForwardCacheAware::kPossiblyDisallow);
+  switch (injection_type) {
+    case mojom::CSSInjection::Operation::kRemove:
+      web_frame->GetDocument().RemoveInsertedStyleSheet(style_sheet_key,
+                                                        blink_css_origin);
+      break;
+    case mojom::CSSInjection::Operation::kAdd: {
+      for (const blink::WebString& css : css_sources) {
+        web_frame->GetDocument().InsertStyleSheet(
+            css, &style_sheet_key, blink_css_origin,
+            blink::BackForwardCacheAware::kPossiblyDisallow);
+      }
+      break;
+    }
   }
 }
 

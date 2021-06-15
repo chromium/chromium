@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -114,7 +113,6 @@ class ScriptExecutor {
   // failure and appropriate error message).
   void ExecuteScript(const mojom::HostID& host_id,
                      mojom::CodeInjectionPtr injection,
-                     mojom::ActionType action_type,
                      FrameScope frame_scope,
                      const std::set<int>& frame_ids,
                      MatchAboutBlank match_about_blank,

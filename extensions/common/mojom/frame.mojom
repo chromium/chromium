@@ -4,7 +4,6 @@
 
 module extensions.mojom;
 
-import "extensions/common/mojom/action_type.mojom";
 import "extensions/common/mojom/code_injection.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/injection_type.mojom";
@@ -21,11 +20,6 @@ struct ExecuteCodeParams {
   // The CSS or JS to inject into the target.
   CodeInjection injection;
 
-  // TODO(devlin): Many of the following fields are only relevant for either
-  // JS or CSS. Move these into CSSInjection and JSInjection as appropriate.
-
-  // Whether the code is JavaScript or CSS.
-  ActionType action_type;
   // The webview guest source who calls to execute code.
   url.mojom.Url webview_src;
   // Whether to inject into about:blank (sub)frames.

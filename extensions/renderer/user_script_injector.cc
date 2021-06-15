@@ -136,12 +136,11 @@ mojom::CSSOrigin UserScriptInjector::GetCssOrigin() const {
   return mojom::CSSOrigin::kAuthor;
 }
 
-bool UserScriptInjector::IsRemovingCSS() const {
-  return false;
-}
-
-bool UserScriptInjector::IsAddingCSS() const {
-  return script_ && !script_->css_scripts().empty();
+mojom::CSSInjection::Operation UserScriptInjector::GetCSSInjectionOperation()
+    const {
+  DCHECK(script_);
+  DCHECK(!script_->css_scripts().empty());
+  return mojom::CSSInjection::Operation::kAdd;
 }
 
 const absl::optional<std::string> UserScriptInjector::GetInjectionKey() const {
