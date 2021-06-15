@@ -41,6 +41,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

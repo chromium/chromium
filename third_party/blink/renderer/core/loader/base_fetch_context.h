@@ -7,6 +7,7 @@
 
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"

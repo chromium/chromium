@@ -35,6 +35,7 @@
 #include "media/base/media_switches.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/l10n/l10n_util.h"

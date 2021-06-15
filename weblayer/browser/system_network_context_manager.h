@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace network {

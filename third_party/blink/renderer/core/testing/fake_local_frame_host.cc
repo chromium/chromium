@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 
 #include "skia/public/mojom/skcolor.mojom-blink.h"
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 

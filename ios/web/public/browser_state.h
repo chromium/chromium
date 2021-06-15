@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"

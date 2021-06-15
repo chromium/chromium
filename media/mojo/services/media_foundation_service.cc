@@ -11,6 +11,7 @@
 #include "media/cdm/win/media_foundation_cdm_module.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
 #include "media/mojo/services/interface_factory_impl.h"
 
 namespace media {

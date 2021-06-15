@@ -4,6 +4,9 @@
 
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
 
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+
 namespace blink {
 
 WeakWrapperResourceLoadInfoNotifier::WeakWrapperResourceLoadInfoNotifier(

@@ -5,6 +5,8 @@
 #include "services/network/test/mock_devtools_observer.h"
 
 #include "net/cookies/canonical_cookie.h"
+#include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {

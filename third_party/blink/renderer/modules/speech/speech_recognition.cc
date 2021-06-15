@@ -26,9 +26,12 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition.h"
 
 #include <algorithm>
+
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom-blink.h"
+#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"

@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/receiver_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"

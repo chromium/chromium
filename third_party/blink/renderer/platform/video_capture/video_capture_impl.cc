@@ -33,6 +33,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
+#include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/system/platform_handle.h"

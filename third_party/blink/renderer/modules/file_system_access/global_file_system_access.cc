@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"

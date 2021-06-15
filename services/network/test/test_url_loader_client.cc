@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

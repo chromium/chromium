@@ -45,6 +45,7 @@
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/ukm_manager.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"

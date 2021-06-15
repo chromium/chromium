@@ -70,6 +70,7 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"

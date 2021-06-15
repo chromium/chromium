@@ -62,6 +62,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
     # the boundary between Blink and non-Blink.
     allowed_interfaces = (
         'services/network/public/mojom/cross_origin_embedder_policy',
+        'services/network/public/mojom/early_hints',
         'services/network/public/mojom/fetch_api',
         'services/network/public/mojom/load_timing_info',
         'services/network/public/mojom/url_loader',

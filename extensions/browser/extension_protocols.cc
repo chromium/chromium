@@ -93,6 +93,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"

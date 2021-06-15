@@ -35,6 +35,7 @@
 #include "net/base/url_util.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 using extensions::mojom::APIPermissionID;
 

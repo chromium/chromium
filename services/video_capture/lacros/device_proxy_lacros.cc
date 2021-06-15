@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "media/capture/mojom/image_capture.mojom.h"
 #include "services/video_capture/lacros/video_frame_handler_proxy_lacros.h"
 
 namespace video_capture {

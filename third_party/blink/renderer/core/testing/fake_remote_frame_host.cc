@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
 
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
+
 namespace blink {
 
 void FakeRemoteFrameHost::Init(blink::AssociatedInterfaceProvider* provider) {

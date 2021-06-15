@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader.h"
 
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"

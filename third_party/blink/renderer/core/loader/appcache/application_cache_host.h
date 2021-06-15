@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/appcache/appcache_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"

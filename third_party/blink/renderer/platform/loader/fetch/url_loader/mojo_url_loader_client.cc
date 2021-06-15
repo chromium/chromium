@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"

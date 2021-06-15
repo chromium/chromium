@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"

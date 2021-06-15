@@ -8,6 +8,7 @@
 
 #include "base/strings/string_tokenizer.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 

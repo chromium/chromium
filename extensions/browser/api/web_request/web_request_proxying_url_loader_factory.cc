@@ -41,6 +41,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "url/origin.h"

@@ -46,6 +46,13 @@ namespace net {
 class IOBuffer;
 }
 
+namespace network {
+namespace mojom {
+class TLSClientSocket;
+class TCPConnectedSocket;
+}  // namespace mojom
+}  // namespace network
+
 namespace extensions {
 class Socket;
 

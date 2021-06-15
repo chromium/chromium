@@ -14,6 +14,7 @@
 #include "extensions/browser/api/sockets_udp/udp_socket_event_dispatcher.h"
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace extensions {
 namespace api {

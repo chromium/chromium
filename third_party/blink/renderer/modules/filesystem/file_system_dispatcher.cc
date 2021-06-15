@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "components/services/filesystem/public/mojom/types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"

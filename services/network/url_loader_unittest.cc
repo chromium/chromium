@@ -84,6 +84,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"

@@ -9,6 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/mime_sniffer.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 

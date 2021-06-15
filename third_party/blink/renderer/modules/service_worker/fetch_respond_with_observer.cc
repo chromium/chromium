@@ -14,6 +14,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"

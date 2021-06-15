@@ -19,6 +19,7 @@
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace blink {

@@ -39,6 +39,7 @@
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
+#include "services/media_session/public/mojom/media_session.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"

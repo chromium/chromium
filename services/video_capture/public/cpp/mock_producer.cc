@@ -4,6 +4,8 @@
 
 #include "services/video_capture/public/cpp/mock_producer.h"
 
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
+
 namespace video_capture {
 
 MockProducer::MockProducer(mojo::PendingReceiver<mojom::Producer> receiver)

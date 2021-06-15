@@ -42,6 +42,7 @@
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
+#include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"

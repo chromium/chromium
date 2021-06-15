@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"

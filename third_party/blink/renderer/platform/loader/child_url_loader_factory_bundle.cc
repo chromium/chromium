@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"

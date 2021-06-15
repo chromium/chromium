@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/web/web_image.h"

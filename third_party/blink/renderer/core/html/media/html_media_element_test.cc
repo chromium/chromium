@@ -8,6 +8,7 @@
 #include "base/test/gtest_util.h"
 #include "media/base/media_content_type.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
+#include "services/media_session/public/mojom/media_session.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"

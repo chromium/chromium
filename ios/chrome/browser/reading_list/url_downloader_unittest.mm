@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #include "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

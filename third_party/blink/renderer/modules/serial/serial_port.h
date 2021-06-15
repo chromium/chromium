@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/serial.mojom-blink-forward.h"
+#include "services/device/public/mojom/serial.mojom-blink.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

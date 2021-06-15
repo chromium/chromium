@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
+#include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"

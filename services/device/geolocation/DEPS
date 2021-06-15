@@ -5,6 +5,7 @@ include_rules = [
   "+net/base",
   "+net/traffic_annotation",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/device/public/cpp/device_features.h",
   "+services/network/test",
   "+third_party/cros_system_api/dbus",

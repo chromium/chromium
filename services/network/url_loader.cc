@@ -72,6 +72,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"

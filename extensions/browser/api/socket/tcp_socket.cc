@@ -23,6 +23,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 
 namespace extensions {
