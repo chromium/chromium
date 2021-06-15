@@ -39,6 +39,8 @@ const char kCanvasAppURL[] = "https://canvas.apps.chrome/";
 const char kCanvasAppTitle[] = "canvas.apps.chrome";
 const char kGoogleNewsAppURL[] = "https://news.google.com/?lfhs=2";
 const char kGoogleNewsAppTitle[] = "news.google.com";
+const char kWebStoreExtensionURL[] = "https://chrome.google.com/webstore/";
+const char kWebStoreExtensionTitle[] = "chrome.google.com";
 
 struct VisibilityFlags {
   apps::mojom::OptionalBool show_in_search;
@@ -213,6 +215,12 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     UpdateSystemFeaturesDisableList(base::Value(), nullptr);
     EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
   }
+
+  void VerifyIsExtensionAppURLAccessible(const char* url,
+                                         const char* app_title) {
+    const GURL& app_url = GURL(url);
+    EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
@@ -225,11 +233,17 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
+  // The URL navigation should still be possible
+  // even if the app is disabled by policy.
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
 
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kReady, false,
                           expected_visibility);
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreAfterInstall) {
@@ -243,11 +257,17 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreAfterInstall) {
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
+  // The URL navigation should still be possible
+  // even if the app is disabled by policy.
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
 
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kReady, false,
                           expected_visibility);
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
@@ -258,27 +278,37 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   VisibilityFlags expected_visibility =
       GetVisibilityFlags(false /* is_hidden */);
   // Disable app with default mode (blocked).
+  // The URL navigation should still be possible
+  // even if the app is disabled by policy.
   UpdateSystemFeaturesDisableList(system_features.Clone(), nullptr);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
   // Disable and hide app.
   expected_visibility = GetVisibilityFlags(true /* is_hidden */);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
   // Disable and block app.
   expected_visibility = GetVisibilityFlags(false /* is_hidden */);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kBlockedDisableMode);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
   // Enable app
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::mojom::Readiness::kReady, false,
                           expected_visibility);
+  VerifyIsExtensionAppURLAccessible(kWebStoreExtensionURL,
+                                    kWebStoreExtensionTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableSWAs) {
