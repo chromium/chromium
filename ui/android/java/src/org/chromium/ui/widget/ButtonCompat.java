@@ -70,11 +70,32 @@ public class ButtonCompat extends AppCompatButton {
         boolean buttonRaised = a.getBoolean(R.styleable.ButtonCompat_buttonRaised, true);
         int verticalInset = a.getDimensionPixelSize(R.styleable.ButtonCompat_verticalInset,
                 getResources().getDimensionPixelSize(R.dimen.button_bg_vertical_inset));
-        a.recycle();
 
-        mRippleBackgroundHelper = new RippleBackgroundHelper(this, buttonColorId, rippleColorId,
-                getResources().getDimensionPixelSize(R.dimen.button_compat_corner_radius),
-                verticalInset);
+        final int defaultRadius =
+                getResources().getDimensionPixelSize(R.dimen.button_compat_corner_radius);
+        final int topStartRippleRadius = a.getDimensionPixelSize(
+                R.styleable.ButtonCompat_rippleCornerRadiusTopStart, defaultRadius);
+        final int topEndRippleRadius = a.getDimensionPixelSize(
+                R.styleable.ButtonCompat_rippleCornerRadiusTopEnd, defaultRadius);
+        final int bottomStartRippleRadius = a.getDimensionPixelSize(
+                R.styleable.ButtonCompat_rippleCornerRadiusBottomStart, defaultRadius);
+        final int bottomEndRippleRadius = a.getDimensionPixelSize(
+                R.styleable.ButtonCompat_rippleCornerRadiusBottomEnd, defaultRadius);
+
+        float[] radii;
+        if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
+            radii = new float[] {topEndRippleRadius, topEndRippleRadius, topStartRippleRadius,
+                    topStartRippleRadius, bottomStartRippleRadius, bottomStartRippleRadius,
+                    bottomEndRippleRadius, bottomEndRippleRadius};
+        } else {
+            radii = new float[] {topStartRippleRadius, topStartRippleRadius, topEndRippleRadius,
+                    topEndRippleRadius, bottomEndRippleRadius, bottomEndRippleRadius,
+                    bottomStartRippleRadius, bottomStartRippleRadius};
+        }
+
+        a.recycle();
+        mRippleBackgroundHelper = new RippleBackgroundHelper(
+                this, buttonColorId, rippleColorId, radii, verticalInset);
         setRaised(buttonRaised);
     }
 

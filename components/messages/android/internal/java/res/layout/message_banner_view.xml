@@ -18,8 +18,6 @@
     android:layout_marginStart="@dimen/message_shadow_lateral_margin"
     android:layout_marginEnd="@dimen/message_shadow_lateral_margin"
     android:elevation="@dimen/message_banner_elevation"
-    android:paddingTop="@dimen/message_banner_vertical_padding"
-    android:paddingBottom="@dimen/message_banner_vertical_padding"
     app:maxWidthPortrait="@dimen/message_max_width"
     app:maxWidthLandscape="@dimen/message_max_width"
     android:background="@drawable/message_bg_tinted">
@@ -35,11 +33,13 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="3"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:layout_gravity="center_vertical"
         android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/message_banner_vertical_padding"
+        android:paddingBottom="@dimen/message_banner_vertical_padding">
 
         <TextView
             android:id="@+id/message_title"
@@ -58,7 +58,6 @@
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/message_secondary_button"
         app:tint="@color/default_icon_color_secondary"
-        android:layout_weight="0"
         android:paddingStart="@dimen/message_icon_padding"
         android:paddingEnd="@dimen/message_icon_padding"
         android:visibility="gone"
@@ -76,14 +75,18 @@
         android:visibility="gone"
         android:importantForAccessibility="no"
         android:layout_width="1dp"
-        android:layout_height="match_parent" />
+        android:layout_height="24dp" />
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/TextButton"
         android:id="@+id/message_primary_button"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        app:verticalInset="0dp"
+        app:rippleCornerRadiusTopStart="0dp"
+        app:rippleCornerRadiusBottomStart="0dp"
+        app:rippleCornerRadiusBottomEnd="@dimen/message_banner_radius"
+        app:rippleCornerRadiusTopEnd="@dimen/message_banner_radius"
+        android:layout_width="@dimen/button_min_width"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:visibility="gone" />
 </org.chromium.components.messages.MessageBannerView>

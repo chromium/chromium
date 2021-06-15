@@ -18,6 +18,13 @@
         <attr name="buttonRaised" format="boolean"/>
         <!-- The vertical inset of the button background drawable. -->
         <attr name="verticalInset"/>
+
+        <!--  The ripple corner radius of ripple effect. If not specified,
+          @dimen/button_compat_corner_radius is default. -->
+        <attr name="rippleCornerRadiusTopStart" format="reference|dimension" />
+        <attr name="rippleCornerRadiusTopEnd" format="reference|dimension" />
+        <attr name="rippleCornerRadiusBottomStart" format="reference|dimension" />
+        <attr name="rippleCornerRadiusBottomEnd" format="reference|dimension" />
     </declare-styleable>
 
     <declare-styleable name="ChipView">
