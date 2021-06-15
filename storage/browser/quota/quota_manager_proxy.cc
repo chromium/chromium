@@ -30,10 +30,9 @@ namespace storage {
 
 namespace {
 
-void DidGetBucketId(
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback,
-    QuotaErrorOr<BucketId> result) {
+void DidGetBucket(scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+                  base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+                  QuotaErrorOr<BucketInfo> result) {
   if (callback_task_runner->RunsTasksInCurrentSequence()) {
     std::move(callback).Run(std::move(result));
     return;
@@ -97,7 +96,7 @@ void QuotaManagerProxy::CreateBucket(
     const url::Origin& origin,
     const std::string& bucket_name,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -109,40 +108,40 @@ void QuotaManagerProxy::CreateBucket(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (!quota_manager_impl_) {
-    DidGetBucketId(std::move(callback_task_runner), std::move(callback),
-                   QuotaErrorOr<BucketId>(QuotaError::kUnknownError));
+    DidGetBucket(std::move(callback_task_runner), std::move(callback),
+                 QuotaErrorOr<BucketInfo>(QuotaError::kUnknownError));
     return;
   }
 
   quota_manager_impl_->CreateBucket(
       origin, bucket_name,
-      base::BindOnce(&DidGetBucketId, std::move(callback_task_runner),
+      base::BindOnce(&DidGetBucket, std::move(callback_task_runner),
                      std::move(callback)));
 }
 
-void QuotaManagerProxy::GetBucketId(
+void QuotaManagerProxy::GetBucket(
     const url::Origin& origin,
     const std::string& bucket_name,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&QuotaManagerProxy::GetBucketId, this, origin,
-                                  bucket_name, std::move(callback_task_runner),
-                                  std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&QuotaManagerProxy::GetBucket, this, origin, bucket_name,
+                       std::move(callback_task_runner), std::move(callback)));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (!quota_manager_impl_) {
-    DidGetBucketId(std::move(callback_task_runner), std::move(callback),
-                   QuotaErrorOr<BucketId>(QuotaError::kUnknownError));
+    DidGetBucket(std::move(callback_task_runner), std::move(callback),
+                 QuotaErrorOr<BucketInfo>(QuotaError::kUnknownError));
     return;
   }
 
-  quota_manager_impl_->GetBucketId(
+  quota_manager_impl_->GetBucket(
       origin, bucket_name,
-      base::BindOnce(&DidGetBucketId, std::move(callback_task_runner),
+      base::BindOnce(&DidGetBucket, std::move(callback_task_runner),
                      std::move(callback)));
 }
 

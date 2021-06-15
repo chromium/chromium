@@ -101,18 +101,18 @@ bool IsSupportedIncognitoType(StorageType type) {
   return type == StorageType::kTemporary || type == StorageType::kPersistent;
 }
 
-QuotaErrorOr<BucketId> CreateBucketOnDBThread(const url::Origin& origin,
-                                              const std::string& bucket_name,
-                                              QuotaDatabase* database) {
+QuotaErrorOr<BucketInfo> CreateBucketOnDBThread(const url::Origin& origin,
+                                                const std::string& bucket_name,
+                                                QuotaDatabase* database) {
   DCHECK(database);
   return database->CreateBucket(StorageKey(origin), bucket_name);
 }
 
-QuotaErrorOr<BucketId> GetBucketIdOnDBThread(const url::Origin& origin,
+QuotaErrorOr<BucketInfo> GetBucketOnDBThread(const url::Origin& origin,
                                              const std::string& bucket_name,
                                              QuotaDatabase* database) {
   DCHECK(database);
-  return database->GetBucketId(StorageKey(origin), bucket_name);
+  return database->GetBucket(StorageKey(origin), bucket_name);
 }
 
 bool GetPersistentHostQuotaOnDBThread(const std::string& host,
@@ -973,26 +973,26 @@ void QuotaManagerImpl::SetQuotaSettings(const QuotaSettings& settings) {
 void QuotaManagerImpl::CreateBucket(
     const url::Origin& origin,
     const std::string& bucket_name,
-    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&CreateBucketOnDBThread, origin, bucket_name),
-      base::BindOnce(&QuotaManagerImpl::DidGetBucketId,
+      base::BindOnce(&QuotaManagerImpl::DidGetBucket,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void QuotaManagerImpl::GetBucketId(
+void QuotaManagerImpl::GetBucket(
     const url::Origin& origin,
     const std::string& bucket_name,
-    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
 
   PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(&GetBucketIdOnDBThread, origin, bucket_name),
-      base::BindOnce(&QuotaManagerImpl::DidGetBucketId,
+      base::BindOnce(&GetBucketOnDBThread, origin, bucket_name),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucket,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -2004,9 +2004,9 @@ void QuotaManagerImpl::DidDatabaseWork(bool success) {
   db_disabled_ = !success;
 }
 
-void QuotaManagerImpl::DidGetBucketId(
-    base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback,
-    QuotaErrorOr<BucketId> result) {
+void QuotaManagerImpl::DidGetBucket(
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+    QuotaErrorOr<BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(result.ok());
   std::move(callback).Run(std::move(result));

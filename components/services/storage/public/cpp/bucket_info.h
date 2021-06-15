@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKET_INFO_H_
+#define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKET_INFO_H_
+
+#include "base/time/time.h"
+#include "base/util/type_safety/id_type.h"
+#include "components/services/storage/public/cpp/bucket_id.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
+#include "url/origin.h"
+
+namespace storage {
+
+struct COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) BucketInfo {
+  BucketInfo(BucketId bucket_id,
+             blink::StorageKey storage_key,
+             blink::mojom::StorageType type,
+             std::string name,
+             base::Time expiration,
+             int64_t quota);
+
+  ~BucketInfo();
+
+  BucketInfo(const BucketInfo&);
+  BucketInfo(BucketInfo&&) noexcept;
+  BucketInfo& operator=(const BucketInfo&);
+  BucketInfo& operator=(BucketInfo&&) noexcept;
+
+  BucketId id;
+  blink::StorageKey storage_key;
+  blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
+  std::string name;
+  base::Time expiration;
+  int64_t quota;
+};
+
+}  // namespace storage
+
+#endif  // COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKET_INFO_H_

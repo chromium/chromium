@@ -78,22 +78,23 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
 
-  // Creates a bucket for `origin` with `bucket_name` and returns the BucketId
-  // to the callback. Will return an QuotaError to the callback on failure.
+  // Creates a bucket for `origin` with `bucket_name` and returns the
+  // BucketInfo to the callback. Will return a QuotaError to the callback
+  // on operation failure.
   virtual void CreateBucket(
       const url::Origin& origin,
       const std::string& bucket_name,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback);
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
-  // Retrieves the BucketId of the bucket with `bucket_name` for `origin` and
-  // returns it to the callback. Will return an empty BucketId if a bucket does
-  // not exist. Will return a QuotaError on operation failure.
-  virtual void GetBucketId(
+  // Retrieves the BucketInfo of the bucket with `bucket_name` for
+  // `origin` and returns it to the callback. Will return a QuotaError if a
+  // bucket does not exist or on operation failure.
+  virtual void GetBucket(
       const url::Origin& origin,
       const std::string& bucket_name,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      base::OnceCallback<void(QuotaErrorOr<BucketId>)> callback);
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
   virtual void NotifyStorageAccessed(const url::Origin& origin,
                                      blink::mojom::StorageType type,

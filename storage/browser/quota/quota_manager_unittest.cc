@@ -163,14 +163,14 @@ class QuotaManagerImplTest : public testing::Test {
   void CreateBucket(const url::Origin& origin, const std::string& bucket_name) {
     quota_manager_impl_->CreateBucket(
         origin, bucket_name,
-        base::BindOnce(&QuotaManagerImplTest::DidGetBucketId,
+        base::BindOnce(&QuotaManagerImplTest::DidGetBucket,
                        weak_factory_.GetWeakPtr()));
   }
 
-  void GetBucketId(const url::Origin& origin, const std::string& bucket_name) {
-    quota_manager_impl_->GetBucketId(
+  void GetBucket(const url::Origin& origin, const std::string& bucket_name) {
+    quota_manager_impl_->GetBucket(
         origin, bucket_name,
-        base::BindOnce(&QuotaManagerImplTest::DidGetBucketId,
+        base::BindOnce(&QuotaManagerImplTest::DidGetBucket,
                        weak_factory_.GetWeakPtr()));
   }
 
@@ -386,8 +386,8 @@ class QuotaManagerImplTest : public testing::Test {
         &QuotaManagerImplTest::DidDumpBucketTable, weak_factory_.GetWeakPtr()));
   }
 
-  void DidGetBucketId(QuotaErrorOr<BucketId> result) {
-    bucket_id_ = std::move(result);
+  void DidGetBucket(QuotaErrorOr<BucketInfo> result) {
+    bucket_ = std::move(result);
   }
 
   void DidGetUsageInfo(UsageInfoEntries entries) {
@@ -546,7 +546,7 @@ class QuotaManagerImplTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
-  QuotaErrorOr<BucketId> bucket_id_;
+  QuotaErrorOr<BucketInfo> bucket_;
 
   static std::vector<QuotaClientType> AllClients() {
     // TODO(pwnall): Implement using something other than an empty vector?
@@ -634,37 +634,38 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
 }
 
 TEST_F(QuotaManagerImplTest, CreateBucket) {
-  url::Origin origin = ToOrigin("http://a.com/");
-  std::string bucket_name = "BucketA";
+  url::Origin origin = ToOrigin("http://google.com/");
+  std::string bucket_name = "bucket_a";
 
   CreateBucket(origin, bucket_name);
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(bucket_id_.ok());
+  ASSERT_TRUE(bucket_.ok());
 
   // Try creating a bucket with the same name.
   CreateBucket(origin, bucket_name);
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(bucket_id_.ok());
+  EXPECT_FALSE(bucket_.ok());
 }
 
-TEST_F(QuotaManagerImplTest, GetBucketId) {
-  url::Origin origin = ToOrigin("http://a.com/");
-  std::string bucket_name = "BucketA";
+TEST_F(QuotaManagerImplTest, GetBucket) {
+  url::Origin origin = ToOrigin("http://google.com/");
+  std::string bucket_name = "bucket_a";
 
   CreateBucket(origin, bucket_name);
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(bucket_id_.ok());
-  BucketId created_bucket_id = bucket_id_.value();
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo created_bucket = bucket_.value();
 
-  GetBucketId(origin, bucket_name);
+  GetBucket(origin, bucket_name);
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(bucket_id_.ok());
-  BucketId retrieved_bucket_id = bucket_id_.value();
-  EXPECT_EQ(created_bucket_id, retrieved_bucket_id);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo retrieved_bucket = bucket_.value();
+  EXPECT_EQ(created_bucket.id, retrieved_bucket.id);
 
-  GetBucketId(origin, "BucketB");
+  GetBucket(origin, "bucket_b");
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(bucket_id_.value().is_null());
+  ASSERT_FALSE(bucket_.ok());
+  EXPECT_EQ(bucket_.error(), QuotaError::kEntryNotFound);
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {

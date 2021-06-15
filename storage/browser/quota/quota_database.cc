@@ -166,70 +166,42 @@ bool QuotaDatabase::SetHostQuota(const std::string& host,
   return true;
 }
 
-QuotaErrorOr<BucketId> QuotaDatabase::CreateBucket(
+QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucket(
     const StorageKey& storage_key,
     const std::string& bucket_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug/1210259): Add DCHECKs for input validation.
-  QuotaError open_error = LazyOpen(LazyOpenMode::kCreateIfNotFound);
-  if (open_error != QuotaError::kNone)
-    return open_error;
 
   // TODO(crbug/1210252): Update to not execute 2 sql statements on creation.
-  QuotaErrorOr<BucketId> bucket_result = GetBucketId(storage_key, bucket_name);
-  if (!bucket_result.ok())
-    return bucket_result.error();
-
-  if (!bucket_result.value().is_null())
+  QuotaErrorOr<BucketInfo> bucket_result = GetBucket(storage_key, bucket_name);
+  if (bucket_result.ok()) {
     return QuotaError::kEntryExistsError;
+  } else if (bucket_result.error() != QuotaError::kEntryNotFound) {
+    return bucket_result.error();
+  }
 
   base::Time now = base::Time::Now();
-  static constexpr char kSql[] =
-      // clang-format off
-      "INSERT INTO buckets("
-        "origin,"
-        "type,"
-        "name,"
-        "use_count,"
-        "last_accessed,"
-        "last_modified,"
-        "expiration,"
-        "quota) "
-        "VALUES (?, 0, ?, 0, ?, ?, ?, 0)";
-  // clang-format on
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   // Bucket usage is only for temporary storage types.
-  static_assert(static_cast<int>(StorageType::kTemporary) == 0,
-                "The type value baked in the SQL statement above is wrong.");
-  statement.BindString(0, storage_key.Serialize());
-  statement.BindString(1, bucket_name);
-  statement.BindTime(2, now);
-  statement.BindTime(3, now);
-  statement.BindTime(4, base::Time::Max());
-
-  if (!statement.Run())
-    return QuotaError::kDatabaseError;
-
-  ScheduleCommit();
-
-  int64_t bucket_id = db_->GetLastInsertRowId();
-  DCHECK_GT(bucket_id, 0);
-  return BucketId(bucket_id);
+  return CreateBucketInternal(storage_key, StorageType::kTemporary, bucket_name,
+                              /*use_count=*/0, now, now);
 }
 
-QuotaErrorOr<BucketId> QuotaDatabase::GetBucketId(
+QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
     const StorageKey& storage_key,
     const std::string& bucket_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QuotaError open_error = LazyOpen(LazyOpenMode::kFailIfNotFound);
   if (open_error != QuotaError::kNone) {
     if (open_error == QuotaError::kDatabaseNotFound)
-      return BucketId();
+      return QuotaError::kEntryNotFound;
     return open_error;
   }
 
   static constexpr char kSql[] =
-      "SELECT id FROM buckets WHERE origin = ? AND type = ? AND name = ?";
+      // clang-format off
+      "SELECT id, expiration, quota "
+        "FROM buckets "
+        "WHERE origin = ? AND type = ? AND name = ?";
+  // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, storage_key.Serialize());
   // Bucket usage is only for temporary storage types.
@@ -237,11 +209,13 @@ QuotaErrorOr<BucketId> QuotaDatabase::GetBucketId(
   statement.BindString(2, bucket_name);
 
   if (!statement.Step()) {
-    return statement.Succeeded()
-               ? QuotaErrorOr<BucketId>(BucketId())
-               : QuotaErrorOr<BucketId>(QuotaError::kDatabaseError);
+    return statement.Succeeded() ? QuotaError::kEntryNotFound
+                                 : QuotaError::kDatabaseError;
   }
-  return BucketId(statement.ColumnInt64(0));
+
+  return BucketInfo(BucketId(statement.ColumnInt64(0)), storage_key,
+                    StorageType::kTemporary, bucket_name,
+                    statement.ColumnTime(1), statement.ColumnInt(2));
 }
 
 bool QuotaDatabase::SetStorageKeyLastAccessTime(const StorageKey& storage_key,
@@ -251,39 +225,22 @@ bool QuotaDatabase::SetStorageKeyLastAccessTime(const StorageKey& storage_key,
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
 
-  sql::Statement statement;
-
   BucketTableEntry entry;
-  if (GetStorageKeyInfo(storage_key, type, &entry)) {
-    ++entry.use_count;
-    static constexpr char kSql[] =
-        // clang-format off
-        "UPDATE buckets "
-          "SET use_count = ?, last_accessed = ? "
-          "WHERE origin = ? AND type = ? AND name = ?";
-    // clang-format on
-    statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  } else {
-    entry.use_count = 1;
-    // INSERT statement column ordering matches UPDATE statement above for
-    // reuse of binding values.
-    static constexpr char kSql[] =
-        // clang-format off
-        "INSERT INTO buckets("
-            "use_count,"
-            "last_accessed,"
-            "origin,"
-            "type,"
-            "name,"
-            "last_modified,"
-            "expiration,"
-            "quota) "
-          "VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
-    // clang-format on
-    statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindTime(5, last_accessed);
-    statement.BindTime(6, base::Time::Max());
+  if (!GetStorageKeyInfo(storage_key, type, &entry)) {
+    QuotaErrorOr<BucketInfo> result =
+        CreateBucketInternal(storage_key, type, kDefaultBucket, /*use_count=*/1,
+                             last_accessed, last_accessed);
+    return result.ok();
   }
+
+  ++entry.use_count;
+  static constexpr char kSql[] =
+      // clang-format off
+      "UPDATE buckets "
+        "SET use_count = ?, last_accessed = ? "
+        "WHERE origin = ? AND type = ? AND name = ?";
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, entry.use_count);
   statement.BindTime(1, last_accessed);
   statement.BindString(2, storage_key.Serialize());
@@ -330,37 +287,22 @@ bool QuotaDatabase::SetStorageKeyLastModifiedTime(const StorageKey& storage_key,
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
 
-  sql::Statement statement;
-
   BucketTableEntry entry;
-  if (GetStorageKeyInfo(storage_key, type, &entry)) {
-    static constexpr char kSql[] =
-        // clang-format off
-        "UPDATE buckets "
-          "SET last_modified = ? "
-          "WHERE origin = ? AND type = ? AND name = ?";
-    // clang-format on
-    statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  } else {
-    static constexpr char kSql[] =
-        // clang-format off
-        "INSERT INTO buckets("
-            "last_modified,"
-            "origin,"
-            "type,"
-            "name,"
-            "last_accessed,"
-            "use_count,"
-            "expiration,"
-            "quota) "
-          "VALUES (?, ?, ?, ?, ?, 0, ?, 0)";
-    // clang-format on
-    statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindTime(4, last_modified);
-    statement.BindTime(5, base::Time::Max());
+  if (!GetStorageKeyInfo(storage_key, type, &entry)) {
+    QuotaErrorOr<BucketInfo> result =
+        CreateBucketInternal(storage_key, type, kDefaultBucket, /*use_count=*/0,
+                             last_modified, last_modified);
+    return result.ok();
   }
-  statement.BindTime(0, last_modified);
 
+  static constexpr char kSql[] =
+      // clang-format off
+      "UPDATE buckets "
+        "SET last_modified = ? "
+        "WHERE origin = ? AND type = ? AND name = ?";
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindTime(0, last_modified);
   statement.BindString(1, storage_key.Serialize());
   statement.BindInt(2, static_cast<int>(type));
   statement.BindString(3, kDefaultBucket);
@@ -982,6 +924,52 @@ bool QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   }
 
   return statement.Succeeded();
+}
+
+QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
+    const blink::StorageKey& storage_key,
+    StorageType type,
+    const std::string& bucket_name,
+    int use_count,
+    base::Time last_accessed,
+    base::Time last_modified) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug/1210259): Add DCHECKs for input validation.
+  QuotaError open_error = LazyOpen(LazyOpenMode::kCreateIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
+
+  static constexpr char kSql[] =
+      // clang-format off
+      "INSERT INTO buckets("
+        "origin,"
+        "type,"
+        "name,"
+        "use_count,"
+        "last_accessed,"
+        "last_modified,"
+        "expiration,"
+        "quota) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindString(0, storage_key.Serialize());
+  statement.BindInt(1, static_cast<int>(type));
+  statement.BindString(2, bucket_name);
+  statement.BindInt(3, use_count);
+  statement.BindTime(4, last_accessed);
+  statement.BindTime(5, last_modified);
+  statement.BindTime(6, base::Time::Max());
+
+  if (!statement.Run())
+    return QuotaError::kDatabaseError;
+
+  ScheduleCommit();
+
+  int64_t bucket_id = db_->GetLastInsertRowId();
+  DCHECK_GT(bucket_id, 0);
+  return BucketInfo(BucketId(bucket_id), storage_key, type, bucket_name,
+                    base::Time::Max(), 0);
 }
 
 bool operator<(const QuotaDatabase::QuotaTableEntry& lhs,
