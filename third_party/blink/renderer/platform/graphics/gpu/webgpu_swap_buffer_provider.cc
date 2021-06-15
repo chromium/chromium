@@ -60,6 +60,14 @@ WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
   device_ = nullptr;
 }
 
+const gfx::Size& WebGPUSwapBufferProvider::Size() const {
+  if (current_swap_buffer_)
+    return current_swap_buffer_->size;
+
+  static constexpr gfx::Size kEmpty;
+  return kEmpty;
+}
+
 cc::Layer* WebGPUSwapBufferProvider::CcLayer() {
   DCHECK(!neutered_);
   return layer_.get();

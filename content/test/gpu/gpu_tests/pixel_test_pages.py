@@ -353,6 +353,18 @@ class PixelTestPages(object):
                       test_rect=[0, 0, 400, 200],
                       browser_args=webgpu_args +
                       [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+        PixelTestPage('pixel_webgpu_import_webgpu_canvas.html',
+                      base_name + '_WebGPUImportWebGPUCanvas',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_webgl_teximage2d.html',
+                      base_name + '_WebGPUWebGLTexImage2D',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_canvas2d_drawimage.html',
+                      base_name + '_WebGPUCanvas2DDrawImage',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args),
     ]
 
   # Pages that should be run with GPU rasterization enabled.

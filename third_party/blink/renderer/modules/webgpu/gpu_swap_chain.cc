@@ -5,10 +5,14 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_swap_chain.h"
 
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -120,9 +124,86 @@ scoped_refptr<CanvasResource> GPUSwapChain::ExportCanvasResource() {
       IntSize(transferable_resource.size),
       transferable_resource.mailbox_holder.texture_target, resource_params,
       swap_buffers_->GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
-      kLow_SkFilterQuality,
-      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,
+      kLow_SkFilterQuality, /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,
       transferable_resource.is_overlay_candidate);
+}
+
+bool GPUSwapChain::CopyToResourceProvider(
+    CanvasResourceProvider* resource_provider) {
+  DCHECK(resource_provider);
+  DCHECK_EQ(resource_provider->Size(), IntSize(Size()));
+  DCHECK(resource_provider->GetSharedImageUsageFlags() &
+         gpu::SHARED_IMAGE_USAGE_WEBGPU);
+  DCHECK(resource_provider->IsOriginTopLeft());
+
+  if (!texture_)
+    return false;
+
+  if (!(usage_ & WGPUTextureUsage_CopySrc))
+    return false;
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+  if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+    return false;
+
+  const auto dst_mailbox =
+      resource_provider->GetBackingMailboxForOverwrite(kUnverifiedSyncToken);
+  if (dst_mailbox.IsZero())
+    return false;
+
+  auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
+
+  gpu::webgpu::WebGPUInterface* webgpu = GetDawnControlClient()->GetInterface();
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu->ReserveTexture(device_->GetHandle());
+  DCHECK(reservation.texture);
+
+  gpu::SyncToken sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  webgpu->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
+                           reservation.id, reservation.generation,
+                           WGPUTextureUsage_CopyDst,
+                           reinterpret_cast<const GLbyte*>(&dst_mailbox));
+
+  WGPUCommandEncoder command_encoder =
+      GetProcs().deviceCreateCommandEncoder(device_->GetHandle(), nullptr);
+
+  WGPUImageCopyTexture source = {
+      .nextInChain = nullptr,
+      .texture = texture_->GetHandle(),
+      .mipLevel = 0,
+      .origin = WGPUOrigin3D{0},
+      .aspect = WGPUTextureAspect_All,
+  };
+  WGPUImageCopyTexture destination = {
+      .nextInChain = nullptr,
+      .texture = reservation.texture,
+      .mipLevel = 0,
+      .origin = WGPUOrigin3D{0},
+      .aspect = WGPUTextureAspect_All,
+  };
+  WGPUExtent3D copy_size = {
+      .width = swap_buffers_->Size().width(),
+      .height = swap_buffers_->Size().height(),
+      .depthOrArrayLayers = 1,
+  };
+  GetProcs().commandEncoderCopyTextureToTexture(command_encoder, &source,
+                                                &destination, &copy_size);
+
+  WGPUCommandBuffer command_buffer =
+      GetProcs().commandEncoderFinish(command_encoder, nullptr);
+  GetProcs().commandEncoderRelease(command_encoder);
+
+  GetProcs().queueSubmit(device_->queue()->GetHandle(), 1u, &command_buffer);
+  GetProcs().commandBufferRelease(command_buffer);
+
+  webgpu->DissociateMailbox(reservation.id, reservation.generation);
+  webgpu->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+
+  return true;
 }
 
 // gpu_swap_chain.idl

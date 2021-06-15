@@ -635,7 +635,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   }
   scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetFilterQuality(SkFilterQuality) override;
-  bool IsWebGL2() { return context_type_ == Platform::kWebGL2ContextType; }
+  bool IsWebGL() const override { return true; }
+  bool IsWebGL2() const {
+    return context_type_ == Platform::kWebGL2ContextType;
+  }
 
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
@@ -1909,7 +1912,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 template <>
 struct DowncastTraits<WebGLRenderingContextBase> {
   static bool AllowFrom(const CanvasRenderingContext& context) {
-    return context.Is3d();
+    return context.IsWebGL();
   }
 };
 

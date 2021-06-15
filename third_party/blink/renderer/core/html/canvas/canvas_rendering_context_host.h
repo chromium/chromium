@@ -101,7 +101,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
 
+  // TODO(crbug.com/1219761): Remove Is3d() in lieu of IsWebGL() and IsWebGPU().
   bool Is3d() const;
+  bool IsWebGL() const;
+  bool IsWebGPU() const;
   bool IsRenderingContext2D() const;
   CanvasColorParams ColorParams() const;
 
@@ -114,7 +117,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   scoped_refptr<StaticBitmapImage> CreateTransparentImage(const IntSize&) const;
 
   void CreateCanvasResourceProvider2D(RasterModeHint hint);
-  void CreateCanvasResourceProvider3D();
+  void CreateCanvasResourceProviderWebGL();
+  void CreateCanvasResourceProviderWebGPU();
 
   // Computes the digest that corresponds to the "input" of this canvas,
   // including the context type, and if applicable, canvas digest, and taint

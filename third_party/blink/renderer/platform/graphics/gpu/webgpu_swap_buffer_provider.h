@@ -40,6 +40,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       WGPUTextureFormat format);
   ~WebGPUSwapBufferProvider() override;
 
+  viz::ResourceFormat Format() const { return format_; }
+  const gfx::Size& Size() const;
   cc::Layer* CcLayer();
   void SetFilterQuality(SkFilterQuality);
   void Neuter();

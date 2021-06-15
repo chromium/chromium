@@ -79,6 +79,14 @@ bool CanvasRenderingContextHost::Is3d() const {
   return RenderingContext() && RenderingContext()->Is3d();
 }
 
+bool CanvasRenderingContextHost::IsWebGL() const {
+  return RenderingContext() && RenderingContext()->IsWebGL();
+}
+
+bool CanvasRenderingContextHost::IsWebGPU() const {
+  return RenderingContext() && RenderingContext()->IsWebGPU();
+}
+
 bool CanvasRenderingContextHost::IsRenderingContext2D() const {
   return RenderingContext() && RenderingContext()->IsRenderingContext2D();
 }
@@ -94,9 +102,12 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
     RasterModeHint hint) {
   if (!ResourceProvider() && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize(Size())) {
-      if (Is3d()) {
-        CreateCanvasResourceProvider3D();
+      if (IsWebGPU()) {
+        CreateCanvasResourceProviderWebGPU();
+      } else if (IsWebGL()) {
+        CreateCanvasResourceProviderWebGL();
       } else {
+        DCHECK(!Is3d());
         CreateCanvasResourceProvider2D(hint);
       }
     }
@@ -106,7 +117,23 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
   return ResourceProvider();
 }
 
-void CanvasRenderingContextHost::CreateCanvasResourceProvider3D() {
+void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
+  std::unique_ptr<CanvasResourceProvider> provider;
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    provider = CanvasResourceProvider::CreateWebGPUImageProvider(
+        Size(), ColorParams().GetAsResourceParams(),
+        /*is_origin_top_left=*/true);
+  }
+  ReplaceResourceProvider(std::move(provider));
+  if (ResourceProvider() && ResourceProvider()->IsValid()) {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              ResourceProvider()->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  ResourceProvider()->GetType());
+  }
+}
+
+void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   DCHECK(Is3d());
 
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =

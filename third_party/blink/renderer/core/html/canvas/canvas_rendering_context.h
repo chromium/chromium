@@ -212,7 +212,9 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ResetUsageTracking() {}
 
   // WebGL-specific interface
+  // TODO(crbug.com/1219761): Remove Is3d() in lieu of IsWebGL() and IsWebGPU().
   virtual bool Is3d() const { return false; }
+  virtual bool IsWebGL() const { return false; }
   virtual bool UsingSwapChain() const { return false; }
   virtual void SetFilterQuality(SkFilterQuality) { NOTREACHED(); }
   virtual void Reshape(int width, int height) {}
@@ -233,6 +235,9 @@ class CORE_EXPORT CanvasRenderingContext
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }
   virtual ImageBitmap* TransferToImageBitmap(ScriptState*) { return nullptr; }
+
+  // WebGPU-specific methods
+  virtual bool IsWebGPU() const { return false; }
 
   bool WouldTaintOrigin(CanvasImageSource*);
   void DidMoveToNewDocument(Document*);

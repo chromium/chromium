@@ -389,42 +389,22 @@ crbug.com/1209344 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_
 crbug.com/1209344 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_Video_MP4 [ RetryOnFailure ]
 
 # WebGPU pixel tests hang on mac bots which mostly run older versions of mac os.
-crbug.com/1213170 [ mac ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/1213170 [ mac ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/1213170 [ mac ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/1213170 [ mac ] Pixel_WebGPU* [ Skip ]
 
-# WebGPU experimentalImportTexture pixel tests fail on Linux+SkiaRenderer+Vulkan
-crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+# WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
+crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
-# WebGPU experimentalImportTexture pixel tests fail on Win10+SkiaRenderer+Dawn.
-crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUImportWebGLCanvas [ Failure ]
-crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUImport2DCanvas [ Failure ]
-crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
+# WebGPU pixel tests fail on Win10+SkiaRenderer+Dawn.
+crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
 
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
-crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-dawn ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-dawn ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-dawn ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-disabled ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-disabled ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/976495 [ linux skia-renderer-disabled ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
-crbug.com/976497 [ android ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/976497 [ android ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/976497 [ android ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
-crbug.com/852089 [ chromeos ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/852089 [ chromeos ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/852089 [ chromeos ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
-crbug.com/852089 [ fuchsia ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/852089 [ fuchsia ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/852089 [ fuchsia ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
-crbug.com/852089 [ win7 ] Pixel_WebGPUImportWebGLCanvas [ Skip ]
-crbug.com/852089 [ win7 ] Pixel_WebGPUImport2DCanvas [ Skip ]
-crbug.com/852089 [ win7 ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Skip ]
+crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPU* [ Skip ]
+crbug.com/976495 [ linux skia-renderer-dawn ] Pixel_WebGPU* [ Skip ]
+crbug.com/976495 [ linux skia-renderer-disabled ] Pixel_WebGPU* [ Skip ]
+crbug.com/976497 [ android ] Pixel_WebGPU* [ Skip ]
+crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
+crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
+crbug.com/852089 [ win7 ] Pixel_WebGPU* [ Skip ]
 
 # Flaky on Pixel 4
 crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]

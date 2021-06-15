@@ -272,6 +272,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return resource()->TextureTarget();
   }
 
+  uint32_t GetSharedImageUsageFlags() const override {
+    return shared_image_usage_flags_;
+  }
+
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,

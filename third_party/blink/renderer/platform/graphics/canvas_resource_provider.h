@@ -203,6 +203,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
     return nullptr;
   }
+  virtual uint32_t GetSharedImageUsageFlags() const {
+    NOTREACHED();
+    return 0;
+  }
 
   ~CanvasResourceProvider() override;
 

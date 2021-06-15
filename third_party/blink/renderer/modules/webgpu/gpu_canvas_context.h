@@ -49,7 +49,10 @@ class GPUCanvasContext : public CanvasRenderingContext {
   ContextType GetContextType() const override;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-  scoped_refptr<StaticBitmapImage> GetImage() final { return nullptr; }
+  scoped_refptr<StaticBitmapImage> GetImage() final;
+  bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) final;
+  bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
+                                             SourceDrawingBuffer) final;
   void SetIsInHiddenPage(bool) override {}
   void SetIsBeingDisplayed(bool) override {}
   bool isContextLost() const override { return false; }
@@ -57,6 +60,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
   bool IsAccelerated() const final { return true; }
   bool IsOriginTopLeft() const final { return true; }
   bool Is3d() const final { return true; }
+  bool IsWebGPU() const final { return true; }
   void SetFilterQuality(SkFilterQuality) override;
   bool IsPaintable() const final { return true; }
   int ExternallyAllocatedBufferCountPerPixel() final { return 1; }

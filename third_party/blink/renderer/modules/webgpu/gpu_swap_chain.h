@@ -39,6 +39,10 @@ class GPUSwapChain : public DawnObjectImpl,
   cc::Layer* CcLayer();
   void SetFilterQuality(SkFilterQuality);
 
+  const gfx::Size& Size() const { return swap_buffers_->Size(); }
+
+  viz::ResourceFormat Format() const { return swap_buffers_->Format(); }
+
   // Returns a StaticBitmapImage backed by a texture containing the current
   // contents of the front buffer. This is done without any pixel copies. The
   // texture in the ImageBitmap is from the active ContextProvider on the
@@ -48,6 +52,10 @@ class GPUSwapChain : public DawnObjectImpl,
   // Returns a CanvasResource of type ExternalCanvasResource that will
   // encapsulate an external mailbox, synctoken and release callback.
   scoped_refptr<CanvasResource> ExportCanvasResource();
+
+  // Copies the back buffer to given shared image resource provider which must
+  // be webgpu compatible. Returns true on success.
+  bool CopyToResourceProvider(CanvasResourceProvider*);
 
   // gpu_swap_chain.idl
   GPUTexture* getCurrentTexture();

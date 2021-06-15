@@ -1294,7 +1294,7 @@ void WebGLRenderingContextBase::RemoveAllCompressedTextureFormats() {
 // CanvasRenderingContext supports.
 unsigned WebGLRenderingContextBase::GetWebGLVersion(
     const CanvasRenderingContext* context) {
-  if (!context->Is3d())
+  if (!context->IsWebGL())
     return 0;
   return static_cast<const WebGLRenderingContextBase*>(context)->ContextType();
 }
@@ -5678,7 +5678,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
     return;
   }
 
-  bool is_webgl_canvas = context_host->Is3d();
+  bool is_webgl_canvas = context_host->IsWebGL();
   WebGLRenderingContextBase* source_canvas_webgl_context = nullptr;
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image;
