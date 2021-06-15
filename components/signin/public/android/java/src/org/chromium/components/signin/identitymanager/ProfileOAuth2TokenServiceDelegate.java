@@ -82,7 +82,7 @@ final class ProfileOAuth2TokenServiceDelegate {
     private void getAccessTokenFromNative(
             String accountEmail, String scope, final long nativeCallback) {
         assert accountEmail != null : "Account email cannot be null!";
-        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
+        mAccountManagerFacade.getAccounts().then(accounts -> {
             final Account account = AccountUtils.findAccountByName(accounts, accountEmail);
             if (account == null) {
                 ThreadUtils.postOnUiThread(() -> {
