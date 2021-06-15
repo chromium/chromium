@@ -113,10 +113,18 @@ enum class LocationPermissionsUI {
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (self.appState.initStage != InitStageFirstRun) {
-    return;
+  if (self.appState.initStage == InitStageFirstRun) {
+    [self handleFirstRunStage];
   }
+  // Important: do not add code after this block because its purpose is to
+  // clear |self| when not needed anymore.
+  if (previousInitStage == InitStageFirstRun) {
+    // Nothing left to do; clean up.
+    [self.appState removeAgent:self];
+  }
+}
 
+- (void)handleFirstRunStage {
   if (!self.appState.startupInformation.isFirstRun) {
     // Skip the FRE because it wasn't determined to be needed.
     [self.appState queueTransitionToNextInitStage];

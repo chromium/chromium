@@ -26,11 +26,6 @@ class GURL;
 // Methods that only exist for tests.
 @interface MainController (TestingOnly)
 
-// TODO(crbug.com/1210246): Remove this once the chrome test fixture is adapted
-// to startup testing.
-// Returns the FirstRunAppAgent.
-- (FirstRunAppAgent*)firstRunAppAgent;
-
 // Sets the internal startup state to indicate that the launch was triggered
 // by an external app opening the given URL.
 - (void)setStartupParametersWithURL:(const GURL&)launchURL;
