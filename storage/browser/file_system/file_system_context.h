@@ -319,7 +319,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   friend class PluginPrivateFileSystemBackendTest;
 
   // Deleters.
-  friend struct DefaultContextDeleter;
   friend class base::DeleteHelper<FileSystemContext>;
   friend class base::RefCountedDeleteOnSequence<FileSystemContext>;
   ~FileSystemContext();
