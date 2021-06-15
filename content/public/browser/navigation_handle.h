@@ -105,6 +105,23 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // constant over the navigation lifetime.
   virtual bool IsInPrimaryMainFrame() = 0;
 
+  // Prerender2:
+  // Whether the navigation is taking place in the main frame of the prerendered
+  // frame tree. Prerender will create separate frame trees to load a page in
+  // the background, which later then be activated by a separate prerender page
+  // activation navigation in the primary main frame. This returns false for
+  // prerender page activation navigations, which should be checked by
+  // IsPrerenderedPageActivation().
+  //
+  // WARNING: In one rare case, the return value of this function can
+  // conceivably change over the navigation lifetime. If this navigation starts
+  // in prerendered main frame where activation is already in progress and
+  // PrerenderCommitDeferringCondition already allowed the commit to occur yet
+  // something else delayed the commit, the navigation will proceed and can
+  // change frame trees to the primary one. It's unknown whether this happens in
+  // practice.
+  virtual bool IsInPrerenderedMainFrame() = 0;
+
   // Prerender2
   // Returns true if this navigation will activate a prerendered page. It is
   // only meaningful to call this after BeginNavigation().

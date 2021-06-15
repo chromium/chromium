@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
@@ -70,6 +71,7 @@ const char kPageLoadCompletedAfterAppBackground[] =
 const char kPageLoadStartedInForeground[] =
     "PageLoad.Internal.NavigationStartedInForeground";
 const char kPageLoadPrerender[] = "PageLoad.Internal.Prerender";
+const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
 
 }  // namespace internal
 
@@ -249,8 +251,17 @@ PageLoadTracker::PageLoadTracker(
           is_first_navigation_in_web_contents) {
   DCHECK(!navigation_handle->HasCommitted());
   embedder_interface_->RegisterObservers(this);
-  INVOKE_AND_PRUNE_OBSERVERS(observers_, OnStart, navigation_handle,
-                             currently_committed_url, started_in_foreground_);
+  if (navigation_handle->IsInPrerenderedMainFrame()) {
+    DCHECK(!started_in_foreground_);
+    INVOKE_AND_PRUNE_OBSERVERS(observers_, OnPrerenderStart, navigation_handle,
+                               currently_committed_url);
+    base::UmaHistogramEnumeration(
+        internal::kPageLoadPrerender2Event,
+        internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
+  } else {
+    INVOKE_AND_PRUNE_OBSERVERS(observers_, OnStart, navigation_handle,
+                               currently_committed_url, started_in_foreground_);
+  }
 
   UMA_HISTOGRAM_BOOLEAN(internal::kPageLoadStartedInForeground,
                         started_in_foreground_);
@@ -444,6 +455,19 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
   INVOKE_AND_PRUNE_OBSERVERS(observers_, OnCommit, navigation_handle,
                              source_id_);
   LogAbortChainHistograms(navigation_handle);
+}
+
+void PageLoadTracker::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE)
+    PageShown();
+
+  for (const auto& observer : observers_)
+    observer->DidActivatePrerenderedPage();
+
+  base::UmaHistogramEnumeration(
+      internal::kPageLoadPrerender2Event,
+      internal::PageLoadPrerenderEvent::kPrerenderActivationNavigation);
 }
 
 void PageLoadTracker::DidCommitSameDocumentNavigation(

@@ -5627,6 +5627,11 @@ bool NavigationRequest::IsInPrimaryMainFrame() {
          frame_tree_node()->frame_tree()->type() == FrameTree::Type::kPrimary;
 }
 
+bool NavigationRequest::IsInPrerenderedMainFrame() {
+  return IsInMainFrame() &&
+         frame_tree_node()->frame_tree()->type() == FrameTree::Type::kPrerender;
+}
+
 bool NavigationRequest::IsPrerenderedPageActivation() {
   if (!blink::features::IsPrerender2Enabled())
     return false;

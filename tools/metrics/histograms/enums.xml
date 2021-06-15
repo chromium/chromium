@@ -60438,6 +60438,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Google News AMP Viewer"/>
 </enum>
 
+<enum name="PageLoadPrerenderEvent">
+  <int value="0" label="Prerendered Main Frame Navigation"/>
+  <int value="1" label="Prerender Activation Navigation"/>
+</enum>
+
 <enum name="PageLoadTimingStatus">
   <summary>Status of PageLoadTimings received from the render process</summary>
   <int value="0" label="Valid"/>

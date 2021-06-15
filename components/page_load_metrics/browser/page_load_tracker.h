@@ -45,6 +45,14 @@ class PageLoadMetricsEmbedderInterface;
 
 namespace internal {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PageLoadPrerenderEvent {
+  kNavigationInPrerenderedMainFrame = 0,
+  kPrerenderActivationNavigation = 1,
+  kMaxValue = kPrerenderActivationNavigation,
+};
+
 extern const char kErrorEvents[];
 extern const char kAbortChainSizeReload[];
 extern const char kAbortChainSizeForwardBack[];
@@ -53,6 +61,7 @@ extern const char kAbortChainSizeNoCommit[];
 extern const char kAbortChainSizeSameURL[];
 extern const char kPageLoadCompletedAfterAppBackground[];
 extern const char kPageLoadStartedInForeground[];
+extern const char kPageLoadPrerender2Event[];
 
 }  // namespace internal
 
@@ -378,6 +387,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Called when the page tracked was just activated after being loaded inside a
   // portal.
   void DidActivatePortal(base::TimeTicks activation_time);
+
+  // Called when the page tracked was just activated after being prerendered.
+  void DidActivatePrerenderedPage(content::NavigationHandle* navigation_handle);
 
   // Called when V8 per-frame memory usage updates are available.
   void OnV8MemoryChanged(const std::vector<MemoryUpdate>& memory_updates);

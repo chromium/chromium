@@ -80,6 +80,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
@@ -3557,3 +3558,76 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationPageLoadMetricsBrowserTest,
     testing::ValuesIn(NavigationPageLoadMetricsBrowserTestTestValues()));
+
+class PrerenderPageLoadMetricsBrowserTest : public PageLoadMetricsBrowserTest {
+ public:
+  PrerenderPageLoadMetricsBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PrerenderPageLoadMetricsBrowserTest::web_contents,
+            base::Unretained(this))) {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    PageLoadMetricsBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
+  using page_load_metrics::internal::kPageLoadPrerender2Event;
+  using page_load_metrics::internal::PageLoadPrerenderEvent;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  histogram_tester_->ExpectBucketCount(
+      kPageLoadPrerender2Event,
+      PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame, 0);
+  histogram_tester_->ExpectBucketCount(
+      kPageLoadPrerender2Event,
+      PageLoadPrerenderEvent::kPrerenderActivationNavigation, 0);
+
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadStartedInForeground, true, 1);
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadStartedInForeground, false, 0);
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  histogram_tester_->ExpectBucketCount(
+      kPageLoadPrerender2Event,
+      PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame, 1);
+  histogram_tester_->ExpectBucketCount(
+      kPageLoadPrerender2Event,
+      PageLoadPrerenderEvent::kPrerenderActivationNavigation, 0);
+
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadStartedInForeground, true, 1);
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadStartedInForeground, false, 1);
+
+  // Activate.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+
+  histogram_tester_->ExpectBucketCount(
+      kPageLoadPrerender2Event,
+      PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame, 1);
+  histogram_tester_->ExpectBucketCount(
+      kPageLoadPrerender2Event,
+      PageLoadPrerenderEvent::kPrerenderActivationNavigation, 1);
+
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadStartedInForeground, true, 1);
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadStartedInForeground, false, 1);
+}

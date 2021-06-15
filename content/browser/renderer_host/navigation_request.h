@@ -284,6 +284,7 @@ class CONTENT_EXPORT NavigationRequest
   SiteInstanceImpl* GetSourceSiteInstance() override;
   bool IsInMainFrame() override;
   bool IsInPrimaryMainFrame() override;
+  bool IsInPrerenderedMainFrame() override;
   bool IsPrerenderedPageActivation() override;
   bool IsRendererInitiated() override;
   bool IsSameOrigin() override;

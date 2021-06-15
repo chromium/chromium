@@ -1961,6 +1961,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Internal.Prerender2.Event"
+    enum="PageLoadPrerenderEvent" expires_after="M98">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>src/content/browser/prerender/OWNERS</owner>
+  <summary>
+    Counts page load events related to Prerender2, like navigation in
+    prerendered main frame and prerendering activation navigation. Recorded when
+    those events are observed in PageLoadTracker.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Internal.ProvisionalAbortChainSize.ForwardBack"
     units="length" expires_after="2018-08-30">
   <owner>csharrison@chromium.org</owner>

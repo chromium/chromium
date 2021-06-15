@@ -271,6 +271,15 @@ class PageLoadMetricsObserver {
                                 const GURL& currently_committed_url,
                                 bool started_in_foreground);
 
+  // For prerendered pages, OnPrerenderStart is called instead of OnStart. The
+  // default implementation returns STOP_OBSERVING, so that observers that are
+  // not aware of prerender will not see prerendered page loads.
+  // TODO(crbug.com/1190112): Prerender support is still in progress. Observers
+  // may not receive some signals.
+  virtual ObservePolicy OnPrerenderStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url);
+
   // OnRedirect is triggered when a page load redirects to another URL.
   // The navigation handle holds relevant data for the navigation, but will
   // be destroyed soon after this call. Don't hold a reference to it. This can
@@ -568,6 +577,10 @@ class PageLoadMetricsObserver {
   // Called when the page tracked was just activated after being loaded inside a
   // portal.
   virtual void DidActivatePortal(base::TimeTicks activation_time) {}
+
+  // Called when the page tracked was just activated after being prerendered.
+  // TODO(crbug.com/1190112): Add |activation_time| parameter.
+  virtual void DidActivatePrerenderedPage() {}
 
   // Called when V8 per-frame memory usage updates are available. Each
   // MemoryUpdate consists of a GlobalFrameRoutingId and a nonzero int64_t

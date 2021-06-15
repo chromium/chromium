@@ -231,6 +231,10 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle,
       std::unique_ptr<PageLoadTracker> tracker);
 
+  void HandleCommittedNavigationForPrerendering(
+      content::NavigationHandle* navigation_handle,
+      std::unique_ptr<PageLoadTracker> tracker);
+
   void FinalizeCurrentlyCommittedLoad(
       content::NavigationHandle* newly_committed_navigation,
       PageLoadTracker* newly_committed_navigation_tracker);
@@ -283,9 +287,10 @@ class MetricsWebContentsObserver
       content::NavigationHandle* next_navigation_handle,
       std::unique_ptr<PageLoadTracker> page_load_tracker);
 
-  // Try to restore a PageLoadTracker when a navigation restores corresponding
-  // page from back-forward cache. Returns true if the page was restored.
-  bool MaybeRestorePageLoadTrackerForBackForwardCache(
+  // Tries to move a PageLoadTracker from |inactive_pages_| to
+  // |committed_load_|, when a navigation activates a back/forward-cached or
+  // prerendered page. Returns true if |committed_load_| is updated.
+  bool MaybeActivatePageLoadTracker(
       content::NavigationHandle* navigation_handle);
 
   // Notify PageLoadTrackers about cookie read or write.
@@ -300,18 +305,11 @@ class MetricsWebContentsObserver
 
   // This map tracks all of the navigations ongoing that are not committed
   // yet. Once a navigation is committed, it moves from the map to
-  // |committed_load_|. Note that a PageLoadTrackers NavigationHandle is only
-  // valid until commit time, when we remove it from the map.
+  // |committed_load_| or |inactive_pages_|. Note that a PageLoadTrackers
+  // NavigationHandle is only valid until commit time, when we remove it from
+  // the map.
   std::map<content::NavigationHandle*, std::unique_ptr<PageLoadTracker>>
       provisional_loads_;
-
-  // Loads we are not interested in tracking (e.g. because they are happening in
-  // the Prerender). Note that a sub frame navigation might start in the
-  // prerender but finish in the primary FrameTree so we need to remember
-  // somewhere that we are not interested in the navigation. Hence this member.
-  // TODO(https://crbug.com/1190112): Add proper support for prerendering when
-  // there are better content APIs
-  std::set<content::NavigationHandle*> uninteresting_loads_;
 
   // Tracks aborted provisional loads for a little bit longer than usual (one
   // more navigation commit at the max), in order to better understand how the
@@ -330,13 +328,11 @@ class MetricsWebContentsObserver
   // This is currently set only for the main frame.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
 
-  // A page can be stored in back-forward cache - in this case its
-  // PageLoadTracker should be preserved as well. Here we store PageLoadTracker
-  // for each main frame that we navigated away from until we are notified that
-  // it is deleted (would happen almost immediately if back-forward cache is not
-  // enabled or page is not stored).
+  // This stores the PageLoadTracker for each main frame of inactive pages,
+  // including pages in the back/forward cache and prerendered pages. (The main
+  // frame of the active page is in |committed_load_|.)
   base::flat_map<content::RenderFrameHost*, std::unique_ptr<PageLoadTracker>>
-      back_forward_cached_pages_;
+      inactive_pages_;
 
   // Has the MWCO observed at least one navigation?
   bool has_navigated_;
