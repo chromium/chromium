@@ -40,8 +40,8 @@ class JavacOutputProcessor:
     # Matches output modification performed by _ElaborateLineForUnknownSymbol()
     # so that it can be colorized.
     # Example: org.chromium.base.Log found in dep //base:base_java.
-    self._found_in_dep_re = re.compile(
-        r'(?P<full_message>[\w.]+ found in dep //[\w/:]+.)$')
+    self._please_add_dep_re = re.compile(
+        r'(?P<full_message>Please add //[\w/:]+ dep to //[\w/:]+.*)$')
 
     # First element in pair is bool which indicates whether the missing
     # class/package is part of the error message.
@@ -113,8 +113,8 @@ class JavacOutputProcessor:
       line = self._Colorize(line, self._warning_re, self._warning_color)
     elif self._error_re.match(line):
       line = self._Colorize(line, self._error_re, self._error_color)
-    elif self._found_in_dep_re.match(line):
-      line = self._Colorize(line, self._found_in_dep_re, self._error_color)
+    elif self._please_add_dep_re.match(line):
+      line = self._Colorize(line, self._please_add_dep_re, self._error_color)
     elif self._marker_re.match(line):
       line = self._Colorize(line, self._marker_re, self._marker_color)
     return line
@@ -149,14 +149,15 @@ class JavacOutputProcessor:
       return [line]
     suggested_target = suggested_deps[0].target
 
-    target_name = self._RemoveSuffixesIfPresent(["__errorprone", "__header"],
-                                                self._target_name)
+    target_name = self._RemoveSuffixesIfPresent(
+        ["__compile_java", "__errorprone", "__header"], self._target_name)
     if not has_missing_symbol_in_error_msg:
       line = "{} {}".format(line, class_to_lookup)
 
     return [
-        "{}:".format(target_name), line,
-        "{} found in dep {}.".format(class_to_lookup, suggested_target)
+        line,
+        "Please add {} dep to {}. ".format(suggested_target, target_name) +
+        "File a crbug if this suggestion is incorrect.",
     ]
 
   @staticmethod
