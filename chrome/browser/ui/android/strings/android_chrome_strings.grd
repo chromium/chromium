@@ -4411,11 +4411,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <message name="IDS_CABLEV2_BLE_ENABLE_TITLE" desc="The title of a screen that'll appear on a phone when we need to enable Bluetooth on the device. This screen will appear for a couple of seconds to give context, then a prompt will appear to allow the user to confirm that they wish to enable Bluetooth. Bluetooth is a radio technology commonly found in phones.">
-        Switching on Bluetooth…
+        Turning on Bluetooth…
       </message>
 
       <message name="IDS_CABLEV2_BLE_ENABLE_BODY" desc="The subheading on a screen that'll appear on a phone when we need to enable Bluetooth on the device. This screen will appear for a couple of seconds to give context, then a prompt will appear to allow the user to confirm that they wish to enable Bluetooth. Bluetooth is a radio technology commonly found in phones. This subheading is informing the user that, if they opt to turn on Bluetooth for this operation, it'll automatically be switched off again afterwards.">
-        We'll switch it back off after we are done
+        Bluetooth will turn back off when you're done
       </message>
 
       <!-- QR Code -->
