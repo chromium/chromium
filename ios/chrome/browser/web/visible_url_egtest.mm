@@ -403,48 +403,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
 }
 
 // Tests that visible URL is always the same as last committed URL during go
-// back navigation started with pending reload in progress.
-- (void)testBackNavigationWithPendingReload {
-  // With iPhone, Stop and Reload are in the tool menu. There's no easy way to
-  // track some animations (opening a popop) and not others (load progress bar)
-  // which makes this test fail.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone (sync issues)");
-  }
-
-  // Purge web view caches and pause the server to make sure that tests can
-  // verify omnibox state before server starts responding.
-  [ChromeEarlGrey purgeCachedWebViewPages];
-  [ChromeEarlGrey waitForWebStateContainingText:kTestPage2];
-  {
-    std::unique_ptr<ScopedSynchronizationDisabler> disabler =
-        std::make_unique<ScopedSynchronizationDisabler>();
-
-    [self setServerPaused:YES];
-
-    // Start reloading the page.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ReloadButton()]
-        performAction:grey_tap()];
-
-    // Do not wait until reload is finished, tap the back button in the toolbar
-    // and verify that URL2 (committed URL) is displayed even though URL1 is a
-    // pending URL.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-        performAction:grey_tap()];
-    // TODO(crbug.com/724560): Re-evaluate if necessary to check receiving URL1
-    // request here.
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
-        assertWithMatcher:grey_notNil()];
-
-    // Make server respond so URL1 becomes committed.
-    [self setServerPaused:NO];
-  }
-  [ChromeEarlGrey waitForWebStateContainingText:kTestPage1];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests that visible URL is always the same as last committed URL during go
 // back navigation initiated with pending renderer-initiated navigation in
 // progress.
 - (void)testBackNavigationWithPendingRendererInitiatedNavigation {
