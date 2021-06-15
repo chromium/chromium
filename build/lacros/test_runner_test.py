@@ -93,8 +93,7 @@ class TestRunnerTest(unittest.TestCase):
       if command == 'lacros_chrome_browsertests':
         self.assertListEqual([
             command,
-            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock',
-            '--test-launcher-jobs=1'
+            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock'
         ], test_args)
       else:
         self.assertListEqual([command], test_args)

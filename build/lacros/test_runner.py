@@ -334,22 +334,6 @@ def _RunTestWithAshChrome(args, forward_args):
     if enable_mojo_crosapi:
       forward_args.append(lacros_mojo_socket_arg)
 
-      reason_of_jobs_1 = (
-          'multiple clients crosapi is not supported yet (crbug.com/1124490), '
-          'lacros_chrome_browsertests has to run tests serially')
-
-      if any('--test-launcher-jobs' in arg for arg in forward_args):
-        raise RuntimeError(
-            'Specifying "--test-launcher-jobs" is not allowed because %s. '
-            'Please remove it and this script will automatically append '
-            '"--test-launcher-jobs=1"' % reason_of_jobs_1)
-
-      # TODO(crbug.com/1124490): Run lacros_chrome_browsertests in parallel once
-      # the bug is fixed.
-      logging.warning('Appending "--test-launcher-jobs=1" because %s',
-                      reason_of_jobs_1)
-      forward_args.append('--test-launcher-jobs=1')
-
     test_env = os.environ.copy()
     test_env['EGL_PLATFORM'] = 'surfaceless'
     test_env['XDG_RUNTIME_DIR'] = tmp_xdg_dir_name

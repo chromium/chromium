@@ -1117,6 +1117,9 @@
   "lacros_chrome_browsertests_run_in_series": {
     "label": "//chrome/test:lacros_chrome_browsertests_run_in_series",
     "type": "windowed_test_launcher",
+    "args": [
+      "--test-launcher-jobs=1",
+    ],
   },
   "lacros_chrome_unittests": {
     "label": "//chrome/test:lacros_chrome_unittests",
