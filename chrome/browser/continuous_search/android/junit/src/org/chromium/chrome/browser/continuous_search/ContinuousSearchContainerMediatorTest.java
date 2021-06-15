@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.concurrent.TimeoutException;
+
 /**
  * Tests for {@link ContinuousSearchContainerMediator}.
  */
@@ -38,6 +40,7 @@ public class ContinuousSearchContainerMediatorTest {
     private int mCurrentTopControlsMinHeight;
     private int mCurrentExpectedHeight;
     private boolean mCanAnimateNative;
+    private CallbackHelper mOnHidden;
     private static final int DEFAULT_MIN_HEIGHT = 40;
     private static final int DEFAULT_CONTAINER_HEIGHT = 50;
     private static final int JAVA_HEIGHT = 60;
@@ -237,12 +240,13 @@ public class ContinuousSearchContainerMediatorTest {
      * tests for hide until that is fixed.
      */
     @Test
-    public void testHide() {
+    public void testHide() throws TimeoutException {
         triggerShow();
         triggerHide();
 
         updateBrowserControlParamsAndAssertModel(
                 DEFAULT_CONTAINER_HEIGHT, 0, true, 0, DEFAULT_CONTAINER_HEIGHT, false, View.GONE);
+        mOnHidden.waitForFirst();
 
         Assert.assertNull(
                 "Mediator should be not registered as a BrowserControlsStateProvider.Observer.",
@@ -362,7 +366,8 @@ public class ContinuousSearchContainerMediatorTest {
 
     private void triggerHide() {
         mCurrentExpectedHeight = 0;
-        mMediator.hide();
+        mOnHidden = new CallbackHelper();
+        mMediator.hide(mOnHidden::notifyCalled);
         Assert.assertFalse("Mediator should be invisible.", mMediator.isVisibleForTesting());
         Assert.assertEquals(
                 "Mediator should still be registered as a BrowserControlsStateProvider.Observer.",

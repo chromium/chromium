@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
@@ -36,7 +37,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                                               ThemeColorProvider.ThemeColorObserver {
     private final ModelList mModelList;
     private final PropertyModel mRootViewModel;
-    private final Callback<Boolean> mSetLayoutVisibility;
+    private final Callback<VisibilitySettings> mSetLayoutVisibility;
     private final ThemeColorProvider mThemeColorProvider;
     private final Resources mResources;
     private Tab mCurrentTab;
@@ -49,7 +50,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private int mStartNavigationIndex;
 
     ContinuousSearchListMediator(ModelList modelList, PropertyModel rootViewModel,
-            Callback<Boolean> setLayoutVisibility, ThemeColorProvider themeColorProvider,
+            Callback<VisibilitySettings> setLayoutVisibility, ThemeColorProvider themeColorProvider,
             Resources resources) {
         mModelList = modelList;
         mRootViewModel = rootViewModel;
@@ -90,7 +91,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
             mCurrentUserData = null;
         }
 
-        onInvalidate();
+        setVisibility(false, null);
+        reset();
         mCurrentTab = tab;
         if (mCurrentTab == null) return;
 
@@ -100,8 +102,11 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
 
     @Override
     public void onInvalidate() {
+        setVisibility(false, this::reset);
+    }
+
+    private void reset() {
         mModelList.clear();
-        setVisibility(false);
         mOnSrp = false;
     }
 
@@ -145,7 +150,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                     && currentUrl.equals(listItem.model.get(ListItemProperties.URL));
             listItem.model.set(ListItemProperties.IS_SELECTED, isSelected);
         }
-        setVisibility(mModelList.size() > 0 && !mOnSrp);
+        setVisibility(mModelList.size() > 0 && !mOnSrp, null);
     }
 
     /**
@@ -230,10 +235,10 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         }
     }
 
-    private void setVisibility(boolean visibility) {
+    private void setVisibility(boolean visibility, Runnable onHideFinished) {
         if (mVisible && !visibility) recordListScrolled();
         mVisible = visibility;
-        mSetLayoutVisibility.onResult(mVisible);
+        mSetLayoutVisibility.onResult(new VisibilitySettings(mVisible, onHideFinished));
     }
 
     void onScrolled() {

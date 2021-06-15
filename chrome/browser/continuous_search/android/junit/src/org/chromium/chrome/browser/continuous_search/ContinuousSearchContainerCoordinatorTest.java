@@ -201,6 +201,7 @@ public class ContinuousSearchContainerCoordinatorTest {
 
         // Invalidate.
         mUserData.invalidateData();
+        mCoordinator.getMediatorForTesting().runOnFinishedHide();
         Assert.assertEquals(0, recyclerView.getAdapter().getItemCount());
     }
 

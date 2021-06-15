@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -34,7 +35,7 @@ public class ContinuousSearchListCoordinator {
     private final PropertyModel mRootViewModel;
 
     public ContinuousSearchListCoordinator(ObservableSupplier<Tab> tabSupplier,
-            Callback<Boolean> setLayoutVisibility, ThemeColorProvider themeColorProvider,
+            Callback<VisibilitySettings> setLayoutVisibility, ThemeColorProvider themeColorProvider,
             Resources resources) {
         mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();

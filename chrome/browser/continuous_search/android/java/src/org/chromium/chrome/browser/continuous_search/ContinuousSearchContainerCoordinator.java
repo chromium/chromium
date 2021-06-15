@@ -40,6 +40,24 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         void onHeightChange(int newHeight, boolean animate);
     }
 
+    static class VisibilitySettings {
+        private boolean mIsVisible;
+        private Runnable mOnHideRunnable;
+
+        VisibilitySettings(boolean isVisible, Runnable onHideRunnable) {
+            mIsVisible = isVisible;
+            mOnHideRunnable = onHideRunnable;
+        }
+
+        boolean isVisible() {
+            return mIsVisible;
+        }
+
+        Runnable getOnHideRunnable() {
+            return mOnHideRunnable;
+        }
+    }
+
     private final ContinuousSearchContainerMediator mContainerMediator;
     private final ContinuousSearchListCoordinator mListCoordinator;
     private ContinuousSearchSceneLayer mSceneLayer;
@@ -66,13 +84,16 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mContainerMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
                 layoutManager, canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
                 this::initializeLayout, hideToolbarShadow);
-        mListCoordinator = new ContinuousSearchListCoordinator(tabSupplier, isVisible -> {
-            if (isVisible) {
-                mContainerMediator.show();
-            } else {
-                mContainerMediator.hide();
-            }
-        }, themeColorProvider, resources);
+        mListCoordinator = new ContinuousSearchListCoordinator(
+                tabSupplier, this::updateVisibility, themeColorProvider, resources);
+    }
+
+    private void updateVisibility(VisibilitySettings visibilitySettings) {
+        if (visibilitySettings.isVisible()) {
+            mContainerMediator.show();
+        } else {
+            mContainerMediator.hide(visibilitySettings.getOnHideRunnable());
+        }
     }
 
     private void initializeLayout() {
@@ -148,5 +169,10 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
     @VisibleForTesting
     ContinuousSearchViewResourceFrameLayout getRootViewForTesting() {
         return mRootView;
+    }
+
+    @VisibleForTesting
+    ContinuousSearchContainerMediator getMediatorForTesting() {
+        return mContainerMediator;
     }
 }

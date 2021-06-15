@@ -33,6 +33,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private final Supplier<Integer> mDefaultTopContainerHeightSupplier;
     private final Callback<Boolean> mHideToolbarShadow;
 
+    private Runnable mOnFinishedHide;
     private boolean mInitialized;
     private boolean mIsVisible;
     private boolean mIsTabObscured;
@@ -73,6 +74,8 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      * is controlled by cc and displays the container.
      */
     void show() {
+        mOnFinishedHide = null;
+
         if (mIsVisible) return;
 
         mInitializeLayout.run();
@@ -88,8 +91,13 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      * Hides the container. This will decrease the top controls height with an animation that
      * is controlled by cc and hides the container.
      */
-    void hide() {
-        if (!mInitialized || !mIsVisible) return;
+    void hide(Runnable onFinishedHide) {
+        mOnFinishedHide = onFinishedHide;
+
+        if (!mInitialized || !mIsVisible) {
+            runOnFinishedHide();
+            return;
+        }
 
         updateVisibility(false);
     }
@@ -104,7 +112,9 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private void updateVisibility(boolean isVisible) {
         mIsVisible = isVisible;
         mBrowserControlsStateProvider.addObserver(this);
-        mHideToolbarShadow.onResult(isVisible);
+        if (isVisible) {
+            mHideToolbarShadow.onResult(true);
+        }
 
         for (HeightObserver observer : mObservers) {
             observer.onHeightChange(isVisible ? mJavaLayoutHeight : 0,
@@ -160,7 +170,17 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
         final boolean doneHiding = !isUiVisible && !mIsVisible;
         if (doneHiding) {
+            mHideToolbarShadow.onResult(false);
+            runOnFinishedHide();
             mBrowserControlsStateProvider.removeObserver(this);
+        }
+    }
+
+    @VisibleForTesting
+    void runOnFinishedHide() {
+        if (mOnFinishedHide != null) {
+            mOnFinishedHide.run();
+            mOnFinishedHide = null;
         }
     }
 

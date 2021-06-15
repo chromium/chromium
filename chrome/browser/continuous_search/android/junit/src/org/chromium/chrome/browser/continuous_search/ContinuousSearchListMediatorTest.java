@@ -50,12 +50,16 @@ public class ContinuousSearchListMediatorTest {
         mLayoutVisibilityTrue = new CallbackHelper();
         mLayoutVisibilityFalse = new CallbackHelper();
         mMediator = new ContinuousSearchListMediator(mModelList, mRootViewModel,
-                (visibility)
+                (visibilitySettings)
                         -> {
-                    if (visibility) {
+                    if (visibilitySettings.isVisible()) {
                         mLayoutVisibilityTrue.notifyCalled();
                     } else {
                         mLayoutVisibilityFalse.notifyCalled();
+                        Runnable runnable = visibilitySettings.getOnHideRunnable();
+                        if (runnable != null) {
+                            runnable.run();
+                        }
                     }
                 },
                 Mockito.mock(ThemeColorProvider.class),
