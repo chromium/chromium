@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -84,7 +85,8 @@ UrlLanguageHistogram::~UrlLanguageHistogram() = default;
 
 // static
 void UrlLanguageHistogram::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kUrlLanguageHistogramCounters);
+  registry->RegisterDictionaryPref(kUrlLanguageHistogramCounters,
+                                   PrefRegistry::LOSSY_PREF);
 }
 
 std::vector<UrlLanguageHistogram::LanguageInfo>
