@@ -26,6 +26,12 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
 #if defined(OS_ANDROID)
   safe_browsing::ShowSafeBrowsingSettings(web_contents);
 #else
+  // In rare circumstances, this happens outside of a Browser, better ignore
+  // than crash.
+  // TODO(crbug.com/1219535): Remove and find a better way, e.g. not showing the
+  // enhanced protection promo at all.
+  if (!chrome::FindBrowserWithWebContents(web_contents))
+    return;
   chrome::ShowSafeBrowsingEnhancedProtection(
       chrome::FindBrowserWithWebContents(web_contents));
 #endif
