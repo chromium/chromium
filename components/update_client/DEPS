@@ -17,6 +17,7 @@ specific_include_rules = {
   "(test_configurator|.*_unittest\.(cc|h))" : [
     "+net",
     "+services/network/public/cpp",
+    "+services/network/public/mojom",
     "+services/network/test",
   ]
 }

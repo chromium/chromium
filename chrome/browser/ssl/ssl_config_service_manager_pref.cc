@@ -32,6 +32,8 @@
 #include "net/cert/cert_verifier.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_config_service.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/ssl_config.mojom.h"
 #include "url/url_canon.h"
 
 namespace base {

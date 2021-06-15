@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_zoom_request_client.h"
 #include "extensions/common/extension_builder.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"

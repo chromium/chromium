@@ -11,6 +11,7 @@
 #include "chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.h"
 #include "chrome/browser/nearby_sharing/webrtc_signaling_messenger.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

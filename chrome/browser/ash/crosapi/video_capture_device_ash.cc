@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/ash/crosapi/video_frame_handler_ash.h"
+#include "media/capture/mojom/image_capture.mojom.h"
 
 namespace crosapi {
 

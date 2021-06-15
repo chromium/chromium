@@ -12,6 +12,7 @@
 #include "components/mirroring/service/fake_video_capture_host.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"

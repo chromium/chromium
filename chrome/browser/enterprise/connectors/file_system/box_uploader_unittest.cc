@@ -5,6 +5,7 @@
 // A complete set of unit tests for BoxUploader.
 
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
+
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
@@ -13,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader_test_helper.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 using testing::Return;
 

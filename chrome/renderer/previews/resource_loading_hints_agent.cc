@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"

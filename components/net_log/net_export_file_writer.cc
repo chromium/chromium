@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/net_log/chrome_net_log.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net_log {
 

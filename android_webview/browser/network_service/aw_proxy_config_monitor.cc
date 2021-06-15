@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace android_webview {
 

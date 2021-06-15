@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/server/http_server.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ui_devtools {
 

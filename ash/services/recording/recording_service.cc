@@ -21,6 +21,7 @@
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "services/audio/public/cpp/device_factory.h"

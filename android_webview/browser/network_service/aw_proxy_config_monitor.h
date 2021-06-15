@@ -14,6 +14,12 @@
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
+namespace network {
+namespace mojom {
+class ProxyConfigClient;
+}
+}  // namespace network
+
 namespace android_webview {
 
 // This class configures proxy settings for NetworkContext if network service

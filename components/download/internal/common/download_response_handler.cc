@@ -11,6 +11,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 
 namespace download {
 

@@ -36,6 +36,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/scoped_disable_exit_on_dfatal.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"

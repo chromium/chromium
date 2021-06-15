@@ -15,6 +15,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::NavigationThrottle;

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 std::string GetTestName() {

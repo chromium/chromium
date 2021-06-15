@@ -75,6 +75,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

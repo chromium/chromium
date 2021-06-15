@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/services/filesystem/public/mojom/types.mojom-shared.h"
+#include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace chrome {

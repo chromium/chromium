@@ -17,6 +17,7 @@
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"

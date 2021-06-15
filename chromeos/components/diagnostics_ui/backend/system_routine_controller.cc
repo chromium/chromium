@@ -20,6 +20,8 @@
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_properties.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/event.h"

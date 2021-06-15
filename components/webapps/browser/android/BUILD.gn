@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//components/favicon/content",
     "//components/favicon_base",
     "//components/webapps/browser",
+    "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

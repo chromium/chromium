@@ -60,6 +60,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"

@@ -6,6 +6,7 @@ include_rules = [
   "+components/prefs",
   "+google_apis",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+third_party/cros_system_api",
   "+net",
   "+url",

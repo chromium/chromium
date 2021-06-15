@@ -11,6 +11,7 @@ include_rules = [
   "+net/http",
   "+net/traffic_annotation",
   "+services/network/test",
+  "+services/network/public/mojom",
   "+third_party/libxml/chromium",
   "+ui/base/l10n",
 ]

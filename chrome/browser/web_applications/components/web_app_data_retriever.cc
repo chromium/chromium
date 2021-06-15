@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"

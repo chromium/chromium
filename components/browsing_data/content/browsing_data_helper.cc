@@ -17,6 +17,7 @@
 #include "components/site_isolation/pref_names.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 

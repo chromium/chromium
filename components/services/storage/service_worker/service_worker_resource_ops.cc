@@ -8,7 +8,9 @@
 #include "base/pickle.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_response_info.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace storage {

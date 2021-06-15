@@ -18,6 +18,12 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace bluetooth {
+namespace mojom {
+class Adapter;
+}
+}  // namespace bluetooth
+
 namespace chromeos {
 namespace nearby {
 

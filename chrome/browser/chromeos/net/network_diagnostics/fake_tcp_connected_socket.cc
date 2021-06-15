@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/tls_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 FakeTCPConnectedSocket::FakeTCPConnectedSocket() = default;

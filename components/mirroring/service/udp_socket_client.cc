@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "net/base/address_family.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace mirroring {
 

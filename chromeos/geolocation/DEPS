@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/network",
   "+google_apis",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+third_party/cros_system_api",
   "+net",
   "+url",

@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "media/capture/mojom/video_capture.mojom.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video_capture_types.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"

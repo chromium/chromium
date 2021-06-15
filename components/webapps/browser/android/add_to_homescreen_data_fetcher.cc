@@ -27,6 +27,7 @@
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/common/constants.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

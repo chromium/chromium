@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 
 namespace arc {
 namespace {

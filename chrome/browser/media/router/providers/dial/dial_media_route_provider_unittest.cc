@@ -6,12 +6,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/strings/stringprintf.h"
-#include "chrome/browser/media/router/test/mock_mojo_media_router.h"
-
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
+#include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/route_request_result.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
