@@ -96,7 +96,7 @@ suite('<emoji-picker>', () => {
     // wait so emoji-groups render and we have something to scroll to.
     await waitForCondition(
         () => findInEmojiPicker(
-            '[data-group="5"] > emoji-group', 'emoji-button', 'button'));
+            '[data-group="2"] > emoji-group', 'emoji-button', 'button'));
     thirdButton.click();
 
     // wait while waiting for scroll to happen and update buttons.

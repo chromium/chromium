@@ -35,14 +35,8 @@ var EmojiPickerMainTest = class extends EmojiPickerBrowserTest {
   }
 };
 
-// Flaky on debug builds, see https://crbug.com/1216145
-GEN('#if !defined(NDEBUG)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
 
-TEST_F('EmojiPickerMainTest', 'MAYBE_All', function() {
+TEST_F('EmojiPickerMainTest', 'All', function() {
   mocha.run();
 });
 
