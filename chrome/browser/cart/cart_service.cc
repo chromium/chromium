@@ -39,6 +39,11 @@ constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
     // This regex does not match anything.
     "\\b\\B"};
 
+constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
+    &ntp_features::kNtpChromeCartModule, "skip-cart-extraction-pattern",
+    // This regex does not match anything.
+    "\\b\\B"};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -86,6 +91,14 @@ bool IsPartnerMerchant(const GURL& url) {
   return RE2::PartialMatch(
       re2::StringPiece(url_string.data(), url_string.size()),
       GetPartnerMerchantPattern());
+}
+
+const re2::RE2& GetSkipCartExtractionPattern() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance(kSkipCartExtractionPattern.Get(),
+                                               options);
+  return *instance;
 }
 }  // namespace
 
@@ -541,6 +554,15 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                                   merchants_to_erase.end();
                      }),
       proto_pairs.end());
+  for (auto proto_pair : proto_pairs) {
+    if (RE2::FullMatch(re2::StringPiece(proto_pair.first),
+                       GetSkipCartExtractionPattern())) {
+      proto_pair.second.clear_product_image_urls();
+      cart_db_->AddCart(proto_pair.first, proto_pair.second,
+                        base::BindOnce(&CartService::OnOperationFinished,
+                                       weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
   // Sort items in timestamp descending order.
   std::sort(proto_pairs.begin(), proto_pairs.end(),
             CompareTimeStampForProtoPair);
@@ -602,6 +624,14 @@ void CartService::OnAddCart(const std::string& domain,
     if (fallback_url) {
       proto.set_merchant_cart_url(*fallback_url);
     }
+  }
+  if (RE2::FullMatch(re2::StringPiece(domain),
+                     GetSkipCartExtractionPattern())) {
+    proto.clear_product_image_urls();
+    cart_db_->AddCart(domain, std::move(proto),
+                      base::BindOnce(&CartService::OnOperationFinished,
+                                     weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
   if (proto_pairs.size() == 0) {
     cart_db_->AddCart(domain, std::move(proto),
