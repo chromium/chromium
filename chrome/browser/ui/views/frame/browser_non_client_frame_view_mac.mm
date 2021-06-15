@@ -261,6 +261,11 @@ void BrowserNonClientFrameViewMac::UpdateFrameColor() {
   UpdateCaptionButtonPlaceholderContainerBackground();
   BrowserNonClientFrameView::UpdateFrameColor();
 }
+
+void BrowserNonClientFrameViewMac::OnThemeChanged() {
+  UpdateCaptionButtonPlaceholderContainerBackground();
+  BrowserNonClientFrameView::OnThemeChanged();
+}
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 

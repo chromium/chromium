@@ -121,11 +121,8 @@ class WebAppToolbarButtonContainer : public views::View,
   // PageActionIconView::Delegate:
   content::WebContents* GetWebContentsForPageActionIconView() override;
 
-  // views::WidgetObserver:
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
-
-  // Whether we're waiting for the widget to become visible.
-  bool pending_widget_visibility_ = true;
+  // views::View:
+  void AddedToWidget() override;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_widget_observation_{this};

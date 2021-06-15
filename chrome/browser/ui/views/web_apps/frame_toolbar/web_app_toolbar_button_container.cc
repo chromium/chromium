@@ -305,13 +305,7 @@ WebAppToolbarButtonContainer::GetWebContentsForPageActionIconView() {
   return browser_view_->GetActiveWebContents();
 }
 
-// views::WidgetObserver:
-void WebAppToolbarButtonContainer::OnWidgetVisibilityChanged(
-    views::Widget* widget,
-    bool visible) {
-  if (!visible || !pending_widget_visibility_)
-    return;
-  pending_widget_visibility_ = false;
+void WebAppToolbarButtonContainer::AddedToWidget() {
   if (GetAnimate()) {
     if (content_settings_container_)
       content_settings_container_->SetUpForFadeIn();

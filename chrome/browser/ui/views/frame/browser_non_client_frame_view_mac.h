@@ -39,6 +39,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
   void UpdateThrobber(bool running) override;
   void PaintAsActiveChanged() override;
   void UpdateFrameColor() override;
+  void OnThemeChanged() override;
 
   // views::NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;
