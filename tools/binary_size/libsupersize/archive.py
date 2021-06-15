@@ -71,7 +71,7 @@ _OutputDirectoryContext = collections.namedtuple('_OutputDirectoryContext', [
 # below are common. At library splitting time, llvm-objcopy pulls what's needed
 # from these sections into the new libraries. Hence, the ELF sections will end
 # up smaller than the combined .map file sections.
-_SECTION_SIZE_BLACKLIST = ['.symtab', '.shstrtab', '.strtab']
+_SECTION_SIZE_BLOCKLIST = ['.symtab', '.shstrtab', '.strtab']
 
 
 # Tunable constant "knobs" for CreateContainerAndSymbols().
@@ -975,7 +975,7 @@ def _ParseElfInfo(map_path, elf_path, tool_prefix, track_string_literals,
     differing_elf_section_sizes = {}
     differing_map_section_sizes = {}
     for k, (_, elf_size) in elf_section_ranges.items():
-      if k in _SECTION_SIZE_BLACKLIST:
+      if k in _SECTION_SIZE_BLOCKLIST:
         continue
       (_, map_size) = map_section_ranges.get(k)
       if map_size != elf_size:

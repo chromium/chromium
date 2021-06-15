@@ -73,8 +73,8 @@ class IndexedSet(object):
 
 
 def _PartitionSymbols(symbols):
-  # Dex methods are whitelisted for the method_count mode in the UI.
-  # Vtable entries are interesting to query for, so whitelist them as well.
+  # Dex methods are allowlisted for the method_count mode in the UI.
+  # Vtable entries are interesting to query for, so allowlist them as well.
   interesting_symbols = symbols.Filter(
       lambda s: s.IsDex() or '[vtable]' in s.name)
   ordered_symbols = interesting_symbols.Inverted().Sorted()

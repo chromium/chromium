@@ -101,7 +101,7 @@ Supports Android and Linux (although Linux
 ##### Pak Symbols (.pak.nontranslated and .pak.translations)
 
 1. Grit creates a mapping between numeric id and textual id for grd files.
-   * A side effect of pak whitelist generation is a mapping of `.cc` to numeric
+   * A side effect of pak allowlist generation is a mapping of `.cc` to numeric
      id.
    * A complete per-apk mapping of numeric id to textual id is stored in the
      `output_dir/size-info` dir.

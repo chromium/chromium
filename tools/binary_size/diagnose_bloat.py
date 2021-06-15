@@ -354,7 +354,7 @@ class _BuildHelper(object):
     # Speed things up a bit by skipping lint & errorprone.
     gn_args += ' disable_android_lint=true'
     # Down from default of 2 to speed up compile and use less disk.
-    # Compiles need at least symbol_level=1 for pak whitelist to work.
+    # Compiles need at least symbol_level=1 for pak allowlist to work.
     gn_args += ' symbol_level=1'
     gn_args += ' use_errorprone_java_compiler=false'
     gn_args += ' use_goma=%s' % str(self.use_goma).lower()
