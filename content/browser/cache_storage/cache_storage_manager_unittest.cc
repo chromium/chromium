@@ -211,12 +211,12 @@ class TestCacheStorageObserver : public storage::mojom::CacheStorageObserver {
       : receiver_(this, std::move(observer)),
         loop_(std::make_unique<base::RunLoop>()) {}
 
-  void OnCacheListChanged(const url::Origin& origin) override {
+  void OnCacheListChanged(const blink::StorageKey& storage_key) override {
     ++notify_list_changed_count;
     loop_->Quit();
   }
 
-  void OnCacheContentChanged(const url::Origin& origin,
+  void OnCacheContentChanged(const blink::StorageKey& storage_key,
                              const std::string& cache_name) override {
     ++notify_content_changed_count;
     loop_->Quit();

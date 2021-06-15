@@ -132,37 +132,42 @@ class StorageHandler::CacheStorageObserver
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
   }
 
-  void TrackOrigin(const url::Origin& origin) {
+  void TrackStorageKey(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (origins_.find(origin) != origins_.end())
+    if (storage_keys_.find(storage_key) != storage_keys_.end())
       return;
-    origins_.insert(origin);
+    storage_keys_.insert(storage_key);
   }
 
-  void UntrackOrigin(const url::Origin& origin) {
+  void UntrackStorageKey(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    origins_.erase(origin);
+    storage_keys_.erase(storage_key);
   }
 
-  void OnCacheListChanged(const url::Origin& origin) override {
+  void OnCacheListChanged(const blink::StorageKey& storage_key) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    auto found = origins_.find(origin);
-    if (found == origins_.end())
+    auto found = storage_keys_.find(storage_key);
+    if (found == storage_keys_.end())
       return;
-    owner_->NotifyCacheStorageListChanged(origin.Serialize());
+    // TODO(https://crbug.com/1199077): NotifyCacheStorageListChanged should be
+    // updated to accept `storage_key`'s serialization.
+    owner_->NotifyCacheStorageListChanged(storage_key.origin().Serialize());
   }
 
-  void OnCacheContentChanged(const url::Origin& origin,
+  void OnCacheContentChanged(const blink::StorageKey& storage_key,
                              const std::string& cache_name) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (origins_.find(origin) == origins_.end())
+    if (storage_keys_.find(storage_key) == storage_keys_.end())
       return;
-    owner_->NotifyCacheStorageContentChanged(origin.Serialize(), cache_name);
+    // TODO(https://crbug.com/1199077): NotifyCacheStorageListChanged should be
+    // updated to accept `storage_key`'s serialization.
+    owner_->NotifyCacheStorageContentChanged(storage_key.origin().Serialize(),
+                                             cache_name);
   }
 
  private:
   // Maintained on the IO thread to avoid thread contention.
-  base::flat_set<url::Origin> origins_;
+  base::flat_set<blink::StorageKey> storage_keys_;
 
   base::WeakPtr<StorageHandler> owner_;
   mojo::Receiver<storage::mojom::CacheStorageObserver> receiver_;
@@ -437,6 +442,8 @@ void StorageHandler::OverrideQuotaForOrigin(
                      std::move(callback)));
 }
 
+// TODO(https://crbug.com/1199077): We should think about how this function
+// should be exposed when migrating to storage keys.
 Response StorageHandler::TrackCacheStorageForOrigin(const std::string& origin) {
   if (!storage_partition_)
     return Response::InternalError();
@@ -445,10 +452,13 @@ Response StorageHandler::TrackCacheStorageForOrigin(const std::string& origin) {
   if (!origin_url.is_valid())
     return Response::InvalidParams(origin + " is not a valid URL");
 
-  GetCacheStorageObserver()->TrackOrigin(url::Origin::Create(origin_url));
+  GetCacheStorageObserver()->TrackStorageKey(
+      blink::StorageKey(url::Origin::Create(origin_url)));
   return Response::Success();
 }
 
+// TODO(https://crbug.com/1199077): We should think about how this function
+// should be exposed when migrating to storage keys.
 Response StorageHandler::UntrackCacheStorageForOrigin(
     const std::string& origin) {
   if (!storage_partition_)
@@ -458,7 +468,8 @@ Response StorageHandler::UntrackCacheStorageForOrigin(
   if (!origin_url.is_valid())
     return Response::InvalidParams(origin + " is not a valid URL");
 
-  GetCacheStorageObserver()->UntrackOrigin(url::Origin::Create(origin_url));
+  GetCacheStorageObserver()->UntrackStorageKey(
+      blink::StorageKey(url::Origin::Create(origin_url)));
   return Response::Success();
 }
 

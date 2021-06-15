@@ -312,7 +312,7 @@ void LegacyCacheStorageManager::NotifyCacheListChanged(
     const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& observer : observers_)
-    observer->OnCacheListChanged(storage_key.origin());
+    observer->OnCacheListChanged(storage_key);
 }
 
 void LegacyCacheStorageManager::NotifyCacheContentChanged(
@@ -320,7 +320,7 @@ void LegacyCacheStorageManager::NotifyCacheContentChanged(
     const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& observer : observers_)
-    observer->OnCacheContentChanged(storage_key.origin(), name);
+    observer->OnCacheContentChanged(storage_key, name);
 }
 
 void LegacyCacheStorageManager::CacheStorageUnreferenced(
