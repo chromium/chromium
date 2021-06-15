@@ -1067,7 +1067,8 @@
               "external/wpt/accessibility/crashtests/aria-hidden-with-select.html",
               "external/wpt/accessibility/crashtests/content-visibility-generated-content-removal.html",
               "external/wpt/accessibility/crashtests/included-descendant-dom-removal.html",
-              "external/wpt/accessibility/crashtests/included-descendant-layout-removal.html"],
+              "external/wpt/accessibility/crashtests/included-descendant-layout-removal.html",
+              "external/wpt/accessibility/crashtests/validation-message.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {

@@ -2960,6 +2960,7 @@ AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid(
               // children, and the root doesn't already have this child.
               ChildrenChanged(document_);
             }
+            DCHECK_EQ(message->CachedParentObject(), Root());
             return message;
           }
         }

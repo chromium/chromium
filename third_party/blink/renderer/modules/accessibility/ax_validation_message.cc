@@ -57,7 +57,10 @@ bool AXValidationMessage::IsOffScreen() const {
 }
 
 bool AXValidationMessage::IsVisible() const {
-  return RelatedFormControlIfVisible();
+  bool is_visible = RelatedFormControlIfVisible();
+  DCHECK(!is_visible || CachedParentObject() == AXObjectCache().Root())
+      << "A visible validation message's parent must be the root object'.";
+  return is_visible;
 }
 
 const AtomicString& AXValidationMessage::LiveRegionStatus() const {

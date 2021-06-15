@@ -644,8 +644,14 @@ void AXObject::SetParent(AXObject* new_parent) const {
 }
 
 bool AXObject::IsMissingParent() const {
-  if (!parent_)
-    return !IsRoot();
+  if (!parent_) {
+    // Do not attempt to repair the ParentObject() of a validation message
+    // object, because hidden ones are purposely kept around without being in
+    // the tree, and without a parent, for potential later reuse.
+    // TODO(accessibility) This is ugly. Consider destroying validation message
+    // objects between uses instead. See GetOrCreateValidationMessageObject().
+    return !IsRoot() && !IsValidationMessage();
+  }
 
   if (parent_->IsDetached())
     return true;
