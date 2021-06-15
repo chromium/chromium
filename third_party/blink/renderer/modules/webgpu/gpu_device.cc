@@ -62,7 +62,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       DawnObject(dawn_control_client, dawn_device),
       adapter_(adapter),
       features_(MakeGarbageCollected<GPUSupportedFeatures>(
-          ToStringVector(descriptor->nonGuaranteedFeatures()))),
+          ToStringVector(descriptor->requiredFeatures()))),
       queue_(MakeGarbageCollected<GPUQueue>(
           this,
           GetProcs().deviceGetQueue(GetHandle()))),
@@ -74,9 +74,9 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       lost_callback_(BindDawnCallback(&GPUDevice::OnDeviceLostError,
                                       WrapWeakPersistent(this))) {
   // Check is necessary because we can't assign a default in the IDL.
-  if (descriptor->hasNonGuaranteedLimits()) {
-    limits_ = MakeGarbageCollected<GPUSupportedLimits>(
-        descriptor->nonGuaranteedLimits());
+  if (descriptor->hasRequiredLimits()) {
+    limits_ =
+        MakeGarbageCollected<GPUSupportedLimits>(descriptor->requiredLimits());
   } else {
     limits_ = MakeGarbageCollected<GPUSupportedLimits>();
   }

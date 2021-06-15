@@ -22,7 +22,7 @@ namespace {
 WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
   DCHECK_NE(nullptr, descriptor);
 
-  auto&& feature_names = descriptor->nonGuaranteedFeatures();
+  auto&& feature_names = descriptor->requiredFeatures();
 
   HashSet<String> feature_set;
   for (auto& feature : feature_names)
@@ -132,10 +132,24 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  // Normalize the device descriptor to avoid using the deprecated fields.
+  if (descriptor->nonGuaranteedFeatures().size() > 0) {
+    AddConsoleWarning(
+        resolver->GetExecutionContext(),
+        "nonGuaranteedFeatures is deprecated. Use requiredFeatures instead.");
+    descriptor->setRequiredFeatures(descriptor->nonGuaranteedFeatures());
+  }
+  if (descriptor->hasNonGuaranteedLimits()) {
+    AddConsoleWarning(
+        resolver->GetExecutionContext(),
+        "nonGuaranteedLimits is deprecated. Use requiredLimits instead.");
+    descriptor->setRequiredLimits(descriptor->nonGuaranteedLimits());
+  }
+
   // Validation of the limits could happen in Dawn, but until that's
   // implemented we can do it here to preserve the spec behavior.
-  if (descriptor->hasNonGuaranteedLimits()) {
-    for (const auto& key_value_pair : descriptor->nonGuaranteedLimits()) {
+  if (descriptor->hasRequiredLimits()) {
+    for (const auto& key_value_pair : descriptor->requiredLimits()) {
       switch (
           limits_->ValidateLimit(key_value_pair.first, key_value_pair.second)) {
         case GPUSupportedLimits::ValidationResult::Valid:
