@@ -108,7 +108,8 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        int32_t scale_factor) {
   display::Display changed_display(output_id);
   if (!display::Display::HasForceDeviceScaleFactor()) {
-    changed_display.SetScaleAndBounds(scale_factor, new_bounds);
+    changed_display.SetScaleAndBounds(scale_factor + additional_scale_,
+                                      new_bounds);
   } else {
     changed_display.set_bounds(new_bounds);
     changed_display.set_work_area(new_bounds);
@@ -297,6 +298,21 @@ base::Value WaylandScreen::GetGpuExtraInfoAsListValue(
                                  base::JoinString(protocols, " ")));
   StorePlatformNameIntoListValue(list_value, "wayland");
   return list_value;
+}
+
+void WaylandScreen::SetDeviceScaleFactor(float scale) {
+  // If the device scale factor is forced, ignore the one provided as it's
+  // already set.
+  if (display::Display::HasForceDeviceScaleFactor())
+    return;
+
+  // See comment near the additional_scale_ in the header file.
+  float whole = 0;
+  additional_scale_ = std::modf(scale, &whole);
+  for (const auto& display : display_list_.displays()) {
+    OnOutputAddedOrUpdated(display.id(), display.bounds(),
+                           display.device_scale_factor());
+  }
 }
 
 }  // namespace ui
