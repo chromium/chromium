@@ -14415,6 +14415,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuMoveToOtherWindow">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User pressed 'Move to other window' in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuNewIncognitoTab">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'New incognito tab' in the app menu.</description>
@@ -14432,6 +14440,12 @@ should be able to be added at any place in this file.
   <description>
     User pressed 'New tab' in the app menu when start surface finale is enabled.
   </description>
+</action>
+
+<action name="MobileMenuNewWindow">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>User pressed 'New Window' in the app menu.</description>
 </action>
 
 <action name="MobileMenuOpenTabs">
