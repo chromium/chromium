@@ -274,7 +274,8 @@ void PasswordGenerationPopupControllerImpl::WebContentsDestroyed() {
 
 void PasswordGenerationPopupControllerImpl::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame() &&
+  if (navigation_handle->HasCommitted() &&
+      navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     HideImpl();
   }

@@ -12,12 +12,16 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_view_tester.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_base.h"
+#include "content/public/test/prerender_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -108,6 +112,70 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
       GetWebContents(), /*vertical_offset=*/-20);
   EXPECT_FALSE(controller_->Show(
       PasswordGenerationPopupController::kEditGeneratedPassword));
+}
+
+class PasswordGenerationPopupViewPrerenderingTest
+    : public PasswordGenerationPopupViewTest {
+ public:
+  PasswordGenerationPopupViewPrerenderingTest()
+      : prerender_helper_(base::BindRepeating(
+            &PasswordGenerationPopupViewTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~PasswordGenerationPopupViewPrerenderingTest() override = default;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    ASSERT_TRUE(test_server_handle_ =
+                    embedded_test_server()->StartAndReturnHandle());
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+};
+
+// Tests that the prerendering doesn't delete
+// PasswordGenerationPopupControllerImpl.
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
+                       PasswordGenerationPopupControllerInPrerendering) {
+  GURL url =
+      embedded_test_server()->GetURL("/password/nonplaceholder_username.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  autofill::password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(400, 600), /*max_length=*/20, u"element",
+      autofill::FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      autofill::FormData());
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          nullptr, ui_data.bounds, ui_data, nullptr, nullptr, GetWebContents(),
+          GetWebContents()->GetMainFrame());
+
+  EXPECT_TRUE(controller->Show(
+      PasswordGenerationPopupController::kEditGeneratedPassword));
+
+  auto prerender_url =
+      embedded_test_server()->GetURL("/password/password_form.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  // It should keep the current popup controller since the prerenedering should
+  // not affect the current page.
+  EXPECT_NE(controller, nullptr);
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+  // It should clear the current popup controller since the page loading deletes
+  // the popup controller from the previous page.
+  EXPECT_EQ(controller, nullptr);
 }
 
 }  // namespace autofill
