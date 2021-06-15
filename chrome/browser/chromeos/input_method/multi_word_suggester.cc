@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/multi_word_suggester.h"
 
+#include <cmath>
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
@@ -47,6 +48,17 @@ std::u16string ExtractFinalWord(const std::u16string& text) {
   return text.substr(offset);
 }
 
+int CalculateDismissedAccuracy(const LastKnownSuggestionState& state) {
+  size_t confirmed_text_end_pos = state.start_pos + state.confirmed_length;
+  size_t num_chars_accurately_predicted =
+      confirmed_text_end_pos >= state.predicted_text_start_pos
+          ? confirmed_text_end_pos - state.predicted_text_start_pos
+          : 0;
+  double accuracy = static_cast<double>(num_chars_accurately_predicted) /
+                    state.predicted_text_length;
+  return std::round(accuracy * 100);
+}
+
 void RecordTimeToAccept(base::TimeDelta delta) {
   base::UmaHistogramTimes("InputMethod.Assistive.TimeToAccept.MultiWord",
                           delta);
@@ -55,6 +67,11 @@ void RecordTimeToAccept(base::TimeDelta delta) {
 void RecordTimeToDismiss(base::TimeDelta delta) {
   base::UmaHistogramTimes("InputMethod.Assistive.TimeToDismiss.MultiWord",
                           delta);
+}
+
+void RecordDismissedAccuracy(int percentage) {
+  base::UmaHistogramPercentage(
+      "InputMethod.Assistive.DismissedAccuracy.MultiWord", percentage);
 }
 
 }  // namespace
@@ -106,15 +123,20 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
 
     DisplaySuggestion(suggestion_text, confirmed_length);
 
-    int start_pos = text_state_.text.length() >= confirmed_length
-                        ? text_state_.text.length() - confirmed_length
-                        : 0;
+    size_t start_pos = text_state_.text.length() >= confirmed_length
+                           ? text_state_.text.length() - confirmed_length
+                           : 0;
+    size_t predicted_text_start_pos = start_pos + confirmed_length;
+    size_t predicted_text_length = suggestion_text.length() - confirmed_length;
 
-    suggestion_state_ =
-        LastKnownSuggestionState{.start_pos = start_pos,
-                                 .text = suggestion_text,
-                                 .suggestion_mode = suggestion.mode,
-                                 .time_shown_to_user = base::TimeTicks::Now()};
+    suggestion_state_ = LastKnownSuggestionState{
+        .start_pos = start_pos,
+        .text = suggestion_text,
+        .confirmed_length = confirmed_length,
+        .predicted_text_start_pos = predicted_text_start_pos,
+        .predicted_text_length = predicted_text_length,
+        .suggestion_mode = suggestion.mode,
+        .time_shown_to_user = base::TimeTicks::Now()};
   }
 }
 
@@ -148,8 +170,9 @@ bool MultiWordSuggester::Suggest(const std::u16string& text,
                        base::CompareCase::INSENSITIVE_ASCII);
 
   if (matches_last_suggestion) {
-    DisplaySuggestion(last_suggestion_shown.text,
-                      possibly_confirmed_text.length());
+    int confirmed_length = possibly_confirmed_text.length();
+    DisplaySuggestion(last_suggestion_shown.text, confirmed_length);
+    suggestion_state_->confirmed_length = confirmed_length;
     return true;
   }
 
@@ -184,6 +207,8 @@ void MultiWordSuggester::DismissSuggestion() {
   if (suggestion_state_) {
     RecordTimeToDismiss(base::TimeTicks::Now() -
                         suggestion_state_->time_shown_to_user);
+    RecordDismissedAccuracy(
+        CalculateDismissedAccuracy(suggestion_state_.value()));
   }
 
   ResetSuggestionState();

@@ -22,6 +22,9 @@ struct LastKnownTextState {
 struct LastKnownSuggestionState {
   size_t start_pos;
   std::u16string text;
+  size_t confirmed_length;
+  size_t predicted_text_start_pos;
+  size_t predicted_text_length;
   ime::TextSuggestionMode suggestion_mode;
   base::TimeTicks time_shown_to_user;
 };
