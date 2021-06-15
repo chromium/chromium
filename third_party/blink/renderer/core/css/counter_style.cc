@@ -85,7 +85,7 @@ Vector<wtf_size_t> CyclicAlgorithm(int value, wtf_size_t num_symbols) {
   value -= 1;
   if (value < 0)
     value += num_symbols;
-  return {value};
+  return {static_cast<wtf_size_t>(value)};
 }
 
 // https://drafts.csswg.org/css-counter-styles/#fixed-system
@@ -95,7 +95,7 @@ Vector<wtf_size_t> FixedAlgorithm(int value,
   if (value < first_symbol_value ||
       static_cast<unsigned>(value - first_symbol_value) >= num_symbols)
     return Vector<wtf_size_t>();
-  return {value - first_symbol_value};
+  return {static_cast<wtf_size_t>(value - first_symbol_value)};
 }
 
 // https://drafts.csswg.org/css-counter-styles/#symbolic-system

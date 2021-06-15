@@ -327,10 +327,10 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
   }
 
   if (corrected_start != start_container ||
-      corrected_start_offset !=
+      static_cast<int>(corrected_start_offset) !=
           ephemeral_range.StartPosition().ComputeOffsetInContainerNode() ||
       corrected_end != end_container ||
-      corrected_end_offset !=
+      static_cast<int>(corrected_end_offset) !=
           ephemeral_range.EndPosition().ComputeOffsetInContainerNode()) {
     PositionInFlatTree start(corrected_start, corrected_start_offset);
     PositionInFlatTree end(corrected_end, corrected_end_offset);

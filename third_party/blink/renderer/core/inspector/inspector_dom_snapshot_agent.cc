@@ -61,7 +61,8 @@ std::unique_ptr<protocol::Array<double>> BuildRectForLayout(const int x,
                                                             const int width,
                                                             const int height) {
   return std::make_unique<std::vector<double>, std::initializer_list<double>>(
-      {x, y, width, height});
+      {static_cast<double>(x), static_cast<double>(y),
+       static_cast<double>(width), static_cast<double>(height)});
 }
 
 Document* GetEmbeddedDocument(PaintLayer* layer) {

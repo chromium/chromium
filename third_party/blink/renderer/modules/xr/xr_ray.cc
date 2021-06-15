@@ -136,7 +136,9 @@ DOMFloat32Array* XRRay::matrix() {
     TransformationMatrix matrix;
 
     const blink::FloatPoint3D desiredRayDirection = {
-        direction_->x(), direction_->y(), direction_->z()};
+        static_cast<float>(direction_->x()),
+        static_cast<float>(direction_->y()),
+        static_cast<float>(direction_->z())};
 
     // Translation from 0 to |origin_| is simply translation by |origin_|.
     // (implicit) Step 6: Let translation be the translation matrix with

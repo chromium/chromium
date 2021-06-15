@@ -882,11 +882,12 @@ ScriptPromise XRSession::requestHitTestSourceForTransientInput(
                          : MakeGarbageCollected<XRRay>();
 
   device::mojom::blink::XRRayPtr ray_mojo = device::mojom::blink::XRRay::New();
-  ray_mojo->origin = {offsetRay->origin()->x(), offsetRay->origin()->y(),
-                      offsetRay->origin()->z()};
-  ray_mojo->direction = {offsetRay->direction()->x(),
-                         offsetRay->direction()->y(),
-                         offsetRay->direction()->z()};
+  ray_mojo->origin = {static_cast<float>(offsetRay->origin()->x()),
+                      static_cast<float>(offsetRay->origin()->y()),
+                      static_cast<float>(offsetRay->origin()->z())};
+  ray_mojo->direction = {static_cast<float>(offsetRay->direction()->x()),
+                         static_cast<float>(offsetRay->direction()->y()),
+                         static_cast<float>(offsetRay->direction()->z())};
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

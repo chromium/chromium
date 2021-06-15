@@ -134,7 +134,7 @@ sk_sp<SkTypeface> FindUniqueFontNameFromSideloadedFonts(
     FT_Open_Args open_args = {
         FT_OPEN_MEMORY,
         reinterpret_cast<const FT_Byte*>(typeface_stream->getMemoryBase()),
-        typeface_stream->getLength()};
+        static_cast<FT_Long>(typeface_stream->getLength())};
     CHECK_EQ(FT_Err_Ok, FT_Open_Face(library, &open_args, 0, &font_face));
     font_family_name = FT_Get_Postscript_Name(font_face);
     FT_Done_Face(font_face);

@@ -378,7 +378,8 @@ void ShapeResultView::GetRunFontData(
     Vector<ShapeResult::RunFontData>* font_data) const {
   for (const auto& part : RunsOrParts()) {
     font_data->push_back(ShapeResult::RunFontData(
-        {part.run_->font_data_.get(), part.end() - part.begin()}));
+        {part.run_->font_data_.get(),
+         static_cast<wtf_size_t>(part.end() - part.begin())}));
   }
 }
 

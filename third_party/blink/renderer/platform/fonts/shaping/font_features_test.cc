@@ -57,7 +57,7 @@ TEST_P(FontFeaturesByOrientationTest,
   constexpr hb_tag_t vchw = HB_TAG('v', 'c', 'h', 'w');
   for (unsigned value = 0; value <= 1; ++value) {
     scoped_refptr<FontFeatureSettings> settings = FontFeatureSettings::Create();
-    settings->Append({IsHorizontal() ? chws : vchw, value});
+    settings->Append({IsHorizontal() ? chws : vchw, static_cast<int>(value)});
     FontDescription font_description;
     font_description.SetOrientation(GetOrientation());
     font_description.SetFeatureSettings(settings);

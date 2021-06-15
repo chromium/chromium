@@ -44,8 +44,8 @@ void InputDeviceInfo::SetVideoInputCapabilities(
       max_height = std::max(max_height, format.frame_size.height());
       max_frame_rate = std::max(max_frame_rate, format.frame_rate);
     }
-    platform_capabilities_.width = {1, max_width};
-    platform_capabilities_.height = {1, max_height};
+    platform_capabilities_.width = {1, static_cast<uint32_t>(max_width)};
+    platform_capabilities_.height = {1, static_cast<uint32_t>(max_height)};
     platform_capabilities_.aspect_ratio = {1.0 / max_height,
                                            static_cast<double>(max_width)};
     platform_capabilities_.frame_rate = {min_frame_rate, max_frame_rate};

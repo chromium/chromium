@@ -240,9 +240,9 @@ DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
     // The neural network expects these features to be in a specific order
     // within float array. Do not change the order here without also changing
     // the neural network code!
-    float feature_list[]{features.is_colorful, features.color_buckets_ratio,
-                         features.transparency_ratio,
-                         features.background_ratio};
+    float feature_list[]{
+        features.is_colorful ? 1.0f : 0.0f, features.color_buckets_ratio,
+        features.transparency_ratio, features.background_ratio};
 
     darkmode_tfnative_model::Inference(feature_list, &nn_out, &nn_temp);
     result = nn_out > 0 ? DarkModeResult::kApplyFilter

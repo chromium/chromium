@@ -548,20 +548,20 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
   CheckBlobBuffer(
       bloberizer_ng.Blobs(),
       {{
-          // T"esti"
-          {range_a.length() - 1,
+          // "Testi"
+          {static_cast<int>(range_a.length() - 1),
            string.Substring(range_a.from + 1, range_a.length() - 1).Utf8(),
            ExpectedRun::ClusterDirection::Ascending},
           // "ng"
-          {range_b.length(),
+          {static_cast<int>(range_b.length()),
            string.Substring(range_b.from, range_b.length()).Utf8(),
            ExpectedRun::ClusterDirection::Ascending},
           // " ShapeResultIterator::Cop"
-          {range_c.length(),
+          {static_cast<int>(range_c.length()),
            string.Substring(range_c.from, range_c.length()).Utf8(),
            ExpectedRun::ClusterDirection::Ascending},
           // "yRange"
-          {range_d.length(),
+          {static_cast<int>(range_d.length()),
            string.Substring(range_d.from, range_d.length()).Utf8(),
            ExpectedRun::ClusterDirection::Ascending},
       }});
@@ -609,15 +609,15 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
   CheckBlobBuffer(bloberizer_ng.Blobs(),
                   {{
                       // "𠜎𠜱𠝹"
-                      {range_a.length() / 2,
+                      {static_cast<int>(range_a.length() / 2),
                        string.Substring(range_a.from, range_a.length()).Utf8(),
                        ExpectedRun::ClusterDirection::Ascending},
                       // "𠱓𠱸𠲖"
-                      {range_b.length() / 2,
+                      {static_cast<int>(range_b.length() / 2),
                        string.Substring(range_b.from, range_b.length()).Utf8(),
                        ExpectedRun::ClusterDirection::Ascending},
                       // "𠳏𠳕"
-                      {range_c.length() / 2,
+                      {static_cast<int>(range_c.length() / 2),
                        string.Substring(range_c.from, range_c.length()).Utf8(),
                        ExpectedRun::ClusterDirection::Ascending},
                   }});

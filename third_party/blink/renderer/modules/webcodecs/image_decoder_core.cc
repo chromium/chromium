@@ -342,7 +342,9 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
   void* planes[cc::kNumYUVPlanes] = {yuv_frame_->data(0), yuv_frame_->data(1),
                                      yuv_frame_->data(2)};
   size_t row_bytes[cc::kNumYUVPlanes] = {
-      yuv_frame_->stride(0), yuv_frame_->stride(1), yuv_frame_->stride(2)};
+      static_cast<size_t>(yuv_frame_->stride(0)),
+      static_cast<size_t>(yuv_frame_->stride(1)),
+      static_cast<size_t>(yuv_frame_->stride(2))};
 
   // TODO(crbug.com/1073995): Add support for high bit depth format.
   const auto color_type = kGray_8_SkColorType;

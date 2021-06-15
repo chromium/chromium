@@ -229,11 +229,11 @@ OpenTypeMathSupport::GetGlyphPartRecords(
   auto converter =
       base::BindRepeating([](hb_ot_math_glyph_part_t record)
                               -> OpenTypeMathStretchData::GlyphPartRecord {
-        return {record.glyph,
+        return {static_cast<Glyph>(record.glyph),
                 HarfBuzzUnitsToFloat(record.start_connector_length),
                 HarfBuzzUnitsToFloat(record.end_connector_length),
                 HarfBuzzUnitsToFloat(record.full_advance),
-                record.flags & HB_MATH_GLYPH_PART_FLAG_EXTENDER};
+                !!(record.flags & HB_MATH_GLYPH_PART_FLAG_EXTENDER)};
       });
   Vector<OpenTypeMathStretchData::GlyphPartRecord> parts =
       GetHarfBuzzMathRecord(
