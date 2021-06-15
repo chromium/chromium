@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="change_picture.html">
+<link rel="import" href="dark_mode_subpage.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
@@ -50,6 +51,17 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
+
+        <!-- Dark mode -->
+        <template is="dom-if" if="[[isDarkModeAllowed_]]">
+          <cr-link-row
+              class="hr"
+              id="darkModeRow"
+              label="$i18n{darkModeTitle}"
+              on-click="navigateToDarkMode_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
       </div>
 
       <template is="dom-if" route-path="/changePicture">
@@ -77,6 +89,15 @@
           </settings-subpage>
         </template>
 
+      </template>
+
+      <template is="dom-if" route-path="/darkMode">
+        <settings-subpage
+            associated-control="[[$$('#darkModeRow')]]"
+            page-title="$i18n{darkModeTitle}">
+          <settings-dark-mode-subpage prefs="{{prefs}}">
+          </settings-dark-mode-subpage>
+        </settings-subpage>
       </template>
     </settings-animated-pages>
   </template>

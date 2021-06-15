@@ -62,6 +62,7 @@ js_modulizer("modulize") {
     "cups_printer_landing_page_tests.js",
     "cups_printer_page_tests.js",
     "cups_printer_test_utils.js",
+    "dark_mode_subpage_tests.js",
     "date_time_page_tests.js",
     "device_page_tests.js",
     "esim_install_error_dialog_test.js",

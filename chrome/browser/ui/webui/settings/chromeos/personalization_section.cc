@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -133,6 +134,10 @@ bool IsAmbientModePhotoPreviewAllowed() {
   return chromeos::features::IsAmbientModePhotoPreviewEnabled();
 }
 
+bool IsDarkModeAllowed() {
+  return ash::features::IsDarkLightModeEnabled();
+}
+
 GURL GetGooglePhotosURL() {
   return GURL(chrome::kGooglePhotosURL);
 }
@@ -209,6 +214,9 @@ void PersonalizationSection::AddLoadTimeData(
       {"ambientModeArtAlbumDialogCloseButtonLabel",
        IDS_OS_SETTINGS_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL},
       {"changePictureTitle", IDS_OS_SETTINGS_CHANGE_PICTURE_TITLE},
+      {"darkModeTitle", IDS_OS_SETTINGS_DARK_MODE_TITLE},
+      {"darkModeOn", IDS_OS_SETTINGS_DARK_MODE_ON},
+      {"darkModeOff", IDS_OS_SETTINGS_DARK_MODE_OFF},
       {"openWallpaperApp", IDS_OS_SETTINGS_OPEN_WALLPAPER_APP},
       {"personalizationPageTitle", IDS_OS_SETTINGS_PERSONALIZATION},
       {"setWallpaper", IDS_OS_SETTINGS_SET_WALLPAPER},
@@ -249,6 +257,7 @@ void PersonalizationSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM,
           base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
+  html_source->AddBoolean("isDarkModeAllowed", IsDarkModeAllowed());
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
@@ -322,6 +331,17 @@ void PersonalizationSection::RegisterHierarchy(
       mojom::SearchResultIcon::kWallpaper,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kAmbientModeArtGalleryAlbumSubpagePath);
+
+  // Dark mode.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_AMBIENT_MODE_TITLE, mojom::Subpage::kDarkMode,
+      mojom::SearchResultIcon::kWallpaper,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kDarkModeSubpagePath);
+  static constexpr mojom::Setting kDarkModeSettings[] = {
+      mojom::Setting::kDarkModeOnOff,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kDarkMode, kDarkModeSettings,
+                            generator);
 }
 
 void PersonalizationSection::OnAmbientModeEnabledStateChanged() {

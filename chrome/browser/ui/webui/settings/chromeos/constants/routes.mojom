@@ -82,6 +82,7 @@ enum Subpage {
   kAmbientModeArtGalleryAlbum = 504,
   // 505 was used for kWallpaper. Do not reuse.
   // 506 was used for kWallpaperImages. Do not reuse.
+  kDarkMode = 507,
 
   // Search and Assistant section.
   kAssistant = 600,
@@ -194,6 +195,7 @@ const string kAmbientModeGooglePhotosAlbumSubpagePath =
     "ambientMode/photos?topicSource=0";
 const string kAmbientModeArtGalleryAlbumSubpagePath =
     "ambientMode/photos?topicSource=1";
+const string kDarkModeSubpagePath = "darkMode";
 
 // Search and Assistant section.
 const string kSearchAndAssistantSectionPath = "osSearch";

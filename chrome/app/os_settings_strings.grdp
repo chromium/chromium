@@ -727,6 +727,17 @@
     Celsius
   </message>
 
+  <!-- Dark Mode Page -->
+  <message name="IDS_OS_SETTINGS_DARK_MODE_TITLE" desc="Label for row in settings page that opens the dark mode settings page to schedule enabling and disabling dark mode time and modes.">
+    Dark theme
+  </message>
+  <message name="IDS_OS_SETTINGS_DARK_MODE_ON" desc="Label for the toggle row in dark mode settings page when it is enabled.">
+    On
+  </message>
+  <message name="IDS_OS_SETTINGS_DARK_MODE_OFF" desc="Label for the toggle row in dark mode settings page when it is disabled.">
+    Off
+  </message>
+
   <!-- Search and Assistant section. -->
   <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL" desc="Label in OS settings describing search engine behavior.">
     Preferred search engine

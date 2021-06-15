@@ -164,6 +164,8 @@ cr.define('settings', function() {
       r.AMBIENT_MODE_PHOTOS = createSubpage(
           r.AMBIENT_MODE, 'ambientMode/photos',
           Subpage.kAmbientModeGooglePhotosAlbum);
+      r.DARK_MODE = createSubpage(
+          r.PERSONALIZATION, mojom.DARK_MODE_SUBPAGE_PATH, Subpage.kDarkMode);
     }
 
     // Search and Assistant section.

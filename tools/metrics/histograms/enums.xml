@@ -59660,6 +59660,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="502" label="Ambient Mode Source"/>
   <int value="503" label="Change Device Account Image"/>
   <int value="504" label="Ambient Mode Update Photos Containers (Deprecated)"/>
+  <int value="505" label="Dark Mode: On/Off"/>
   <int value="600" label="Preferred Search Engine"/>
   <int value="601" label="Assistant: On/Off"/>
   <int value="602" label="Assistant: Related Info"/>
@@ -59850,6 +59851,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="504" label="Ambient Mode Art Gallery Album"/>
   <int value="505" label="Wallpaper (Deprecated)"/>
   <int value="506" label="Wallpaper Images (Deprecated)"/>
+  <int value="507" label="Dark Mode"/>
   <int value="600" label="Assistant"/>
   <int value="601" label="Search"/>
   <int value="700" label="App Management"/>

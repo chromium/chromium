@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":change_picture.m",
     ":change_picture_browser_proxy",
+    ":dark_mode_subpage.m",
     ":personalization_page.m",
     ":wallpaper_browser_proxy",
   ]
@@ -45,6 +46,17 @@ js_library("change_picture_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
+js_library("dark_mode_subpage.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/dark_mode_subpage.m.js" ]
+
+  deps = [
+    "../../prefs:prefs",
+    "../../prefs:prefs_behavior",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+  extra_deps = [ ":dark_mode_subpage_module" ]
+}
+
 js_library("personalization_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/personalization_page.m.js" ]
   deps = [
@@ -69,6 +81,7 @@ js_library("wallpaper_browser_proxy") {
 group("polymer3_elements") {
   public_deps = [
     ":change_picture_module",
+    ":dark_mode_subpage_module",
     ":personalization_page_module",
   ]
 }
@@ -83,6 +96,15 @@ polymer_modulizer("change_picture") {
                    "ui/webui/resources/html/assert.html|assert,assertNotReached",
                    "ui/webui/resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.html|IronA11yAnnouncer",
                  ]
+}
+
+polymer_modulizer("dark_mode_subpage") {
+  js_file = "dark_mode_subpage.js"
+  html_file = "dark_mode_subpage.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
 }
 
 polymer_modulizer("personalization_page") {

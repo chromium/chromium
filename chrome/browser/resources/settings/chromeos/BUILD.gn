@@ -470,6 +470,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/parental_controls_page/parental_controls_browser_proxy.m.js",
     "chromeos/parental_controls_page/parental_controls_page.m.js",
     "chromeos/personalization_page/change_picture.m.js",
+    "chromeos/personalization_page/dark_mode_subpage.m.js",
     "chromeos/personalization_page/personalization_page.m.js",
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",

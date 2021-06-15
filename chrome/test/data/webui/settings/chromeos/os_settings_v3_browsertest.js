@@ -311,6 +311,7 @@ TEST_F(
  ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],
  ['CupsPrinterPage', 'cups_printer_page_tests.m.js'],
+ ['DarkModeSubpage', 'dark_mode_subpage_tests.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.m.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.m.js'],

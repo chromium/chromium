@@ -284,6 +284,9 @@ const char kMessageCenterLockScreenModeHideSensitive[] = "hideSensitive";
 // A boolean pref storing the enabled status of the ambient color feature.
 const char kAmbientColorEnabled[] = "ash.ambient_color.enabled";
 
+// A boolean pref that indicates whether dark mode is enabled.
+const char kDarkModeEnabled[] = "ash.dark_mode.enabled";
+
 // A boolean pref storing the enabled status of the NightLight feature.
 const char kNightLightEnabled[] = "ash.night_light.enabled";
 
@@ -608,8 +611,6 @@ const char kMouseReverseScroll[] = "settings.mouse.reverse_scroll";
 // contextual nudge was shown.
 const char kMultipasteNudges[] = "ash.clipboard.multipaste_nudges";
 
-// A boolean pref that indicates whether dark mode is enabled.
-const char kDarkModeEnabled[] = "cros.system.dark_mode_enabled";
 // A boolean pref that indicates whether the color mode is themed. If true, the
 // background color will be calculated based on extracted wallpaper color.
 const char kColorModeThemed[] = "cros.system.color_mode_themed";

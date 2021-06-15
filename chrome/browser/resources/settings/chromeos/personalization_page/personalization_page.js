@@ -36,6 +36,15 @@ Polymer({
       readOnly: true,
     },
 
+    /** @private */
+    isDarkModeAllowed_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isDarkModeAllowed');
+      },
+      readOnly: true,
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -109,6 +118,11 @@ Polymer({
   /** @private */
   navigateToAmbientMode_() {
     settings.Router.getInstance().navigateTo(settings.routes.AMBIENT_MODE);
+  },
+
+  /** @private */
+  navigateToDarkMode_() {
+    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE);
   },
 
   /**

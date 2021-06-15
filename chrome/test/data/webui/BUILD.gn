@@ -294,6 +294,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/app_management_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/arc_detail_view_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/chrome_app_detail_view_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/dark_mode_subpage_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/dom_switch_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/main_view_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/permission_item_test.m.js",

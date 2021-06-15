@@ -34,6 +34,7 @@
  *   BLUETOOTH_DEVICES: !settings.Route,
  *   CHANGE_PICTURE: !settings.Route,
  *   CUPS_PRINTERS: !settings.Route,
+ *   DARK_MODE: !settings.Route,
  *   DATETIME: !settings.Route,
  *   DATETIME_TIMEZONE_SUBPAGE: !settings.Route,
  *   DETAILED_BUILD_INFO: !settings.Route,

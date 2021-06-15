@@ -117,6 +117,7 @@ ASH_PUBLIC_EXPORT extern const char kMessageCenterLockScreenModeHide[];
 ASH_PUBLIC_EXPORT extern const char kMessageCenterLockScreenModeHideSensitive[];
 
 ASH_PUBLIC_EXPORT extern const char kAmbientColorEnabled[];
+ASH_PUBLIC_EXPORT extern const char kDarkModeEnabled[];
 ASH_PUBLIC_EXPORT extern const char kNightLightEnabled[];
 ASH_PUBLIC_EXPORT extern const char kNightLightTemperature[];
 ASH_PUBLIC_EXPORT extern const char kNightLightScheduleType[];
@@ -222,7 +223,6 @@ ASH_PUBLIC_EXPORT extern const char kMouseReverseScroll[];
 
 ASH_PUBLIC_EXPORT extern const char kMultipasteNudges[];
 
-ASH_PUBLIC_EXPORT extern const char kDarkModeEnabled[];
 ASH_PUBLIC_EXPORT extern const char kColorModeThemed[];
 
 ASH_PUBLIC_EXPORT extern const char kAppNotificationBadgingEnabled[];

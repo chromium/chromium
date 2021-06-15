@@ -10,7 +10,7 @@
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 let personalizationPage = null;
@@ -34,6 +34,13 @@ function createPersonalizationPage() {
         },
       },
     },
+    ash: {
+      dark_mode: {
+        enabled: {
+          value: true,
+        }
+      }
+    }
   });
 
   personalizationPage.set('pageVisibility', {
@@ -55,9 +62,10 @@ suite('PersonalizationHandler', function() {
     createPersonalizationPage();
   });
 
-  teardown(function() {
+  teardown(async function() {
     personalizationPage.remove();
     settings.Router.getInstance().resetRouteForTesting();
+    await test_util.flushTasks();
   });
 
   test('wallpaperManager', async () => {
@@ -128,6 +136,38 @@ suite('PersonalizationHandler', function() {
           settings.routes.AMBIENT_MODE,
           settings.Router.getInstance().getCurrentRoute());
     }
+  });
+
+  test('darkMode', function() {
+    const isGuest = loadTimeData.getBoolean('isGuest');
+    // Enable dark mode feature and guest mode, so dark mode row should be
+    // hidden due to no personalization section show in the guest mode.
+    loadTimeData.overrideValues({isDarkModeAllowed: true, isGuest: true});
+    assertTrue(loadTimeData.getBoolean('isDarkModeAllowed'));
+    Polymer.dom.flush();
+    let row = personalizationPage.$$('#darkModeRow');
+    assertTrue(!row);
+
+    // Disable guest mode and check that dark mode row shows up.
+    loadTimeData.overrideValues({isDarkModeAllowed: true, isGuest: false});
+    assertFalse(loadTimeData.getBoolean('isGuest'));
+    createPersonalizationPage();
+    Polymer.dom.flush();
+    row = personalizationPage.$$('#darkModeRow');
+    assertFalse(!row);
+    row.click();
+    assertTrue(
+        settings.routes.DARK_MODE ===
+        settings.Router.getInstance().getCurrentRoute());
+
+    // Disable dark mode feature and check that dark mode row is hidden.
+    loadTimeData.overrideValues({isDarkModeAllowed: false, isGuest: false});
+    assertFalse(loadTimeData.getBoolean('isDarkModeAllowed'));
+    createPersonalizationPage();
+    personalizationPage.prefs.ash.dark_mode.enabled.value = false;
+    Polymer.dom.flush();
+    row = personalizationPage.$$('#darkModeRow');
+    assertTrue(!row);
   });
 
   suite('PersonalizationTest_ReleaseOnly', function() {
