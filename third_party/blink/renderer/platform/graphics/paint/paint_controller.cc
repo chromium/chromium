@@ -518,11 +518,14 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
     new_subsequences_.tree.push_back(SubsequenceMarkers{
         markers.client,
         markers.start_chunk_index + new_start_chunk_index - start_chunk_index,
-        markers.end_chunk_index + new_start_chunk_index - start_chunk_index});
+        markers.end_chunk_index + new_start_chunk_index - start_chunk_index,
+        /*is_moved_from_cached_subsequence*/ true});
     ++num_cached_new_subsequences_;
   }
 
   EndSubsequence(new_subsequence_index);
+  new_subsequences_.tree[new_subsequence_index]
+      .is_moved_from_cached_subsequence = true;
 
 #if DCHECK_IS_ON()
   DCHECK_EQ(properties_before_subsequence, CurrentPaintChunkProperties());
@@ -592,6 +595,13 @@ void PaintController::FinishCycle() {
   // Validate display item clients that have validly cached subsequence or
   // display items in this PaintController.
   for (auto& item : current_subsequences_.tree) {
+    if (item.is_moved_from_cached_subsequence) {
+      // We don't need to validate the client of a cached subsequence, because
+      // it should be already valid. See http://crbug.com/1050090 for more
+      // details.
+      DCHECK(!item.client->IsCacheable() || ClientCacheIsValid(*item.client));
+      continue;
+    }
     if (item.client->IsCacheable())
       item.client->Validate();
   }

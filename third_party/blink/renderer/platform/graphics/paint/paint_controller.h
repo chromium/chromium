@@ -361,6 +361,7 @@ class PLATFORM_EXPORT PaintController {
     // subsequence.
     wtf_size_t start_chunk_index = 0;
     wtf_size_t end_chunk_index = 0;
+    bool is_moved_from_cached_subsequence = false;
   };
 
   wtf_size_t GetSubsequenceIndex(const DisplayItemClient&) const;
