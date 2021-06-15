@@ -69,7 +69,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
         image, container_size_without_zoom, zoom, url));
   }
 
-  IntSize Size() const override;
+  IntSize SizeWithConfig(SizeConfig) const override;
   FloatSize SizeAsFloat(RespectImageOrientationEnum) const override;
 
   bool HasIntrinsicSize() const override { return image_->HasIntrinsicSize(); }

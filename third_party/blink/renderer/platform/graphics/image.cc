@@ -338,14 +338,6 @@ bool Image::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
   return true;
 }
 
-IntSize Image::Size(
-    RespectImageOrientationEnum respect_image_orientation) const {
-  if (respect_image_orientation == kRespectImageOrientation) {
-    return PreferredDisplaySize();
-  }
-  return DensityCorrectedSize();
-}
-
 SkBitmap Image::AsSkBitmapForCurrentFrame(
     RespectImageOrientationEnum respect_image_orientation) {
   PaintImage paint_image = PaintImageForCurrentFrame();

@@ -35,11 +35,11 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImage::Create(
       orientation);
 }
 
-IntSize StaticBitmapImage::PreferredDisplaySize() const {
-  if (orientation_.UsesWidthAsHeight())
-    return Size().TransposedSize();
-  else
-    return Size();
+IntSize StaticBitmapImage::SizeWithConfig(SizeConfig config) const {
+  IntSize size = SizeInternal();
+  if (config.apply_orientation && orientation_.UsesWidthAsHeight())
+    size = size.TransposedSize();
+  return size;
 }
 
 void StaticBitmapImage::DrawHelper(

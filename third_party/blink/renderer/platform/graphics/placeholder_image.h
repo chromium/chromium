@@ -40,7 +40,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
 
   ~PlaceholderImage() override;
 
-  IntSize Size() const override;
+  IntSize SizeWithConfig(SizeConfig) const override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,

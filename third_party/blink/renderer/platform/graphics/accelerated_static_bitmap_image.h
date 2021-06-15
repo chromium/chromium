@@ -67,7 +67,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       viz::ReleaseCallback release_callback);
 
   bool CurrentFrameKnownToBeOpaque() override;
-  IntSize Size() const override;
   bool IsTextureBacked() const override { return true; }
   scoped_refptr<StaticBitmapImage> ConvertToColorSpace(sk_sp<SkColorSpace>,
                                                        SkColorType) override;
@@ -144,6 +143,8 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   void CreateImageFromMailboxIfNeeded();
   void InitializeTextureBacking(GLuint shared_image_texture_id);
+
+  IntSize SizeInternal() const override;
 
   const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;

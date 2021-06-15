@@ -21,7 +21,7 @@
 
 namespace blink {
 
-IntSize SVGImageForContainer::Size() const {
+IntSize SVGImageForContainer::SizeWithConfig(SizeConfig) const {
   // The image orientation is irrelevant because there is not concept of
   // orientation for SVG images.
   return RoundedIntSize(SizeAsFloat(kRespectImageOrientation));

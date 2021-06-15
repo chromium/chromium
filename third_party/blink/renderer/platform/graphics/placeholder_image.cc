@@ -219,7 +219,7 @@ PlaceholderImage::PlaceholderImage(ImageObserver* observer,
 
 PlaceholderImage::~PlaceholderImage() = default;
 
-IntSize PlaceholderImage::Size() const {
+IntSize PlaceholderImage::SizeWithConfig(SizeConfig) const {
   return size_;
 }
 

@@ -284,7 +284,7 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
   return true;
 }
 
-IntSize SVGImage::Size() const {
+IntSize SVGImage::SizeWithConfig(SizeConfig) const {
   return RoundedIntSize(intrinsic_size_);
 }
 

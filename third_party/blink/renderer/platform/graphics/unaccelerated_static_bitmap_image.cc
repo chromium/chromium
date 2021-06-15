@@ -66,7 +66,7 @@ UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
   }
 }
 
-IntSize UnacceleratedStaticBitmapImage::Size() const {
+IntSize UnacceleratedStaticBitmapImage::SizeInternal() const {
   return IntSize(paint_image_.width(), paint_image_.height());
 }
 

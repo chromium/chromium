@@ -54,9 +54,8 @@ class TestImage : public Image {
     return base::AdoptRef(new TestImage(size));
   }
 
-  IntSize Size() const override {
+  IntSize SizeWithConfig(SizeConfig) const override {
     DCHECK(image_);
-
     return IntSize(image_->width(), image_->height());
   }
 

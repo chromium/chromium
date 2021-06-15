@@ -106,19 +106,44 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   virtual bool HasIntrinsicSize() const { return true; }
 
-  // Size of the Image without any density correction or orientation applied.
-  virtual IntSize Size() const = 0;
+  struct SizeConfig {
+    // Apply density correction.
+    bool apply_density = false;
+
+    // Apply preferred orientation.
+    bool apply_orientation = false;
+  };
+
+  // Size of the Image optionally modified per the provided SizeConfig.
+  virtual IntSize SizeWithConfig(SizeConfig) const = 0;
+
+  // Size of the Image.
+  IntSize Size() const { return SizeWithConfig({}); }
 
   // Size of the Image with density correction applied.
-  virtual IntSize DensityCorrectedSize() const { return Size(); }
-
-  // Size of the Image with density correction applied. If the argument is
-  // kRespectImageOrientation orientation is applied as well.
-  IntSize Size(RespectImageOrientationEnum) const;
+  IntSize DensityCorrectedSize() const {
+    SizeConfig config;
+    config.apply_density = true;
+    return SizeWithConfig(config);
+  }
 
   // Size of the Image with density correction and orientation applied
   // regardless of any settings or style affecting orientation.
-  virtual IntSize PreferredDisplaySize() const { return Size(); }
+  IntSize PreferredDisplaySize() const {
+    SizeConfig config;
+    config.apply_density = true;
+    config.apply_orientation = true;
+    return SizeWithConfig(config);
+  }
+
+  // Size of the Image with density correction applied. If the argument is
+  // kRespectImageOrientation orientation is applied as well.
+  IntSize Size(RespectImageOrientationEnum respect_orientation) const {
+    SizeConfig config;
+    config.apply_density = true;
+    config.apply_orientation = respect_orientation == kRespectImageOrientation;
+    return SizeWithConfig(config);
+  }
 
   // Same as Size(RespectImageOrientationEnum) above, but returns a floating
   // point representation of the size. For subclasses of Image that can have a

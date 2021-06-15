@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/image_observer.h"
 
 namespace blink {
 
@@ -47,7 +46,9 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
 
   bool HasIntrinsicSize() const override { return true; }
 
-  IntSize Size() const override { return FlooredIntSize(size_); }
+  IntSize SizeWithConfig(SizeConfig) const override {
+    return FlooredIntSize(size_);
+  }
 
  protected:
   void Draw(cc::PaintCanvas*,

@@ -73,7 +73,7 @@ class CORE_EXPORT SVGImage final : public Image {
   static bool IsInSVGImage(const Node*);
 
   bool IsSVGImage() const override { return true; }
-  IntSize Size() const override;
+  IntSize SizeWithConfig(SizeConfig) const override;
 
   void CheckLoaded() const;
   bool CurrentFrameHasSingleSecurityOrigin() const override;

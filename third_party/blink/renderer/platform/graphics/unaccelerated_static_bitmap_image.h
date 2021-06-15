@@ -27,7 +27,6 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
       ImageOrientation orientation = ImageOrientationEnum::kDefault);
 
   bool CurrentFrameKnownToBeOpaque() override;
-  IntSize Size() const override;
   bool IsPremultiplied() const override;
   scoped_refptr<StaticBitmapImage> ConvertToColorSpace(sk_sp<SkColorSpace>,
                                                        SkColorType) override;
@@ -50,6 +49,8 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
  private:
   UnacceleratedStaticBitmapImage(sk_sp<SkImage>, ImageOrientation);
   UnacceleratedStaticBitmapImage(PaintImage, ImageOrientation);
+
+  IntSize SizeInternal() const override;
 
   PaintImage paint_image_;
   THREAD_CHECKER(thread_checker_);

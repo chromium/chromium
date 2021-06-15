@@ -38,7 +38,9 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
 
   bool HasIntrinsicSize() const override { return false; }
 
-  IntSize Size() const override { return RoundedIntSize(size_); }
+  IntSize SizeWithConfig(SizeConfig) const override {
+    return RoundedIntSize(size_);
+  }
   FloatSize SizeAsFloat(RespectImageOrientationEnum) const override {
     return size_;
   }

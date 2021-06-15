@@ -97,7 +97,7 @@ AcceleratedStaticBitmapImage::~AcceleratedStaticBitmapImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-IntSize AcceleratedStaticBitmapImage::Size() const {
+IntSize AcceleratedStaticBitmapImage::SizeInternal() const {
   return IntSize(sk_image_info_.width(), sk_image_info_.height());
 }
 

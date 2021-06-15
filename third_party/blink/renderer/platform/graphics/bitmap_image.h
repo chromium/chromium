@@ -65,8 +65,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   bool CurrentFrameHasSingleSecurityOrigin() const override;
 
-  IntSize Size() const override;
-  IntSize PreferredDisplaySize() const override;
+  IntSize SizeWithConfig(SizeConfig) const override;
   bool HasDefaultOrientation() const override;
   bool GetHotSpot(IntPoint&) const override;
   String FilenameExtension() const override;
@@ -104,8 +103,6 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   void SetDecoderForTesting(std::unique_ptr<DeferredImageDecoder> decoder) {
     decoder_ = std::move(decoder);
   }
-
-  IntSize DensityCorrectedSize() const override;
 
   // Records the decoded image type in a UseCounter. |use_counter| may be a null
   // pointer.
@@ -162,9 +159,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   std::unique_ptr<DeferredImageDecoder> decoder_;
   mutable IntSize size_;  // The size to use for the overall image (will just
                           // be the size of the first image).
-  mutable IntSize size_respecting_orientation_;
   mutable IntSize density_corrected_size_;
-  mutable IntSize density_corrected_size_respecting_orientation_;
 
   // This caches the PaintImage created with the last updated encoded data to
   // ensure re-use of generated decodes. This is cleared each time the encoded
@@ -178,6 +173,8 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool all_data_received_ : 1;  // Whether we've received all our data.
   mutable bool have_size_ : 1;  // Whether our |m_size| member variable has the
                                 // final overall image size yet.
+  mutable bool preferred_size_is_transposed_ : 1;  // Whether the preferred size
+                                                   // uses width as height.
   bool size_available_ : 1;     // Whether we can obtain the size of the first
                                 // image frame from ImageIO yet.
   bool have_frame_count_ : 1;
