@@ -7,9 +7,9 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
@@ -22,7 +22,7 @@ namespace {
 // Type names corresponding to MCSProtoTags. Useful for identifying what type
 // of MCS protobuf is contained within a google::protobuf::MessageLite object.
 // WARNING: must match the order in MCSProtoTag.
-const char* kProtoNames[] = {
+const char* const kProtoNames[] = {
   "mcs_proto.HeartbeatPing",
   "mcs_proto.HeartbeatAck",
   "mcs_proto.LoginRequest",

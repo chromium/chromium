@@ -12,9 +12,9 @@
 
 #include "google_apis/google_api_keys_unittest.h"
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_command_line.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
