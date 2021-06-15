@@ -49,9 +49,10 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
 }
 
 std::unique_ptr<SkiaOutputDevice::ScopedPaint>
-SkiaOutputDeviceVulkanSecondaryCB::BeginScopedPaint() {
+SkiaOutputDeviceVulkanSecondaryCB::BeginScopedPaint(
+    bool allocate_frame_buffer) {
   std::vector<GrBackendSemaphore> end_semaphores;
-  SkSurface* sk_surface = BeginPaint(&end_semaphores);
+  SkSurface* sk_surface = BeginPaint(allocate_frame_buffer, &end_semaphores);
   return std::make_unique<SkiaOutputDevice::ScopedPaint>(
       std::move(end_semaphores), this, sk_surface);
 }
@@ -90,7 +91,9 @@ void SkiaOutputDeviceVulkanSecondaryCB::PostSubBuffer(
 }
 
 SkSurface* SkiaOutputDeviceVulkanSecondaryCB::BeginPaint(
+    bool allocate_frame_buffer,
     std::vector<GrBackendSemaphore>* end_semaphores) {
+  DCHECK(!allocate_frame_buffer);
   return nullptr;
 }
 

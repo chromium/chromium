@@ -489,11 +489,28 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   }
   current_buffer_modified_ = false;
 
+  pending_swaps_++;
+  if (AvailableBuffersLowerBound() > 0) {
+    consecutive_frames_with_extra_buffer_++;
+  } else {
+    consecutive_frames_with_extra_buffer_ = 0;
+  }
+
+  constexpr int kFreeBufferThreshold = 10;
+  bool release_one_buffer =
+      capabilities_.use_dynamic_frame_buffer_allocation &&
+      consecutive_frames_with_extra_buffer_ > kFreeBufferThreshold &&
+      AvailableBuffersLowerBound() > 0;
+  if (release_one_buffer) {
+    consecutive_frames_with_extra_buffer_ = 0;
+    num_allocated_buffers_--;
+  }
+
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
-  auto callback =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SwapBuffers,
-                     base::Unretained(impl_on_gpu_.get()), std::move(frame));
+  auto callback = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SwapBuffers,
+                                 base::Unretained(impl_on_gpu_.get()),
+                                 std::move(frame), release_one_buffer);
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
                  /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
@@ -621,6 +638,10 @@ void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/false);
   } else {
+    bool allocate_new_buffer = ShouldCreateNewBufferForNextSwap();
+    if (allocate_new_buffer)
+      num_allocated_buffers_++;
+
     // Draw on the root render pass.
     current_buffer_modified_ = true;
     sk_sp<SkDeferredDisplayList> overdraw_ddl;
@@ -636,7 +657,8 @@ void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
         &SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
         base::Unretained(impl_on_gpu_.get()), std::move(ddl),
         std::move(overdraw_ddl), std::move(images_in_current_paint_),
-        resource_sync_tokens_, std::move(on_finished), draw_rectangle_);
+        resource_sync_tokens_, std::move(on_finished), draw_rectangle_,
+        allocate_new_buffer);
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/true);
     draw_rectangle_.reset();
@@ -940,6 +962,9 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
       frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size_);
   }
 
+  DCHECK_GT(pending_swaps_, 0);
+  pending_swaps_--;
+
   if (use_damage_area_from_skia_output_device_) {
     damage_of_current_buffer_ = params.frame_buffer_damage_area;
     DCHECK(damage_of_current_buffer_);
@@ -1190,9 +1215,16 @@ gfx::Rect SkiaOutputSurfaceImpl::GetCurrentFramebufferDamage() const {
     DCHECK(damage_of_current_buffer_);
     return *damage_of_current_buffer_;
   }
+
   if (!frame_buffer_damage_tracker_) {
     return gfx::Rect();
   }
+
+  // Allocating brand new buffer, so need to draw whole frame.
+  if (ShouldCreateNewBufferForNextSwap()) {
+    return gfx::Rect(size_);
+  }
+
   return frame_buffer_damage_tracker_->GetCurrentFrameBufferDamage();
 }
 
@@ -1219,6 +1251,18 @@ void SkiaOutputSurfaceImpl::InitDelegatedInkPointRendererReceiver(
       base::Unretained(impl_on_gpu_.get()), std::move(pending_receiver));
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
+}
+
+int SkiaOutputSurfaceImpl::AvailableBuffersLowerBound() const {
+  // Up to 1 buffer may be held for display, and each pending swap can use up
+  // to 1 buffer. Note the result can be negative.
+  return num_allocated_buffers_ - 1 - pending_swaps_;
+}
+
+bool SkiaOutputSurfaceImpl::ShouldCreateNewBufferForNextSwap() const {
+  return capabilities_.use_dynamic_frame_buffer_allocation &&
+         AvailableBuffersLowerBound() <= 0 &&
+         num_allocated_buffers_ < capabilities_.number_of_buffers;
 }
 
 }  // namespace viz

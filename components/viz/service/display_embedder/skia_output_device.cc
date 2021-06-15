@@ -112,9 +112,9 @@ SkiaOutputDevice::~SkiaOutputDevice() {
 }
 
 std::unique_ptr<SkiaOutputDevice::ScopedPaint>
-SkiaOutputDevice::BeginScopedPaint() {
+SkiaOutputDevice::BeginScopedPaint(bool allocate_frame_buffer) {
   std::vector<GrBackendSemaphore> end_semaphores;
-  SkSurface* sk_surface = BeginPaint(&end_semaphores);
+  SkSurface* sk_surface = BeginPaint(allocate_frame_buffer, &end_semaphores);
   if (!sk_surface) {
     return nullptr;
   }
@@ -135,6 +135,10 @@ void SkiaOutputDevice::CommitOverlayPlanes(BufferPresentedCallback feedback,
 void SkiaOutputDevice::PostSubBuffer(const gfx::Rect& rect,
                                      BufferPresentedCallback feedback,
                                      OutputSurfaceFrame frame) {
+  NOTREACHED();
+}
+
+void SkiaOutputDevice::ReleaseOneFrameBuffer() {
   NOTREACHED();
 }
 

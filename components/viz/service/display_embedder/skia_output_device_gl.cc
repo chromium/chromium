@@ -454,7 +454,9 @@ void SkiaOutputDeviceGL::DiscardBackbuffer() {
 }
 
 SkSurface* SkiaOutputDeviceGL::BeginPaint(
+    bool allocate_frame_buffer,
     std::vector<GrBackendSemaphore>* end_semaphores) {
+  DCHECK(!allocate_frame_buffer);
   DCHECK(sk_surface_);
   return sk_surface_.get();
 }

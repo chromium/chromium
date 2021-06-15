@@ -21,6 +21,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kDisableDeJelly;
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicColorGamut;
 #endif
+VIZ_COMMON_EXPORT extern const base::Feature kDynamicBufferQueueAllocation;
 VIZ_COMMON_EXPORT extern const base::Feature kFastSolidColorDraw;
 VIZ_COMMON_EXPORT extern const base::Feature kVizFrameSubmissionForWebView;
 VIZ_COMMON_EXPORT extern const base::Feature kUsePreferredIntervalForVideo;

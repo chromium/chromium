@@ -59,6 +59,12 @@ const base::Feature kUseSkiaRenderer {
 const base::Feature kDisableDeJelly{"DisableDeJelly",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// On platform and configuration where viz controls the allocation of frame
+// buffers (ie SkiaOutputDeviceBufferQueue is used), allocate and release frame
+// buffers on demand.
+const base::Feature kDynamicBufferQueueAllocation{
+    "DynamicBufferQueueAllocation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.

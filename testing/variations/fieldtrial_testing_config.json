@@ -3181,6 +3181,22 @@
             ]
         }
     ],
+    "DynamicBufferQueueAllocation": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DynamicBufferQueueAllocation"
+                    ]
+                }
+            ]
+        }
+    ],
     "DynamicTcmallocThreadCache": [
         {
             "platforms": [

@@ -81,7 +81,9 @@ void SkiaOutputDeviceWebView::SwapBuffers(BufferPresentedCallback feedback,
 }
 
 SkSurface* SkiaOutputDeviceWebView::BeginPaint(
+    bool allocate_frame_buffer,
     std::vector<GrBackendSemaphore>* end_semaphores) {
+  DCHECK(!allocate_frame_buffer);
   DCHECK(sk_surface_);
 
   unsigned int fbo = gl_surface_->GetBackingFramebufferObject();

@@ -25,6 +25,7 @@ class SkiaOutputDeviceVulkanSecondaryCBOffscreen final
   ~SkiaOutputDeviceVulkanSecondaryCBOffscreen() override;
 
   SkSurface* BeginPaint(
+      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;

@@ -647,7 +647,6 @@ std::vector<std::unique_ptr<OutputPresenter::Image>>
 OutputPresenterX11::AllocateImages(gfx::ColorSpace color_space,
                                    gfx::Size image_size,
                                    size_t num_images) {
-  DCHECK_EQ(num_images, kNumberOfBuffers);
   auto window = static_cast<x11::Window>(dependency_->GetSurfaceHandle());
   std::vector<std::unique_ptr<Image>> images(num_images);
   for (size_t i = 0; i < num_images; ++i) {

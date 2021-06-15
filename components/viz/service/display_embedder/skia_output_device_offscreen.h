@@ -39,6 +39,7 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
   SkSurface* BeginPaint(
+      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 

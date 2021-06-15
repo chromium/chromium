@@ -660,7 +660,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
-    absl::optional<gfx::Rect> draw_rectangle) {
+    absl::optional<gfx::Rect> draw_rectangle,
+    bool allocate_frame_buffer) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!scoped_output_device_paint_);
@@ -684,7 +685,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   // We do not reset scoped_output_device_paint_ after drawing the ddl until
   // SwapBuffers() is called, because we may need access to output_sk_surface()
   // for CopyOutput().
-  scoped_output_device_paint_ = output_device_->BeginScopedPaint();
+  scoped_output_device_paint_ =
+      output_device_->BeginScopedPaint(allocate_frame_buffer);
   if (!scoped_output_device_paint_) {
     MarkContextLost(ContextLostReason::CONTEXT_LOST_BEGIN_PAINT_FAILED);
     return;
@@ -758,10 +760,13 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
   output_surface_plane_ = output_surface_plane;
 }
 
-void SkiaOutputSurfaceImplOnGpu::SwapBuffers(
-    OutputSurfaceFrame frame) {
+void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame,
+                                             bool release_frame_buffer) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::SwapBuffers");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (release_frame_buffer)
+    output_device_->ReleaseOneFrameBuffer();
 
   SwapBuffersInternal(std::move(frame));
 }

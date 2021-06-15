@@ -54,8 +54,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
                gfx::BufferFormat format,
                gfx::OverlayTransform transform) override;
   SkSurface* BeginPaint(
+      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
+  void ReleaseOneFrameBuffer() override;
 
   bool IsPrimaryPlaneOverlay() const override;
   void SchedulePrimaryPlane(

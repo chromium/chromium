@@ -44,8 +44,10 @@ SkiaOutputDeviceVulkanSecondaryCBOffscreen::
     ~SkiaOutputDeviceVulkanSecondaryCBOffscreen() = default;
 
 SkSurface* SkiaOutputDeviceVulkanSecondaryCBOffscreen::BeginPaint(
+    bool allocate_frame_buffer,
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  SkSurface* sk_surface = SkiaOutputDeviceOffscreen::BeginPaint(end_semaphores);
+  SkSurface* sk_surface = SkiaOutputDeviceOffscreen::BeginPaint(
+      allocate_frame_buffer, end_semaphores);
   sk_surface->getCanvas()->clear(SK_ColorTRANSPARENT);
   return sk_surface;
 }

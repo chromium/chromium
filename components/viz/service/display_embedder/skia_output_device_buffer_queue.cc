@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
@@ -186,7 +186,7 @@ SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
 }
 
 OutputPresenter::Image* SkiaOutputDeviceBufferQueue::GetNextImage() {
-  DCHECK(!available_images_.empty());
+  CHECK(!available_images_.empty());
   auto* image = available_images_.front();
   available_images_.pop_front();
   return image;
@@ -565,21 +565,47 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
 }
 
 bool SkiaOutputDeviceBufferQueue::RecreateImages() {
+  size_t existing_number_of_buffers = images_.size();
   FreeAllSurfaces();
-  images_ = presenter_->AllocateImages(color_space_, image_size_,
-                                       capabilities_.number_of_buffers);
+  size_t number_to_allocate = capabilities_.use_dynamic_frame_buffer_allocation
+                                  ? existing_number_of_buffers
+                                  : capabilities_.number_of_buffers;
+  if (!number_to_allocate)
+    return true;
+
+  images_ =
+      presenter_->AllocateImages(color_space_, image_size_, number_to_allocate);
   for (auto& image : images_) {
     available_images_.push_back(image.get());
   }
 
+  DCHECK(images_.empty() || images_.size() == number_to_allocate);
   return !images_.empty();
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
+    bool allocate_frame_buffer,
     std::vector<GrBackendSemaphore>* end_semaphores) {
+  if (!capabilities_.use_dynamic_frame_buffer_allocation)
+    DCHECK(!allocate_frame_buffer);
+
   primary_plane_waiting_on_paint_ = false;
-  if (!current_image_)
-    current_image_ = GetNextImage();
+
+  if (allocate_frame_buffer) {
+    DCHECK(!current_image_);
+    std::vector<std::unique_ptr<OutputPresenter::Image>> images =
+        presenter_->AllocateImages(color_space_, image_size_, 1u);
+    if (images.size() != 1u) {
+      LOG(ERROR) << "AllocateImages failed " << images.size();
+      return nullptr;
+    }
+    current_image_ = images[0].get();
+    images_.push_back(std::move(images[0]));
+  } else {
+    if (!current_image_)
+      current_image_ = GetNextImage();
+  }
+
   if (!current_image_->sk_surface())
     current_image_->BeginWriteSkia();
   *end_semaphores = current_image_->TakeEndWriteSkiaSemaphores();
@@ -589,6 +615,22 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 void SkiaOutputDeviceBufferQueue::EndPaint() {
   DCHECK(current_image_);
   current_image_->EndWriteSkia();
+}
+
+void SkiaOutputDeviceBufferQueue::ReleaseOneFrameBuffer() {
+  DCHECK(capabilities_.use_dynamic_frame_buffer_allocation);
+  CHECK_GE(available_images_.size(), 1u);
+  OutputPresenter::Image* image_to_free = available_images_.back();
+  DCHECK_NE(image_to_free, current_image_);
+  DCHECK_NE(image_to_free, submitted_image_);
+  DCHECK_NE(image_to_free, displayed_image_);
+  available_images_.pop_back();
+  for (auto iter = images_.begin(); iter != images_.end(); ++iter) {
+    if (iter->get() == image_to_free) {
+      images_.erase(iter);
+      break;
+    }
+  }
 }
 
 bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(

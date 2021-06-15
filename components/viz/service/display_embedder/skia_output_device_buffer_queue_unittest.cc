@@ -357,7 +357,8 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
   Image* PaintPrimaryPlane() {
     std::vector<GrBackendSemaphore> end_semaphores;
-    output_device_->BeginPaint(&end_semaphores);
+    output_device_->BeginPaint(/*allocate_frame_buffer=*/false,
+                               &end_semaphores);
     output_device_->EndPaint();
     return current_image();
   }

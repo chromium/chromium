@@ -136,6 +136,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // True if the OutputSurface can resize to match the size of the root
     // surface. E.g. Wayland protocol allows this.
     bool resize_based_on_root_surface = false;
+    // Some configuration supports allocating frame buffers on demand.
+    // When enabled, `number_of_buffers` should be interpreted as the maximum
+    // number of buffers to allocate.
+    bool use_dynamic_frame_buffer_allocation = false;
 
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =
