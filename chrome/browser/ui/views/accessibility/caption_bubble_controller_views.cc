@@ -134,8 +134,14 @@ void CaptionBubbleControllerViews::ActivateContext(
   // in. Order matters: web contents needs to be active in order for the widget
   // getter to work.
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser)
+    return;
   TabStripModel* tab_strip_model = browser->tab_strip_model();
+  if (!tab_strip_model)
+    return;
   int index = tab_strip_model->GetIndexOfWebContents(web_contents);
+  if (index == TabStripModel::kNoTab)
+    return;
   tab_strip_model->ActivateTabAt(index);
   views::Widget* context_widget = views::Widget::GetTopLevelWidgetForNativeView(
       web_contents->GetNativeView());
