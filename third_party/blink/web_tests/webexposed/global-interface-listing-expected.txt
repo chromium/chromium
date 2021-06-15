@@ -259,6 +259,7 @@ interface AppHistoryEntry : EventTarget
 interface AppHistoryNavigateEvent : Event
     attribute @@toStringTag
     getter canRespond
+    getter destination
     getter formData
     getter hashChange
     getter info

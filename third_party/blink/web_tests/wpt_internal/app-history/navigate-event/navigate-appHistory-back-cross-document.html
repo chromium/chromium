@@ -12,6 +12,8 @@ async_test(t => {
         assert_false(e.canRespond);
         assert_false(e.userInitiated);
         assert_false(e.hashChange);
+        assert_equals(new URL(e.destination.url).pathname, "/common/blank.html");
+        assert_false(e.destination.sameDocument);
         assert_equals(e.formData, null);
         assert_equals(e.info, "hi");
       });

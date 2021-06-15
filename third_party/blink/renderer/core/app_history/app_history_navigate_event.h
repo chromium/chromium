@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class AppHistoryDestination;
 class AppHistoryNavigateEventInit;
 class ExceptionState;
 class FormData;
@@ -43,6 +44,7 @@ class AppHistoryNavigateEvent final : public Event,
   bool canRespond() const { return can_respond_; }
   bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
+  AppHistoryDestination* destination() { return destination_; }
   FormData* formData() const { return form_data_; }
   ScriptValue info() const { return info_; }
 
@@ -62,6 +64,7 @@ class AppHistoryNavigateEvent final : public Event,
   bool can_respond_;
   bool user_initiated_;
   bool hash_change_;
+  Member<AppHistoryDestination> destination_;
   Member<FormData> form_data_;
   ScriptValue info_;
 

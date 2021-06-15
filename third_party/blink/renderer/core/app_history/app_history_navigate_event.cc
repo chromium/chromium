@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
+#include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -22,6 +23,7 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
       can_respond_(init->canRespond()),
       user_initiated_(init->userInitiated()),
       hash_change_(init->hashChange()),
+      destination_(init->destination()),
       form_data_(init->formData()),
       info_(init->hasInfo()
                 ? init->info()
@@ -78,6 +80,7 @@ const AtomicString& AppHistoryNavigateEvent::InterfaceName() const {
 void AppHistoryNavigateEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
+  visitor->Trace(destination_);
   visitor->Trace(form_data_);
   visitor->Trace(info_);
   visitor->Trace(navigation_action_promise_);

@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  // step_timeout because blink doesn't create history entries if onload has not
+  // yet completed.
+  window.onload = () => t.step_timeout(t.step_func_done(() => {
+    let navState = { statevar: "state" };
+    appHistory.navigate("#foo", { replace: true, state: navState });
+    appHistory.navigate("#bar");
+    appHistory.onnavigate = t.step_func_done(e => {
+      assert_not_equals(e.destination, null);
+      assert_not_equals(e.destination.getState(), undefined);
+      assert_not_equals(e.destination.getState(), e.destination.getState());
+    });
+    appHistory.back();
+  }), 0);
+}, "navigate event destination.getState() on back/forward navigation");
+</script>

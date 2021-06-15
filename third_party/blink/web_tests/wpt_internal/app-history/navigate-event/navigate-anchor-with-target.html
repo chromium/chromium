@@ -15,6 +15,9 @@ async_test(t => {
       assert_false(e.userInitiated);
       assert_false(e.hashChange);
       assert_equals(e.formData, null);
+      assert_equals(new URL(e.destination.url).pathname,
+                    "/wpt_internal/app-history/navigate-event/foo.html");
+      assert_false(e.destination.sameDocument);
       e.preventDefault();
     });
     a.click();

@@ -8,9 +8,11 @@ async_test(t => {
     assert_true(e.canRespond);
     assert_false(e.userInitiated);
     assert_true(e.hashChange);
+    assert_equals(new URL(e.destination.url).hash, "#1");
+    assert_true(e.destination.sameDocument);
     assert_equals(e.formData, null);
     e.preventDefault();
   });
-  window.onload = t.step_func(() => window.open("#", "_self"));
+  window.onload = t.step_func(() => window.open("#1", "_self"));
 }, "window.open() fires navigate event when targeting self");
 </script>

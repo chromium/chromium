@@ -12,12 +12,14 @@ async_test(t => {
       assert_true(e.cancelable);
       assert_true(e.canRespond);
       assert_false(e.userInitiated);
-      assert_false(e.hashChange);
+      assert_true(e.hashChange);
+      assert_equals(new URL(e.destination.url).hash, "#1");
+      assert_true(e.destination.sameDocument);
       assert_equals(e.formData, null);
       e.preventDefault();
     });
 
-    window.open("#", "i");
+    window.open("/common/blank.html#1", "i");
   });
 }, "window.open() fires navigate event in target window but not source");
 </script>

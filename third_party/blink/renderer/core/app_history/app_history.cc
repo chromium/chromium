@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -428,6 +429,15 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   init->setHashChange(event_type == NavigateEventType::kFragment &&
                       url != current_url &&
                       EqualIgnoringFragmentIdentifier(url, current_url));
+
+  SerializedScriptValue* destination_state = nullptr;
+  if (destination_item)
+    destination_state = destination_item->GetAppHistoryState();
+  else if (navigate_serialized_state_)
+    destination_state = navigate_serialized_state_.get();
+  init->setDestination(MakeGarbageCollected<AppHistoryDestination>(
+      url, event_type != NavigateEventType::kCrossDocument, destination_state));
+
   init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
   init->setFormData(form ? FormData::Create(form, ASSERT_NO_EXCEPTION)
                          : nullptr);
