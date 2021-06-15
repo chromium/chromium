@@ -24,6 +24,12 @@ ScopedInstallDetails::ScopedInstallDetails(bool system_level,
   previous_details_ = InstallDetails::Swap(std::move(details));
 }
 
+ScopedInstallDetails::ScopedInstallDetails(
+    std::unique_ptr<InstallDetails> details) {
+  these_details_ = details.get();
+  previous_details_ = InstallDetails::Swap(std::move(details));
+}
+
 ScopedInstallDetails::~ScopedInstallDetails() {
   // Swap the previous details back in, destroying the details created by
   // this scoped object.

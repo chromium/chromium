@@ -22,6 +22,9 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "build/branding_buildflags.h"
+#include "chrome/install_static/install_details.h"
+#include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_constants.h"
@@ -477,3 +480,68 @@ TEST_F(InstallUtilTest, GuidToSquid) {
   ASSERT_EQ(InstallUtil::GuidToSquid(L"EDA620E3-AA98-3846-B81E-3493CB2E0E02"),
             L"3E026ADE89AA64838BE14339BCE2E020");
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Tests that policy-overrides for channel values are included in generated
+// command lines.
+TEST(AppendModeAndChannelSwitchesTest, ExtendedStable) {
+  static constexpr struct {
+    const wchar_t* channel_override;
+    bool is_extended_stable_channel;
+  } kTestData[] = {
+      {
+          /*channel_override=*/nullptr,
+          /*is_extended_stable_channel=*/false,
+      },
+      {
+          /*channel_override=*/L"",
+          /*is_extended_stable_channel=*/false,
+      },
+      {
+          /*channel_override=*/L"stable",
+          /*is_extended_stable_channel=*/false,
+      },
+      {
+          /*channel_override=*/L"beta",
+          /*is_extended_stable_channel=*/false,
+      },
+      {
+          /*channel_override=*/L"dev",
+          /*is_extended_stable_channel=*/false,
+      },
+      {
+          /*channel_override=*/L"extended",
+          /*is_extended_stable_channel=*/true,
+      },
+  };
+
+  for (const auto& test_data : kTestData) {
+    // Install process-wide InstallDetails for the given test data.
+    auto install_details =
+        std::make_unique<install_static::PrimaryInstallDetails>();
+    install_details->set_mode(
+        &install_static::kInstallModes[install_static::STABLE_INDEX]);
+    install_details->set_channel(L"");
+    if (test_data.channel_override) {
+      install_details->set_channel_origin(
+          install_static::ChannelOrigin::kPolicy);
+      install_details->set_channel_override(test_data.channel_override);
+    }
+    install_details->set_is_extended_stable_channel(
+        test_data.is_extended_stable_channel);
+    install_static::ScopedInstallDetails scoped_details(
+        std::move(install_details));
+
+    // Generate a command line.
+    base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+    InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
+
+    // Ensure that it has the proper --channel switch.
+    if (test_data.channel_override) {
+      ASSERT_TRUE(cmd_line.HasSwitch(installer::switches::kChannel));
+      ASSERT_EQ(cmd_line.GetSwitchValueNative(installer::switches::kChannel),
+                test_data.channel_override);
+    }
+  }
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
