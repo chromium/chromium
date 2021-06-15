@@ -2231,7 +2231,7 @@ ci.clang_builder(
         short_name = "sim",
     ),
     cores = None,
-    os = os.MAC_10_15_OR_11,
+    os = os.MAC_11,
     ssd = True,
     xcode = xcode.x12d4e,
 )
@@ -2244,7 +2244,7 @@ ci.clang_builder(
         short_name = "dev",
     ),
     cores = None,
-    os = os.MAC_10_15_OR_11,
+    os = os.MAC_11,
     ssd = True,
     xcode = xcode.x12d4e,
 )
@@ -3768,7 +3768,7 @@ ci.fyi_coverage_builder(
         short_name = "ios",
     ),
     cores = None,
-    os = os.MAC_10_15_OR_11,
+    os = os.MAC_11,
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
