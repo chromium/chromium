@@ -245,6 +245,9 @@ enum ModelType {
   MODEL_TYPE_DECISION_TREE = 1;
   // A model using only operations that are supported by TensorflowLite 2.3.0.
   MODEL_TYPE_TFLITE_2_3_0 = 2;
+  // A model using only operations that are supported by TensorflowLite 2.3.0
+  // with updated FULLY_CONNECTED and BATCH_MUL versions for quantized models.
+  MODEL_TYPE_TFLITE_2_3_0_1 = 3;
 }
 
 // A set of model features and the host that it applies to.
