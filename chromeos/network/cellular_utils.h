@@ -15,7 +15,10 @@ namespace chromeos {
 class CellularESimProfile;
 
 // Generates a list of CellularESimProfile objects for all Hermes esim profile
-// objects available through its dbus clients.
+// objects available through its dbus clients. Note that this function returns
+// an empty array if CellularESimProfileHandler::RefreshProfileList has not
+// been called. CellularESimProfileHandler::GetESimProfiles() should be called
+// to fetch cached profiles.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::vector<CellularESimProfile> GenerateProfilesFromHermes();
 

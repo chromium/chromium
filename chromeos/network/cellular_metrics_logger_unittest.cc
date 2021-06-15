@@ -90,8 +90,7 @@ class CellularMetricsLoggerTest : public testing::Test {
   }
 
   void SetUpMetricsLogger() {
-    cellular_metrics_logger_.reset(
-        new CellularMetricsLogger(task_environment_.GetMockTickClock()));
+    cellular_metrics_logger_.reset(new CellularMetricsLogger());
     cellular_metrics_logger_->Init(
         network_state_test_helper_.network_state_handler(),
         /* network_connection_handler */ nullptr,

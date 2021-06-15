@@ -16,10 +16,6 @@
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class TickClock;
-}
-
 namespace chromeos {
 
 class CellularESimProfileHandler;
@@ -126,9 +122,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, EnterPin);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, UnblockPin);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, ChangePin);
-
-  // Custom `tick_clock` could be used for tests.
-  explicit CellularMetricsLogger(const base::TickClock* tick_clock);
 
   // The amount of time after cellular device is added to device list,
   // after which cellular device is considered initialized.
@@ -331,6 +324,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Tracks how many eSIM profiles are installed on the device and how many pSIM
   // networks are available on the device if |is_service_count_logged_| is true.
   void CheckForCellularServiceCountMetric();
+
+  // Handles ESim Standard Feature Usage Logging metrics when the cellular usage
+  // changes for an ESim network.
+  void HandleESimFeatureUsageChange(CellularUsage last_esim_cellular_usage,
+                                    CellularUsage current_usage);
 
   // Returns the ConnectionInfo for given |cellular_network_guid|.
   ConnectionInfo* GetConnectionInfoForCellularNetwork(
