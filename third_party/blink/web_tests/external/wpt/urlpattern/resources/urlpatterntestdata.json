@@ -2056,5 +2056,55 @@
       "protocol": { "input": "data", "groups": {} },
       "pathname": { "input": "foo:bar@example.com", "groups": {} }
     }
+  },
+  {
+    "pattern": [ "https://foo{@}example.com" ],
+    "inputs": [ "https://foo@example.com" ],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "foo%40example.com",
+      "pathname": "/"
+    },
+    "expected_match": null
+  },
+  {
+    "pattern": [ "https://foo{\\:}bar@example.com" ],
+    "inputs": [ "https://foo:bar@example.com" ],
+    "exactly_empty_components": [ "password", "port", "search", "hash" ],
+    "expected_obj": {
+      "protocol": "https",
+      "username": "foo%3Abar",
+      "hostname": "example.com",
+      "pathname": "/"
+    },
+    "expected_match": null
+  },
+  {
+    "pattern": [ "data{\\:}channel.html", "https://example.com" ],
+    "inputs": [ "https://example.com/data:channel.html" ],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
+    "expected_obj": {
+      "protocol": "https",
+      "hostname": "example.com",
+      "pathname": "/data\\:channel.html"
+    },
+    "expected_match": {
+      "protocol": { "input": "https", "groups": {} },
+      "hostname": { "input": "example.com", "groups": {} },
+      "pathname": { "input": "/data:channel.html", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "https://foo{{@}}example.com" ],
+    "inputs": [ "https://foo@example.com" ],
+    "expected_obj": "error"
+  },
+  {
+    "pattern": [ "https://foo{@example.com" ],
+    "inputs": [ "https://foo@example.com" ],
+    "expected_obj": "error"
   }
 ]
