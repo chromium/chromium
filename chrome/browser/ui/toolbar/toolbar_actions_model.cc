@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/single_thread_task_runner.h"
@@ -311,9 +312,9 @@ void ToolbarActionsModel::InitializeActionList() {
                                 pinned_action_ids_.size());
     double percentage_double = static_cast<double>(pinned_action_ids_.size()) /
                                action_ids_.size() * 100.0;
-    int percentage = int{percentage_double};
     base::UmaHistogramPercentageObsoleteDoNotUse(
-        "Extensions.Toolbar.PinnedExtensionPercentage3", percentage);
+        "Extensions.Toolbar.PinnedExtensionPercentage3",
+        base::ClampRound(percentage_double));
   }
 }
 

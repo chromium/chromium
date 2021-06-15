@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
@@ -3089,8 +3090,9 @@ TEST_F(FlexLayoutCrossAxisFitTest, Layout_CrossCenter) {
   // Second child view is smaller than the host view, but margins don't fit.
   // The margins will be scaled down.
   remain = kHostSize.height() - kChildSizes[0].height();
-  expected = std::roundf(kChildMargins[1].top() * static_cast<float>(remain) /
-                         kChildMargins[1].height());
+  expected =
+      base::ClampRound(kChildMargins[1].top() * static_cast<float>(remain) /
+                       kChildMargins[1].height());
   EXPECT_EQ(expected, child_views_[1]->origin().y());
 
   // Third child view does not fit, so is centered.

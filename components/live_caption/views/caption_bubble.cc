@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -147,7 +148,7 @@ bool ParseNonTransparentRGBACSSColorString(std::string css_string,
   // preferred style and use our default color.
   if (!match || a == 0)
     return false;
-  uint16_t a_int = uint16_t{a * 255};
+  uint16_t a_int = base::ClampRound<uint16_t>(a * 255);
 #if defined(OS_MAC)
   // On Mac, any opacity lower than 90% leaves rendering artifacts which make
   // it appear like there is a layer of faint text beneath the actual text.

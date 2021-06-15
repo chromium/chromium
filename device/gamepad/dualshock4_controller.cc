@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/metrics/crc32.h"
+#include "base/numerics/safe_conversions.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/hid_writer.h"
@@ -233,8 +234,10 @@ void Dualshock4Controller::SetVibrationUsb(double strong_magnitude,
   control_report.fill(0);
   control_report[0] = kReportId05;
   control_report[1] = 0x01;  // motor only, don't update LEDs
-  control_report[4] = uint8_t{weak_magnitude * kRumbleMagnitudeMax};
-  control_report[5] = uint8_t{strong_magnitude * kRumbleMagnitudeMax};
+  control_report[4] =
+      base::ClampRound<uint8_t>(weak_magnitude * kRumbleMagnitudeMax);
+  control_report[5] =
+      base::ClampRound<uint8_t>(strong_magnitude * kRumbleMagnitudeMax);
 
   writer_->WriteOutputReport(control_report);
 }
@@ -252,8 +255,10 @@ void Dualshock4Controller::SetVibrationBluetooth(double strong_magnitude,
   control_report[2] = 0x20;  // unknown
   control_report[3] = 0xf1;  // motor only, don't update LEDs
   control_report[4] = 0x04;  // unknown
-  control_report[6] = uint8_t{weak_magnitude * kRumbleMagnitudeMax};
-  control_report[7] = uint8_t{strong_magnitude * kRumbleMagnitudeMax};
+  control_report[6] =
+      base::ClampRound<uint8_t>(weak_magnitude * kRumbleMagnitudeMax);
+  control_report[7] =
+      base::ClampRound<uint8_t>(strong_magnitude * kRumbleMagnitudeMax);
   control_report[21] = 0x43;  // volume left
   control_report[22] = 0x43;  // volume right
   control_report[24] = 0x4d;  // volume speaker

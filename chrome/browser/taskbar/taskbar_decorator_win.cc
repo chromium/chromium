@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -67,7 +68,7 @@ void SetOverlayIcon(HWND hwnd,
 
     // Maintain aspect ratio on resize, but prefer more square.
     // (We used to round down here, but rounding up produces nicer results.)
-    const int resized_height = std::ceilf(
+    const int resized_height = base::ClampCeil(
         kOverlayIconSize *
         (static_cast<float>(bitmap.get()->height()) / bitmap.get()->width()));
 

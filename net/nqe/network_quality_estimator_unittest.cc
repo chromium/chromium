@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -1028,9 +1029,9 @@ TEST_F(NetworkQualityEstimatorTest, ClampKbpsBasedOnEct) {
   } tests[] = {
       // Clamping multiplier set to 3.5 by default.
       {"", 3000, INT32_MAX, EFFECTIVE_CONNECTION_TYPE_SLOW_2G,
-       kTypicalDownlinkKbpsEffectiveConnectionType
-               [EFFECTIVE_CONNECTION_TYPE_SLOW_2G] *
-           3.5},
+       base::ClampFloor(kTypicalDownlinkKbpsEffectiveConnectionType
+                            [EFFECTIVE_CONNECTION_TYPE_SLOW_2G] *
+                        3.5)},
       // Clamping disabled.
       {"-1", 3000, INT32_MAX, EFFECTIVE_CONNECTION_TYPE_SLOW_2G, INT32_MAX},
       // Clamping multiplier overridden to 1000.
@@ -1050,9 +1051,9 @@ TEST_F(NetworkQualityEstimatorTest, ClampKbpsBasedOnEct) {
            1000},
       // Clamping multiplier set to 3.5 by default.
       {"", 500, INT32_MAX, EFFECTIVE_CONNECTION_TYPE_3G,
-       kTypicalDownlinkKbpsEffectiveConnectionType
-               [EFFECTIVE_CONNECTION_TYPE_3G] *
-           3.5},
+       base::ClampFloor(kTypicalDownlinkKbpsEffectiveConnectionType
+                            [EFFECTIVE_CONNECTION_TYPE_3G] *
+                        3.5)},
       // Clamping ineffective when the observed throughput is lower than the
       // clamped throughput.
       {"", 500, 100, EFFECTIVE_CONNECTION_TYPE_3G, 100},

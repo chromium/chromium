@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 #if defined(OS_MAC)
   a = 230;
 #else
-  a = 127;
+  a = 128;
 #endif
   GetController()->UpdateCaptionStyle(caption_style);
   EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetLabel()->GetEnabledColor());
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 #if defined(OS_MAC)
   a = 230;
 #else
-  a = 127;
+  a = 128;
 #endif
   caption_style.background_color = "";
   GetController()->UpdateCaptionStyle(caption_style);

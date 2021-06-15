@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -773,7 +774,7 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
 
   // Resize the avatar image down to the desired badge size, maintaining aspect
   // ratio (but prefer more square than rectangular when rounding).
-  const int avatar_badge_height = std::ceilf(
+  const int avatar_badge_height = base::ClampCeil(
       avatar_badge_width *
       (static_cast<float>(source_bitmap.height()) / source_bitmap.width()));
   SkBitmap sk_icon = skia::ImageOperations::Resize(
@@ -799,7 +800,7 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   const int cutout_top = app_icon_bitmap.height() - cutout_size;
   const int icon_left = cutout_left;
   const int icon_top =
-      cutout_top + int{std::ceilf((cutout_size - avatar_badge_height) / 2.0f)};
+      cutout_top + base::ClampCeil((cutout_size - avatar_badge_height) / 2.0f);
   const SkRRect clip_circle = SkRRect::MakeOval(
       SkRect::MakeXYWH(cutout_left, cutout_top, cutout_size, cutout_size));
 

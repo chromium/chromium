@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
@@ -345,8 +346,8 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
                                         kVEADefaultBitratePerPixel),
                uint64_t{std::numeric_limits<uint32_t>::max()});
 
-  uint32_t framerate = uint32_t{std::round(
-      options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate))};
+  uint32_t framerate = base::ClampRound<uint32_t>(
+      options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate));
 
   accelerator_->RequestEncodingParametersChange(bitrate, framerate);
 
