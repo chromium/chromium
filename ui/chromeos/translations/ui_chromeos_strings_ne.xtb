@@ -562,7 +562,7 @@
 <translation id="6885780034956018177">चिप्लेकिरो</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6898028766943174120">थप उप फोल्डरहरू...</translation>
-<translation id="691516599546977041"><ph name="FOLDER_NAME" /> मा सुरक्षित गर्न सकिँदैन। सम्पादन गरिएका छविहरू डाउनलोडहरू नामक फोल्डरमा सुरक्षित गरिने छन्।</translation>
+<translation id="691516599546977041"><ph name="FOLDER_NAME" /> मा सुरक्षित गर्न सकिँदैन। सम्पादन गरिएका फोटो डाउनलोडहरू नामक फोल्डरमा सुरक्षित गरिने छन्।</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">अवधि</translation>
@@ -793,7 +793,7 @@
 <translation id="9174050671906956834">ट्र्यासमा रहेका वस्तुहरू ३० दिनपछि सदाका लागि मेटाइन्छन्।</translation>
 <translation id="9189836632794948435">काजाख</translation>
 <translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
-<translation id="9219103736887031265">छविहरू</translation>
+<translation id="9219103736887031265">फोटो</translation>
 <translation id="9219908252191632183">लुनर</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="942954117721265519">यस निर्देशिका मा कुनै तस्बिर छैन ।</translation>

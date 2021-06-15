@@ -5939,7 +5939,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7507930499305566459">Certificado del respondedor de estado</translation>
 <translation id="7509097596023256288">Se está configurando la administración</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
-<translation id="7511415964832680006">Si habilitas esta opción, los sitios podrán utilizar las técnicas de protección de la privacidad que se muestran aquí para ofrecer su contenido y sus servicios. Entre estas técnicas, se incluyen alternativas al seguimiento entre sitios web. Es posible que se agreguen más funciones de prueba a lo largo del tiempo.</translation>
+<translation id="7511415964832680006">Si habilitas esta opción, los sitios podrán utilizar las técnicas de protección de la privacidad que se muestran aquí para ofrecer su contenido y sus servicios. Entre estas técnicas, se incluyen alternativas al seguimiento entre sitios web. Es posible que se agreguen más pruebas a lo largo del tiempo.</translation>
 <translation id="7513029293694390567">Accede automáticamente a los sitios web con las credenciales almacenadas. Si la función está inhabilitada, deberás confirmar siempre tu identidad para acceder a un sitio web.</translation>
 <translation id="7514239104543605883">Copiar a tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -7241,7 +7241,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8892168913673237979">¡Listo!</translation>
 <translation id="8893801527741465188">Se completó la desinstalación</translation>
 <translation id="8893928184421379330">Lo sentimos, no se reconoció el dispositivo <ph name="DEVICE_LABEL" />.</translation>
-<translation id="8894761918470382415">Protección de acceso a datos para dispositivos periféricos</translation>
+<translation id="8894761918470382415">Protección de acceso a datos desde periféricos</translation>
 <translation id="8895454554629927345">Lista de favoritos</translation>
 <translation id="8898786835233784856">Seleccionar siguiente pestaña</translation>
 <translation id="8898822736010347272">Envía a Google las URL de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>

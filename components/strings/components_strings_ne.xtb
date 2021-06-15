@@ -392,7 +392,7 @@
 <translation id="2346319942568447007">तपाईंले प्रतिलिपि गर्नुभएको छवि</translation>
 <translation id="2354001756790975382">अन्य बुकमार्कहरू</translation>
 <translation id="2354430244986887761">Google सुरक्षित ब्राउजिङले हालै <ph name="SITE" /> मा  <ph name="BEGIN_LINK" />हानिकारक एपहरू भेट्टायो<ph name="END_LINK" />।</translation>
-<translation id="2355395290879513365">आक्रमणकारीहरूले यस साइटमा तपाईँले हेरिरहनुभएका छविहरू हेर्न र तिनीहरूलाई परिमार्जन गरी तपाईँलाई धोका दिन सक्छन्।</translation>
+<translation id="2355395290879513365">आक्रमणकारीहरूले यस साइटमा तपाईँले हेरिरहनुभएका फोटो हेर्न र तिनीहरूलाई परिमार्जन गरी तपाईँलाई धोका दिन सक्छन्।</translation>
 <translation id="2356070529366658676">सोध्नुहोस्</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> ले तपाईंको यन्त्र व्यवस्थापन गर्छ र <ph name="ACCOUNT_MANAGER" /> ले तपाईंको खाता व्यवस्थापन गर्छ।</translation>
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{एक दिनभन्दा कम समयमै}=1{एक दिनभित्र}other{{NUM_DAYS} दिनभित्र}}</translation>
@@ -1403,7 +1403,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="6107012941649240045">लाई जारी गरिएको</translation>
 <translation id="610911394827799129">तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा ब्राउजिङ इतिहासका अन्य ढाँचाहरू रहेका हुनसक्छन्।</translation>
-<translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र छविहरू हेर्नुहोस्</translation>
+<translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्नुहोस्</translation>
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6146055958333702838">तपाइँले प्रयोग गरिेहेको कुनै पनि केबुलहरू जाँच्नुहोस् र कुनै पनि राउटरहरू, मोडेमहरू, वा अन्य 
@@ -2207,7 +2207,7 @@
 <translation id="9207861905230894330">लेख थप्न असफल भयो।</translation>
 <translation id="9213433120051936369">आफूले चाहेअनुसारको रूप बनाउनुहोस्</translation>
 <translation id="9215416866750762878">कुनै अनुप्रयोगले Chrome लाई सुरक्षित रूपमा यो साइटमा जडान हुनबाट रोकिरहेको छ</translation>
-<translation id="9219103736887031265">छविहरू</translation>
+<translation id="9219103736887031265">फोटो</translation>
 <translation id="933712198907837967">डाइनर्स क्लब</translation>
 <translation id="935608979562296692">फारम खाली गर्नुहोस्</translation>
 <translation id="936474030629450166">Super-B</translation>

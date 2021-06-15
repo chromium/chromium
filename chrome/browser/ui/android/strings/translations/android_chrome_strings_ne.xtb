@@ -555,7 +555,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4696983787092045100">आफ्ना यन्त्रहरूमा टेक्स्ट म्यासेज पठाउनुहोस्</translation>
 <translation id="4697543623252708062">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> सम्बन्धी लेखहरू देखाइने छन्। तपाईं 'फलो गरिएका साइटहरू व्यवस्थापन गर्नुहोस्' नामक खण्डमा गई आफूले फलो गरिरहेका साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
-<translation id="4699172675775169585">क्यास गरिएका छविहरू र फाइलहरू</translation>
+<translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4714588616299687897">आफ्नो डेटाको ६०% सम्म जोगाउनुहोस्</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />मा खोल्नुहोस्</translation>
@@ -849,7 +849,7 @@
 <translation id="6433501201775827830">आफ्नो सर्च इन्जिन छनौट गर्नुहोस्</translation>
 <translation id="6437478888915024427">पृष्ठको जानकारी</translation>
 <translation id="6441734959916820584">नाम अत्यन्तै लामो छ</translation>
-<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# छवि}other{# छविहरू}}</translation>
+<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# छवि}other{# फोटो}}</translation>
 <translation id="6447558397796644647">उक्त पुस्तक चिन्ह फेला पार्न सकिएन। आफ्नो हिज्जे जाँच्नुहोस् वा कुनै नयाँ पुस्तक चिन्ह थप्नुहोस्।</translation>
 <translation id="6461962085415701688">फाइल खोल्न सकिँदैन</translation>
 <translation id="6464977750820128603">तपाईं आफूले Chrome मार्फत भ्रमण गर्ने साइटहरू हेर्न र तिनमा टाइमर सेट गर्न सक्नुहुन्छ।\n\nGoogle ले तपाईंले टाइमर सेट गर्नुभएका साइटहरू तथा उक्त साइट भ्रमण गर्दा बिताउनुभएको समयसम्बन्धी जानकारी प्राप्त गर्छ। यो जानकारी डिजिटल वेलबिइङ सुविधालाई अझ राम्रो बनाउनका निम्ति प्रयोग गरिन्छ।</translation>
@@ -1283,7 +1283,7 @@
 <translation id="9206873250291191720">क</translation>
 <translation id="9209888181064652401">कल गर्न सकिएन</translation>
 <translation id="9212845824145208577">योभन्दा तल जान मिल्दैन। यो पेजको अझै तल्लो भागबाट ड्रयाग गरी हेर्नुहोस्।</translation>
-<translation id="9219103736887031265">छविहरू</translation>
+<translation id="9219103736887031265">फोटो</translation>
 <translation id="926205370408745186">आफूले Chrome मा गरेका क्रियाकलाप डिजिटल वेलबिइङबाट हटाउनुहोस्</translation>
 <translation id="927968626442779827">Google Chrome को लाइट मोड प्रयोग गर्नुहोस्</translation>
 <translation id="932327136139879170">गृहपृष्ठ</translation>
