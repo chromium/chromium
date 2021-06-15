@@ -5358,6 +5358,7 @@
                     "enable_features": [
                         "OmniboxAdaptiveSuggestionsCount",
                         "OmniboxCompactSuggestions",
+                        "OmniboxDynamicMaxAutocomplete",
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
