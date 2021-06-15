@@ -158,6 +158,19 @@ void GPUCanvasContext::configure(const GPUSwapChainDescriptor* descriptor,
   ConfigureInternal(descriptor, exception_state);
 }
 
+void GPUCanvasContext::unconfigure() {
+  if (stopped_) {
+    return;
+  }
+
+  if (swapchain_) {
+    // Tell any previous swapchain that it will no longer be used and can
+    // destroy all its resources (and produce errors when used).
+    swapchain_->Neuter();
+    swapchain_ = nullptr;
+  }
+}
+
 String GPUCanvasContext::getPreferredFormat(const GPUAdapter* adapter) {
   // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
   return "bgra8unorm";
@@ -200,6 +213,8 @@ void GPUCanvasContext::ConfigureInternal(
     const GPUSwapChainDescriptor* descriptor,
     ExceptionState& exception_state,
     bool deprecated_resize_behavior) {
+  DCHECK(descriptor);
+
   if (stopped_) {
     // This is probably not possible, or at least would only happen during page
     // shutdown.
@@ -213,11 +228,6 @@ void GPUCanvasContext::ConfigureInternal(
     // destroy all its resources (and produce errors when used).
     swapchain_->Neuter();
     swapchain_ = nullptr;
-  }
-
-  // Passing a null descriptor explicitly clears the configuration.
-  if (!descriptor) {
-    return;
   }
 
   WGPUTextureUsage usage = AsDawnEnum<WGPUTextureUsage>(descriptor->usage());
