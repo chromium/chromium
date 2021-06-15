@@ -5526,7 +5526,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
       Settings
     </message>
     <message name="IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON" desc="The cancel button label of the notification for the user to select not restore on startup.">
-      Cancel
+      No thanks
     </message>
     <message name="IDS_RESTORE_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to select restore or not on startup.">
       Restore apps &amp; pages?
