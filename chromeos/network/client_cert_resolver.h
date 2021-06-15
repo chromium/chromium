@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
@@ -88,6 +89,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
       const client_cert::ConfigType client_cert_type,
       const client_cert::ClientCertConfig& client_cert_config,
       base::DictionaryValue* shill_properties);
+
+  // Allows overwriting the function which gets the client certificate
+  // provisioning profile id of a certificate. This is necessary for unit tests,
+  // because there we use an NSS soft token which does not support the custom
+  // attributes used for storing the id. Calling this will overwrite the
+  // behavior until the returned ScopedClosureRunner is destructed, which will
+  // reset to the original behavior.
+  using ProvisioningProfileIdGetter =
+      base::RepeatingCallback<std::string(CERTCertificate* cert)>;
+  static base::ScopedClosureRunner SetProvisioningIdForCertGetterForTesting(
+      ProvisioningProfileIdGetter getter);
 
  private:
   // NetworkStateHandlerObserver overrides

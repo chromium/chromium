@@ -1125,6 +1125,8 @@ mojom::ManagedEAPPropertiesPtr GetManagedEAPProperties(const base::Value* dict,
       eap_dict, ::onc::client_cert::kClientCertPattern);
   eap->client_cert_pkcs11_id =
       GetManagedString(eap_dict, ::onc::client_cert::kClientCertPKCS11Id);
+  eap->client_cert_provisioning_profile_id = GetManagedString(
+      eap_dict, ::onc::client_cert::kClientCertProvisioningProfileId);
   eap->client_cert_ref =
       GetManagedString(eap_dict, ::onc::client_cert::kClientCertRef);
   eap->client_cert_type =
@@ -1164,6 +1166,8 @@ mojom::ManagedIPSecPropertiesPtr GetManagedIPSecProperties(
       ipsec_dict, ::onc::client_cert::kClientCertPattern);
   ipsec->client_cert_pkcs11_id =
       GetManagedString(ipsec_dict, ::onc::client_cert::kClientCertPKCS11Id);
+  ipsec->client_cert_provisioning_profile_id = GetManagedString(
+      ipsec_dict, ::onc::client_cert::kClientCertProvisioningProfileId);
   ipsec->client_cert_ref =
       GetManagedString(ipsec_dict, ::onc::client_cert::kClientCertRef);
   ipsec->client_cert_type =
@@ -1222,6 +1226,8 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
       GetManagedString(openvpn_dict, ::onc::client_cert::kClientCertPKCS11Id);
   openvpn->client_cert_pattern = GetManagedCertificatePattern(
       openvpn_dict, ::onc::client_cert::kClientCertPattern);
+  openvpn->client_cert_provisioning_profile_id = GetManagedString(
+      openvpn_dict, ::onc::client_cert::kClientCertProvisioningProfileId);
   openvpn->client_cert_ref =
       GetManagedString(openvpn_dict, ::onc::client_cert::kClientCertRef);
   openvpn->client_cert_type =

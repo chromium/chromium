@@ -260,6 +260,7 @@ namespace networking.onc {
     DOMString? AnonymousIdentity;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     ClientCertificateType ClientCertType;
     DOMString? Identity;

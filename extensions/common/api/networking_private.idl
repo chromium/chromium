@@ -233,6 +233,7 @@ namespace networkingPrivate {
     DOMString? AnonymousIdentity;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     DOMString? Identity;
@@ -254,6 +255,7 @@ namespace networkingPrivate {
     ManagedDOMString? AnonymousIdentity;
     ManagedCertificatePattern? ClientCertPattern;
     ManagedDOMString? ClientCertPKCS11Id;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedDOMString? Identity;
@@ -316,6 +318,7 @@ namespace networkingPrivate {
     DOMString AuthenticationType;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     EAPProperties? EAP;
@@ -332,6 +335,7 @@ namespace networkingPrivate {
     ManagedDOMString AuthenticationType;
     ManagedCertificatePattern? ClientCertPattern;
     ManagedDOMString? ClientCertPKCS11Id;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedEAPProperties? EAP;
@@ -419,6 +423,7 @@ namespace networkingPrivate {
     DOMString? Cipher;
     DOMString? ClientCertPKCS11Id;
     CertificatePattern? ClientCertPattern;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     DOMString? CompLZO;
@@ -460,6 +465,7 @@ namespace networkingPrivate {
     ManagedDOMString? Cipher;
     ManagedDOMString? ClientCertPKCS11Id;
     ManagedCertificatePattern? ClientCertPattern;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedDOMString? CompLZO;

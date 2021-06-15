@@ -579,6 +579,9 @@ void NetworkCertLoader::UpdateCertificates() {
 }
 
 void NetworkCertLoader::NotifyCertificatesLoaded() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (is_shutting_down_)
+    return;
   for (auto& observer : observers_)
     observer.OnCertificatesLoaded();
 }

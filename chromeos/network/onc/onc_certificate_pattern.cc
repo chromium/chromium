@@ -62,15 +62,14 @@ bool OncCertificatePattern::Empty() const {
 bool OncCertificatePattern::Matches(
     const net::X509Certificate& certificate,
     const std::string& pem_encoded_issuer_ca) const {
-  if (!issuer_pattern_.Empty() || !subject_pattern_.Empty()) {
-    if (!issuer_pattern_.Empty() &&
-        !issuer_pattern_.Matches(certificate.issuer()))
-      return false;
-    if (!subject_pattern_.Empty() &&
-        !subject_pattern_.Matches(certificate.subject()))
-      return false;
+  if (!issuer_pattern_.Empty() &&
+      !issuer_pattern_.Matches(certificate.issuer())) {
+    return false;
   }
-
+  if (!subject_pattern_.Empty() &&
+      !subject_pattern_.Matches(certificate.subject())) {
+    return false;
+  }
   if (!pem_encoded_issuer_cas_.empty() &&
       !base::Contains(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
     return false;

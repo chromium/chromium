@@ -408,6 +408,69 @@ class ClientCertResolverTest : public testing::Test,
     return certs;
   }
 
+  void ResolveTestHelper(const char* test_policy_network, bool expect_failure) {
+    SetupWifi();
+    task_environment_.RunUntilIdle();
+    StartNetworkCertLoader();
+    task_environment_.RunUntilIdle();
+    SetupNetworkHandlers();
+    task_environment_.RunUntilIdle();
+
+    // Make sure that expiring client certs don't cause issues.
+    test_clock_->SetNow(base::Time::Min());
+
+    // Apply the network policy.
+    network_properties_changed_count_ = 0;
+    ASSERT_NO_FATAL_FAILURE(SetManagedNetworkPolicy(
+        ::onc::ONC_SOURCE_USER_POLICY, test_policy_network));
+    task_environment_.RunUntilIdle();
+
+    // The referenced client cert does not exist yet, so expect that it has not
+    // been resolved.
+    std::string pkcs11_id;
+    GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
+    EXPECT_TRUE(pkcs11_id.empty());
+    EXPECT_EQ(1, network_properties_changed_count_);
+
+    // Now import a client certificate which has the GUID required using the
+    // |CertificateImporterImpl|.
+    auto onc_parsed_certificates = OncParsedCertificatesForPkcs12File(
+        net::GetTestCertsDirectory().AppendASCII("client-empty-password.p12"),
+        "{some-unique-guid}");
+    ASSERT_TRUE(onc_parsed_certificates);
+
+    onc::CertificateImporterImpl importer(
+        task_environment_.GetMainThreadTaskRunner(), test_nsscertdb_.get());
+    base::RunLoop import_loop;
+    importer.ImportClientCertificates(
+        onc_parsed_certificates->client_certificates(),
+        base::BindOnce(&OnImportCompleted, import_loop.QuitClosure()));
+    import_loop.Run();
+    task_environment_.RunUntilIdle();
+
+    // Find the imported cert and get its id.
+    net::ScopedCERTCertificateList private_slot_certs =
+        ListCertsOnPrivateSlot();
+    ASSERT_EQ(1u, private_slot_certs.size());
+    int slot_id = 0;
+    const std::string imported_cert_pkcs11_id =
+        NetworkCertLoader::GetPkcs11IdAndSlotForCert(
+            private_slot_certs[0].get(), &slot_id);
+    std::string imported_cert_formatted_pkcs11_id =
+        base::StringPrintf("%i:%s", slot_id, imported_cert_pkcs11_id.c_str());
+
+    // Verify that the resolver positively matched the pattern in the policy
+    // with the test client cert and configured the network.
+    GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
+    if (!expect_failure) {
+      EXPECT_EQ(imported_cert_formatted_pkcs11_id, pkcs11_id);
+      EXPECT_EQ(2, network_properties_changed_count_);
+    } else {
+      EXPECT_NE(imported_cert_formatted_pkcs11_id, pkcs11_id);
+      EXPECT_EQ(1, network_properties_changed_count_);
+    }
+  }
+
   base::test::TaskEnvironment task_environment_;
   int network_properties_changed_count_ = 0;
   std::string test_cert_id_;
@@ -844,60 +907,106 @@ TEST_F(ClientCertResolverTest, ResolveClientCertRef) {
                }
            } ])";
 
-  SetupWifi();
-  task_environment_.RunUntilIdle();
-  StartNetworkCertLoader();
-  task_environment_.RunUntilIdle();
-  SetupNetworkHandlers();
-  task_environment_.RunUntilIdle();
+  ResolveTestHelper(test_policy_network, false);
+}
 
-  // Make sure that expiring client certs don't cause issues.
-  test_clock_->SetNow(base::Time::Min());
+// Tests that a ClientCertProvisioningProfileId is resolved by
+// |ClientCertResolver|.
+// Same test as above except that we search for a different key. Note that
+// this is using the Ref type instead of the ProvisioningProfileId type because
+// that syntax was chosen by the Android team for this type of match. We also
+// support a dedicated syntax which is tested below.
+TEST_F(ClientCertResolverTest, ResolveByCertProfileIdInClientCertRef) {
+  const char* test_policy_network =
+      R"([ { "GUID": "wifi_stub",
+               "Name": "wifi_stub",
+               "Type": "WiFi",
+               "WiFi": {
+                 "Security": "WPA-EAP",
+                 "SSID": "wifi_ssid",
+                 "EAP": {
+                   "Identity": "TestIdentity",
+                   "Outer": "EAP-TLS",
+                   "ClientCertType": "Ref",
+                   "ClientCertRef": "{some-provisioning-id}"
+                 }
+               }
+           } ])";
 
-  // Apply the network policy.
-  network_properties_changed_count_ = 0;
-  ASSERT_NO_FATAL_FAILURE(SetManagedNetworkPolicy(::onc::ONC_SOURCE_USER_POLICY,
-                                                  test_policy_network));
-  task_environment_.RunUntilIdle();
+  // Override the getter for the provisioning id. See
+  // ClientCertResolver::SetProvisioningIdForCertGetterForTesting for details.
+  // We know that we only import one cert, so we do not need to check more,
+  // here.
+  auto runner = ClientCertResolver::SetProvisioningIdForCertGetterForTesting(
+      base::BindRepeating([](CERTCertificate* cert) -> std::string {
+        return "{some-provisioning-id}";
+      }));
 
-  // The referenced client cert does not exist yet, so expect that it has not
-  // been resolved.
-  std::string pkcs11_id;
-  GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
-  EXPECT_TRUE(pkcs11_id.empty());
-  EXPECT_EQ(1, network_properties_changed_count_);
+  ResolveTestHelper(test_policy_network, false);
+}
 
-  // Now import a client certificate which has the GUID required using the
-  // |CertificateImporterImpl|.
-  auto onc_parsed_certificates = OncParsedCertificatesForPkcs12File(
-      net::GetTestCertsDirectory().AppendASCII("client-empty-password.p12"),
-      "{some-unique-guid}");
-  ASSERT_TRUE(onc_parsed_certificates);
+// Tests that a ClientCertProvisioningProfileId is resolved by
+// |ClientCertResolver|.
+// Same test as above except that we use the dedicated syntax for a
+// ClientCertProvisioningProfileId.
+TEST_F(ClientCertResolverTest, ResolveByCertProfileId) {
+  const char* test_policy_network =
+      R"([ { "GUID": "wifi_stub",
+               "Name": "wifi_stub",
+               "Type": "WiFi",
+               "WiFi": {
+                 "Security": "WPA-EAP",
+                 "SSID": "wifi_ssid",
+                 "EAP": {
+                   "Identity": "TestIdentity",
+                   "Outer": "EAP-TLS",
+                   "ClientCertType": "ProvisioningProfileId",
+                   "ClientCertProvisioningProfileId": "{some-provisioning-id}"
+                 }
+               }
+           } ])";
 
-  onc::CertificateImporterImpl importer(
-      task_environment_.GetMainThreadTaskRunner(), test_nsscertdb_.get());
-  base::RunLoop import_loop;
-  importer.ImportClientCertificates(
-      onc_parsed_certificates->client_certificates(),
-      base::BindOnce(&OnImportCompleted, import_loop.QuitClosure()));
-  import_loop.Run();
-  task_environment_.RunUntilIdle();
+  // Override the getter for the provisioning id. See
+  // ClientCertResolver::SetProvisioningIdForCertGetterForTesting for details.
+  // We know that we only import one cert, so we do not need to check more,
+  // here.
+  auto runner = ClientCertResolver::SetProvisioningIdForCertGetterForTesting(
+      base::BindRepeating([](CERTCertificate* cert) -> std::string {
+        return "{some-provisioning-id}";
+      }));
 
-  // Find the imported cert and get its id.
-  net::ScopedCERTCertificateList private_slot_certs = ListCertsOnPrivateSlot();
-  ASSERT_EQ(1u, private_slot_certs.size());
-  int slot_id = 0;
-  const std::string imported_cert_pkcs11_id =
-      NetworkCertLoader::GetPkcs11IdAndSlotForCert(private_slot_certs[0].get(),
-                                                   &slot_id);
-  std::string imported_cert_formatted_pkcs11_id =
-      base::StringPrintf("%i:%s", slot_id, imported_cert_pkcs11_id.c_str());
+  ResolveTestHelper(test_policy_network, false);
+}
 
-  // Verify that the resolver positively matched the pattern in the policy with
-  // the test client cert and configured the network.
-  GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
-  EXPECT_EQ(imported_cert_formatted_pkcs11_id, pkcs11_id);
-  EXPECT_EQ(2, network_properties_changed_count_);
+// Tests that a ClientCertProvisioningProfileId is not resolved by
+// |ClientCertResolver| if it has the wrong profile id.
+TEST_F(ClientCertResolverTest, ResolveByCertProfileIdFailure) {
+  const char* test_policy_network =
+      R"([ { "GUID": "wifi_stub",
+               "Name": "wifi_stub",
+               "Type": "WiFi",
+               "WiFi": {
+                 "Security": "WPA-EAP",
+                 "SSID": "wifi_ssid",
+                 "EAP": {
+                   "Identity": "TestIdentity",
+                   "Outer": "EAP-TLS",
+                   "ClientCertType": "ProvisioningProfileId",
+                   "ClientCertProvisioningProfileId": "{wrong-provisioning-id}"
+                 }
+               }
+           } ])";
+
+  // Override the getter for the provisioning id. See
+  // ClientCertResolver::SetProvisioningIdForCertGetterForTesting
+  // for details. We know that we only import one cert, so we do not need to
+  // check more, here.
+  auto runner = ClientCertResolver::SetProvisioningIdForCertGetterForTesting(
+      base::BindRepeating([](CERTCertificate* cert) -> std::string {
+        return "{some-provisioning-id}";
+      }));
+
+  ResolveTestHelper(test_policy_network, true);
 }
 
 }  // namespace chromeos

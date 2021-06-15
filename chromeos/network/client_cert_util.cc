@@ -32,8 +32,9 @@ const char kDefaultTPMPin[] = "111111";
 
 namespace {
 
-// Extracts the type and descriptor (referenced GUID or client cert pattern) of
-// a ONC-specified client certificate specification for a network
+// Extracts the type and descriptor (referenced GUID or client cert pattern
+// or provisioning profile id) of a ONC-specified client certificate
+// specification for a network
 // (|dict_with_client_cert|) and stores it in |cert_config|.
 void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
                                     const base::Value& dict_with_client_cert,
@@ -68,6 +69,16 @@ void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
                                             base::Value::Type::STRING);
     if (client_cert_ref_key)
       cert_config->guid = client_cert_ref_key->GetString();
+  } else if (cert_config->client_cert_type ==
+             ::onc::client_cert::kProvisioningProfileId) {
+    const std::string* provisioning_profile_id =
+        dict_with_client_cert.FindStringKey(
+            ::onc::client_cert::kClientCertProvisioningProfileId);
+    if (!provisioning_profile_id) {
+      LOG(ERROR) << "ProvisioningProfileId missing";
+      return;
+    }
+    cert_config->provisioning_profile_id = *provisioning_profile_id;
   }
 }
 

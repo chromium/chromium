@@ -33,11 +33,18 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
 
 namespace {
+
+// Global override for the getter function. This is used for testing purposes.
+// See SetProvisioningIdForCertGetterForTesting for details.
+ClientCertResolver::ProvisioningProfileIdGetter
+    g_provisioning_id_getter_for_testing =
+        ClientCertResolver::ProvisioningProfileIdGetter();
 
 // Describes a resolved client certificate along with the EAP identity field.
 struct MatchingCert {
@@ -121,7 +128,9 @@ std::map<std::string, std::string> GetSubstitutionsForCert(
 bool ShouldResolveCert(
     const client_cert::ClientCertConfig& client_cert_config) {
   return client_cert_config.client_cert_type == ::onc::client_cert::kPattern ||
-         client_cert_config.client_cert_type == ::onc::client_cert::kRef;
+         client_cert_config.client_cert_type == ::onc::client_cert::kRef ||
+         client_cert_config.client_cert_type ==
+             ::onc::client_cert::kProvisioningProfileId;
 }
 
 }  // namespace
@@ -174,7 +183,7 @@ namespace {
 // will return the empty string.
 absl::optional<std::string> GetPrivateKeyNickname(CERTCertificate* cert) {
   crypto::ScopedSECKEYPrivateKey key(
-      PK11_FindKeyByAnyCert(cert, nullptr /* wincx */));
+      PK11_FindKeyByAnyCert(cert, /*wincx=*/nullptr));
   if (!key)
     return absl::nullopt;
 
@@ -192,10 +201,12 @@ absl::optional<std::string> GetPrivateKeyNickname(CERTCertificate* cert) {
 struct CertAndIssuer {
   CertAndIssuer(net::ScopedCERTCertificate certificate,
                 const std::string& issuer,
-                const std::string& key_nickname)
+                const std::string& key_nickname,
+                const std::string& cert_provisioning_profile_id)
       : cert(std::move(certificate)),
         pem_encoded_issuer(issuer),
-        private_key_nickname(key_nickname) {}
+        private_key_nickname(key_nickname),
+        provisioning_profile_id(cert_provisioning_profile_id) {}
 
   net::ScopedCERTCertificate cert;
   std::string pem_encoded_issuer;
@@ -204,6 +215,7 @@ struct CertAndIssuer {
   // |CertificateImporterImpl| sets the private key nickname to the
   // ONC-specified GUID.
   std::string private_key_nickname;
+  std::string provisioning_profile_id;
 };
 
 bool CompareCertExpiration(const CertAndIssuer& a, const CertAndIssuer& b) {
@@ -239,7 +251,21 @@ struct MatchCertWithCertConfig {
     if (cert_config.client_cert_type == ::onc::client_cert::kRef) {
       // This relies on the fact that |CertificateImporterImpl| sets the
       // nickname for the imported private key to the GUID.
-      return cert_config.guid == cert_and_issuer.private_key_nickname;
+      if (cert_config.guid == cert_and_issuer.private_key_nickname)
+        return true;
+      // This code implements a method used by Android which also checks
+      // if the ref matches the provisioning_profile_id, if kRef was chosen.
+      // Since ref and provisioning_profile_id come from different namespaces
+      // there should not be a collision. The more proper version is below.
+      return cert_config.guid == cert_and_issuer.provisioning_profile_id;
+    }
+
+    // This is the proper configuration in the ONC file for using a
+    // provisioning profile id for selecting the certificate.
+    if (cert_config.client_cert_type ==
+        ::onc::client_cert::kProvisioningProfileId) {
+      return cert_config.provisioning_profile_id ==
+             cert_and_issuer.provisioning_profile_id;
     }
 
     NOTREACHED();
@@ -275,6 +301,38 @@ std::string GetPEMEncodedIssuer(CERTCertificate* cert) {
   return pem_encoded_issuer;
 }
 
+std::string GetProvisioningIdForCert(CERTCertificate* cert) {
+  crypto::ScopedSECKEYPrivateKey priv_key(
+      PK11_FindKeyByAnyCert(cert, /*wincx=*/nullptr));
+  if (!priv_key)
+    return std::string();
+
+  if (!g_provisioning_id_getter_for_testing.is_null())
+    return g_provisioning_id_getter_for_testing.Run(cert);
+
+  crypto::ScopedSECItem attribute_value(SECITEM_AllocItem(/*arena=*/nullptr,
+                                                          /*item=*/nullptr,
+                                                          /*len=*/0));
+  DCHECK(attribute_value.get());
+
+  SECStatus status = PK11_ReadRawAttribute(
+      /*objType=*/PK11_TypePrivKey, priv_key.get(),
+      pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId,
+      attribute_value.get());
+  if (status != SECSuccess) {
+    return std::string();
+  }
+
+  if (attribute_value->len > 0) {
+    std::string id;
+    id.assign(attribute_value->data,
+              attribute_value->data + attribute_value->len);
+    return id;
+  }
+
+  return std::string();
+}
+
 void CreateSortedCertAndIssuerList(
     const NetworkCertLoader::NetworkCertList& network_certs,
     base::Time now,
@@ -305,16 +363,19 @@ void CreateSortedCertAndIssuerList(
       // No private key has been found for this certificate.
       continue;
     }
+
+    std::string cert_id = GetProvisioningIdForCert(cert);
+
     std::string pem_encoded_issuer = GetPEMEncodedIssuer(cert);
     if (all_cert_and_issuers) {
-      all_cert_and_issuers->push_back(
-          CertAndIssuer(net::x509_util::DupCERTCertificate(cert),
-                        pem_encoded_issuer, private_key_nickname.value()));
+      all_cert_and_issuers->push_back(CertAndIssuer(
+          net::x509_util::DupCERTCertificate(cert), pem_encoded_issuer,
+          private_key_nickname.value(), cert_id));
     }
     if (device_wide_cert_and_issuers && network_cert.is_device_wide()) {
-      device_wide_cert_and_issuers->push_back(
-          CertAndIssuer(net::x509_util::DupCERTCertificate(cert),
-                        pem_encoded_issuer, private_key_nickname.value()));
+      device_wide_cert_and_issuers->push_back(CertAndIssuer(
+          net::x509_util::DupCERTCertificate(cert), pem_encoded_issuer,
+          private_key_nickname.value(), cert_id));
     }
   }
 
@@ -482,7 +543,8 @@ bool ClientCertResolver::ResolveClientCertificateSync(
         nullptr /* device_wide_cert_and_issuers */);
   }
 
-  // Search for a certificate matching the pattern or reference.
+  // Search for a certificate matching the pattern, reference or
+  // ProvisioningProfileId.
   std::vector<CertAndIssuer>::iterator cert_it = std::find_if(
       client_cert_and_issuers.begin(), client_cert_and_issuers.end(),
       MatchCertWithCertConfig(client_cert_config));
@@ -509,6 +571,16 @@ bool ClientCertResolver::ResolveClientCertificateSync(
 
 void ClientCertResolver::SetClockForTesting(base::Clock* clock) {
   testing_clock_ = clock;
+}
+
+// static
+base::ScopedClosureRunner
+ClientCertResolver::SetProvisioningIdForCertGetterForTesting(
+    ProvisioningProfileIdGetter getter) {
+  g_provisioning_id_getter_for_testing = getter;
+
+  return base::ScopedClosureRunner(
+      base::BindOnce([]() { g_provisioning_id_getter_for_testing.Reset(); }));
 }
 
 void ClientCertResolver::NetworkListChanged() {
@@ -603,8 +675,8 @@ void ClientCertResolver::ResolveNetworks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<NetworkAndCertConfig> networks_to_resolve;
 
-  // Filter networks with ClientCertPattern or ClientCertRef. As these can only
-  // be set by policy, we check there.
+  // Filter networks with ClientCertPattern, ClientCertRef, or
+  // ProvisioningProfileId. As these can only be set by policy, we check there.
   for (const NetworkState* network : networks) {
     // If the network was not known before, mark it as known but with resolving
     // pending.
@@ -613,7 +685,7 @@ void ClientCertResolver::ResolveNetworks(
                                         MatchingCertAndResolveStatus());
 
     // If this network is not configured, it cannot have a
-    // ClientCertPattern/ClientCertRef.
+    // ClientCertPattern/ClientCertRef/ProvisioningProfileId.
     if (network->profile_path().empty())
       continue;
 

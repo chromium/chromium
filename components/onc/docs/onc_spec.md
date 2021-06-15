@@ -597,6 +597,13 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
     * If *Cert* is used, **ClientCertType** and *ServerCARefs* (or the
       deprecated *ServerCARef*) must be set.
 
+* **ClientCertProvisioningProfileId**
+    * (required if **ClientCertType** is *ProvisioningProfileId*, otherwise
+      ignored) - **string**
+    * Id of the client certificate to be used. On Chrome OS, this corresponds
+      to the "cert_profile_id" field in the RequiredClientCertificateForUser or
+      RequiredClientCertificateForDevice policy.
+
 * **ClientCertPKCS11Id**
     * (required if **ClientCertType** is *PKCS11Id*, otherwise ignored) -
     * PKCS#11 identifier in the format slot:key_id.
@@ -617,8 +624,9 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
       * *PKCS11Id*
       * *Pattern*
       * *Ref*
-    * *Ref* and *Pattern* indicate that the associated property should be used
-      to identify the client certificate.
+      * *ProvisioningProfileId*
+    * *Ref*, *Pattern* and *ProvisioningProfileId* indicate that the associated
+      property should be used to identify the client certificate.
     * *PKCS11Id* is used when representing a certificate in a local store and is
       only valid when describing a local configuration.
 

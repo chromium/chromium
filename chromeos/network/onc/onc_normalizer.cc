@@ -123,6 +123,9 @@ void Normalizer::NormalizeEAP(base::DictionaryValue* eap) {
   RemoveEntryUnless(eap,
                     ::onc::client_cert::kClientCertRef,
                     clientcert_type == ::onc::client_cert::kRef);
+  RemoveEntryUnless(
+      eap, ::onc::client_cert::kClientCertProvisioningProfileId,
+      clientcert_type == ::onc::client_cert::kProvisioningProfileId);
 
   std::string outer;
   eap->GetStringWithoutPathExpansion(::onc::eap::kOuter, &outer);
@@ -156,6 +159,9 @@ void Normalizer::NormalizeIPsec(base::DictionaryValue* ipsec) {
   RemoveEntryUnless(ipsec,
                     ::onc::client_cert::kClientCertRef,
                     clientcert_type == ::onc::client_cert::kRef);
+  RemoveEntryUnless(
+      ipsec, ::onc::client_cert::kClientCertProvisioningProfileId,
+      clientcert_type == ::onc::client_cert::kProvisioningProfileId);
 
   int ike_version = ipsec->FindIntKey(::onc::ipsec::kIKEVersion).value_or(-1);
   RemoveEntryUnless(ipsec, ::onc::ipsec::kEAP, ike_version == 2);
@@ -197,6 +203,9 @@ void Normalizer::NormalizeOpenVPN(base::DictionaryValue* openvpn) {
   RemoveEntryUnless(openvpn,
                     ::onc::client_cert::kClientCertRef,
                     clientcert_type == ::onc::client_cert::kRef);
+  RemoveEntryUnless(
+      openvpn, ::onc::client_cert::kClientCertProvisioningProfileId,
+      clientcert_type == ::onc::client_cert::kProvisioningProfileId);
 
   base::Value* user_auth_type_value = openvpn->FindKeyOfType(
       ::onc::openvpn::kUserAuthenticationType, base::Value::Type::STRING);

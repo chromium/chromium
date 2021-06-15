@@ -259,6 +259,7 @@ ONC_EXPORT extern const char kEAP[];
 }  // namespace wimax_deprecated
 
 namespace client_cert {
+ONC_EXPORT extern const char kClientCertProvisioningProfileId[];
 ONC_EXPORT extern const char kClientCertPattern[];
 ONC_EXPORT extern const char kClientCertPKCS11Id[];
 ONC_EXPORT extern const char kClientCertRef[];
@@ -274,6 +275,7 @@ ONC_EXPORT extern const char kLocality[];
 ONC_EXPORT extern const char kOrganization[];
 ONC_EXPORT extern const char kOrganizationalUnit[];
 ONC_EXPORT extern const char kPattern[];
+ONC_EXPORT extern const char kProvisioningProfileId[];
 ONC_EXPORT extern const char kPKCS11Id[];
 ONC_EXPORT extern const char kRef[];
 ONC_EXPORT extern const char kSubject[];

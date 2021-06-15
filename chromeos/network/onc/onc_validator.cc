@@ -332,9 +332,10 @@ bool Validator::ValidateRecommendedField(
 
 bool Validator::ValidateClientCertFields(bool allow_cert_type_none,
                                          base::DictionaryValue* result) {
-  std::vector<const char*> valid_cert_types = {::onc::client_cert::kRef,
-                                               ::onc::client_cert::kPattern,
-                                               ::onc::client_cert::kPKCS11Id};
+  std::vector<const char*> valid_cert_types = {
+      ::onc::client_cert::kRef, ::onc::client_cert::kPattern,
+      ::onc::client_cert::kProvisioningProfileId,
+      ::onc::client_cert::kPKCS11Id};
   if (allow_cert_type_none)
     valid_cert_types.push_back(::onc::client_cert::kClientCertTypeNone);
 
@@ -351,7 +352,10 @@ bool Validator::ValidateClientCertFields(bool allow_cert_type_none,
 
   bool all_required_exist = true;
 
-  if (cert_type == ::onc::client_cert::kPattern)
+  if (cert_type == ::onc::client_cert::kProvisioningProfileId)
+    all_required_exist &= RequireField(
+        *result, ::onc::client_cert::kClientCertProvisioningProfileId);
+  else if (cert_type == ::onc::client_cert::kPattern)
     all_required_exist &=
         RequireField(*result, ::onc::client_cert::kClientCertPattern);
   else if (cert_type == ::onc::client_cert::kRef)
