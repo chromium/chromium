@@ -5,12 +5,12 @@
 #include "extensions/renderer/api_activity_logger.h"
 
 #include "base/run_loop.h"
-#include "content/public/test/mock_render_thread.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
+#include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
@@ -36,10 +36,10 @@ class ScopedAllowActivityLogging {
 }  // namespace
 
 using ActivityLoggerTest = APIBindingTest;
+using ActivityLogCallType = IPCMessageSender::ActivityLogCallType;
 
 // Regression test for crbug.com/740866.
 TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
-  content::MockRenderThread mock_render_thread;
   TestExtensionsRendererClient client;
   std::set<ExtensionId> extension_ids;
   ScriptContextSet script_context_set(&extension_ids);
@@ -58,32 +58,26 @@ TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
 
   std::vector<v8::Local<v8::Value>> args = {v8::Undefined(isolate())};
 
-  IPC::TestSink& sink = mock_render_thread.sink();
-  sink.ClearMessages();
+  std::unique_ptr<TestIPCMessageSender> ipc_sender =
+      std::make_unique<testing::StrictMock<TestIPCMessageSender>>();
+  EXPECT_CALL(*ipc_sender,
+              SendActivityLogIPC(extension->id(), ActivityLogCallType::APICALL,
+                                 testing::_))
+      .WillOnce([&](const ExtensionId& extension_id, const ActivityLogCallType,
+                    const ExtensionHostMsg_APIActionOrEvent_Params& params) {
+        EXPECT_EQ("someApiMethod", params.api_call);
+        ASSERT_EQ(1u, params.arguments.GetList().size());
+        EXPECT_EQ(base::Value::Type::NONE,
+                  params.arguments.GetList()[0].type());
+      });
 
-  APIActivityLogger::LogAPICall(context, "someApiMethod", args);
-
-  ASSERT_EQ(1u, sink.message_count());
-  const IPC::Message* message = sink.GetMessageAt(0u);
-  ASSERT_EQ(
-      static_cast<uint32_t>(ExtensionHostMsg_AddAPIActionToActivityLog::ID),
-      message->type());
-  ExtensionHostMsg_AddAPIActionToActivityLog::Param full_params;
-  ASSERT_TRUE(
-      ExtensionHostMsg_AddAPIActionToActivityLog::Read(message, &full_params));
-  std::string extension_id = std::get<0>(full_params);
-  ExtensionHostMsg_APIActionOrEvent_Params params;
-  params.api_call = std::get<1>(full_params).api_call;
-  params.arguments =
-      base::ListValue(std::get<1>(full_params).arguments.GetList());
-  params.extra = std::get<1>(full_params).extra;
-  EXPECT_EQ(extension->id(), extension_id);
-  ASSERT_EQ(1u, params.arguments.GetList().size());
-  EXPECT_EQ(base::Value::Type::NONE, params.arguments.GetList()[0].type());
+  APIActivityLogger::LogAPICall(ipc_sender.get(), context, "someApiMethod",
+                                args);
 
   ScriptContext* script_context = script_context_set.GetByV8Context(context);
   script_context_set.Remove(script_context);
   base::RunLoop().RunUntilIdle();  // Let script context destruction complete.
+  ::testing::Mock::VerifyAndClearExpectations(ipc_sender.get());
 }
 
 }  // namespace extensions

@@ -97,6 +97,14 @@ class ServiceWorkerMessagingTest : public ExtensionApiTest {
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMessagingTest);
 };
 
+class ServiceWorkerMessagingTestWithActivityLog
+    : public ServiceWorkerMessagingTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
+    ServiceWorkerMessagingTest::SetUpCommandLine(command_line);
+  }
+};
+
 // Tests one-way message from content script to SW extension using
 // chrome.runtime.sendMessage.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, TabToWorkerOneWay) {
@@ -369,6 +377,28 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
     StopServiceWorker(*service_worker_extension);
     unregister_worker_observer.WaitForUnregister();
   }
+}
+
+// Tests ActiviyLog from SW based extension.
+// Regression test for https://crbug.com/1213074, https://crbug.com/1217343.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTestWithActivityLog, ActivityLog) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const Extension* friend_extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/messaging/connect_to_worker/connect_and_disconnect"));
+  ASSERT_TRUE(friend_extension);
+  {
+    ResultCatcher catcher;
+    content::WebContents* new_web_contents = browsertest_util::AddTab(
+        browser(),
+        embedded_test_server()->GetURL("/extensions/test_file.html"));
+    EXPECT_TRUE(new_web_contents);
+    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  }
+
+  // The test passes when /activiy_log/ extension sees activities from
+  // |friend_extension|.
+  ASSERT_TRUE(RunExtensionTest("service_worker/messaging/activity_log/"));
 }
 
 }  // namespace extensions

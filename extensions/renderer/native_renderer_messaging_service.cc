@@ -456,7 +456,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
       list.emplace_back();
 
     APIActivityLogger::LogEvent(
-        script_context, event_name,
+        bindings_system_->GetIPCMessageSender(), script_context, event_name,
         std::make_unique<base::ListValue>(std::move(list)));
   }
 }

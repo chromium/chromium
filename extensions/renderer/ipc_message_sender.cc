@@ -194,6 +194,22 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     render_thread_->Send(new ExtensionHostMsg_PostMessage(port_id, message));
   }
 
+  void SendActivityLogIPC(
+      const ExtensionId& extension_id,
+      ActivityLogCallType call_type,
+      const ExtensionHostMsg_APIActionOrEvent_Params& params) override {
+    switch (call_type) {
+      case ActivityLogCallType::APICALL:
+        render_thread_->Send(new ExtensionHostMsg_AddAPIActionToActivityLog(
+            extension_id, params));
+        break;
+      case ActivityLogCallType::EVENT:
+        render_thread_->Send(
+            new ExtensionHostMsg_AddEventToActivityLog(extension_id, params));
+        break;
+    }
+  }
+
  private:
   void OnResponse(int request_id,
                   bool success,
@@ -393,6 +409,22 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   void SendPostMessageToPort(const PortId& port_id,
                              const Message& message) override {
     dispatcher_->Send(new ExtensionHostMsg_PostMessage(port_id, message));
+  }
+
+  void SendActivityLogIPC(
+      const ExtensionId& extension_id,
+      ActivityLogCallType call_type,
+      const ExtensionHostMsg_APIActionOrEvent_Params& params) override {
+    switch (call_type) {
+      case ActivityLogCallType::APICALL:
+        dispatcher_->Send(new ExtensionHostMsg_AddAPIActionToActivityLog(
+            extension_id, params));
+        break;
+      case ActivityLogCallType::EVENT:
+        dispatcher_->Send(
+            new ExtensionHostMsg_AddEventToActivityLog(extension_id, params));
+        break;
+    }
   }
 
  private:

@@ -19,6 +19,7 @@
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
+#include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -28,9 +29,8 @@
 
 namespace extensions {
 
-namespace {
-
-void IsInstalledGetterCallback(
+// static
+void AppHooksDelegate::IsInstalledGetterCallback(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::HandleScope handle_scope(info.GetIsolate());
@@ -46,16 +46,18 @@ void IsInstalledGetterCallback(
   auto* hooks_delegate =
       static_cast<AppHooksDelegate*>(info.Data().As<v8::External>()->Value());
   // Since this is more-or-less an API, log it as an API call.
-  APIActivityLogger::LogAPICall(context, "app.getIsInstalled",
+  APIActivityLogger::LogAPICall(hooks_delegate->ipc_sender_, context,
+                                "app.getIsInstalled",
                                 std::vector<v8::Local<v8::Value>>());
   info.GetReturnValue().Set(hooks_delegate->GetIsInstalled(script_context));
 }
 
-}  // namespace
-
 AppHooksDelegate::AppHooksDelegate(Dispatcher* dispatcher,
-                                   APIRequestHandler* request_handler)
-    : dispatcher_(dispatcher), request_handler_(request_handler) {}
+                                   APIRequestHandler* request_handler,
+                                   IPCMessageSender* ipc_sender)
+    : dispatcher_(dispatcher),
+      request_handler_(request_handler),
+      ipc_sender_(ipc_sender) {}
 AppHooksDelegate::~AppHooksDelegate() = default;
 
 bool AppHooksDelegate::GetIsInstalled(ScriptContext* script_context) const {
@@ -125,8 +127,8 @@ void AppHooksDelegate::InitializeTemplate(
   // TODO(devlin): This is getting pretty common. We should find a generalized
   // solution, or make gin::ObjectTemplateBuilder work for these use cases.
   object_template->SetAccessor(gin::StringToSymbol(isolate, "isInstalled"),
-                               &IsInstalledGetterCallback, nullptr,
-                               v8::External::New(isolate, this));
+                               &AppHooksDelegate::IsInstalledGetterCallback,
+                               nullptr, v8::External::New(isolate, this));
 }
 
 v8::Local<v8::Value> AppHooksDelegate::GetDetails(

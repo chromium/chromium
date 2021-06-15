@@ -28,6 +28,10 @@ class WorkerScriptContextSet : public ScriptContextSetIterable,
 
   ~WorkerScriptContextSet() override;
 
+  // Returns the ScriptContext for a Service Worker |v8_context|, or nullptr if
+  // no such context exists.
+  ScriptContext* GetContextByV8Context(v8::Local<v8::Context> v8_context);
+
   // ScriptContextSetIterable:
   void ForEach(
       const std::string& extension_id,

@@ -24,6 +24,8 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+struct ExtensionHostMsg_APIActionOrEvent_Params;
+
 namespace base {
 class DictionaryValue;
 }
@@ -87,6 +89,10 @@ class TestIPCMessageSender : public IPCMessageSender {
                void(int routing_id, const PortId& port_id, bool close_channel));
   MOCK_METHOD2(SendPostMessageToPort,
                void(const PortId& port_id, const Message& message));
+  MOCK_METHOD3(SendActivityLogIPC,
+               void(const ExtensionId& extension_id,
+                    IPCMessageSender::ActivityLogCallType call_type,
+                    const ExtensionHostMsg_APIActionOrEvent_Params& params));
 
   const mojom::RequestParams* last_params() const { return last_params_.get(); }
 

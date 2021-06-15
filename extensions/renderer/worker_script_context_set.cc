@@ -67,6 +67,19 @@ void WorkerScriptContextSet::Insert(std::unique_ptr<ScriptContext> context) {
   contexts->push_back(std::move(context));
 }
 
+// static
+ScriptContext* WorkerScriptContextSet::GetContextByV8Context(
+    v8::Local<v8::Context> v8_context) {
+  DCHECK(worker_thread_util::IsWorkerThread())
+      << "Must be called on a worker thread";
+  ContextVector* contexts = contexts_tls_.Get();
+  if (!contexts)
+    return nullptr;
+
+  auto context_it = FindContext(contexts, v8_context);
+  return context_it == contexts->end() ? nullptr : context_it->get();
+}
+
 void WorkerScriptContextSet::Remove(v8::Local<v8::Context> v8_context,
                                     const GURL& url) {
   DCHECK(worker_thread_util::IsWorkerThread())

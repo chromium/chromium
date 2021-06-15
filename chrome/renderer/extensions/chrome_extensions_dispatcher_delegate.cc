@@ -272,7 +272,8 @@ void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
   extensions::APIBindingsSystem* bindings = bindings_system->api_system();
   bindings->GetHooksForAPI("app")->SetDelegate(
       std::make_unique<extensions::AppHooksDelegate>(
-          dispatcher, bindings->request_handler()));
+          dispatcher, bindings->request_handler(),
+          bindings_system->GetIPCMessageSender()));
   bindings->GetHooksForAPI("extension")
       ->SetDelegate(std::make_unique<extensions::ExtensionHooksDelegate>(
           bindings_system->messaging_service()));
