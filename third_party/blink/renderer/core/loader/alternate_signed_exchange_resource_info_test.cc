@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -17,6 +16,10 @@ class AlternateSignedExchangeResourceInfoTest
  public:
   AlternateSignedExchangeResourceInfoTest()
       : ScopedSignedExchangeSubresourcePrefetchForTest(true) {}
+  AlternateSignedExchangeResourceInfoTest(
+      const AlternateSignedExchangeResourceInfoTest&) = delete;
+  AlternateSignedExchangeResourceInfoTest& operator=(
+      const AlternateSignedExchangeResourceInfoTest&) = delete;
   ~AlternateSignedExchangeResourceInfoTest() override = default;
 
  protected:
@@ -24,9 +27,6 @@ class AlternateSignedExchangeResourceInfoTest
       const AlternateSignedExchangeResourceInfo* info) {
     return info->alternative_resources_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AlternateSignedExchangeResourceInfoTest);
 };
 
 TEST_F(AlternateSignedExchangeResourceInfoTest, Empty) {

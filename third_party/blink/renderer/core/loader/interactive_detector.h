@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_INTERACTIVE_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_INTERACTIVE_DETECTOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -60,14 +59,14 @@ class CORE_EXPORT InteractiveDetector
   class CORE_EXPORT NetworkActivityChecker {
    public:
     explicit NetworkActivityChecker(Document* document) : document_(document) {}
+    NetworkActivityChecker(const NetworkActivityChecker&) = delete;
+    NetworkActivityChecker& operator=(const NetworkActivityChecker&) = delete;
 
     virtual int GetActiveConnections();
     virtual ~NetworkActivityChecker() = default;
 
    private:
     WeakPersistent<Document> document_;
-
-    DISALLOW_COPY_AND_ASSIGN(NetworkActivityChecker);
   };
 
   static InteractiveDetector* From(Document&);
@@ -76,6 +75,8 @@ class CORE_EXPORT InteractiveDetector
   static const char* SupplementName();
 
   explicit InteractiveDetector(Document&, NetworkActivityChecker*);
+  InteractiveDetector(const InteractiveDetector&) = delete;
+  InteractiveDetector& operator=(const InteractiveDetector&) = delete;
   ~InteractiveDetector() override = default;
 
   // Calls to base::TimeTicks::Now().since_origin().InSecondsF() is expensive,
@@ -245,8 +246,6 @@ class CORE_EXPORT InteractiveDetector
   base::TimeTicks pending_pointerdown_timestamp_;
 
   ukm::UkmRecorder* ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(InteractiveDetector);
 };
 
 }  // namespace blink

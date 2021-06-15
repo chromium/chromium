@@ -37,6 +37,10 @@ class CORE_EXPORT WorkerResourceTimingNotifierImpl final
   // only for MakeGarbageCollected.
   explicit WorkerResourceTimingNotifierImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  WorkerResourceTimingNotifierImpl(const WorkerResourceTimingNotifierImpl&) =
+      delete;
+  WorkerResourceTimingNotifierImpl& operator=(
+      const WorkerResourceTimingNotifierImpl&) = delete;
   ~WorkerResourceTimingNotifierImpl() override = default;
 
   void AddResourceTiming(
@@ -68,8 +72,6 @@ class CORE_EXPORT WorkerResourceTimingNotifierImpl final
   // Used when the execution context lives on a different sequence of this
   // notifier.
   CrossThreadWeakPersistent<ExecutionContext> outside_execution_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerResourceTimingNotifierImpl);
 };
 
 // NullWorkerResourceTimingNotifier does nothing when AddResourceTiming() is
@@ -78,6 +80,10 @@ class CORE_EXPORT NullWorkerResourceTimingNotifier final
     : public WorkerResourceTimingNotifier {
  public:
   NullWorkerResourceTimingNotifier() = default;
+  NullWorkerResourceTimingNotifier(const NullWorkerResourceTimingNotifier&) =
+      delete;
+  NullWorkerResourceTimingNotifier& operator=(
+      const NullWorkerResourceTimingNotifier&) = delete;
   ~NullWorkerResourceTimingNotifier() override = default;
 
   void AddResourceTiming(
@@ -85,9 +91,6 @@ class CORE_EXPORT NullWorkerResourceTimingNotifier final
       const AtomicString& initiator_type,
       mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
           worker_timing_receiver) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullWorkerResourceTimingNotifier);
 };
 
 }  // namespace blink

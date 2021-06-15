@@ -34,7 +34,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -49,6 +48,8 @@ class CORE_EXPORT HttpRefreshScheduler final
     : public GarbageCollected<HttpRefreshScheduler> {
  public:
   explicit HttpRefreshScheduler(Document*);
+  HttpRefreshScheduler(const HttpRefreshScheduler&) = delete;
+  HttpRefreshScheduler& operator=(const HttpRefreshScheduler&) = delete;
   ~HttpRefreshScheduler() = default;
 
   bool IsScheduledWithin(base::TimeDelta interval) const;
@@ -81,8 +82,6 @@ class CORE_EXPORT HttpRefreshScheduler final
     base::TimeTicks input_timestamp;
   };
   std::unique_ptr<ScheduledHttpRefresh> refresh_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpRefreshScheduler);
 };
 
 }  // namespace blink

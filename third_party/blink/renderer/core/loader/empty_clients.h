@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "cc/paint/paint_canvas.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -242,6 +241,8 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
 class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
  public:
   EmptyLocalFrameClient() = default;
+  EmptyLocalFrameClient(const EmptyLocalFrameClient&) = delete;
+  EmptyLocalFrameClient& operator=(const EmptyLocalFrameClient&) = delete;
   ~EmptyLocalFrameClient() override = default;
 
   bool HasWebView() const override { return true; }  // mainly for assertions
@@ -395,8 +396,6 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
  protected:
   // Not owned
   WebTextCheckClient* text_check_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyLocalFrameClient);
 };
 
 class EmptySpellCheckPanelHostClient : public WebSpellCheckPanelHostClient {
@@ -404,12 +403,14 @@ class EmptySpellCheckPanelHostClient : public WebSpellCheckPanelHostClient {
 
  public:
   EmptySpellCheckPanelHostClient() = default;
+  EmptySpellCheckPanelHostClient(const EmptySpellCheckPanelHostClient&) =
+      delete;
+  EmptySpellCheckPanelHostClient& operator=(
+      const EmptySpellCheckPanelHostClient&) = delete;
 
   void ShowSpellingUI(bool) override {}
   bool IsShowingSpellingUI() override { return false; }
   void UpdateSpellingUIWithMisspelledWord(const WebString&) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(EmptySpellCheckPanelHostClient);
 };
 
 CORE_EXPORT ChromeClient& GetStaticEmptyChromeClientInstance();

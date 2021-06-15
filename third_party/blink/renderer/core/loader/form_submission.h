@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -62,6 +61,8 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
         : method_(kGetMethod),
           is_multi_part_form_(false),
           encoding_type_("application/x-www-form-urlencoded") {}
+    Attributes(const Attributes&) = delete;
+    Attributes& operator=(const Attributes&) = delete;
 
     SubmitMethod Method() const { return method_; }
     static SubmitMethod ParseMethodType(const String&);
@@ -92,8 +93,6 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
     AtomicString target_;
     AtomicString encoding_type_;
     String accept_charset_;
-
-    DISALLOW_COPY_AND_ASSIGN(Attributes);
   };
 
   static FormSubmission* Create(HTMLFormElement*,

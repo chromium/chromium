@@ -34,7 +34,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -73,6 +72,9 @@ namespace {
 class HTTPRequestHeaderValidator : public WebHTTPHeaderVisitor {
  public:
   HTTPRequestHeaderValidator() : is_safe_(true) {}
+  HTTPRequestHeaderValidator(const HTTPRequestHeaderValidator&) = delete;
+  HTTPRequestHeaderValidator& operator=(const HTTPRequestHeaderValidator&) =
+      delete;
   ~HTTPRequestHeaderValidator() override = default;
 
   void VisitHeader(const WebString& name, const WebString& value) override;
@@ -80,8 +82,6 @@ class HTTPRequestHeaderValidator : public WebHTTPHeaderVisitor {
 
  private:
   bool is_safe_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTTPRequestHeaderValidator);
 };
 
 void HTTPRequestHeaderValidator::VisitHeader(const WebString& name,
@@ -107,6 +107,8 @@ class WebAssociatedURLLoaderImpl::ClientAdapter final
                 network::mojom::RequestMode,
                 network::mojom::CredentialsMode,
                 scoped_refptr<base::SingleThreadTaskRunner>);
+  ClientAdapter(const ClientAdapter&) = delete;
+  ClientAdapter& operator=(const ClientAdapter&) = delete;
 
   // ThreadableLoaderClient
   void DidSendData(uint64_t /*bytesSent*/,
@@ -159,8 +161,6 @@ class WebAssociatedURLLoaderImpl::ClientAdapter final
   HeapTaskRunnerTimer<ClientAdapter> error_timer_;
   bool enable_error_notifications_;
   bool did_fail_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientAdapter);
 };
 
 WebAssociatedURLLoaderImpl::ClientAdapter::ClientAdapter(

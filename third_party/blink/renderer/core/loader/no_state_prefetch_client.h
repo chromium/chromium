@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NO_STATE_PREFETCH_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NO_STATE_PREFETCH_CLIENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -49,6 +48,8 @@ class CORE_EXPORT NoStatePrefetchClient
   static const char kSupplementName[];
 
   NoStatePrefetchClient(Page&, WebNoStatePrefetchClient*);
+  NoStatePrefetchClient(const NoStatePrefetchClient&) = delete;
+  NoStatePrefetchClient& operator=(const NoStatePrefetchClient&) = delete;
 
   virtual bool IsPrefetchOnly();
 
@@ -56,8 +57,6 @@ class CORE_EXPORT NoStatePrefetchClient
 
  private:
   WebNoStatePrefetchClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchClient);
 };
 
 CORE_EXPORT void ProvideNoStatePrefetchClientTo(Page&, NoStatePrefetchClient*);

@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_H_
 
-#include "base/macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -94,6 +93,8 @@ class CORE_EXPORT ThreadableLoader final
                    ThreadableLoaderClient*,
                    const ResourceLoaderOptions&,
                    ResourceFetcher* = nullptr);
+  ThreadableLoader(const ThreadableLoader&) = delete;
+  ThreadableLoader& operator=(const ThreadableLoader&) = delete;
   ~ThreadableLoader() override;
 
   // Must be called to actually begin the request.
@@ -166,8 +167,6 @@ class CORE_EXPORT ThreadableLoader final
   base::TimeTicks request_started_;
 
   RawResourceClientStateChecker checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadableLoader);
 };
 
 }  // namespace blink

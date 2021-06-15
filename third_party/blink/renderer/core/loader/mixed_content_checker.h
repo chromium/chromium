@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MIXED_CONTENT_CHECKER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink-forward.h"
@@ -148,6 +147,9 @@ class CORE_EXPORT MixedContentChecker final {
 
   static MixedContent::CheckModeForPlugin DecideCheckModeForPlugin(Settings*);
 
+  MixedContentChecker(const MixedContentChecker&) = delete;
+  MixedContentChecker& operator=(const MixedContentChecker&) = delete;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MixedContentCheckerTest, HandleCertificateError);
 
@@ -165,8 +167,6 @@ class CORE_EXPORT MixedContentChecker final {
   static void Count(Frame*,
                     mojom::blink::RequestContextType,
                     const LocalFrame*);
-
-  DISALLOW_COPY_AND_ASSIGN(MixedContentChecker);
 };
 
 }  // namespace blink

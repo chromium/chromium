@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_CLIENT_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
@@ -71,12 +70,12 @@ class CORE_EXPORT ThreadableLoaderClient : public GarbageCollectedMixin {
   // resource ended up being zero bytes.
   virtual void DidDownloadToBlob(scoped_refptr<BlobDataHandle>) {}
 
+  ThreadableLoaderClient(const ThreadableLoaderClient&) = delete;
+  ThreadableLoaderClient& operator=(const ThreadableLoaderClient&) = delete;
   virtual ~ThreadableLoaderClient() = default;
 
  protected:
   ThreadableLoaderClient() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadableLoaderClient);
 };
 
 }  // namespace blink

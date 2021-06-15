@@ -52,7 +52,12 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     request_.CopyFrom(request);
   }
 
-  ~PrefetchedSignedExchangeLoader() override {}
+  PrefetchedSignedExchangeLoader(const PrefetchedSignedExchangeLoader&) =
+      delete;
+  PrefetchedSignedExchangeLoader& operator=(
+      const PrefetchedSignedExchangeLoader&) = delete;
+
+  ~PrefetchedSignedExchangeLoader() override = default;
 
   base::WeakPtr<PrefetchedSignedExchangeLoader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -146,8 +151,6 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
   std::queue<base::OnceClosure> pending_method_calls_;
 
   base::WeakPtrFactory<PrefetchedSignedExchangeLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchedSignedExchangeLoader);
 };
 
 // static

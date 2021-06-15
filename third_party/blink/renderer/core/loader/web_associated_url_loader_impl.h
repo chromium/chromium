@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_ASSOCIATED_URL_LOADER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_ASSOCIATED_URL_LOADER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
@@ -27,6 +26,9 @@ class CORE_EXPORT WebAssociatedURLLoaderImpl final
  public:
   WebAssociatedURLLoaderImpl(ExecutionContext*,
                              const WebAssociatedURLLoaderOptions&);
+  WebAssociatedURLLoaderImpl(const WebAssociatedURLLoaderImpl&) = delete;
+  WebAssociatedURLLoaderImpl& operator=(const WebAssociatedURLLoaderImpl&) =
+      delete;
   ~WebAssociatedURLLoaderImpl() override;
 
   void LoadAsynchronously(const WebURLRequest&,
@@ -63,8 +65,6 @@ class CORE_EXPORT WebAssociatedURLLoaderImpl final
   // A ExecutionContextLifecycleObserver for cancelling |loader_| when the
   // context is detached.
   Persistent<Observer> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAssociatedURLLoaderImpl);
 };
 
 }  // namespace blink
