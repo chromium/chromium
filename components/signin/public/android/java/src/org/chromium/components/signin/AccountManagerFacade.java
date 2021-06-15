@@ -73,8 +73,11 @@ public interface AccountManagerFacade {
 
     /**
      * Asynchronous version of {@link #getAccounts()}.
+     *
+     * This method is deprecated, use {@link #getAccounts()} instead.
      */
     @MainThread
+    @Deprecated
     void tryGetGoogleAccounts(final Callback<List<Account>> callback);
 
     /**

@@ -98,7 +98,7 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     protected void onSigninAccepted(String accountName, boolean isDefaultAccount,
             boolean settingsClicked, Runnable callback) {
         // TODO(https://crbug.com/1002056): Change onSigninAccepted to get CoreAccountInfo.
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             @Nullable
             Account account = AccountUtils.findAccountByName(accounts, accountName);
             if (account == null) {

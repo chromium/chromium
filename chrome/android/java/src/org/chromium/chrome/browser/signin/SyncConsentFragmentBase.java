@@ -67,7 +67,7 @@ import java.util.List;
  * what happens after the signin flow.
  */
 public abstract class SyncConsentFragmentBase
-        extends Fragment implements AccountPickerCoordinator.Listener {
+        extends Fragment implements AccountPickerCoordinator.Listener, AccountsChangeObserver {
     private static final String ARGUMENT_ACCESS_POINT = "SigninFragmentBase.AccessPoint";
 
     private static final String SETTINGS_LINK_OPEN = "<LINK1>";
@@ -99,7 +99,6 @@ public abstract class SyncConsentFragmentBase
 
     private String mSelectedAccountName;
     private boolean mIsDefaultAccountSelected;
-    private final AccountsChangeObserver mAccountsChangedObserver;
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
     private ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
@@ -167,7 +166,6 @@ public abstract class SyncConsentFragmentBase
 
     protected SyncConsentFragmentBase() {
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        mAccountsChangedObserver = this::triggerUpdateAccounts;
         mProfileDataCacheObserver = this::updateProfileData;
         mCanUseGooglePlayServices = true;
     }
@@ -289,6 +287,14 @@ public abstract class SyncConsentFragmentBase
         mCanUseGooglePlayServices = ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                 new UserRecoverableErrorHandler.ModalDialog(requireActivity(), cancelable));
         mView.getAcceptButton().setEnabled(mCanUseGooglePlayServices);
+    }
+
+    /**
+     * Implements {@link AccountsChangeObserver}.
+     */
+    @Override
+    public void onAccountsChanged() {
+        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
     /**
@@ -491,8 +497,9 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void onResume() {
         super.onResume();
-        mAccountManagerFacade.addObserver(mAccountsChangedObserver);
-        triggerUpdateAccounts();
+        mAccountManagerFacade.addObserver(this);
+        updateAccounts(
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
 
         mView.startAnimations();
     }
@@ -500,7 +507,7 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void onPause() {
         super.onPause();
-        mAccountManagerFacade.removeObserver(mAccountsChangedObserver);
+        mAccountManagerFacade.removeObserver(this);
 
         mView.stopAnimations();
     }
@@ -511,15 +518,10 @@ public abstract class SyncConsentFragmentBase
         updateProfileData(mSelectedAccountName);
     }
 
-    private void triggerUpdateAccounts() {
-        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
-            if (isResumed() && mCanUseGooglePlayServices) {
-                updateAccounts(accounts);
-            }
-        });
-    }
-
     private void updateAccounts(List<Account> accounts) {
+        if (!isResumed() || !mCanUseGooglePlayServices) {
+            return;
+        }
         if (accounts.isEmpty()) {
             mSelectedAccountName = null;
             mAccountSelectionPending = false;
