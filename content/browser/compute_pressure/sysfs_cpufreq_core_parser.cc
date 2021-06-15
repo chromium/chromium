@@ -88,7 +88,9 @@ int64_t SysfsCpufreqCoreParser::FileReader::ReadNumber() {
   if (!base::StringToInt64(trimmed_file_bytes, &file_value) || file_value < 0)
     return -1;
 
-  return file_value;
+  // CPUfreq reports frequencies in kHz.
+  constexpr int kKhz = 1000;
+  return file_value * kKhz;
 }
 
 SysfsCpufreqCoreParser::SysfsFileReader::SysfsFileReader(

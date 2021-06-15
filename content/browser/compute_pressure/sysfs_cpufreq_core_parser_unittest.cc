@@ -70,10 +70,10 @@ TEST_F(SysfsCpufreqCoreParserTest, NoFile) {
 }
 
 TEST_F(SysfsCpufreqCoreParserTest, GovernorFiles) {
-  ASSERT_TRUE(WriteFakeFile("scaling_max_freq", "1234000000\n"));
-  ASSERT_TRUE(WriteFakeFile("scaling_min_freq", "5678000000\n"));
-  ASSERT_TRUE(WriteFakeFile("scaling_cur_freq", "9876000000\n"));
-  ASSERT_TRUE(WriteFakeFile("base_frequency", "5432000000\n"));
+  ASSERT_TRUE(WriteFakeFile("scaling_max_freq", "1234000\n"));
+  ASSERT_TRUE(WriteFakeFile("scaling_min_freq", "5678000\n"));
+  ASSERT_TRUE(WriteFakeFile("scaling_cur_freq", "9876000\n"));
+  ASSERT_TRUE(WriteFakeFile("base_frequency", "5432000\n"));
   EXPECT_EQ(1'234'000'000, parser_->ReadMaxFrequency());
   EXPECT_EQ(5'678'000'000, parser_->ReadMinFrequency());
   EXPECT_EQ(9'876'000'000, parser_->ReadCurrentFrequency());
@@ -81,9 +81,9 @@ TEST_F(SysfsCpufreqCoreParserTest, GovernorFiles) {
 }
 
 TEST_F(SysfsCpufreqCoreParserTest, FirmwareFiles) {
-  ASSERT_TRUE(WriteFakeFile("cpuinfo_max_freq", "1234000000\n"));
-  ASSERT_TRUE(WriteFakeFile("cpuinfo_min_freq", "5678000000\n"));
-  ASSERT_TRUE(WriteFakeFile("cpuinfo_cur_freq", "9876000000\n"));
+  ASSERT_TRUE(WriteFakeFile("cpuinfo_max_freq", "1234000\n"));
+  ASSERT_TRUE(WriteFakeFile("cpuinfo_min_freq", "5678000\n"));
+  ASSERT_TRUE(WriteFakeFile("cpuinfo_cur_freq", "9876000\n"));
   EXPECT_EQ(1'234'000'000, parser_->ReadMaxFrequency());
   EXPECT_EQ(5'678'000'000, parser_->ReadMinFrequency());
   EXPECT_EQ(9'876'000'000, parser_->ReadCurrentFrequency());
@@ -180,7 +180,7 @@ class SysfsCpufreqCoreParserRoutingTest
 };
 
 TEST_P(SysfsCpufreqCoreParserRoutingTest, Read) {
-  WriteFakeFiles("1234000000\n", "56780000\n");
+  WriteFakeFiles("1234000\n", "56780000\n");
 
   int64_t expected_value =
       firmware_file_is_present()
@@ -211,7 +211,7 @@ TEST_P(SysfsCpufreqCoreParserRoutingTest, Read_InvalidFirmwareFile) {
   };
 
   for (const char* invalid_number : invalid_numbers) {
-    WriteFakeFiles(invalid_number, "5678000000\n");
+    WriteFakeFiles(invalid_number, "5678000\n");
 
     int64_t expected_value = governor_file_is_present() ? 5'678'000'000 : -1;
 
@@ -242,7 +242,7 @@ TEST_P(SysfsCpufreqCoreParserRoutingTest, Read_InvalidGovernorFile) {
   };
 
   for (const char* invalid_number : invalid_numbers) {
-    WriteFakeFiles("1234000000\n", invalid_number);
+    WriteFakeFiles("1234000\n", invalid_number);
 
     int64_t expected_value = firmware_file_is_present() ? 1'234'000'000 : -1;
 
