@@ -28,7 +28,7 @@
 
 namespace blink {
 namespace {
-static double INTERSECTION_RATIO_THRESHOLD = 0.5;
+static float INTERSECTION_RATIO_THRESHOLD = 0.5f;
 
 }  // namespace
 

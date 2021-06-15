@@ -25,11 +25,11 @@ struct LogicalRectUniteTestData {
     {"saturated width",
      {-1000, 0, 200, 200},
      {33554402, 500, 30, 100},
-     {0, 0, 99999999.0f, 600}},
+     {0, 0, 99999999, 600}},
     {"saturated height",
      {0, -1000, 200, 200},
      {0, 33554402, 100, 30},
-     {0, 0, 200, 99999999.0f}},
+     {0, 0, 200, 99999999}},
 };
 
 std::ostream& operator<<(std::ostream& os,

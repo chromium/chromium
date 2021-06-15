@@ -95,12 +95,12 @@ ChildFrameCompositingHelper::PaintContentsToDisplayList() {
 
   SkBitmap* sad_bitmap = child_frame_compositor_->GetSadPageBitmap();
   if (sad_bitmap) {
-    int paint_width = sad_bitmap->width() * device_scale_factor_;
-    int paint_height = sad_bitmap->height() * device_scale_factor_;
+    float paint_width = sad_bitmap->width() * device_scale_factor_;
+    float paint_height = sad_bitmap->height() * device_scale_factor_;
     if (layer_size.width() >= paint_width &&
         layer_size.height() >= paint_height) {
-      int x = (layer_size.width() - paint_width) / 2;
-      int y = (layer_size.height() - paint_height) / 2;
+      float x = (layer_size.width() - paint_width) / 2.0f;
+      float y = (layer_size.height() - paint_height) / 2.0f;
       if (device_scale_factor_ != 1.f) {
         display_list->push<cc::SaveOp>();
         display_list->push<cc::TranslateOp>(x, y);

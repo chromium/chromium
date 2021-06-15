@@ -122,10 +122,10 @@ TEST(LinkedHashSetTest, CopyConstructAndAssignString) {
   auto it1 = set1.begin();
   auto it2 = set2.begin();
   auto it3 = set3.begin();
-  for (int i = 0; i < 3; i++) {
-    EXPECT_EQ(*it1, String(Vector<UChar>({'1' + i})));
-    EXPECT_EQ(*it2, String(Vector<UChar>({'1' + i})));
-    EXPECT_EQ(*it3, String(Vector<UChar>({'1' + i})));
+  for (char16_t i = '1'; i < '4'; i++) {
+    EXPECT_EQ(*it1, String(Vector<UChar>({i})));
+    EXPECT_EQ(*it2, String(Vector<UChar>({i})));
+    EXPECT_EQ(*it3, String(Vector<UChar>({i})));
     ++it1;
     ++it2;
     ++it3;
@@ -139,10 +139,10 @@ TEST(LinkedHashSetTest, CopyConstructAndAssignString) {
   it1 = set1.begin();
   it2 = set2.begin();
   it3 = set3.begin();
-  for (int i = 0; i < 3; i++) {
-    EXPECT_EQ(*it1, String(Vector<UChar>({'1', '1' + i})));
-    EXPECT_EQ(*it2, String(Vector<UChar>({'1' + i})));
-    EXPECT_EQ(*it3, String(Vector<UChar>({'1' + i})));
+  for (char16_t i = '1'; i < '4'; i++) {
+    EXPECT_EQ(*it1, String(Vector<UChar>({'1', i})));
+    EXPECT_EQ(*it2, String(Vector<UChar>({i})));
+    EXPECT_EQ(*it3, String(Vector<UChar>({i})));
     ++it1;
     ++it2;
     ++it3;
@@ -205,8 +205,8 @@ TEST(LinkedHashSetTest, MoveConstructAndAssignString) {
   set3 = std::move(set2);
   EXPECT_EQ(set3.size(), 3u);
   auto it = set3.begin();
-  for (int i = 0; i < 3; i++) {
-    EXPECT_EQ(it->Value(), String(Vector<UChar>({'1' + i})));
+  for (char16_t i = '1'; i < '4'; i++) {
+    EXPECT_EQ(it->Value(), String(Vector<UChar>({i})));
     ++it;
   }
 
