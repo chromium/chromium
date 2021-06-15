@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<body style="background: red">
+<script>
+runAfterLayoutAndPaint(() => {
+  document.documentElement.remove();
+}, true);
+</script>
+</body>
