@@ -158,7 +158,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void SegmentBidiRuns(NGInlineNodeData*) const;
   void ShapeText(NGInlineItemsData*,
                  const String* previous_text = nullptr,
-                 const Vector<NGInlineItem>* previous_items = nullptr) const;
+                 const Vector<NGInlineItem>* previous_items = nullptr,
+                 const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
 
@@ -176,6 +177,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
     return *To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
   }
   const NGInlineNodeData& EnsureData() const;
+
+  void AdjustFontForTextCombineUprightAll() const;
 
   static void ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
                                    NGInlineNodeData* data);

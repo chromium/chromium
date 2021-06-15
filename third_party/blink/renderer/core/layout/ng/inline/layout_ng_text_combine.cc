@@ -6,8 +6,12 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -60,6 +64,41 @@ bool LayoutNGTextCombine::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
   return type == kLayoutObjectNGTextCombine ||
          LayoutNGBlockFlow::IsOfType(type);
+}
+
+float LayoutNGTextCombine::DesiredWidth() const {
+  DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
+            FontOrientation::kHorizontal);
+  const float one_em = StyleRef().ComputedFontSize();
+  if (EnumHasFlags(Parent()->StyleRef().TextDecorationsInEffect(),
+                   TextDecoration::kUnderline | TextDecoration::kOverline))
+    return one_em;
+  // Allow em + 10% margin if there are no underline and overeline for
+  // better looking. This isn't specified in the spec[1], but EPUB group
+  // wants this.
+  // [1] https://www.w3.org/TR/css-writing-modes-3/
+  constexpr float kTextCombineMargin = 1.1f;
+  return one_em * kTextCombineMargin;
+}
+
+void LayoutNGTextCombine::ResetLayout() {
+  compressed_font_.reset();
+  scale_x_.reset();
+}
+
+void LayoutNGTextCombine::SetScaleX(float new_scale_x) {
+  DCHECK_GT(new_scale_x, 0.0f);
+  DCHECK(!scale_x_.has_value());
+  DCHECK(!compressed_font_.has_value());
+  // Note: Even if rounding, e.g. LayoutUnit::FromFloatRound(), we still have
+  // gap between painted characters in text-combine-upright-value-all-002.html
+  scale_x_ = new_scale_x;
+}
+
+void LayoutNGTextCombine::SetCompressedFont(const Font& font) {
+  DCHECK(!compressed_font_.has_value());
+  DCHECK(!scale_x_.has_value());
+  compressed_font_ = font;
 }
 
 }  // namespace blink

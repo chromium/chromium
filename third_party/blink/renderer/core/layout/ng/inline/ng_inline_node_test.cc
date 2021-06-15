@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_layout_algorithm.h"
@@ -1535,6 +1536,27 @@ TEST_F(NGInlineNodeTest, LetterSpacingUseCounterUnderline) {
   const LayoutObject* span = GetLayoutObjectByElementId("span");
   EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
       span->SlowFirstChild(), /* first_line */ false, p));
+}
+
+TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "  font: 10px/20px Ahem;"
+      "  text-combine-upright: all;"
+      "  writing-mode: vertical-rl;"
+      "}");
+  SetBodyInnerHTML("<div id=t1>0123456789</div><div id=t2>0</div>");
+
+  EXPECT_TRUE(To<LayoutNGTextCombine>(
+                  GetLayoutObjectByElementId("t1")->SlowFirstChild())
+                  ->UsesScaleX())
+      << "We paint combined text '0123456789' with scaling in X-axis.";
+  EXPECT_FALSE(To<LayoutNGTextCombine>(
+                   GetLayoutObjectByElementId("t2")->SlowFirstChild())
+                   ->UsesScaleX())
+      << "We paint combined text '0' without scaling in X-axis.";
 }
 
 }  // namespace blink

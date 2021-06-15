@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
@@ -48,6 +50,19 @@
 namespace blink {
 
 namespace {
+
+// Returns sum of |ShapeResult::Width()| in |data.items|. Note: All items
+// should be text item other type of items are not allowed.
+float CalculateWidthForTextCombine(const NGInlineItemsData& data) {
+  return std::accumulate(
+      data.items.begin(), data.items.end(), 0.0f,
+      [](float sum, const NGInlineItem& item) {
+        DCHECK_EQ(item.Type(), NGInlineItem::kText);
+        if (auto* const shape_result = item.TextShapeResult())
+          return shape_result->Width() + sum;
+        return 0.0f;
+      });
+}
 
 bool IsLeftAligned(const ComputedStyle& style) {
   switch (style.GetTextAlign()) {
@@ -487,7 +502,10 @@ void NGInlineNode::PrepareLayoutIfNeeded() const {
     if (!block_flow->NeedsCollectInlines())
       return;
 
-    previous_data.reset(block_flow->TakeNGInlineNodeData());
+    // Note: For "text-combine-upright:all", we use a font calculated from
+    // text width, so we can't reuse previous data.
+    if (LIKELY(!IsTextCombine()))
+      previous_data.reset(block_flow->TakeNGInlineNodeData());
     block_flow->ResetNGInlineNodeData();
   }
 
@@ -509,6 +527,12 @@ void NGInlineNode::PrepareLayout(
 
   LayoutBlockFlow* block_flow = GetLayoutBlockFlow();
   block_flow->ClearNeedsCollectInlines();
+
+  if (UNLIKELY(IsTextCombine())) {
+    // To use |LayoutNGTextCombine::UsersScaleX()| in |NGFragmentItemsBuilder|,
+    // we adjust font here instead in |Layout()|,
+    AdjustFontForTextCombineUprightAll();
+  }
 
 #if DCHECK_IS_ON()
   // ComputeOffsetMappingIfNeeded() runs some integrity checks as part of
@@ -545,6 +569,11 @@ class NGInlineNodeDataEditor final {
         !block_flow_->GetNGInlineNodeData() ||
         block_flow_->GetNGInlineNodeData()->text_content.IsNull() ||
         block_flow_->GetNGInlineNodeData()->items.IsEmpty())
+      return nullptr;
+
+    // For "text-combine-upright:all", we choose font to fit layout result in
+    // 1em, so font can be different than original font.
+    if (UNLIKELY(IsA<LayoutNGTextCombine>(block_flow_)))
       return nullptr;
 
     // Because of current text content has secured text, e.g. whole text is
@@ -1248,7 +1277,8 @@ void NGInlineNode::SegmentBidiRuns(NGInlineNodeData* data) const {
 
 void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const String* previous_text,
-                             const Vector<NGInlineItem>* previous_items) const {
+                             const Vector<NGInlineItem>* previous_items,
+                             const Font* override_font) const {
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
   Vector<NGInlineItem>* items = &data->items;
@@ -1268,7 +1298,19 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     }
 
     const ComputedStyle& start_style = *start_item.Style();
-    const Font& font = start_item.FontWithSvgScaling();
+    const Font& font =
+        override_font ? *override_font : start_item.FontWithSvgScaling();
+#if DCHECK_IS_ON()
+    if (!IsTextCombine()) {
+      DCHECK(!override_font);
+    } else {
+      DCHECK_EQ(font.GetFontDescription().Orientation(),
+                FontOrientation::kHorizontal);
+      LayoutNGTextCombine::AssertStyleIsValid(start_style);
+      DCHECK(!override_font ||
+             font.GetFontDescription().WidthVariant() != kRegularWidth);
+    }
+#endif
     TextDirection direction = start_item.Direction();
     unsigned end_index = index + 1;
     unsigned end_offset = start_item.EndOffset();
@@ -1329,7 +1371,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
     // Shaping a single item. Skip if the existing results remain valid.
     if (previous_text && end_offset == start_item.EndOffset() &&
-        !NeedsShaping(start_item)) {
+        !NeedsShaping(start_item) && LIKELY(!IsTextCombine())) {
       DCHECK_EQ(start_item.StartOffset(),
                 start_item.TextShapeResult()->StartIndex());
       DCHECK_EQ(start_item.EndOffset(),
@@ -1370,6 +1412,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
         shaper.Shape(start_item, font, end_offset);
 
     if (UNLIKELY(spacing.SetSpacing(font.GetFontDescription()))) {
+      DCHECK(!IsTextCombine()) << GetLayoutBlockFlow();
       shape_result->ApplySpacing(spacing);
       if (spacing.LetterSpacing() &&
           ShouldReportLetterSpacingUseCounter(
@@ -1921,6 +1964,48 @@ const Vector<SvgTextContentRange>& NGInlineNode::SvgTextLengthRangeList()
 const Vector<SvgTextContentRange>& NGInlineNode::SvgTextPathRangeList() const {
   DCHECK(IsSvgText());
   return Data().svg_node_data_->text_path_range_list;
+}
+
+void NGInlineNode::AdjustFontForTextCombineUprightAll() const {
+  DCHECK(IsTextCombine()) << GetLayoutBlockFlow();
+  DCHECK(IsPrepareLayoutFinished()) << GetLayoutBlockFlow();
+
+  const float content_width = CalculateWidthForTextCombine(ItemsData(false));
+  if (UNLIKELY(content_width == 0.0f))
+    return;  // See "fast/css/zero-font-size-crash.html".
+  auto& text_combine = *To<LayoutNGTextCombine>(GetLayoutBlockFlow());
+  const float desired_width = text_combine.DesiredWidth();
+  text_combine.ResetLayout();
+  if (UNLIKELY(desired_width == 0.0f)) {
+    NOTREACHED() << "We get the test case!";
+    return;
+  }
+  if (content_width <= desired_width)
+    return;
+
+  const Font& font = Style().GetFont();
+  FontSelector* const font_selector = font.GetFontSelector();
+  FontDescription description = font.GetFontDescription();
+
+  // Try compressed fonts.
+  static const std::array<FontWidthVariant, 3> kWidthVariants = {
+      kHalfWidth, kThirdWidth, kQuarterWidth};
+  for (const auto width_variant : kWidthVariants) {
+    description.SetWidthVariant(width_variant);
+    Font compressed_font(description, font_selector);
+    ShapeText(MutableData(), nullptr, nullptr, &compressed_font);
+    if (CalculateWidthForTextCombine(ItemsData(false)) <= desired_width) {
+      text_combine.SetCompressedFont(compressed_font);
+      return;
+    }
+  }
+
+  // There is no compressed font to fit within 1em. We use original font with
+  // scaling.
+  ShapeText(MutableData());
+  DCHECK_EQ(content_width, CalculateWidthForTextCombine(ItemsData(false)));
+  DCHECK_NE(content_width, 0.0f);
+  text_combine.SetScaleX(desired_width / content_width);
 }
 
 bool NGInlineNode::NeedsShapingForTesting(const NGInlineItem& item) {

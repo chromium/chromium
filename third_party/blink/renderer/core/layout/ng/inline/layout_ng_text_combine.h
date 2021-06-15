@@ -21,7 +21,18 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   LayoutNGTextCombine();
   ~LayoutNGTextCombine() override;
 
+  float DesiredWidth() const;
   String GetTextContent() const;
+
+  // Compressed font
+  const Font& CompressedFont() const { return compressed_font_.value(); }
+  bool UsesCompressedFont() const { return compressed_font_.has_value(); }
+  void SetCompressedFont(const Font& font);
+
+  // Scaling
+  void ResetLayout();
+  void SetScaleX(float new_scale_x);
+  bool UsesScaleX() const { return scale_x_.has_value(); }
 
   static void AssertStyleIsValid(const ComputedStyle& style);
 
@@ -34,6 +45,13 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
  private:
   bool IsOfType(LayoutObjectType) const override;
   const char* GetName() const override { return "LayoutNGTextCombine"; }
+
+  // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
+  absl::optional<Font> compressed_font_;
+
+  // |scale_x_| holds scale factor to width of text content to 1em. When we
+  // use |scale_x_|, we use |StyleRef().GetFont()| instead of compressed font.
+  absl::optional<float> scale_x_;
 };
 
 // static
