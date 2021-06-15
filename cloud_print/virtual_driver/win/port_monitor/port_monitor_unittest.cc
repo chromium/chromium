@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -37,7 +36,9 @@ const wchar_t kCloudPrintRegKey[] = L"Software\\Google\\CloudPrint";
 
 class PortMonitorTest : public testing::Test {
  public:
-  PortMonitorTest() {}
+  PortMonitorTest() = default;
+  PortMonitorTest(const PortMonitorTest&) = delete;
+  PortMonitorTest& operator=(const PortMonitorTest&) = delete;
 
  protected:
   // Creates a registry entry pointing at a chrome
@@ -89,13 +90,9 @@ class PortMonitorTest : public testing::Test {
     ASSERT_TRUE(base::DeletePathRecursively(alternate_path));
   }
 
- protected:
   void SetUp() override { SetUpChromeExeRegistry(); }
 
   void TearDown() override { DeleteChromeExeRegistry(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PortMonitorTest);
 };
 
 TEST_F(PortMonitorTest, GetChromeExePathTest) {
