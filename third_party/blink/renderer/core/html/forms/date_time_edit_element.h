@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_EDIT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_EDIT_ELEMENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
@@ -82,6 +81,8 @@ class DateTimeEditElement final : public HTMLDivElement,
   };
 
   DateTimeEditElement(Document&, EditControlOwner&);
+  DateTimeEditElement(const DateTimeEditElement&) = delete;
+  DateTimeEditElement& operator=(const DateTimeEditElement&) = delete;
   ~DateTimeEditElement() override;
   void Trace(Visitor*) const override;
 
@@ -157,8 +158,6 @@ class DateTimeEditElement final : public HTMLDivElement,
 
   HeapVector<Member<DateTimeFieldElement>, kMaximumNumberOfFields> fields_;
   Member<EditControlOwner> edit_control_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeEditElement);
 };
 
 template <>

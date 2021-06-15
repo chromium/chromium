@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_CHOOSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_CHOOSER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -46,6 +45,10 @@ class AXObject;
 struct DateTimeChooserParameters {
   DISALLOW_NEW();
   CORE_EXPORT DateTimeChooserParameters();
+  // DateTimeSuggestionPtr is not copyable.
+  DateTimeChooserParameters(const DateTimeChooserParameters&) = delete;
+  DateTimeChooserParameters& operator=(const DateTimeChooserParameters&) =
+      delete;
   CORE_EXPORT ~DateTimeChooserParameters();
 
   AtomicString type;
@@ -70,10 +73,6 @@ struct DateTimeChooserParameters {
   bool has_second = false;
   bool has_millisecond = false;
   int focused_field_index = 0;
-
- private:
-  // DateTimeSuggestionPtr is not copyable.
-  DISALLOW_COPY_AND_ASSIGN(DateTimeChooserParameters);
 };
 
 // For pickers like color pickers and date pickers.

@@ -23,7 +23,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -212,6 +211,8 @@ class SavedFormState {
 
  public:
   SavedFormState() : control_state_count_(0) {}
+  SavedFormState(const SavedFormState&) = delete;
+  SavedFormState& operator=(const SavedFormState&) = delete;
 
   static std::unique_ptr<SavedFormState> Deserialize(const Vector<String>&,
                                                      wtf_size_t& index);
@@ -232,8 +233,6 @@ class SavedFormState {
                                   ControlKeyHashTraits>;
   ControlStateMap state_for_new_controls_;
   wtf_size_t control_state_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavedFormState);
 };
 
 static bool IsNotFormControlTypeCharacter(UChar ch) {
@@ -333,6 +332,8 @@ Vector<String> SavedFormState::GetReferencedFilePaths() const {
 class FormKeyGenerator final : public GarbageCollected<FormKeyGenerator> {
  public:
   FormKeyGenerator() = default;
+  FormKeyGenerator(const FormKeyGenerator&) = delete;
+  FormKeyGenerator& operator=(const FormKeyGenerator&) = delete;
 
   void Trace(Visitor* visitor) const { visitor->Trace(form_to_key_map_); }
   const AtomicString& FormKey(const ListedElement&);
@@ -343,8 +344,6 @@ class FormKeyGenerator final : public GarbageCollected<FormKeyGenerator> {
   using FormSignatureToNextIndexMap = HashMap<String, unsigned>;
   FormToKeyMap form_to_key_map_;
   FormSignatureToNextIndexMap form_signature_to_next_index_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormKeyGenerator);
 };
 
 static inline void RecordFormStructure(const HTMLFormElement& form,
