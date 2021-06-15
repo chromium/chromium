@@ -14,7 +14,7 @@ namespace blink {
 void Profiler::Trace(Visitor* visitor) const {
   visitor->Trace(profiler_group_);
   visitor->Trace(script_state_);
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
 }
 
 void Profiler::DisposeAsync() {
