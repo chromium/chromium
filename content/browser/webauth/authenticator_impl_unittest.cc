@@ -4228,62 +4228,71 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
               SCOPED_TRACE(::testing::Message()
                            << "appid_exclude=" << appid_exclude);
 
-              ConfigureVirtualDevice(pin_protocol, pin_uv_auth_token,
-                                     support_level);
-
-              for (int uv_level = 0; uv_level <= 2; uv_level++) {
-                SCOPED_TRACE(kUVDescription[uv_level]);
-
-                switch (expected[support_level][uv_level]) {
-                  case kNoPIN:
-                  case kFailure:
-                    // There shouldn't be any PIN prompts.
-                    test_client_.expected.clear();
-                    break;
-
-                  case kSetPIN:
-                    // A single PIN prompt to set a PIN is expected.
-                    test_client_.expected = {{PINReason::kSet, kTestPIN16}};
-                    break;
-
-                  case kUsePIN:
-                    // A single PIN prompt to get the PIN is expected.
-                    test_client_.expected = {
-                        {PINReason::kChallenge, kTestPIN16, 8}};
-                    break;
-
-                  default:
-                    NOTREACHED();
+              for (const bool always_uv : {false, true}) {
+                if (always_uv &&
+                    (!ui_support ||
+                     virtual_device_factory_->mutable_state()->pin.empty())) {
+                  continue;
                 }
+                SCOPED_TRACE(::testing::Message() << "always_uv=" << always_uv);
 
-                MakeCredentialResult result =
-                    AuthenticatorMakeCredential(make_credential_options(
-                        kUVLevel[uv_level], excluded_credentials,
-                        appid_exclude));
+                ConfigureVirtualDevice(pin_protocol, pin_uv_auth_token,
+                                       support_level);
 
-                switch (expected[support_level][uv_level]) {
-                  case kFailure:
-                    EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
-                              result.status);
-                    break;
+                for (int uv_level = 0; uv_level <= 2; uv_level++) {
+                  SCOPED_TRACE(kUVDescription[uv_level]);
 
-                  case kNoPIN:
-                    ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-                    EXPECT_EQ("",
-                              virtual_device_factory_->mutable_state()->pin);
-                    EXPECT_FALSE(HasUV(result.response));
-                    break;
+                  switch (expected[support_level][uv_level]) {
+                    case kNoPIN:
+                    case kFailure:
+                      // There shouldn't be any PIN prompts.
+                      test_client_.expected.clear();
+                      break;
 
-                  case kSetPIN:
-                  case kUsePIN:
-                    ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-                    EXPECT_EQ(kTestPIN,
-                              virtual_device_factory_->mutable_state()->pin);
-                    EXPECT_TRUE(HasUV(result.response));
-                    break;
+                    case kSetPIN:
+                      // A single PIN prompt to set a PIN is expected.
+                      test_client_.expected = {{PINReason::kSet, kTestPIN16}};
+                      break;
 
-                  default:
-                    NOTREACHED();
+                    case kUsePIN:
+                      // A single PIN prompt to get the PIN is expected.
+                      test_client_.expected = {
+                          {PINReason::kChallenge, kTestPIN16, 8}};
+                      break;
+
+                    default:
+                      NOTREACHED();
+                  }
+
+                  MakeCredentialResult result =
+                      AuthenticatorMakeCredential(make_credential_options(
+                          kUVLevel[uv_level], excluded_credentials,
+                          appid_exclude));
+
+                  switch (expected[support_level][uv_level]) {
+                    case kFailure:
+                      EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
+                                result.status);
+                      break;
+
+                    case kNoPIN:
+                      ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+                      EXPECT_EQ("",
+                                virtual_device_factory_->mutable_state()->pin);
+                      EXPECT_FALSE(HasUV(result.response));
+                      break;
+
+                    case kSetPIN:
+                    case kUsePIN:
+                      ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+                      EXPECT_EQ(kTestPIN,
+                                virtual_device_factory_->mutable_state()->pin);
+                      EXPECT_TRUE(HasUV(result.response));
+                      break;
+
+                    default:
+                      NOTREACHED();
+                  }
                 }
               }
             }

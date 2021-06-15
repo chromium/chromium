@@ -115,11 +115,10 @@ void FidoDeviceAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
   // the AppID-excluded credentials, if any. There's no interaction with PUATs
   // to worry about because U2F doesn't have them.
   //
-  // If the device is AlwaysUV then we ignore the appidExclude extension. We
-  // would have to obtain two different PUATs for the different RP ID values,
-  // which would be awkward for internal UV.
+  // (If the device is AlwaysUV then it should still support up=false requests
+  // without a PUAT, so they aren't excluded here.)
   if (!MakeCredentialTask::WillUseCTAP2(device_.get(), request) ||
-      options_->always_uv || device_->NoSilentRequests()) {
+      device_->NoSilentRequests()) {
     std::move(callback).Run(CtapDeviceResponseCode::kSuccess, absl::nullopt);
     return;
   }
