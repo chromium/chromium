@@ -473,8 +473,12 @@ bool DownloadPrefs::IsAutoOpenByPolicy(const GURL& url,
   DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
   extension.erase(0, 1);
 
+  // if |url| is a blob scheme, use the originating URL for policy evaluation.
+  const GURL fixed_url =
+      url.SchemeIsBlob() ? url::Origin::Create(url).GetURL() : url;
+
   return auto_open_by_policy_.find(extension) != auto_open_by_policy_.end() &&
-         !auto_open_allowed_by_urls_->IsURLBlocked(url);
+         !auto_open_allowed_by_urls_->IsURLBlocked(fixed_url);
 }
 
 bool DownloadPrefs::EnableAutoOpenByUserBasedOnExtension(

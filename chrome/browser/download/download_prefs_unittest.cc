@@ -323,6 +323,44 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyAllowedURLsDynamicUpdates) {
   EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kDisallowedURL, kFilePath));
 }
 
+TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
+  const base::FilePath kFilePath(FILE_PATH_LITERAL("/good/basic-path.txt"));
+  const GURL kAllowedURL("http://basic.com");
+  const GURL kDisallowedURL("http://disallowed.com");
+  const GURL kBlobAllowedURL("blob:" + kAllowedURL.spec());
+  const GURL kBlobDisallowedURL("blob:" + kDisallowedURL.spec());
+
+  ASSERT_TRUE(kBlobAllowedURL.SchemeIsBlob());
+  ASSERT_TRUE(kBlobDisallowedURL.SchemeIsBlob());
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile;
+  ListPrefUpdate update_type(profile.GetPrefs(),
+                             prefs::kDownloadExtensionsToOpenByPolicy);
+  update_type->AppendString("txt");
+  DownloadPrefs prefs(&profile);
+
+  // Ensure both urls work in either form when no URL restrictions are present.
+  EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kAllowedURL, kFilePath));
+  EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kDisallowedURL, kFilePath));
+  EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kBlobAllowedURL, kFilePath));
+  EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kBlobDisallowedURL, kFilePath));
+
+  // Update the policy preference to only allow |kAllowedURL|.
+  {
+    ListPrefUpdate update_url(profile.GetPrefs(),
+                              prefs::kDownloadAllowedURLsForOpenByPolicy);
+    update_url->AppendString("basic.com");
+  }
+
+  // Ensure |kAllowedURL| continutes to work and |kDisallowedURL| is blocked,
+  // even in blob form.
+  EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kAllowedURL, kFilePath));
+  EXPECT_FALSE(prefs.IsAutoOpenByPolicy(kDisallowedURL, kFilePath));
+  EXPECT_TRUE(prefs.IsAutoOpenByPolicy(kBlobAllowedURL, kFilePath));
+  EXPECT_FALSE(prefs.IsAutoOpenByPolicy(kBlobDisallowedURL, kFilePath));
+}
+
 TEST(DownloadPrefsTest, MissingDefaultPathCorrected) {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
