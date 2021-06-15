@@ -13,8 +13,10 @@
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
+#include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/contexts/midi_sysex_permission_context.h"
+#include "components/permissions/contexts/nfc_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/contexts/sensor_permission_context.h"
 #include "components/permissions/contexts/wake_lock_permission_context.h"
@@ -31,10 +33,7 @@
 #if defined(OS_ANDROID)
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/permissions/contexts/nfc_permission_context_android.h"
-#else
-#include "components/permissions/contexts/geolocation_permission_context.h"
-#include "components/permissions/contexts/nfc_permission_context.h"
-#endif
+#endif  // defined(OS_ANDROID)
 
 namespace weblayer {
 namespace {
@@ -80,14 +79,28 @@ webrtc::MediaStreamDeviceEnumerator* GetMediaStreamDeviceEnumerator() {
 permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     content::BrowserContext* browser_context) {
   permissions::PermissionManager::PermissionContextMap permission_contexts;
-  permission_contexts[ContentSettingsType::MIDI_SYSEX] =
-      std::make_unique<permissions::MidiSysexPermissionContext>(
+
+  // TODO(crbug.com/1218451): Move common permission contexts into
+  // //components/embedder_support and share this code with //weblayer.
+  permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
+      std::make_unique<permissions::AccessibilityPermissionContext>(
           browser_context);
-  permission_contexts[ContentSettingsType::MIDI] =
-      std::make_unique<permissions::MidiPermissionContext>(browser_context);
+  permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
+      std::make_unique<BackgroundSyncPermissionContext>(browser_context);
+  permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
+      std::make_unique<permissions::CameraPanTiltZoomPermissionContext>(
+          browser_context, GetMediaStreamDeviceEnumerator());
+  permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
+      std::make_unique<permissions::ClipboardReadWritePermissionContext>(
+          browser_context);
+  permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
+      std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
+          browser_context);
 #if defined(OS_ANDROID)
-  using GeolocationPermissionContext =
-      permissions::GeolocationPermissionContextAndroid;
+  permission_contexts[ContentSettingsType::GEOLOCATION] =
+      std::make_unique<permissions::GeolocationPermissionContextAndroid>(
+          browser_context,
+          std::make_unique<GeolocationPermissionContextDelegate>());
 #elif defined(OS_MAC)
   // TODO: macOS uses permissions::GeolocationPermissionContextMac which
   // requires a GeolocationManager for construction. In Chrome this object is
@@ -96,33 +109,16 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // macOS.
   NOTREACHED();
 #else
-  using GeolocationPermissionContext =
-      permissions::GeolocationPermissionContext;
-#endif
-  permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
-      std::make_unique<permissions::AccessibilityPermissionContext>(
-          browser_context);
-  permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
-      std::make_unique<permissions::ClipboardReadWritePermissionContext>(
-          browser_context);
-  permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
-      std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
-          browser_context);
   permission_contexts[ContentSettingsType::GEOLOCATION] =
-      std::make_unique<GeolocationPermissionContext>(
+      std::make_unique<permissions::GeolocationPermissionContext>(
           browser_context,
           std::make_unique<GeolocationPermissionContextDelegate>());
-  permission_contexts[ContentSettingsType::PAYMENT_HANDLER] =
-      std::make_unique<payments::PaymentHandlerPermissionContext>(
-          browser_context);
-
-#if defined(OS_ANDROID)
-  permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
-      std::make_unique<SafePermissionContext>(
-          browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
 #endif
-
+  permission_contexts[ContentSettingsType::MIDI] =
+      std::make_unique<permissions::MidiPermissionContext>(browser_context);
+  permission_contexts[ContentSettingsType::MIDI_SYSEX] =
+      std::make_unique<permissions::MidiSysexPermissionContext>(
+          browser_context);
   auto nfc_delegate = std::make_unique<WebLayerNfcPermissionContextDelegate>();
 #if defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::NFC] =
@@ -132,20 +128,10 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::NFC] =
       std::make_unique<permissions::NfcPermissionContext>(
           browser_context, std::move(nfc_delegate));
-#endif
-
-  permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
-      std::make_unique<SafePermissionContext>(
-          browser_context, ContentSettingsType::MEDIASTREAM_MIC,
-          blink::mojom::PermissionsPolicyFeature::kMicrophone);
-  permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
-      std::make_unique<SafePermissionContext>(
-          browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
-          blink::mojom::PermissionsPolicyFeature::kCamera);
-  permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =
-      std::make_unique<BackgroundFetchPermissionContext>(browser_context);
-  permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
-      std::make_unique<BackgroundSyncPermissionContext>(browser_context);
+#endif  // defined(OS_ANDROID)
+  permission_contexts[ContentSettingsType::PAYMENT_HANDLER] =
+      std::make_unique<payments::PaymentHandlerPermissionContext>(
+          browser_context);
   permission_contexts[ContentSettingsType::SENSORS] =
       std::make_unique<permissions::SensorPermissionContext>(browser_context);
   permission_contexts[ContentSettingsType::WAKE_LOCK_SCREEN] =
@@ -154,15 +140,41 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::WAKE_LOCK_SYSTEM] =
       std::make_unique<permissions::WakeLockPermissionContext>(
           browser_context, ContentSettingsType::WAKE_LOCK_SYSTEM);
-  permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
-      std::make_unique<permissions::CameraPanTiltZoomPermissionContext>(
-          browser_context, GetMediaStreamDeviceEnumerator());
+
+  // Add additional WebLayer specific permission contexts. Please add a comment
+  // when adding new contexts here explaining why it can't be shared with other
+  // Content embedders by adding it to CreateDefaultPermissionContexts().
+
+  // Similar to the Chrome implementation except we don't have access to the
+  // DownloadRequestLimiter in WebLayer.
+  permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =
+      std::make_unique<BackgroundFetchPermissionContext>(browser_context);
+
+  // The Chrome implementation only checks for policies which we don't have in
+  // WebLayer.
+  permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
+      std::make_unique<SafePermissionContext>(
+          browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
+          blink::mojom::PermissionsPolicyFeature::kCamera);
+  permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
+      std::make_unique<SafePermissionContext>(
+          browser_context, ContentSettingsType::MEDIASTREAM_MIC,
+          blink::mojom::PermissionsPolicyFeature::kMicrophone);
+
+#if defined(OS_ANDROID)
+  // The Chrome implementation has special cases for Chrome OS and Windows which
+  // we don't support yet. On Android this will match Chrome's behaviour.
+  permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
+      std::make_unique<SafePermissionContext>(
+          browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
+#endif
 
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.
   for (content::PermissionType type : content::GetAllPermissionTypes()) {
 #if !defined(OS_ANDROID)
-    // PROTECTED_MEDIA_IDENTIFIER is only supported on Android/ChromeOS.
+    // PROTECTED_MEDIA_IDENTIFIER is only supported on Android.
     if (type == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER)
       continue;
 #endif
@@ -176,8 +188,10 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
               blink::mojom::PermissionsPolicyFeature::kNotFound);
     }
   }
+
   return permission_contexts;
 }
+
 }  // namespace
 
 // static
