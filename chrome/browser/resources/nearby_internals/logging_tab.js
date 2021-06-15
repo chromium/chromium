@@ -11,7 +11,7 @@ import './shared_style.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NearbyLogsBrowserProxy} from './nearby_logs_browser_proxy.js';
-import {LogMessage, Severity} from './types.js';
+import {LogMessage, LogProvider, Severity} from './types.js';
 
 /**
  * Converts log message to string format for saved download file.
@@ -42,6 +42,28 @@ function logToSavedString_(log) {
   return `[${log.time} ${severity} ${file} (${log.line})] ${log.text}\n`;
 }
 
+/** @type {LogProvider} */
+const nearbyShareLogProvider = {
+  messageAddedEventName: 'log-message-added',
+  bufferClearedEventName: 'log-buffer-cleared',
+  logFilePrefix: 'nearby_internals_logs_',
+  getLogMessages: () => NearbyLogsBrowserProxy.getInstance().getLogMessages(),
+};
+
+/**
+ * Gets a log provider instance for a feature.
+ * @param {!string} feature
+ * @return {?LogProvider}
+ */
+function getLogProvider(feature) {
+  switch (feature) {
+    case 'nearby-share':
+      return nearbyShareLogProvider;
+    default:
+      return null;
+  }
+}
+
 Polymer({
   is: 'logging-tab',
 
@@ -52,7 +74,6 @@ Polymer({
   ],
 
   properties: {
-
     /**
      * @private {!Array<!LogMessage>}
      */
@@ -60,18 +81,15 @@ Polymer({
       type: Array,
       value: [],
     },
+
+    /** @private {!string} */
+    feature: {
+      type: String,
+    },
   },
 
-  /** @private {?NearbyLogsBrowserProxy}*/
-  browserProxy_: null,
-
-  /**
-   * Initialize |browserProxy_| and |logList_|.
-   * @override
-   */
-  created() {
-    this.browserProxy_ = NearbyLogsBrowserProxy.getInstance();
-  },
+  /** @private {?LogProvider}*/
+  logProvider_: null,
 
   /**
    * When the page is initialized, notify the C++ layer and load in the
@@ -79,11 +97,14 @@ Polymer({
    * @override
    */
   attached() {
+    this.logProvider_ = getLogProvider(this.feature);
     this.addWebUIListener(
-        'log-message-added', log => this.onLogMessageAdded_(log));
+        this.logProvider_.messageAddedEventName,
+        log => this.onLogMessageAdded_(log));
     this.addWebUIListener(
-        'log-buffer-cleared', () => this.onWebUILogBufferCleared_());
-    this.browserProxy_.getLogMessages().then(
+        this.logProvider_.bufferClearedEventName,
+        () => this.onWebUILogBufferCleared_());
+    this.logProvider_.getLogMessages().then(
         logs => this.onGetLogMessages_(logs));
   },
 
@@ -107,7 +128,7 @@ Polymer({
     const anchorElement = document.createElement('a');
     anchorElement.href = url;
     anchorElement.download =
-        'nearby_internals_logs_' + new Date().toJSON() + '.txt';
+        this.logProvider_.logFilePrefix + new Date().toJSON() + '.txt';
     document.body.appendChild(anchorElement);
     anchorElement.click();
 

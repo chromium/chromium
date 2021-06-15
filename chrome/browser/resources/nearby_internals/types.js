@@ -137,3 +137,12 @@ export let ShareTargetSelectOption;
  *            time: number}}
  */
 export let NearbyShareStates;
+
+/**
+ * Object used by the logging tab to retrieve feature specific logs.
+ * @typedef {{messageAddedEventName: string,
+ *            bufferClearedEventName: string,
+ *            logFilePrefix: string,
+ *            getLogMessages: function(): Promise<!Array<!LogMessage>> }}
+ */
+export let LogProvider;
