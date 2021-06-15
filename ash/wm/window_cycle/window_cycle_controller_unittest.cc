@@ -2594,6 +2594,58 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   EXPECT_TRUE(wm::IsActiveWindow(win0.get()));
 }
 
+// Regression test to make sure there is no crash if a desk is added while the
+// window cycle ui is visible. Regression test for https://crbug.com/1216238.
+TEST_F(ModeSelectionWindowCycleControllerTest, NoCrashAfterAddingDesk) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create enough windows so that cycling will result in the WindowCycleView
+  // being layouted.
+  const size_t num_windows = 10;
+  std::vector<std::unique_ptr<aura::Window>> windows(num_windows);
+  for (size_t i = 0; i < num_windows; ++i)
+    windows[i] = CreateAppWindow(gfx::Rect(200, 200));
+
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+
+  // Start window cycle, the desk mode switcher UI should not be shown.
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  ASSERT_TRUE(GetWindowCycleTabSliderButtons().empty());
+  ASSERT_FALSE(GetWindowCycleNoRecentItemsLabel());
+
+  // Create a new desk while cycling, which should stop cycling.
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  EXPECT_FALSE(cycle_controller->IsCycling());
+
+  // Cycling forward should trigger a relayout, which should not crash.
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_FALSE(GetWindowCycleTabSliderButtons().empty());
+  EXPECT_TRUE(GetWindowCycleNoRecentItemsLabel());
+}
+
+// Tests that destroying all windows while cycling does not cause a crash.
+TEST_F(ModeSelectionWindowCycleControllerTest, WindowDestructionWhileCycling) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  auto win1 = CreateAppWindow(gfx::Rect(200, 200));
+  auto win2 = CreateAppWindow(gfx::Rect(200, 200));
+
+  // Start window cycle, the desk mode switcher UI should not be shown.
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  ASSERT_TRUE(GetWindowCycleTabSliderButtons().empty());
+  ASSERT_FALSE(GetWindowCycleNoRecentItemsLabel());
+
+  win1.reset();
+  win2.reset();
+}
+
 // Tests that ChromeVox alerts correctly when the current desk has no window
 // during alt-tab mode switching via both keyboard navigation and button click.
 TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
