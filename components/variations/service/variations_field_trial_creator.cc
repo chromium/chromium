@@ -147,7 +147,6 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
 }  // namespace
 
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
-    PrefService* local_state,
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store,
     const UIStringOverrider& ui_string_overrider)

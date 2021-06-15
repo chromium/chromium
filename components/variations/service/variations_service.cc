@@ -360,8 +360,7 @@ VariationsService::VariationsService(
       resource_request_allowed_notifier_(std::move(notifier)),
       request_count_(0),
       safe_seed_manager_(local_state),
-      field_trial_creator_(local_state,
-                           client_.get(),
+      field_trial_creator_(client_.get(),
                            std::make_unique<VariationsSeedStore>(
                                local_state,
                                MaybeImportFirstRunSeed(local_state),

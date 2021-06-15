@@ -274,7 +274,6 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
                                   TestVariationsServiceClient* client,
                                   SafeSeedManager* safe_seed_manager)
       : VariationsFieldTrialCreator(
-            local_state,
             client,
             std::make_unique<VariationsSeedStore>(local_state),
             UIStringOverrider()),
@@ -542,8 +541,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
       &prefs_, std::move(initial_seed),
       /*signature_verification_enabled=*/false);
   VariationsFieldTrialCreator field_trial_creator(
-      &prefs_, &variations_service_client, std::move(seed_store),
-      UIStringOverrider());
+      &variations_service_client, std::move(seed_store), UIStringOverrider());
 
   metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/true,
                                                            /*enabled=*/true);

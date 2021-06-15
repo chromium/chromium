@@ -50,8 +50,7 @@ class VariationsFieldTrialCreator {
  public:
   // Caller is responsible for ensuring that objects passed to the constructor
   // stay valid for the lifetime of this object.
-  VariationsFieldTrialCreator(PrefService* local_state,
-                              VariationsServiceClient* client,
+  VariationsFieldTrialCreator(VariationsServiceClient* client,
                               std::unique_ptr<VariationsSeedStore> seed_store,
                               const UIStringOverrider& ui_string_overrider);
   virtual ~VariationsFieldTrialCreator();

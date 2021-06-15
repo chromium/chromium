@@ -636,7 +636,6 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
 
   ShellVariationsServiceClient variations_service_client;
   variations::VariationsFieldTrialCreator field_trial_creator(
-      nullptr,  // not used local_state_.get(),
       &variations_service_client,
       std::make_unique<variations::VariationsSeedStore>(
           local_state_.get(), std::move(initial_seed),

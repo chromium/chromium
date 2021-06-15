@@ -204,8 +204,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   variations::UIStringOverrider ui_string_overrider;
   variations_field_trial_creator_ =
       std::make_unique<variations::VariationsFieldTrialCreator>(
-          local_state_.get(), client_.get(), std::move(seed_store),
-          ui_string_overrider);
+          client_.get(), std::move(seed_store), ui_string_overrider);
   variations_field_trial_creator_->OverrideVariationsPlatform(
       variations::Study::PLATFORM_ANDROID_WEBVIEW);
 
