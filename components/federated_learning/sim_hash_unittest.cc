@@ -150,7 +150,7 @@ TEST(SimHashTest, ExpectationOnRandomUniformInput) {
   const uint8_t dimensions = 16u;
   const size_t repeat_times = 10000u;
 
-  uint64_t totals[dimensions] = {0.0};
+  uint64_t totals[dimensions] = {0};
 
   for (size_t i = 0; i < repeat_times; ++i) {
     LargeBitVector v = RandLargeBitVector(RandUint64InRange(1u, 10u));

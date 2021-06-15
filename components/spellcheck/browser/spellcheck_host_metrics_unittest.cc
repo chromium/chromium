@@ -112,7 +112,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordAcceptLanguageStats) {
       "Spellcheck.Windows.ChromeLocalesSupport.HunspellOnly",
       "Spellcheck.Windows.ChromeLocalesSupport.NativeOnly",
       "Spellcheck.Windows.ChromeLocalesSupport.NoSupport"};
-  const int expected_counts[] = {1, 2, 3, 4};
+  const size_t expected_counts[] = {1, 2, 3, 4};
   base::HistogramTester histogram_tester;
 
   metrics()->RecordAcceptLanguageStats({expected_counts[0], expected_counts[1],
@@ -131,7 +131,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellcheckLanguageStats) {
       "Spellcheck.Windows.SpellcheckLocalesSupport.Both",
       "Spellcheck.Windows.SpellcheckLocalesSupport.HunspellOnly",
       "Spellcheck.Windows.SpellcheckLocalesSupport.NativeOnly"};
-  const int expected_counts[] = {1, 2, 3};
+  const size_t expected_counts[] = {1, 2, 3};
   base::HistogramTester histogram_tester;
 
   metrics()->RecordSpellcheckLanguageStats(

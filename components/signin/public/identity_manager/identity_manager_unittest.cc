@@ -1795,9 +1795,10 @@ TEST_F(IdentityManagerTest,
 
 TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
   struct SignedOutStatus {
-    int account_1;
-    int account_2;
-  } signed_out_status_set[] = {{0, 0}, {1, 0}, {0, 1}, {1, 1}};
+    bool account_1;
+    bool account_2;
+  } signed_out_status_set[] = {
+      {false, false}, {true, false}, {false, true}, {true, true}};
 
   for (const auto& signed_out_status : signed_out_status_set) {
     base::RunLoop run_loop;
@@ -1814,8 +1815,8 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
     identity_manager()->GetGaiaCookieManagerService()->TriggerListAccounts();
     run_loop.Run();
 
-    unsigned int accounts_signed_out =
-        signed_out_status.account_1 + signed_out_status.account_2;
+    size_t accounts_signed_out = size_t{signed_out_status.account_1} +
+                                 size_t{signed_out_status.account_2};
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info =
         identity_manager_observer()
             ->AccountsInfoFromAccountsInCookieUpdatedCallback();

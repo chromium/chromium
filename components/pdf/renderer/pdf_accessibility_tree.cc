@@ -867,7 +867,7 @@ class PdfAccessibilityTreeBuilder {
     return CreateComboboxNode(choice_field);
   }
 
-  void AddTextToAXNode(uint32_t start_text_run_index,
+  void AddTextToAXNode(size_t start_text_run_index,
                        uint32_t end_text_run_index,
                        ui::AXNodeData* ax_node,
                        ui::AXNodeData** previous_on_line_node) {
@@ -918,7 +918,7 @@ class PdfAccessibilityTreeBuilder {
                                             ax_name);
   }
 
-  void AddTextToObjectNode(uint32_t object_text_run_index,
+  void AddTextToObjectNode(size_t object_text_run_index,
                            uint32_t object_text_run_count,
                            ui::AXNodeData* object_node,
                            ui::AXNodeData* para_node,
@@ -1167,7 +1167,7 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
   // |index_in_page| of every |link| should be with in the range of total number
   // of links, which is size of |links|.
   for (const ppapi::PdfAccessibilityLinkInfo& link : links) {
-    base::CheckedNumeric<uint32_t> index = link.text_run_index;
+    base::CheckedNumeric<size_t> index = link.text_run_index;
     index += link.text_run_count;
     if (!index.IsValid() || index.ValueOrDie() > text_runs.size() ||
         link.index_in_page >= links.size()) {
@@ -1200,7 +1200,7 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
   // |index_in_page| of a |highlight| follows the same index validation rules
   // as of links.
   for (const auto& highlight : highlights) {
-    base::CheckedNumeric<uint32_t> index = highlight.text_run_index;
+    base::CheckedNumeric<size_t> index = highlight.text_run_index;
     index += highlight.text_run_count;
     if (!index.IsValid() || index.ValueOrDie() > text_runs.size() ||
         highlight.index_in_page >= highlights.size()) {

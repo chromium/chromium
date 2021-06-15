@@ -158,7 +158,7 @@ class FlagsState {
   // Returns the value for the current platform. This is one of the values
   // defined by the OS enum above.
   // This is exposed only for testing.
-  static int GetCurrentPlatform();
+  static unsigned short GetCurrentPlatform();
 
  private:
   // Keeps track of affected switches for each FeatureEntry, based on which

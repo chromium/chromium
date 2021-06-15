@@ -622,7 +622,7 @@ void FlagsState::GetFlagFeatureEntries(
 }
 
 // static
-int FlagsState::GetCurrentPlatform() {
+unsigned short FlagsState::GetCurrentPlatform() {
 #if defined(OS_IOS)
   return kOsIos;
 #elif defined(OS_MAC)

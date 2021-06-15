@@ -258,12 +258,13 @@ void BookmarkModel::RemoveAllUserBookmarks() {
       if (!client_->CanBeEditedByUser(permanent_node.get()))
         continue;
 
-      for (size_t j = permanent_node->children().size(); j > 0; --j) {
+      for (int j = static_cast<int>(permanent_node->children().size() - 1);
+           j >= 0; --j) {
         std::unique_ptr<BookmarkNode> node = url_index_->Remove(
-            permanent_node->children()[j - 1].get(), &removed_urls);
+            permanent_node->children()[j].get(), &removed_urls);
         RemoveNodeFromIndexRecursive(node.get());
         removed_node_data_list.push_back(
-            {permanent_node.get(), j - 1, std::move(node)});
+            {permanent_node.get(), j, std::move(node)});
       }
     }
   }
