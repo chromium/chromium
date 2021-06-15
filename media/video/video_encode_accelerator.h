@@ -34,7 +34,7 @@ class VideoFrame;
 //                  meaning dropping this frame still results in a decodable
 //                  stream.
 //  |temporal_idx|  indicates the temporal index for this frame.
-//  |layer_sync|    if true iff this frame has |temporal_idx| > 0 and does NOT
+//  |layer_sync|    is true iff this frame has |temporal_idx| > 0 and does NOT
 //                  reference any reference buffer containing a frame with
 //                  temporal_idx > 0.
 struct MEDIA_EXPORT Vp8Metadata final {
@@ -44,24 +44,36 @@ struct MEDIA_EXPORT Vp8Metadata final {
   bool layer_sync;
 };
 
-// Metadata for a VP9 bitstream buffer
-// |has_reference|      is true iff this frame depends on previously coded frame
-//                      on the same spatial layer.
-// |temporal_up_switch| is true iff this frame only references TL0 frames.
-// |tempora_idx|        indicates the temporal index for this frame.
-// |p_diffs|            indicates the differences between the picture id of this
-//                      frame and picture ids of reference frames.
-// CAVEATS: This Vp9 metadata is for temporal layer bitstream and not sufficient
-// for spatial layer bitstream.
+// Metadata for a VP9 bitstream buffer, this struct resembles
+// webrtc::CodecSpecificInfoVP9 [1]
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/include/video_codec_interface.h;l=56;drc=e904161cecbe5e2ca31382e2a62fc776151bb8f2
 struct MEDIA_EXPORT Vp9Metadata final {
   Vp9Metadata();
   ~Vp9Metadata();
   Vp9Metadata(const Vp9Metadata&);
 
-  // Default values are for keyframe.
+  // True iff this layer frame is dependent on previously coded frame(s).
+  // TODO: rename |has_reference| to |inter_pic_predicted| follow webrtc.
   bool has_reference = false;
+  // True iff this frame only references TL0 frames.
   bool temporal_up_switch = false;
+  // True iff frame is referenced by upper spatial layer frame.
+  bool referenced_by_upper_spatial_layers = false;
+  // True iff frame is dependent on directly lower spatial layer frame.
+  bool reference_lower_spatial_layers = false;
+  // True iff frame is last layer frame of picture.
+  bool end_of_picture = true;
+
+  // The temporal index for this frame.
   uint8_t temporal_idx = 0;
+  // The spatial index for this frame.
+  uint8_t spatial_idx = 0;
+  // The resolutions of active spatial layers, filled if and only if keyframe or
+  // the number of active spatial layers is changed.
+  std::vector<gfx::Size> spatial_layer_resolutions;
+
+  // The differences between the picture id of this frame and picture ids
+  // of reference frames, only be filled for non key frames.
   std::vector<uint8_t> p_diffs;
 };
 

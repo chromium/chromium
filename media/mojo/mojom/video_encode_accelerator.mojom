@@ -153,7 +153,12 @@ struct Vp8Metadata {
 struct Vp9Metadata {
   bool has_reference;
   bool temporal_up_switch;
+  bool referenced_by_upper_spatial_layers;
+  bool reference_lower_spatial_layers;
+  bool end_of_picture;
   uint8 temporal_idx;
+  uint8 spatial_idx;
+  array<gfx.mojom.Size> spatial_layer_resolutions;
   array<uint8> p_diffs;
 };
 

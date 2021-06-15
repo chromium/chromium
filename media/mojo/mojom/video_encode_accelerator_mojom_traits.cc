@@ -157,8 +157,16 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
     media::Vp9Metadata* out_metadata) {
   out_metadata->has_reference = data.has_reference();
   out_metadata->temporal_up_switch = data.temporal_up_switch();
+  out_metadata->referenced_by_upper_spatial_layers =
+      data.referenced_by_upper_spatial_layers();
+  out_metadata->reference_lower_spatial_layers =
+      data.reference_lower_spatial_layers();
+  out_metadata->end_of_picture = data.end_of_picture();
   out_metadata->temporal_idx = data.temporal_idx();
-  return data.ReadPDiffs(&out_metadata->p_diffs);
+  out_metadata->spatial_idx = data.spatial_idx();
+  return data.ReadSpatialLayerResolutions(
+             &out_metadata->spatial_layer_resolutions) &&
+         data.ReadPDiffs(&out_metadata->p_diffs);
 }
 
 // static

@@ -108,7 +108,12 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   Vp9Metadata vp9;
   vp9.has_reference = true;
   vp9.temporal_up_switch = true;
+  vp9.referenced_by_upper_spatial_layers = true;
+  vp9.reference_lower_spatial_layers = true;
+  vp9.end_of_picture = true;
   vp9.temporal_idx = 2;
+  vp9.spatial_idx = 0;
+  vp9.spatial_layer_resolutions = {gfx::Size(320, 180), gfx::Size(640, 360)};
   vp9.p_diffs = {0, 1};
   input_metadata.vp9 = vp9;
   output_metadata = ::media::BitstreamBufferMetadata();

@@ -155,8 +155,25 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
   static bool temporal_up_switch(const media::Vp9Metadata& vp9) {
     return vp9.temporal_up_switch;
   }
+  static bool referenced_by_upper_spatial_layers(
+      const media::Vp9Metadata& vp9) {
+    return vp9.referenced_by_upper_spatial_layers;
+  }
+  static bool reference_lower_spatial_layers(const media::Vp9Metadata& vp9) {
+    return vp9.reference_lower_spatial_layers;
+  }
+  static bool end_of_picture(const media::Vp9Metadata& vp9) {
+    return vp9.end_of_picture;
+  }
   static uint8_t temporal_idx(const media::Vp9Metadata& vp9) {
     return vp9.temporal_idx;
+  }
+  static uint8_t spatial_idx(const media::Vp9Metadata& vp9) {
+    return vp9.spatial_idx;
+  }
+  static const std::vector<gfx::Size>& spatial_layer_resolutions(
+      const media::Vp9Metadata& vp9) {
+    return vp9.spatial_layer_resolutions;
   }
   static const std::vector<uint8_t>& p_diffs(const media::Vp9Metadata& vp9) {
     return vp9.p_diffs;

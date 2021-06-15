@@ -194,7 +194,13 @@ bool operator==(const Vp8Metadata& l, const Vp8Metadata& r) {
 bool operator==(const Vp9Metadata& l, const Vp9Metadata& r) {
   return l.has_reference == r.has_reference &&
          l.temporal_up_switch == r.temporal_up_switch &&
-         l.temporal_idx == r.temporal_idx && l.p_diffs == r.p_diffs;
+         l.referenced_by_upper_spatial_layers ==
+             r.referenced_by_upper_spatial_layers &&
+         l.reference_lower_spatial_layers == r.reference_lower_spatial_layers &&
+         l.end_of_picture == r.end_of_picture &&
+         l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
+         l.spatial_layer_resolutions == r.spatial_layer_resolutions &&
+         l.p_diffs == r.p_diffs;
 }
 
 bool operator==(const BitstreamBufferMetadata& l,
