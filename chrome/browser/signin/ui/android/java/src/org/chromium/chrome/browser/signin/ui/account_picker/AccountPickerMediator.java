@@ -56,7 +56,7 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
      */
     @Override
     public void onAccountsChanged() {
-        mAccountManagerFacade.tryGetGoogleAccounts(this::updateAccounts);
+        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
     /**
