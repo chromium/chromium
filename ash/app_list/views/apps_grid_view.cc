@@ -46,6 +46,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -842,10 +843,6 @@ bool AppsGridView::CanDrop(const OSExchangeData& data) {
 
 int AppsGridView::OnDragUpdated(const ui::DropTargetEvent& event) {
   return ui::DragDropTypes::DRAG_MOVE;
-}
-
-const char* AppsGridView::GetClassName() const {
-  return "AppsGridView";
 }
 
 void AppsGridView::UpdateControlVisibility(AppListViewState app_list_state,
@@ -2967,5 +2964,8 @@ void AppsGridView::OnHostDragStartTimerFired() {
     forward_events_to_drag_and_drop_host_ = true;
   }
 }
+
+BEGIN_METADATA(AppsGridView, views::View)
+END_METADATA
 
 }  // namespace ash

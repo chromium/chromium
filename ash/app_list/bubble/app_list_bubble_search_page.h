@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_SEARCH_PAGE_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -15,6 +16,8 @@ namespace ash {
 // which is owned by a parent view.
 class ASH_EXPORT AppListBubbleSearchPage : public views::View {
  public:
+  METADATA_HEADER(AppListBubbleSearchPage);
+
   AppListBubbleSearchPage();
   AppListBubbleSearchPage(const AppListBubbleSearchPage&) = delete;
   AppListBubbleSearchPage& operator=(const AppListBubbleSearchPage&) = delete;

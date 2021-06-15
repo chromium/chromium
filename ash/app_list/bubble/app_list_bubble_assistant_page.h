@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -13,6 +14,8 @@ namespace ash {
 // The assistant page for the app list bubble / clamshell launcher.
 class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
  public:
+  METADATA_HEADER(AppListBubbleAssistantPage);
+
   AppListBubbleAssistantPage();
   AppListBubbleAssistantPage(const AppListBubbleAssistantPage&) = delete;
   AppListBubbleAssistantPage& operator=(const AppListBubbleAssistantPage&) =

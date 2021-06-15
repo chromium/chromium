@@ -10,6 +10,7 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -51,5 +52,8 @@ AppListBubbleSearchPage::AppListBubbleSearchPage() {
 }
 
 AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
+
+BEGIN_METADATA(AppListBubbleSearchPage, views::View)
+END_METADATA
 
 }  // namespace ash

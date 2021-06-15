@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -21,6 +22,8 @@ class AppListViewDelegate;
 // a list of app icons.
 class ASH_EXPORT RecentAppsView : public views::View {
  public:
+  METADATA_HEADER(RecentAppsView);
+
   explicit RecentAppsView(AppListViewDelegate* view_delegate);
   RecentAppsView(const RecentAppsView&) = delete;
   RecentAppsView& operator=(const RecentAppsView&) = delete;

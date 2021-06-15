@@ -21,6 +21,7 @@
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "url/gurl.h"
 
@@ -182,5 +183,8 @@ RecentAppsView::~RecentAppsView() = default;
 AppListItemView* RecentAppsView::GetItemViewForTest(int index) {
   return static_cast<AppListItemView*>(children()[index]);
 }
+
+BEGIN_METADATA(RecentAppsView, views::View)
+END_METADATA
 
 }  // namespace ash

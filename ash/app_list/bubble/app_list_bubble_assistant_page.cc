@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -28,5 +29,8 @@ AppListBubbleAssistantPage::AppListBubbleAssistantPage() {
 }
 
 AppListBubbleAssistantPage::~AppListBubbleAssistantPage() = default;
+
+BEGIN_METADATA(AppListBubbleAssistantPage, views::View)
+END_METADATA
 
 }  // namespace ash

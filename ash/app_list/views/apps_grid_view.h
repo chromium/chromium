@@ -23,6 +23,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -82,6 +83,8 @@ class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListModelObserver,
                                 public views::BoundsAnimatorObserver {
  public:
+  METADATA_HEADER(AppsGridView);
+
   enum Pointer {
     NONE,
     MOUSE,
@@ -180,7 +183,6 @@ class ASH_EXPORT AppsGridView : public views::View,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const OSExchangeData& data) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  const char* GetClassName() const override;
 
   // Updates the visibility of app list items according to |app_list_state| and
   // |is_in_drag|.

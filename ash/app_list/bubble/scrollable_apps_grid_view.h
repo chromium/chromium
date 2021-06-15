@@ -7,6 +7,7 @@
 
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -16,6 +17,8 @@ class AppListViewDelegate;
 // the clamshell mode bubble launcher.
 class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
  public:
+  METADATA_HEADER(ScrollableAppsGridView);
+
   ScrollableAppsGridView(AppListViewDelegate* view_delegate,
                          AppsGridViewFolderDelegate* folder_delegate);
   ScrollableAppsGridView(const ScrollableAppsGridView&) = delete;

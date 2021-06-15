@@ -18,6 +18,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -100,5 +101,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() = default;
+
+BEGIN_METADATA(AppListBubbleAppsPage, views::View)
+END_METADATA
 
 }  // namespace ash
