@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">No hem pogut validar les teves credencials</translation>
 <translation id="1310482092992808703">Agrupa les pestanyes</translation>
 <translation id="1311657260431405215">Aquest codi QR no és un URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">L'historial de navegació està obert</translation>
 <translation id="1331212799747679585">No es pot actualitzar Chrome. Més opcions</translation>
 <translation id="1332501820983677155">Dreceres per a funcions de Google Chrome</translation>
@@ -961,6 +962,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="718926126787620637">La llista de carpetes d'adreces d'interès s'ha obert a alçada completa</translation>
 <translation id="7191430249889272776">Pestanya oberta en segon pla</translation>
 <translation id="7233236755231902816">Per veure el web en el teu idioma, actualitza Chrome a la versió més recent.</translation>
+<translation id="7242755609445462077">Marca estilitzada el dia <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Comprova que <ph name="TARGET_DEVICE_NAME" /> tingui la sincronització activada a Chrome</translation>
 <translation id="7252076891734325316">Acosta el telèfon a l'ordinador</translation>
 <translation id="7274013316676448362">Lloc bloquejat</translation>

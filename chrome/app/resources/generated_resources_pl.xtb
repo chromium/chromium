@@ -1212,6 +1212,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2300383962156589922">Ustawienia aplikacji <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Skróty klawiszowe dla słów kluczowych w sieci wyszukiwania</translation>
 <translation id="2301382460326681002">Główny katalog rozszerzenia jest nieprawidłowy.</translation>
+<translation id="2301402091755573488">Udostępniona karta</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” żąda dodatkowych pozwoleń.</translation>
 <translation id="23055578400314116">Wybierz nazwę użytkownika</translation>
 <translation id="2307462900900812319">Skonfiguruj sieć</translation>
@@ -1489,6 +1490,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="2613535083491958306">Strona <ph name="ORIGIN" /> będzie mogła edytować plik <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Odczytywanie i modyfikowanie Twoich danych na: <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Aktywuj przycisk Dalej, aby kontynuować konfigurację, lub przycisk Wstecz, aby zmienić przypisanie przełącznika „Zaznacz”.</translation>
 <translation id="2618797463720777311">Konfigurowanie Udostępniania w pobliżu</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620215283731032047">Nie można pobrać pliku <ph name="FILE_NAME" /> w bezpieczny sposób.</translation>
@@ -2884,6 +2886,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4120817667028078560">Zbyt długa ścieżka</translation>
 <translation id="4124823734405044952">Klucz bezpieczeństwa został zresetowany</translation>
 <translation id="4124935795427217608">Jednorożec</translation>
+<translation id="4126916490446791914">Automatyczne skanowanie jest włączone</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Dziennik urządzenia</translation>
 <translation id="4130207949184424187">To rozszerzenie ustawiło inną stronę wyświetlaną po wyszukiwaniu w omniboksie.</translation>
@@ -3266,6 +3269,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 Jeśli Twoje dziecko używa w szkole Chromebooka i chcesz mu zapewnić w domu środowisko podobne do szkolnego oraz dostęp do niezbędnych materiałów edukacyjnych, wyloguj się z konta Family Link i zaloguj się na konto szkolne ze strony kont Chrome OS (uwaga: ustawienia kontroli rodzicielskiej w Family Link nie będą stosowane).&lt;br&gt;&lt;br&gt;
 Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządzać pracą dziecka z domu za pomocą konta Family Link, kliknij przycisk Dalej, by dodać konto szkolne do tego profilu.</translation>
 <translation id="4576541033847873020">Sparuj urządzenie Bluetooth</translation>
+<translation id="4576763597586015380">Potwierdź swoją tożsamość, aby nadal zapisywać hasła na koncie Google</translation>
 <translation id="4579453506923101210">Zapomnij połączony telefon</translation>
 <translation id="4579581181964204535">Nie udało się przesłać <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Błąd podczas przywracania Linuksa</translation>
@@ -4983,6 +4987,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6538098297809675636">Błąd wykrywania kodu</translation>
 <translation id="653920215766444089">Szukam urządzenia wskazującego</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> włącz tę opcję, tylko jeśli dokładnie wiesz, co robisz, lub ktoś Cię o to poprosił – zbieranie danych może obniżyć wydajność.</translation>
+<translation id="6540672086173674880">Google może korzystać z Twojej historii przeglądania, aby dostosowywać wyniki wyszukiwania i działanie innych usług Google. W dowolnym momencie możesz to zmienić na myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Tej stronie zablokowano dostęp do czujników ruchu.</translation>
 <translation id="6545665334409411530">Szybkość powtarzania</translation>
 <translation id="6545864417968258051">Skanowanie Bluetooth</translation>
@@ -5868,6 +5873,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="754207240458482646">Sieć jest zsynchronizowana ze wszystkimi urządzeniami na Twoim koncie. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Włącz funkcje debugowania na urządzeniu <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Poproś rodzica</translation>
+<translation id="7546012169463147344">Funkcja automatycznego skanowania przechodzi między elementami na ekranie i je zaznacza. Kiedy zaznaczy ona element, naciśnij przypisany przed chwilą klawisz „Zaznacz”, aby aktywować ten element.</translation>
 <translation id="7547317915858803630">Ostrzeżenie: Twoje ustawienia <ph name="PRODUCT_NAME" /> są zapisywane na dysku sieciowym. Może to spowalniać działanie, powodować awarie, a nawet doprowadzić do utraty danych.</translation>
 <translation id="7548856833046333824">Lemoniada</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6838,6 +6844,7 @@ Naciśnij przypisany przełącznik, by usunąć przypisanie.</translation>
 <translation id="8621866727807194849">Masz na komputerze szkodliwe oprogramowanie. Chrome właśnie je usuwa, przywraca Twoje ustawienia i wyłącza rozszerzenia. Dzięki temu przeglądarka znowu będzie działać normalnie.</translation>
 <translation id="8621979332865976405">Udostępnij cały ekran</translation>
 <translation id="8624354461147303341">Otrzymaj zniżki</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Rozszerzenia</translation>
 <translation id="8625663000550647058">Nie zezwolono na używanie mikrofonu</translation>
 <translation id="8625916342247441948">Nie zezwalaj witrynom na łączenie się z urządzeniami HID</translation>
@@ -6902,6 +6909,7 @@ Naciśnij przypisany przełącznik, by usunąć przypisanie.</translation>
 <translation id="8677212948402625567">Zwiń wszystko...</translation>
 <translation id="867767487203716855">Następna aktualizacja</translation>
 <translation id="8677859815076891398">Brak albumów. Utwórz album w <ph name="LINK_BEGIN" />Zdjęciach Google<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Dane zostały zaszyfrowane Twoim hasłem synchronizacji w dniu <ph name="TIME" />. Nie obejmuje to form płatności ani adresów w Google Pay.</translation>
 <translation id="8678582529642151449">Karty się nie zmniejszają</translation>
 <translation id="8678933587484842200">Jak chcesz uruchamiać tę aplikację?</translation>
 <translation id="8680251145628383637">Zaloguj się, by korzystać ze swoich zakładek, historii, haseł i innych ustawień na wszystkich urządzeniach. Będziesz też automatycznie logować się do usług Google, których używasz.</translation>

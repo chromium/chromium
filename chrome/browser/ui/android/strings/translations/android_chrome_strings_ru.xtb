@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Не удалось проверить ваши учетные данные.</translation>
 <translation id="1310482092992808703">Сгруппировать вкладки</translation>
 <translation id="1311657260431405215">В этом QR-коде нет URL: <ph name="QRCODEVALUE" />.</translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">История переходов открыта</translation>
 <translation id="1331212799747679585">Не удалось обновить Chrome. Другие настройки</translation>
 <translation id="1332501820983677155">Функции Google Chrome</translation>
@@ -961,6 +962,7 @@
 <translation id="718926126787620637">Список папок с закладками открыт на весь экран</translation>
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
 <translation id="7233236755231902816">Чтобы просматривать веб-страницы на своем языке, обновите Chrome до последней версии.</translation>
+<translation id="7242755609445462077">Стилизованный контент: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Убедитесь, что в браузере Chrome на устройстве <ph name="TARGET_DEVICE_NAME" /> включена синхронизация.</translation>
 <translation id="7252076891734325316">Поднесите телефон к компьютеру.</translation>
 <translation id="7274013316676448362">Заблокированный сайт</translation>

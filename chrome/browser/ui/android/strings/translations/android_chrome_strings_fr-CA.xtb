@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Désolés, nous n'avons pas pu valider vos authentifiants</translation>
 <translation id="1310482092992808703">Grouper les onglets</translation>
 <translation id="1311657260431405215">Ce code QR ne correspond pas à une URL : <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">mise_en_évidence_stylisée_chrome_</translation>
 <translation id="1327257854815634930">L'historique de navigation est ouvert</translation>
 <translation id="1331212799747679585">Impossible de mettre à jour Chrome. Autres options</translation>
 <translation id="1332501820983677155">Raccourcis relatifs aux fonctionnalités Google Chrome</translation>
@@ -961,6 +962,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="718926126787620637">Liste des dossiers de favoris ouverte à pleine hauteur</translation>
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
 <translation id="7233236755231902816">Pour afficher le Web dans votre propre langue, procurez-vous la dernière version de Chrome</translation>
+<translation id="7242755609445462077">Mise en évidence stylisée <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation dans Chrome est activée sur <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7252076891734325316">Placez votre téléphone près de l'ordinateur</translation>
 <translation id="7274013316676448362">Site bloqué</translation>

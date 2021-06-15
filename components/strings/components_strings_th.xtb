@@ -606,6 +606,7 @@
 <translation id="3212623355668894776">ปิดหน้าต่างโหมดผู้มาเยือนทั้งหมดเพื่อลบกิจกรรมการท่องเว็บออกจากอุปกรณ์นี้</translation>
 <translation id="3215092763954878852">ใช้ WebAuthn ไม่ได้</translation>
 <translation id="3218181027817787318">Relative</translation>
+<translation id="3223287115535306850">ทรอบเบอร์การเปิดแอป</translation>
 <translation id="3225919329040284222">เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ตรงกับการคาดการณ์ที่มีอยู่ การคาดการณ์เหล่านี้มีอยู่ในบางเว็บไซต์ที่มีการรักษาความปลอดภัยสูงเพื่อปกป้องคุณ</translation>
 <translation id="3226128629678568754">กดปุ่มโหลดซ้ำเพื่อส่งซ้ำข้อมูลที่จำเป็นในการโหลดหน้าเว็บ</translation>
 <translation id="3226387218769101247">ภาพขนาดย่อ</translation>
@@ -680,6 +681,7 @@
 <translation id="3447884698081792621">แสดงใบรับรอง (ออกโดย <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
 <translation id="3453962258458347894">จำนวนการลองใหม่</translation>
+<translation id="3454555520521576458">ปรับขนาดได้</translation>
 <translation id="3456231139987291353">Number-11 (ซองจดหมาย)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ต้องการดูข้อความและรูปภาพที่คัดลอกไปยังคลิปบอร์ด</translation>
 <translation id="3461824795358126837">ไฮไลต์</translation>
@@ -715,7 +717,6 @@
 <translation id="3586931643579894722">ซ่อนรายละเอียด</translation>
 <translation id="3587738293690942763">ตรงกลาง</translation>
 <translation id="3590643883886679995">ข้อมูลการลงชื่อเข้าใช้จะจัดเก็บอยู่ในอุปกรณ์นี้หลังจากออกจากโหมดไม่ระบุตัวตน</translation>
-<translation id="359126217934908072">เดือน/ปี:</translation>
 <translation id="3592413004129370115">Italian (ซองจดหมาย)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{คุณรีเซ็ตกลุ่มได้ทุกเมื่อ การเข้าร่วมกลุ่มใหม่จะใช้เวลาประมาณ 1 วัน}=1{คุณรีเซ็ตกลุ่มได้ทุกเมื่อ การเข้าร่วมกลุ่มใหม่จะใช้เวลาประมาณ 1 วัน}other{คุณรีเซ็ตกลุ่มได้ทุกเมื่อ การเข้าร่วมกลุ่มใหม่จะใช้เวลาประมาณ {NUM_DAYS} วัน}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1008,6 +1009,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> ต้องการตอบสนองต่อเหตุการณ์การเข้าถึงพิเศษ</translation>
 <translation id="467809019005607715">Google สไลด์</translation>
 <translation id="4680804919228900307">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้สำหรับ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> และเว็บไซต์อื่นๆ ที่คุณใช้รหัสผ่านนี้ทันที</translation>
+<translation id="468314109939257734">ดูหมายเลขบัตรเสมือนของคุณ</translation>
 <translation id="4690462567478992370">หยุดใช้ใบรับรองที่ไม่ถูกต้อง</translation>
 <translation id="4691835149146451662">Architecture-A (ซองจดหมาย)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1916,6 +1918,7 @@
 <translation id="8057711352706143257">กำหนดค่า "<ph name="SOFTWARE_NAME" />" ไม่ถูกต้อง การถอนการติดตั้ง "<ph name="SOFTWARE_NAME" />" มักแก้ไขปัญหานี้ได้ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">ขออภัย มีบางอย่างผิดพลาด</translation>
 <translation id="8067872629359326442">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ช่วยคุณได้ หากต้องการเปลี่ยนรหัสผ่านและแจ้งให้ Google ทราบว่าบัญชีของคุณอาจมีความเสี่ยง ให้คลิก "ปกป้องบัญชี"</translation>
+<translation id="8070439594494267500">ไอคอนแอป</translation>
 <translation id="8074253406171541171">10x13 (ซองจดหมาย)</translation>
 <translation id="8075898834294118863">จัดการการตั้งค่าเว็บไซต์</translation>
 <translation id="8078141288243656252">เมื่อหมุนแล้วจะใส่หมายเหตุไม่ได้</translation>
@@ -2200,6 +2203,7 @@
 <translation id="9128870381267983090">เชื่อมต่อกับเครือข่าย</translation>
 <translation id="9137013805542155359">แสดงหน้าเว็บเดิม</translation>
 <translation id="9141013498910525015">จัดการที่อยู่</translation>
+<translation id="9144951720726881238">วันหมดอายุ:</translation>
 <translation id="9148088599418889305">เลือกวิธีการจัดส่ง</translation>
 <translation id="9148507642005240123">&amp;เลิกทำการแก้ไข</translation>
 <translation id="9150045010208374699">ใช้กล้องถ่ายรูปของคุณ</translation>

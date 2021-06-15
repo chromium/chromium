@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Ezin izan ditugu baliozkotu kredentzialak</translation>
 <translation id="1310482092992808703">Taldekatu fitxak</translation>
 <translation id="1311657260431405215">QR kode hau ez da URL bat: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Nabigazio-historia zabalik dago</translation>
 <translation id="1331212799747679585">Ezin da eguneratu Chrome. Aukera gehiago.</translation>
 <translation id="1332501820983677155">Google Chrome eginbideetarako lasterbideak</translation>
@@ -961,6 +962,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="718926126787620637">Altuera osoan ireki diren laster-marken karpeten zerrenda</translation>
 <translation id="7191430249889272776">Atzeko planoan ireki da fitxa.</translation>
 <translation id="7233236755231902816">Eskuratu Chrome-ren azken bertsioa webgunea zure hizkuntzan ikusteko</translation>
+<translation id="7242755609445462077">Nabarmentze estilizatua <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> gailuak Chrome-ren sinkronizazioa aktibatuta daukala</translation>
 <translation id="7252076891734325316">Jarri telefonoa ordenagailutik gertu</translation>
 <translation id="7274013316676448362">Blokeatutako webgunea</translation>

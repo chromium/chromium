@@ -720,7 +720,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3586931643579894722">Tafsilotlarni yopish</translation>
 <translation id="3587738293690942763">Oʻrtacha</translation>
 <translation id="3590643883886679995">Inkognito rejimini tark etganingizdan keyin kirish maʼlumotlari shu qurilmada saqlanadi.</translation>
-<translation id="359126217934908072">Oy/Yil:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish bir kun vaqt oladi.}=1{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish bir kun vaqt oladi.}other{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish {NUM_DAYS} kun vaqt oladi.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>

@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">サイレント モードはオンです。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{通知設定を表示します。1 件のアプリで通知がオフになっています}other{通知設定を表示します。# 件のアプリで通知がオフになっています}}</translation>
 <translation id="1525508553941733066">閉じる</translation>
+<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> を使用するには、すべてのアカウントからログアウトする必要があります。ログアウトするには、[キャンセル] を選択して元に戻ります。次に時刻を選択してステータス領域を開き、[ログアウト] を選択します。最後にもう一度 <ph name="USER_EMAIL_ADDRESS_2" /> にログインします。</translation>
 <translation id="15373452373711364">大きいマウスカーソル</translation>
 <translation id="1546492247443594934">デスク 2</translation>
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>

@@ -606,6 +606,7 @@
 <translation id="3212623355668894776">只要關閉所有訪客視窗，您的瀏覽活動就會從此裝置中刪除。</translation>
 <translation id="3215092763954878852">無法使用 WebAuthn</translation>
 <translation id="3218181027817787318">相對</translation>
+<translation id="3223287115535306850">應用程式啟動載入圖示</translation>
 <translation id="3225919329040284222">伺服器提供的憑證與內置的預期條件不符。我們在特定高安全性的網站內置了這些預期條件，以保護您的資料安全無虞。</translation>
 <translation id="3226128629678568754">按下重新載入按鈕，重新提交載入網頁所需的數據。</translation>
 <translation id="3226387218769101247">縮圖</translation>
@@ -680,6 +681,7 @@
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="3453962258458347894">重試次數</translation>
+<translation id="3454555520521576458">可調整大小</translation>
 <translation id="3456231139987291353">Number-11 (信封)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> 要求查看複製到剪貼簿的文字和圖片</translation>
 <translation id="3461824795358126837">螢光筆</translation>
@@ -715,7 +717,6 @@
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587738293690942763">中間</translation>
 <translation id="3590643883886679995">離開無痕模式後，登入資料會儲存在此裝置中。</translation>
-<translation id="359126217934908072">月/年：</translation>
 <translation id="3592413004129370115">Italian (信封)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{您可隨時重設群組。加入新群組約需時 1 天。}=1{您可隨時重設群組。加入新群組約需時 1 天。}other{您可隨時重設群組。加入新群組約需時 {NUM_DAYS} 天。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
@@ -1008,6 +1009,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> 希望回應無障礙功能事件</translation>
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4680804919228900307">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即檢查已儲存在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及其他您使用此密碼的網站。</translation>
+<translation id="468314109939257734">查看虛擬卡號</translation>
 <translation id="4690462567478992370">停止使用無效的憑證</translation>
 <translation id="4691835149146451662">Architecture-A (信封)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1916,6 +1918,7 @@
 <translation id="8057711352706143257">無法正確安裝「<ph name="SOFTWARE_NAME" />」，解除安裝「<ph name="SOFTWARE_NAME" />」通常能修正相關問題。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">很抱歉，系統發生錯誤。</translation>
 <translation id="8067872629359326442">您剛才在欺詐網站上輸入了密碼。Chromium 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
+<translation id="8070439594494267500">應用程式圖示</translation>
 <translation id="8074253406171541171">10x13 (信封)</translation>
 <translation id="8075898834294118863">管理網站設定</translation>
 <translation id="8078141288243656252">文件旋轉後無法加入註釋</translation>
@@ -2199,6 +2202,7 @@
 <translation id="9128870381267983090">連線至網路</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9141013498910525015">管理地址</translation>
+<translation id="9144951720726881238">到期日：</translation>
 <translation id="9148088599418889305">選擇付運方式</translation>
 <translation id="9148507642005240123">復原編輯(&amp;U)</translation>
 <translation id="9150045010208374699">使用您的相機。</translation>

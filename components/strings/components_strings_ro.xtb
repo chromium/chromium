@@ -610,6 +610,7 @@
 <translation id="3212623355668894776">Închide toate ferestrele pentru invitați pentru ca activitatea ta de navigare să se șteargă de pe acest dispozitiv.</translation>
 <translation id="3215092763954878852">Nu s-a putut folosi WebAuthn</translation>
 <translation id="3218181027817787318">Relativă</translation>
+<translation id="3223287115535306850">Pictograma de încărcare pentru lansarea aplicației</translation>
 <translation id="3225919329040284222">Serverul a prezentat un certificat care nu se potrivește cu așteptările încorporate. Aceste așteptări sunt incluse pentru anumite site-uri web, cu un grad sporit de securitate, pentru a vă proteja.</translation>
 <translation id="3226128629678568754">Apăsați butonul de reîncărcare pentru a retrimite datele necesare pentru încărcarea paginii.</translation>
 <translation id="3226387218769101247">Miniaturi</translation>
@@ -684,6 +685,7 @@
 <translation id="3447884698081792621">Afișează certificatul (emis de <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval de preluare:</translation>
 <translation id="3453962258458347894">Numărul de reîncercări</translation>
+<translation id="3454555520521576458">Redimensionabilă</translation>
 <translation id="3456231139987291353">Number-11 (Plic)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> dorește să vadă textul și imaginile copiate în clipboard</translation>
 <translation id="3461824795358126837">Evidențiator</translation>
@@ -720,7 +722,6 @@
 <translation id="3586931643579894722">Ascunde detaliile</translation>
 <translation id="3587738293690942763">Central</translation>
 <translation id="3590643883886679995">Datele de conectare vor fi stocate pe acest dispozitiv după ce ieși din modul incognito.</translation>
-<translation id="359126217934908072">Luna / anul:</translation>
 <translation id="3592413004129370115">Italian (Plic)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Poți reseta oricând grupul. Durează aproximativ o zi să te alături unui alt grup.}=1{Poți reseta oricând grupul. Durează aproximativ o zi să te alături unui alt grup.}few{Poți reseta oricând grupul. Durează aproximativ {NUM_DAYS} zile să te alături unui alt grup.}other{Poți reseta oricând grupul. Durează aproximativ {NUM_DAYS} de zile să te alături unui alt grup.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1018,6 +1019,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> dorește să răspundă evenimentelor de accesibilitate</translation>
 <translation id="467809019005607715">Prezentări Google</translation>
 <translation id="4680804919228900307">Ai introdus parola pe un site înșelător. Chromium recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă.</translation>
+<translation id="468314109939257734">Vezi numărul de card virtual</translation>
 <translation id="4690462567478992370">Nu mai folosi un certificat nevalid</translation>
 <translation id="4691835149146451662">Architecture-A (Plic)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1926,6 +1928,7 @@ Detalii suplimentare:
 <translation id="8057711352706143257">„<ph name="SOFTWARE_NAME" />” nu este configurat corect. De obicei, problema se remediază dezinstalând „<ph name="SOFTWARE_NAME" />” <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">A apărut o eroare.</translation>
 <translation id="8067872629359326442">Ai introdus parola pe un site înșelător. Chromium te poate ajuta. Ca să schimbi parola și să anunți Google că respectivul cont poate fi în pericol, dă clic pe Protejează contul.</translation>
+<translation id="8070439594494267500">Pictograma aplicației</translation>
 <translation id="8074253406171541171">10x13 (Plic)</translation>
 <translation id="8075898834294118863">Butonul Gestionează setările pentru site-uri</translation>
 <translation id="8078141288243656252">Nu se poate adnota când este rotit</translation>
@@ -2210,6 +2213,7 @@ Detalii suplimentare:
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>
 <translation id="9137013805542155359">Afișează originalul</translation>
 <translation id="9141013498910525015">Gestionează adresele</translation>
+<translation id="9144951720726881238">Data expirării:</translation>
 <translation id="9148088599418889305">Alege metoda de expediere</translation>
 <translation id="9148507642005240123">&amp;Anulați editarea</translation>
 <translation id="9150045010208374699">Utilizează camera foto</translation>

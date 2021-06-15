@@ -1232,6 +1232,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2300383962156589922">„<ph name="APP_NAME" />“ tinkinimas ir valdymas</translation>
 <translation id="2300578660547687840">Paieškos tinklo raktinių žodžių spartieji klavišai</translation>
 <translation id="2301382460326681002">Plėtinio šakninis katalogas neteisingas.</translation>
+<translation id="2301402091755573488">Bendrinamas skirtukas</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ pateikė papildomų leidimų užklausą.</translation>
 <translation id="23055578400314116">Pasirinkite naudotojo vardą</translation>
 <translation id="2307462900900812319">Konfigūruoti tinklą</translation>
@@ -1509,6 +1510,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2612676031748830579">Kortelės numeris</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> galės redaguoti „<ph name="FILENAME" />“</translation>
 <translation id="2616366145935564096">Skaityti ir keisti duomenis <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Suaktyvinkite mygtuką „Kitas“, kad galėtumėte tęsti sąranką, arba mygtuką „Ankstesnis“, kad pakeistumėte jungiklio „Pasirinkti“ priskyrimą.</translation>
 <translation id="2618797463720777311">Bendrinimo netoliese nustatymas</translation>
 <translation id="2619761439309613843">Atnaujinimas per dieną</translation>
 <translation id="2620215283731032047">Negalima saugiai atsisiųsti failo „<ph name="FILE_NAME" />“.</translation>
@@ -2905,6 +2907,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4120817667028078560">Kelias per ilgas</translation>
 <translation id="4124823734405044952">Jūsų saugos raktas nustatytas iš naujo.</translation>
 <translation id="4124935795427217608">Vienaragis</translation>
+<translation id="4126916490446791914">Automatinis nuskaitymas įgalintas</translation>
 <translation id="412730574613779332">Triko</translation>
 <translation id="4130199216115862831">Įrenginio žurnalas</translation>
 <translation id="4130207949184424187">Šis plėtinys pakeitė, kuris puslapis rodomas ieškant „Omnibox“.</translation>
@@ -3288,6 +3291,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
     Jei vaikas naudoja „Chromebook“ mokykloje ir norite namuose naudoti mokykloje teikiamas funkcijas, kad vaikas galėtų pasiekti visus reikiamus mokyklos darbus, atsijunkite nuo šios „Family Link“ paskyros ir prisijunkite prie mokyklos paskyros apsilankę „Chrome“ OS paskyrų puslapyje (pastaba: „Family Link“ tėvų kontrolė netaikoma).&lt;br&gt;&lt;br&gt;
     Jei vaikas nenaudoja „Chromebook“ mokykloje arba norite valdyti vaiko funkcijas namuose naudodami „Family Link“, spustelėkite toliau pateiktą mygtuką „Kitas“, kad pridėtumėte mokyklos paskyrą prie šio profilio.</translation>
 <translation id="4576541033847873020">„Bluetooth“ įrenginio susiejimas</translation>
+<translation id="4576763597586015380">Norėdami ir toliau saugoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
 <translation id="4579453506923101210">Pamiršti susietą telefoną</translation>
 <translation id="4579581181964204535">Nepavyko perduoti <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Atkuriant „Linux“ įvyko klaida</translation>
@@ -5009,6 +5013,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6538098297809675636">Bandant aptikti kodą įvyko klaida</translation>
 <translation id="653920215766444089">Ieškoma manipuliatoriaus</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> įgalinkite, tik jei žinote, ką darote, arba jei jūsų paprašė tai atlikti, nes renkant duomenis gali sumažėti našumas.</translation>
+<translation id="6540672086173674880">Naudodama naršymo istoriją „Google“ gali suasmeninti Paiešką ir kitas „Google“ paslaugas. Galite bet kada tai pakeisti apsilankę myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Ši svetainė užblokuota, kad nepasiektų judesio jutiklių.</translation>
 <translation id="6545665334409411530">Kartojimo dažnis</translation>
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
@@ -5894,6 +5899,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="754207240458482646">Sinchronizuojama su kitais įrenginiais jūsų paskyroje. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Įgalinkite derinimo funkcijas šiame „<ph name="IDS_SHORT_PRODUCT_NAME" />“ įrenginyje</translation>
 <translation id="7543525346216957623">Paprašykite vieno iš tėvų</translation>
+<translation id="7546012169463147344">Naudojant automatinį nuskaitymą, ekrane bus automatiškai perjungiami ir suaktyvinami elementai. Kai elementas bus paryškintas, paspauskite klavišą „Pasirinkti“, kurį ką tik priskyrėte, kad suaktyvintumėte tą elementą.</translation>
 <translation id="7547317915858803630">Įspėjimas: „<ph name="PRODUCT_NAME" />“ nustatymai saugomi tinklo diske. Dėl to gali sulėtėti veikimas, atsirasti strigčių ar net būti prarasti duomenys.</translation>
 <translation id="7548856833046333824">Limonadas</translation>
 <translation id="7550830279652415241">žymės_<ph name="DATESTAMP" />.html</translation>
@@ -6864,6 +6870,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="8621866727807194849">Kompiuteryje yra kenkėjiškos programinės įrangos. „Chrome“ ją pašalina, atkuria nustatymus ir išjungia plėtinius. Tai leis naršyklei vėl įprastai veikti.</translation>
 <translation id="8621979332865976405">Viso ekrano bendrinimas</translation>
 <translation id="8624354461147303341">Gauti nuolaidų</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Plėtiniai</translation>
 <translation id="8625663000550647058">Neleidžiama naudoti mikrofono</translation>
 <translation id="8625916342247441948">Neleisti svetainėms prisijungti prie HID įrenginių</translation>
@@ -6928,6 +6935,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="8677212948402625567">Sutraukti viską...</translation>
 <translation id="867767487203716855">Kitas naujinys</translation>
 <translation id="8677859815076891398">Nėra albumų. Sukurkite albumą <ph name="LINK_BEGIN" />„Google“ nuotraukose<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739"><ph name="TIME" /> duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Mokėjimo metodai ir adresai iš „Google Pay“ neįtraukiami.</translation>
 <translation id="8678582529642151449">Skirtukai nesumažinami</translation>
 <translation id="8678933587484842200">Kaip norite paleisti šią programą?</translation>
 <translation id="8680251145628383637">Prisijunkite, kad žymes, istoriją, slaptažodžius ir kitus nustatymus galėtumėte naudoti visuose įrenginiuose. Be to, būsite automatiškai prijungti prie „Google“ paslaugų.</translation>

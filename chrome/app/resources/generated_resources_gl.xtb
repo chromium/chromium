@@ -1213,6 +1213,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2300383962156589922">Personaliza e controla <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Atallos de teclado para palabras clave de busca</translation>
 <translation id="2301382460326681002">O directorio raíz da extensión non é válido.</translation>
+<translation id="2301402091755573488">Pestana compartida</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permisos adicionais.</translation>
 <translation id="23055578400314116">Selecciona un nome de usuario</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
@@ -1490,6 +1491,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Ler e cambiar os teus datos en <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Para continuar coa configuración, usa o botón Seguinte. Se prefires cambiar a asignación do interruptor Seleccionar, fai clic no botón Anterior.</translation>
 <translation id="2618797463720777311">Configurar a función Compartir por Nearby</translation>
 <translation id="2619761439309613843">Actualización diaria</translation>
 <translation id="2620215283731032047">O ficheiro <ph name="FILE_NAME" /> non se pode descargar de forma segura.</translation>
@@ -2885,6 +2887,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4120817667028078560">A ruta é demasiado longa</translation>
 <translation id="4124823734405044952">Restableceuse a túa chave de seguranza</translation>
 <translation id="4124935795427217608">Unicornio</translation>
+<translation id="4126916490446791914">Activouse a exploración automática</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Rexistro do dispositivo</translation>
 <translation id="4130207949184424187">Esta extensión cambiou a páxina que se mostra ao buscar desde Omnibox.</translation>
@@ -3267,6 +3270,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 Se o neno ou nena utiliza un Chromebook na clase e queres recrear a experiencia escolar na casa para asegurarte de que teña acceso a todas as tarefas escolares necesarias, pecha sesión nesta conta de Family Link e inicia sesión na conta do centro educativo desde a páxina de contas de Chrome OS (non esquezas que non se aplicarán os controis parentais de Family Link).&lt;br&gt;&lt;br&gt;
 Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestionar a súa experiencia na casa con Family Link, fai clic no botón Seguinte que aparece a continuación para engadir unha conta de centro escolar a este perfil.</translation>
 <translation id="4576541033847873020">Sincronizar dispositivo Bluetooth</translation>
+<translation id="4576763597586015380">Para seguir gardando contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="4579453506923101210">Esquecer teléfono conectado</translation>
 <translation id="4579581181964204535">Non se puido emitir <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Produciuse un erro ao restaurar Linux</translation>
@@ -4987,6 +4991,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="6538098297809675636">Produciuse un erro á hora de detectar o código</translation>
 <translation id="653920215766444089">Buscando dispositivo apuntador</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Activar só se sabes o que estás facendo ou se se che solicitou facelo, xa que é posible que a recompilación de datos reduza o rendemento.</translation>
+<translation id="6540672086173674880">Podemos usar o teu historial de navegación para personalizar a Busca e outros servizos de Google. Podes cambiar esta opción en calquera momento en myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Bloqueouse o acceso deste sitio aos teus sensores de movemento.</translation>
 <translation id="6545665334409411530">Índice de repetición</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
@@ -5872,6 +5877,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="754207240458482646">Sincronizada con outros dispositivos da túa conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Activar as funcións de depuración neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Pregunta ao teu pai ou nai</translation>
+<translation id="7546012169463147344">A exploración automática moverase polos elementos da pantalla e destacaraos. Ao chegar ao elemento que queiras activar, preme a tecla que acabas de asignar (Seleccionar).</translation>
 <translation id="7547317915858803630">Advertencia: A túa configuración de <ph name="PRODUCT_NAME" /> almacenouse nunha unidade de rede. É posible que isto provoque reducións de velocidade, erros ou incluso a perda de datos.</translation>
 <translation id="7548856833046333824">Limoada</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6840,6 +6846,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8621866727807194849">O teu ordenador ten software daniño. Chrome está quitándoo, restaurando a configuración e desactivando as extensións. Despois, o navegador funcionará con normalidade de novo.</translation>
 <translation id="8621979332865976405">Compartir a pantalla completa</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensións</translation>
 <translation id="8625663000550647058">Sitios que non poden usar o micrófono</translation>
 <translation id="8625916342247441948">Non permitir que os sitios se conecten a dispositivos de interface humana</translation>
@@ -6904,6 +6911,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
 <translation id="867767487203716855">Seguinte actualización</translation>
 <translation id="8677859815076891398">Non hai ningún álbum. Crea un en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Os datos encriptáronse coa túa frase de acceso de sincronización o <ph name="TIME" />. Non se inclúen os métodos de pago nin os enderezos de Google Pay.</translation>
 <translation id="8678582529642151449">As pestanas non se reducen</translation>
 <translation id="8678933587484842200">Como queres que se inicie esta aplicación?</translation>
 <translation id="8680251145628383637">Inicia sesión para  ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos. Tamén se iniciará sesión automaticamente nos teus servizos de Google.</translation>

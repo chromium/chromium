@@ -1223,6 +1223,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2300383962156589922">Tilpass og kontrollér <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Hurtigtaster for søkeord</translation>
 <translation id="2301382460326681002">Utvidelsens rotkatalog er ugyldig.</translation>
+<translation id="2301402091755573488">Delt fane</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» har bedt om ekstra tilgang.</translation>
 <translation id="23055578400314116">Velg et brukernavn</translation>
 <translation id="2307462900900812319">Konfigurer nettverket</translation>
@@ -1500,6 +1501,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> får tilgang til å redigere <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">lese og endre opplysningene dine på <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Aktivér Neste-knappen for å fortsette konfigureringen eller Forrige-knappen for å endre tilordningen av «Velg»-bryteren.</translation>
 <translation id="2618797463720777311">Konfigurer nærdeling</translation>
 <translation id="2619761439309613843">Daglig oppdatering</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan ikke lastes ned sikkert.</translation>
@@ -2894,6 +2896,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4120817667028078560">Filbanen er for lang</translation>
 <translation id="4124823734405044952">Sikkerhetsnøkkelen er tilbakestilt</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
+<translation id="4126916490446791914">Automatisk skanning er påslått</translation>
 <translation id="412730574613779332">Superhelt</translation>
 <translation id="4130199216115862831">Enhetslogg</translation>
 <translation id="4130207949184424187">Denne utvidelsen har endret hvilken side som vises når du søker fra multifunksjonsfeltet.</translation>
@@ -3276,6 +3279,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
     Hvis barnet bruker Chromebook på skolen og du vil gjenskape skoleopplevelsen hjemme for å sikre at barnet har tilgang til alt nødvendig skolearbeid, logger du av denne Family Link-kontoen og logger på skolekontoen på Chrome OS-kontosiden. (Merk: Family Link-foreldrekontroll kommer ikke til å være aktiv.)&lt;br&gt;&lt;br&gt;
     Hvis barnet ikke bruker Chromebook på skolen, eller hvis du foretrekker å administrere barnets opplevelse hjemme ved å bruke Family Link, klikker du på Neste-knappen under for å legge til en skolekonto på denne profilen.</translation>
 <translation id="4576541033847873020">Koble til Bluetooth-enhet</translation>
+<translation id="4576763597586015380">For å fortsette å lagre passord i Google-kontoen din, bekreft at det er deg</translation>
 <translation id="4579453506923101210">Glem den tilkoblede telefonen</translation>
 <translation id="4579581181964204535">Kunne ikke caste <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Feil under gjenoppretting av Linux</translation>
@@ -4996,6 +5000,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6538098297809675636">Kunne ikke gjenkjenne koden</translation>
 <translation id="653920215766444089">Søker etter pekeenhet</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Ettersom innsamling av data kan redusere ytelsen bør du bare aktivere dette hvis du vet hva du gjør eller har blitt bedt om å gjøre dette.</translation>
+<translation id="6540672086173674880">Google kan bruke nettlesingsloggen din for å gi Søk og andre Google-tjenester et personlig preg. Du kan når som helst endre dette på myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Dette nettstedet er blokkert fra å få tilgang til bevegelsessensorene dine.</translation>
 <translation id="6545665334409411530">Gjentakelsesfrekvens</translation>
 <translation id="6545864417968258051">Bluetooth-skanning</translation>
@@ -5881,6 +5886,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="754207240458482646">Synkronisert med andre enheter på kontoen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Slå på feilsøkingsfunksjoner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten</translation>
 <translation id="7543525346216957623">Spør forelderen din</translation>
+<translation id="7546012169463147344">Automatisk skanning går automatisk gjennom elementer på skjermen og fokuserer på dem. Når et element har fokus, trykker du på «Velg»-tasten du nettopp tilordnet, for å aktivere det.</translation>
 <translation id="7547317915858803630">Advarsel: <ph name="PRODUCT_NAME" />-innstillingene dine lagres på en nettverksdisk. Dette kan forårsake forsinkelser, krasjer og til og med tap av data.</translation>
 <translation id="7548856833046333824">Limonade</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6850,6 +6856,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8621866727807194849">Det finnes skadelig programvare på datamaskinen din. Chrome fjerner den, gjenoppretter innstillingene dine og deaktiverer utvidelser. Dette gjør at nettleseren fungerer som normalt igjen.</translation>
 <translation id="8621979332865976405">Del hele skjermen</translation>
 <translation id="8624354461147303341">Få rabatter</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Utvidelser</translation>
 <translation id="8625663000550647058">Nettsteder som ikke har lov til å bruke mikrofonen din</translation>
 <translation id="8625916342247441948">Ikke la nettsteder koble til HID-enheter</translation>
@@ -6914,6 +6921,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8677212948402625567">Skjul alle</translation>
 <translation id="867767487203716855">Neste oppdatering</translation>
 <translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Data er kryptert med passordfrasen din for synkronisering <ph name="TIME" />. Dette inkluderer ikke betalingsmåter og adresser fra Google Pay.</translation>
 <translation id="8678582529642151449">Faner krymper ikke</translation>
 <translation id="8678933587484842200">Hvordan vil du at denne appen skal starte?</translation>
 <translation id="8680251145628383637">Logg på for å hente bokmerkene dine, loggen din, passordene dine og andre innstillinger på alle enhetene du bruker. Du blir dessuten automatisk logget på Google-tjenestene du bruker.</translation>

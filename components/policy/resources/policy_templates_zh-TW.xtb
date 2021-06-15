@@ -81,6 +81,7 @@
 <translation id="1082802595100075771">讓使用者選擇使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="1087437665304381368">這項政策只能控管 <ph name="PRODUCT_OS_NAME" />開發人員模式。如要禁止他人存取 Android 開發人員選項，則必須設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome Enterprise 政策清單的網址已變更！請將你的書籤更新為 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
+<translation id="1089631008765417531">允許強制安裝的網頁應用程式查詢裝置屬性。</translation>
 <translation id="1095209545735032039">封鎖這些網站上的 Serial API</translation>
 <translation id="1096105751829466145">預設搜尋引擎</translation>
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
@@ -567,6 +568,7 @@
 
       注意：政策設定值應指定為 0 至 100 之間的百分比值。</translation>
 <translation id="1736269219679256369">允許忽略 SSL 警告網頁，繼續前往原本指定的頁面</translation>
+<translation id="173993509627303617">禁止強制安裝的網頁應用程式查詢裝置屬性。</translation>
 <translation id="174765717426930019">除非要求開啟彈出式視窗的網頁明確拒絕與該彈出式視窗互動，否則一律允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動 </translation>
 <translation id="1750315445671978749">封鎖所有下載作業</translation>
 <translation id="1751429117283165017">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予寫入權限，以寫入主機作業系統中檔案系統的檔案或目錄。
@@ -909,6 +911,17 @@
       如果設為 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (值為 1)，使用者只能將修正重大安全性或穩定性問題的變化版本套用到 <ph name="PRODUCT_OS_NAME" />。
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法在登入畫面上將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_OS_NAME" />開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
+<translation id="2216380260552785166">這項政策可控管 <ph name="PRODUCT_NAME" /> 如何解讀舊版瀏覽器支援功能的網站清單/可疑項目清單政策，影響範圍涵蓋以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
+
+      如果將這項政策設為「預設」(0) 或不設定，網址比對方式會較不嚴格，不含「/」的規則會尋找網址主機名稱中任意位置出現的子字串。
+
+      如果將這項政策設為「嚴格」(1)，網址比對方式會比較嚴格，不含「/」的規則只會在主機名稱的結尾進行比對，這類規則比對的內容也不得超出網域名稱的範圍。這種比對方式與 <ph name="MS_IE_PRODUCT_NAME" /> 及 <ph name="MS_EDGE_PRODUCT_NAME" /> 的相容性較高。
+
+      以「example.com」規則為例：
+
+無論剖析模式為何，「http://example.com/」和「http://subdomain.example.com/」都是相符的結果。
+
+      不過，「http://notexample.com/」、「http://example.com.invalid.com/」和「http://example.comabc/」只有在「預設」模式下才會是相符的結果。</translation>
 <translation id="2221850122314326571">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
       如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
       如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
@@ -2148,6 +2161,13 @@
 
       如要進一步瞭解 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段，請參閱 <ph name="WEBXR_AR_MODULE_API_NAME" />規範。</translation>
 <translation id="3788662722837364290">使用者進入閒置狀態時的電源管理設定</translation>
+<translation id="3789468269499404556">如果設為啟用，<ph name="PRODUCT_NAME" /> 功能會傳送詳細的要求標頭，提供有關使用者瀏覽器和環境的資訊。
+
+      這是附加功能，但因為有些網站會限制要求中可包含的字元，新標頭可能會導致這類網站無法正常運作。
+
+      如果啟用或不設定這項政策，系統會啟用 <ph name="PRODUCT_NAME" /> 功能。如果停用這項政策，這項功能將無法使用。
+
+      這項企業政策只是暫時性措施，將在 Chrome 第 94 版中移除。</translation>
 <translation id="3790085888761753785">如果啟用這項設定，使用者將可透過 Smart Lock 登入帳戶。一般 Smart Lock 只能讓使用者解鎖螢幕畫面，相較之下這項設定提供了更高的權限。
 
       如果停用這項設定，使用者將無法透過 Smart Lock 登入帳戶。
@@ -2500,6 +2520,7 @@
       自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="4268586991084547853">與 Microsoft IE/Edge 企業模式網站清單的相容性更高。</translation>
 <translation id="4269859918103560644">允許使用者決定</translation>
 <translation id="4274691295133617461">如果將這項政策設為 3，網站即可要求透過 File System API 讀取主機作業系統中檔案系統的檔案和目錄。如果將這項政策設為 2，系統會拒絕網站存取。
 
@@ -2727,6 +2748,7 @@
       * 如果將 <ph name="FILTER_PLACEHOLDER" /> 設為 <ph name="EMPTY_DICTIONARY" />，則瀏覽器在選取用戶端憑證時不會受到額外限制。請注意，由網路伺服器所提供的篩選器仍然適用。
 
       如果未設定這項政策，Chrome 不會自動選取任何網站的用戶端憑證。</translation>
+<translation id="4615003180013429835">網站清單剖析模式</translation>
 <translation id="4617338332148204752">在 <ph name="PRODUCT_FRAME_NAME" /> 內略過中繼標記檢查</translation>
 <translation id="4625915093043961294">設定擴充功能安裝許可清單</translation>
 <translation id="4632343302005518762">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型</translation>
@@ -3404,6 +3426,11 @@
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
 <translation id="5540885720415375851">允許本機裝置搜尋</translation>
+<translation id="5541621819310532773">設定這項政策可讓強制安裝的網頁應用程式透過 Device Attributes web API 取得各種裝置屬性，例如序號和主機名稱。
+
+      如果將這項政策設為 True 或不設定，強制安裝的網頁應用程式將可使用 Device Attributes web API。
+
+      如果將這項政策設為 False，這類網頁應用程式就無法使用 Device Attributes web API。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登入畫面上啟用高對比模式</translation>
 <translation id="555077880566103058">允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
@@ -4005,6 +4032,7 @@
       如果將這項政策設為停用或不予設定，系統一律不會顯示浮動式無障礙選單。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
 <translation id="6424486395812679373">對所有下載檔案執行安全瀏覽檢查</translation>
+<translation id="6436052172226685535">LBS 的預設行為。</translation>
 <translation id="6438364096042399634">你可以透過這項政策來定義 USB 裝置清單，使用者可以從核心驅動程式中卸除這份清單中的 USB 裝置，並且直接透過 chrome.usb API 在網頁應用程式中使用。輸入項目為可識別特定硬體的 USB 供應商 ID 和產品 ID 組合。
 
       如果未設定，卸除式 USB 裝置的清單會空白。
@@ -4503,6 +4531,11 @@
 <translation id="69525503251220566">為預設搜尋引擎提供圖片搜尋功能的參數</translation>
 <translation id="6953102253399571439">預設為啟用 PIN 碼列印模式</translation>
 <translation id="6956272732789158625">不允許任何網站使用金鑰產生功能</translation>
+<translation id="6959021201443139119">針對符合這些模式的網域所設定的 Cookie 會還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站的網址是否相同時，略過網路通訊協定的比較。如需完整說明，請參閱 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
+
+          如果網域中的 Cookie 不符合此處指定的模式，系統會根據使用者的個人設定套用全域預設值。如果不設定這項政策，系統會為所有 Cookie 採用這種做法。
+
+          請注意，系統會將你在這裡列出的模式視為網域而非網址，因此你不應指定網路通訊協定或通訊埠。</translation>
 <translation id="6961602002757991199">如果將這項政策設為有效的網址，<ph name="PRODUCT_NAME" /> 會從該網址下載網站清單，然後按照 <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> 政策中的設定套用規則。這些政策會禁止 <ph name="PRODUCT_NAME" /> 和替代瀏覽器相互開啟。
 
       如果未設定 (或設為無效網址)，<ph name="PRODUCT_NAME" /> 不會使用這項政策做為不切換瀏覽器的規則來源。

@@ -612,6 +612,7 @@
 <translation id="3212623355668894776">כדאי לסגור את כל חלונות האורחים כדי שפעילות הגלישה תימחק מהמכשיר הזה.</translation>
 <translation id="3215092763954878852">‏לא ניתן להשתמש ב-WebAuthn</translation>
 <translation id="3218181027817787318">יחסי</translation>
+<translation id="3223287115535306850">סמל הפעלת האפליקציה</translation>
 <translation id="3225919329040284222">השרת הציג אישור שאינו תואם את הציפיות המובנות. ציפיות אלה נכללות עבור אתרי אינטרנט מסוימים בעלי אבטחה גבוהה כדי להגן עליך.</translation>
 <translation id="3226128629678568754">יש ללחוץ על לחצן הטעינה מחדש כדי לשלוח מחדש את הנתונים הדרושים לטעינת הדף.</translation>
 <translation id="3226387218769101247">תמונות ממוזערות</translation>
@@ -686,6 +687,7 @@
 <translation id="3447884698081792621">הצגת אישור (נופק על-ידי <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">מרווח אחזור:</translation>
 <translation id="3453962258458347894">מספר ניסיונות חוזרים</translation>
+<translation id="3454555520521576458">יכולת קביעת גודל</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)‎</translation>
 <translation id="3461266716147554923"><ph name="URL" /> רוצה גישה אל טקסט ותמונות שהועתקו אל לוח העריכה.</translation>
 <translation id="3461824795358126837">כלי הדגשה</translation>
@@ -722,7 +724,6 @@
 <translation id="3586931643579894722">הסתרת הפרטים</translation>
 <translation id="3587738293690942763">אמצעי</translation>
 <translation id="3590643883886679995">פרטי הכניסה יאוחסנו במכשיר הזה אחרי היציאה מהמצב האנונימי.</translation>
-<translation id="359126217934908072">חודש/שנה:</translation>
 <translation id="3592413004129370115">Italian (Envelope)‎</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}=1{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}two{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יומיים ({NUM_DAYS}).}many{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}other{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1018,6 +1019,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> רוצה להגיב לאירועי נגישות</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chromium היא לבדוק באופן מיידי את הסיסמאות השמורות של <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ואתרים אחרים שבהם הסיסמה הזו נמצאת בשימוש.</translation>
+<translation id="468314109939257734">הצגת המספר של הכרטיס הווירטואלי שלך</translation>
 <translation id="4690462567478992370">הפסקת השימוש באישור לא חוקי</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)‎</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1931,6 +1933,7 @@ Del</translation>
 <translation id="8057711352706143257">יש בעיה בהגדרה של "<ph name="SOFTWARE_NAME" />". בדרך כלל, הסרת ההתקנה של "<ph name="SOFTWARE_NAME" />" פותרת את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">מצטערים, משהו השתבש.</translation>
 <translation id="8067872629359326442">‏הזנת כרגע את הסיסמה שלך באתר מטעה. אפשר לפתור את הבעיה בעזרת Chromium. כדי לשנות את הסיסמה ולהודיע ל-Google שייתכן כי החשבון בסיכון, יש ללחוץ על 'הגנה על החשבון'.</translation>
+<translation id="8070439594494267500">סמל האפליקציה</translation>
 <translation id="8074253406171541171">10x13 (Envelope)‎</translation>
 <translation id="8075898834294118863">ניהול ההגדרות לאתרים</translation>
 <translation id="8078141288243656252">לא ניתן להוסיף הערה במצב מסובב</translation>
@@ -2214,6 +2217,7 @@ Del</translation>
 <translation id="9128870381267983090">התחברות לרשת</translation>
 <translation id="9137013805542155359">הצגת מקור</translation>
 <translation id="9141013498910525015">ניהול כתובות</translation>
+<translation id="9144951720726881238">תאריך תפוגה:</translation>
 <translation id="9148088599418889305">בחירת שיטת משלוח</translation>
 <translation id="9148507642005240123">&amp;ביטול עריכה</translation>
 <translation id="9150045010208374699">להשתמש במצלמה</translation>

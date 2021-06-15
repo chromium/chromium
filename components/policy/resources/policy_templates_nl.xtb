@@ -81,6 +81,7 @@
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
 <translation id="1087707496788636333">De Chrome Enterprise-beleidslijst wordt verplaatst. Update je bookmarks naar <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
+<translation id="1089631008765417531">Toestaan dat afgedwongen geïnstalleerde web-apps query's voor apparaatkenmerken kunnen uitvoeren.</translation>
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
@@ -570,6 +571,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Opmerking: Geef de beleidswaarden op in procenten, minimaal 0 en maximaal 100.</translation>
 <translation id="1736269219679256369">Doorgaan vanaf de SSL-waarschuwingspagina toestaan</translation>
+<translation id="173993509627303617">Voorkomen dat afgedwongen geïnstalleerde web-apps query's voor apparaatkenmerken kunnen uitvoeren.</translation>
 <translation id="174765717426930019">Toestaan dat alle pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die het openen van de pop-up heeft aangevraagd, tenzij de openende pagina expliciet geen toestemming geeft voor dergelijke interactie </translation>
 <translation id="1750315445671978749">Alle downloads blokkeren</translation>
 <translation id="1751429117283165017">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
@@ -912,6 +914,17 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als je <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (waarde 1) instelt, mogen alleen varianten die worden beschouwd als essentiële beveiligings- of stabiliteitsoplossingen, worden toegepast op <ph name="PRODUCT_OS_NAME" />.
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
+<translation id="2216380260552785166">Met dit beleid wordt bepaald hoe <ph name="PRODUCT_NAME" /> beleid voor sitelijsten/grijze lijsten interpreteert voor de ondersteuningsfunctie voor oudere browsers. Het is alleen van invloed op het volgende beleid: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> en <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Als dit is ingesteld op 'Default' (0) of niet is ingesteld, wordt de URL-overeenkomst minder strikt toegepast. Regels die geen '/' bevatten, zoeken naar een subtekenreeks in de URL-hostnaam.
+
+      Als dit is ingesteld op 'Strict' (1), wordt de URL-overeenkomst strikter toegepast. Regels die geen '/' bevatten komen alleen overeen aan het einde van de hostnaam. Deze moeten zich ook bij de domeinnaamgrens bevinden. Dit werkt beter met <ph name="MS_IE_PRODUCT_NAME" /> en <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Een voorbeeld met de regel 'example.com':
+
+'http://example.com/' en 'http://subdomain.example.com/' komen overeen, ongeacht de parseermodus.
+
+      'http://notexample.com/', 'http://example.com.invalid.com/' en 'http://example.comabc/' komen alleen overeen in de modus 'Default'.</translation>
 <translation id="2221850122314326571">Als je deze instelling aanzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
       Als je deze instelling uitzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
       Als je deze instelling niet instelt, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
@@ -2153,6 +2166,13 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
       Bekijk de <ph name="WEBXR_AR_MODULE_API_NAME" />-specificatie voor meer informatie over <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />-sessies.</translation>
 <translation id="3788662722837364290">Instellingen voor energiebeheer wanneer de gebruiker inactief is</translation>
+<translation id="3789468269499404556">Als je dit beleid hebt toegepast, stuurt de <ph name="PRODUCT_NAME" />-functie gedetailleerde verzoekheaders met informatie over de browser en omgeving van de gebruiker.
+
+      Dit is een aanvullende functie, maar de nieuwe headers kunnen de juiste weergave verhinderen van sommige websites die de tekens in deze verzoeken beperken.
+
+      Als je dit beleid toepast of niet instelt, wordt de <ph name="PRODUCT_NAME" />-functie uitgezet. Als je het beleid niet hebt toegepast, is de functie ook niet beschikbaar.
+
+      Dit bedrijfsbeleid is voor kortdurende aanpassing en wordt verwijderd in Chrome 94.</translation>
 <translation id="3790085888761753785">Als deze instelling aanstaat, kunnen gebruikers inloggen op hun account via Smart Lock. Dit is toleranter dan het normale Smart Lock-gedrag, dat gebruikers alleen toestaat om hun scherm te ontgrendelen.
 
       Als dit beleid niet is toegepast, kunnen gebruikers Smart Lock Signin niet gebruiken.
@@ -2505,6 +2525,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de stand zonder interface.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, die worden uitgevoerd in Windows 10 Pro of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="4268586991084547853">Meer compatibel met sitelijsten in de Microsoft IE-/Edge-bedrijfsmodus.</translation>
 <translation id="4269859918103560644">Toestaan dat gebruikers dit bepalen</translation>
 <translation id="4274691295133617461">Als je het beleid instelt op 3, kunnen websites leestoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
 
@@ -2734,6 +2755,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       * Als <ph name="FILTER_PLACEHOLDER" /> is ingesteld op <ph name="EMPTY_DICTIONARY" />, wordt de selectie van clientcertificaten niet verder beperkt. Houd er rekening mee dat filters die door de webserver worden geleverd, nog steeds van toepassing zijn.
 
       Als je het beleid niet instelt, worden clientcertificaten voor geen enkele site automatisch geselecteerd.</translation>
+<translation id="4615003180013429835">Modus voor sitelijstparsering</translation>
 <translation id="4617338332148204752">De metatagcontrole in <ph name="PRODUCT_FRAME_NAME" /> overslaan</translation>
 <translation id="4625915093043961294">Witte lijst voor het installeren van extensies configureren</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
@@ -3415,6 +3437,11 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 <translation id="5535973522252703021">Witte lijst voor Kerberos-delegatieserver</translation>
 <translation id="553806128266843748">Een Booleaanse markering die aangeeft of throttling aanstaat.</translation>
 <translation id="5540885720415375851">Toestaan dat lokale apparaten worden gevonden</translation>
+<translation id="5541621819310532773">Met dit beleid kun je bepalen of afgedwongen geïnstalleerde web-apps query's voor apparaatkenmerken (bijv. serienummer, hostnaam) kunnen uitvoeren via de Device Attributes Web API.
+
+      Als je dit beleid instelt op True of niet instelt, mag de Device Attributes Web API worden gebruikt voor afgedwongen geïnstalleerde web-apps.
+
+      Als je dit beleid instelt op False, kan de Device Attributes Web API niet worden gebruikt.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hoog contrast op het inlogscherm aanzetten</translation>
 <translation id="555077880566103058">Alle sites toestaan om de <ph name="FLASH_PLUGIN_NAME" />-plug-in automatisch uit te voeren</translation>
@@ -4024,6 +4051,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       Als dit beleid niet is toegepast of niet is ingesteld, wordt het zwevende toegankelijkheidsmenu nooit getoond.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Safe Browsing-checks uitvoeren op alle gedownloade bestanden</translation>
+<translation id="6436052172226685535">Standaardgedrag voor LBS.</translation>
 <translation id="6438364096042399634">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 
       Als je het beleid niet instelt, is de lijst met USB-apparaten die kunnen worden ontkoppeld leeg.
@@ -4520,6 +4548,11 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="69525503251220566">Parameter die een functie voor zoeken op afbeelding levert voor de standaardzoekprovider</translation>
 <translation id="6953102253399571439">Afdrukken met pincode standaard aanzetten</translation>
 <translation id="6956272732789158625">Sites niet toestaan sleutels te genereren</translation>
+<translation id="6959021201443139119">Cookies die zijn ingesteld voor domeinen die met deze patronen overeenkomen, worden teruggezet naar het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" />. Als je het verouderde gedrag terugzet, worden cookies waarin geen <ph name="ATTRIBUTE_SAMESITE_NAME" />-kenmerk is opgegeven, als '<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />' behandeld en wordt de vereiste weggenomen dat cookies van '<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />' het kenmerk '<ph name="ATTRIBUTE_SECURE_NAME" />' bevatten. De schemavergelijking wordt overgeslagen tijdens de controle of twee sites dezelfde site zijn. Zie https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies voor een volledige beschrijving.
+
+          Voor cookies op domeinen die niet overeenkomen met de hier genoemde patronen, of voor alle cookies als dit beleid niet is ingesteld, is de globale standaardwaarde de persoonlijke configuratie van de gebruiker.
+
+          Houd er rekening mee dat de patronen die je hier opgeeft, worden behandeld als domeinen (en niet als URL's). Geef daarom geen schema of poort op.</translation>
 <translation id="6961602002757991199">Als je dit beleid instelt op een geldige URL, downloadt <ph name="PRODUCT_NAME" /> de lijst met sites van die URL en worden de regels toegepast alsof ze zijn ingesteld met het <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />-beleid. Met dit beleid wordt voorkomen dat <ph name="PRODUCT_NAME" /> en de alternatieve browser elkaar openen.
 
       Als je dit beleid niet instelt (of instelt op een ongeldige URL), gebruikt <ph name="PRODUCT_NAME" /> dit beleid niet als een bron van regels die het niet overschakelen naar een andere browser regelen.

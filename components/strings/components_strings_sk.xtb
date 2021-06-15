@@ -603,6 +603,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3212623355668894776">Zavrite všetky okná hosťovského režimu, aby bola aktivita prehliadania odstránená z tohto zariadenia.</translation>
 <translation id="3215092763954878852">WebAuthn sa nepodarilo použiť</translation>
 <translation id="3218181027817787318">Relatívne</translation>
+<translation id="3223287115535306850">Ikona spúšťania aplikácie</translation>
 <translation id="3225919329040284222">Server sa preukázal certifikátom, ktorý nezodpovedá integrovaným očakávaniam. Tieto očakávania sú kvôli vašej ochrane zahrnuté pri určitých webových stránkach s vysokou úrovňou zabezpečenia.</translation>
 <translation id="3226128629678568754">Stlačením tlačidla opakovaného spustenia znova odošlete údaje potrebné na načítanie stránky.</translation>
 <translation id="3226387218769101247">Miniatúry</translation>
@@ -677,6 +678,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3447884698081792621">Zobraziť certifikát (od vydavateľa <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval načítania:</translation>
 <translation id="3453962258458347894">Počet opakovaných pokusov</translation>
+<translation id="3454555520521576458">Nastaviteľná veľkosť</translation>
 <translation id="3456231139987291353">Number-11 (obálka)</translation>
 <translation id="3461266716147554923">Web <ph name="URL" /> chce získať prístup k textu a obrázkom pridaným do schránky</translation>
 <translation id="3461824795358126837">Zvýrazňovač</translation>
@@ -713,7 +715,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3586931643579894722">Skryť podrobnosti</translation>
 <translation id="3587738293690942763">Stred</translation>
 <translation id="3590643883886679995">Keď opustíte režim inkognito, prihlasovacie údaje sa budú ukladať v tomto zariadení.</translation>
-<translation id="359126217934908072">Mesiac a rok:</translation>
 <translation id="3592413004129370115">Italian (obálka)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}=1{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}few{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dni.}many{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dňa.}other{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dní.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1005,6 +1006,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4677585247300749148"><ph name="URL" /> chce reagovať na udalosti dostupnosti</translation>
 <translation id="467809019005607715">Prezentácie Google</translation>
 <translation id="4680804919228900307">Práve ste zadali svoje heslo na podvodnom webe. Chromium odporúča, aby ste skontrolovali svoje uložené heslá pre <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> a ďalšie weby, na ktorých ho momentálne používate.</translation>
+<translation id="468314109939257734">Zobraziť číslo virtuálnej karty</translation>
 <translation id="4690462567478992370">Nepoužívať neplatné certifikáty</translation>
 <translation id="4691835149146451662">Architecture-A (obálka)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1912,6 +1914,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8057711352706143257">Softvér <ph name="SOFTWARE_NAME" /> nie je správne nakonfigurovaný. Tento problém sa zvyčajne odstráni odinštalovaním softvéru <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Je nám to ľúto, ale vyskytol sa problém.</translation>
 <translation id="8067872629359326442">Práve ste zadali svoje heslo na podvodnom webe. Chromium vám s tým pomôže. Ak chcete zmeniť heslo a upozorniť Google, že váš účet môže byť ohrozený, kliknite na Ochrániť účet.</translation>
+<translation id="8070439594494267500">Ikona aplikácie</translation>
 <translation id="8074253406171541171">10x13 (obálka)</translation>
 <translation id="8075898834294118863">Spravovať nastavenia webov</translation>
 <translation id="8078141288243656252">Po otočení dokumentu nie je anotácia možná</translation>
@@ -2196,6 +2199,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9128870381267983090">Pripojiť k sieti</translation>
 <translation id="9137013805542155359">Zobraziť originál</translation>
 <translation id="9141013498910525015">Spravovať adresy</translation>
+<translation id="9144951720726881238">Dátum ukončenia platnosti:</translation>
 <translation id="9148088599418889305">Zvoliť spôsob dodania</translation>
 <translation id="9148507642005240123">&amp;Vrátiť späť úpravu</translation>
 <translation id="9150045010208374699">Používať vašu kameru</translation>

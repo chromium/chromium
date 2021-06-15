@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Չհաջողվեց ստուգել ձեր տվյալները</translation>
 <translation id="1310482092992808703">Խմբավորել ներդիրները</translation>
 <translation id="1311657260431405215">Այս QR կոդը URL չէ՝ <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Նավիգացիայի պատմության թերթն ամբողջությամբ բացված է</translation>
 <translation id="1331212799747679585">Չհաջողվեց թարմացնել Chrome-ը։ Այլ կարգավորումներ</translation>
 <translation id="1332501820983677155">Google Chrome-ի գործառույթների դյուրանցումներ</translation>
@@ -961,6 +962,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="718926126787620637">Էջանիշներով պանակների ցանկը բացված է ամբողջությամբ</translation>
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
 <translation id="7233236755231902816">Կայքերը ձեր լեզվով դիտելու համար տեղադրեք Chrome-ի վերջին տարբերակը</translation>
+<translation id="7242755609445462077">Ոճավորված բովանդակություն՝ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքի Chrome դիտարկիչում միացված է համաժամացումը:</translation>
 <translation id="7252076891734325316">Հեռախոսը դրեք համակարգչի մոտ</translation>
 <translation id="7274013316676448362">Արգելափակված կայք</translation>

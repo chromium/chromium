@@ -610,6 +610,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3212623355668894776">Aizveriet visus viesa režīma logus, lai jūsu pārlūkošanas darbības tiktu izdzēstas no šīs ierīces.</translation>
 <translation id="3215092763954878852">Neizdevās izmantot WebAuthn</translation>
 <translation id="3218181027817787318">Relatīva</translation>
+<translation id="3223287115535306850">Animēta lietotnes palaišanas ikona</translation>
 <translation id="3225919329040284222">Serveris uzrādīja sertifikātu, kas neatbilst iebūvētajām cerībām. Šīs cerības ir ietvertas konkrētām, augstas drošības vietnēm, lai aizsargātu jūs.</translation>
 <translation id="3226128629678568754">Nospiediet atkārtotas ielādes pogu, lai atkārtoti iesniegtu datus, kas nepieciešami lapas ielādei.</translation>
 <translation id="3226387218769101247">Sīktēli</translation>
@@ -684,6 +685,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3447884698081792621">Parādīt sertifikātu (izsniedza <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Pirmsielādes intervāls:</translation>
 <translation id="3453962258458347894">Atkārtotu mēģinājumu skaits</translation>
+<translation id="3454555520521576458">Var mainīt lielumu</translation>
 <translation id="3456231139987291353">Number-11 (aploksne)</translation>
 <translation id="3461266716147554923">Vietne <ph name="URL" /> vēlas skatīt starpliktuvē kopēto tekstu un attēlus.</translation>
 <translation id="3461824795358126837">Marķieris</translation>
@@ -720,7 +722,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3586931643579894722">Slēpt detaļas</translation>
 <translation id="3587738293690942763">vidējais</translation>
 <translation id="3590643883886679995">Pēc tam, kad iziesiet no inkognito režīma, pierakstīšanās dati tiks glabāti šajā ierīcē.</translation>
-<translation id="359126217934908072">Mēnesis/gads:</translation>
 <translation id="3592413004129370115">Italian (aploksne)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt aptuveni dienu.}=1{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt aptuveni dienu.}zero{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienas.}one{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienu.}other{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienas.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1017,6 +1018,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4677585247300749148">Vietnē <ph name="URL" /> tiek pieprasīta atļauja reaģēt uz piekļūstamības notikumiem.</translation>
 <translation id="467809019005607715">Google prezentācijas</translation>
 <translation id="4680804919228900307">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums: tūlīt pārbaudiet saglabātās paroles vietnē <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, kā arī citās vietnēs, kurās izmantojat šo paroli.</translation>
+<translation id="468314109939257734">Skatiet savas virtuālās kartes numuru</translation>
 <translation id="4690462567478992370">Pārtraukt nederīga sertifikāta izmantošanu</translation>
 <translation id="4691835149146451662">Architecture-A (aploksne)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1925,6 +1927,7 @@ Papildu informācija:
 <translation id="8057711352706143257">Programmatūra <ph name="SOFTWARE_NAME" /> nav pareizi konfigurēta. Atinstalējot programmatūru <ph name="SOFTWARE_NAME" />, parasti problēma tiek novērsta. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Diemžēl radās problēma.</translation>
 <translation id="8067872629359326442">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium var palīdzēt. Lai mainītu paroli un paziņotu uzņēmumam Google, ka jūsu konts, iespējams, ir apdraudēts, noklikšķiniet uz pogas Aizsargāt kontu.</translation>
+<translation id="8070439594494267500">Lietotnes ikona</translation>
 <translation id="8074253406171541171">10x13 (aploksne)</translation>
 <translation id="8075898834294118863">Pārvaldīt vietnes iestatījumus</translation>
 <translation id="8078141288243656252">Pagrieztiem dokumentiem nevar pievienot piezīmes</translation>
@@ -2209,6 +2212,7 @@ Papildu informācija:
 <translation id="9128870381267983090">Izveidot savienojumu ar tīklu</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>
 <translation id="9141013498910525015">Pārvaldīt adreses</translation>
+<translation id="9144951720726881238">Derīguma termiņš:</translation>
 <translation id="9148088599418889305">Izvēlēties nosūtīšanas veidu</translation>
 <translation id="9148507642005240123">&amp;Atsaukt labojumu</translation>
 <translation id="9150045010208374699">Izmantot jūsu videokameru</translation>

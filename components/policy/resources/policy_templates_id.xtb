@@ -81,6 +81,7 @@
 <translation id="1082802595100075771">Izinkan pengguna memilih menggunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
 <translation id="1087437665304381368">Kebijakan ini hanya mengontrol mode developer<ph name="PRODUCT_OS_NAME" />. Jika ingin mencegah akses ke Opsi Developer Android, Anda perlu menetapkan kebijakan <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">Daftar kebijakan Chrome Enterprise berpindah! Update bookmark ke <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
+<translation id="1089631008765417531">Izinkan aplikasi web yang diinstal otomatis mengkueri atribut perangkat.</translation>
 <translation id="1095209545735032039">Memblokir Serial API di situs ini</translation>
 <translation id="1096105751829466145">Penyedia penelusuran default</translation>
 <translation id="1099282607296956954">Aktifkan Isolasi Situs untuk setiap situs</translation>
@@ -568,6 +569,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Catatan: Nilai kebijakan harus ditentukan dalam persen dari 0 sampai 100.</translation>
 <translation id="1736269219679256369">Memungkinkan melanjutkan dari halaman peringatan SSL</translation>
+<translation id="173993509627303617">Cegah aplikasi web yang diinstal otomatis mengkueri atribut perangkat.</translation>
 <translation id="174765717426930019">Izinkan semua pop-up yang dibuka dengan target <ph name="BLANK_PAGE_NAME" /> untuk berinteraksi dengan halaman yang meminta membuka pop-up, kecuali jika halaman pembuka secara eksplisit memilih untuk melarang interaksi tersebut </translation>
 <translation id="1750315445671978749">Blokir semua download</translation>
 <translation id="1751429117283165017">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang tidak dapat meminta akses tulis ke file atau direktori di sistem file pada sistem operasi host.
@@ -927,6 +929,17 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (nilai 1) disetel, hanya variasi yang dianggap sebagai perbaikan keamanan atau stabilitas penting yang akan diterapkan ke <ph name="PRODUCT_OS_NAME" />.
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan diterapkan ke browser di layar login. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_OS_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
+<translation id="2216380260552785166">Kebijakan ini mengontrol cara <ph name="PRODUCT_NAME" /> menafsirkan kebijakan sitelist/greylist untuk fitur Dukungan Browser Lama. Kebijakan ini akan memengaruhi kebijakan berikut: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" />, dan <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Jika disetel ke 'Default' (0) atau tidak disetel, pencocokan URL kurang ketat. Aturan yang tidak berisi "/" akan mencari substring di mana pun di nama host URL.
+
+      Jika disetel ke 'Strict' (1), pencocokan URL akan lebih ketat. Aturan yang tidak berisi "/" hanya akan dicocokkan pada akhir nama host. Aturan juga harus berada di batas nama domain. Aturan ini lebih kompatibel dengan <ph name="MS_IE_PRODUCT_NAME" /> dan <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Misalnya, dengan aturan "example.com":
+
+      "http://example.com/" dan "http://subdomain.example.com/" cocok, apa pun mode penguraiannya.
+
+      "http://notexample.com/", "http://example.com.invalid.com/", dan "http://example.comabc/" hanya cocok dalam mode 'Default'.</translation>
 <translation id="2221850122314326571">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan.
       Jika setelan ini dinonaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat lama yang disediakan oleh platform.
       Jika setelan ini tidak ditetapkan, pemverifikasi sertifikat yang lama atau bawaan dapat digunakan.
@@ -2190,6 +2203,13 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Untuk detail selengkapnya tentang sesi <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, lihat spesifikasi <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Setelan pengelolaan daya saat pengguna sedang menganggur</translation>
+<translation id="3789468269499404556">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan mengirimkan header permintaan terperinci yang memberikan informasi tentang browser dan lingkungan pengguna.
+
+      Ini adalah fitur tambahan, tetapi header baru dapat menyebabkan error di situs yang membatasi karakter yang mungkin ada di dalam permintaan.
+
+      Jika kebijakan ini diaktifkan atau tidak disetel, fitur <ph name="PRODUCT_NAME" /> akan diaktifkan. Jika kebijakan dinonaktifkan, fitur tidak akan tersedia.
+
+      Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan dihapus di Chrome 94.</translation>
 <translation id="3790085888761753785">Jika setelan ini diaktifkan, pengguna akan diizinkan untuk login ke akunnya dengan Smart Lock. Setelan ini lebih longgar dibandingkan perilaku Smart Lock biasa yang hanya mengizinkan pengguna membuka kunci layarnya.
 
 Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan fitur Smart Lock Signin.
@@ -2546,6 +2566,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mode headless.
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
+<translation id="4268586991084547853">Lebih kompatibel dengan Microsoft IE/Edge enterprise mode sitelist.</translation>
 <translation id="4269859918103560644">Izinkan pengguna untuk memutuskan</translation>
 <translation id="4274691295133617461">Jika kebijakan disetel ke 3, situs web akan diizinkan meminta akses baca ke file, dan direktori, di sistem file pada sistem operasi host melalui File System API. Jika kebijakan disetel ke 2, akses akan ditolak.
 
@@ -2776,6 +2797,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       * Jika <ph name="FILTER_PLACEHOLDER" /> disetel ke <ph name="EMPTY_DICTIONARY" />, pemilihan sertifikat klien tidak akan dibatasi lebih lanjut. Perhatikan bahwa filter yang diberikan oleh server web masih berlaku.
 
       Jika kebijakan tidak disetel, tidak akan ada pemilihan otomatis untuk situs apa pun.</translation>
+<translation id="4615003180013429835">Mode penguraian sitelist</translation>
 <translation id="4617338332148204752">Lewati pemeriksaan tag meta pada <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4625915093043961294">Mengonfigurasi daftar putih pemasangan ekstensi</translation>
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
@@ -3459,6 +3481,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5535973522252703021">Daftar putih server delegasi Kerberos</translation>
 <translation id="553806128266843748">Tanda boolean menunjukkan jika throttling diaktifkan.</translation>
 <translation id="5540885720415375851">Izinkan penemuan perangkat lokal</translation>
+<translation id="5541621819310532773">Jika kebijakan disetel, aplikasi web yang diinstal otomatis akan diizinkan mendapatkan atribut perangkat (misalnya, nomor seri, nama host) dengan menggunakan Device Attributes web API.
+
+      Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, Device Attributes web API akan diizinkan untuk aplikasi web yang diinstal otomatis.
+
+      Jika kebijakan ini disetel ke salah (false), Device Attributes web API tidak akan diizinkan.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Mengaktifkan kontras tinggi di layar login</translation>
 <translation id="555077880566103058">Izinkan semua situs menjalankan plugin <ph name="FLASH_PLUGIN_NAME" /> secara otomatis</translation>
@@ -4101,6 +4128,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini ditetapkan ke nonaktif atau tidak ditetapkan, menu aksesibilitas mengambang tidak akan ditampilkan.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Lakukan pemeriksaan Safe Browsing pada semua file yang didownload</translation>
+<translation id="6436052172226685535">Perilaku default untuk LBS.</translation>
 <translation id="6438364096042399634">Menyetel kebijakan akan menentukan daftar perangkat USB yang dapat dilepas pengguna dari driver kernelnya, agar dapat langsung digunakan melalui chrome.usb API dalam aplikasi web. Entri berupa pasangan ID Vendor USB dan Kode Produk untuk mengidentifikasi hardware tertentu.
 
       Jika tidak disetel, daftar perangkat USB yang dapat dilepas akan kosong.
@@ -4600,6 +4628,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="69525503251220566">Parameter menyediakan fitur telusuri pakai gambar untuk penyedia penelusuran default</translation>
 <translation id="6953102253399571439">Aktifkan pencetakan PIN secara default</translation>
 <translation id="6956272732789158625">Jangan izinkan situs apa pun menggunakan pembuatan kunci</translation>
+<translation id="6959021201443139119">Cookie yang disetel untuk domain yang sesuai dengan pola ini akan kembali ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama. Pengembalian ke perilaku lama akan menyebabkan cookie yang tidak menentukan atribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> dianggap sebagai "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", menghapus persyaratan bagi cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" untuk membawa atribut "<ph name="ATTRIBUTE_SECURE_NAME" />", dan melewati perbandingan skema saat evaluasi jika dua situs adalah situs yang sama. Lihat penjelasan lengkapnya di https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+
+          Untuk cookie pada domain yang tidak tercakup oleh pola yang ditentukan di sini, atau untuk semua cookie jika kebijakan ini tidak disetel, nilai default global-nya adalah konfigurasi pribadi pengguna.
+
+          Perlu diingat bahwa pola yang Anda cantumkan di sini dianggap sebagai domain, bukan URL, jadi Anda tidak perlu menentukan skema atau port.</translation>
 <translation id="6961602002757991199">Jika kebijakan disetel ke URL yang valid, <ph name="PRODUCT_NAME" /> akan mendownload daftar situs dari URL tersebut dan menerapkan aturan seolah-olah aturan tersebut disiapkan dengan kebijakan <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Kebijakan ini akan mencegah <ph name="PRODUCT_NAME" /> dan browser alternatif membuka satu sama lain.
 
       Jika kebijakan tidak disetel (atau disetel ke URL yang tidak valid), <ph name="PRODUCT_NAME" /> tidak akan menggunakan kebijakan sebagai sumber aturan untuk tidak beralih browser.

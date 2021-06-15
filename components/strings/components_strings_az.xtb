@@ -610,6 +610,7 @@
 <translation id="3212623355668894776">Baxış datasının bu cihazdan silinməsi üçün bütün Qonaq pəncərələrini bağlayın.</translation>
 <translation id="3215092763954878852">WebAuthn istifadə edilmədi</translation>
 <translation id="3218181027817787318">Nisbi</translation>
+<translation id="3223287115535306850">Tətbiq başlama göstəricisi</translation>
 <translation id="3225919329040284222">Serverin təqdim etdiyi sertifikat daxili gözləntilərə uyğun deyil.</translation>
 <translation id="3226128629678568754">Səhifənin yüklənilməsi üçün tələb olunan datanın yenidən göndərilməsi üçün yenidən yükləmə düyməsini basın.</translation>
 <translation id="3226387218769101247">Miniatürlər</translation>
@@ -684,6 +685,7 @@
 <translation id="3447884698081792621">Sertifikatı göstərin (<ph name="ISSUER" /> tərəfindən paylaşılan)</translation>
 <translation id="3452404311384756672">Əldə etmə intervalı:</translation>
 <translation id="3453962258458347894">Təkrar cəhdlərin sayı</translation>
+<translation id="3454555520521576458">Ölçüsü dəyişdirilə bilən</translation>
 <translation id="3456231139987291353">Nömrə-11 (Zərf)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> buferə kopylanan mətn və şəkillərə baxmaq istəyir</translation>
 <translation id="3461824795358126837">Vurğulayıcı</translation>
@@ -719,7 +721,6 @@
 <translation id="3586931643579894722">Detalları gizlədin</translation>
 <translation id="3587738293690942763">Orta</translation>
 <translation id="3590643883886679995">Anonim rejimdən çıxdıqdan sonra giriş datası bu cihazda saxlanılacaq.</translation>
-<translation id="359126217934908072">Ay/İl:</translation>
 <translation id="3592413004129370115">İtalyan (Zərf)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Qrupunuzu istənilən vaxt sıfırlaya bilərsiniz. Yeni bir qrupa qoşulmaq təxminən bir gün çəkir.}=1{Qrupunuzu istənilən vaxt sıfırlaya bilərsiniz. Yeni bir qrupa qoşulmaq təxminən bir gün çəkir.}other{Qrupunuzu istənilən vaxt sıfırlaya bilərsiniz. Yeni bir qrupa qoşulmaq təxminən {NUM_DAYS} gün çəkir.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1015,6 +1016,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> əlçatımlılıq tədbirlərinə cavab vermək istəyir</translation>
 <translation id="467809019005607715">Google Slayd</translation>
 <translation id="4680804919228900307">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> saytlarında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı indi yoxlamağı tövsiyə edir.</translation>
+<translation id="468314109939257734">Virtual kart nömrənizə baxın</translation>
 <translation id="4690462567478992370">Yalnış sertifikat istifadəsini dayandırın</translation>
 <translation id="4691835149146451662">Arxitektura-A (Zərf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1923,6 +1925,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" düzgün konfiqurasiya edilməyib. "<ph name="SOFTWARE_NAME" />" proqramının sistemdən silinməsi ilə adətən problem həll olunur. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Xəta baş verdi.</translation>
 <translation id="8067872629359326442">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium yardım edə bilər. Parolunuzu dəyişmək və Google'a hesabınızın təhlükədə ola biləcəyini bildirmək üçün "Hesabı Qoruyun" seçiminə toxunun.</translation>
+<translation id="8070439594494267500">Tətbiq ikonası</translation>
 <translation id="8074253406171541171">10x13 (Zərf)</translation>
 <translation id="8075898834294118863">Sayt ayarlarını idarə edin</translation>
 <translation id="8078141288243656252">Döndərilidikdə annotasiya mümkün deyil</translation>

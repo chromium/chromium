@@ -720,7 +720,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587738293690942763">Milieu</translation>
 <translation id="3590643883886679995">Les données de connexion seront stockées sur l'appareil lorsque vous aurez quitté le mode navigation privée.</translation>
-<translation id="359126217934908072">Mois/Année :</translation>
 <translation id="3592413004129370115">Italian (enveloppe)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Vous pouvez réinitialiser votre groupe à tout moment. Comptez environ une journée pour rejoindre un nouveau groupe.}=1{Vous pouvez réinitialiser votre groupe à tout moment. Comptez environ une journée pour rejoindre un nouveau groupe.}one{Vous pouvez réinitialiser votre groupe à tout moment. Comptez {NUM_DAYS} jour pour rejoindre un nouveau groupe.}other{Vous pouvez réinitialiser votre groupe à tout moment. Comptez {NUM_DAYS} jours pour rejoindre un nouveau groupe.}}</translation>
 <translation id="3600246354004376029">"<ph name="TITLE" />", <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2210,6 +2209,7 @@ Informations supplémentaires :
 <translation id="9128870381267983090">Connectez-vous au réseau</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
+<translation id="9144951720726881238">Date d'expiration :</translation>
 <translation id="9148088599418889305">Sélectionner un mode de livraison</translation>
 <translation id="9148507642005240123">&amp;Annuler la modification</translation>
 <translation id="9150045010208374699">Utiliser votre caméra</translation>

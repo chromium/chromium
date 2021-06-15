@@ -609,6 +609,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3212623355668894776">Pecha todas as ventás do modo de convidado para eliminar a túa actividade de navegación deste dispositivo.</translation>
 <translation id="3215092763954878852">Non se puido utilizar WebAuthn</translation>
 <translation id="3218181027817787318">Relativo</translation>
+<translation id="3223287115535306850">Icona animada de inicio de aplicación</translation>
 <translation id="3225919329040284222">O servidor presentou un certificado que non coincide coas expectativas integradas. Estas expectativas inclúense para determinados sitios web de alta seguranza co fin de protexerte.</translation>
 <translation id="3226128629678568754">Preme o botón Volver cargar para volver enviar os datos necesarios para cargar a páxina.</translation>
 <translation id="3226387218769101247">Miniaturas</translation>
@@ -683,6 +684,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalo de recuperación:</translation>
 <translation id="3453962258458347894">Número de reintentos</translation>
+<translation id="3454555520521576458">Pódese cambiar o tamaño</translation>
 <translation id="3456231139987291353">Number-11 (sobre)</translation>
 <translation id="3461266716147554923">O URL <ph name="URL" /> quere ver o texto e as imaxes que se copian no portapapeis</translation>
 <translation id="3461824795358126837">Marcador</translation>
@@ -719,7 +721,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3590643883886679995">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito.</translation>
-<translation id="359126217934908072">Mes/Ano:</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}=1{Podes restablecer o teu grupo cando queiras. Tardarás máis ou menos un día en unirte a un grupo novo.}other{Podes restablecer o teu grupo cando queiras. Tardarás {NUM_DAYS} días en unirte a un grupo novo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1017,6 +1018,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4677585247300749148">O URL <ph name="URL" /> quere responder a eventos de accesibilidade</translation>
 <translation id="467809019005607715">Presentacións de Google</translation>
 <translation id="4680804919228900307">Acabas de escribir o teu contrasinal nun sitio enganoso. Chromium recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>
+<translation id="468314109939257734">Ver número de tarxeta virtual</translation>
 <translation id="4690462567478992370">Deter o uso dun certificado non válido</translation>
 <translation id="4691835149146451662">Architecture-A (sobre)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1925,6 +1927,7 @@ Detalles adicionais:
 <translation id="8057711352706143257"><ph name="SOFTWARE_NAME" /> non está configurado correctamente. Ao desinstalar <ph name="SOFTWARE_NAME" /> adoita solucionarse o problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Produciuse un erro.</translation>
 <translation id="8067872629359326442">Acabas de escribir o teu contrasinal nun sitio enganoso. Chromium pode axudarche. Para cambiar o teu contrasinal e notificarlle a Google que a túa conta pode estar en risco, fai clic en Protexer conta.</translation>
+<translation id="8070439594494267500">Icona da aplicación</translation>
 <translation id="8074253406171541171">10x13 (sobre)</translation>
 <translation id="8075898834294118863">Xestionar configuración dos sitios</translation>
 <translation id="8078141288243656252">Non se poden realizar anotacións ao xirar o documento</translation>

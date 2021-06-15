@@ -1228,6 +1228,7 @@
 <translation id="2300383962156589922">自訂和控制 <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">搜尋關鍵字的鍵盤快速鍵</translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
+<translation id="2301402091755573488">分享咗嘅分頁</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
 <translation id="23055578400314116">請選取使用者名稱</translation>
 <translation id="2307462900900812319">設定網絡</translation>
@@ -1505,6 +1506,7 @@
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可以編輯「<ph name="FILENAME" />」</translation>
 <translation id="2616366145935564096">讀取及變更您在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
+<translation id="2618274688675613222">啟用「下一個」按鈕即可繼續設定，啟用「上一個」按鈕則可變更指派的「選取」開關。</translation>
 <translation id="2618797463720777311">設定「咫尺共享」</translation>
 <translation id="2619761439309613843">每日重新整理</translation>
 <translation id="2620215283731032047">無法安全下載「<ph name="FILE_NAME" />」。</translation>
@@ -2901,6 +2903,7 @@
 <translation id="4120817667028078560">路徑名稱過長</translation>
 <translation id="4124823734405044952">您的安全密鑰已重設</translation>
 <translation id="4124935795427217608">獨角獸</translation>
+<translation id="4126916490446791914">已啟用自動掃瞄功能</translation>
 <translation id="412730574613779332">彈力俠</translation>
 <translation id="4130199216115862831">裝置記錄</translation>
 <translation id="4130207949184424187">擴充功能已變更您使用網址列搜尋時所顯示的頁面。</translation>
@@ -3284,6 +3287,7 @@
     如果您的子女在學校使用 Chromebook，而您想將學校體驗完整複製至家中，以確保子女女可存取所有與學校作業相關的必要內容，請登出此 Family Link 帳戶，並從 Chrome 作業系統帳戶頁面登入學校帳戶 (注意：系統不會套用 Family Link 家長監控設定)。&lt;br&gt;&lt;br&gt;
     如果您的子女在學校不使用 Chromebook，或您想透過 Family Link 管理子女的在家體驗，請按下方的 [下一步] 按鈕，將學校帳戶新增至此設定檔。</translation>
 <translation id="4576541033847873020">配對藍牙裝置</translation>
+<translation id="4576763597586015380">如要繼續將密碼儲存在 Google 帳戶中，請驗證您的身份</translation>
 <translation id="4579453506923101210">清除已連接的手機</translation>
 <translation id="4579581181964204535">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
@@ -5004,6 +5008,7 @@
 <translation id="6538098297809675636">偵測代碼時發生錯誤</translation>
 <translation id="653920215766444089">正在搜尋指標裝置</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您瞭解這項功能的用途或是收到相關指示，否則請不要啟用這項功能，因為收集數據可能會導致系統效能降低。</translation>
+<translation id="6540672086173674880">Google 可能會使用您的瀏覽記錄，為您提供個人化的搜尋服務和其他 Google 服務。您可以隨時前往 myaccount.google.com/activitycontrols/search 變更此設定。</translation>
 <translation id="6541638731489116978">此網站被禁止存取您的動作感應器。</translation>
 <translation id="6545665334409411530">重複頻率</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
@@ -5889,6 +5894,7 @@
 <translation id="754207240458482646">已與您帳戶上的其他裝置同步。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">在這部 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
+<translation id="7546012169463147344">自動掃瞄功能會自動將焦點逐一移至畫面上的每個項目。當焦點移至所需項目時，按下你剛才指派的「選取」鍵即可啟用該項目。</translation>
 <translation id="7547317915858803630">警告：您的 <ph name="PRODUCT_NAME" /> 設定均儲存在網絡硬碟中。這樣可能導致速度變慢、當機，甚至數據遺失。</translation>
 <translation id="7548856833046333824">檸檬水</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6858,6 +6864,7 @@
 <translation id="8621866727807194849">在您的電腦上發現有害軟件。Chrome 正在移除該軟件、復原設定及停用擴充程式。這樣，您的瀏覽器就能恢復正常運作。</translation>
 <translation id="8621979332865976405">分享整個螢幕畫面</translation>
 <translation id="8624354461147303341">取得折扣</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />：<ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">擴充功能(&amp;E)</translation>
 <translation id="8625663000550647058">不允許使用麥克風</translation>
 <translation id="8625916342247441948">不允許網站連接 HID 裝置</translation>
@@ -6922,6 +6929,7 @@
 <translation id="8677212948402625567">全部收合…</translation>
 <translation id="867767487203716855">下一個更新項目</translation>
 <translation id="8677859815076891398">沒有相簿。請在「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」中建立相簿。</translation>
+<translation id="8678538439778360739">系統已於 <ph name="TIME" />使用您的同步密碼短語加密資料。Google Pay 的付款方法和地址不會包括在內。</translation>
 <translation id="8678582529642151449">分頁不可縮小</translation>
 <translation id="8678933587484842200">您想如何啟動此應用程式？</translation>
 <translation id="8680251145628383637">登入即可從任何裝置取得自己的書籤、記錄、密碼和其他設定。您亦會自動登入至各種 Google 服務。</translation>

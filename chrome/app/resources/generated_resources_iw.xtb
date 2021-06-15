@@ -1228,6 +1228,7 @@
 <translation id="2300383962156589922">התאמה אישית ושליטה ב-<ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">מקשי קיצור למילות מפתח לרשת החיפוש</translation>
 <translation id="2301382460326681002">ספריית הבסיס של ההרחבה אינה חוקית.</translation>
+<translation id="2301402091755573488">כרטיסייה משותפת</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ביקש אישורים נוספים.</translation>
 <translation id="23055578400314116">יש לבחור שם משתמש</translation>
 <translation id="2307462900900812319">הגדרת רשת</translation>
@@ -1505,6 +1506,7 @@
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2613535083491958306">ל-<ph name="ORIGIN" /> תהיה הרשאה לערוך את <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">לקרוא ולשנות את הנתונים שלך ב-<ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">כדי להמשיך בהגדרה, צריך להפעיל את הלחצן 'הבא'. כדי לשנות את הקצאת המתגים לאפשרות "בחירה", צריך להפעיל את הלחצן 'הקודם'.</translation>
 <translation id="2618797463720777311">הגדרת 'שיתוף בקרבת מקום'</translation>
 <translation id="2619761439309613843">רענון יומי</translation>
 <translation id="2620215283731032047">לא ניתן להוריד את <ph name="FILE_NAME" /> בצורה מאובטחת.</translation>
@@ -2902,6 +2904,7 @@
 <translation id="4120817667028078560">הנתיב ארוך מדי</translation>
 <translation id="4124823734405044952">מפתח האבטחה שלך אופס</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
+<translation id="4126916490446791914">הסריקה האוטומטית פועלת</translation>
 <translation id="412730574613779332">סטרץ'</translation>
 <translation id="4130199216115862831">יומן מכשיר</translation>
 <translation id="4130207949184424187">התוסף הזה שינה את הדף שמוצג כשמבצעים חיפוש מסרגל הכתובות.</translation>
@@ -3285,6 +3288,7 @@
     אם הילד או הילדה שלך משתמשים ב-Chromebook בבית הספר, וברצונך ליצור בשבילם בבית חוויה הדומה ללמידה בבית הספר ולהבטיח שיש להם גישה לכל המקורות הדרושים ללמידה, עליך לצאת מהחשבון הזה של Family Link ולהיכנס שוב לחשבון הבית ספרי מדף החשבונות ב-Chrome OS (הערה: בקרת ההורים של Family Link לא תחול על החשבון).&lt;br&gt;&lt;br&gt;
     אם הילד או הילדה לא משתמשים ב-Chromebook בבית הספר, או אם עדיף לך לנהל את החוויה של הילד או הילדה בבית באמצעות Family Link, עליך ללחוץ על הלחצן 'הבא' למטה כדי להוסיף חשבון בית ספרי לפרופיל הזה.</translation>
 <translation id="4576541033847873020">‏התאמת מכשיר Bluetooth</translation>
+<translation id="4576763597586015380">‏עליך לאמת את הזהות שלך כדי להמשיך לשמור סיסמאות בחשבון Google</translation>
 <translation id="4579453506923101210">הסרת הטלפון המחובר</translation>
 <translation id="4579581181964204535">לא ניתן להעביר את <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">‏שגיאה בזמן השחזור של Linux</translation>
@@ -5005,6 +5009,7 @@
 <translation id="6538098297809675636">אירעה שגיאה בזיהוי הקוד</translation>
 <translation id="653920215766444089">המערכת מחפשת אמצעי הצבעה</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יש להפעיל אפשרות זו בטוחים בכך, או אם התבקשת לעשות זאת, משום שאיסוף נתונים עלול לפגוע בביצועים.</translation>
+<translation id="6540672086173674880">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך כדי להתאים אישית את החיפוש ושירותי Google נוספים. אפשר לשנות את ההגדרות האלה בכל שלב בכתובת myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">גישת האתר לחיישני תנועה נחסמה.</translation>
 <translation id="6545665334409411530">שיעור חזרה</translation>
 <translation id="6545864417968258051">‏סריקת Bluetooth</translation>
@@ -5890,6 +5895,7 @@
 <translation id="754207240458482646">הסנכרון עם מכשירים אחרים בחשבון שלך בוצע. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">יש להפעיל תכונות ניפוי באגים במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה</translation>
 <translation id="7543525346216957623">יש לבקש רשות מההורים</translation>
+<translation id="7546012169463147344">הסריקה האוטומטית תעבור באופן אוטומטי בין פריטים ותתמקד בהם. כשמתבצעת התמקדות בפריט, צריך ללחוץ על המקש שהקצית ל"בחירה" כדי להפעיל אותו.</translation>
 <translation id="7547317915858803630">אזהרה: הגדרות <ph name="PRODUCT_NAME" /> שלך מאוחסנות בכונן רשת. דבר זה עשוי לגרום להאטות, לקריסות ואפילו לאובדן נתונים.</translation>
 <translation id="7548856833046333824">לימונדה</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6861,6 +6867,7 @@
 <translation id="8621866727807194849">‏יש במחשב שלך תוכנה מזיקה. Chrome מסיר אותה, משחזר את ההגדרות ומשבית תוספים. לאחר מכן הדפדפן יחזור לפעולה רגילה.</translation>
 <translation id="8621979332865976405">שיתוף המסך כולו</translation>
 <translation id="8624354461147303341">לקבלת הנחות</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;תוספים</translation>
 <translation id="8625663000550647058">לא מורשים להשתמש במיקרופון</translation>
 <translation id="8625916342247441948">‏לא לאפשר לאתרים להתחבר למכשירי HID</translation>
@@ -6925,6 +6932,7 @@
 <translation id="8677212948402625567">כיווץ הכול...</translation>
 <translation id="867767487203716855">העדכון הבא</translation>
 <translation id="8677859815076891398">‏אין אלבומים. ניתן ליצור אלבום ב<ph name="LINK_BEGIN" />תמונות Google<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">‏הנתונים הוצפנו באמצעות ביטוי הסיסמה שלך לסנכרון בשעה <ph name="TIME" />. הנתונים המוצפנים לא כוללים אמצעי תשלום וכתובות מ-Google Pay.</translation>
 <translation id="8678582529642151449">הכרטיסיות לא יתכווצו</translation>
 <translation id="8678933587484842200">איך להפעיל את האפליקציה הזו?</translation>
 <translation id="8680251145628383637">‏יש להיכנס כדי לקבל גישה אל הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים שברשותך. בנוסף, תחובר אוטומטית אל שירותי Google.</translation>

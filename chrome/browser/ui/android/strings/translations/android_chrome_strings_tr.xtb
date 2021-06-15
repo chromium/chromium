@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Maalesef kimlik bilgilerinizi doğrulayamadık</translation>
 <translation id="1310482092992808703">Sekmeleri grupla</translation>
 <translation id="1311657260431405215">Bu QR kodu bir URL değil: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Gezinme geçmişi açık</translation>
 <translation id="1331212799747679585">Chrome güncellenemiyor. Diğer seçenekler</translation>
 <translation id="1332501820983677155">Google Chrome'un özellik kısayolları</translation>
@@ -961,6 +962,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="718926126787620637">Yer işareti klasörlerinin listesi tam ekranda açıldı</translation>
 <translation id="7191430249889272776">Sekme arka planda açıldı.</translation>
 <translation id="7233236755231902816">Web'i kendi dilinizde görmek için Chrome'un en son sürümünü edinin</translation>
+<translation id="7242755609445462077">Stil eklenmiş vurgu <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> cihazının Chrome'da senkronizasyonunun açık olduğundan emin olun</translation>
 <translation id="7252076891734325316">Telefonunuzu bilgisayara yakın bir yere koyun</translation>
 <translation id="7274013316676448362">Engellenmiş site</translation>

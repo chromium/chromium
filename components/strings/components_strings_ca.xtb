@@ -606,6 +606,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3212623355668894776">Tanca totes les finestres de convidat perquè la teva activitat de navegació se suprimeixi d'aquest dispositiu.</translation>
 <translation id="3215092763954878852">No s'ha pogut utilitzar WebAuthn</translation>
 <translation id="3218181027817787318">Relatiu</translation>
+<translation id="3223287115535306850">Icona animada d'inici d'una aplicació</translation>
 <translation id="3225919329040284222">El servidor ha presentat un certificat que no coincideix amb les expectatives integrades. Les expectatives s'inclouen perquè determinats llocs web d'alta seguretat us protegeixin.</translation>
 <translation id="3226128629678568754">Premeu el botó de tornar a carregar per tornar a enviar les dades necessàries per carregar la pàgina.</translation>
 <translation id="3226387218769101247">Miniatures</translation>
@@ -680,6 +681,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3447884698081792621">Mostra el certificat (emès per <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Obtén l'interval:</translation>
 <translation id="3453962258458347894">Nombre d'intents</translation>
+<translation id="3454555520521576458">Es pot canviar la mida</translation>
 <translation id="3456231139987291353">Number-11 (sobre)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> vol veure el text i les imatges copiats al porta-retalls</translation>
 <translation id="3461824795358126837">Retolador fluorescent</translation>
@@ -716,7 +718,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3586931643579894722">Oculta els detalls</translation>
 <translation id="3587738293690942763">Mitjà</translation>
 <translation id="3590643883886679995">Les dades d'inici de sessió s'emmagatzemaran en aquest dispositiu quan surtis del mode d'incògnit.</translation>
-<translation id="359126217934908072">Mes/Any:</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Pots restablir el teu grup en qualsevol moment. Ha de transcórrer aproximadament un dia per unir-te a un grup nou.}=1{Pots restablir el teu grup en qualsevol moment. Ha de transcórrer aproximadament un dia per unir-te a un grup nou.}other{Pots restablir el teu grup en qualsevol moment. Han de transcórrer aproximadament {NUM_DAYS} dies per unir-te a un grup nou.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1009,6 +1010,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4677585247300749148"><ph name="URL" /> vol respondre als esdeveniments d'accessibilitat</translation>
 <translation id="467809019005607715">Presentacions de Google</translation>
 <translation id="4680804919228900307">Acabes d'introduir la contrasenya en un lloc web enganyós. Chromium et recomana que comprovis les teves contrasenyes desades per a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i altres llocs web en què utilitzis aquesta contrasenya ara.</translation>
+<translation id="468314109939257734">Mostra el número de la targeta virtual</translation>
 <translation id="4690462567478992370">Deixa de fer servir un certificat no vàlid</translation>
 <translation id="4691835149146451662">Architecture-A (sobre)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1917,6 +1919,7 @@ Detalls addicionals:
 <translation id="8057711352706143257"><ph name="SOFTWARE_NAME" /> no s'ha configurat correctament. Normalment el problema se soluciona desinstal·lant <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">S'ha produït un error.</translation>
 <translation id="8067872629359326442">Acabes d'introduir la contrasenya en un lloc web enganyós. Chromium pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
+<translation id="8070439594494267500">Icona de l'aplicació</translation>
 <translation id="8074253406171541171">10x13 (sobre)</translation>
 <translation id="8075898834294118863">Gestiona la configuració del lloc web</translation>
 <translation id="8078141288243656252">No es poden fer anotacions en un document girat</translation>
@@ -2200,6 +2203,7 @@ Detalls addicionals:
 <translation id="9128870381267983090">Connecta't a la xarxa</translation>
 <translation id="9137013805542155359">Mostra l'original</translation>
 <translation id="9141013498910525015">Gestiona les adreces</translation>
+<translation id="9144951720726881238">Data de caducitat:</translation>
 <translation id="9148088599418889305">Tria el mètode d'enviament</translation>
 <translation id="9148507642005240123">&amp;Desfés la modificació</translation>
 <translation id="9150045010208374699">Utilitzar la càmera</translation>

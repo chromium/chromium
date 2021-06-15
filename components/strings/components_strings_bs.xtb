@@ -612,6 +612,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3212623355668894776">Zatvorite sve prozore za goste da se vaša aktivnost pregledanja izbriše s ovog uređaja.</translation>
 <translation id="3215092763954878852">Upotreba autentifikatora WebAuthn nije uspjela</translation>
 <translation id="3218181027817787318">Relativno</translation>
+<translation id="3223287115535306850">Ikona učitavanja aplikacije</translation>
 <translation id="3225919329040284222">Poslužitelj je pokazao certifikat koji ne odgovara ugrađenim očekivanjima. Ta su očekivanja uključena za određene web-lokacije s visokim stupnjem sigurnosti radi vaše zaštite.</translation>
 <translation id="3226128629678568754">Pritisnite dugme za ponovno učitavanje da ponovo pošaljete podatke potrebne za učitavanje stranice.</translation>
 <translation id="3226387218769101247">Sličice</translation>
@@ -686,6 +687,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3447884698081792621">Prikaži potvrdu (izdavač: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval preuzimanja:</translation>
 <translation id="3453962258458347894">Broj ponovnih pokušaja</translation>
+<translation id="3454555520521576458">Promjenjiva veličina</translation>
 <translation id="3456231139987291353">Number-11 (koverta)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> želi vidjeti tekst i slike kopirane u međumemoriju</translation>
 <translation id="3461824795358126837">Alat za isticanje</translation>
@@ -722,7 +724,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3586931643579894722">Sakrij detalje</translation>
 <translation id="3587738293690942763">Srednje</translation>
 <translation id="3590643883886679995">Podaci za prijavu će se pohraniti na ovom uređaju nakon što izađete iz anonimnog načina rada.</translation>
-<translation id="359126217934908072">Mjesec/godina:</translation>
 <translation id="3592413004129370115">Italijanska (koverta)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike jedan dan da se pridružite novoj grupi.}=1{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike jedan dan da se pridružite novoj grupi.}one{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike {NUM_DAYS} dan da se pridružite novoj grupi.}few{Možete vratiti grupu na zadano kad god želite. Potrebna su otprilike {NUM_DAYS} dana da se pridružite novoj grupi.}other{Možete vratiti grupu na zadano kad god želite. Potrebno je otprilike {NUM_DAYS} dana da se pridružite novoj grupi.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1020,6 +1021,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4677585247300749148"><ph name="URL" /> želi odgovoriti na događaje pristupačnosti</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chromium preporučuje provjeru sačuvanih lozinki za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge web lokacije na kojima sada koristite ovu lozinku.</translation>
+<translation id="468314109939257734">Pogledajte broj virtuelne kartice</translation>
 <translation id="4690462567478992370">Zaustavi korištenje nevažeće potvrde</translation>
 <translation id="4691835149146451662">Architecture-A (omotnica)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1928,6 +1930,7 @@ Dodatni detalji:
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" nije ispravno konfiguriran. Problem se obično riješi deinstalacijom softvera "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Nažalost, nešto nije uredu.</translation>
 <translation id="8067872629359326442">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chromium vam može pomoći. Da promijenite lozinku i obavijestite Google da vam je račun možda ugrožen, kliknite Zaštiti račun.</translation>
+<translation id="8070439594494267500">Ikona aplikacije</translation>
 <translation id="8074253406171541171">10x13 (koverta)</translation>
 <translation id="8075898834294118863">Upravljajte postavkama web lokacije</translation>
 <translation id="8078141288243656252">Ne mogu se praviti bilješke kada je dokument rotiran</translation>
@@ -2211,6 +2214,7 @@ Dodatni detalji:
 <translation id="9128870381267983090">Spoji se na mrežu</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9141013498910525015">Upravljajte adresama</translation>
+<translation id="9144951720726881238">Datum isteka:</translation>
 <translation id="9148088599418889305">Odaberi način isporuke</translation>
 <translation id="9148507642005240123">&amp;Poništi uređivanje</translation>
 <translation id="9150045010208374699">Korištenje kamere</translation>

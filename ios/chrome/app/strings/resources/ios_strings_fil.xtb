@@ -391,6 +391,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5062321486222145940">I-install - Google Drive</translation>
 <translation id="5083464117946352670">Hindi matukoy ang file size.</translation>
 <translation id="5090832849094901128">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline. Tatanungin ka ng Chrome kung gusto mong mag-save ng mahahabang page.</translation>
 <translation id="5094827893301452931">Kumpleto na ang Tweet.</translation>
 <translation id="5118764316110575523">Naka-off</translation>
 <translation id="5127805178023152808">Naka-off ang pag-sync</translation>
@@ -757,6 +758,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8548878600947630424">Hanapin sa page...</translation>
 <translation id="8574235780160508979">Magbabago ang Mga Tuntunin ng Serbisyo ng Chrome sa Marso 31. <ph name="BEGIN_LINK" />Pakisuri<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Naka-off</translation>
+<translation id="8590913940444621808">Huwag Magtanong</translation>
 <translation id="8591976964826315682">I-block ang Third-Party na Cookies sa Incognito</translation>
 <translation id="8605219856220328675">Isara ang tab.</translation>
 <translation id="8620640915598389714">I-edit</translation>
@@ -804,6 +806,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9094033019050270033">I-update ang password</translation>
 <translation id="9100610230175265781">Kinakailangan ang passphrase</translation>
 <translation id="9107664647686727385">Tingnan kung may mga nakompromisong password</translation>
+<translation id="9124387962554796433">Puwedeng gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9152539721251340337">Gumawa ng QR Code</translation>

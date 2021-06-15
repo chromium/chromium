@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Nažalost, nismo uspjeli potvrditi vaše akreditive</translation>
 <translation id="1310482092992808703">Grupiši kartice</translation>
 <translation id="1311657260431405215">Ovaj QR kôd nije URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Historija navigacije je otvorena</translation>
 <translation id="1331212799747679585">Nije moguće ažurirati Chrome. Više opcija</translation>
 <translation id="1332501820983677155">Prečice Google Chrome funkcija</translation>
@@ -961,6 +962,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="718926126787620637">Lista foldera s oznakama je otvorena u punoj visini</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7233236755231902816">Da prikažete web lokaciju na svom jeziku, nabavite najnoviju verziju Chromea</translation>
+<translation id="7242755609445462077">Stilizirani istaknuti tekst <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Provjerite je li na uređaju <ph name="TARGET_DEVICE_NAME" /> uključena sinhronizacija na Chromeu</translation>
 <translation id="7252076891734325316">Postavite telefon blizu računara</translation>
 <translation id="7274013316676448362">Blokirane web lokacije:</translation>

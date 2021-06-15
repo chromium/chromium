@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">죄송합니다. 사용자 인증 정보의 유효성을 검사할 수 없습니다.</translation>
 <translation id="1310482092992808703">탭 그룹화</translation>
 <translation id="1311657260431405215">이 QR 코드(<ph name="QRCODEVALUE" />)는 URL이 아닙니다.</translation>
+<translation id="1316212908214730110">Chrome_스타일_지정된_하이라이트_</translation>
 <translation id="1327257854815634930">탐색 기록 열림</translation>
 <translation id="1331212799747679585">Chrome을 업데이트할 수 없습니다. 옵션 더보기</translation>
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
@@ -961,6 +962,7 @@
 <translation id="718926126787620637">북마크 폴더 목록이 전체 높이로 열림</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
 <translation id="7233236755231902816">내가 사용하는 언어로 웹을 보려면 최신 버전의 Chrome을 사용하세요.</translation>
+<translation id="7242755609445462077">스타일 지정된 하이라이트 <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="7252076891734325316">휴대전화를 컴퓨터 가까이 두세요</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>

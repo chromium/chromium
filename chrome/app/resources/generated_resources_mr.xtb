@@ -1228,6 +1228,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ला कस्टमाइझ आणि नियंत्रित करा</translation>
 <translation id="2300578660547687840">शोध कीवर्डसाठी कीबोर्ड शॉर्टकट</translation>
 <translation id="2301382460326681002">एक्स्टेंशन मूळ डिरेक्टरी अवैध आहे.</translation>
+<translation id="2301402091755573488">शेअर केलेला टॅब</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" नी अतिरिक्त परवानग्यांची विनंती केली आहे.</translation>
 <translation id="23055578400314116">एखादे वापरकर्ता नाव निवडा</translation>
 <translation id="2307462900900812319">नेटवर्क कॉंफिगर करा</translation>
@@ -1505,6 +1506,7 @@
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> संपादित करता येईल</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा आणि बदला</translation>
+<translation id="2618274688675613222">सेटअप पुढे सुरू ठेवण्यासाठी, पुढील बटण किंवा असाइनमेंट स्विच करा "निवडा" बदलण्यासाठी मागील बटण ॲक्टिव्हेट करा.</translation>
 <translation id="2618797463720777311">Nearby सह शेअरिंग सेट करा</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही.</translation>
@@ -2898,6 +2900,7 @@
 <translation id="4120817667028078560">पथ खूपच लांब आहे</translation>
 <translation id="4124823734405044952">तुमची सिक्युरिटी की रीसेट केली गेली आहे</translation>
 <translation id="4124935795427217608">युनिकॉर्न</translation>
+<translation id="4126916490446791914">ऑटो-स्कॅन सुरू केले आहे</translation>
 <translation id="412730574613779332">स्‍पॅनडेक्‍स</translation>
 <translation id="4130199216115862831">डिव्‍हाइस लॉग</translation>
 <translation id="4130207949184424187">तुम्ही ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पेज दर्शविले जाते ते या एक्स्टेंशनने बदलले आहे.</translation>
@@ -3281,6 +3284,7 @@
     तुमचे मूल शाळेत Chromebook वापरत असल्यास आणि तुमच्या मुलाला सर्व आवश्यक शालेय कामाचा अ‍ॅक्सेस असेल याची खात्री करण्यासाठी तुम्हाला शाळेतील अनुभव घरात प्रतिबिंबित करायचा असल्यास, कृपया या Family Link खात्यामधून साइन आउट करा आणि Chrome OS खाती पेजमधून शाळा खात्यामध्ये साइन इन करा (टीप: Family Link पालक नियंत्रणे लागू होणार नाहीत).&lt;br&gt;&lt;br&gt;
     तुमचे मूल शाळेत Chromebook वापरत नसल्यास किंवा तुम्हाला घरीच Family Link वापरून तुमच्या मुलाचा अनुभव व्यवस्थापित करण्यास प्राधान्य द्यायचे असल्यास, या प्रोफाइलवर शाळा खाते जोडण्यासाठी खाली दिलेल्या पुढील बटणावर क्लिक करा.</translation>
 <translation id="4576541033847873020">ब्लूटूथ डिव्हाइस जोडा</translation>
+<translation id="4576763597586015380">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करणे पुढे सुरू ठेवण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="4579453506923101210">कनेक्ट केलेला फोन विसरा</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> कास्ट करण्यात अक्षम.</translation>
 <translation id="4581774856936278355">Linux रिस्टोअर करताना एरर आली</translation>
@@ -5000,6 +5004,7 @@
 <translation id="6538098297809675636">कोड डिटेक्ट करताना एरर आली</translation>
 <translation id="653920215766444089">पॉइंटिंग डिव्हाइस शोधत आहे</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> डेटाचे संकलन कामप्रदर्शन कमी करू शकत असल्यामुळे, तुम्ही काय करत आहात हे केवळ तुम्हाला माहिती असल्यास किंवा असे करण्यास तुम्हाला सांगितले गेले असल्यास सुरू करा.</translation>
+<translation id="6540672086173674880">Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमचा ब्राउझिंग इतिहास वापरू शकते. तुम्ही हे myaccount.google.com/activitycontrols/search येथे कधीही बदलू शकता</translation>
 <translation id="6541638731489116978">या साइटला तुमचे मोशन सेन्सर अ‍ॅक्सेस करण्यापासून ब्लॉक केले आहे.</translation>
 <translation id="6545665334409411530">पुनरावृत्ती दर</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कॅन करत आहे</translation>
@@ -5885,6 +5890,7 @@
 <translation id="754207240458482646">तुमच्या खात्यावरील इतर डिव्हाइसशी सिंक केलेले. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">या <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्‍हाइसवर डीबगिंग वैशिष्‍ट्ये सुरू करा</translation>
 <translation id="7543525346216957623">आपल्या पालकास विचारा</translation>
+<translation id="7546012169463147344">ऑटो-स्कॅन आपोआप स्क्रीनवरील आयटम स्कॅन आणि फोकस करेल. आयटम फोकस केलेला असतो तेव्हा, तो ॲक्टिव्हेट करण्यासाठी, तुम्ही नुकतीच असाइन केलेली "निवडा" की दाबा.</translation>
 <translation id="7547317915858803630">चेतावणी: तुमची <ph name="PRODUCT_NAME" /> सेटिंग्ज एका नेटवर्क ड्राइव्हवर संचयित करण्यात आली आहेत. यामुळे वेग मंदावणे, क्रॅश किंवा डेटा गमावणे हे परिणाम देखील होऊ शकतात.</translation>
 <translation id="7548856833046333824">लेमोनेड</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6853,6 +6859,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8621866727807194849">तुमच्या काँप्युटरवर हानिकारक सॉफ्टवेअर आहे. Chrome ते काढून टाकत आहे, तुमची सेटिंग्ज रिस्टोअर करत आहे आणि एक्स्टेंशन बंद करत आहे. यामुळे तुमचा ब्राउझर पुन्हा नीट काम करेल.</translation>
 <translation id="8621979332865976405">तुमची संपूर्ण स्क्रीन शेअर करा</translation>
 <translation id="8624354461147303341">सवलती मिळवा</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;विस्तार</translation>
 <translation id="8625663000550647058">मायक्रोफोन वापरण्याची अनुमती नाही</translation>
 <translation id="8625916342247441948">साइटना HID डिव्हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
@@ -6916,6 +6923,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8677212948402625567">सर्व कोलॅप्स करा...</translation>
 <translation id="867767487203716855">पुढील अपडेट</translation>
 <translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>
+<translation id="8678538439778360739">तुमच्या सिंक पासफ्रेझसह <ph name="TIME" /> रोजी डेटा एंक्रिप्ट केला होता. यामध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.</translation>
 <translation id="8678582529642151449">टॅब लहान केले जात नाहीत</translation>
 <translation id="8678933587484842200">हे ॲप्लिकेशन कसे लॉंच व्हावे असे तुम्हाला वाटते?</translation>
 <translation id="8680251145628383637">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज मिळविण्‍यासाठी साइन इन करा. तुम्ही स्वयंचलितपणे आपल्‍या Google सेवांवर देखील साइन इन कराल.</translation>

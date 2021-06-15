@@ -1218,6 +1218,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> අභිරුචිකරණය සහ පාලනය</translation>
 <translation id="2300578660547687840">සෙවීම් මූලපද සඳහා යතුරු පුවරු කෙටි මං</translation>
 <translation id="2301382460326681002">දිගු මූල නාමාවලිය අවලංගුය.</translation>
+<translation id="2301402091755573488">බෙදා ගත් ටැබය</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" අමතර අවසරයන් ඉල්ලා ඇත.</translation>
 <translation id="23055578400314116">පරිශීලක නමක් තෝරන්න</translation>
 <translation id="2307462900900812319">ජාලය සකසන්න</translation>
@@ -1495,6 +1496,7 @@
 <translation id="2612676031748830579">කාඩ්පත් අංකය</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> හට <ph name="FILENAME" /> සංස්කරණය කිරීමට හැකි වනු ඇත</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> හි ඔබගේ දත්ත කියවා වෙනස් කරන්න</translation>
+<translation id="2618274688675613222">පිහිටුවීම දිගටම කරගෙන යාමට ඊළඟ බොත්තම හෝ "තෝරන්න" ස්විච පැවරුම වෙනස් කිරීමට පෙර බොත්තම සක්‍රිය කරන්න.</translation>
 <translation id="2618797463720777311">ළඟ බෙදා ගැනීම පිහිටුවන්න</translation>
 <translation id="2619761439309613843">දිනපතා නැවුම් කිරීම</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> සුරක්‍ෂිතව බාගත නොහැක.</translation>
@@ -2891,6 +2893,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4120817667028078560">මඟ ඉතා දිගුයි</translation>
 <translation id="4124823734405044952">ඔබේ ආරක්‍ෂක යතුර යළි සකසා ඇත</translation>
 <translation id="4124935795427217608">කඟවේනා</translation>
+<translation id="4126916490446791914">ස්වයං-ස්කෑන් කිරීම සබලයි</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">උපාංග වාර්ථාව</translation>
 <translation id="4130207949184424187">දිගුව ඔබ Omnibox වෙතින් සොයන විට කුමන පිටුව පෙන්වන්නේද යන්න වෙනස් කර තිබේ.</translation>
@@ -3273,6 +3276,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     ඔබේ දරුවා Chromebook එකක් භාවිත කරන අතර ඔබ ඔබේ දරුවාට අවශ්‍ය පාසල් වැඩ සියල්ල වෙත ප්‍රවේශය තිබීම තහවුරු කිරීමට නිවසේදී පාසල් අත්දැකීම දර්පණය කිරීමට කැමති නම්, මෙම Family Link ගිණුමෙන් වරා Chrome OS ගිණුම් පිටුවෙන් පාසල් ගිණුමට පුරන්න (සටහන: Family Link මාපිය පාලන නොයෙදේ).&lt;br&gt;&lt;br&gt;
     ඔබේ දරුවා පාසලේදී Chromebook එකක් භාවිත නොකරන්නේ නම් හෝ ඔබ ඔබේ දරුවාගේ අත්දැකීම නිවසේදී Family Link භාවිත කර කළමනාකරණය කිරීමට කැමති නම්, මෙම පැතිකඩට පාසල් ගිණුමක් එක් කිරීමට පහත 'ඊළඟ' බොත්ත ක්ලික් කරන්න.</translation>
 <translation id="4576541033847873020">බ්ලූටූත් උපාංගය යුගල කරන්න</translation>
+<translation id="4576763597586015380">ඔබගේ Google ගිණුමේ මුරපද සුරැකීම දිගටම කර ගෙන යාමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="4579453506923101210">සම්බන්ධිත දුරකථනය අමතක කරන්න</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> විකාශය කිරීමට නොහැකිය.</translation>
 <translation id="4581774856936278355">ලිනක්ස් ප්‍රතිසාධන කරන විට දෝෂයක් සිදු විය</translation>
@@ -4992,6 +4996,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6538098297809675636">කේතය හඳුනා ගැනීමේ දෝෂයකි</translation>
 <translation id="653920215766444089">දැක්වුම් උපාංග සඳහා සොයමින්</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />සටහන:<ph name="END_BOLD" /> දත්ත රැස්කිරීමෙන් ක්‍රියාකාරීත්වය දුර්වල විය හැකි බැවින් ඔබ කරන දේ ඔබ දන්නේ නම් ‍හෝ ඔබගෙන් මෙසේ කරන්න යැයි ඉල්ලා ඇත්නම් පමණක් සබල කරන්න.</translation>
+<translation id="6540672086173674880">සෙවීම සහ වෙනත් Google සේවා පෞද්ගලිකකරණය කිරීමට Google ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය භාවිත කළ හැකිය. ඔබට මෙය ඕනෑම වේලාවක myaccount.google.com/activitycontrols/search හිදී වෙනස් කළ හැකිය</translation>
 <translation id="6541638731489116978">මෙම වෙබ් අඩවිය ඔබේ චලන සංවේදක වෙත ප්‍රවේශ වීමෙන් අවහිර කරනු ලැබ ඇත.</translation>
 <translation id="6545665334409411530">පුනරාවර්තන අනුපාතය</translation>
 <translation id="6545864417968258051">බ්ලූටූත් ස්කෑන් කිරීම</translation>
@@ -5877,6 +5882,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="754207240458482646">ඔබේ ගිණුම මත අනෙකුත් උපාංග සමඟ සමමුහූර්ත කෙරේ. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">මෙම <ph name="IDS_SHORT_PRODUCT_NAME" /> උපාංගය මත දෝශ නිවාරණය සක්‍රීය කරන්න</translation>
 <translation id="7543525346216957623">ඔබේ දෙමව්පියන්ගෙන් අසන්න</translation>
+<translation id="7546012169463147344">ස්වයං-ස්කෑන් කිරීම ස්වයංක්‍රීයව චක්‍රීය වන අතර තිරයේ ඇති අයිතමවලට නාභිගත වනු ඇත. අයිතමයක් නාභිගත වූ විට, එය සක්‍රිය කිරීම සඳහා ඔබ විසින් පවරා ඇති "තෝරන්න" යතුර ඔබන්න.</translation>
 <translation id="7547317915858803630">අවවාදයයි: ඔබේ <ph name="PRODUCT_NAME" /> සැකසුම් ජාල ධාවකයක පිහිටා ඇත. මෙය මන්දගාමී වීම, බිඳවැටීම හෝ දත්ත අහිමි වීම සඳහා පවා හේතු විය හැක.</translation>
 <translation id="7548856833046333824">ලෙමනේඩ්</translation>
 <translation id="7550830279652415241">පිටුසලකුණු_<ph name="DATESTAMP" />.html</translation>
@@ -6844,6 +6850,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8621866727807194849">ඔබගේ පරිගණකයෙහි හානිකර මෘදුකාංග ඇත. Chrome එය ඉවත් කරයි, ඔබේ සැකසීම් ප්‍රතිසාධන කරයි, දිගු අබල කරයි. මෙය ඔබේ බ්‍රවුසරය නැවතත් සාමාන්‍ය පරිදි ක්‍රියා කරවයි.</translation>
 <translation id="8621979332865976405">ඔබේ මුළු තිරයම බෙදා ගන්න</translation>
 <translation id="8624354461147303341">වට්ටම් ලබා ගන්න</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">දිගු (&amp;E)</translation>
 <translation id="8625663000550647058">ඔබගේ මයික්‍රෆෝනය භාවිත කිරීමට ඉඩ නොදේ</translation>
 <translation id="8625916342247441948">HID උපාංගවලට සම්බන්ධ වීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
@@ -6908,6 +6915,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8677212948402625567">සියල්ල හකුළන්න...</translation>
 <translation id="867767487203716855">ඊළඟ යාවත්කාලීනය</translation>
 <translation id="8677859815076891398">ඇල්බම නොමැත. <ph name="LINK_BEGIN" />Google ඡායාරූප<ph name="LINK_END" /> තුළ ඇල්බමයක් තනන්න.</translation>
+<translation id="8678538439778360739"><ph name="TIME" />ට ඔබගේ සමමුහුර්ත මුර-වැකිකඩ සමඟ දත්ත සංකේතන කරන ලදි. මෙයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළත් නොවේ.</translation>
 <translation id="8678582529642151449">නොහැකිළෙන ටැබ</translation>
 <translation id="8678933587484842200">ඔබ මෙම යෙදුම දියත් කිරීමට කැමති කෙසේ ද?</translation>
 <translation id="8680251145628383637">ඔබගේ සියලු උපාංග මත පිටු සලකුණු, ඉතිහාසය, සහ වෙනත් සැකසීම් ලබා ගැනීමට පුරන්න. ඔබව ස්වයංක්‍රීයව ඔබගේ Google සේවාවලට පිරීමද කරනු ඇත.</translation>

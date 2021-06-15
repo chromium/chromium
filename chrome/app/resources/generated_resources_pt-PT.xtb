@@ -1214,6 +1214,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2300383962156589922">Personalizar e controlar a aplicação <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Atalhos de teclado para palavras-chave de pesquisa</translation>
 <translation id="2301382460326681002">O directório de raiz da extensão é inválido.</translation>
+<translation id="2301402091755573488">Separador partilhado</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
 <translation id="23055578400314116">Selecione um nome de utilizador.</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
@@ -1491,6 +1492,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Ler e alterar os seus dados em <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Ative o botão Seguinte para continuar a configuração ou o botão Anterior para alterar a atribuição do interruptor "Selecionar".</translation>
 <translation id="2618797463720777311">Configure a funcionalidade Partilhar na proximidade</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620215283731032047">Não é possível transferir o ficheiro <ph name="FILE_NAME" /> em segurança.</translation>
@@ -2888,6 +2890,7 @@ Pretende pará-lo?</translation>
 <translation id="4120817667028078560">Caminho demasiado longo</translation>
 <translation id="4124823734405044952">A chave de segurança foi reposta.</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
+<translation id="4126916490446791914">Análise automática ativada</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Registo do dispositivo</translation>
 <translation id="4130207949184424187">Esta extensão alterou a página apresentada quando pesquisa a partir da caixa geral.</translation>
@@ -3270,6 +3273,7 @@ Pretende pará-lo?</translation>
     Se a criança utilizar um Chromebook na escola e pretender reproduzir a experiência escolar em casa para se assegurar de que a criança tem acesso a todos os trabalhos escolares necessários, termine sessão nesta conta do Family Link e inicie sessão na conta escolar na página de contas do Chrome OS (nota: não se aplica o controlo parental do Family Link).&lt;br&gt;&lt;br&gt;
     Se a criança não utilizar um Chromebook na escola ou se preferir gerir a experiência da criança em casa através do Family Link, clique no botão Seguinte abaixo para adicionar uma conta escolar a este perfil.</translation>
 <translation id="4576541033847873020">Sincronizar dispositivo Bluetooth</translation>
+<translation id="4576763597586015380">Para continuar a guardar palavras-passe na sua Conta Google, valide a sua identidade</translation>
 <translation id="4579453506923101210">Esquecer telemóvel associado</translation>
 <translation id="4579581181964204535">Não é possível transmitir <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Erro ao restaurar o Linux</translation>
@@ -4991,6 +4995,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6538098297809675636">Ocorreu um erro ao detetar o código.</translation>
 <translation id="653920215766444089">A pesquisar dispositivo apontador…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Ative apenas se tiver a certeza do que está a fazer ou se tal lhe tiver sido solicitado, dado que a recolha de dados pode diminuir o desempenho.</translation>
+<translation id="6540672086173674880">A Google pode utilizar o seu histórico de navegação para personalizar a Pesquisa e outros serviços Google. Pode alterar esta definição em qualquer altura em myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Este site foi impedido de aceder aos sensores de movimentos.</translation>
 <translation id="6545665334409411530">Taxa de repetição</translation>
 <translation id="6545864417968258051">Procura de Bluetooth</translation>
@@ -5876,6 +5881,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="754207240458482646">Sincronizada com outros dispositivos na sua conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Ativar as funcionalidades de depuração neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Pede aos teus pais</translation>
+<translation id="7546012169463147344">A análise automática percorre e foca automaticamente os itens no ecrã. Quando um item estiver focado, prima a tecla "Selecionar" que acabou de atribuir para o ativar.</translation>
 <translation id="7547317915858803630">Aviso: as definições do <ph name="PRODUCT_NAME" /> estão armazenadas numa unidade de rede. Isto pode resultar em lentidão, falhas ou mesmo perda de dados.</translation>
 <translation id="7548856833046333824">Limonada</translation>
 <translation id="7550830279652415241">marcadores_<ph name="DATESTAMP" />.html</translation>
@@ -6846,6 +6852,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="8621866727807194849">Existe software prejudicial no seu computador. O Chrome está a removê-lo, a restaurar as suas definições e a desativar as extensões. Com esta ação, o navegador vai voltar a funcionar normalmente.</translation>
 <translation id="8621979332865976405">Partilhe o ecrã inteiro</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensões</translation>
 <translation id="8625663000550647058">Sem autorização para utilizar o seu microfone</translation>
 <translation id="8625916342247441948">Não permitir que os sites estabeleçam ligação a dispositivos HID</translation>
@@ -6910,6 +6917,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="8677212948402625567">Reduzir tudo...</translation>
 <translation id="867767487203716855">Próxima atualização</translation>
 <translation id="8677859815076891398">Não existem álbuns. Crie um álbum no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Os dados foram encriptados com a sua frase de acesso de sincronização a <ph name="TIME" />. Não estão incluídos métodos de pagamento e endereços do Google Pay.</translation>
 <translation id="8678582529642151449">Os separadores não são reduzidos</translation>
 <translation id="8678933587484842200">Como pretende que esta aplicação seja iniciada?</translation>
 <translation id="8680251145628383637">Inicie sessão para obter os seus marcadores, o histórico, as palavras-passe e outras definições em todos os seus dispositivos. Além disso, também inicia sessão automaticamente nos serviços Google.</translation>

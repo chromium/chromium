@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Maaf, kami tidak dapat mengesahkan bukti kelayakan anda</translation>
 <translation id="1310482092992808703">Himpunkan tab.</translation>
 <translation id="1311657260431405215">Kod QR ini bukan URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">serlahan_digayakan_chrome_</translation>
 <translation id="1327257854815634930">Sejarah navigasi dibuka</translation>
 <translation id="1331212799747679585">Chrome tidak dapat dikemas kini. Lagi pilihan</translation>
 <translation id="1332501820983677155">Pintasan ciri Google Chrome</translation>
@@ -961,6 +962,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="718926126787620637">Senarai folder penanda halaman dibuka pada ketinggian penuh</translation>
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7233236755231902816">Untuk melihat web dalam bahasa anda, dapatkan versi terkini Chrome</translation>
+<translation id="7242755609445462077">Serlahan digayakan <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Pastikan penyegerakan telah dihidupkan dalam Chrome pada <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Letakkan telefon anda dekat dengan komputer</translation>
 <translation id="7274013316676448362">Tapak yang disekat</translation>

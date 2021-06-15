@@ -1214,6 +1214,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2300383962156589922">Personalizza e controlla <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Scorciatoie da tastiera per parole chiave di ricerca</translation>
 <translation id="2301382460326681002">Directory principale dell'estensione non valida.</translation>
+<translation id="2301402091755573488">Scheda condivisa</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha richiesto altre autorizzazioni.</translation>
 <translation id="23055578400314116">Seleziona un nome utente</translation>
 <translation id="2307462900900812319">Configura rete</translation>
@@ -1491,6 +1492,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2612676031748830579">Numero carta</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> potrà modificare <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Leggere e modificare i tuoi dati su <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Attiva il pulsante Avanti per continuare la configurazione oppure il pulsante Indietro per cambiare l'assegnazione del sensore "Seleziona".</translation>
 <translation id="2618797463720777311">Configura Condivisione nelle vicinanze</translation>
 <translation id="2619761439309613843">Aggiornam. quotidiano</translation>
 <translation id="2620215283731032047">Impossibile scaricare <ph name="FILE_NAME" /> in modo sicuro.</translation>
@@ -2887,6 +2889,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4120817667028078560">Percorso troppo lungo</translation>
 <translation id="4124823734405044952">Il token di sicurezza è stato reimpostato</translation>
 <translation id="4124935795427217608">Unicorno</translation>
+<translation id="4126916490446791914">Scansione automatica attivata</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Log dispositivo</translation>
 <translation id="4130207949184424187">Questa estensione ha cambiato la pagina mostrata quando esegui ricerche dalla omnibox.</translation>
@@ -3269,6 +3272,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
     Se tuo figlio usa un Chromebook a scuola e vuoi rispecchiare l'esperienza scolastica a casa per assicurarti che abbia accesso a tutti i compiti necessari, esci da questo account Family Link e accedi all'account della scuola dalla pagina degli account di Chrome OS (tieni però presente che non sarà applicato il Controllo genitori di Family Link).&lt;br&gt;&lt;br&gt;
     Se tuo figlio non usa un Chromebook a scuola o se preferisci gestire la sua esperienza domestica con Family Link, fai clic sul pulsante Avanti qui sotto per aggiungere un account della scuola a questo profilo.</translation>
 <translation id="4576541033847873020">Accoppia dispositivo Bluetooth</translation>
+<translation id="4576763597586015380">Verifica la tua identità per continuare a salvare le password nel tuo Account Google</translation>
 <translation id="4579453506923101210">Eliminare un telefono connesso</translation>
 <translation id="4579581181964204535">Impossibile trasmettere <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Errore durante il ripristino di Linux</translation>
@@ -4989,6 +4993,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6538098297809675636">Errore durante il rilevamento del codice</translation>
 <translation id="653920215766444089">Ricerca del dispositivo di puntamento in corso…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota.<ph name="END_BOLD" /> Attiva questa opzione soltanto se sei sicuro di ciò che fai o se ti è stato chiesto di farlo perché la raccolta di dati potrebbe peggiorare il rendimento.</translation>
+<translation id="6540672086173674880">Google potrebbe usare la tua cronologia di navigazione per personalizzare la Ricerca e altri servizi Google. Puoi modificare l'impostazione in qualsiasi momento all'indirizzo myaccount.google.com/activitycontrols/search.</translation>
 <translation id="6541638731489116978">A questo sito è stato impedito l'accesso ai sensori di movimento.</translation>
 <translation id="6545665334409411530">Frequenza ripetizione</translation>
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
@@ -5874,6 +5879,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="754207240458482646">Sincronizzata con altri dispositivi sul tuo account. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Attiva funzioni di debug su questo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Chiedi a uno dei tuoi genitori</translation>
+<translation id="7546012169463147344">Con la scansione automatica viene attivato lo spostamento automatico tra gli elementi sullo schermo e l'impostazione dello stato attivo sugli elementi. Quando lo stato attivo viene impostato sull'elemento che ti interessa, premi il tasto "Seleziona" appena assegnato per attivarlo.</translation>
 <translation id="7547317915858803630">Avviso. Le tue impostazioni <ph name="PRODUCT_NAME" /> sono memorizzate su un'unità di rete. Potrebbero verificarsi rallentamenti, arresti anomali o persino perdite di dati.</translation>
 <translation id="7548856833046333824">Limonata</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6844,6 +6850,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="8621866727807194849">È stato rilevato software dannoso sul tuo computer. Chrome lo rimuoverà, ripristinerà le tue impostazioni e disattiverà le estensioni. In questo modo verrà ripristinato il normale funzionamento del browser.</translation>
 <translation id="8621979332865976405">Condividi tutto lo schermo</translation>
 <translation id="8624354461147303341">Ricevi sconti</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Estensioni</translation>
 <translation id="8625663000550647058">Non possono utilizzare il microfono</translation>
 <translation id="8625916342247441948">Non consentire ai siti di connettersi ai dispositivi HID</translation>
@@ -6908,6 +6915,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="8677212948402625567">Comprimi tutto...</translation>
 <translation id="867767487203716855">Prossimo aggiornamento</translation>
 <translation id="8677859815076891398">Nessun album. Crea un album in<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">I dati sono stati criptati con la tua passphrase di sincronizzazione il giorno <ph name="TIME" />. Non sono inclusi i metodi di pagamento e gli indirizzi di Google Pay.</translation>
 <translation id="8678582529642151449">Le schede non si riducono</translation>
 <translation id="8678933587484842200">Come vuoi che venga lanciata questa applicazione?</translation>
 <translation id="8680251145628383637">Accedi per trovare i tuoi segnalibri, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi. Verrà inoltre eseguito l'accesso automatico ai tuoi servizi Google.</translation>

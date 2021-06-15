@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Não foi possível validar suas credenciais</translation>
 <translation id="1310482092992808703">Agrupar guias</translation>
 <translation id="1311657260431405215">Este código QR não é um URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">destaque_estilizado_do_chrome</translation>
 <translation id="1327257854815634930">O histórico de navegação está aberto</translation>
 <translation id="1331212799747679585">Não é possível atualizar o Chrome. Mais opções</translation>
 <translation id="1332501820983677155">Atalhos de recursos do Google Chrome</translation>
@@ -962,6 +963,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="718926126787620637">Lista de pastas de favoritos aberta no tamanho máximo</translation>
 <translation id="7191430249889272776">Guia aberta no plano de fundo.</translation>
 <translation id="7233236755231902816">Para ver as páginas da Web no seu idioma, instale a versão mais recente do Chrome</translation>
+<translation id="7242755609445462077">Destaque estilizado de <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Verifique se a sincronização do <ph name="TARGET_DEVICE_NAME" /> está ativada no Chrome</translation>
 <translation id="7252076891734325316">Aproxime o smartphone do computador</translation>
 <translation id="7274013316676448362">Site bloqueado</translation>

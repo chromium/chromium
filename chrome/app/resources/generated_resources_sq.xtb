@@ -1212,6 +1212,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2300383962156589922">Personalizo dhe kontrollo <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Shkurtoret e tastierës për fjalët kyçe të kërkimit</translation>
 <translation id="2301382460326681002">Direktoria rrënjë e shtesës është e pavlefshme.</translation>
+<translation id="2301402091755573488">Skeda e ndarë</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
 <translation id="23055578400314116">Zgjidh një emër përdoruesi</translation>
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
@@ -1489,6 +1490,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2612676031748830579">Numri i kartës</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> do të ketë mundësi të modifikojë <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Lexo dhe ndrysho të dhënat e tua në <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Aktivizo butonin "Para" për të vazhduar me konfigurimin ose butonin "Pas" për të ndryshuar caktimin e çelësit "Zgjidh".</translation>
 <translation id="2618797463720777311">Konfiguro "Ndarjen në afërsi"</translation>
 <translation id="2619761439309613843">Rifreskimi i përditshëm</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> nuk mund të shkarkohet në mënyrë të sigurt.</translation>
@@ -2884,6 +2886,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4120817667028078560">Shtegu është shumë i gjatë</translation>
 <translation id="4124823734405044952">Çelësi yt i sigurisë është rivendosur</translation>
 <translation id="4124935795427217608">Njëbrirësh</translation>
+<translation id="4126916490446791914">Skanimi automatik është aktivizuar</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Ditari i pajisjes</translation>
 <translation id="4130207949184424187">Kjo shtesë ka ndryshuar se cila faqe shfaqet kur kërkon nga Omnibox.</translation>
@@ -3266,6 +3269,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     Nëse fëmija yt përdor një Chromebook në shkollë dhe dëshiron ta pasqyrosh përvojën e shkollës në shtëpi për të siguruar që fëmija të ketë qasje te të gjitha detyrat e nevojshme të shkollës, dil nga kjo llogari e Family Link dhe identifikohu në llogarinë e shkollës nga faqja e llogarive të Chrome OS. (Shënim. Nuk do të zbatohen kontrollet prindërore të Family Link.)&lt;br&gt;&lt;br&gt;
     Nëse fëmija yt nuk përdor një Chromebook në shkollë ose nëse preferon ta menaxhosh përvojën e fëmijës tënd në shtëpi duke përdorur Family Link, kliko te butoni "Para" më poshtë për të shtuar një llogari të shkollës te ky profil.</translation>
 <translation id="4576541033847873020">Çifto pajisje me "Bluetooth"</translation>
+<translation id="4576763597586015380">Për të vazhduar të ruash fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="4579453506923101210">Harro telefonin e lidhur</translation>
 <translation id="4579581181964204535">Nuk mund të transmetojë <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Gabim gjatë restaurimit të Linux</translation>
@@ -4986,6 +4990,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6538098297809675636">Gabim në zbulimin e kodit</translation>
 <translation id="653920215766444089">Po kërkon për pajisjen treguese</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Aktivizoje vetëm nëse e di e çfarë po bën ose nëse të është kërkuar ta bësh këtë, sepse grumbullimi të dhënave mund të ulë rendimentin.</translation>
+<translation id="6540672086173674880">Google mund ta përdorë historikun tënd të shfletimit për të personalizuar "Kërko" dhe shërbime të tjera të Google. Këtë mund ta ndryshosh në çdo kohë te myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Kjo faqe nuk lejohet të t'i hapë sensorët e lëvizjes.</translation>
 <translation id="6545665334409411530">Shpejtësia e përsëritjes</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
@@ -5871,6 +5876,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="754207240458482646">Sinkronizuar me pajisjet e tjera në llogarinë tënde. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Aktivizo funksionet e korrigjimit në këtë pajisje të <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Pyet prindin tënd</translation>
+<translation id="7546012169463147344">Skanimi automatik do t'i kalojë automatikisht në cikël dhe do të fokusohet tek artikujt në ekran. Kur të fokusohet një artikull, shtyp çelësin "Zgjidh" që sapo ke caktuar për ta aktivizuar atë.</translation>
 <translation id="7547317915858803630">Paralajmërim! Cilësimet e <ph name="PRODUCT_NAME" /> ruhen në një disk rrjeti. Kjo mund të rezultojë në ngadalësime, ndërprerje aksidentale, madje edhe në humbjen e të dhënave.</translation>
 <translation id="7548856833046333824">Limonatë</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6838,6 +6844,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8621866727807194849">Ka një softuer keqdashës në kompjuterin tënd. Chrome po e heqë atë, po restauron cilësimet e tua dhe po çaktivizon shtesat. Kjo do të bëjë që shfletuesi të punojë përsëri si normalisht.</translation>
 <translation id="8621979332865976405">Ndaj të gjithë ekranin tënd</translation>
 <translation id="8624354461147303341">Merr uljet e çmimeve</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Shtesat</translation>
 <translation id="8625663000550647058">Nuk lejohen të përdorin mikrofonin</translation>
 <translation id="8625916342247441948">Mos lejo që sajtet të lidhen me pajisjet HID</translation>
@@ -6902,6 +6909,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8677212948402625567">Palosi të gjitha...</translation>
 <translation id="867767487203716855">Përditësimi tjetër</translation>
 <translation id="8677859815076891398">Nuk ka albume. Krijo një album te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Të dhënat janë enkriptuar me frazën tënde të kalimit në datën <ph name="TIME" />. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
 <translation id="8678582529642151449">Skedat nuk tkurren</translation>
 <translation id="8678933587484842200">Si dëshiron që të hapet ky aplikacion?</translation>
 <translation id="8680251145628383637">Identifikohu për të marrë faqeshënuesit, historikun dhe cilësime të tjera në të gjitha pajisjet. Do të identifikohesh gjithashtu në shërbimet e tua të Google.</translation>

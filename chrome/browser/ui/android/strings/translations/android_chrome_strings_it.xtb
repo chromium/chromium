@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Spiacenti, impossibile convalidare le credenziali</translation>
 <translation id="1310482092992808703">Raggruppa schede</translation>
 <translation id="1311657260431405215">Questo codice QR non corrisponde a un URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">La cronologia di navigazione è aperta</translation>
 <translation id="1331212799747679585">Impossibile aggiornare Chrome. Altre opzioni</translation>
 <translation id="1332501820983677155">Scorciatoie delle funzioni di Google Chrome</translation>
@@ -961,6 +962,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="718926126787620637">Elenco di cartelle di preferiti aperto a schermo intero</translation>
 <translation id="7191430249889272776">Scheda aperta in background.</translation>
 <translation id="7233236755231902816">Per navigare sul Web nella tua lingua, scarica l'ultima versione di Chrome</translation>
+<translation id="7242755609445462077">Evidenziazione stilizzata: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Assicurati che in Chrome sia attiva la sincronizzazione di <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Avvicina il telefono al computer</translation>
 <translation id="7274013316676448362">Sito bloccato</translation>

@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">I-on ang pag-sync?</translation>
 <translation id="123724288017357924">I-reload ang page, balewalain ang cached content</translation>
 <translation id="1240288207750131269">Nilo-load ang <ph name="LANG" /></translation>
+<translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
@@ -52,6 +53,7 @@
 <translation id="1307205233980126133">Paumanhin, hindi namin ma-validate ang iyong mga kredensyal</translation>
 <translation id="1310482092992808703">Igrupo ang mga tab</translation>
 <translation id="1311657260431405215">Hindi URL ang QR Code na ito: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Nakabukas ang history ng pag-navigate</translation>
 <translation id="1331212799747679585">Hindi ma-update ang Chrome. Higit pang opsyon</translation>
 <translation id="1332501820983677155">Mga shortcut ng feature ng Google Chrome</translation>
@@ -919,6 +921,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6864459304226931083">I-download ang larawan</translation>
 <translation id="6865313869410766144">Data ng form ng autofill</translation>
 <translation id="6867400383614725881">Bagong tab na Incognito</translation>
+<translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Karaniwang proteksyon laban sa mga website, download, at extension na kilalang mapanganib.</translation>
 <translation id="688738109438487280">Idagdag ang kasalukuyang data sa <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">I-unlock upang kopyahin ang iyong password</translation>
@@ -961,6 +964,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="718926126787620637">Listahan ng mga folder ng bookmark na binuksan nang buo ang taas</translation>
 <translation id="7191430249889272776">Binuksan ang tab sa background.</translation>
 <translation id="7233236755231902816">Para makita ang web sa iyong wika, kunin ang pinakabagong bersyon ng Chrome</translation>
+<translation id="7242755609445462077">May istilong highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Tiyaking naka-on sa <ph name="TARGET_DEVICE_NAME" /> ang pag-sync sa Chrome</translation>
 <translation id="7252076891734325316">Ilapit ang iyong telepono sa computer</translation>
 <translation id="7274013316676448362">Naka-block na site</translation>
@@ -1154,6 +1158,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
 <translation id="8410695015584479363">I-track ang mga presyo</translation>
 <translation id="8413126021676339697">Ipakita ang buong history</translation>
+<translation id="8424781820952413435">Naipadala na ang page. Para makita ito, buksan ang Chrome sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Nakabukas nang kalahati ang tab na preview</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8438566539970814960">Mas pahusayin ang mga paghahanap at pag-browse</translation>
@@ -1195,6 +1200,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="860282621117673749">Mga alerto sa pagbaba ng presyo</translation>
 <translation id="8616006591992756292">Maaaring may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Buksan ang iminumungkahing URL na tinukoy sa na-download na content?</translation>
+<translation id="8621068256433641644">telepono</translation>
 <translation id="8636825310635137004">Upang makuha ang iyong mga tab mula sa iba mo pang mga device, i-on ang pag-sync.</translation>
 <translation id="8641930654639604085">Subukang i-block ang mga site na para sa mga nasa hustong gulang</translation>
 <translation id="8655129584991699539">Maaari mong i-clear ang data sa Mga Setting ng Chrome</translation>

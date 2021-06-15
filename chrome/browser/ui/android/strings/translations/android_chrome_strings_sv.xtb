@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Vi kunde tyvärr inte validera dina användaruppgifter</translation>
 <translation id="1310482092992808703">Gruppera flikar</translation>
 <translation id="1311657260431405215">QR-koden är inte en webbadress: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Navigeringshistoriken har öppnats</translation>
 <translation id="1331212799747679585">Det går inte att uppdatera Chrome. Fler alternativ</translation>
 <translation id="1332501820983677155">Kortkommandon för funktioner i Google Chrome</translation>
@@ -961,6 +962,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="718926126787620637">Lista över bokmärkesmappar som har öppnats över hela skärmen</translation>
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7233236755231902816">Skaffa den senaste versionen av Chrome och få webben översatt till ditt språk</translation>
+<translation id="7242755609445462077">Stiliserad markering <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Kontrollera att synkronisering har aktiverats i Chrome på <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Lägg telefonen nära datorn</translation>
 <translation id="7274013316676448362">Blockerad webbplats</translation>

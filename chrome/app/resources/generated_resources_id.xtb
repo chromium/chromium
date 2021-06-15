@@ -1229,6 +1229,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2300383962156589922">Sesuaikan dan kontrol <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Pintasan keyboard untuk kata kunci penelusuran</translation>
 <translation id="2301382460326681002">Direktori akar ekstensi tidak valid.</translation>
+<translation id="2301402091755573488">Tab Dibagikan</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" telah meminta izin tambahan.</translation>
 <translation id="23055578400314116">Pilih nama pengguna</translation>
 <translation id="2307462900900812319">Konfigurasi jaringan</translation>
@@ -1506,6 +1507,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2612676031748830579">Nomor kartu kredit</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> akan dapat mengedit <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Membaca dan mengubah data Anda di <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Aktifkan tombol Berikutnya untuk melanjutkan penyiapan atau tombol Sebelumnya untuk mengubah penetapan tombol akses "Pilih".</translation>
 <translation id="2618797463720777311">Menyiapkan Berbagi Langsung</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> tidak dapat didownload dengan aman.</translation>
@@ -2902,6 +2904,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4120817667028078560">Jalur terlalu panjang</translation>
 <translation id="4124823734405044952">Kunci keamanan Anda telah direset</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4126916490446791914">Pemindaian otomatis diaktifkan</translation>
 <translation id="412730574613779332">Putra Super</translation>
 <translation id="4130199216115862831">Log Perangkat</translation>
 <translation id="4130207949184424187">Ekstensi ini telah mengubah halaman apa yang ditampilkan saat Anda menelusuri dari Omnibox.</translation>
@@ -3285,6 +3288,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
     Jika anak Anda menggunakan Chromebook di sekolah dan Anda ingin menduplikasi pengalaman sekolah di rumah untuk memastikan anak Anda memiliki akses ke semua tugas sekolah yang diperlukan, logout dari akun Family Link ini dan login ke akun sekolah dari halaman akun Chrome OS (catatan: Kontrol orang tua Family Link tidak akan berlaku).&lt;br&gt;&lt;br&gt;
     Jika anak Anda tidak menggunakan Chromebook di sekolah atau jika Anda ingin mengelola pengalaman anak di rumah menggunakan Family Link, klik tombol Berikutnya di bawah untuk menambahkan akun sekolah ke profil ini.</translation>
 <translation id="4576541033847873020">Sandingkan perangkat Bluetooth</translation>
+<translation id="4576763597586015380">Untuk terus menyimpan sandi di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="4579453506923101210">Lupakan ponsel yang terhubung</translation>
 <translation id="4579581181964204535">Tidak dapat mentransmisi <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Terjadi error saat memulihkan Linux</translation>
@@ -5005,6 +5009,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6538098297809675636">Terjadi error saat mendeteksi kode</translation>
 <translation id="653920215766444089">Menelusuri perangkat penunjuk</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" /> Hanya aktif jika Anda tahu sedang melakukan apa atau jika ditanyai untuk melakukan hal tersebut, karena koleksi data dapat mengurangi kinerja.</translation>
+<translation id="6540672086173674880">Google dapat menggunakan histori penjelajahan untuk mempersonalisasi Penelusuran dan layanan Google lainnya. Anda dapat mengubahnya kapan saja di myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan.</translation>
 <translation id="6545665334409411530">Tingkat pengulangan</translation>
 <translation id="6545864417968258051">Pemindaian Bluetooth</translation>
@@ -5890,6 +5895,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="754207240458482646">Disinkronkan dengan perangkat lain di akun Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Aktifkan fitur debug pada perangkat <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Tanyakan kepada orang tua</translation>
+<translation id="7546012169463147344">Pemindaian otomatis akan otomatis menampilkan dan fokus pada item di layar. Saat item difokuskan, tekan tombol "Pilih" yang baru saja Anda tetapkan untuk mengaktifkannya.</translation>
 <translation id="7547317915858803630">Peringatan: setelan <ph name="PRODUCT_NAME" /> Anda disimpan di drive jaringan. Hal ini dapat mengakibatkan kelambatan, kerusakan, atau bahkan hilangnya data.</translation>
 <translation id="7548856833046333824">Minum</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6860,6 +6866,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="8621866727807194849">Ada software berbahaya di komputer Anda. Chrome sedang menghapusnya, memulihkan setelan Anda, dan menonaktifkan ekstensi. Tindakan ini akan membuat browser berfungsi kembali secara normal.</translation>
 <translation id="8621979332865976405">Bagikan seluruh layar Anda</translation>
 <translation id="8624354461147303341">Dapatkan diskon</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Ekstensi</translation>
 <translation id="8625663000550647058">Tidak diizinkan menggunakan mikrofon Anda</translation>
 <translation id="8625916342247441948">Jangan izinkan situs terhubung ke perangkat HID</translation>
@@ -6924,6 +6931,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="8677212948402625567">Ciutkan semua...</translation>
 <translation id="867767487203716855">Update berikutnya</translation>
 <translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Data dienkripsi dengan frasa sandi sinkronisasi Anda pada <ph name="TIME" />. Data ini tidak mencakup metode pembayaran dan alamat dari Google Pay.</translation>
 <translation id="8678582529642151449">Tab tidak dikecilkan</translation>
 <translation id="8678933587484842200">Bagaimana Anda ingin meluncurkan aplikasi ini?</translation>
 <translation id="8680251145628383637">Login untuk mendapatkan bookmark, histori, sandi, dan setelan lain di semua perangkat. Anda juga akan otomatis masuk ke layanan Google.</translation>

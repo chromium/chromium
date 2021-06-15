@@ -1215,6 +1215,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2300383962156589922">Personnaliser et contrôler <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Raccourcis-clavier pour les mots clés de recherche</translation>
 <translation id="2301382460326681002">Le répertoire racine de l'extension n'est pas valide.</translation>
+<translation id="2301402091755573488">Onglet partagé</translation>
 <translation id="23030561267973084">« <ph name="EXTENSION_NAME" /> » a demandé des autorisations supplémentaires.</translation>
 <translation id="23055578400314116">Sélectionnez un nom d'utilisateur</translation>
 <translation id="2307462900900812319">Configurer le réseau</translation>
@@ -1493,6 +1494,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2612676031748830579">Numéro de la carte</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> pourra modifier <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Accéder à vos données sur <ph name="WEBSITE_1" /> et les modifier</translation>
+<translation id="2618274688675613222">Activez le bouton Suivant pour continuer la configuration ou le bouton Précédent afin de modifier l'attribution du commutateur « Sélectionner ».</translation>
 <translation id="2618797463720777311">Configurer le partage à proximité</translation>
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ne peut pas être téléchargé de manière sécuritaire.</translation>
@@ -2889,6 +2891,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4120817667028078560">Chemin d'accès trop long</translation>
 <translation id="4124823734405044952">Votre clé de sécurité a été réinitialisée</translation>
 <translation id="4124935795427217608">Licorne</translation>
+<translation id="4126916490446791914">Balayage automatique activée</translation>
 <translation id="412730574613779332">Superhéros</translation>
 <translation id="4130199216115862831">Journal de l’appareil</translation>
 <translation id="4130207949184424187">L'extension a modifié la page qui s'affiche lorsque vous effectuez des recherches depuis l'omnibox.</translation>
@@ -3271,6 +3274,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
     Si votre enfant utilise un Chromebook à l'école et que vous souhaitez reproduire cette expérience à la maison pour vous assurer qu'il a accès à tous ses travaux scolaires, veuillez vous déconnecter de ce compte Family Link et vous connecter avec le compte scolaire sur la page des comptes Chrome OS (remarque : les paramètres des contrôles parentaux de Family Link ne s'appliqueront pas).&lt;br&gt;&lt;br&gt;
     Si votre enfant n'utilise pas de Chromebook à l'école ou si vous préférez gérer son expérience à la maison avec Family Link, veuillez cliquer sur le bouton Suivant ci-dessous pour ajouter un compte scolaire à ce profil.</translation>
 <translation id="4576541033847873020">Associer un appareil Bluetooth</translation>
+<translation id="4576763597586015380">Pour continuer d'enregistrer vos mots de passe dans votre compte Google, vérifiez votre identité</translation>
 <translation id="4579453506923101210">Oublier le téléphone connecté</translation>
 <translation id="4579581181964204535">Impossible de diffuser <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Une erreur s'est produite lors de la restauration du conteneur Linux</translation>
@@ -4991,6 +4995,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6538098297809675636">Erreur lors de la détection du code</translation>
 <translation id="653920215766444089">Recherche d'un dispositif de pointage en cours…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : n'activez cette option que si vous êtes sûr de ce que vous faites ou si vous avez été invité à le faire. En effet, la collecte de données est susceptible de diminuer les performances.</translation>
+<translation id="6540672086173674880">Google peut utiliser votre historique de navigation pour personnaliser la recherche et d'autres services Google. Vous pouvez modifier ce paramètre en tout temps sur la page myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Ce site a été bloqué : il ne peut pas accéder à vos capteurs de mouvement.</translation>
 <translation id="6545665334409411530">Fréquence de répétition</translation>
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
@@ -5876,6 +5881,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="754207240458482646">Synchronisé avec d'autres appareils associés à votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Activer les fonctionnalités de débogage sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
+<translation id="7546012169463147344">Le balayage automatique fera automatiquement défiler les éléments à l'écran et elle les mettra en évidence. Lorsqu'un élément est mis en évidence, appuyez sur la touche « Sélectionner » assignée afin de l'activer.</translation>
 <translation id="7547317915858803630">Avertissement : vos paramètres de <ph name="PRODUCT_NAME" /> sont enregistrés sur un lecteur réseau, ce qui peut entraîner des ralentissements, des plantages et même la perte de données.</translation>
 <translation id="7548856833046333824">Martini</translation>
 <translation id="7550830279652415241">favoris_<ph name="DATESTAMP" />.html</translation>
@@ -6845,6 +6851,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8621866727807194849">Nous avons trouvé un logiciel nuisible sur votre ordinateur. Chrome est en train de le supprimer, de restaurer vos paramètres et de désactiver les extensions. Votre navigateur pourra ainsi fonctionner normalement à nouveau.</translation>
 <translation id="8621979332865976405">Partager l'écran au complet</translation>
 <translation id="8624354461147303341">Obtenir des rabais</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" /> : <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Non autorisés à utiliser votre microphone</translation>
 <translation id="8625916342247441948">Ne pas autoriser les sites à se connecter à des appareils HID</translation>
@@ -6909,6 +6916,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8677212948402625567">Tout réduire…</translation>
 <translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8677859815076891398">Aucun album. Créez un album dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Des données ont été chiffrées à l'aide de votre phrase de passe de synchronisation le <ph name="TIME" />. Cette méthode ne couvre pas les modes de paiement ni les adresses de Google Pay.</translation>
 <translation id="8678582529642151449">Les onglets ne sont pas réduits</translation>
 <translation id="8678933587484842200">Comment souhaitez-vous lancer cette application?</translation>
 <translation id="8680251145628383637">Connectez-vous pour accéder à vos favoris, votre historique, vos mots de passe et autres paramètres sur tous vos appareils. Vous serez également automatiquement connecté(e) à vos services Google.</translation>

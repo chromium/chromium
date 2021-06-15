@@ -606,6 +606,7 @@
 <translation id="3212623355668894776">게스트 창을 모두 닫으면 기기에서 탐색 활동이 삭제됩니다.</translation>
 <translation id="3215092763954878852">WebAuthn을 사용할 수 없음</translation>
 <translation id="3218181027817787318">상대</translation>
+<translation id="3223287115535306850">앱 실행용 트로버</translation>
 <translation id="3225919329040284222">서버가 내장된 기대치와 일치하지 않는 인증서를 전달했습니다. 이러한 기대치는 사용자를 보호하기 위해 보안이 엄격한 특정 웹사이트에 포함됩니다.</translation>
 <translation id="3226128629678568754">페이지 로드에 필요한 데이터를 다시 제출하려면 새로고침 버튼을 누릅니다.</translation>
 <translation id="3226387218769101247">미리보기 이미지</translation>
@@ -680,6 +681,7 @@
 <translation id="3447884698081792621">인증서 표시(발급 기관: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">가져오기 간격:</translation>
 <translation id="3453962258458347894">재시도 횟수</translation>
+<translation id="3454555520521576458">크기 조정 가능</translation>
 <translation id="3456231139987291353">Number-11(봉투)</translation>
 <translation id="3461266716147554923"><ph name="URL" />에서 클립보드에 복사된 텍스트 및 이미지를 확인하려고 합니다.</translation>
 <translation id="3461824795358126837">형광펜</translation>
@@ -716,7 +718,6 @@
 <translation id="3586931643579894722">세부정보 숨기기</translation>
 <translation id="3587738293690942763">보통</translation>
 <translation id="3590643883886679995">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다.</translation>
-<translation id="359126217934908072">월/연도:</translation>
 <translation id="3592413004129370115">Italian(봉투)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}=1{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}other{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 {NUM_DAYS}일이 소요됩니다.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1009,6 +1010,7 @@
 <translation id="4677585247300749148"><ph name="URL" />에서 접근성 이벤트에 응답하려고 합니다</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> 등 동일한 비밀번호를 사용한 사이트에 저장된 비밀번호를 확인하는 것이 좋습니다.</translation>
+<translation id="468314109939257734">가상 카드 번호 보기</translation>
 <translation id="4690462567478992370">유효하지 않은 인증서 사용 중단</translation>
 <translation id="4691835149146451662">Architecture-A(봉투)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1916,6 +1918,7 @@
 <translation id="8057711352706143257">'<ph name="SOFTWARE_NAME" />이(가) 올바르게 설정되지 않았습니다. 일반적으로 '<ph name="SOFTWARE_NAME" />'을(를) 제거하면 문제가 해결됩니다. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">문제 발생</translation>
 <translation id="8067872629359326442">사기성 사이트에 비밀번호를 입력했습니다. Chromium이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
+<translation id="8070439594494267500">앱 아이콘</translation>
 <translation id="8074253406171541171">10x13(봉투)</translation>
 <translation id="8075898834294118863">사이트 설정 관리</translation>
 <translation id="8078141288243656252">회전 시 주석을 달 수 없습니다.</translation>
@@ -2199,6 +2202,7 @@
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9137013805542155359">원본 보기</translation>
 <translation id="9141013498910525015">주소 관리</translation>
+<translation id="9144951720726881238">유효기간:</translation>
 <translation id="9148088599418889305">배송 방법 선택</translation>
 <translation id="9148507642005240123">수정 실행 취소(&amp;U)</translation>
 <translation id="9150045010208374699">카메라 사용</translation>

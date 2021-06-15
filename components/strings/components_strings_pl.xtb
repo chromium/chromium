@@ -608,6 +608,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3212623355668894776">Zamknij wszystkie okna w trybie gościa, aby usunąć z tego urządzenia swoją aktywność związaną z przeglądaniem.</translation>
 <translation id="3215092763954878852">Nie udało się użyć WebAuthn</translation>
 <translation id="3218181027817787318">Względna</translation>
+<translation id="3223287115535306850">Animowana ikona uruchamiania aplikacji</translation>
 <translation id="3225919329040284222">Serwer przedstawił certyfikat, który nie pasuje do zaprogramowanych oczekiwań. Oczekiwania mają chronić Cię w określonych witrynach o wysokim poziomie zabezpieczeń.</translation>
 <translation id="3226128629678568754">Naciśnij przycisk ponownego załadowania, by przesłać dane wymagane do wczytania strony.</translation>
 <translation id="3226387218769101247">Miniatury</translation>
@@ -682,6 +683,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3447884698081792621">Pokaż certyfikat (wydany przez: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Okres pobierania:</translation>
 <translation id="3453962258458347894">Liczba ponownych prób</translation>
+<translation id="3454555520521576458">Możliwość zmiany rozmiaru</translation>
 <translation id="3456231139987291353">Number-11 (koperta)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> chce mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
 <translation id="3461824795358126837">Zakreślacz</translation>
@@ -718,7 +720,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3586931643579894722">Ukryj szczegóły</translation>
 <translation id="3587738293690942763">Średni</translation>
 <translation id="3590643883886679995">Dane logowania pozostaną zapisane na tym urządzeniu po wyjściu z trybu incognito.</translation>
-<translation id="359126217934908072">Miesiąc/rok:</translation>
 <translation id="3592413004129370115">Italian (koperta)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}=1{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około 1 dnia.}few{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dni.}many{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dni.}other{Możesz zresetować grupę w dowolnym momencie. Dołączenie do nowej grupy trwa około {NUM_DAYS} dnia.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1011,6 +1012,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4677585247300749148"><ph name="URL" /> chce odpowiadać na zdarzenia dotyczące ułatwień dostępu</translation>
 <translation id="467809019005607715">Prezentacje Google</translation>
 <translation id="4680804919228900307">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca, by sprawdzić zapisane hasła do witryn <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /> oraz do innych stron, na których używasz tego hasła.</translation>
+<translation id="468314109939257734">Wyświetl numer karty wirtualnej</translation>
 <translation id="4690462567478992370">Przestań używać nieprawidłowego certyfikatu</translation>
 <translation id="4691835149146451662">Architecture-A (koperta)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1919,6 +1921,7 @@ Dodatkowe informacje:
 <translation id="8057711352706143257">Oprogramowanie „<ph name="SOFTWARE_NAME" />” nie jest prawidłowo skonfigurowane. Odinstalowanie oprogramowania „<ph name="SOFTWARE_NAME" />” zwykle rozwiązuje problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Coś poszło nie tak.</translation>
 <translation id="8067872629359326442">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium może pomóc. Aby zmienić hasło i powiadomić Google, że Twoje konto może być zagrożone, kliknij Chroń konto.</translation>
+<translation id="8070439594494267500">Ikona aplikacji</translation>
 <translation id="8074253406171541171">10x13 (koperta)</translation>
 <translation id="8075898834294118863">Zarządzaj ustawieniami witryn</translation>
 <translation id="8078141288243656252">Nie można dodawać adnotacji, gdy dokument jest obrócony</translation>
@@ -2202,6 +2205,7 @@ Dodatkowe informacje:
 <translation id="9128870381267983090">Połącz z siecią</translation>
 <translation id="9137013805542155359">Pokaż tekst oryginalny</translation>
 <translation id="9141013498910525015">Zarządzaj adresami</translation>
+<translation id="9144951720726881238">Data wygaśnięcia:</translation>
 <translation id="9148088599418889305">Wybierz metodę wysyłki</translation>
 <translation id="9148507642005240123">&amp;Cofnij edycję</translation>
 <translation id="9150045010208374699">Korzystanie z Twojej kamery</translation>

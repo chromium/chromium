@@ -81,6 +81,7 @@
 <translation id="1082802595100075771">Consenti agli utenti di scegliere un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="1087437665304381368">Questa norma consente di controllare esclusivamente la modalità sviluppatore di <ph name="PRODUCT_OS_NAME" />. Se vuoi impedire l'accesso alle Opzioni sviluppatore Android, devi impostare la norma <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">L'elenco dei criteri di Chrome Enterprise è in fase di trasferimento. Aggiorna i tuoi preferiti con l'URL <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
+<translation id="1089631008765417531">Le applicazioni web con installazione forzata possono richiedere gli attributi dei dispositivi.</translation>
 <translation id="1095209545735032039">Blocca l'API Serial su questi siti</translation>
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
 <translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
@@ -565,6 +566,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Nota: i valori del criterio devono essere specificati in percentuali da 0 a 100.</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
+<translation id="173993509627303617">Le applicazioni web con installazione forzata non possono richiedere gli attributi dei dispositivi.</translation>
 <translation id="174765717426930019">Consenti a tutti i popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha richiesto l'apertura del popup se la pagina di apertura non disattiva esplicitamente tale interazione </translation>
 <translation id="1750315445671978749">Blocca tutti i download</translation>
 <translation id="1751429117283165017">La configurazione del criterio consente di elencare i pattern URL che specificano i siti che non possono richiedere agli utenti l'accesso di scrittura di file o directory nel file system del sistema operativo host.
@@ -919,6 +921,15 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se viene impostato <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valore 1), è possibile applicare a <ph name="PRODUCT_OS_NAME" /> soltanto le varianti considerate correzioni fondamentali per la sicurezza o la stabilità.
 
       Se viene impostato <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2), non è possibile applicare al browser tutte le varianti nella schermata di accesso. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_OS_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
+<translation id="2216380260552785166">Questo criterio consente di stabilire in che modo <ph name="PRODUCT_NAME" /> deve interpretare i criteri relativi a elenchi dei siti/greylist della funzionalità Supporto dei browser precedenti. Incide sui seguenti criteri: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Se il criterio viene impostato su "Default" (0) o se non viene configurato, la corrispondenza degli URL è meno rigorosa. Per le regole che non contengono "/" viene cercata una sottostringa in un punto qualsiasi del nome host dell'URL.
+
+      Se il criterio viene impostato su "Strict" (1), la corrispondenza degli URL è più rigorosa. Per le regole che non contengono "/" viene cercata una corrispondenza soltanto alla fine del nome host. Le regole devono essere inoltre a un limite del nome di dominio. Questo garantisce più compatibilità con <ph name="MS_IE_PRODUCT_NAME" /> e <ph name="MS_EDGE_PRODUCT_NAME" />, ad esempio, con la regola "example.com":
+
+      "http://example.com/" e "http://subdomain.example.com/" corrispondono a prescindere dalla modalità di analisi.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" e "http://example.comabc/" corrispondono soltanto in modalità "Default".</translation>
 <translation id="2221850122314326571">Se questa impostazione viene attivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati integrato.
       Se viene disattivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati precedente fornito dalla piattaforma.
       Se non viene configurata, potrebbe essere utilizzato lo strumento di verifica dei certificati integrato o quello precedente.
@@ -2167,6 +2178,13 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Per ulteriori informazioni sulle sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, consulta la specifica <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Impostazioni di gestione dell'alimentazione quando l'utente diventa inattivo</translation>
+<translation id="3789468269499404556">Se il criterio viene attivato, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
+
+      Si tratta di una funzionalità aggiuntiva, ma le nuove intestazioni potrebbero causare interruzioni su alcuni siti web che limitano il numero di caratteri della richiesta.
+
+      Se il criterio viene attivato o se non viene configurato, la funzionalità <ph name="PRODUCT_NAME" /> verrà attivata. Se il criterio viene disattivato, la funzionalità non sarà disponibile.
+
+      Questo criterio aziendale è finalizzato al periodo di transizione e sarà rimosso nella versione 94 di Chrome.</translation>
 <translation id="3790085888761753785">Se questa impostazione viene attivata, gli utenti potranno accedere ai propri account con Smart Lock. Questa impostazione è più permissiva rispetto al normale comportamento di Smart Lock che consente agli utenti soltanto di sbloccare lo schermo.
 
       Se questa impostazione viene disattivata, gli utenti non potranno usare l'accesso tramite Smart Lock.
@@ -2519,6 +2537,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="4268586991084547853">Più compatibilità con gli elenchi dei siti in modalità Enterprise di Microsoft IE/Edge</translation>
 <translation id="4269859918103560644">Consenti all'utente di decidere</translation>
 <translation id="4274691295133617461">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso di lettura di file e directory nel file system del sistema operativo host tramite l'API file system. Se il criterio viene impostato su 2, l'accesso viene negato.
 
@@ -2749,6 +2768,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       * Quando <ph name="FILTER_PLACEHOLDER" /> è impostato su <ph name="EMPTY_DICTIONARY" />, la selezione dei certificati client non viene limitata ulteriormente. Nota: si applicano ancora i filtri forniti dal server web.
 
       Se il criterio non viene configurato, non viene eseguita la selezione automatica per nessun sito.</translation>
+<translation id="4615003180013429835">Modalità di analisi degli elenchi dei siti</translation>
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4625915093043961294">Configura la whitelist per l'installazione delle estensioni</translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
@@ -3432,6 +3452,11 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5535973522252703021">Whitelist server di delega Kerberos</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
+<translation id="5541621819310532773">La configurazione di questo criterio consente di stabilire se consentire o meno alle applicazioni web con installazione forzata di ricevere gli attributi dei dispositivi (ad esempio, numero di serie, nome host) usando l'API web Device Attributes.
+
+      Se questo criterio viene impostato su vero o non viene configurato, l'API web Device Attributes sarà consentita per le applicazioni web con installazione forzata.
+
+      Se questo criterio viene impostato su falso, l'API web Device Attributes non sarà consentita.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>
@@ -4049,6 +4074,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio è disattivato o non è impostato, il menu Accessibilità mobile non verrà mai mostrato.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Esegui i controlli di Navigazione sicura per tutti i file scaricati</translation>
+<translation id="6436052172226685535">Comportamento predefinito di LBS</translation>
 <translation id="6438364096042399634">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare hardware specifico.
 
       Se il criterio non viene configurato, l'elenco di dispositivi USB scollegabili è vuoto.
@@ -4548,6 +4574,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="69525503251220566">Parametro che fornisce la funzione di ricerca tramite immagine per il provider di ricerca predefinito</translation>
 <translation id="6953102253399571439">Attiva la stampa PIN per impostazione predefinita</translation>
 <translation id="6956272732789158625">Non consentire a nessun sito di utilizzare la generazione di chiavi</translation>
+<translation id="6959021201443139119">Per i cookie impostati per i domini corrispondenti a questi pattern verrà ripristinato il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+
+          Per i cookie sui domini non previsti dai pattern specificati qui oppure per tutti i cookie se questo criterio non viene impostato, il valore predefinito globale sarà la configurazione personale dell'utente.
+
+          Tieni presente che i pattern elencati qui vengono considerati come domini, non URL, quindi non dovresti specificare uno schema o una porta.</translation>
 <translation id="6961602002757991199">Se per il criterio viene impostato un URL valido, <ph name="PRODUCT_NAME" /> scarica l'elenco dei siti da tale URL e applica le regole come se fossero state configurate con il criterio <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Questi criteri impediscono a <ph name="PRODUCT_NAME" /> e al browser alternativo di aprirsi a vicenda.
 
       Se il criterio non viene impostato (o se viene impostato un URL non valido), <ph name="PRODUCT_NAME" /> non usa il criterio come fonte di regole per non cambiare browser.

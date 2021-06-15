@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">ドライブをインストール</translation>
 <translation id="5083464117946352670">ファイルサイズが不明です。</translation>
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
+<translation id="5092117651143801290">ページを保存して、後で読んだり、オフラインで読んだりできます。長いページを保存する場合は確認のメッセージが表示されます。</translation>
 <translation id="5094827893301452931">ツイートが完了しました。</translation>
 <translation id="5118764316110575523">オフ</translation>
 <translation id="5127805178023152808">同期は無効です</translation>
@@ -757,6 +758,7 @@
 <translation id="8548878600947630424">ページ内を検索...</translation>
 <translation id="8574235780160508979">Chrome の利用規約が 3 月 31 日に更新されます。<ph name="BEGIN_LINK" />お読みください<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">オフ</translation>
+<translation id="8590913940444621808">今後表示しない</translation>
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8605219856220328675">タブを閉じる。</translation>
 <translation id="8620640915598389714">編集</translation>
@@ -804,6 +806,7 @@
 <translation id="9094033019050270033">パスワードを更新</translation>
 <translation id="9100610230175265781">パスフレーズを入力してください</translation>
 <translation id="9107664647686727385">不正使用されたパスワードがないか確認します</translation>
+<translation id="9124387962554796433">検索やその他の Google サービスをカスタマイズする目的で、履歴が Google で使用されることがあります。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9152539721251340337">QR コードを作成</translation>

@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Želite li da uključite sinhronizaciju?</translation>
 <translation id="123724288017357924">Ponovno učitavanje aktuelne stranice, zanemarujući keširani sadržaj</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> se učitava</translation>
+<translation id="1242883863226959074">uređaju</translation>
 <translation id="124678866338384709">Zatvaranje aktuelne kartice</translation>
 <translation id="1258753120186372309">Google dudl logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
@@ -52,6 +53,7 @@
 <translation id="1307205233980126133">Žao nam je, nismo uspeli da proverimo akreditive</translation>
 <translation id="1310482092992808703">Grupiši kartice</translation>
 <translation id="1311657260431405215">Ovaj QR kôd nije URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Istorija navigacije je otvorena</translation>
 <translation id="1331212799747679585">Chrome ne može da se ažurira. Još opcija</translation>
 <translation id="1332501820983677155">Prečice za Google Chrome funkcije</translation>
@@ -919,6 +921,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6864459304226931083">Preuzmi sliku</translation>
 <translation id="6865313869410766144">Podaci Automatskog popunjavanja za obrasce</translation>
 <translation id="6867400383614725881">Nova kartica bez arhiviranja</translation>
+<translation id="6869056123412990582">računaru</translation>
 <translation id="6882836635272038266">Standardna zaštita od veb-sajtova, preuzimanja i dodataka za koje se zna da su štetni.</translation>
 <translation id="688738109438487280">Dodavanje postojećih podataka na <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Otključajte da biste kopirali lozinku</translation>
@@ -961,6 +964,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="718926126787620637">Lista foldera sa obeleživačima otvorena je na celom ekranu</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7233236755231902816">Da biste pregledali veb na svom jeziku, preuzmite najnoviju verziju Chrome-a</translation>
+<translation id="7242755609445462077">Stilizovano isticanje <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Uverite se da je sinhronizacija za <ph name="TARGET_DEVICE_NAME" /> uključena u Chrome-u</translation>
 <translation id="7252076891734325316">Postavite telefon blizu računara</translation>
 <translation id="7274013316676448362">Sajt je blokiran</translation>
@@ -1154,6 +1158,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8410695015584479363">Pratite cene</translation>
 <translation id="8413126021676339697">Prikaži svu istoriju</translation>
+<translation id="8424781820952413435">Stranica je poslata. Da biste je videli, otvorite Chrome na <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Kartica za pregled je poluotvorena</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8438566539970814960">Poboljšaj pretrage i pregledanje</translation>
@@ -1195,6 +1200,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="860282621117673749">Obaveštenja o sniženjima</translation>
 <translation id="8616006591992756292">Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Želite li da otvorite predloženi URL naveden u preuzetom sadržaju?</translation>
+<translation id="8621068256433641644">telefonu</translation>
 <translation id="8636825310635137004">Da bi vam kartice bile dostupne na drugim uređajima, uključite sinhronizaciju.</translation>
 <translation id="8641930654639604085">Pokušaj da blokiraš sajtove sa sadržajem za odrasle</translation>
 <translation id="8655129584991699539">Možete da obrišete podatke u Chrome podešavanjima</translation>

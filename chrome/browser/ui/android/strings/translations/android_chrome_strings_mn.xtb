@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Синк асаах уу?</translation>
 <translation id="123724288017357924">Нөөцөлсөн агуулгыг алгасч одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="1240288207750131269"><ph name="LANG" />-г ачаалж байна</translation>
+<translation id="1242883863226959074">төхөөрөмж</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />-г хуваалцаж чадсангүй</translation>
@@ -52,6 +53,7 @@
 <translation id="1307205233980126133">Уучлаарай, бид таны мандат үнэмлэхийг баталж чадсангүй</translation>
 <translation id="1310482092992808703">Бүлэг таб</translation>
 <translation id="1311657260431405215">Энэ QR код бол URL биш: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Навигацын түүх нээлттэй байна</translation>
 <translation id="1331212799747679585">Chrome-г шинэчлэх боломжгүй байна. Бусад сонголт</translation>
 <translation id="1332501820983677155">Google Chrome онцлогийн товчлол</translation>
@@ -918,6 +920,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6864459304226931083">Зураг татах</translation>
 <translation id="6865313869410766144">Autofill дээрх мэдээлэл</translation>
 <translation id="6867400383614725881">Шинэ Нууцлалтай таб</translation>
+<translation id="6869056123412990582">компьютер</translation>
 <translation id="6882836635272038266">Аюултай гэж мэдэгдсэн веб сайт, таталт болон өргөтгөлийн эсрэг стандарт хамгаалалт.</translation>
 <translation id="688738109438487280">Одоо байгаа өгөгдлийг <ph name="TO_ACCOUNT" />-д нэмнэ үү.</translation>
 <translation id="6891726759199484455">Нууц үгээ хуулахын тулд түгжээг тайлна уу</translation>
@@ -960,6 +963,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="718926126787620637">Бүтэн хэмжээтэйгээр нээсэн хавчуурганы фолдерын жагсаалт</translation>
 <translation id="7191430249889272776">Арын дэвсгэр дээр нээсэн цонх.</translation>
 <translation id="7233236755231902816">Вебийг өөрийн хэлээр үзэхийн тулд Chrome-н хамгийн сүүлийн үеийн хувилбарыг авна уу</translation>
+<translation id="7242755609445462077">Стильжүүлсэн тодруулга <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> нь Chrome дээр синк хийхийг асаасан эсэхийг шалгана уу</translation>
 <translation id="7252076891734325316">Утсаа компьютертой ойр байрлуулна уу</translation>
 <translation id="7274013316676448362">Блоклосон сайт</translation>
@@ -1153,6 +1157,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8393700583063109961">Мессеж илгээх</translation>
 <translation id="8410695015584479363">Үнэ хянах</translation>
 <translation id="8413126021676339697">Бүрэн түүхийг харуулах</translation>
+<translation id="8424781820952413435">Хуудас илгээсэн. Үүнийг харахын тулд Chrome -г <ph name="DEVICE_TYPE" /> дээрээ нээнэ үү</translation>
 <translation id="8427875596167638501">Урьдчилан үзэх табыг хагас нээсэн</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8438566539970814960">Хайлт болон хөтлөх явцыг сайжруулаарай</translation>
@@ -1194,6 +1199,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="860282621117673749">Үнэ бууралтын сэрэмжлүүлэг</translation>
 <translation id="8616006591992756292">Таны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
 <translation id="8617240290563765734">Татаж авсан контент дахь санал болгож буй URL-г нээх үү?</translation>
+<translation id="8621068256433641644">утас</translation>
 <translation id="8636825310635137004">Бусад төхөөрөмжөөс чихтэй хуудсаа авахын тулд синкийг асаана уу.</translation>
 <translation id="8641930654639604085">Насанд хүрэгчдэд зориулсан сайтыг блоклох</translation>
 <translation id="8655129584991699539">Та өгөгдлийг Chrome тохиргоонд устгаж болно</translation>

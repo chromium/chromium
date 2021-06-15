@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Sajnos nem sikerült érvényesíteni a hitelesítési adatait</translation>
 <translation id="1310482092992808703">Lapok csoportosítása</translation>
 <translation id="1311657260431405215">Ez a QR-kód nem URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Megnyitotta a navigációs előzményeket</translation>
 <translation id="1331212799747679585">A Chrome frissítése nem lehetséges. További lehetőségek</translation>
 <translation id="1332501820983677155">A Google Chrome-funkciók billentyűparancsai</translation>
@@ -961,6 +962,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="718926126787620637">Könyvjelzőmappák listája teljes magasságban megnyitva</translation>
 <translation id="7191430249889272776">A lap megnyílt a háttérben.</translation>
 <translation id="7233236755231902816">Ha saját nyelvén szeretné böngészni az internetet, szerezze be a Chrome legújabb verzióját</translation>
+<translation id="7242755609445462077">Stilizált kiemelés (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Győződjön meg arról, hogy a(z) <ph name="TARGET_DEVICE_NAME" /> szinkronizálása be van kapcsolva a Chrome-ban</translation>
 <translation id="7252076891734325316">Helyezze telefonját a számítógép közelébe</translation>
 <translation id="7274013316676448362">Letiltott oldal</translation>

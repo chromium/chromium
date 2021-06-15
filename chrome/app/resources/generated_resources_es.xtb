@@ -1215,6 +1215,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2300383962156589922">Personalizar y controlar <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Combinaciones de teclas para palabras clave de búsqueda</translation>
 <translation id="2301382460326681002">El directorio raíz de la extensión no es válido.</translation>
+<translation id="2301402091755573488">Pestaña compartida</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> ha solicitado permisos adicionales.</translation>
 <translation id="23055578400314116">Selecciona un nombre de usuario</translation>
 <translation id="2307462900900812319">Configurar red</translation>
@@ -1492,6 +1493,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2612676031748830579">Número de la tarjeta</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> podrá editar <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Leer y modificar tus datos en <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Activa el botón Siguiente para seguir con la configuración del botón Anterior para cambiar la asignación del interruptor "Seleccionar".</translation>
 <translation id="2618797463720777311">Configurar Compartir con Nearby</translation>
 <translation id="2619761439309613843">Actualiz. diaria</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> no se puede descargar de forma segura.</translation>
@@ -2886,6 +2888,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4120817667028078560">Ruta demasiado larga</translation>
 <translation id="4124823734405044952">Tu llave de seguridad se ha restablecido</translation>
 <translation id="4124935795427217608">Unicornio</translation>
+<translation id="4126916490446791914">Búsqueda automática activada</translation>
 <translation id="412730574613779332">Superhéroe</translation>
 <translation id="4130199216115862831">Registro de dispositivo</translation>
 <translation id="4130207949184424187">Esta extensión ha cambiado la página que se muestra al buscar en el omnibox.</translation>
@@ -3268,6 +3271,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     Si tu hijo/a usa un Chromebook en su centro educativo y quieres replicar la experiencia escolar en casa para asegurarte de que tenga acceso a todo el material necesario, cierra la sesión de esta cuenta de Family Link e inicia sesión en la cuenta de centro educativo en la página de cuentas de Chrome OS (ten en cuenta que no se aplicará el control parental que hayas configurado en Family Link).&lt;br&gt;&lt;br&gt;
     Si tu hijo/a no usa un Chromebook en su centro educativo, o si prefieres gestionar su experiencia en casa a través de Family Link, haz clic en el botón Siguiente para añadir una cuenta de centro educativo a este perfil.</translation>
 <translation id="4576541033847873020">Emparejar dispositivo Bluetooth</translation>
+<translation id="4576763597586015380">Para seguir guardando contraseñas en tu cuenta de Google, verifica tu identidad</translation>
 <translation id="4579453506923101210">Olvidar teléfono conectado</translation>
 <translation id="4579581181964204535">No se puede enviar <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Error al restaurar Linux</translation>
@@ -4988,6 +4992,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6538098297809675636">No se ha podido detectar el código</translation>
 <translation id="653920215766444089">Buscando dispositivo señalador</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Habilita esta opción solo si tienes conciencia de los efectos de esta acción o si se te ha pedido que lo hagas, ya que la recogida de datos puede reducir el rendimiento.</translation>
+<translation id="6540672086173674880">Es posible que Google use tu historial de navegación para personalizar la Búsqueda y otros servicios de Google. Puedes cambiar esta opción en cualquier momento en myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Este sitio web no tiene permiso para acceder a los sensores de movimiento.</translation>
 <translation id="6545665334409411530">Frecuencia de repetición</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
@@ -5873,6 +5878,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="754207240458482646">La red está sincronizada con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Se habilitarán las funciones de depurado en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Pide permiso a uno de tus padres</translation>
+<translation id="7546012169463147344">La búsqueda automática recorrerá y seleccionará automáticamente los elementos de la pantalla. Cuando se haya seleccionado un elemento, pulsa la tecla "Seleccionar" que has asignado para activarla.</translation>
 <translation id="7547317915858803630">Advertencia: la configuración de <ph name="PRODUCT_NAME" /> se almacena en una unidad de red, lo que puede provocar ralentizaciones, fallos e incluso pérdidas de datos.</translation>
 <translation id="7548856833046333824">Cóctel</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6843,6 +6849,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8621866727807194849">Se ha detectado software dañino en tu ordenador. Chrome está eliminándolo, restaurando la configuración y desactivando las extensiones. Así, el navegador volverá a funcionar con normalidad.</translation>
 <translation id="8621979332865976405">Compartir toda la pantalla</translation>
 <translation id="8624354461147303341">Conseguir descuentos</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensiones</translation>
 <translation id="8625663000550647058">No puede usar tu micrófono</translation>
 <translation id="8625916342247441948">No permitir que los sitios se conecten a dispositivos HID</translation>
@@ -6907,6 +6914,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8677212948402625567">Ocultar todos...</translation>
 <translation id="867767487203716855">Próxima actualización</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Los datos se cifraron con tu frase de contraseña de sincronización el <ph name="TIME" />. Esto no incluye los métodos de pago ni las direcciones de Google Pay.</translation>
 <translation id="8678582529642151449">el tamaño de las pestañas no se ajusta</translation>
 <translation id="8678933587484842200">¿Cómo te gustaría que se iniciara esta aplicación?</translation>
 <translation id="8680251145628383637">Inicia sesión para acceder a tus marcadores, tu historial, tus contraseñas y tu configuración en todos tus dispositivos. Además, iniciarás sesión automáticamente en tus servicios de Google.</translation>

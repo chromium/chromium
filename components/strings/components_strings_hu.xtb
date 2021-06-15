@@ -608,6 +608,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3212623355668894776">Zárja be mindegyik Vendég ablakot, hogy böngészési tevékenységei törlődjenek az eszközről.</translation>
 <translation id="3215092763954878852">Hiba történt a WebAuthn használata során</translation>
 <translation id="3218181027817787318">Relatív</translation>
+<translation id="3223287115535306850">Alkalmazásindító ikon</translation>
 <translation id="3225919329040284222">A szerver tanúsítványa nem felel meg a beépített elvárásoknak. Ezek a beépített elvárások bizonyos nagy biztonságú webhelyekre vonatkoznak az Ön védelme érdekében.</translation>
 <translation id="3226128629678568754">Nyomja meg a frissítés gombot az oldal betöltéséhez szükséges adatok újraküldéséhez.</translation>
 <translation id="3226387218769101247">Indexképek</translation>
@@ -682,6 +683,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3447884698081792621">Tanúsítvány megjelenítése (kibocsátó: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Lekérési intervallum:</translation>
 <translation id="3453962258458347894">Újrapróbálkozások száma</translation>
+<translation id="3454555520521576458">Újraméretezhető</translation>
 <translation id="3456231139987291353">Number-11 (boríték)</translation>
 <translation id="3461266716147554923">A(z) <ph name="URL" /> webhely szeretné megtekinteni a vágólapra másolt szövegeket és képeket</translation>
 <translation id="3461824795358126837">Szövegkiemelő</translation>
@@ -718,7 +720,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3586931643579894722">Részletek elrejtése</translation>
 <translation id="3587738293690942763">Közép</translation>
 <translation id="3590643883886679995">Az inkognitó mód elhagyása után ez az eszköz tárolja a bejelentkezési adatokat.</translation>
-<translation id="359126217934908072">Hónap/év:</translation>
 <translation id="3592413004129370115">Italian (boríték)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Csoportját bármikor visszaállíthatja. Az új csoporthoz való csatlakozás körülbelül egy napig tart.}=1{Csoportját bármikor visszaállíthatja. Az új csoporthoz való csatlakozás körülbelül egy napig tart.}other{Csoportját bármikor visszaállíthatja. Az új csoporthoz való csatlakozás körülbelül {NUM_DAYS} napig tart.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1016,6 +1017,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4677585247300749148">A(z) <ph name="URL" /> kisegítő lehetőségekkel kapcsolatos eseményekre szeretne válaszolni</translation>
 <translation id="467809019005607715">Google Diák</translation>
 <translation id="4680804919228900307">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />).</translation>
+<translation id="468314109939257734">Virtuális kártyaszám megtekintése</translation>
 <translation id="4690462567478992370">Érvénytelen tanúsítvány használatának befejezése</translation>
 <translation id="4691835149146451662">Architecture-A (boríték)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1924,6 +1926,7 @@ További részletek:
 <translation id="8057711352706143257">A(z) „<ph name="SOFTWARE_NAME" />” nincs megfelelően beállítva. A(z) „<ph name="SOFTWARE_NAME" />” eltávolítása általában megoldja a problémát. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Sajnos hiba történt.</translation>
 <translation id="8067872629359326442">Megtévesztő webhelyen adta meg jelszavát. A Chromium segíthet. Ha módosítani szeretné jelszavát, és értesíteni szeretné a Google-t arról, hogy fiókja veszélyben lehet, kattintson a Fiók védelme gombra.</translation>
+<translation id="8070439594494267500">Alkalmazásikon</translation>
 <translation id="8074253406171541171">10x13 (boríték)</translation>
 <translation id="8075898834294118863">Webhelybeállítások kezelése</translation>
 <translation id="8078141288243656252">Elforgatott állapotban nem lehetséges a jegyzetelés</translation>
@@ -2208,6 +2211,7 @@ További részletek:
 <translation id="9128870381267983090">Csatlakozás hálózathoz</translation>
 <translation id="9137013805542155359">Eredeti megjelenítése</translation>
 <translation id="9141013498910525015">Címek kezelése</translation>
+<translation id="9144951720726881238">Lejárati dátum:</translation>
 <translation id="9148088599418889305">Szállítási mód kiválasztása</translation>
 <translation id="9148507642005240123">&amp;Szerkesztés visszavonása</translation>
 <translation id="9150045010208374699">Kamera használata</translation>

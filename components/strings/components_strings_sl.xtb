@@ -612,6 +612,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3212623355668894776">Zaprite vsa okna načina za goste, da se bo dejavnost brskanja izbrisala iz te naprave.</translation>
 <translation id="3215092763954878852">Ni bilo mogoče uporabiti WebAuthn</translation>
 <translation id="3218181027817787318">Relativno</translation>
+<translation id="3223287115535306850">Animirana ikona ob zagonu aplikacije</translation>
 <translation id="3225919329040284222">Strežnik je poslal potrdilo, ki se ne ujema z vgrajenimi pričakovanji. Ta pričakovanja so zaradi vaše varnosti vključena za nekatera strogo zavarovana spletna mesta.</translation>
 <translation id="3226128629678568754">Pritisnite gumb za vnovično nalaganje, da znova pošljete podatke za nalaganje strani.</translation>
 <translation id="3226387218769101247">Sličice</translation>
@@ -686,6 +687,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3447884698081792621">Prikaz potrdila (izdal: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval prejemanja:</translation>
 <translation id="3453962258458347894">Število vnovičnih poskusov</translation>
+<translation id="3454555520521576458">Omogoča spreminjanje velikosti</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> si želi ogledati besedilo in slike, kopirane v odložišče</translation>
 <translation id="3461824795358126837">Označevalnik</translation>
@@ -722,7 +724,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3586931643579894722">Skrij podrobnosti</translation>
 <translation id="3587738293690942763">Srednje</translation>
 <translation id="3590643883886679995">Podatki za prijavo se bodo shranili v tej napravi, ko zaprete anonimni način.</translation>
-<translation id="359126217934908072">Mesec/leto:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno en dan.}=1{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno en dan.}one{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dan.}two{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dneva.}few{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dni.}other{Skupino lahko kadar koli ponastavite. Pridružitev novi skupini traja približno {NUM_DAYS} dni.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1020,6 +1021,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4677585247300749148"><ph name="URL" /> se želi odzvati na dogodke funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="467809019005607715">Google Predstavitve</translation>
 <translation id="4680804919228900307">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chromium priporoča, da takoj preverite shranjena gesla za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> in druga spletna mesta, na katerih uporabljate to geslo.</translation>
+<translation id="468314109939257734">Ogled številke navidezne kartice</translation>
 <translation id="4690462567478992370">Prenehaj uporabljati neveljavno potrdilo</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1928,6 +1930,7 @@ Dodatne podrobnosti:
 <translation id="8057711352706143257">Programska oprema »<ph name="SOFTWARE_NAME" />« ni pravilno konfigurirana. Običajno težavo odpravite tako, da odstranite programsko opremo »<ph name="SOFTWARE_NAME" />«. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Prišlo je do napake.</translation>
 <translation id="8067872629359326442">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chromium lahko pomaga. Če želite spremeniti geslo in obvestiti Google, da je vaš račun morda ogrožen, kliknite »Zaščita računa«.</translation>
+<translation id="8070439594494267500">Ikona aplikacije</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Upravljanje nastavitev spletnega mesta</translation>
 <translation id="8078141288243656252">Ko je dokument zasukan, pripisovanje ni mogoče</translation>
@@ -2211,6 +2214,7 @@ Dodatne podrobnosti:
 <translation id="9128870381267983090">Vzpostavi povezavo z omrežjem</translation>
 <translation id="9137013805542155359">Pokaži izvirno besedilo</translation>
 <translation id="9141013498910525015">Upravljanje naslovov</translation>
+<translation id="9144951720726881238">Datum poteka:</translation>
 <translation id="9148088599418889305">Izbira načina pošiljanja</translation>
 <translation id="9148507642005240123">&amp;Razveljavi urejanje</translation>
 <translation id="9150045010208374699">Uporabite kamero</translation>

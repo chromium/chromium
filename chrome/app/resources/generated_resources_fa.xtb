@@ -1226,6 +1226,7 @@
 <translation id="2300383962156589922">سفارشی ساختن و کنترل <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">میان‌برهای صفحه کلید برای جستجوی کلیدواژه‌ها</translation>
 <translation id="2301382460326681002">دایرکتوری ریشه برنامهٔ افزودنی نامعتبر است.</translation>
+<translation id="2301402091755573488">برگه هم‌رسانی‌شده</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های تکمیلی درخواست کرده است.</translation>
 <translation id="23055578400314116">نام کاربری انتخاب کنید</translation>
 <translation id="2307462900900812319">پیکربندی شبکه</translation>
@@ -1503,6 +1504,7 @@
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> خواهد توانست <ph name="FILENAME" /> را ویرایش کند</translation>
 <translation id="2616366145935564096">خواندن و تغییر داده‌هایتان در <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">برای ادامه راه‌اندازی، دکمه «بعدی» را فعال کنید یا برای تغییر عملکرد اختصاص‌داده‌شده به کلید «انتخاب»، دکمه «قبلی» را فعال کنید.</translation>
 <translation id="2618797463720777311">راه‌اندازی «هم‌رسانی با اطراف»</translation>
 <translation id="2619761439309613843">بازخوانی روزانه</translation>
 <translation id="2620215283731032047">نمی‌توان <ph name="FILE_NAME" /> را به‌طور ایمن بارگیری کرد.</translation>
@@ -2899,6 +2901,7 @@
 <translation id="4120817667028078560">مسیر بیش از حد طولانی است</translation>
 <translation id="4124823734405044952">کلید امنیتی بازنشانی شد</translation>
 <translation id="4124935795427217608">تک‌شاخ</translation>
+<translation id="4126916490446791914">اسکن خودکار فعال شده است</translation>
 <translation id="412730574613779332">قهرمان</translation>
 <translation id="4130199216115862831">گزارش دستگاه</translation>
 <translation id="4130207949184424187">‏این افزونه، صفحه‌ای را تغییر داده است که هنگام جستجو از Omnibox نشان داده می‌شود.</translation>
@@ -3282,6 +3285,7 @@
     اگر کودکتان از Chromebook در محل تحصیل استفاده کند و می‌خواهید همان تجربه مدرسه را در خانه داشته باشید تا مطمئن شوید کودکتان به همه تکالیف ضروری مدرسه دسترسی دارد، لطفاً از سیستم این حساب Family Link خارج شوید و از صفحه حساب‌های سیستم‌عامل Chrome به سیستم حساب محل تحصیل وارد شوید (توجه: کنترل‌های والدین Family Link اعمال نخواهد شد).&lt;br&gt;&lt;br&gt;
     اگر کودکتان از Chromebook در مدرسه استفاده نمی‌کند یا اگر ترجیح می‌دهید تجربه کودکتان را بااستفاده از Family Link در خانه مدیریت کنید، لطفاً برای افزودن حساب محل تحصیل به این نمایه، روی دکمه «بعدی» کلیک کنید.</translation>
 <translation id="4576541033847873020">مرتبط‌سازی دستگاه بلوتوث</translation>
+<translation id="4576763597586015380">‏برای ادامه ذخیره کردن گذرواژه‌ها در «حساب Google» خود، هویتتان را به‌تأیید برسانید</translation>
 <translation id="4579453506923101210">فراموش کردن تلفن متصل</translation>
 <translation id="4579581181964204535">ارسال محتوای <ph name="HOST_NAME" /> امکان‌پذیر نیست.</translation>
 <translation id="4581774856936278355">‏خطا هنگام بازیابی Linux</translation>
@@ -5002,6 +5006,7 @@
 <translation id="6538098297809675636">خطای شناسایی کد</translation>
 <translation id="653920215766444089">درحال جستجوی دستگاه اشاره‌گر</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> فقط درصورتی آن را فعال کنید که اطلاع دارید چه کاری انجام می‌دهید یا از شما خواسته شده باشد این کار را انجام دهید، زیرا جمع‌آوری داده‌ها ممکن است عملکرد را کاهش دهد.</translation>
+<translation id="6540672086173674880">‏ممکن است Google از سابقه مرور شما برای شخصی‌سازی «جستجو» و دیگر سرویس‌های Google استفاده کند. هرزمان خواستید می‌توانید این تنظیم را در myaccount.google.com/activitycontrols/search تغییر دهید</translation>
 <translation id="6541638731489116978">دسترسی این سایت به حسگرهای حرکتی مسدود شده است.</translation>
 <translation id="6545665334409411530">سرعت تکرار</translation>
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
@@ -5887,6 +5892,7 @@
 <translation id="754207240458482646">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">فعال کردن ویژگی‌های رفع اشکال در این دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">از والدینتان بخواهید این کار را انجام دهد</translation>
+<translation id="7546012169463147344">اسکن خودکار به‌طور خودکار بین موارد روی صفحه جابه‌جا می‌شود و روی آن‌ها تمرکز می‌کند. وقتی موردی متمرکز شد، کلید «انتخاب» را که اختصاص داده‌اید فشار دهید تا فعال شود.</translation>
 <translation id="7547317915858803630">اخطار: تنظیمات <ph name="PRODUCT_NAME" /> شما در درایو شبکه ذخیره می‌شود. این کار ممکن است منجر به از دست رفتن دادهٰ‌ها٬ کند شدن و خرابی شود.</translation>
 <translation id="7548856833046333824">لیموناد</translation>
 <translation id="7550830279652415241">bookmarks<ph name="DATESTAMP" />.html</translation>
@@ -6857,6 +6863,7 @@
 <translation id="8621866727807194849">‏نرم‌افزار مضری در رایانه‌تان وجود دارد. Chrome آن را برمی‌دارد، تنظیمات شما را بازنشانی می‌کند و افزونه‌ها را غیرفعال می‌کند. این کار باعث می‌شود مرورگرتان دوباره به‌طور معمول کار کند.</translation>
 <translation id="8621979332865976405">هم‌رسانی کل صفحه‌نمایش</translation>
 <translation id="8624354461147303341">دریافت تخفیف</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;برنامه های افزودنی</translation>
 <translation id="8625663000550647058">اجازه ندارد از میکروفون استفاده کند</translation>
 <translation id="8625916342247441948">‏به سایت‌ها اجازه داده نشود به دستگاه‌های HID متصل شوند</translation>
@@ -6921,6 +6928,7 @@
 <translation id="8677212948402625567">کوچک کردن همه...</translation>
 <translation id="867767487203716855">به‌روزرسانی بعدی</translation>
 <translation id="8677859815076891398">‏آلبومی وجود ندارد. آلبومی در <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ایجاد کنید.</translation>
+<translation id="8678538439778360739">‏داده‌ها در <ph name="TIME" /> با گذرعبارت همگام‌سازی‌تان رمزگذاری شد. این شامل روش‌های پرداخت و نشانی‌های Google Pay نمی‌شود.</translation>
 <translation id="8678582529642151449">برگه‌ها کوچک نمی‌شوند</translation>
 <translation id="8678933587484842200">می‌خواهید این برنامه چگونه راه‌اندازی شود؟</translation>
 <translation id="8680251145628383637">‏برای دریافت نشانک‌ها، سابقه، گذرواژه‌ها و تنظیمات دیگرتان را در همه دستگاه‌هایتان، به سیستم وارد شوید. همچنین به‌صورت خودکار به سیستم خدمات Google خود نیز وارد می‌شوید.</translation>

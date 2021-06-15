@@ -606,6 +606,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3212623355668894776">Feche todas as janelas de visitante para excluir sua atividade de navegação do dispositivo.</translation>
 <translation id="3215092763954878852">Não foi possível usar WebAuthn</translation>
 <translation id="3218181027817787318">Relativo</translation>
+<translation id="3223287115535306850">Throbber de abertura do app</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não coincide com as expectativas incorporadas. Estas expectativas são incluídas para determinados websites de alta segurança com a finalidade de oferecer proteção a você.</translation>
 <translation id="3226128629678568754">Pressione o botão "Atualizar" para reenviar os dados necessários para carregar a página.</translation>
 <translation id="3226387218769101247">Miniaturas</translation>
@@ -680,6 +681,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Buscar intervalo:</translation>
 <translation id="3453962258458347894">Número de novas tentativas</translation>
+<translation id="3454555520521576458">Redimensionável</translation>
 <translation id="3456231139987291353">Nº 11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> quer ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="3461824795358126837">Marcador</translation>
@@ -716,7 +718,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587738293690942763">Meio</translation>
 <translation id="3590643883886679995">Depois que você sair do modo de navegação anônima, os dados de login serão armazenados no dispositivo.</translation>
-<translation id="359126217934908072">Mês/ano:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}=1{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}one{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dia para fazer parte de um novo grupo.}other{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dias para fazer parte de um novo grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1009,6 +1010,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4677585247300749148"><ph name="URL" /> quer responder a eventos de acessibilidade</translation>
 <translation id="467809019005607715">Apresentações Google</translation>
 <translation id="4680804919228900307">Você acabou de digitar sua senha em um site suspeito. O Chromium recomenda que você verifique agora suas senhas salvas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que você usa essa senha.</translation>
+<translation id="468314109939257734">Ver o número do seu cartão virtual</translation>
 <translation id="4690462567478992370">Suspender o uso de um certificado inválido</translation>
 <translation id="4691835149146451662">Arch A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1917,6 +1919,7 @@ Mais detalhes:
 <translation id="8057711352706143257">O software "<ph name="SOFTWARE_NAME" />" não foi configurado corretamente. A desinstalação do "<ph name="SOFTWARE_NAME" />" costuma resolver o problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Algo deu errado.</translation>
 <translation id="8067872629359326442">Você acabou de digitar sua senha em um site suspeito. O Chromium pode ajudar. Para mudar a senha e notificar o Google de que sua conta pode estar em risco, clique em "Proteger conta".</translation>
+<translation id="8070439594494267500">Ícone do app</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Gerenciar configurações do site</translation>
 <translation id="8078141288243656252">Não é possível fazer anotações em documentos girados</translation>
@@ -2202,6 +2205,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9128870381267983090">Conectar à rede</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9141013498910525015">Gerenciar endereços</translation>
+<translation id="9144951720726881238">Data de expiração:</translation>
 <translation id="9148088599418889305">Escolher método de envio</translation>
 <translation id="9148507642005240123">&amp;Desfazer editar</translation>
 <translation id="9150045010208374699">Usar câmera</translation>

@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Не ўдалося праверыць вашы ўліковыя даныя</translation>
 <translation id="1310482092992808703">Згрупаваць укладкі</translation>
 <translation id="1311657260431405215">Гэты QR-код не з'яўляецца URL-адрасам: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Гісторыя навігацыі адкрыта</translation>
 <translation id="1331212799747679585">Немагчыма абнавіць Chrome. Дадатковыя параметры</translation>
 <translation id="1332501820983677155">Спалучэнні клавіш для функцый Google Chrome</translation>
@@ -961,6 +962,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="718926126787620637">Спіс папак з закладкамі разгорнуты на ўвесь экран</translation>
 <translation id="7191430249889272776">Укладка адкрыта ў фоне.</translation>
 <translation id="7233236755231902816">Каб праглядаць вэб-сайты на сваёй мове, усталюйце апошнюю версію Chrome</translation>
+<translation id="7242755609445462077">Стылізаванае вылучанае змесціва (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Праверце, ці ўключана на прыладзе "<ph name="TARGET_DEVICE_NAME" />" сінхранізацыя ў браўзеры Chrome</translation>
 <translation id="7252076891734325316">Размясціце тэлефон каля камп’ютара</translation>
 <translation id="7274013316676448362">Заблакіраваны сайт</translation>

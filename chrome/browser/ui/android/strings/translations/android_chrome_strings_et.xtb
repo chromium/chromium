@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Vabandust, me ei saanud teie mandaate kinnitada</translation>
 <translation id="1310482092992808703">Vahelehtede grupeerimine</translation>
 <translation id="1311657260431405215">See QR-kood ei ole URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Navigeerimisajalugu on avatud</translation>
 <translation id="1331212799747679585">Chrome'i ei saa värskendada. Rohkem valikuid</translation>
 <translation id="1332501820983677155">Google Chrome'i funktsioonide otseteed</translation>
@@ -961,6 +962,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="718926126787620637">Täiskõrgusel avatud järjehoidjakaustade loend</translation>
 <translation id="7191430249889272776">Taustal on avatud vaheleht.</translation>
 <translation id="7233236755231902816">Hankige Chrome'i uusim versioon, et saaksite oma keeles veebi sirvida</translation>
+<translation id="7242755609445462077">Stiliseeritud esiletõst kuupäevast <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Veenduge, et seadmes <ph name="TARGET_DEVICE_NAME" /> oleks Chrome'i sünkroonimine sisse lülitatud</translation>
 <translation id="7252076891734325316">Asetage telefon arvuti lähedale</translation>
 <translation id="7274013316676448362">Blokeeritud sait</translation>

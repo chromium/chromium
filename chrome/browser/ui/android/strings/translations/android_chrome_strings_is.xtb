@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Ekki tókst að staðfesta skilríkin þín</translation>
 <translation id="1310482092992808703">Sameina flipa</translation>
 <translation id="1311657260431405215">Þessi QR-kóði er ekki vefslóð: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Ferill er opinn</translation>
 <translation id="1331212799747679585">Ekki er hægt að uppfæra Chrome. Fleiri valkostir.</translation>
 <translation id="1332501820983677155">Flýtilyklar eiginleika Google Chrome</translation>
@@ -961,6 +962,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="718926126787620637">Listi bókamerkjamappa opinn í fullri hæð</translation>
 <translation id="7191430249889272776">Flipi opnaður í bakgrunni.</translation>
 <translation id="7233236755231902816">Til að skoða vefinn á þínu tungumáli skaltu sækja nýjustu útgáfuna af Chrome</translation>
+<translation id="7242755609445462077">Áhersluatriði stílfært <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Gakktu úr skugga um að kveikt sé á samstillingu í Chrome í <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Stilltu símanum upp við tölvuna</translation>
 <translation id="7274013316676448362">Vefsvæði á bannlista</translation>

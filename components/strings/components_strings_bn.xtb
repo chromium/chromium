@@ -719,7 +719,6 @@
 <translation id="3586931643579894722">বিশদ বিবরণ লুকান</translation>
 <translation id="3587738293690942763">মাঝারি</translation>
 <translation id="3590643883886679995">ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসলে এই ডিভাইসে সাইন-ইন ডেটা সেভ করা হবে।</translation>
-<translation id="359126217934908072">মাস/বছর:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে প্রায় এক দিন সময় লাগে।}=1{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে প্রায় এক দিন সময় লাগে।}one{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে {NUM_DAYS} দিন সময় লাগে।}other{আপনি যেকোনও সময় আপনার গ্রুপ রিসেট করতে পারবেন। নতুন গ্রুপে যোগ দিতে {NUM_DAYS} দিন সময় লাগে।}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2202,6 +2201,7 @@
 <translation id="9128870381267983090">নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
 <translation id="9141013498910525015">ঠিকানা ম্যানেজ করুন</translation>
+<translation id="9144951720726881238">মেয়াদকাল সমাপ্তির তারিখ:</translation>
 <translation id="9148088599418889305">শিপিংয়ের পদ্ধতি বেছে নিন</translation>
 <translation id="9148507642005240123">&amp;সম্পাদনাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="9150045010208374699">আপনার ক্যামেরা ব্যবহার করুন</translation>

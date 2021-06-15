@@ -723,7 +723,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3586931643579894722">Hide details</translation>
 <translation id="3587738293690942763">Middle</translation>
 <translation id="3590643883886679995">Sign-in data will be stored on this device after you exit Incognito mode.</translation>
-<translation id="359126217934908072">Month/Year:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{You can reset your group at any time. It takes about a day to join a new group.}=1{You can reset your group at any time. It takes about a day to join a new group.}other{You can reset your group at any time. It takes {NUM_DAYS} days to join a new group.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2214,6 +2213,7 @@ Additional details:
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9141013498910525015">Manage addresses</translation>
+<translation id="9144951720726881238">Expiry date:</translation>
 <translation id="9148088599418889305">Choose delivery method</translation>
 <translation id="9148507642005240123">&amp;Undo edit</translation>
 <translation id="9150045010208374699">Use your camera</translation>

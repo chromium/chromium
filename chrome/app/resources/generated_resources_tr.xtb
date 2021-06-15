@@ -1214,6 +1214,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2300383962156589922"><ph name="APP_NAME" /> uygulamasını özelleştirin ve denetleyin</translation>
 <translation id="2300578660547687840">Arama anahtar kelimeleri için klavye kısayolları</translation>
 <translation id="2301382460326681002">Uzantı kök dizini geçersiz.</translation>
+<translation id="2301402091755573488">Paylaşılan Sekmesi</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ek izinler istedi.</translation>
 <translation id="23055578400314116">Bir kullanıcı adı seçin</translation>
 <translation id="2307462900900812319">Ağı yapılandır</translation>
@@ -1491,6 +1492,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2612676031748830579">Kart numarası</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />, <ph name="FILENAME" /> dosyasını düzenleyebilir</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> web sitesinde verilerinizi okuma ve değiştirme</translation>
+<translation id="2618274688675613222">Kuruluma devam etmek için Sonraki düğmesini veya "Seç" anahtar atamasını değiştirmek için Önceki düğmesini etkinleştirin.</translation>
 <translation id="2618797463720777311">Yakındakilerle Paylaş kurulumu</translation>
 <translation id="2619761439309613843">Günlük Yenileme</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> güvenli bir şekilde indirilemiyor.</translation>
@@ -2886,6 +2888,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4120817667028078560">Yol çok uzun</translation>
 <translation id="4124823734405044952">Güvenlik anahtarınız sıfırlandı.</translation>
 <translation id="4124935795427217608">Tek boynuzlu at</translation>
+<translation id="4126916490446791914">Otomatik tarama etkin</translation>
 <translation id="412730574613779332">Süper Kahraman</translation>
 <translation id="4130199216115862831">Cihaz Günlüğü</translation>
 <translation id="4130207949184424187">Bu uzantı, Çok Amaçlı Adres Çubuğu'nda arama yaptığınızda gösterilen sayfayı değiştirdi.</translation>
@@ -3268,6 +3271,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
     Çocuğunuz okulda Chromebook kullanıyorsa ve çocuğunuzun gerekli tüm okul çalışmalarına erişimini sağlamak için evde okul deneyimini yansıtmak istiyorsanız lütfen bu Family Link hesabında oturumunuzu kapatıp Chrome OS hesapları sayfasından okul hesabında oturum açın (Not: Family Link ebeveyn denetimleri geçerli olmayacak).&lt;br&gt;&lt;br&gt;
     Çocuğunuz okulda Chromebook kullanmıyorsa veya çocuğunuzun evdeki deneyimini Family Link'i kullanarak yönetmeyi tercih ediyorsanız bu profile okul hesabı eklemek için lütfen aşağıdaki Sonraki düğmesini tıklayın.</translation>
 <translation id="4576541033847873020">Bluetooth cihazı eşle</translation>
+<translation id="4576763597586015380">Şifreleri Google Hesabınıza kaydetmeye devam edebilmek için kimliğinizi doğrulayın</translation>
 <translation id="4579453506923101210">Bağlı telefonu unut</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> yayınlanamıyor.</translation>
 <translation id="4581774856936278355">Linux geri yüklenirken hata oluştu</translation>
@@ -4988,6 +4992,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="6538098297809675636">Kod algılanırken hata oluştu</translation>
 <translation id="653920215766444089">İşaretleme cihazı aranıyor</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Not:<ph name="END_BOLD" /> Veri toplama işlemi performansı düşürebileceğinden sadece etkinleştirmenin sonuçlarını biliyorsanız veya etkinleştirmeniz istenmişse bunu yapın.</translation>
+<translation id="6540672086173674880">Google; Arama ve diğer Google hizmetlerini kişiselleştirmek için tarama geçmişinizi kullanabilir. Bunu istediğiniz zaman myaccount.google.com/activitycontrols/search adresinden değiştirebilirsiniz</translation>
 <translation id="6541638731489116978">Bu sitenin, hareket sensörlerinize erişimi engellenmiştir.</translation>
 <translation id="6545665334409411530">Yineleme hızı</translation>
 <translation id="6545864417968258051">Bluetooth taraması</translation>
@@ -5873,6 +5878,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="754207240458482646">Hesabınızdaki diğer cihazlarla senkronize edildi. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazında hata ayıklama özelliklerini etkinleştir</translation>
 <translation id="7543525346216957623">Ebeveyninize sorun</translation>
+<translation id="7546012169463147344">Otomatik tarama, otomatik olarak geçiş yapıp ekrandaki öğelere odaklanır. Odaklanılan öğeyi etkinleştirmek için az önce atadığınız "Seç" tuşuna basın.</translation>
 <translation id="7547317915858803630">Uyarı: <ph name="PRODUCT_NAME" /> ayarlarınız bir ağ sürücüsünde depolanıyor. Bu durum yavaşlamalara, kilitlenmelere, hatta veri kaybına neden olabilir.</translation>
 <translation id="7548856833046333824">Limonata</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6841,6 +6847,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="8621866727807194849">Bilgisayarınızda zararlı yazılım var. Chrome bunu kaldırıyor, ayarlarınızı geri yüklüyor ve uzantılarınızı devre dışı bırakıyor. Bu işlem, tarayıcınızın tekrar normal şekilde çalışmasını sağlayacak.</translation>
 <translation id="8621979332865976405">Tüm ekranınızı paylaşın</translation>
 <translation id="8624354461147303341">İndirim alın</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Uzantılar</translation>
 <translation id="8625663000550647058">Mikrofonunuzu kullanmasına izin verilmeyen siteler</translation>
 <translation id="8625916342247441948">Sitelerin HID cihazlara bağlanmasına izin verme</translation>
@@ -6905,6 +6912,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="8677212948402625567">Tümünü daralt...</translation>
 <translation id="867767487203716855">Sonraki güncelleme</translation>
 <translation id="8677859815076891398">Albüm yok. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'da albüm oluşturun.</translation>
+<translation id="8678538439778360739">Veriler, <ph name="TIME" /> itibarıyla senkronizasyon parolanızla şifrelendi. Google Pay'deki adresler ve ödeme yöntemleri bu kapsamda değildir.</translation>
 <translation id="8678582529642151449">Sekmeler daralmaz</translation>
 <translation id="8678933587484842200">Bu uygulamanın nasıl başlatılmasını istersiniz?</translation>
 <translation id="8680251145628383637">Tüm cihazlarınızdaki sekmeleri, geçmişi ve diğer ayarları almak için oturum açın. Google hizmetlerinizde de otomatik olarak oturum açarsınız.</translation>

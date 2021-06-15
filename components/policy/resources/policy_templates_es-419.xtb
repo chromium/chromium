@@ -81,6 +81,7 @@
 <translation id="1082802595100075771">Permite que los usuarios usen un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
 <translation id="1087437665304381368">Esta política controla solo el modo de desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las Opciones para desarrolladores de Android, deberás configurar la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La lista de políticas de Chrome Enterprise cambia de sitio. Guarda <ph name="POLICY_DOCUMENTATION_URL" /> en tus favoritos.</translation>
+<translation id="1089631008765417531">Permitir que las aplicaciones web instaladas de manera automática busquen atributos de dispositivos</translation>
 <translation id="1095209545735032039">Bloquea la API de Serial en estos sitios</translation>
 <translation id="1096105751829466145">Proveedor de búsqueda predeterminado</translation>
 <translation id="1099282607296956954">Permite el aislamiento de todos los sitios</translation>
@@ -569,6 +570,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Nota: Los valores de la política deben especificarse en porcentajes del 0 al 100.</translation>
 <translation id="1736269219679256369">Permitir continuar desde la página de advertencia de SSL</translation>
+<translation id="173993509627303617">Impedir que las aplicaciones web instaladas de manera automática busquen atributos de dispositivos</translation>
 <translation id="174765717426930019">Permitir que se abran todas ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> para interactuar con la página que abrió la ventana emergente, a menos que esta página inhabilite esta interacción de forma explícita </translation>
 <translation id="1750315445671978749">Bloquear todas las descargas</translation>
 <translation id="1751429117283165017">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir a los usuarios acceso de escritura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
@@ -922,6 +924,17 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si estableces <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1), solo se permitirá la aplicación a <ph name="PRODUCT_OS_NAME" /> de variaciones que se consideren correcciones críticas de estabilidad o seguridad.
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no podrá aplicarse ninguna variación en el navegador en la pantalla de acceso. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad de manera oportuna.</translation>
+<translation id="2216380260552785166">Esta política controla la manera en la que <ph name="PRODUCT_NAME" /> interpreta las políticas de listas de sitios o listas grises para la función Compatibilidad con navegadores heredados. Afecta las siguientes políticas: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Si estableces la política como "Default" (0) o no la estableces, las coincidencias de URL serán menos estrictas. Las reglas que no incluyan "/" buscarán un substring en el nombre de host de la URL.
+
+      Si estableces la política como "Strict" (1), las coincidencias de URL serán más estrictas. Las reglas que no incluyan "/" solo buscarán coincidencias al final del nombre de host. Las reglas deben estar en el límite de un nombre de dominio. Es más compatible con <ph name="MS_IE_PRODUCT_NAME" /> y <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Por ejemplo, con la regla "example.com":
+
+      "http://example.com/" y "http://subdomain.example.com/" coinciden, independientemente del modo de análisis.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" y "http://example.comabc/" solo coinciden en el modo "Default".</translation>
 <translation id="2221850122314326571">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados heredado que incluye la plataforma.
       Si no la estableces, podrán utilizarse el verificador de certificados integrado o el heredado.
@@ -2176,6 +2189,13 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Para obtener más información sobre las sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, consulta la especificación de la <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
+<translation id="3789468269499404556">Si habilitas la política, la función de <ph name="PRODUCT_NAME" /> enviará encabezados de solicitud detallados con información sobre el entorno y el navegador del usuario.
+
+      Esta es una función adicional, pero los nuevos encabezados pueden ocasionar fallos en algunos sitios web que restrinjan los caracteres que pueden contener las solicitudes.
+
+      Si habilitas esta política o no la estableces, se habilitará la función de <ph name="PRODUCT_NAME" />. Si la inhabilitas, la función no estará disponible.
+
+      Esta política es una solución alternativa orientada a la adaptación de las empresas a corto plazo y se quitará en la versión 94 de Chrome.</translation>
 <translation id="3790085888761753785">Si se habilita esta configuración, los usuarios podrán acceder a sus cuentas mediante Smart Lock. Este método es más permisivo que el comportamiento normal de Smart Lock, que solo permite a los usuarios desbloquear las pantallas.
 
       Si se inhabilita esta configuración, los usuarios no podrán utilizar el acceso mediante Smart Lock.
@@ -2532,6 +2552,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política también es compatible en el modo sin interfaz gráfica.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias que se encuentran vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
+<translation id="4268586991084547853">Mayor compatibilidad con listas de sitios en modo de empresa de Microsoft IE/Edge</translation>
 <translation id="4269859918103560644">Permitir que el usuario decida</translation>
 <translation id="4274691295133617461">Si estableces la política en 3, los sitios web podrán solicitar acceso de lectura a archivos y directorios en el sistema de archivos del sistema operativo del host a través de la API de File System. Si la estableces en 2, se rechazará el acceso.
 
@@ -2762,6 +2783,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       * Si estableces <ph name="FILTER_PLACEHOLDER" /> como <ph name="EMPTY_DICTIONARY" />, no se aplicarán restricciones adicionales a la selección de certificados de cliente. Ten en cuenta que se seguirán aplicando los filtros que proporciona el servidor web.
 
       Si no estableces la política, no se implementará la selección automática para ningún sitio.</translation>
+<translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
 <translation id="4617338332148204752">Omitir la comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4625915093043961294">Configurar la lista blanca de instalación de extensiones</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
@@ -3444,6 +3466,11 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5535973522252703021">Lista blanca de servidores de delegación de Kerberos</translation>
 <translation id="553806128266843748">Una función experimental booleana que indica si está habilitada la limitación de la red.</translation>
 <translation id="5540885720415375851">Permite el descubrimiento de dispositivos locales</translation>
+<translation id="5541621819310532773">Si estableces la política, se permitirá que las aplicaciones web instaladas de manera automática obtengan atributos de dispositivos (p. ej., número de serie o nombre de host) a través de la API Device Attributes web.
+
+      Si estableces esta política como verdadera o no la configuras, se permitirá que la API Device Attributes web instale aplicaciones web de manera automática.
+
+      Si la estableces como falsa, se inhabilitará la API Device Attributes web.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Habilita el contraste alto en la pantalla de acceso</translation>
 <translation id="555077880566103058">Permitir que todos los sitios ejecuten el complemento <ph name="FLASH_PLUGIN_NAME" /> de manera automática</translation>
@@ -4084,6 +4111,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si esta política se configura como habilitada o no se configura, nunca se mostrará el menú de accesibilidad flotante.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Realiza las verificaciones de la Navegación segura en todos los archivos descargados</translation>
+<translation id="6436052172226685535">Comportamiento predeterminado de LBS</translation>
 <translation id="6438364096042399634">Si estableces la política, se definirá la lista de dispositivos USB que el usuario puede desconectar del controlador de kernel para usarlos a través de la API chrome.usb directamente en una aplicación web. Las entradas son pares formados por el identificador del producto y el identificador del proveedor USB que permiten reconocer hardware específico.
 
       Si no estableces la política, la lista de dispositivos USB que se pueden desconectar estará vacía.
@@ -4432,7 +4460,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
           * <ph name="PROXY_MODE_ENUM_SYSTEM" />, se usará el proxy del sistema y se ignorará el resto de los campos.
           * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, se ignorará el resto de los campos.
           * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, se usarán los campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: se usarán los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, se usarán los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
 
       Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="6835883744948188639">Mostrar un mensaje recurrente al usuario para indicarle que se recomienda llevar a cabo el reinicio</translation>
@@ -4581,6 +4609,11 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imagen para el proveedor de búsquedas predeterminado</translation>
 <translation id="6953102253399571439">Habilita la impresión con PIN de forma predeterminada</translation>
 <translation id="6956272732789158625">No permitir que los sitios utilicen la generación de claves</translation>
+<translation id="6959021201443139119">Se revertirá conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /> el comportamiento de las cookies establecidas para los dominios que coincidan con estos patrones. Si se revierte el comportamiento conforme al atributo heredado, las cookies que no tengan un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> especificado se tratarán según el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", las cookies con el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" ya no necesitarán el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />", y se omitirá la comparación de esquemas cuando se evalúa si dos sitios son el mismo sitio. Para obtener la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+
+          Para las cookies de dominios que no se incluyan en los patrones especificados aquí, o para todas las cookies si no se establece esta política, se usará el valor predeterminado global de la configuración personal del usuario.
+
+          Ten en cuenta que los patrones que incluyas aquí se tratarán como dominios, no como URL, por lo que no debes especificar un esquema ni un puerto.</translation>
 <translation id="6961602002757991199">Si estableces esta política con una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Estas políticas impiden que <ph name="PRODUCT_NAME" /> abra el navegador alternativo y viceversa.
 
       Si no la estableces (o determinas una URL no válida), <ph name="PRODUCT_NAME" /> no utilizará la política como fuente de reglas para no cambiar de navegador.

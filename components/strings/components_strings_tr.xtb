@@ -607,6 +607,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3212623355668894776">Tarama etkinliğinizin bu cihazdan silinmesi için tüm Misafir pencerelerini kapatın.</translation>
 <translation id="3215092763954878852">WebAuthn kullanılamadı</translation>
 <translation id="3218181027817787318">Akraba</translation>
+<translation id="3223287115535306850">Uygulama yükleme simgesi</translation>
 <translation id="3225919329040284222">Sunucu, yerleşik beklentilerle eşleşmeyen bir sertifika sundu. Bu beklentiler sizi korumak amacıyla bazı yüksek güvenlikli web sitelerinde bulunur.</translation>
 <translation id="3226128629678568754">Sayfayı yüklemek üzere gereken verileri tekrar göndermek için yeniden yükle düğmesine basın.</translation>
 <translation id="3226387218769101247">Küçük resimler</translation>
@@ -681,6 +682,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3447884698081792621">Sertifikayı göster (yayınlayan: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Getirme aralığı:</translation>
 <translation id="3453962258458347894">Deneme sayısı</translation>
+<translation id="3454555520521576458">Yeniden boyutlandırılabilir</translation>
 <translation id="3456231139987291353">Number-11 (Zarf)</translation>
 <translation id="3461266716147554923"><ph name="URL" />, panoya kopyalanan metin ve resimleri görmek istiyor</translation>
 <translation id="3461824795358126837">Vurgulayıcı</translation>
@@ -717,7 +719,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3586931643579894722">Ayrıntıları gizle</translation>
 <translation id="3587738293690942763">Orta</translation>
 <translation id="3590643883886679995">Gizli moddan çıktıktan sonra oturum açma verileriniz bu cihazda saklanır.</translation>
-<translation id="359126217934908072">Ay/Yıl:</translation>
 <translation id="3592413004129370115">Italian (Zarf)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grubunuzu istediğiniz zaman sıfırlayabilirsiniz. Yeni bir gruba katılmak yaklaşık bir gün sürer.}=1{Grubunuzu istediğiniz zaman sıfırlayabilirsiniz. Yeni bir gruba katılmak yaklaşık bir gün sürer.}other{Grubunuzu istediğiniz zaman sıfırlayabilirsiniz. Yeni bir gruba katılmak yaklaşık {NUM_DAYS} gün sürer.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1011,6 +1012,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4677585247300749148"><ph name="URL" />, erişilebilirlikle ilgili etkinliklere yanıt vermek istiyor</translation>
 <translation id="467809019005607715">Google Slaytlar</translation>
 <translation id="4680804919228900307">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ve bu şifreyi kullandığınız diğer sitelerdeki kayıtlı şifrelerinizi hemen kontrol etmenizi öneriyor.</translation>
+<translation id="468314109939257734">Sanal kart numaranızı görüntüleyin</translation>
 <translation id="4690462567478992370">Geçersiz sertifika kullanımını durdur</translation>
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1919,6 +1921,7 @@ Ek ayrıntılar:
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" doğru şekilde yapılandırılmamış. Genellikle "<ph name="SOFTWARE_NAME" />" kaldırıldığında sorun çözülür. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Maalesef bir hata oluştu.</translation>
 <translation id="8067872629359326442">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium yardım edebilir. Şifrenizi değiştirmek ve hesabınızın risk altında olabileceğini Google'a bildirmek için Hesabı Koru'yu tıklayın.</translation>
+<translation id="8070439594494267500">Uygulama simgesi</translation>
 <translation id="8074253406171541171">10x13 (Zarf)</translation>
 <translation id="8075898834294118863">Site ayarlarını yönet</translation>
 <translation id="8078141288243656252">Doküman döndürüldüğünde ek açıklama özelliği kullanılamaz</translation>
@@ -2203,6 +2206,7 @@ Ek ayrıntılar:
 <translation id="9128870381267983090">Ağa bağlan</translation>
 <translation id="9137013805542155359">Orijinali göster</translation>
 <translation id="9141013498910525015">Adresleri yönet</translation>
+<translation id="9144951720726881238">Son kullanma tarihi:</translation>
 <translation id="9148088599418889305">Gönderim Yöntemi Seç</translation>
 <translation id="9148507642005240123">Düzenlemeyi &amp;geri al</translation>
 <translation id="9150045010208374699">Kameranızı kullanma</translation>

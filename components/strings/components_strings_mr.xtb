@@ -609,6 +609,7 @@
 <translation id="3212623355668894776">सर्व अतिथी विंडो बंद करा जेणेकरून, तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी या डिव्हाइसवरून हटवली जाईल.</translation>
 <translation id="3215092763954878852">WebAuthn वापरता आले नाही</translation>
 <translation id="3218181027817787318">संबंधित</translation>
+<translation id="3223287115535306850">ॲप लाँचिंग थ्रॉबर</translation>
 <translation id="3225919329040284222">सर्व्हरने असे सर्टिफिकेट सादर केले आहे जे अंगभूत अपेक्षांशी जुळत नाही. या अपेक्षा तुम्हाला संरक्षित करण्यासाठी विशिष्ट, उच्च सुरक्षिततेच्या वेबसाइटसाठी समाविष्ट केल्या आहेत.</translation>
 <translation id="3226128629678568754">पृष्ठ लोड करण्यास आवश्यक असलेला डेटा पुन्हा सबमिट करण्यासाठी रीलोड बटण दाबा.</translation>
 <translation id="3226387218769101247">थंबनेल</translation>
@@ -682,6 +683,7 @@
 <translation id="3447884698081792621">सर्टिफिकेट दाखवा (<ph name="ISSUER" /> ने जारी केलेले)</translation>
 <translation id="3452404311384756672">मध्यंतर प्राप्त करा:</translation>
 <translation id="3453962258458347894">किती वेळा पुन्हा प्रयत्न केले</translation>
+<translation id="3454555520521576458">आकार बदलण्यायोग्य</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ला क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज पहायच्या आहेत</translation>
 <translation id="3461824795358126837">हायलाइटर</translation>
@@ -717,7 +719,6 @@
 <translation id="3586931643579894722">तपशील लपवा</translation>
 <translation id="3587738293690942763">मध्य</translation>
 <translation id="3590643883886679995">तुम्ही गुप्त मोडमधून बाहेर पडल्यानंतर साइन-इन डेटा या डिव्हाइसवर सेव्ह केला जाईल.</translation>
-<translation id="359126217934908072">महिना/वर्ष:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{You can reset your group at any time. It takes about a day to join a new group.}=1{तुम्ही तुमचा गट कधीही रीसेट करू शकता. नवीन गटामध्ये सामील होण्यासाठी एक दिवस लागू शकतो.}other{तुम्ही तुमचा गट कधीही रीसेट करू शकता. नवीन गटामध्ये सामील होण्यासाठी {NUM_DAYS} दिवस लागू शकतात.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1015,6 +1016,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> ला ॲक्सेसिबिलिटी इव्‍हेंटना प्रतिसाद द्यायचा आहे</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुम्ही हा पासवर्ड आता जेथे वापरता अशा <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> आणि इतर साइटसाठी तुमचे सेव्ह केलेले पासवर्ड तपासण्याची Chromium शिफारस करते.</translation>
+<translation id="468314109939257734">तुमचा व्हर्च्युअल कार्ड नंबर पहा</translation>
 <translation id="4690462567478992370">चुकीचे सर्टिफिकेट वापरणे थांबवा</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1920,6 +1922,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" योग्य रीतीने कॉंफिगर केलेले नाही. "<ph name="SOFTWARE_NAME" />" अनइंस्टॉल केल्याने सहसा समस्या सुटते. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">सॉरी, काहीतरी चूक झाली.</translation>
 <translation id="8067872629359326442">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला आहे. Chromium मदत करू शकते. तुमचा पासवर्ड बदलण्यासाठी आणि तुमच्या खात्याला धोका असल्याचे Google ला सूचित करण्यासाठी, खाते संरक्षित करा वर क्लिक करा.</translation>
+<translation id="8070439594494267500">अ‍ॅपचा आयकन</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">साइट सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="8078141288243656252">फिरवल्यावर भाष्य करू शकत नाही</translation>
@@ -2202,6 +2205,7 @@
 <translation id="9128870381267983090">नेटवर्कशी कनेक्ट करा</translation>
 <translation id="9137013805542155359">मूळ दर्शवा</translation>
 <translation id="9141013498910525015">पत्ते व्यवस्थापित करा</translation>
+<translation id="9144951720726881238">कालावधी समाप्ती तारीख:</translation>
 <translation id="9148088599418889305">पाठवण्याची पद्धत निवडा</translation>
 <translation id="9148507642005240123">&amp;संपादित करा पूर्ववत करा</translation>
 <translation id="9150045010208374699">तुमचा कॅमेरा वापरा</translation>

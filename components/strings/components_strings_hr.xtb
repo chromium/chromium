@@ -612,6 +612,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3212623355668894776">Zatvorite sve prozore u načinu rada za goste kako bi se s uređaja izbrisala aktivnost pregledavanja.</translation>
 <translation id="3215092763954878852">Nije moguće koristiti WebAuthn</translation>
 <translation id="3218181027817787318">Relativno</translation>
+<translation id="3223287115535306850">Ikona za učitavanje prilikom pokretanja aplikacije</translation>
 <translation id="3225919329040284222">Poslužitelj je pokazao certifikat koji ne odgovara ugrađenim očekivanjima. Ta su očekivanja uključena za određene web-lokacije s visokim stupnjem sigurnosti radi vaše zaštite.</translation>
 <translation id="3226128629678568754">Pritisnite gumb za ponovno učitavanje da biste ponovo poslali podatke koji su potrebni za učitavanje stranice.</translation>
 <translation id="3226387218769101247">Minijature</translation>
@@ -686,6 +687,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3447884698081792621">Prikaz certifikata (izdavač: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Dohvati interval:</translation>
 <translation id="3453962258458347894">Broj ponovnih pokušaja</translation>
+<translation id="3454555520521576458">Promjenjiva veličina</translation>
 <translation id="3456231139987291353">Number-11 (omotnica)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> želi vidjeti tekst i slike kopirane u međuspremnik</translation>
 <translation id="3461824795358126837">Alat za isticanje</translation>
@@ -722,7 +724,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3586931643579894722">Sakrij detalje</translation>
 <translation id="3587738293690942763">Srednji</translation>
 <translation id="3590643883886679995">Podaci za prijavu pohranit će se na ovom uređaju nakon što izađete iz anonimnog načina.</translation>
-<translation id="359126217934908072">Mjesec/godina:</translation>
 <translation id="3592413004129370115">Italian (omotnica)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grupu uvijek možete poništiti. Za pridruživanje novoj grupi potreban je otprilike jedan dan.}=1{Grupu uvijek možete poništiti. Za pridruživanje novoj grupi potreban je otprilike jedan dan.}one{Grupu uvijek možete poništiti. Za pridruživanje novoj grupi potreban je {NUM_DAYS} dan.}few{Grupu uvijek možete poništiti. Za pridruživanje novoj grupi potrebna su {NUM_DAYS} dana.}other{Grupu uvijek možete poništiti. Za pridruživanje novoj grupi potrebno je {NUM_DAYS} dana.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1020,6 +1021,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4677585247300749148"><ph name="URL" /> želi odgovoriti na događaje pristupačnosti</translation>
 <translation id="467809019005607715">Google prezentacije</translation>
 <translation id="4680804919228900307">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Chromium preporučuje da odmah provjerite spremljene zaporke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge web-lokacije na kojima koristite tu zaporku.</translation>
+<translation id="468314109939257734">Prikaz broja virtualne kartice</translation>
 <translation id="4690462567478992370">Prestani upotrebljavati nevažeći certifikat</translation>
 <translation id="4691835149146451662">Architecture-A (omotnica)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1928,6 +1930,7 @@ Dodatne pojedinosti:
 <translation id="8057711352706143257">Softver "<ph name="SOFTWARE_NAME" />" nije ispravno konfiguriran. Taj se problem obično rješava deinstaliranjem softvera "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Nešto nije u redu.</translation>
 <translation id="8067872629359326442">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Chromium može pomoći. Da biste promijenili zaporku i obavijestili Google da je vaš račun možda ugrožen, kliknite Zaštitite račun.</translation>
+<translation id="8070439594494267500">Ikona aplikacije</translation>
 <translation id="8074253406171541171">10x13 (omotnica)</translation>
 <translation id="8075898834294118863">Upravljajte postavkama web-lokacija</translation>
 <translation id="8078141288243656252">Ne može dodati bilješku kada je dokument zakrenut</translation>
@@ -2213,6 +2216,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9128870381267983090">Povezivanje s mrežom</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9141013498910525015">Upravljanje adresama</translation>
+<translation id="9144951720726881238">Datum isteka:</translation>
 <translation id="9148088599418889305">Odaberite način dostave</translation>
 <translation id="9148507642005240123">&amp;Poništi uređivanje</translation>
 <translation id="9150045010208374699">upotrijebiti vašu kameru</translation>

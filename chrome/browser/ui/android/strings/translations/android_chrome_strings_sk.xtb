@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Ľutujeme, ale vaše prihlasovacie údaje sa nám nepodarilo overiť</translation>
 <translation id="1310482092992808703">Zoskupiť karty</translation>
 <translation id="1311657260431405215">Tento QR kód nie je webová adresa: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">História navigácie je otvorená</translation>
 <translation id="1331212799747679585">Chrome sa nedá aktualizovať. Ďalšie možnosti</translation>
 <translation id="1332501820983677155">Skratky pre funkcie prehliadača Google Chrome</translation>
@@ -961,6 +962,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="718926126787620637">Zoznam priečinkov so záložkami je otvorený na úplnú výšku</translation>
 <translation id="7191430249889272776">Karta je otvorená na pozadí.</translation>
 <translation id="7233236755231902816">Ak chcete príslušný web zobraziť vo svojom jazyku, nainštalujte si najnovšiu verziu Chromu</translation>
+<translation id="7242755609445462077">Štylizované zvýraznenie <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Skontrolujte, či má <ph name="TARGET_DEVICE_NAME" /> v Chrome zapnutú synchronizáciu</translation>
 <translation id="7252076891734325316">Položte telefón k počítaču</translation>
 <translation id="7274013316676448362">Blokovaný web</translation>

@@ -713,7 +713,6 @@
 <translation id="3586931643579894722">隐藏详细信息</translation>
 <translation id="3587738293690942763">中间</translation>
 <translation id="3590643883886679995">当您退出无痕模式后，登录数据会存储在此设备中。</translation>
-<translation id="359126217934908072">月/年：</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}=1{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}other{您可以随时重置自己所属的群组。大约需要 {NUM_DAYS} 天的时间才能加入新群组。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
@@ -2196,6 +2195,7 @@
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9141013498910525015">管理地址</translation>
+<translation id="9144951720726881238">截止日期：</translation>
 <translation id="9148088599418889305">选择送货方式</translation>
 <translation id="9148507642005240123">撤消修改(&amp;U)</translation>
 <translation id="9150045010208374699">使用您的摄像头</translation>

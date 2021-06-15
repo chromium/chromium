@@ -1214,6 +1214,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2300383962156589922"><ph name="APP_NAME" /> aanpassen en beheren</translation>
 <translation id="2300578660547687840">Sneltoetsen voor zoekwoorden</translation>
 <translation id="2301382460326681002">Hoofddirectory van extensie is ongeldig.</translation>
+<translation id="2301402091755573488">Gedeeld tabblad</translation>
 <translation id="23030561267973084">De extensie '<ph name="EXTENSION_NAME" />' heeft gevraagd om extra rechten.</translation>
 <translation id="23055578400314116">Selecteer een gebruikersnaam</translation>
 <translation id="2307462900900812319">Netwerk configureren</translation>
@@ -1491,6 +1492,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2612676031748830579">Kaartnummer</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken</translation>
 <translation id="2616366145935564096">Je gegevens lezen en wijzigen op <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Activeer de knop Volgende om door te gaan met het instellen of de knop Vorige om de toewijzing van de schakelaar Selecteren te wijzigen.</translation>
 <translation id="2618797463720777311">Dichtbij delen instellen</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan niet beveiligd worden gedownload.</translation>
@@ -2886,6 +2888,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4120817667028078560">Pad is te lang</translation>
 <translation id="4124823734405044952">Je beveiligingssleutel is gereset</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
+<translation id="4126916490446791914">Automatisch scannen staat aan</translation>
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Apparaatlogboek</translation>
 <translation id="4130207949184424187">Deze extensie heeft gewijzigd welke pagina wordt getoond wanneer je vanuit de omnibox zoekt.</translation>
@@ -3268,6 +3271,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
     Als je kind een Chromebook gebruikt op school en je de schoolomgeving thuis wilt mirroren zodat je kind toegang heeft tot al het nodige schoolwerk, log je uit van dit Family Link-account en log je in op het schoolaccount vanaf de Chrome OS-accountpagina. (Opmerking: Ouderlijk toezicht van Family Link is dan niet van toepassing.)&lt;br&gt;&lt;br&gt;
     Als je kind geen Chromebook gebruikt op school of als je liever de online omgeving van je kind thuis beheert met Family Link, klik je hieronder op de knop Volgende om een schoolaccount toe te voegen aan dit profiel.</translation>
 <translation id="4576541033847873020">Bluetooth-apparaat koppelen</translation>
+<translation id="4576763597586015380">Bevestig dat jij het bent als je wilt doorgaan met het opslaan van wachtwoorden in je Google-account</translation>
 <translation id="4579453506923101210">Verbonden telefoon vergeten</translation>
 <translation id="4579581181964204535">Kan <ph name="HOST_NAME" /> niet casten.</translation>
 <translation id="4581774856936278355">Fout bij het herstellen van Linux</translation>
@@ -4986,6 +4990,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="6538098297809675636">Fout bij detecteren van code</translation>
 <translation id="653920215766444089">Zoeken naar aanwijsapparaat</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Zet dit alleen aan als je weet wat je doet of als je bent gevraagd dit te doen, omdat het verzamelen van gegevens kan leiden tot verminderde prestaties.</translation>
+<translation id="6540672086173674880">Google kan je browsegeschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren. Je kunt dit altijd wijzigen via myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Deze site heeft geen toegang tot je bewegingssensoren.</translation>
 <translation id="6545665334409411530">Herhalingssnelheid</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
@@ -5871,6 +5876,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="754207240458482646">Gesynchroniseerd met andere apparaten in je account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Foutopsporingsfuncties voor dit <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat aanzetten</translation>
 <translation id="7543525346216957623">Vraag het aan je ouder of voogd</translation>
+<translation id="7546012169463147344">Automatisch scannen doorloopt automatisch de items op het scherm en zet de focus erop. Als de focus op een item staat, druk je op de knop Selecteren die je zojuist hebt toegewezen om het item te activeren.</translation>
 <translation id="7547317915858803630">Waarschuwing: je instellingen voor <ph name="PRODUCT_NAME" /> zijn opgeslagen op een netwerkschijf. Dit kan leiden tot vertragingen, crashes of zelfs gegevensverlies.</translation>
 <translation id="7548856833046333824">Cocktail</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6839,6 +6845,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8621866727807194849">Er staat schadelijke software op je computer. Chrome is bezig deze te verwijderen, je instellingen te herstellen en extensies uit te zetten. Hierdoor werkt je browser straks weer normaal.</translation>
 <translation id="8621979332865976405">Je volledige scherm delen</translation>
 <translation id="8624354461147303341">Kortingen zoeken</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensies</translation>
 <translation id="8625663000550647058">Geen toestemming om je microfoon te gebruiken</translation>
 <translation id="8625916342247441948">Niet toestaan dat sites verbinding maken met HID-apparaten</translation>
@@ -6903,6 +6910,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8677212948402625567">Alles samenvouwen...</translation>
 <translation id="867767487203716855">Volgende update</translation>
 <translation id="8677859815076891398">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">De gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin voor synchronisatie. Hieronder vallen geen betaalmethoden en adressen van Google Pay.</translation>
 <translation id="8678582529642151449">Tabbladen krimpen niet</translation>
 <translation id="8678933587484842200">Hoe moet deze app worden gestart?</translation>
 <translation id="8680251145628383637">Log in om je bookmarks, geschiedenis, wachtwoorden en andere instellingen op te halen op al je apparaten. Je wordt ook automatisch ingelogd bij je Google-services.</translation>

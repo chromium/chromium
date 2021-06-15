@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Poverilnic žal ni bilo mogoče preveriti</translation>
 <translation id="1310482092992808703">Združi zavihke</translation>
 <translation id="1311657260431405215">Ta koda QR ni URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Zgodovina krmarjenja je odprta</translation>
 <translation id="1331212799747679585">Posodobitev Chroma ni mogoča. Več možnosti.</translation>
 <translation id="1332501820983677155">Bližnjice za funkcije Google Chroma</translation>
@@ -961,6 +962,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="718926126787620637">Seznam map z zaznamki, odprt pri polni višini.</translation>
 <translation id="7191430249889272776">Zavihek se je odprl v ozadju.</translation>
 <translation id="7233236755231902816">Če si želite splet ogledovati v svojem jeziku, posodobite Chrome na najnovejšo različico</translation>
+<translation id="7242755609445462077">Stilizirana oznaka <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Poskrbite, da ima naprava <ph name="TARGET_DEVICE_NAME" /> vklopljeno sinhronizacijo v Chromu</translation>
 <translation id="7252076891734325316">Postavite telefon blizu računalnika</translation>
 <translation id="7274013316676448362">Blokirano spletno mesto</translation>

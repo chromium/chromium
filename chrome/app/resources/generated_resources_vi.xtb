@@ -1229,6 +1229,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2300383962156589922">Tùy chỉnh và kiểm soát <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Phím tắt cho từ khóa tìm kiếm</translation>
 <translation id="2301382460326681002">Thư mục gốc của tiện ích không hợp lệ.</translation>
+<translation id="2301402091755573488">Thẻ được chia sẻ</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
 <translation id="23055578400314116">Chọn tên người dùng</translation>
 <translation id="2307462900900812319">Định cấu hình mạng</translation>
@@ -1506,6 +1507,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2612676031748830579">Số thẻ</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> sẽ chỉnh sửa được <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Hãy chọn nút Tiếp theo để tiếp tục quá trình thiết lập hoặc nút Trước để thay đổi việc gán công tắc cho thao tác "Chọn".</translation>
 <translation id="2618797463720777311">Thiết lập tính năng Chia sẻ lân cận</translation>
 <translation id="2619761439309613843">Làm mới hàng ngày</translation>
 <translation id="2620215283731032047">Không thể tải <ph name="FILE_NAME" /> xuống một cách an toàn.</translation>
@@ -2902,6 +2904,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4120817667028078560">Đường dẫn quá dài</translation>
 <translation id="4124823734405044952">Khóa bảo mật của bạn đã được đặt lại</translation>
 <translation id="4124935795427217608">Kỳ lân</translation>
+<translation id="4126916490446791914">Đã bật tính năng tự động quét</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Nhật ký thiết bị</translation>
 <translation id="4130207949184424187">Tiện ích này đã thay đổi trang nào được hiển thị khi bạn tìm kiếm từ Thanh địa chỉ.</translation>
@@ -3285,6 +3288,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
     Nếu con bạn sử dụng Chromebook ở trường học và bạn muốn mô phỏng trải nghiệm trường học tại nhà nhằm đảm bảo con có quyền truy cập vào tất cả bài tập về nhà cần thiết, vui lòng đăng xuất khỏi tài khoản Family Link này, rồi đăng nhập vào tài khoản trường học trên trang tài khoản Chrome OS (lưu ý: Không áp dụng quyền kiểm soát của cha mẹ trên Family Link).&lt;br&gt;&lt;br&gt;
     Nếu con bạn không sử dụng Chromebook ở trường học hoặc nếu bạn muốn kiểm soát việc sử dụng của con tại nhà bằng Family Link, vui lòng nhấp vào nút Tiếp theo ở bên dưới để thêm tài khoản trường học vào hồ sơ này.</translation>
 <translation id="4576541033847873020">Ghép nối thiết bị Bluetooth</translation>
+<translation id="4576763597586015380">Hãy xác minh danh tính của bạn để tiếp tục lưu mật khẩu trong Tài khoản Google</translation>
 <translation id="4579453506923101210">Xóa điện thoại đã kết nối</translation>
 <translation id="4579581181964204535">Không thể truyền <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Lỗi khi khôi phục Linux</translation>
@@ -5005,6 +5009,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6538098297809675636">Lỗi khi phát hiện mã</translation>
 <translation id="653920215766444089">Đang tìm kiếm thiết bị trỏ</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Chỉ bật nếu bạn biết mình đang làm gì hoặc nếu bạn đã được yêu cầu bật vì việc thu thập dữ liệu có thể giảm hiệu suất hoạt động.</translation>
+<translation id="6540672086173674880">Google có thể dùng nhật ký duyệt web của bạn để cá nhân hóa tính năng Tìm kiếm và các dịch vụ khác của Google. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào tại myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Trang web này đã bị chặn sử dụng cảm biến chuyển động.</translation>
 <translation id="6545665334409411530">Tốc độ lặp lại</translation>
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
@@ -5890,6 +5895,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="754207240458482646">Đã đồng bộ hóa với các thiết bị khác trên tài khoản của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Bật tính năng gỡ lỗi trên thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> này</translation>
 <translation id="7543525346216957623">Hãy hỏi ý kiến cha mẹ của bạn</translation>
+<translation id="7546012169463147344">Tính năng tự động quét sẽ tự động chuyển qua và lấy các mục trên màn hình làm tiêu điểm. Khi một mục được chọn là tiêu điểm, hãy nhấn phím "Chọn" mà bạn vừa gán để kích hoạt mục đó.</translation>
 <translation id="7547317915858803630">Cảnh báo: cài đặt <ph name="PRODUCT_NAME" /> của bạn được lưu trữ trên ổ đĩa mạng. Điều này có thể dẫn đến giảm tốc độ, trục trặc hoặc thậm chí là mất dữ liệu.</translation>
 <translation id="7548856833046333824">Nước chanh</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6860,6 +6866,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8621866727807194849">Máy tính của bạn có phần mềm độc hại. Chrome đang xóa phần mềm này, khôi phục các tùy chọn cài đặt của bạn và tắt tiện ích. Việc này sẽ giúp trình duyệt của bạn hoạt động lại bình thường.</translation>
 <translation id="8621979332865976405">Chia sẻ toàn bộ màn hình</translation>
 <translation id="8624354461147303341">Nhận chiết khấu</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Tiện ích mở rộng</translation>
 <translation id="8625663000550647058">Không được phép sử dụng micrô của bạn</translation>
 <translation id="8625916342247441948">Không cho phép trang web kết nối với các thiết bị HID</translation>
@@ -6924,6 +6931,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8677212948402625567">Thu gọn tất cả...</translation>
 <translation id="867767487203716855">Thời gian cập nhật tiếp theo</translation>
 <translation id="8677859815076891398">Không có album nào. Hãy tạo một album trong <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Dữ liệu đã được mã hóa bằng cụm mật khẩu đồng bộ hóa của bạn vào <ph name="TIME" />. Dữ liệu này không bao gồm địa chỉ và phương thức thanh toán trên Google Pay.</translation>
 <translation id="8678582529642151449">Thẻ sẽ không thu gọn</translation>
 <translation id="8678933587484842200">Bạn muốn ứng dụng này khởi động như thế nào?</translation>
 <translation id="8680251145628383637">Đăng nhập để sử dụng dấu trang, lịch sử hoạt động, mật khẩu và các tùy chọn cài đặt khác trên tất cả thiết bị của bạn. Bạn cũng sẽ tự động được đăng nhập vào các dịch vụ Google của mình.</translation>

@@ -1228,6 +1228,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2300383962156589922">Muokkaus ja hallinta: <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Hakuavainsanojen pikanäppäimet</translation>
 <translation id="2301382460326681002">Laajennuksen juurihakemisto on virheellinen.</translation>
+<translation id="2301402091755573488">Jaettu-välilehti</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> on pyytänyt lisäoikeuksia.</translation>
 <translation id="23055578400314116">Valitse käyttäjänimi</translation>
 <translation id="2307462900900812319">Määritä verkko</translation>
@@ -1505,6 +1506,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2612676031748830579">Kortin numero</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> voi muokata tätä: <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">lukea ja muuttaa tietojasi sivustossa <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Aktivoi Seuraava-painike, niin voit jatkaa käyttöönottoa, tai Edellinen-painike, niin voit vaihtaa Valitse-kytkimen määritystä.</translation>
 <translation id="2618797463720777311">Lähijakamisen käyttöönotto</translation>
 <translation id="2619761439309613843">Uusi päivittäin</translation>
 <translation id="2620215283731032047">Tiedostoa (<ph name="FILE_NAME" />) ei voi ladata turvallisesti.</translation>
@@ -2898,6 +2900,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4120817667028078560">Polku on liian pitkä</translation>
 <translation id="4124823734405044952">Suojausavaimesi on nollattu</translation>
 <translation id="4124935795427217608">Yksisarvinen</translation>
+<translation id="4126916490446791914">Automaattinen skannaus käytössä</translation>
 <translation id="412730574613779332">Äijä</translation>
 <translation id="4130199216115862831">Laitteen loki</translation>
 <translation id="4130207949184424187">Tämä laajennus on vaihtanut omnibox-hakujen aloitussivun.</translation>
@@ -3281,6 +3284,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
     Jos lapsesi käyttää koulussa Chromebookia ja haluat käyttökokemusten olevan samanlaiset koulussa ja kotona, jolloin lapsi saa kaikki tarvittavat oppimateriaalit, kirjaudu ulos tältä Family Link ‑tililtä ja kirjaudu oppilaitostilille Chrome-käyttöjärjestelmän tilisivulta (Family Linkin lapsilukko ei silloin toimi).&lt;br&gt;&lt;br&gt;
     Jos lapsi ei käytä koulussa Chromebookia tai päätät mieluummin lapsen käyttökokemuksesta kotona Family Linkin avulla, valitse alta Seuraava lisätäksesi tähän profiiliin oppilaitostilin.</translation>
 <translation id="4576541033847873020">Parin muodostus Bluetooth-laitteen kanssa</translation>
+<translation id="4576763597586015380">Jos haluat jatkossakin tallentaa salasanoja Google-tilillesi, vahvista henkilöllisyytesi</translation>
 <translation id="4579453506923101210">Unohda yhdistetty puhelin</translation>
 <translation id="4579581181964204535">Osoitteen <ph name="HOST_NAME" /> suoratoisto ei onnistu.</translation>
 <translation id="4581774856936278355">Virhe palautettaessa Linuxia</translation>
@@ -5001,6 +5005,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6538098297809675636">Virhe koodin havaitsemisessa</translation>
 <translation id="653920215766444089">Etsitään osoitinlaitetta</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Huomaa:<ph name="END_BOLD" /> Ota tämä asetus käyttöön vain, jos tiedät mitä olet tekemässä tai jos sinua on pyydetty ottamaan asetus käyttöön. Tietojen kerääminen voi heikentää tehokkuutta.</translation>
+<translation id="6540672086173674880">Google voi käyttää selaushistoriaasi Haun ja muiden Googlen palveluiden muokkaamiseen. Voit muuttaa asetuksiasi koska tahansa osoitteessa myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Tältä sivustolta on estetty liiketunnistimien lukemien käyttö.</translation>
 <translation id="6545665334409411530">Toistonopeus</translation>
 <translation id="6545864417968258051">Bluetooth-haku</translation>
@@ -5886,6 +5891,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="754207240458482646">Synkronoitu muiden tilisi laitteiden kanssa. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Ota virheenkorjausominaisuudet käyttöön tällä <ph name="IDS_SHORT_PRODUCT_NAME" />-laitteella..</translation>
 <translation id="7543525346216957623">Pyydä lupaa vanhemmalta</translation>
+<translation id="7546012169463147344">Automaattinen skannaus siirtyy automaattisesti näytön kohteesta toiseen ja korostaa ne. Kun kohde on korostettuna, aktivoi se painamalla äsken määrittämääsi Valitse-näppäintä.</translation>
 <translation id="7547317915858803630">Varoitus: Tuotteen <ph name="PRODUCT_NAME" /> asetukset on tallennettu verkkoasemaan. Tämä voi aiheuttaa hidastuksia, virheitä tai tietojen menetyksiä.</translation>
 <translation id="7548856833046333824">Limu</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6855,6 +6861,7 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="8621866727807194849">Tietokoneellasi on haitallinen ohjelmisto. Chrome poistaa sen, palauttaa asetuksesi ja poistaa laajennukset käytöstä. Tämä saa selaimen toimimaan taas normaalisti.</translation>
 <translation id="8621979332865976405">Jaa koko näyttö</translation>
 <translation id="8624354461147303341">Hyödynnä alennukset</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">Laaj&amp;ennukset</translation>
 <translation id="8625663000550647058">Mikrofonin käyttö kielletty</translation>
 <translation id="8625916342247441948">Älä salli sivustojen yhdistää HID-laitteisiin</translation>
@@ -6919,6 +6926,7 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="8677212948402625567">Tiivistä kaikki...</translation>
 <translation id="867767487203716855">Seuraava päivitys</translation>
 <translation id="8677859815076891398">Albumeja ei ole. Luo albumi <ph name="LINK_BEGIN" />Google Kuvissa<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Data salattiin synkronoinnin tunnuslauseellasi <ph name="TIME" />. Tämä ei koske Google Payhin tallennettuja maksutapoja tai osoitteita.</translation>
 <translation id="8678582529642151449">Välilehdet eivät kutistu</translation>
 <translation id="8678933587484842200">Miten haluat käynnistää tämän sovelluksen?</translation>
 <translation id="8680251145628383637">Kirjaudu sisään, niin voit käyttää kirjanmerkkejä, historiaa, salasanoja ja muita asetuksiasi kaikilla laitteilla. Sinut kirjataan lisäksi automaattisesti sisään käyttämiisi Googlen palveluihin.</translation>

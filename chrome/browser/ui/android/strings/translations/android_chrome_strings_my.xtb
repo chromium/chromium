@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">ဝမ်းနည်းပါသည်၊ သင့်အထောက်အထားများကို ကျွန်ုပ်တို့ အတည်ပြု၍မရပါ</translation>
 <translation id="1310482092992808703">တဘ်များကို အုပ်စုဖွဲ့ရန်</translation>
 <translation id="1311657260431405215">ဤ 'QR ကုဒ်' သည် URL မဟုတ်ပါ- <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">လမ်းညွှန်မှု မှတ်တမ်း ဖွင့်ထားသည်</translation>
 <translation id="1331212799747679585">Chrome ကို အပ်ဒိတ်လုပ်၍မရပါ။ နောက်ထပ်ရွေးချယ်စရာများ</translation>
 <translation id="1332501820983677155">Google Chrome ဝန်ဆောင်မှု ဖြတ်လမ်းလင့်ခ်များ</translation>
@@ -960,6 +961,7 @@
 <translation id="718926126787620637">လိပ်စာဖိုင်တွဲများစာရင်းကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="7191430249889272776">တဲဘ်ကို နောက်ခံမှာ ဖွင့်ထား။</translation>
 <translation id="7233236755231902816">ဝဘ်ကို သင့်ဘာသာစကားနှင့် ကြည့်ရန် Chrome နောက်ဆုံးဗားရှင်းကို ရယူပါ</translation>
+<translation id="7242755609445462077">မြင်သာအောင်လုပ်ခြင်းတွင် ဟန်ပန်ပုံစံထည့်လိုက်သည် <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome တွင် <ph name="TARGET_DEVICE_NAME" /> က စင့်ခ်ဖွင့်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="7252076891734325316">သင့်ဖုန်းကို ကွန်ပျူတာအနီးတွင် ထားပါ</translation>
 <translation id="7274013316676448362">ပိတ်ထားသည့်ဆိုက်</translation>

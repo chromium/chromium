@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Nu ți-am putut valida datele de conectare</translation>
 <translation id="1310482092992808703">Grupează file</translation>
 <translation id="1311657260431405215">Acest cod QR nu este o adresă URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">evidențiere_stilizată_chrome</translation>
 <translation id="1327257854815634930">Istoricul de navigare este deschis</translation>
 <translation id="1331212799747679585">Chrome nu se poate actualiza. Mai multe opțiuni</translation>
 <translation id="1332501820983677155">Comenzi rapide pentru funcțiile Google Chrome</translation>
@@ -961,6 +962,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="718926126787620637">Lista dosarelor de marcaje deschisă la înălțimea completă</translation>
 <translation id="7191430249889272776">A fost deschisă o filă în fundal.</translation>
 <translation id="7233236755231902816">Pentru a naviga pe internet în limba ta, este necesară cea mai recentă versiune de Chrome</translation>
+<translation id="7242755609445462077">Evidențiere stilizată <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Verifică dacă <ph name="TARGET_DEVICE_NAME" /> are sincronizarea activată în Chrome</translation>
 <translation id="7252076891734325316">Apropie telefonul de computer</translation>
 <translation id="7274013316676448362">Site blocat</translation>

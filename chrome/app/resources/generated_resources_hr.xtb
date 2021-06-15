@@ -1216,6 +1216,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2300383962156589922">Prilagodite i kontrolirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Tipkovni prečaci za ključne riječi za pretraživačku mrežu</translation>
 <translation id="2301382460326681002">Korijenski direktorij proširenja nije važeći.</translation>
+<translation id="2301402091755573488">Podijeljena kartica</translation>
 <translation id="23030561267973084">Proširenje "<ph name="EXTENSION_NAME" />" zatražilo je dodatne dozvole.</translation>
 <translation id="23055578400314116">Odaberite korisničko ime</translation>
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
@@ -1493,6 +1494,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> će moći uređivati datoteku <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">pročitati i promijeniti vaše podatke na <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Aktivirajte gumb Sljedeće da biste nastavili postavljanje ili gumb Prethodno da biste promijenili dodjelu prekidača Odabir.</translation>
 <translation id="2618797463720777311">Postavljanje dijeljenja u blizini</translation>
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
 <translation id="2620215283731032047">Datoteka <ph name="FILE_NAME" /> ne može se sigurno preuzeti.</translation>
@@ -2889,6 +2891,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4120817667028078560">Putanja je predugačka</translation>
 <translation id="4124823734405044952">Vaš sigurnosni ključ vraćen je na zadano</translation>
 <translation id="4124935795427217608">Jednorog</translation>
+<translation id="4126916490446791914">Automatsko traženje je omogućeno</translation>
 <translation id="412730574613779332">Elastični</translation>
 <translation id="4130199216115862831">Zapisnik uređaja</translation>
 <translation id="4130207949184424187">Ovo proširenje promijenilo je stranicu koja se prikazuje prilikom pretraživanja putem višenamjenskog okvira.</translation>
@@ -3271,6 +3274,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
     Ako vaše dijete upotrebljava Chromebook u školi i želite da kod kuće ima pristup svim obaveznim školskim zadacima kao da je u školi, odjavite se s ovog Family Link računa i prijavite se na školski račun putem stranice računa u OS-u Chrome (napominjemo da se roditeljski nadzor Family Linka neće primjenjivati).&lt;br&gt;&lt;br&gt;
     Ako vaše dijete ne upotrebljava Chromebook u školi ili ako želite upravljati njegovim doživljajem kod kuće putem Family Linka, kliknite gumb Dalje u nastavku da biste ovom profilu dodali školski račun.</translation>
 <translation id="4576541033847873020">Uparivanje Bluetooth uređaja</translation>
+<translation id="4576763597586015380">Da biste nastavili spremati zaporke na Google računu, potvrdite svoj identitet</translation>
 <translation id="4579453506923101210">Zaboravljanje povezanog telefona</translation>
 <translation id="4579581181964204535">Ne može se emitirati <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Došlo je do pogreške prilikom vraćanja Linuxa</translation>
@@ -4991,6 +4995,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6538098297809675636">Pogreška prilikom detektiranja koda</translation>
 <translation id="653920215766444089">Traženje pokazivačkog uređaja</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> omogućite samo ako točno znate što radite ili ako se to od vas traži jer prikupljanje podataka može umanjiti izvedbu.</translation>
+<translation id="6540672086173674880">Google može upotrebljavati povijest pregledavanja za prilagodbu Pretraživanja i drugih Googleovih usluga. To uvijek možete promijeniti na stranici myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Web-lokaciji je blokiran pristup senzorima kretanja.</translation>
 <translation id="6545665334409411530">Stopa ponavljanja</translation>
 <translation id="6545864417968258051">Traženje Bluetootha</translation>
@@ -5876,6 +5881,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="754207240458482646">Sinkronizirano s drugim uređajima na vašem računu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Omogući značajke za otklanjanje pogrešaka na ovom uređaju <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Zamoli roditelja</translation>
+<translation id="7546012169463147344">Automatsko traženje automatski će kružiti kroz postavke i fokusirati se na stavke na zaslonu. Kada je stavka u fokusu, pritisnite tipku Odabir koju ste upravo dodijelili da biste je aktivirali.</translation>
 <translation id="7547317915858803630">Upozorenje: vaše postavke za uslugu <ph name="PRODUCT_NAME" /> pohranjene su na mrežnom disku. To može uzrokovati sporiji rad, padove pa čak i gubitak podataka.</translation>
 <translation id="7548856833046333824">Limunada</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6845,6 +6851,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="8621866727807194849">Na računalu imate štetni softver. Chrome ga uklanja, vraća vaše postavke i onemogućuje proširenja. Na taj će način vaš preglednik ponovo funkcionirati normalno.</translation>
 <translation id="8621979332865976405">Podijelite čitav zaslon</translation>
 <translation id="8624354461147303341">Traži popuste</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Proširenja</translation>
 <translation id="8625663000550647058">Nije dopuštena upotreba mikrofona</translation>
 <translation id="8625916342247441948">Ne dopuštaj web-lokacijama povezivanje s HID uređajima</translation>
@@ -6909,6 +6916,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="8677212948402625567">Sažmi sve...</translation>
 <translation id="867767487203716855">Sljedeće ažuriranje</translation>
 <translation id="8677859815076891398">Nema albuma. Izradite album u <ph name="LINK_BEGIN" />Google fotografijama<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Podaci su šifrirani vašom šifrom za sinkronzaciju <ph name="TIME" />. To ne uključuje načine plaćanja i adrese s Google Paya.</translation>
 <translation id="8678582529642151449">Kartice se ne smanjuju</translation>
 <translation id="8678933587484842200">Kako želite da se ova aplikacija pokreće?</translation>
 <translation id="8680251145628383637">Prijavite se tako da vam oznake, povijest i druge postavke budu dostupne na svim svojim uređajima. Time ćete se automatski prijaviti i na Googleove usluge.</translation>

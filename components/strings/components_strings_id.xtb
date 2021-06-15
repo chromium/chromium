@@ -608,6 +608,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3212623355668894776">Tutup semua jendela Tamu agar aktivitas penjelajahan dihapus dari perangkat ini.</translation>
 <translation id="3215092763954878852">Tidak dapat menggunakan WebAuthn</translation>
 <translation id="3218181027817787318">Relatif</translation>
+<translation id="3223287115535306850">Aplikasi sedang meluncurkan ikon pemuatan</translation>
 <translation id="3225919329040284222">Server menunjukkan sertifikat yang tidak sesuai dengan harapan terpasang. Harapan ini disertakan untuk situs web tertentu dengan keamanan tinggi guna melindungi Anda.</translation>
 <translation id="3226128629678568754">Tekan tombol muat ulang untuk mengirimkan lagi data yang dibutuhkan untuk memuat halaman ini.</translation>
 <translation id="3226387218769101247">Thumbnail</translation>
@@ -682,6 +683,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3447884698081792621">Tampilkan sertifikat (diterbitkan oleh <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval pengambilan:</translation>
 <translation id="3453962258458347894">Jumlah percobaan ulang</translation>
+<translation id="3454555520521576458">Dapat diubah ukurannya</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ingin melihat teks dan gambar yang disalin ke papan klip</translation>
 <translation id="3461824795358126837">Stabilo</translation>
@@ -717,7 +719,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3586931643579894722">Sembunyikan detail</translation>
 <translation id="3587738293690942763">Tengah</translation>
 <translation id="3590643883886679995">Data login akan disimpan di perangkat ini setelah Anda keluar dari mode Samaran.</translation>
-<translation id="359126217934908072">Bulan/Tahun:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Anda dapat mereset grup kapan saja. Perlu waktu sekitar 1 hari untuk bergabung ke grup baru.}=1{Anda dapat mereset grup kapan saja. Perlu waktu sekitar 1 hari untuk bergabung ke grup baru.}other{Anda dapat mereset grup kapan saja. Perlu waktu sekitar {NUM_DAYS} hari untuk bergabung ke grup baru.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1010,6 +1011,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4677585247300749148"><ph name="URL" /> ingin merespons peristiwa aksesibilitas</translation>
 <translation id="467809019005607715">Google Slide</translation>
 <translation id="4680804919228900307">Anda baru saja memasukkan sandi ke situs penipuan. Chromium merekomendasikan Anda memeriksa sandi yang disimpan untuk <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, dan situs lain tempat Anda menggunakan sandi ini sekarang.</translation>
+<translation id="468314109939257734">Lihat nomor kartu virtual Anda</translation>
 <translation id="4690462567478992370">Berhenti menggunakan sertifikat yang tidak valid</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1916,6 +1918,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" tidak dikonfigurasi dengan benar. Biasanya masalah akan terselesaikan dengan meng-uninstal "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Maaf, ada masalah.</translation>
 <translation id="8067872629359326442">Anda baru saja memasukkan sandi ke situs penipuan. Chromium dapat membantu. Untuk mengubah sandi dan memberi tahu Google bahwa akun Anda mungkin berisiko, klik Lindungi Akun.</translation>
+<translation id="8070439594494267500">Ikon aplikasi</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Kelola setelan situs</translation>
 <translation id="8078141288243656252">Tidak dapat menambahkan anotasi saat diputar</translation>
@@ -2197,6 +2200,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9128870381267983090">Sambungkan ke jaringan</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
 <translation id="9141013498910525015">Kelola alamat</translation>
+<translation id="9144951720726881238">Tanggal kedaluwarsa:</translation>
 <translation id="9148088599418889305">Pilih Metode Pengiriman</translation>
 <translation id="9148507642005240123">&amp;Urungkan pengeditan</translation>
 <translation id="9150045010208374699">Menggunakan kamera Anda</translation>

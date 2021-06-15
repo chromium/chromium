@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Nažalost nismo uspjeli potvrditi vaše vjerodajnice</translation>
 <translation id="1310482092992808703">Grupiraj kartice</translation>
 <translation id="1311657260431405215">Taj QR kôd nije URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Otvorena je povijest navigacije</translation>
 <translation id="1331212799747679585">Chrome se ne može ažurirati. Više opcija</translation>
 <translation id="1332501820983677155">Prečaci za značajke Google Chromea</translation>
@@ -960,6 +961,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="718926126787620637">Popis mapa oznaka otvoren je u punoj visini</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7233236755231902816">Za prikaz weba na vašem jeziku preuzmite najnoviju verziju Chromea</translation>
+<translation id="7242755609445462077">Stilizirano isticanje <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Provjerite je li na uređaju <ph name="TARGET_DEVICE_NAME" /> uključena sinkronizacija u Chromeu</translation>
 <translation id="7252076891734325316">Postavite telefon blizu računala</translation>
 <translation id="7274013316676448362">Blokirana web-lokacija</translation>

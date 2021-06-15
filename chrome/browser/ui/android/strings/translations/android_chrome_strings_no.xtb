@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Beklager, men vi kunne ikke validere legitimasjonen din</translation>
 <translation id="1310482092992808703">Gruppér faner</translation>
 <translation id="1311657260431405215">Denne QR-koden er ikke noen nettadresse: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Navigasjonsloggen er åpnet</translation>
 <translation id="1331212799747679585">Kan ikke oppdatere Chrome. Flere alternativer</translation>
 <translation id="1332501820983677155">Hurtigtaster for funksjoner i Google Chrome.</translation>
@@ -961,6 +962,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="718926126787620637">Listen over bokmerkemapper er åpnet i full høyde</translation>
 <translation id="7191430249889272776">En fane ble åpnet i bakgrunnen.</translation>
 <translation id="7233236755231902816">For å se nettet på ditt eget språk, skaff den nyeste versjonen av Chrome</translation>
+<translation id="7242755609445462077">Stilisert fremheving <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Kontrollér at <ph name="TARGET_DEVICE_NAME" /> har synkronisering påslått i Chrome</translation>
 <translation id="7252076891734325316">Plassér telefonen i nærheten av datamaskinen</translation>
 <translation id="7274013316676448362">Blokkert nettsted</translation>

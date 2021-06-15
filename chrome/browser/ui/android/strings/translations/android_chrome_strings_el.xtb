@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Δυστυχώς, δεν ήταν δυνατή η επαλήθευση των διαπιστευτηρίων σας.</translation>
 <translation id="1310482092992808703">Ομαδοποίηση καρτελών</translation>
 <translation id="1311657260431405215">Αυτός ο κωδικός QR δεν είναι URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Το ιστορικό περιήγησης έχει ανοίξει</translation>
 <translation id="1331212799747679585">Δεν είναι δυνατή η ενημέρωση του Chrome. Περισσότερες επιλογές</translation>
 <translation id="1332501820983677155">Συντομεύσεις λειτουργιών Google Chrome</translation>
@@ -961,6 +962,7 @@
 <translation id="718926126787620637">Η λίστα φακέλων σελιδοδεικτών άνοιξε σε πλήρες ύψος</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
 <translation id="7233236755231902816">Για να δείτε τον ιστό στη γλώσσα σας, κατεβάστε την πιο πρόσφατη έκδοση του Chrome</translation>
+<translation id="7242755609445462077">Στιλιζαρισμένη επισήμανση <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Βεβαιωθείτε ότι ο συγχρονισμός στο Chrome έχει ενεργοποιηθεί για τη συσκευή <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7252076891734325316">Τοποθετήστε το τηλέφωνό σας κοντά στον υπολογιστή</translation>
 <translation id="7274013316676448362">Αποκλεισμένος ιστότοπος</translation>

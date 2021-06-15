@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Lo sentimos, no hemos podido validar tus credenciales</translation>
 <translation id="1310482092992808703">Agrupar pestañas</translation>
 <translation id="1311657260431405215">Este código QR no es una URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">El historial de navegación está abierto</translation>
 <translation id="1331212799747679585">No se ha podido actualizar Chrome. Más opciones</translation>
 <translation id="1332501820983677155">Combinaciones de teclas de funciones de Google Chrome</translation>
@@ -961,6 +962,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="718926126787620637">Lista con carpetas de marcadores abierta a altura completa</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano.</translation>
 <translation id="7233236755231902816">Si quieres ver la Web en tu idioma, consigue la última versión de Chrome</translation>
+<translation id="7242755609445462077">Estilizado resaltado el <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Asegúrate de que la sincronización de tu <ph name="TARGET_DEVICE_NAME" /> está activada en Chrome</translation>
 <translation id="7252076891734325316">Acerca tu teléfono al ordenador</translation>
 <translation id="7274013316676448362">Sitio web bloqueado</translation>

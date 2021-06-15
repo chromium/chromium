@@ -390,6 +390,7 @@
 <translation id="5062321486222145940">Google Drive суулгах</translation>
 <translation id="5083464117946352670">Файлын хэмжээг тодорхойлж чадахгүй байна.</translation>
 <translation id="5090832849094901128">Энэ нууц үгийг устгаснаар таны <ph name="WEBSITE" /> дээрх бүртгэлийг устгахгүй.</translation>
+<translation id="5092117651143801290">Та хуудаснуудыг дараа, эсвэл офлайнаар уншихаар хадгалж болно. Chrome танаас урт хуудаснуудыг хадгалахыг хүсэж байгаа эсэхийг асууна.</translation>
 <translation id="5094827893301452931">Жиргэж дууссан.</translation>
 <translation id="5118764316110575523">Унтраалттай</translation>
 <translation id="5127805178023152808">Тохиргоог унтраасан байна</translation>
@@ -756,6 +757,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8548878600947630424">Хуудаснаас олох...</translation>
 <translation id="8574235780160508979">Chrome-н Үйлчилгээний нөхцөлийг гуравдугаар сарын 31-ний өдөр өөрчлөх болно. <ph name="BEGIN_LINK" />Шалгаж үзнэ үү<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Унтраах</translation>
+<translation id="8590913940444621808">Хэзээ ч бүү асуу</translation>
 <translation id="8591976964826315682">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="8605219856220328675">Цонхыг хаах.</translation>
 <translation id="8620640915598389714">Засах</translation>
@@ -803,6 +805,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>
 <translation id="9100610230175265781">Нэвтрэх үг шаардлагатай</translation>
 <translation id="9107664647686727385">Алдагдсан нууц үгнүүдийг шалгана</translation>
+<translation id="9124387962554796433">Хайлт болон Google-н бусад үйлчилгээг хувийн болгохын тулд Google таны түүхийг ашиглаж магадгүй.</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>
 <translation id="9152539721251340337">QR код үүсгэх</translation>

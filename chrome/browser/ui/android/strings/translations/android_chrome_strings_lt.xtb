@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Deja, nepavyko patvirtinti jūsų prisijungimo duomenų</translation>
 <translation id="1310482092992808703">Grupuoti skirtukus</translation>
 <translation id="1311657260431405215">Šis QR kodas nėra URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Naršymo istorija atidaryta</translation>
 <translation id="1331212799747679585">Nepavyksta atnaujinti „Chrome“. Daugiau parinkčių.</translation>
 <translation id="1332501820983677155">„Google Chrome“ funkcijų spartieji klavišai</translation>
@@ -961,6 +962,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="718926126787620637">Žymių aplankų sąrašas, atidarytas per visą ekrano aukštį</translation>
 <translation id="7191430249889272776">Skirtuko lapas atidarytas fone.</translation>
 <translation id="7233236755231902816">Jei norite matyti žiniatinklį savo kalba, gaukite naujausią „Chrome“ versiją</translation>
+<translation id="7242755609445462077">Stilizuotas paryškinimas: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Įsitikinkite, kad įrenginyje „<ph name="TARGET_DEVICE_NAME" />“ įjungtas sinchronizavimas sistemoje „Chrome“</translation>
 <translation id="7252076891734325316">Padėkite telefoną šalia kompiuterio</translation>
 <translation id="7274013316676448362">Užblokuota svetainė</translation>

@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Kirjautumistietojasi ei voitu todentaa</translation>
 <translation id="1310482092992808703">Ryhmittele välilehtiä</translation>
 <translation id="1311657260431405215">Tämä QR-koodi ei ole URL-osoite: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Navigointihistoria avattu</translation>
 <translation id="1331212799747679585">Chromea ei voi päivittää. Lisää vaihtoehtoja</translation>
 <translation id="1332501820983677155">Google Chromen ominaisuuksien pikanäppäimet</translation>
@@ -961,6 +962,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="718926126787620637">Kirjanmerkkikansioiden lista avattu koko näytön kokoisena</translation>
 <translation id="7191430249889272776">Välilehti avattiin taustalla.</translation>
 <translation id="7233236755231902816">Päivitä Chrome uusimpaan versioon, niin näet verkon sisällön omalla kielelläsi</translation>
+<translation id="7242755609445462077">Tyylitelty korostus <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Varmista, että <ph name="TARGET_DEVICE_NAME" /> käyttää synkronointia Chromessa</translation>
 <translation id="7252076891734325316">Aseta puhelin tietokoneen lähelle</translation>
 <translation id="7274013316676448362">Estetty sivusto</translation>

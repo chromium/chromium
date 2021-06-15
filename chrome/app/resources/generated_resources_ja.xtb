@@ -1214,6 +1214,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> のカスタマイズと制御</translation>
 <translation id="2300578660547687840">検索キーワードのキーボード ショートカット</translation>
 <translation id="2301382460326681002">拡張機能のルート ディレクトリが無効です。</translation>
+<translation id="2301402091755573488">共有されたタブ</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」が追加の許可をリクエストしています。</translation>
 <translation id="23055578400314116">ユーザー名を選択してください</translation>
 <translation id="2307462900900812319">ネットワークを設定</translation>
@@ -1491,6 +1492,7 @@
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を編集できるようになります</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> 上にある自分のデータの読み取りと変更</translation>
+<translation id="2618274688675613222">[次へ] ボタンをアクティブにして設定を続行するか、[前へ] ボタンをアクティブにして [選択] スイッチの割り当てを変更します。</translation>
 <translation id="2618797463720777311">ニアバイシェアの設定</translation>
 <translation id="2619761439309613843">毎日更新する</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> は安全にダウンロードできません。</translation>
@@ -2887,6 +2889,7 @@
 <translation id="4120817667028078560">パスが長すぎます</translation>
 <translation id="4124823734405044952">セキュリティ キーがリセットされました</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
+<translation id="4126916490446791914">自動スキャンを有効にしました</translation>
 <translation id="412730574613779332">スパンデックス</translation>
 <translation id="4130199216115862831">デバイスログ</translation>
 <translation id="4130207949184424187">この拡張機能により、アドレスバーから検索したときに表示されるページが変更されました。</translation>
@@ -3269,6 +3272,7 @@
     お子様が学校で Chromebook を使用している場合に、自宅で学校の使用環境を再現して、お子様が必要な学習用コンテンツすべてにアクセスできるようにするには、このファミリー リンク アカウントからログアウトしてください。その後、Chrome OS のアカウント ページから学校用アカウントにログインしてください（注: ファミリー リンクの保護者による使用制限は適用されなくなります）。&lt;br&gt;&lt;br&gt;
     お子様が学校で Chromebook を使用していない場合、またはファミリー リンクを使用してお子様の自宅での使用環境を管理したい場合は、下の [次へ] ボタンをクリックして、学校用アカウントをこのプロファイルに追加してください。</translation>
 <translation id="4576541033847873020">Bluetooth デバイスのペア設定</translation>
+<translation id="4576763597586015380">Google アカウントでパスワードの保存を続行するには、本人確認を行ってください</translation>
 <translation id="4579453506923101210">接続済みスマートフォンの解除</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> をキャストできません。</translation>
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
@@ -4989,6 +4993,7 @@
 <translation id="6538098297809675636">コード検出エラー</translation>
 <translation id="653920215766444089">ポインティング デバイスを探しています</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> データの収集によりパフォーマンスが低下する場合があるため、意図的に行う場合、または指示された場合のみ有効にしてください。</translation>
+<translation id="6540672086173674880">検索やその他の Google サービスをカスタマイズする目的で、閲覧履歴が Google で使用されることがあります。この設定は myaccount.google.com/activitycontrols/search でいつでも変更できます</translation>
 <translation id="6541638731489116978">このサイトではモーション センサーへのアクセスがブロックされています。</translation>
 <translation id="6545665334409411530">リピート回数 / 秒</translation>
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
@@ -5874,6 +5879,7 @@
 <translation id="754207240458482646">アカウントの他のデバイスと同期しています。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能を有効にします</translation>
 <translation id="7543525346216957623">保護者に頼んでください</translation>
+<translation id="7546012169463147344">自動スキャンでは、画面上の項目が自動で順番にフォーカスされます。項目がフォーカスされたら、先ほど割り当てた [選択] キーを押してアクティブにします。</translation>
 <translation id="7547317915858803630">警告: お使いの <ph name="PRODUCT_NAME" /> の設定はネットワーク ドライブに保存されています。遅延、クラッシュ、データ損失が生じる場合があります。</translation>
 <translation id="7548856833046333824">レモネード</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6843,6 +6849,7 @@
 <translation id="8621866727807194849">お使いのパソコンに有害なソフトウェアが見つかりました。現在 Chrome でこのソフトウェアの削除、設定の復元、拡張機能の無効化を行っています。処理が完了すると、ブラウザは正常に動作するようになります。</translation>
 <translation id="8621979332865976405">画面全体の共有</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">拡張機能(&amp;E)</translation>
 <translation id="8625663000550647058">マイクの使用を許可しないサイト</translation>
 <translation id="8625916342247441948">サイトに HID デバイスへの接続を許可しない</translation>
@@ -6907,6 +6914,7 @@
 <translation id="8677212948402625567">すべてを折りたたむ...</translation>
 <translation id="867767487203716855">次の更新</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>
+<translation id="8678538439778360739"><ph name="TIME" /> にデータを同期パスフレーズで暗号化しました。なお、Google Pay のお支払い方法と住所はこれには含まれません。</translation>
 <translation id="8678582529642151449">タブを縮小しない</translation>
 <translation id="8678933587484842200">このアプリケーションの起動方法を選択してください。</translation>
 <translation id="8680251145628383637">ブックマーク、履歴、パスワードなどの設定をすべてのデバイスで使用するにはログインしてください。ログインすると、利用している Google サービスにも自動的にログインすることになります。</translation>

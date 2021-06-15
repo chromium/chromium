@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">माफ़ करें, हम आपके क्रेडेंशियल की पुष्टि नहीं कर सके</translation>
 <translation id="1310482092992808703">टैब को समूह में लगाएं</translation>
 <translation id="1311657260431405215">यह क्यूआर कोड, यूआरएल नहीं है: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">नेविगेशन का इतिहास अपने पूरे आकार में खुला हुआ है</translation>
 <translation id="1331212799747679585">Chrome अपडेट नहीं किया जा सकता. ज़्यादा विकल्प</translation>
 <translation id="1332501820983677155">Google Chrome सुविधा शॉर्टकट</translation>
@@ -961,6 +962,7 @@
 <translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
 <translation id="7233236755231902816">वेब को अपनी भाषा में देखने के लिए, Chrome का नया वर्शन पाएं</translation>
+<translation id="7242755609445462077">बेहतर बनाया गया हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> पर Chrome में सिंक करने की सुविधा चालू है</translation>
 <translation id="7252076891734325316">अपने फ़ोन को कंप्यूटर के पास रखें</translation>
 <translation id="7274013316676448362">अवरोधित साइट</translation>

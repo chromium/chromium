@@ -613,6 +613,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3212623355668894776">Uždarykite visus svečio langus, kad naršymo veikla būtų ištrinta iš šio įrenginio.</translation>
 <translation id="3215092763954878852">Nepavyko naudoti „WebAuthn“</translation>
 <translation id="3218181027817787318">Santykinis</translation>
+<translation id="3223287115535306850">Animuota programų paleidimo piktograma</translation>
 <translation id="3225919329040284222">Serveris pateikė sertifikatą, kuris neatitinka numatytų reikalavimų. Šie reikalavimai taikomi tam tikrose itin saugiose svetainėse, kad jūs būtumėte saugūs.</translation>
 <translation id="3226128629678568754">Spustelėkite įkėlimo iš naujo mygtuką, kad iš naujo pateiktumėte duomenis, reikalingus puslapiui įkelti.</translation>
 <translation id="3226387218769101247">Miniatiūros</translation>
@@ -687,6 +688,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3447884698081792621">Rodyti sertifikatą (išdavė „<ph name="ISSUER" />“)</translation>
 <translation id="3452404311384756672">Gauti intervalą:</translation>
 <translation id="3453962258458347894">Pakartotinių bandymų skaičius</translation>
+<translation id="3454555520521576458">Galima keisti dydį</translation>
 <translation id="3456231139987291353">„Number-11“ (vokas)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> nori matyti tekstą ir vaizdus, nukopijuotus į iškarpinę</translation>
 <translation id="3461824795358126837">Paryškinimo žymeklis</translation>
@@ -723,7 +725,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3586931643579894722">Slėpti išsamią informaciją</translation>
 <translation id="3587738293690942763">Vidurys</translation>
 <translation id="3590643883886679995">Prisijungimo duomenys bus saugomi šiame įrenginyje, kai išjungsite inkognito režimą.</translation>
-<translation id="359126217934908072">Mėnuo ir (arba) metai:</translation>
 <translation id="3592413004129370115">„Italian“ (vokas)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}=1{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}one{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dieną.}few{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienas.}many{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienos.}other{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienų.}}</translation>
 <translation id="3600246354004376029">„<ph name="TITLE" />“, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1021,6 +1022,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4677585247300749148"><ph name="URL" /> nori reaguoti į pritaikymo neįgaliesiems įvykius</translation>
 <translation id="467809019005607715">„Google“ skaidrės</translation>
 <translation id="4680804919228900307">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. „Chromium“ rekomenduoja patikrinti išsaugotus <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ir kitų svetainių, kuriose dabar naudojate šį slaptažodį, slaptažodžius.</translation>
+<translation id="468314109939257734">Žr. virtualios kortelės numerį</translation>
 <translation id="4690462567478992370">Nebenaudoti negaliojančio sertifikato</translation>
 <translation id="4691835149146451662">„Architecture-A“ (vokas)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1929,6 +1931,7 @@ Papildoma išsami informacija:
 <translation id="8057711352706143257">„<ph name="SOFTWARE_NAME" />“ netinkamai sukonfigūruota. Pašalinus „<ph name="SOFTWARE_NAME" />“ paprastai pavyksta išspręsti šią problemą. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Deja, kažkas nepavyko.</translation>
 <translation id="8067872629359326442">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. „Chromium“ gali padėti. Norėdami pakeisti slaptažodį ir pranešti „Google“, kad jūsų paskyrai gali grėsti pavojus, spustelėkite „Apsaugoti paskyrą“.</translation>
+<translation id="8070439594494267500">Programos piktograma</translation>
 <translation id="8074253406171541171">10 x 13 (vokas)</translation>
 <translation id="8075898834294118863">Tvarkyti svetainių nustatymus</translation>
 <translation id="8078141288243656252">Negalima rašyti komentarų, kai pasukta</translation>
@@ -2213,6 +2216,7 @@ Papildoma išsami informacija:
 <translation id="9128870381267983090">Prisijungti prie tinklo</translation>
 <translation id="9137013805542155359">Rodyti originalą</translation>
 <translation id="9141013498910525015">Tvarkyti adresus</translation>
+<translation id="9144951720726881238">Galiojimo data:</translation>
 <translation id="9148088599418889305">Pasirinkti pristatymo metodą</translation>
 <translation id="9148507642005240123">&amp;Anuliuoti redagavimą</translation>
 <translation id="9150045010208374699">Naudoti kamerą</translation>

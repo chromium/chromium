@@ -612,6 +612,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3212623355668894776">Maak alle gasvensters toe sodat jou blaai-aktiwiteit op hierdie toestel uitgevee word.</translation>
 <translation id="3215092763954878852">Kon nie in WebAuthn gebruik nie</translation>
 <translation id="3218181027817787318">Relatief</translation>
+<translation id="3223287115535306850">Geanimeerde programlaai-ikoon</translation>
 <translation id="3225919329040284222">Die bediener het 'n sertifikaat voorgehou wat nie ooreenstem met ingeboude verwagtinge nie. Hierdie verwagtinge is vir sekere hoësekerheidwebwerwe ingesluit om jou te beskerm.</translation>
 <translation id="3226128629678568754">Druk die herlaaiknoppie om die data wat benodig word om die bladsy te laai, weer in te dien.</translation>
 <translation id="3226387218769101247">Kleinkiekies</translation>
@@ -686,6 +687,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3447884698081792621">Wys sertifikaat (uitgereik deur <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Haal-interval:</translation>
 <translation id="3453962258458347894">Aantal herprobeerslae</translation>
+<translation id="3454555520521576458">Grootte kan verander word</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> wil teks en prente wat na die knipbord gekopieer is, sien</translation>
 <translation id="3461824795358126837">Kleurmerker</translation>
@@ -722,7 +724,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3586931643579894722">Versteek besonderhede</translation>
 <translation id="3587738293690942763">Middel</translation>
 <translation id="3590643883886679995">Aanmelddata sal op hierdie toestel geberg word nadat jy Incognitomodus verlaat het.</translation>
-<translation id="359126217934908072">Maand/jaar:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Jy kan jou groep enige tyd terugstel. Dit neem omtrent 'n dag om by 'n nuwe groep aan te sluit.}=1{Jy kan jou groep enige tyd terugstel. Dit neem omtrent 'n dag om by 'n nuwe groep aan te sluit.}other{Jy kan jou groep enige tyd terugstel. Dit neem {NUM_DAYS} dae om by 'n nuwe groep aan te sluit.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1020,6 +1021,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4677585247300749148"><ph name="URL" /> wil op toeganklikheidgebeurtenisse reageer</translation>
 <translation id="467809019005607715">Google Skyfies</translation>
 <translation id="4680804919228900307">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chromium beveel aan dat jy jou gestoorde wagwoorde vir <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en ander werwe waar jy hierdie wagwoord gebruik, nou nagaan.</translation>
+<translation id="468314109939257734">Bekyk jou virtuele kaart se nommer</translation>
 <translation id="4690462567478992370">Hou op om 'n ongeldige sertifikaat te gebruik</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1928,6 +1930,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" is nie reg opgestel nie."<ph name="SOFTWARE_NAME" />" stel gewoonlik die probleem reg. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Jammer, iets is fout.</translation>
 <translation id="8067872629359326442">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chromium kan help. Klik Beskerm Rekening om jou wagwoord te verander en stel Google in kennis dat jou rekening dalk in gevaar is.</translation>
+<translation id="8070439594494267500">Programikoon</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Bestuur werfinstellings</translation>
 <translation id="8078141288243656252">Kan nie aantekeninge maak wanneer gedraai nie</translation>

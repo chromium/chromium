@@ -611,6 +611,7 @@
 <translation id="3212623355668894776">Браузерді қолдану мәліметі бұл құрылғыдан жойылуы үшін, қонақ режиміндегі барлық терезені жабыңыз.</translation>
 <translation id="3215092763954878852">WebAuthn қолдану мүмкін болмады</translation>
 <translation id="3218181027817787318">Ұқсас</translation>
+<translation id="3223287115535306850">Қолданбаны іске қосу белгішесі</translation>
 <translation id="3225919329040284222">Сервер ендірілген параметрлерге сәйкес келмейтін сертификатты ұсынды. Бұл параметрлер сізді қорғау үшін аса қауіпсіз белгілі бір веб-сайттар үшін қамтылған.</translation>
 <translation id="3226128629678568754">Бетті жүктеуге қажет деректерді қайта жіберу үшін "Қайта жүктеу" түймесін басыңыз.</translation>
 <translation id="3226387218769101247">Нобайлар</translation>
@@ -685,6 +686,7 @@
 <translation id="3447884698081792621">Сертификатты көрсету (шығарушы: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Аралықты алу:</translation>
 <translation id="3453962258458347894">Қайталаулар саны</translation>
+<translation id="3454555520521576458">Өлшемін өзгертуге болады</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> беті буферге көшірілген мәтін мен кескіндерді көргісі келеді</translation>
 <translation id="3461824795358126837">Бөлектеу құралы</translation>
@@ -721,7 +723,6 @@
 <translation id="3586931643579894722">Мәліметтерді жасыру</translation>
 <translation id="3587738293690942763">Ортасы</translation>
 <translation id="3590643883886679995">Сіз инкогнито режимінен шыққаннан кейін де, есептік жазбаға кіру деректері осы құрылғыда сақталады.</translation>
-<translation id="359126217934908072">Айы/жылы:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен бір күн алады.}=1{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен бір күн алады.}other{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен {NUM_DAYS} күн алады.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1019,6 +1020,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> арнайы мүмкіндіктер оқиғаларына жауап бергісі келеді</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
+<translation id="468314109939257734">Виртуалды карта нөмірін көру</translation>
 <translation id="4690462567478992370">Жарамсыз сертификат пайдалануды тоқтату</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1927,6 +1929,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" дұрыс конфигурацияланған. Әдетте "<ph name="SOFTWARE_NAME" />" жойылғанда, мәселе шешіледі. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Кешіріңіз, бірдеңе дұрыс болмады.</translation>
 <translation id="8067872629359326442">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium көмектесе алады. Құпия сөзді өзгертіп, Google-ға есептік жазбаға төніп тұрған қауіп туралы хабарлау үшін "Есептік жазбаны қорғау" түймесін басыңыз.</translation>
+<translation id="8070439594494267500">Қолданба белгішесі</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Сайт параметрлерін басқару</translation>
 <translation id="8078141288243656252">Құжат бұрылып тұрғанда, аннотация қосу мүмкін емес.</translation>

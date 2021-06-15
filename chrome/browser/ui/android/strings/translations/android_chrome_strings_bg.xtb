@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Да се включи ли синхронизирането?</translation>
 <translation id="123724288017357924">Презареждане на страницата (кешът се пренебрегва)</translation>
 <translation id="1240288207750131269">Зарежда се <ph name="LANG" /></translation>
+<translation id="1242883863226959074">устройството</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
 <translation id="1258753120186372309">Драскулка на Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
@@ -52,6 +53,7 @@
 <translation id="1307205233980126133">За съжаление, не успяхме да потвърдим идентификационните ви данни</translation>
 <translation id="1310482092992808703">Групиране на раздели</translation>
 <translation id="1311657260431405215">Този QR код не е URL адрес: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Историята на навигацията е отворена</translation>
 <translation id="1331212799747679585">Chrome не може да се актуализира. Още опции</translation>
 <translation id="1332501820983677155">Комбинации за функции на Google Chrome</translation>
@@ -919,6 +921,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6864459304226931083">Изтегляне на изображението</translation>
 <translation id="6865313869410766144">Данни за автоматично попълване на формуляри</translation>
 <translation id="6867400383614725881">Нов раздел „инкогнито“</translation>
+<translation id="6869056123412990582">компютъра</translation>
 <translation id="6882836635272038266">Стандартна защита срещу уебсайтове, изтеглени файлове и разширения, за които е известно, че са опасни.</translation>
 <translation id="688738109438487280">Добавяне на съществуващите данни към <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Отключете, за да копирате паролата си</translation>
@@ -961,6 +964,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="718926126787620637">Списъкът с папките с отметки е отворен на пълната височина</translation>
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
 <translation id="7233236755231902816">За да виждате съдържанието в мрежата на своя език, изтеглете най-новата версия на Chrome</translation>
+<translation id="7242755609445462077">Стилизирано открояване – <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Поставете телефона си близо до компютъра</translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>
@@ -1154,6 +1158,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8410695015584479363">Следене на цени</translation>
 <translation id="8413126021676339697">Цялата история</translation>
+<translation id="8424781820952413435">Страницата е изпратена. За да я прегледате, отворете Chrome на <ph name="DEVICE_TYPE" /> си.</translation>
 <translation id="8427875596167638501">Разделът за визуализация е наполовина отворен</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
@@ -1195,6 +1200,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="860282621117673749">Сигнали за понижение на цените</translation>
 <translation id="8616006591992756292">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Да се отвори ли предложеният URL адрес, посочен в изтегленото съдържание?</translation>
+<translation id="8621068256433641644">телефона</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
 <translation id="8641930654639604085">Опит за блокиране на сайтовете за пълнолетни</translation>
 <translation id="8655129584991699539">Можете да изчистите данните в настройките на Chrome</translation>

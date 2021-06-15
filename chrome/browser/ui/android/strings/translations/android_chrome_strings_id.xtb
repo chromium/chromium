@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Maaf, kami tidak dapat memvalidasi kredensial Anda</translation>
 <translation id="1310482092992808703">Kelompokkan tab</translation>
 <translation id="1311657260431405215">Kode QR ini bukan URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Histori navigasi terbuka</translation>
 <translation id="1331212799747679585">Chrome tidak dapat diupdate. Opsi lainnya</translation>
 <translation id="1332501820983677155">Pintasan fitur Google Chrome</translation>
@@ -961,6 +962,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="718926126787620637">Daftar folder bookmark terbuka sepenuhnya</translation>
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7233236755231902816">Untuk melihat web dalam bahasa Anda, dapatkan versi terbaru Chrome</translation>
+<translation id="7242755609445462077">Sorotan bergaya <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Pastikan <ph name="TARGET_DEVICE_NAME" /> telah mengaktifkan sinkronisasi di Chrome</translation>
 <translation id="7252076891734325316">Letakkan ponsel Anda dekat dengan komputer</translation>
 <translation id="7274013316676448362">Situs yang diblokir</translation>

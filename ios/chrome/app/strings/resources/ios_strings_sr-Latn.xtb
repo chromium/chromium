@@ -391,6 +391,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
 <translation id="5083464117946352670">Nije moguće utvrditi veličinu datoteke.</translation>
 <translation id="5090832849094901128">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Možete da sačuvate stranice da biste ih čitali kasnije ili oflajn. Chrome će vas pitati da li želite da sačuvate duge stranice.</translation>
 <translation id="5094827893301452931">Tvit je dovršen.</translation>
 <translation id="5118764316110575523">Isključeno</translation>
 <translation id="5127805178023152808">Sinhronizacija je isključena</translation>
@@ -757,6 +758,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8548878600947630424">Pronađi na stranici...</translation>
 <translation id="8574235780160508979">Chrome uslovi korišćenja usluge se menjaju 31. marta. <ph name="BEGIN_LINK" />Pregledajte<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Isključeno</translation>
+<translation id="8590913940444621808">Nikada ne pitaj</translation>
 <translation id="8591976964826315682">Blokirajte kolačiće trećih strana u režimu bez arhiviranja</translation>
 <translation id="8605219856220328675">Zatvori karticu.</translation>
 <translation id="8620640915598389714">Izmeni</translation>
@@ -804,6 +806,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9100610230175265781">Potrebna je pristupna fraza</translation>
 <translation id="9107664647686727385">Traže ugrožene lozinke</translation>
+<translation id="9124387962554796433">Google može da koristi istoriju za personalizaciju Pretrage i drugih Google usluga.</translation>
 <translation id="9137526406337347448">Google usluge</translation>
 <translation id="9148126808321036104">Prijavi me ponovo</translation>
 <translation id="9152539721251340337">Napravite QR kôd</translation>

@@ -80,6 +80,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1516740043221086139">Režim Ne uznemiravaj je uključen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za jednu aplikaciju}one{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikaciju}few{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikacije}other{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikacija}}</translation>
 <translation id="1525508553941733066">ODBACI</translation>
+<translation id="1536604384701784949">Da biste koristili <ph name="USER_EMAIL_ADDRESS" />, prvo morate da se odjavite sa svih naloga. Da biste se odjavili, vratite se nazad biranjem opcije Otkaži. Zatim izaberite vreme da biste otvorili oblast statusa i izaberite Odjavi me. Ponovo se prijavite na <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Veliki kursor</translation>
 <translation id="1546492247443594934">Radna površina 2</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>

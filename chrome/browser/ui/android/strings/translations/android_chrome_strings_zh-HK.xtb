@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">很抱歉，我們無法驗證您的憑證</translation>
 <translation id="1310482092992808703">將分頁加入群組</translation>
 <translation id="1311657260431405215">此二維條碼不是網址：<ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">導覽記錄開咗</translation>
 <translation id="1331212799747679585">無法更新 Chrome。其他選項</translation>
 <translation id="1332501820983677155">Google Chrome 功能快速鍵</translation>
@@ -961,6 +962,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7233236755231902816">如要以您的語言查看網頁，請下載 Chrome 的最新版本。</translation>
+<translation id="7242755609445462077">風格化突顯內容 (日期：<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">請確認 <ph name="TARGET_DEVICE_NAME" /> 已開啟 Chrome 的同步處理功能。</translation>
 <translation id="7252076891734325316">請將手機放在電腦附近</translation>
 <translation id="7274013316676448362">已封鎖的網站</translation>

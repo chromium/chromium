@@ -611,6 +611,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3212623355668894776">Sulgege kõik külalise aknad, et oma sirvimistegevused sellest seadmest kustutada.</translation>
 <translation id="3215092763954878852">Üksust WebAuthn ei saanud kasutada</translation>
 <translation id="3218181027817787318">Suhteline</translation>
+<translation id="3223287115535306850">Rakenduse käivitamise laadimisikoon</translation>
 <translation id="3225919329040284222">Serveri esitatud sertifikaat ei vasta sisseehitatud ootustele. Ootused on teie kaitsmiseks kaasatud kindlate kõrge turvalisusega veebisaitide jaoks.</translation>
 <translation id="3226128629678568754">Lehe laadimiseks vajalike andmete uuesti esitamiseks vajutage uuesti laadimise nuppu.</translation>
 <translation id="3226387218769101247">Pisipildid</translation>
@@ -685,6 +686,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3447884698081792621">Kuva sertifikaat (väljastas <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Hankimise intervall:</translation>
 <translation id="3453962258458347894">Uuesti proovimiste arv</translation>
+<translation id="3454555520521576458">Suurust saab muuta</translation>
 <translation id="3456231139987291353">Number-11 (ümbrik)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> soovib näha lõikelauale kopeeritud teksti ja kujutisi</translation>
 <translation id="3461824795358126837">Esiletõstja</translation>
@@ -721,7 +723,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3586931643579894722">Peida üksikasjad</translation>
 <translation id="3587738293690942763">Keskmine</translation>
 <translation id="3590643883886679995">Sisselogimisandmed salvestatakse sellesse seadmesse pärast inkognito režiimist väljumist.</translation>
-<translation id="359126217934908072">Kuu/aasta:</translation>
 <translation id="3592413004129370115">Italian (ümbrik)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Saate grupi mis tahes ajal lähtestada. Uue grupiga liitumiseks kulub umbes päev.}=1{Saate grupi mis tahes ajal lähtestada. Uue grupiga liitumiseks kulub umbes päev.}other{Saate grupi mis tahes ajal lähtestada. Uue grupiga liitumiseks kulub {NUM_DAYS} päeva.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1019,6 +1020,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4677585247300749148"><ph name="URL" /> soovib vastata juurdepääsetavuse sündmustele</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Sisestasite äsja oma parooli kahtlasele saidile. Chromium soovitab teil salvestatud paroole kontrollida saitide <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ja muude saitide puhul, kus praegu seda parooli kasutate.</translation>
+<translation id="468314109939257734">Vaadake oma virtuaalkaardi numbrit</translation>
 <translation id="4690462567478992370">Lõpeta kehtetu sertifikaadi kasutamine</translation>
 <translation id="4691835149146451662">Architecture-A (ümbrik)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1927,6 +1929,7 @@ Lisateave:
 <translation id="8057711352706143257">Tarkvara „<ph name="SOFTWARE_NAME" />” ei ole õigesti seadistatud. Tarkvara „<ph name="SOFTWARE_NAME" />” desinstallimine lahendab tavaliselt probleemi. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Kahjuks läks midagi valesti</translation>
 <translation id="8067872629359326442">Sisestasite äsja oma parooli petturlikule saidile. Chromium saab teid aidata. Oma parooli muutmiseks ja Google'i teavitamiseks sellest, et teie konto võib olla ohus, klõpsake valikul Konto kaitsmine.</translation>
+<translation id="8070439594494267500">Rakenduse ikoon</translation>
 <translation id="8074253406171541171">10x13 (ümbrik)</translation>
 <translation id="8075898834294118863">Saidi seadete haldamine</translation>
 <translation id="8078141288243656252">Pööramisel ei saa märkusi lisada</translation>
@@ -2210,6 +2213,7 @@ Lisateave:
 <translation id="9128870381267983090">Ühendumine Internetiga</translation>
 <translation id="9137013805542155359">Kuva originaal</translation>
 <translation id="9141013498910525015">Aadresside haldamine</translation>
+<translation id="9144951720726881238">Aegumiskuupäev:</translation>
 <translation id="9148088599418889305">Valige tarneviis</translation>
 <translation id="9148507642005240123">&amp;Võta muudatus tagasi</translation>
 <translation id="9150045010208374699">Kaamera kasutamine</translation>

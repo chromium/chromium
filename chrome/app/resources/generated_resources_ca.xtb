@@ -1214,6 +1214,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2300383962156589922">Personalitza i controla <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Tecles de drecera per a les paraules clau de cerca</translation>
 <translation id="2301382460326681002">El directori arrel de l'extensió no és vàlid.</translation>
+<translation id="2301402091755573488">Pestanya compartida</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha sol·licitat permisos addicionals.</translation>
 <translation id="23055578400314116">Selecciona un nom d'usuari</translation>
 <translation id="2307462900900812319">Configura la xarxa</translation>
@@ -1491,6 +1492,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2612676031748830579">Número de targeta</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> podrà editar <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Llegir i modificar les dades del lloc web <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Activa el botó Següent per continuar amb la configuració o el botó Anterior per canviar l'assignació de l'interruptor "Selecciona".</translation>
 <translation id="2618797463720777311">Configura la funció Compartició Nearby</translation>
 <translation id="2619761439309613843">Actualització diària</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> no es pot baixar de manera segura.</translation>
@@ -2886,6 +2888,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4120817667028078560">El camí és massa llarg</translation>
 <translation id="4124823734405044952">La clau de seguretat s'ha restablert</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4126916490446791914">S'ha activat l'escaneig automàtic</translation>
 <translation id="412730574613779332">Superheroi</translation>
 <translation id="4130199216115862831">Registre del dispositiu</translation>
 <translation id="4130207949184424187">Aquesta extensió ha canviat la pàgina que es mostra quan feu una cerca des de l'omnibox.</translation>
@@ -3268,6 +3271,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
     Si el teu fill fa servir un Chromebook a l'escola i vols replicar-ne l'experiència a casa per assegurar-te que tingui accés a tots els deures necessaris, tanca la sessió en aquest compte de Family Link i inicia-la al compte de centre educatiu des de la pàgina de comptes de Chrome OS. Nota: no s'aplicaran els controls parentals de Family Link.&lt;br&gt;&lt;br&gt;
     Si el teu fill no fa servir un Chromebook a l'escola o si prefereixes gestionar l'experiència del teu fill a casa mitjançant Family Link, fes clic al botó Següent de sota per afegir un compte de centre educatiu a aquest perfil.</translation>
 <translation id="4576541033847873020">Vincula un dispositiu Bluetooth</translation>
+<translation id="4576763597586015380">Per continuar desant contrasenyes al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="4579453506923101210">Oblida el telèfon connectat</translation>
 <translation id="4579581181964204535">No es pot emetre <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">S'ha produït un error en restaurar Linux</translation>
@@ -4990,6 +4994,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6538098297809675636">S'ha produït un error en detectar el codi</translation>
 <translation id="653920215766444089">S'està cercant un dispositiu apuntador</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> activeu aquesta opció només si sabeu què esteu fent o si se us ha demanat que ho feu, ja que la recollida de dades pot reduir el rendiment.</translation>
+<translation id="6540672086173674880">És possible que Google utilitzi el teu historial de navegació per personalitzar la Cerca i altres serveis de Google. Pots canviar aquesta opció sempre que vulguis des de myaccount.google.com/activitycontrols/search.</translation>
 <translation id="6541638731489116978">No es permet que aquest lloc web accedeixi als sensors de moviment.</translation>
 <translation id="6545665334409411530">Freqüència de repetició</translation>
 <translation id="6545864417968258051">Cerca de dispositius Bluetooth</translation>
@@ -5875,6 +5880,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="754207240458482646">Està sincronitzada amb altres dispositius del teu compte. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Activa les funcions de depuració en aquest dispositiu <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Demana-ho al teu pare o a la teva mare</translation>
+<translation id="7546012169463147344">L'escaneig automàtic es mourà automàticament pels elements de la pantalla i els enfocarà. Quan s'enfoqui un element, prem la tecla "Selecciona" que acabes d'assignar per activar-lo.</translation>
 <translation id="7547317915858803630">Advertiment: la vostra configuració de <ph name="PRODUCT_NAME" /> s'emmagatzema en una unitat de xarxa. Això pot provocar alentiments, bloquejos o fins i tot la pèrdua de dades.</translation>
 <translation id="7548856833046333824">Còctel</translation>
 <translation id="7550830279652415241">marcadors_<ph name="DATESTAMP" />.html</translation>
@@ -6846,6 +6852,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8621866727807194849">Hi ha programari nociu a l'ordinador. Chrome l'està suprimint, restaurant la configuració i desactivant les extensions. D'aquesta manera, el navegador tornarà a funcionar amb normalitat.</translation>
 <translation id="8621979332865976405">Comparteix tota la pantalla</translation>
 <translation id="8624354461147303341">Obtén descomptes</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Sense permís per utilitzar el micròfon</translation>
 <translation id="8625916342247441948">No permetis que els llocs web es connectin a dispositius HID</translation>
@@ -6910,6 +6917,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8677212948402625567">Redueix-ho tot...</translation>
 <translation id="867767487203716855">Propera actualització</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Les dades s'han encriptat amb la teva contrasenya de sincronització el dia <ph name="TIME" />. No s'hi inclouen les formes de pagament ni les adreces de Google Pay.</translation>
 <translation id="8678582529642151449">Les pestanyes no es redueixen</translation>
 <translation id="8678933587484842200">Com voldries que s'iniciés aquesta aplicació?</translation>
 <translation id="8680251145628383637">Inicieu la sessió per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions en tots els dispositius. A més, iniciareu la sessió automàticament als serveis de Google.</translation>

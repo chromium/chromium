@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Diemžēl nevarēja apstiprināt jūsu akreditācijas datus.</translation>
 <translation id="1310482092992808703">Grupēt cilnes</translation>
 <translation id="1311657260431405215">Šis ātrās atbildes kods nav URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Navigācijas vēsture ir atvērta</translation>
 <translation id="1331212799747679585">Nevar atjaunināt Chrome — citas opcijas</translation>
 <translation id="1332501820983677155">Google Chrome funkciju īsinājumtaustiņi</translation>
@@ -961,6 +962,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="718926126787620637">Grāmatzīmju mapju saraksts atvērts pilna ekrāna augstumā</translation>
 <translation id="7191430249889272776">Cilne tika atvērta fonā.</translation>
 <translation id="7233236755231902816">Lai skatītu tīmekli savā valodā, iegūstiet jaunāko Chrome versiju</translation>
+<translation id="7242755609445462077">Stilizēts izcēlums: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Ierīcē <ph name="TARGET_DEVICE_NAME" /> ieslēdziet Chrome sinhronizāciju</translation>
 <translation id="7252076891734325316">Novietojiet tālruni blakus datoram</translation>
 <translation id="7274013316676448362">Bloķēta vietne</translation>

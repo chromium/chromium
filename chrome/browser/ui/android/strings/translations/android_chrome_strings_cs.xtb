@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Omlouváme se, identifikační údaje se nepodařilo ověřit</translation>
 <translation id="1310482092992808703">Seskupit karty</translation>
 <translation id="1311657260431405215">Tento QR kód není adresa URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Historie navigace je otevřená</translation>
 <translation id="1331212799747679585">Chrome nelze aktualizovat. Další možnosti</translation>
 <translation id="1332501820983677155">Zkratky funkcí prohlížeče Google Chrome</translation>
@@ -961,6 +962,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="718926126787620637">Seznam složek se záložkami otevřený na celou výšku</translation>
 <translation id="7191430249889272776">Karta je otevřena na pozadí.</translation>
 <translation id="7233236755231902816">Chcete-li si web prohlížet ve svém jazyce, stáhněte si nejnovější verzi Chromu</translation>
+<translation id="7242755609445462077">Stylizované zvýraznění <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Zkontrolujte, zda je v Chromu na zařízení <ph name="TARGET_DEVICE_NAME" /> zapnutá synchronizace</translation>
 <translation id="7252076891734325316">Umístěte telefon k počítači</translation>
 <translation id="7274013316676448362">Blokovaný web</translation>

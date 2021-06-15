@@ -1230,6 +1230,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2300383962156589922">Personalizar e controlar o app <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Atalhos do teclado para palavras-chave de pesquisa</translation>
 <translation id="2301382460326681002">O diretório raiz da extensão é inválido.</translation>
+<translation id="2301402091755573488">Guia compartilhada</translation>
 <translation id="23030561267973084">A extensão "<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
 <translation id="23055578400314116">Selecione um nome de usuário</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
@@ -1507,6 +1508,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar o arquivo <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Ler e alterar seus dados em <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Ative o botão "Próxima" para continuar a configuração ou o botão "Anterior" para mudar a função do interruptor "Selecionar".</translation>
 <translation id="2618797463720777311">Configurar o "Compartilhar por proximidade"</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620215283731032047">Não foi possível fazer o download de <ph name="FILE_NAME" /> por motivo de segurança.</translation>
@@ -2904,6 +2906,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4120817667028078560">Caminho muito longo</translation>
 <translation id="4124823734405044952">Sua chave de segurança foi redefinida</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
+<translation id="4126916490446791914">Verificação automática ativada</translation>
 <translation id="412730574613779332">Mascarado</translation>
 <translation id="4130199216115862831">Registro do dispositivo</translation>
 <translation id="4130207949184424187">Esta extensão alterou a página que é exibida quando você pesquisa na Omnibox.</translation>
@@ -3287,6 +3290,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
     Se a criança usa um Chromebook na escola e você quer proporcionar a mesma experiência em casa para garantir que ela tenha acesso a todos os trabalhos escolares necessários, saia dessa conta do Family Link e faça login na conta escolar na página de contas do Chrome OS. Observação: o controle dos pais do Family Link não será aplicado.&lt;br&gt;&lt;br&gt;
     Se a criança não usa um Chromebook na escola ou se você prefere gerenciar a experiência dela em casa usando o Family Link, clique no botão "Próxima" abaixo para adicionar uma conta escolar a esse perfil.</translation>
 <translation id="4576541033847873020">Parear dispositivo Bluetooth</translation>
+<translation id="4576763597586015380">Para continuar salvando senhas na Conta do Google, confirme sua identidade</translation>
 <translation id="4579453506923101210">Esquecer smartphone conectado</translation>
 <translation id="4579581181964204535">Não foi possível transmitir <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Erro ao restaurar o Linux</translation>
@@ -5008,6 +5012,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6538098297809675636">Erro ao detectar o código</translation>
 <translation id="653920215766444089">Procurando dispositivo apontador</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Observação:<ph name="END_BOLD" /> Ative somente se você souber o que está fazendo ou tiver sido solicitado(a) a fazê-lo, porque a coleta de dados pode reduzir o desempenho.</translation>
+<translation id="6540672086173674880">O Google pode usar seu histórico de navegação para personalizar a Pesquisa e outros serviços oferecidos. Mude essa configuração a qualquer momento em myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Este site foi impedido de acessar seus sensores de movimento.</translation>
 <translation id="6545665334409411530">Taxa de repetição</translation>
 <translation id="6545864417968258051">Verificação de Bluetooth</translation>
@@ -5893,6 +5898,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="754207240458482646">Sincronizada com outros dispositivos na sua conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Ativar os recursos de depuração neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Peça para seu responsável</translation>
+<translation id="7546012169463147344">A verificação automática percorrerá e focará nos itens da tela. Quando um item estiver em foco e você quiser ativá-lo, pressione a chave "Selecionar" que você acabou de atribuir.</translation>
 <translation id="7547317915858803630">Aviso: as configurações do <ph name="PRODUCT_NAME" /> são armazenadas em um disco de rede. Isso pode acarretar lentidão, falhas ou até mesmo perda de dados.</translation>
 <translation id="7548856833046333824">Margarita</translation>
 <translation id="7550830279652415241">favoritos_<ph name="DATESTAMP" />.html</translation>
@@ -6863,6 +6869,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8621866727807194849">Há um software nocivo no seu computador. O Chrome está removendo-o, restaurando suas configurações e desativando as extensões. Assim, o navegador voltará a funcionar normalmente.</translation>
 <translation id="8621979332865976405">Compartilhar toda a tela</translation>
 <translation id="8624354461147303341">Ver descontos</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensões</translation>
 <translation id="8625663000550647058">Bloquear o uso do microfone</translation>
 <translation id="8625916342247441948">Não permitir que os sites se conectem a dispositivos HID</translation>
@@ -6927,6 +6934,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8677212948402625567">Recolher tudo...</translation>
 <translation id="867767487203716855">Próxima atualização</translation>
 <translation id="8677859815076891398">Nenhum álbum. Crie um no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Os dados foram criptografados com sua senha longa de sincronização em <ph name="TIME" />. Isso não inclui formas de pagamento e endereços do Google Pay.</translation>
 <translation id="8678582529642151449">as guias não são encolhidas</translation>
 <translation id="8678933587484842200">Como você gostaria que este app fosse iniciado?</translation>
 <translation id="8680251145628383637">Faça login para ter acesso aos seus favoritos, histórico, senhas e outras configurações em todos os seus dispositivos. Você será conectado automaticamente aos seus serviços do Google.</translation>

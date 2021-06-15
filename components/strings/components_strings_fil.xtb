@@ -612,6 +612,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3212623355668894776">Isara ang lahat ng window ng Bisita para ma-delete ang iyong aktibidad sa pag-browse sa device na ito.</translation>
 <translation id="3215092763954878852">Hindi magamit ang WebAuthn</translation>
 <translation id="3218181027817787318">Kaugnay</translation>
+<translation id="3223287115535306850">Throbber ng paglulunsad ng app</translation>
 <translation id="3225919329040284222">Nagpakita ang server ng certificate na hindi tumutugma sa mga built-in na inaasahan. Ang mga inaasahang ito ay isinama para sa ilang partikular na website na may mataas na antas ng seguridad upang maprotektahan ka.</translation>
 <translation id="3226128629678568754">Pindutin ang button na i-reload upang isumiteng muli ang data na kailangan upang ma-load ang pahina.</translation>
 <translation id="3226387218769101247">Mga Thumbnail</translation>
@@ -686,6 +687,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3447884698081792621">Ipakita ang certificate (ibinigay ng <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Kunin ang agwat:</translation>
 <translation id="3453962258458347894">Bilang ng mga pag-retry</translation>
+<translation id="3454555520521576458">Nababago ang laki</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923">Gustong makita ng <ph name="URL" /> ang text at mga larawang kinopya sa clipboard</translation>
 <translation id="3461824795358126837">Highlighter</translation>
@@ -722,7 +724,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3586931643579894722">Magtago ng mga detalye</translation>
 <translation id="3587738293690942763">Gitna</translation>
 <translation id="3590643883886679995">Iso-store ang data ng pag-sign in sa device na ito pagkatapos mong lumabas sa Incognito mode.</translation>
-<translation id="359126217934908072">Buwan/Taon:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puwede mong i-reset ang iyong grupo anumang oras. Inaabot nang humigit-kumulang isang araw para makasali sa isang bagong grupo.}=1{Puwede mong i-reset ang iyong grupo anumang oras. Inaabot nang humigit-kumulang isang araw para makasali sa isang bagong grupo.}one{Puwede mong i-reset ang iyong grupo anumang oras. Inaabot nang {NUM_DAYS} araw para makasali sa isang bagong grupo.}other{Puwede mong i-reset ang iyong grupo anumang oras. Inaabot nang {NUM_DAYS} na araw para makasali sa isang bagong grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1020,6 +1021,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4677585247300749148">Gustong tumugon ng <ph name="URL" /> sa mga kaganapan ng pagiging accessible</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Kakalagay mo lang ng iyong password sa isang mapanlinlang na site. Inirerekomenda ng Chromium na suriin mo ngayon ang iyong mga naka-save na password para sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, at iba pang site kung saan mo ginagamit ang password na ito.</translation>
+<translation id="468314109939257734">Tingnan ang iyong virtual na numero ng card</translation>
 <translation id="4690462567478992370">Ihinto ang paggamit ng di-wastong certificate</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1928,6 +1930,7 @@ Mga karagdagang detalye:
 <translation id="8057711352706143257">Hindi maayos na naka-configure ang "<ph name="SOFTWARE_NAME" />." Kadalasang naaayos ang problema kapag in-uninstall ang "<ph name="SOFTWARE_NAME" />." <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Paumanhin, nagkaproblema.</translation>
 <translation id="8067872629359326442">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Makakatulong ang Chromium. Para palitan ang iyong password at abisuhan ang Google na posibleng nasa panganib ang iyong account, i-click ang Protektahan ang Account.</translation>
+<translation id="8070439594494267500">Icon ng app</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">Pamahalaan ang mga setting ng site</translation>
 <translation id="8078141288243656252">Hindi maaaring i-annotate kapag naka-rotate</translation>
@@ -2211,6 +2214,7 @@ Mga karagdagang detalye:
 <translation id="9128870381267983090">Kumonekta sa network</translation>
 <translation id="9137013805542155359">Ipakita ang orihinal</translation>
 <translation id="9141013498910525015">Pamahalaan ang mga address</translation>
+<translation id="9144951720726881238">Expiration date:</translation>
 <translation id="9148088599418889305">Pumili ng Paraan ng Pagpapadala</translation>
 <translation id="9148507642005240123">&amp;I-undo ang pag-e-edit</translation>
 <translation id="9150045010208374699">Gamitin ang iyong camera</translation>

@@ -1215,6 +1215,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2300383962156589922">Personalizează și controlează <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Comenzi rapide de la tastatură asociate cuvintelor cheie pentru Rețeaua de căutare</translation>
 <translation id="2301382460326681002">Directorul rădăcină pentru extensie este nevalid.</translation>
+<translation id="2301402091755573488">Fila a fost distribuită</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” a solicitat permisiuni suplimentare.</translation>
 <translation id="23055578400314116">Selectează un nume de utilizator</translation>
 <translation id="2307462900900812319">Configurați rețeaua</translation>
@@ -1492,6 +1493,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2612676031748830579">Număr card</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> va putea să editeze <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Citește și modifică datele de pe <ph name="WEBSITE_1" /></translation>
+<translation id="2618274688675613222">Activează butonul Înainte pentru a continua configurarea sau butonul Înapoi pentru a modifica atribuirea comutatorului Selectează.</translation>
 <translation id="2618797463720777311">Configurează Trimiterea în apropiere</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> nu se poate descărca în siguranță.</translation>
@@ -2888,6 +2890,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4120817667028078560">Calea este prea lungă</translation>
 <translation id="4124823734405044952">Cheia de securitate a fost resetată</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4126916490446791914">Scanarea automată este activată</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Jurnalul dispozitivului</translation>
 <translation id="4130207949184424187">Această extensie a modificat ce pagină se afișează când cauți din caseta polivalentă.</translation>
@@ -3270,6 +3273,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
     În cazul în care copilul tău folosește un Chromebook la școală și vrei să redai acasă experiența de la școală, ca să te asiguri că acesta are acces la toate resursele necesare pentru activitatea școlară, deconectează-te de la acest cont Family Link și conectează-te la contul de la școală din pagina Conturi a sistemului de operare Chrome (notă: opțiunile de control parental Family Link nu se vor aplica).&lt;br&gt;&lt;br&gt;
     În cazul în care copilul tău nu folosește un Chromebook la școală sau preferi să gestionezi experiența copilului acasă folosind Family Link, dă clic pe butonul Înainte de mai jos pentru a adăuga un cont de la școală la acest profil.</translation>
 <translation id="4576541033847873020">Asociază dispozitivul Bluetooth</translation>
+<translation id="4576763597586015380">Pentru a salva în continuare parole în Contul Google, confirmă-ți identitatea</translation>
 <translation id="4579453506923101210">Elimină telefonul conectat</translation>
 <translation id="4579581181964204535">Nu se poate proiecta <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Eroare la restabilirea Linux</translation>
@@ -4990,6 +4994,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6538098297809675636">Eroare la detectarea codului</translation>
 <translation id="653920215766444089">Se caută dispozitivul de indicat</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> activați culegerea datelor numai dacă înțelegeți consecințele acțiunii sau dacă vi s-a solicitat să o activați, deoarece aceasta ar putea reduce performanța.</translation>
+<translation id="6540672086173674880">Google poate folosi istoricul de navigare pentru a personaliza Căutarea și alte servicii Google. Poți schimba oricând această opțiune la myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">Site-ul nu are permisiunea de a accesa senzorii de mișcare.</translation>
 <translation id="6545665334409411530">Frecvența de repetare</translation>
 <translation id="6545864417968258051">Căutare Bluetooth</translation>
@@ -5875,6 +5880,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="754207240458482646">Sincronizată cu alte dispozitive din contul tău. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Activează funcțiile de remediere a erorilor pe acest dispozitiv <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Roagă-ți părintele</translation>
+<translation id="7546012169463147344">Scanarea automată va parcurge și focaliza automat pe elemente de pe ecran. Atunci când un element este focalizat, apasă pe tasta Selectează pe care tocmai ai atribuit-o pentru a-l activa.</translation>
 <translation id="7547317915858803630">Avertisment: setările <ph name="PRODUCT_NAME" /> sunt stocate pe o unitate de rețea, ceea ce poate duce la încetiniri, blocări sau chiar la pierderi de date.</translation>
 <translation id="7548856833046333824">Limonadă</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6844,6 +6850,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="8621866727807194849">Ai software dăunător pe computer. Chrome îl elimină, restabilind setările și dezactivând extensiile. Astfel, browserul tău va funcționa normal din nou.</translation>
 <translation id="8621979332865976405">Arată întregul ecran</translation>
 <translation id="8624354461147303341">Primește reduceri</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensii</translation>
 <translation id="8625663000550647058">Nu au permisiunea de a folosi microfonul</translation>
 <translation id="8625916342247441948">Nu permite site-urilor să se conecteze la dispozitive HID</translation>
@@ -6908,6 +6915,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="8677212948402625567">Restrânge-le pe toate...</translation>
 <translation id="867767487203716855">Următoarea actualizare</translation>
 <translation id="8677859815076891398">Niciun album. Creează un album în <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Datele au fost criptate cu expresia de acces pentru sincronizare la <ph name="TIME" />. Acest lucru nu este valabil pentru metodele de plată și adresele din Google Pay.</translation>
 <translation id="8678582529642151449">Filele nu se micșorează</translation>
 <translation id="8678933587484842200">Cum dorești să se lanseze această aplicație?</translation>
 <translation id="8680251145628383637">Conectează-te pentru a-ți accesa marcajele, istoricul, parolele și alte setări pe toate dispozitivele. În plus, te vei conecta automat la serviciile Google.</translation>

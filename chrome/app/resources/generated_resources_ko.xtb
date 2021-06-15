@@ -1229,6 +1229,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> 맞춤설정 및 제어</translation>
 <translation id="2300578660547687840">검색 키워드 단축키</translation>
 <translation id="2301382460326681002">확장 프로그램 루트 디렉터리가 잘못되었습니다.</translation>
+<translation id="2301402091755573488">공유된 탭</translation>
 <translation id="23030561267973084">'<ph name="EXTENSION_NAME" />'이(가) 추가 승인을 요청했습니다.</translation>
 <translation id="23055578400314116">사용자 이름 선택</translation>
 <translation id="2307462900900812319">네트워크 설정</translation>
@@ -1506,6 +1507,7 @@
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있습니다.</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />의 데이터를 읽고 변경</translation>
+<translation id="2618274688675613222">다음 버튼을 활성화하여 설정을 계속하거나 이전 버튼을 활성화하여 '선택' 스위치 할당을 변경하세요.</translation>
 <translation id="2618797463720777311">Nearby Share 설정</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다.</translation>
@@ -2900,6 +2902,7 @@
 <translation id="4120817667028078560">경로가 너무 김</translation>
 <translation id="4124823734405044952">보안 키가 재설정되었습니다.</translation>
 <translation id="4124935795427217608">유니콘</translation>
+<translation id="4126916490446791914">자동 스캔 사용 설정됨</translation>
 <translation id="412730574613779332">스판덱스</translation>
 <translation id="4130199216115862831">기기 로그</translation>
 <translation id="4130207949184424187">검색주소창에서 검색하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
@@ -3282,6 +3285,7 @@
     자녀가 학교에서 Chromebook을 사용하며 집에서 학교 환경을 미러링하여 필요한 학교 과제에 모두 액세스할 수 있기를 원한다면, 이 Family Link 계정에서 로그아웃한 후 Chrome OS 계정 페이지에서 학교 계정으로 로그인하세요(참고: Family Link 자녀 보호 기능이 적용되지 않음).&lt;br&gt;&lt;br&gt;
     자녀가 학교에서 Chromebook을 사용하지 않거나 Family Link를 사용하여 집에서 자녀의 환경을 관리하고 싶다면 아래에서 다음 버튼을 클릭하여 이 프로필에 학교 계정을 추가하세요.</translation>
 <translation id="4576541033847873020">블루투스 기기 페어링</translation>
+<translation id="4576763597586015380">Google 계정에 계속 비밀번호를 저장하려면 본인 인증을 하세요</translation>
 <translation id="4579453506923101210">연결된 휴대전화 삭제</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" />을(를) 전송할 수 없습니다.</translation>
 <translation id="4581774856936278355">Linux 복원 중 오류 발생</translation>
@@ -5002,6 +5006,7 @@
 <translation id="6538098297809675636">코드를 감지하는 중 오류 발생</translation>
 <translation id="653920215766444089">포인팅 기기 검색 중</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 데이터 수집으로 인해 성능이 감소할 수 있으므로 확신이 있는 경우 또는 요청을 받은 경우에만 사용하도록 설정합니다.</translation>
+<translation id="6540672086173674880">Google 검색 및 다른 Google 서비스를 맞춤설정하기 위하여 Google에서 사용자의 방문 기록을 이용할 수 있습니다. 이 설정은 언제든지 myaccount.google.com/activitycontrols/search에서 변경할 수 있습니다.</translation>
 <translation id="6541638731489116978">움직임 감지 센서 액세스가 차단된 사이트입니다.</translation>
 <translation id="6545665334409411530">반복 속도</translation>
 <translation id="6545864417968258051">블루투스 검색</translation>
@@ -5887,6 +5892,7 @@
 <translation id="754207240458482646">계정에 연결된 다른 기기와 동기화되어 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">이 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기에서 디버깅 기능을 사용 설정하세요.</translation>
 <translation id="7543525346216957623">부모님께 물어보세요.</translation>
+<translation id="7546012169463147344">자동 스캔에서는 화면에 표시된 항목이 자동으로 돌아가며 선택됩니다. 항목이 선택되었을 때 방금 할당한 '선택' 키를 누르면 활성화할 수 있습니다.</translation>
 <translation id="7547317915858803630">경고: <ph name="PRODUCT_NAME" /> 설정이 네트워크 드라이브에 저장되었습니다. 이로 인해 속도 저하, 비정상 종료 그리고 데이터 손실까지 발생할 수 있습니다.</translation>
 <translation id="7548856833046333824">레모네이드</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6857,6 +6863,7 @@
 <translation id="8621866727807194849">컴퓨터에 유해한 소프트웨어가 있습니다. Chrome이 유해한 소프트웨어를 삭제하고, 설정을 복원하고, 확장 프로그램을 사용 중지하는 중입니다. 이 작업이 끝나면 브라우저가 다시 정상적으로 작동합니다.</translation>
 <translation id="8621979332865976405">전체 화면 공유</translation>
 <translation id="8624354461147303341">할인받기</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">확장 프로그램(&amp;E)</translation>
 <translation id="8625663000550647058">마이크 사용이 허용되지 않음</translation>
 <translation id="8625916342247441948">사이트에서 HID 기기에 연결하도록 허용하지 않음</translation>
@@ -6921,6 +6928,7 @@
 <translation id="8677212948402625567">모두 접기...</translation>
 <translation id="867767487203716855">다음 업데이트</translation>
 <translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
+<translation id="8678538439778360739"><ph name="TIME" />에 데이터가 동기화 암호로 암호화되었습니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
 <translation id="8678582529642151449">탭이 줄어들지 않음</translation>
 <translation id="8678933587484842200">이 애플리케이션을 실행할 방법을 선택하세요.</translation>
 <translation id="8680251145628383637">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정이 동기화되며 Google 서비스에 자동으로 로그인됩니다.</translation>

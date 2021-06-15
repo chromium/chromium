@@ -80,6 +80,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1516740043221086139">Niet storen staat aan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Instellingen voor meldingen tonen. Meldingen staan uit voor een app}other{Instellingen voor meldingen tonen. Meldingen staan uit voor # apps}}</translation>
 <translation id="1525508553941733066">SLUITEN</translation>
+<translation id="1536604384701784949">Als je <ph name="USER_EMAIL_ADDRESS" /> wilt gebruiken, moet je eerst uitloggen van alle accounts. Wil je uitloggen, selecteer dan Annuleren om terug te gaan. Selecteer daarna de tijd om het statusgedeelte te openen en kies Uitloggen. Log dan weer in op <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Grote muisaanwijzer</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1550523713251050646">Klik voor meer opties</translation>

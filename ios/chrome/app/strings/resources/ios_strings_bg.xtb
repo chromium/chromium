@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">Инсталиране на Google Диск</translation>
 <translation id="5083464117946352670">Неизвестен файлов размер.</translation>
 <translation id="5090832849094901128">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Можете да запазвате страници за четене по-късно или офлайн. Chrome ще ви попита дали искате да запазвате дълги страници.</translation>
 <translation id="5094827893301452931">Съобщението в Twitter е завършено.</translation>
 <translation id="5118764316110575523">Изкл.</translation>
 <translation id="5127805178023152808">Синхронизирането е изключено</translation>
@@ -757,6 +758,7 @@
 <translation id="8548878600947630424">Търсене в страницата...</translation>
 <translation id="8574235780160508979">Общите условия на Chrome ще бъдат променени на 31 март. <ph name="BEGIN_LINK" />Моля, прегледайте ги<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Изключено</translation>
+<translation id="8590913940444621808">Без запитване</translation>
 <translation id="8591976964826315682">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="8605219856220328675">Затваряне на раздела.</translation>
 <translation id="8620640915598389714">Редактиране</translation>
@@ -804,6 +806,7 @@
 <translation id="9094033019050270033">Актуализиране на паролата</translation>
 <translation id="9100610230175265781">Изисква се пропуск</translation>
 <translation id="9107664647686727385">Проверка за компрометирани пароли</translation>
+<translation id="9124387962554796433">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9152539721251340337">Създаване на QR код</translation>

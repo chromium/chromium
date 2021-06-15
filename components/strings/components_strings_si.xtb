@@ -610,6 +610,7 @@
 <translation id="3212623355668894776">ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් මැකෙන ලෙස සියලු ආගන්තුක කවුළු වසන්න.</translation>
 <translation id="3215092763954878852">WebAuthn භාවිත කළ නොහැකි විය</translation>
 <translation id="3218181027817787318">අදාළ</translation>
+<translation id="3223287115535306850">යෙදුම දියත් කිරීමේ තෙරපුම</translation>
 <translation id="3225919329040284222">සේවාදායකය සහතිකයක් ඉදිරිපත් කළ නමුත් එය තිළැලි පොරොත්තු සමඟ නොගැලපේ. ඔබේ ආරක්ෂාව සඳහා එම පොරොත්තු ඇතුළත් කර ඇත්තේ නිශ්චිත අධි-ආරක්ෂිත අඩවි පමණි.</translation>
 <translation id="3226128629678568754">පිටුව ප්‍රවේශනය කිරීමට අවශ්‍ය දත්ත යළි ඉදිරිපත් කිරීමට යළි ප්‍රවේශනය කරන බොත්තම ඔබන්න.</translation>
 <translation id="3226387218769101247">සිඟිති රූ</translation>
@@ -684,6 +685,7 @@
 <translation id="3447884698081792621">සහතිකය පෙන්වන්න (නිකුත් කරන ලද්දේ <ph name="ISSUER" /> )</translation>
 <translation id="3452404311384756672">කාලාන්තරය සොයන්න:</translation>
 <translation id="3453962258458347894">යළි උත්සාහ කිරීම් සංඛ්‍යාව</translation>
+<translation id="3454555520521576458">ප්‍රතිප්‍රමාණ කළ හැකිය</translation>
 <translation id="3456231139987291353">Number-11 (ලියුම් කවරය)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> හට පසුරු පුවරුවට පිටපත් කළ පෙළ සහ රූප බැලීමට අවශ්‍යයි</translation>
 <translation id="3461824795358126837">උද්දීපකය</translation>
@@ -720,7 +722,6 @@
 <translation id="3586931643579894722">විස්තර සඟවන්න</translation>
 <translation id="3587738293690942763">මැද</translation>
 <translation id="3590643883886679995">ඔබ අප්‍රසිද්ධ ප්‍රකාරයෙන් පිට වූ පසු පුරන දත්ත මෙම උපාංගය තුළ ගබඩා කරනු ඇත.</translation>
-<translation id="359126217934908072">මාසය/වසර:</translation>
 <translation id="3592413004129370115">Italian (ලියුම් කවරය)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දිනක් පමණ ගත වේ.}=1{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දිනක් පමණ ගත වේ.}one{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දින {NUM_DAYS}ක් ගත වේ.}other{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දින {NUM_DAYS}ක් ගත වේ.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1015,6 +1016,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> හට ප්‍රවේශ්‍යතා සිදුවීම්වලට ප්‍රතිචාර දැක්වීමට අවශ්‍යයි</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, සහ ඔබ දැනට මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවි සඳහා ඔබේ සුරැකි මුරපද පරීක්‍ෂා කිරීම නිර්දේශ කරයි.</translation>
+<translation id="468314109939257734">ඔබගේ අතථ්‍ය කාඩ්පත් අංකය බලන්න</translation>
 <translation id="4690462567478992370">අවලංගු සහතිකයක් භාවිතය නවත්වන්න</translation>
 <translation id="4691835149146451662">Architecture-A (ලියුම් කවරය)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1923,6 +1925,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" නිවැරදිව වින්‍යාස කර නොමැත. "<ph name="SOFTWARE_NAME" />" අස්ථාපනයෙන් සාමාන්‍යයෙන් ගැටලුව විසඳයි. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">කනගාටුයි, යමක් වැරදිණි.</translation>
 <translation id="8067872629359326442">ඔබ මේ දැන් වංචනික වෙබ් අඩවියක් මත ඔබේ මුරපදය ඇතුළත් කළා. Chromium උදවු කළ හැක. ඔබේ මුරපදය වෙනස් කිරීමටත් ඔබේ ගිණුම අවදානමේ තිබිය හැකි බව Google වෙත දැනුම් දිමටත්, ගිණුම ආරක්‍ෂා කරන්න ක්ලික් කරන්න.</translation>
+<translation id="8070439594494267500">යෙදුම් නිරූපකය</translation>
 <translation id="8074253406171541171">10x13 (ලියුම් කවරය)</translation>
 <translation id="8075898834294118863">අඩවි සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="8078141288243656252">කරකැවූ විට අනුසටහන් කළ නොහැක</translation>
@@ -2206,6 +2209,7 @@
 <translation id="9128870381267983090">ජාලයට සබඳ වන්න</translation>
 <translation id="9137013805542155359">මූලිකය පෙන්වන්න</translation>
 <translation id="9141013498910525015">ලිපින කළමනා කරන්න</translation>
+<translation id="9144951720726881238">කල් ඉකුත් වීමේ දිනය:</translation>
 <translation id="9148088599418889305">නැව්ගත කිරීමේ ක්‍රමය තෝරාගන්න</translation>
 <translation id="9148507642005240123">සංස්කරණය &amp;පසුගමනය කරන්න</translation>
 <translation id="9150045010208374699">ඔබගේ කැමරාව භාවිතා කරන්න</translation>

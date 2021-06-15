@@ -606,6 +606,7 @@
 <translation id="3212623355668894776">Fermez toutes les fenêtres d'invité pour que votre activité de navigation soit supprimée de cet appareil.</translation>
 <translation id="3215092763954878852">Impossible d'utiliser WebAuthn</translation>
 <translation id="3218181027817787318">Relatif</translation>
+<translation id="3223287115535306850">Icône de chargement de lancement d'application</translation>
 <translation id="3225919329040284222">Le serveur dispose d'un certificat qui ne répond pas aux exigences intégrées. Celles-ci sont incluses dans certains sites Web très sécurisés afin de vous protéger.</translation>
 <translation id="3226128629678568754">Appuyez sur le bouton d'actualisation pour soumettre de nouveau les données nécessaires pour charger la page.</translation>
 <translation id="3226387218769101247">Miniatures</translation>
@@ -680,6 +681,7 @@
 <translation id="3447884698081792621">Afficher le certificat (délivré par <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalle de récupération :</translation>
 <translation id="3453962258458347894">Nombre de nouveaux essais</translation>
+<translation id="3454555520521576458">Redimensionnable</translation>
 <translation id="3456231139987291353">Enveloppe n° 11</translation>
 <translation id="3461266716147554923"><ph name="URL" /> veut voir le texte et les images copiés dans le presse-papiers</translation>
 <translation id="3461824795358126837">Surligneur</translation>
@@ -716,7 +718,6 @@
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587738293690942763">Centre</translation>
 <translation id="3590643883886679995">Les données de connexion seront stockées sur cet appareil lorsque vous quitterez le mode de navigation privée.</translation>
-<translation id="359126217934908072">Mois/Année :</translation>
 <translation id="3592413004129370115">Enveloppe italienne</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ un jour pour vous joindre à un nouveau groupe.}=1{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ un jour pour vous joindre à un nouveau groupe.}one{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ {NUM_DAYS} jour pour vous joindre à un nouveau groupe.}other{Vous pouvez réinitialiser votre groupe en tout temps. Il faut environ {NUM_DAYS} jours pour vous joindre à un nouveau groupe.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1009,6 +1010,7 @@
 <translation id="4677585247300749148">L'URL <ph name="URL" /> veut répondre aux événements d'accessibilité</translation>
 <translation id="467809019005607715">Google Présentations</translation>
 <translation id="4680804919228900307">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, pour <ph name="WEBSITE_2" />, pour <ph name="WEBSITE_3" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
+<translation id="468314109939257734">Afficher votre numéro de carte virtuelle</translation>
 <translation id="4690462567478992370">Arrêter d'utiliser un certificat non valide</translation>
 <translation id="4691835149146451662">Enveloppe Architecture A</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1917,6 +1919,7 @@ Détails supplémentaires :
 <translation id="8057711352706143257">« <ph name="SOFTWARE_NAME" /> » n'est pas correctement configuré. La désinstallation de « <ph name="SOFTWARE_NAME" /> » résout généralement le problème. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Désolés, une erreur s'est produite.</translation>
 <translation id="8067872629359326442">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium peut vous aider. Pour modifier votre mot de passe et avertir Google que votre compte pourrait être en danger, cliquez sur Protéger le compte.</translation>
+<translation id="8070439594494267500">Icône de l'application</translation>
 <translation id="8074253406171541171">Enveloppe 10 po x 13 po</translation>
 <translation id="8075898834294118863">Gérer les paramètres de site</translation>
 <translation id="8078141288243656252">Impossible d'annoter lorsque le document est pivoté</translation>

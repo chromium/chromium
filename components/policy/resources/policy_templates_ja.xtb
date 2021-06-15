@@ -77,6 +77,7 @@
 <translation id="1082802595100075771">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得するかどうかをユーザーが選択できる</translation>
 <translation id="1087437665304381368">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のデベロッパー モードのみを管理します。Android 開発者向けオプションへのアクセスを禁止するには、<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> ポリシーを設定する必要があります。</translation>
 <translation id="1087707496788636333">Chrome Enterprise ポリシーのリストは別のページに移動しました。ブックマークを <ph name="POLICY_DOCUMENTATION_URL" /> に変更してください。</translation>
+<translation id="1089631008765417531">自動インストールされたウェブ アプリケーションにデバイス属性の取得を許可する。</translation>
 <translation id="1095209545735032039">シリアル API をブロックするサイトを指定します</translation>
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>
 <translation id="1099282607296956954">すべてのサイトに対してサイト分離を有効にする</translation>
@@ -555,6 +556,7 @@
 
       注: ポリシーの値は 0～100（%）の範囲で指定する必要があります。</translation>
 <translation id="1736269219679256369">SSL 警告ページから移動することを許可する</translation>
+<translation id="173993509627303617">自動インストールされたウェブ アプリケーションにデバイス属性の取得を許可しない。</translation>
 <translation id="174765717426930019">ポップアップの表示元ページで操作が明示的に禁止されている場合以外は、<ph name="BLANK_PAGE_NAME" /> をターゲットとして開いたすべてのポップアップにそのリクエスト元ページの操作を許可する </translation>
 <translation id="1750315445671978749">すべてのダウンロードをブロックする</translation>
 <translation id="1751429117283165017">このポリシーでは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリに書き込みアクセスすることに関して、ユーザーに許可を要求できないサイトの URL パターンリストを指定できます。
@@ -898,6 +900,17 @@
       <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />（値 1）に設定した場合は、セキュリティまたは安定性に関する重要な修正とみなされるバリエーションのみ <ph name="PRODUCT_OS_NAME" /> に適用できます。
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（値 2）に設定した場合は、ログイン画面でどのバリエーションもブラウザに適用できません。このモードは、<ph name="PRODUCT_OS_NAME" /> のデベロッパーがセキュリティに関する重要な修正を適切なタイミングで適用できない場合があるため推奨されません。</translation>
+<translation id="2216380260552785166">このポリシーでは、<ph name="PRODUCT_NAME" /> の「従来のブラウザのサポート」機能でサイトリストまたはグレーリストのポリシーをどのように扱うかを管理します。次のポリシーに影響します: <ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
+
+      [Default]（0）に設定するか未設定のままにした場合、URL は緩やかな基準で照合されます。「/」を含まないルールは、URL のホスト名の任意の場所に含まれる部分文字列が照合されます。
+
+      [Strict]（1）に設定した場合、URL は厳格な基準で照合されます。「/」を含まないルールは、ホスト名の末尾のみが照合されます。また、ドメイン名の区切りとしてのみ使用する必要があります。この設定では、<ph name="MS_IE_PRODUCT_NAME" /> および <ph name="MS_EDGE_PRODUCT_NAME" /> との互換性がより高くなります。
+
+      たとえば、「example.com」というルールは、
+
+      解析モードに関係なく、「http://example.com/」と「http://subdomain.example.com/」に一致します。
+
+      「http://notexample.com/」、「http://example.com.invalid.com/」、「http://example.comabc/」は [Default] モードの場合のみ一致します。</translation>
 <translation id="2221850122314326571">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。
       無効な場合、<ph name="PRODUCT_NAME" /> はプラットフォームから提供される従来の証明書確認機能を使用してサーバー証明書の確認を行います。
       未設定の場合、組み込みまたは従来の証明書確認機能が使用される可能性があります。
@@ -2117,6 +2130,13 @@
 
       <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> セッションの詳細については、<ph name="WEBXR_AR_MODULE_API_NAME" /> 仕様をご覧ください。</translation>
 <translation id="3788662722837364290">ユーザーがアイドル状態になったときの電源管理設定</translation>
+<translation id="3789468269499404556">有効な場合、<ph name="PRODUCT_NAME" /> 機能はユーザーのブラウザと環境に関する情報を提供する詳細なリクエスト ヘッダーを送信します。
+
+      これは追加の機能ですが、この新しいヘッダーは、リクエストに含める情報を制限している一部のウェブサイトでは正常に動作しない可能性があります。
+
+      このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> 機能は有効になります。このポリシーを無効に設定した場合、この機能は使用できません。
+
+      この企業向けのポリシーは一時的な適用を想定しており、Chome 94 で削除されます。</translation>
 <translation id="3790085888761753785">この設定が有効になっている場合、ユーザーは Smart Lock を使ってアカウントにログインできます。これにより、通常は画面のロック解除のみをユーザーに許可する Smart Lock の機能範囲が広がります。
 
       この設定が無効になっている場合、ユーザーは Smart Lock Signin を使用できません。
@@ -2462,6 +2482,7 @@
       <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
+<translation id="4268586991084547853">Microsoft IE / Edge エンタープライズ モードのサイトリストとの互換性を高める。</translation>
 <translation id="4269859918103560644">ユーザーが決定できるようにする</translation>
 <translation id="4274691295133617461">このポリシーを 3 に設定した場合、ウェブサイトは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリへの File System API を経由した読み取りアクセスを要求することが許可されます。このポリシーを 2 に設定した場合、アクセスは拒否されます。
 
@@ -2690,6 +2711,7 @@
       * <ph name="FILTER_PLACEHOLDER" /> に <ph name="EMPTY_DICTIONARY" /> を設定した場合、クライアント証明書の選択に追加の条件は適用されません。ウェブサーバーによって提供されたフィルタは引き続き適用されます。
 
       このポリシーを未設定のままにした場合、どのサイトについても証明書の自動選択は行われません。</translation>
+<translation id="4615003180013429835">サイトリスト解析モード</translation>
 <translation id="4617338332148204752"><ph name="PRODUCT_FRAME_NAME" /> でのメタ タグ チェックをスキップする</translation>
 <translation id="4625915093043961294">拡張機能インストールのホワイトリストを設定する</translation>
 <translation id="4632343302005518762">リストで指定したコンテンツ タイプの処理を <ph name="PRODUCT_FRAME_NAME" /> に対して許可する</translation>
@@ -3338,6 +3360,11 @@
 <translation id="5535973522252703021">Kerberos 委任サーバーのホワイトリスト</translation>
 <translation id="553806128266843748">ネットワーク制限を有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="5540885720415375851">ローカル デバイスの検出を許可する</translation>
+<translation id="5541621819310532773">このポリシーでは、自動インストールされたウェブ アプリケーションに Device Attributes Web API を使用したデバイス属性（シリアル番号、ホスト名など）の取得を許可するかどうかを設定します。
+
+      このポリシーを true に設定するか未設定のままにした場合は、自動インストールされたウェブ アプリケーションに Device Attributes Web API の使用を許可します。
+
+      このポリシーを false に設定した場合は、Device Attributes Web API の使用を許可しません。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">ログイン画面でハイ コントラストを有効にする</translation>
 <translation id="555077880566103058">すべてのサイトで <ph name="FLASH_PLUGIN_NAME" /> プラグインの自動実行を許可する</translation>
@@ -3944,6 +3971,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、フローティング ユーザー補助機能メニューは常に非表示となります。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">すべてのダウンロード ファイルに対してセーフ ブラウジング チェックを行う</translation>
+<translation id="6436052172226685535">LBS のデフォルトの動作。</translation>
 <translation id="6438364096042399634">このポリシーでは、ユーザーがカーネル ドライバから分離してウェブアプリ内で直接 chrome.usb API を通じて使用できる USB デバイスのリストを定義できます。USB ベンダー ID と商品 ID をペアで入力し、個々のハードウェアを特定できるようにします。
 
       このポリシーを設定しない場合、分離可能な USB デバイスのリストは空になります。
@@ -4417,6 +4445,11 @@
 <translation id="69525503251220566">既定の検索プロバイダに画像検索機能を提供するパラメータ</translation>
 <translation id="6953102253399571439">デフォルトで PIN の印刷を有効にします</translation>
 <translation id="6956272732789158625">すべてのサイトにキー生成の使用を許可しない</translation>
+<translation id="6959021201443139119">ここで指定したパターンに一致するドメインに設定されている Cookie を、以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻します。以前の動作に戻すと、<ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性のない Cookie は「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」が指定されたものとして扱われます。また、「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」の Cookie に「<ph name="ATTRIBUTE_SECURE_NAME" />」属性は必須ではなくなります。さらに、2 つのサイトが同一サイトかどうかを評価する際に、スキーム比較がスキップされます。詳細については https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies をご覧ください。
+
+          ここで指定したパターンに一致しないドメインの Cookie（またはこのポリシーが未設定の場合はすべての Cookie）には、グローバルなデフォルト値がユーザーの個人設定の値として使用されます。
+
+          ここで指定するパターンは URL ではなくドメインとして扱われるため、スキームやポートは指定しないでください。</translation>
 <translation id="6961602002757991199">このポリシーが有効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> はその URL からサイトリストをダウンロードし、<ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> ポリシーで設定されているものとしてルールを適用します。このポリシーにより、<ph name="PRODUCT_NAME" /> と代替ブラウザの双方で互いに他方を開くことができなくなります。
 
       このポリシーが未設定のままか、無効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> は、このポリシーをブラウザの切り替えを行わないルールの参照元として使用しません。

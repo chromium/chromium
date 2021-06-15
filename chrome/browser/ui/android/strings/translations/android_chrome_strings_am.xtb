@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">ይቅርታ፣ የእርስዎን የመግቢያ ማስረጃዎችን ማረጋገጥ አልቻልንም</translation>
 <translation id="1310482092992808703">ትሮችን ይሰብስቡ</translation>
 <translation id="1311657260431405215">ይህ የQR ኮድ ዩአርኤል አይደለም፦ <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">የዳሰሳ ታሪክ ተከፍቷል</translation>
 <translation id="1331212799747679585">Chrome መዘመን አይችልም። ተጨማሪ አማራጮች</translation>
 <translation id="1332501820983677155">የGoogle Chrome ባህሪ አቋራጮች</translation>
@@ -961,6 +962,7 @@
 <translation id="718926126787620637">በሙሉ ቁመታቸው ላይ የተከፈቱ የዕልባት አቃፊዎች ዝርዝር</translation>
 <translation id="7191430249889272776">ትር ጀርባ ላይ ተከፍቷል።</translation>
 <translation id="7233236755231902816">ድሩን በቋንቋዎ ለማየት የቅርብ ጊዜውን የChrome ስሪት ያግኙ</translation>
+<translation id="7242755609445462077">ቅጥ ያለው ድምቀት <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> በ Chrome ውስጥ ስምረት እንደበራለት ያረጋግጡ</translation>
 <translation id="7252076891734325316">ስልክዎን ከኮምፒውተሩ አጠገብ ያኑሩ</translation>
 <translation id="7274013316676448362">የታገደ ጣቢያ</translation>

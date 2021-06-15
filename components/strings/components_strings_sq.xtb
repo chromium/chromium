@@ -609,6 +609,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3212623355668894776">Mbyll të gjitha dritaret e "vizitorit" që aktiviteti yt i shfletimit të fshihet nga kjo pajisje.</translation>
 <translation id="3215092763954878852">WebAuthn nuk mund të përdorej</translation>
 <translation id="3218181027817787318">Relativ</translation>
+<translation id="3223287115535306850">Ikona e ngarkimit për hapjen e aplikacionit</translation>
 <translation id="3225919329040284222">Serveri paraqiti një certifikatë që nuk përputhet me pritshmëritë e integruara. Këto pritshmëri përfshihen për uebsajte të caktuara të sigurisë së lartë, me qëllim që të të mbrojnë.</translation>
 <translation id="3226128629678568754">Shtyp butonin e ringarkimit për të dorëzuar përsëri të dhënat që duhen për të ngarkuar faqen.</translation>
 <translation id="3226387218769101247">Miniaturat</translation>
@@ -683,6 +684,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3447884698081792621">Shfaq certifikatën (lëshuar nga <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervali i marrjes:</translation>
 <translation id="3453962258458347894">Numri i ripërpjekjeve</translation>
+<translation id="3454555520521576458">Me madhësi të ndryshueshme</translation>
 <translation id="3456231139987291353">Number-11 (Zarf)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> dëshiron të shikojë tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
 <translation id="3461824795358126837">Theksuesi</translation>
@@ -719,7 +721,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3586931643579894722">Fshih detajet</translation>
 <translation id="3587738293690942763">Mesatar</translation>
 <translation id="3590643883886679995">Të dhënat e identifikimit do të ruhen në këtë pajisje pasi të dalësh nga modaliteti "i fshehtë".</translation>
-<translation id="359126217934908072">Muaji/viti:</translation>
 <translation id="3592413004129370115">Italian (Zarf)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Mund ta rivendosësh grupin tënd në çdo kohë. Duhet rreth një ditë për t'u bashkuar në një grup të ri.}=1{Mund ta rivendosësh grupin tënd në çdo kohë. Duhet rreth një ditë për t'u bashkuar në një grup të ri.}other{Mund ta rivendosësh grupin tënd në çdo kohë. Duhen {NUM_DAYS} ditë për t'u bashkuar në një grup të ri.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1015,6 +1016,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4677585247300749148"><ph name="URL" /> kërkon të reagojë ndaj ngjarjeve të qasshmërisë</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chromium të rekomandon t'i kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
+<translation id="468314109939257734">Shiko numrin e kartës sate virtuale</translation>
 <translation id="4690462567478992370">Ndalo përdorimin e një certifikate të pavlefshme</translation>
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1922,6 +1924,7 @@ Detaje shtesë:
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" nuk është konfiguruar mirë. Zakonisht këtë problem e zgjidh çinstalimi i "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Na vjen keq! Diçka shkoi keq.</translation>
 <translation id="8067872629359326442">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium mund të të ndihmojë. Për të ndryshuar fjalëkalimin dhe për të njoftuar Google se llogaria jote mund të jetë në rrezik, kliko te "Mbroje llogarinë".</translation>
+<translation id="8070439594494267500">Ikona e aplikacionit</translation>
 <translation id="8074253406171541171">10x13 (Zarf)</translation>
 <translation id="8075898834294118863">Menaxho cilësimet e sajtit</translation>
 <translation id="8078141288243656252">Nuk mund të shënosh kur rrotullohet</translation>

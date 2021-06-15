@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">同期を有効にしますか？</translation>
 <translation id="123724288017357924">キャッシュ コンテンツを無視して現在のページを再読み込みする</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> を読み込んでいます</translation>
+<translation id="1242883863226959074">デバイス</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
@@ -52,6 +53,7 @@
 <translation id="1307205233980126133">認証情報を確認できませんでした</translation>
 <translation id="1310482092992808703">タブをグループ化</translation>
 <translation id="1311657260431405215">この QR コードは URL ではありません: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">ナビゲーション履歴が開いています</translation>
 <translation id="1331212799747679585">Chrome を更新できません。その他のオプション</translation>
 <translation id="1332501820983677155">Google Chrome 機能のショートカット</translation>
@@ -919,6 +921,7 @@
 <translation id="6864459304226931083">画像をダウンロード</translation>
 <translation id="6865313869410766144">自動入力フォームのデータ</translation>
 <translation id="6867400383614725881">新しいシークレット タブ</translation>
+<translation id="6869056123412990582">パソコン</translation>
 <translation id="6882836635272038266">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
 <translation id="688738109438487280">既存のデータを <ph name="TO_ACCOUNT" /> に追加します。</translation>
 <translation id="6891726759199484455">パスワードをコピーするにはロックを解除してください</translation>
@@ -961,6 +964,7 @@
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7233236755231902816">お使いの言語でウェブを表示するには、Chrome の最新バージョンを入手してください</translation>
+<translation id="7242755609445462077">スタイルを設定した選択箇所（<ph name="CURRENT_DATE" />）</translation>
 <translation id="7248069434667874558">Chrome で <ph name="TARGET_DEVICE_NAME" /> の同期がオンになっていることを確認してください</translation>
 <translation id="7252076891734325316">パソコンの近くにスマートフォンを置いてください</translation>
 <translation id="7274013316676448362">ブロック中のサイト</translation>
@@ -1154,6 +1158,7 @@
 <translation id="8393700583063109961">メッセージを送信</translation>
 <translation id="8410695015584479363">料金をチェック</translation>
 <translation id="8413126021676339697">全履歴を表示</translation>
+<translation id="8424781820952413435">ページを送信しました。<ph name="DEVICE_TYPE" /> で Chrome を開くと表示できます</translation>
 <translation id="8427875596167638501">[プレビュー] タブが半分開いています</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
@@ -1195,6 +1200,7 @@
 <translation id="860282621117673749">値下げアラート</translation>
 <translation id="8616006591992756292">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="8617240290563765734">ダウンロード コンテンツに指定されている URL を開きますか？</translation>
+<translation id="8621068256433641644">スマートフォン</translation>
 <translation id="8636825310635137004">他のデバイスと同じタブを使用するには、同期を有効にします。</translation>
 <translation id="8641930654639604085">成人向けのサイトを可能な限りブロックする</translation>
 <translation id="8655129584991699539">Chrome の設定でデータを削除できます</translation>

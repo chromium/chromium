@@ -603,6 +603,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3212623355668894776">Itxi gonbidatu moduko leiho guztiak arakatze-jarduerak ezabatzeko gailu honetatik.</translation>
 <translation id="3215092763954878852">Ezin izan da erabili WebAuthn</translation>
 <translation id="3218181027817787318">Erlatiboa</translation>
+<translation id="3223287115535306850">Aplikazio bat abiarazi dela adierazteko dardara</translation>
 <translation id="3225919329040284222">Zerbitzariak aurkeztu duen ziurtagiria ez dator bat integratutako eskakizunekin. Eskakizun horiek segurtasun handiko webgune batzuek egiten dituzte erabiltzaileak babesteko.</translation>
 <translation id="3226128629678568754">Orria kargatzeko behar diren datuak berriro bidaltzeko, sakatu Kargatu berriro botoia.</translation>
 <translation id="3226387218769101247">Irudi txikiak</translation>
@@ -677,6 +678,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3447884698081792621">Erakutsi ziurtagiria (jaulkitzailea: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Eskuratzeko denbora tartea:</translation>
 <translation id="3453962258458347894">Saiakera kopurua</translation>
+<translation id="3454555520521576458">Tamaina alda daiteke</translation>
 <translation id="3456231139987291353">Number-11 (gutun-azala)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> webguneak arbelean kopiatzen dituzun testuak eta irudiak ikusi nahi ditu</translation>
 <translation id="3461824795358126837">Nabarmentze-tresna</translation>
@@ -712,7 +714,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3586931643579894722">Ezkutatu xehetasunak</translation>
 <translation id="3587738293690942763">Erdia</translation>
 <translation id="3590643883886679995">Ezkutuko modutik irteten zarenean, saioa hasteko datuak gailu honetan gordeko dira.</translation>
-<translation id="359126217934908072">Hilabetea/Urtea:</translation>
 <translation id="3592413004129370115">Italian (gutun-azala)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Edozein unetan berrezar dezakezu taldea. Gutxi gorabehera egun bat behar da beste talde batean sartzeko.}=1{Edozein unetan berrezar dezakezu taldea. Gutxi gorabehera egun bat behar da beste talde batean sartzeko.}other{Edozein unetan berrezar dezakezu taldea. Gutxi gorabehera {NUM_DAYS} egun behar dira beste talde batean sartzeko.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" /> (<ph name="TIME" />)</translation>
@@ -1005,6 +1006,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4677585247300749148"><ph name="URL" /> webguneak erabilerraztasun-gertaerei erantzun nahi die</translation>
 <translation id="467809019005607715">Google Aurkezpenak</translation>
 <translation id="4680804919228900307">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> eta <ph name="WEBSITE_3" /> webguneetarako eta pasahitz hori erabili duzun beste webgune batzuetarako gordetako pasahitzak egiaztatzea gomendatzen dizu Chromium-ek.</translation>
+<translation id="468314109939257734">Ikusi txartel birtualaren zenbakia</translation>
 <translation id="4690462567478992370">Utzi ziurtagiri baliogabea erabiltzaileari</translation>
 <translation id="4691835149146451662">Architecture-A (gutun-azala)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1912,6 +1914,7 @@ Xehetasun gehiago:
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" ez dago behar bezala konfiguratuta. "<ph name="SOFTWARE_NAME" />" desinstalatuta konpondu ohi da arazo hori. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Arazoren bat izan da.</translation>
 <translation id="8067872629359326442">Webgune engainagarri batean idatzi duzu pasahitza. Chromium-ek lagundu egin diezazuke. Pasahitza aldatzeko eta Google-ri agian kontua arriskuan dagoela jakinarazteko, egin klik Babestu kontua botoian.</translation>
+<translation id="8070439594494267500">Aplikazioaren ikonoa</translation>
 <translation id="8074253406171541171">10x13 (gutun-azala)</translation>
 <translation id="8075898834294118863">Kudeatu webguneen ezarpenak</translation>
 <translation id="8078141288243656252">Ezin da oharpenik egin dokumentua biratuta dagoenean</translation>

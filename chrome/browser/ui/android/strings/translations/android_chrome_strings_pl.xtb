@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">Nie udało się zweryfikować Twoich danych logowania</translation>
 <translation id="1310482092992808703">Grupuj karty</translation>
 <translation id="1311657260431405215">Ten kod QR nie jest adresem URL: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">Historia nawigacji jest otwarta</translation>
 <translation id="1331212799747679585">Nie udało się zaktualizować Chrome. Więcej opcji</translation>
 <translation id="1332501820983677155">Skróty do funkcji Google Chrome</translation>
@@ -961,6 +962,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="718926126787620637">Lista folderów zakładek otwarta na całą wysokość</translation>
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
 <translation id="7233236755231902816">Aby wyświetlać strony internetowe w swoim języku, pobierz najnowszą wersję Chrome</translation>
+<translation id="7242755609445462077">Stylizowane wyróżnienie: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma włączoną synchronizację w Chrome</translation>
 <translation id="7252076891734325316">Przybliż telefon do komputera</translation>
 <translation id="7274013316676448362">Zablokowana witryna</translation>

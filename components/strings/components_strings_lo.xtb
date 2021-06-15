@@ -612,6 +612,7 @@
 <translation id="3212623355668894776">ປິດໜ້າຈໍແຂກທັງໝົດເພື່ອໃຫ້ການເຄື່ອນໄຫວທ່ອງເວັບຂອງທ່ານຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 <translation id="3215092763954878852">ບໍ່ສາມາດໃຊ້ WebAuthn ໄດ້</translation>
 <translation id="3218181027817787318">ຍາດພີ່ນ້ອງ</translation>
+<translation id="3223287115535306850">ໄອຄອນໂຫຼດຕອນກຳລັງເປີດແອັບ</translation>
 <translation id="3225919329040284222">ເຊີບເວີໄດ້ນໍາສະເໜີໃບຢັ້ງຢືນທີ່ບໍ່ກົງກັບສິ່ງຄາດຫວັງທີ່ຝັງໄວ້ຢູ່ໃນ. ສິ່ງຄາດຫວັງເຫຼົ່ານີ້ຖືກເອົາລວມໄວ້ໃຫ້ກັບເວັບໄຊທ໌ຄວາມປອດໄພສູງ, ສະເພາະ ເພື່ອປົກປ້ອງທ່ານ.</translation>
 <translation id="3226128629678568754">ກົດປຸ່ມໂຫຼດຄືນໃໝ່ ເພື່ອສົ່ງຂໍ້ມູນທີ່ຈໍາເປັນຄືນໃໝ່ ເພື່ອໂຫຼດໜ້າ.</translation>
 <translation id="3226387218769101247">ຮູບຕົວຢ່າງ</translation>
@@ -686,6 +687,7 @@
 <translation id="3447884698081792621">ສະແດງໃບຮັບຮອງ (ທີ່ອອກໃຫ້ໂດຍ <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">ເອົາໄລຍະ​ຫ່າງ​:</translation>
 <translation id="3453962258458347894">ຈຳນວນການລອງໃໝ່</translation>
+<translation id="3454555520521576458">ປ່ຽນຂະໜາດໄດ້</translation>
 <translation id="3456231139987291353">Number-11 (ຊອງຈົດໝາຍ)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ຕ້ອງການເຫັນຂໍ້ຄວາມ ແລະ ຮູບພາບທີ່ສຳເນົາໄວ້ໃນຄລິບບອດ</translation>
 <translation id="3461824795358126837">ຕົວໄຮໄລ້</translation>
@@ -722,7 +724,6 @@
 <translation id="3586931643579894722">ເຊື່ອງ​ລາຍ​ລະ​ອຽດ</translation>
 <translation id="3587738293690942763">ເຄິ່ງກາງ</translation>
 <translation id="3590643883886679995">ລະບົບຈະເກັບຂໍ້ມູນເຂົ້າສູ່ລະບົບໄວ້ໃນອຸປະກອນນີ້ຫຼັງຈາກທີ່ທ່ານອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນແລ້ວ.</translation>
-<translation id="359126217934908072">ເດືອນ/ປີ:</translation>
 <translation id="3592413004129370115">Italian (ຊອງຈົດໝາຍ)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ທ່ານສາມາດຣີເຊັດກຸ່ມຂອງທ່ານຕອນໃດກໍໄດ້. ມັນໃຊ້ເວລາປະມານໜຶ່ງມື້ເພື່ອເຂົ້າຮ່ວມກຸ່ມໃໝ່.}=1{ທ່ານສາມາດຣີເຊັດກຸ່ມຂອງທ່ານຕອນໃດກໍໄດ້. ມັນໃຊ້ເວລາປະມານໜຶ່ງມື້ເພື່ອເຂົ້າຮ່ວມກຸ່ມໃໝ່.}other{ທ່ານສາມາດຣີເຊັດກຸ່ມຂອງທ່ານຕອນໃດກໍໄດ້. ມັນໃຊ້ເວລາປະມານ {NUM_DAYS} ມື້ເພື່ອເຂົ້າຮ່ວມກຸ່ມໃໝ່.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1020,6 +1021,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> ຕ້ອງການຕອບສະໜອງກັບເຫດການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">ທ່ານຫາກໍປ້ອນລະຫັດຜ່ານຂອງທ່ານໃສ່ເວັບໄຊຫຼອກລວງ. Chromium ຂໍແນະນຳໃຫ້ກວດເບິ່ງລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄວ້ສຳລັບ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ແລະ ເວັບໄຊອື່ນໆທີ່ທ່ານໃຊ້ລະຫັດຜ່ານນີ້ໃນຕອນນີ້ເລີຍ.</translation>
+<translation id="468314109939257734">ເບິ່ງໝາຍເລກບັດສະເໝືອນຂອງທ່ານ</translation>
 <translation id="4690462567478992370">ຢຸດ​ການ​ໃຊ້​ໃບ​ຢັ້ງ​ຢືນ​ທີ່ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="4691835149146451662">Architecture-A (ຊອງຈົດໝາຍ)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1928,6 +1930,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" ບໍ່ຖືກກຳນົດຄ່າຢ່າງຖືກຕ້ອງ. ໂດຍປົກກະຕິແລ້ວການຖອນຕິດຕັ້ງ "<ph name="SOFTWARE_NAME" />" ຈະແກ້ໄຂບັນຫາໄດ້. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">ຂໍອະໄພ, ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="8067872629359326442">ທ່ານຫາກໍປ້ອນລະຫັດຜ່ານຂອງທ່ານໃສ່ເວັບໄຊຫຼອກລວງ. Chromium ສາມາດຊ່ວຍໄດ້. ເພື່ອປ່ຽນລະຫັດຜ່ານຂອງທ່ານ ແລະ ແຈ້ງບອກ Google ວ່າບັນຊີຂອງທ່ານອາດຈະມີຄວາມສ່ຽງ, ກະລຸນາຄລິກປົກປ້ອງບັນຊີ.</translation>
+<translation id="8070439594494267500">ໄອຄອນແອັບ</translation>
 <translation id="8074253406171541171">10x13 (ຊອງຈົດໝາຍ)</translation>
 <translation id="8075898834294118863">ຈັດການການຕັ້ງຄ່າເວັບໄຊ</translation>
 <translation id="8078141288243656252">ບໍ່ສາມາດຂຽນອະທິບາຍຄວາມເຫັນໃນເວລາໝຸນໄດ້</translation>
