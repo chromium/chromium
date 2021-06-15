@@ -1308,20 +1308,6 @@ bool ScrollableShelfView::ShouldShowRightArrow() const {
          (layout_strategy_ == kShowButtons);
 }
 
-int ScrollableShelfView::GetStatusWidgetSizeOnPrimaryAxis(
-    bool use_target_bounds) const {
-  const gfx::Size status_widget_size =
-      use_target_bounds
-          ? GetShelf()->status_area_widget()->GetTargetBounds().size()
-          : GetShelf()
-                ->shelf_widget()
-                ->status_area_widget()
-                ->GetWindowBoundsInScreen()
-                .size();
-  return GetShelf()->PrimaryAxisValue(status_widget_size.width(),
-                                      status_widget_size.height());
-}
-
 gfx::Rect ScrollableShelfView::GetAvailableLocalBounds(
     bool use_target_bounds) const {
   return use_target_bounds

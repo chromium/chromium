@@ -286,8 +286,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   bool ShouldShowLeftArrow() const;
   bool ShouldShowRightArrow() const;
 
-  int GetStatusWidgetSizeOnPrimaryAxis(bool use_target_bounds) const;
-
   // Returns the local bounds depending on which view bounds are used: actual
   // view bounds or target view bounds.
   gfx::Rect GetAvailableLocalBounds(bool use_target_bounds) const;
