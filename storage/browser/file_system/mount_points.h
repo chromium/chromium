@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/common/file_system/file_system_util.h"
 
 class GURL;
@@ -43,8 +42,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MountPoints {
     }
   };
 
-  MountPoints() {}
-  virtual ~MountPoints() {}
+  MountPoints() = default;
+  MountPoints(const MountPoints&) = delete;
+  MountPoints& operator=(const MountPoints&) = delete;
+  virtual ~MountPoints() = default;
 
   // Revokes a mount point identified by |mount_name|.
   // Returns false if the |mount_name| is not (no longer) registered.
@@ -98,9 +99,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MountPoints {
   // instantiated as the FileSystemURL class. This is internally used for nested
   // URL cracking in FileSystemContext.
   virtual FileSystemURL CrackFileSystemURL(const FileSystemURL& url) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MountPoints);
 };
 
 }  // namespace storage

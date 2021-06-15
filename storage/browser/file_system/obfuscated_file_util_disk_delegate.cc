@@ -9,9 +9,9 @@
 
 namespace storage {
 
-ObfuscatedFileUtilDiskDelegate::ObfuscatedFileUtilDiskDelegate() {}
+ObfuscatedFileUtilDiskDelegate::ObfuscatedFileUtilDiskDelegate() = default;
 
-ObfuscatedFileUtilDiskDelegate::~ObfuscatedFileUtilDiskDelegate() {}
+ObfuscatedFileUtilDiskDelegate::~ObfuscatedFileUtilDiskDelegate() = default;
 
 bool ObfuscatedFileUtilDiskDelegate::DirectoryExists(
     const base::FilePath& path) {

@@ -42,9 +42,11 @@ class FileStreamWriter {
       int64_t initial_offset,
       OpenOrCreate open_or_create);
 
+  FileStreamWriter(const FileStreamWriter&) = delete;
+  FileStreamWriter& operator=(const FileStreamWriter&) = delete;
   // Closes the file. If there's an in-flight operation, it is canceled (i.e.,
   // the callback function associated with the operation is not called).
-  virtual ~FileStreamWriter() {}
+  virtual ~FileStreamWriter() = default;
 
   // Writes to the current cursor position asynchronously.
   //
@@ -94,6 +96,9 @@ class FileStreamWriter {
   //
   // It is invalid to call Flush while there is an in-flight async operation.
   virtual int Flush(net::CompletionOnceCallback callback) = 0;
+
+ protected:
+  FileStreamWriter() = default;
 };
 
 }  // namespace storage

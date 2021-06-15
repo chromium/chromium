@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_operation.h"
 
@@ -59,6 +58,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileUtil {
     bool IsDirectory() override;
   };
 
+  FileSystemFileUtil(const FileSystemFileUtil&) = delete;
+  FileSystemFileUtil& operator=(const FileSystemFileUtil&) = delete;
   virtual ~FileSystemFileUtil() = default;
 
   // Creates or opens a file with the given flags.
@@ -176,10 +177,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileUtil {
                                         base::FilePath* platform_path) = 0;
 
  protected:
-  FileSystemFileUtil() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileSystemFileUtil);
+  FileSystemFileUtil() = default;
 };
 
 }  // namespace storage

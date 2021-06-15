@@ -16,7 +16,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -74,7 +73,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   // An instance of this interface is assumed to be called on the file thread.
   class OriginEnumerator {
    public:
-    virtual ~OriginEnumerator() {}
+    OriginEnumerator(const OriginEnumerator&) = delete;
+    OriginEnumerator& operator=(const OriginEnumerator&) = delete;
+    virtual ~OriginEnumerator() = default;
 
     // Returns the next origin.  Returns absl::nullopt if there are no more
     // origins.
@@ -82,6 +83,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
 
     // Returns the current origin's information.
     virtual bool HasFileSystemType(FileSystemType type) const = 0;
+
+   protected:
+    OriginEnumerator() = default;
   };
 
   // Returns the type directory name in sandbox directory for given |type|.
@@ -95,6 +99,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
       const FileSystemOptions& file_system_options,
       leveldb::Env* env_override);
 
+  SandboxFileSystemBackendDelegate(const SandboxFileSystemBackendDelegate&) =
+      delete;
+  SandboxFileSystemBackendDelegate& operator=(
+      const SandboxFileSystemBackendDelegate&) = delete;
   ~SandboxFileSystemBackendDelegate() override;
 
   // Returns an origin enumerator of sandbox filesystem.
@@ -266,8 +274,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   base::Time next_release_time_for_open_filesystem_stat_;
 
   base::WeakPtrFactory<SandboxFileSystemBackendDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxFileSystemBackendDelegate);
 };
 
 }  // namespace storage

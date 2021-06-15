@@ -62,7 +62,9 @@ class FileSystemOperation {
       FileSystemContext* file_system_context,
       std::unique_ptr<FileSystemOperationContext> operation_context);
 
-  virtual ~FileSystemOperation() {}
+  FileSystemOperation(const FileSystemOperation&) = delete;
+  FileSystemOperation& operator=(const FileSystemOperation&) = delete;
+  virtual ~FileSystemOperation() = default;
 
   // Used for CreateFile(), etc. |result| is the return code of the operation.
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
@@ -546,6 +548,8 @@ class FileSystemOperation {
     kOperationGetLocalPath,
     kOperationCancel,
   };
+
+  FileSystemOperation() = default;
 };
 
 }  // namespace storage

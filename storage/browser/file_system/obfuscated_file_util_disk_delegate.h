@@ -19,6 +19,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDiskDelegate
     : public ObfuscatedFileUtilDelegate {
  public:
   ObfuscatedFileUtilDiskDelegate();
+  ObfuscatedFileUtilDiskDelegate(const ObfuscatedFileUtilDiskDelegate&) =
+      delete;
+  ObfuscatedFileUtilDiskDelegate& operator=(
+      const ObfuscatedFileUtilDiskDelegate&) = delete;
   ~ObfuscatedFileUtilDiskDelegate() override;
 
   bool DirectoryExists(const base::FilePath& path) override;
@@ -55,8 +59,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDiskDelegate
       FileSystemOperation::CopyOrMoveOption option,
       NativeFileUtil::CopyOrMoveMode mode) override;
   base::File::Error DeleteFile(const base::FilePath& path) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtilDiskDelegate);
 };
 
 }  // namespace storage

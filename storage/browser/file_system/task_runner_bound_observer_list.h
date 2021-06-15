@@ -30,13 +30,16 @@ class TaskRunnerBoundObserverList {
       std::map<Observer*, scoped_refptr<base::SequencedTaskRunner>>;
 
   // Creates an empty list.
-  TaskRunnerBoundObserverList() {}
+  TaskRunnerBoundObserverList() = default;
 
   // Creates a new list with given |observers|.
   explicit TaskRunnerBoundObserverList(const ObserversListMap& observers)
       : observers_(observers) {}
 
-  virtual ~TaskRunnerBoundObserverList() {}
+  TaskRunnerBoundObserverList(const TaskRunnerBoundObserverList&) = default;
+  TaskRunnerBoundObserverList& operator=(const TaskRunnerBoundObserverList&) =
+      default;
+  virtual ~TaskRunnerBoundObserverList() = default;
 
   // Returns a new observer list with given observer.
   // It is valid to give nullptr as |runner_to_notify|, and in that case
