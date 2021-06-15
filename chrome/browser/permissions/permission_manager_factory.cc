@@ -10,6 +10,7 @@
 #include "chrome/browser/background_sync/periodic_background_sync_permission_context.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
+#include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 #include "chrome/browser/idle/idle_detection_permission_context.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
@@ -32,6 +33,7 @@
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
+#include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/contexts/midi_sysex_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
@@ -43,35 +45,44 @@
 
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
-#endif
+#endif  // defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 #else
-#include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 #include "chrome/browser/web_applications/components/file_handling_permission_context.h"
+#include "components/permissions/contexts/nfc_permission_context.h"
+#endif  // defined(OS_ANDROID)
+
 #if defined(OS_MAC)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/permissions/contexts/geolocation_permission_context_mac.h"
-#else
-#include "components/permissions/contexts/geolocation_permission_context.h"
-#endif
-#include "components/permissions/contexts/nfc_permission_context.h"
-#endif
+#endif  // defined(OS_MAC)
 
 namespace {
+
 permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     Profile* profile) {
   permissions::PermissionManager::PermissionContextMap permission_contexts;
-  permission_contexts[ContentSettingsType::MIDI_SYSEX] =
-      std::make_unique<permissions::MidiSysexPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::MIDI] =
-      std::make_unique<permissions::MidiPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::NOTIFICATIONS] =
-      std::make_unique<NotificationPermissionContext>(profile);
+
+  // TODO(crbug.com/1218451): Move common permission contexts into
+  // //components/embedder_support and share this code with //weblayer.
+  permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
+      std::make_unique<permissions::AccessibilityPermissionContext>(profile);
+  permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
+      std::make_unique<BackgroundSyncPermissionContext>(profile);
+  permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
+      std::make_unique<permissions::CameraPanTiltZoomPermissionContext>(
+          profile, MediaCaptureDevicesDispatcher::GetInstance());
+  permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
+      std::make_unique<permissions::ClipboardReadWritePermissionContext>(
+          profile);
+  permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
+      std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
+          profile);
 #if defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(
@@ -90,77 +101,115 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
           profile,
           std::make_unique<GeolocationPermissionContextDelegate>(profile));
 #endif
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_WIN)
-  permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
-      std::make_unique<ProtectedMediaIdentifierPermissionContext>(profile);
-#endif
-  permission_contexts[ContentSettingsType::DURABLE_STORAGE] =
-      std::make_unique<DurableStoragePermissionContext>(profile);
-  permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
-      std::make_unique<MediaStreamDevicePermissionContext>(
-          profile, ContentSettingsType::MEDIASTREAM_MIC);
-  permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
-      std::make_unique<MediaStreamDevicePermissionContext>(
-          profile, ContentSettingsType::MEDIASTREAM_CAMERA);
-  permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
-      std::make_unique<BackgroundSyncPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::SENSORS] =
-      std::make_unique<permissions::SensorPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
-      std::make_unique<permissions::AccessibilityPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
-      std::make_unique<permissions::ClipboardReadWritePermissionContext>(
-          profile);
-  permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
-      std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
-          profile);
+  permission_contexts[ContentSettingsType::MIDI] =
+      std::make_unique<permissions::MidiPermissionContext>(profile);
+  permission_contexts[ContentSettingsType::MIDI_SYSEX] =
+      std::make_unique<permissions::MidiSysexPermissionContext>(profile);
+  auto nfc_delegate = std::make_unique<ChromeNfcPermissionContextDelegate>();
+#if defined(OS_ANDROID)
+  permission_contexts[ContentSettingsType::NFC] =
+      std::make_unique<permissions::NfcPermissionContextAndroid>(
+          profile, std::move(nfc_delegate));
+#else
+  permission_contexts[ContentSettingsType::NFC] =
+      std::make_unique<permissions::NfcPermissionContext>(
+          profile, std::move(nfc_delegate));
+#endif  // defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::PAYMENT_HANDLER] =
       std::make_unique<payments::PaymentHandlerPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =
-      std::make_unique<BackgroundFetchPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::IDLE_DETECTION] =
-      std::make_unique<IdleDetectionPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::PERIODIC_BACKGROUND_SYNC] =
-      std::make_unique<PeriodicBackgroundSyncPermissionContext>(profile);
+  permission_contexts[ContentSettingsType::SENSORS] =
+      std::make_unique<permissions::SensorPermissionContext>(profile);
   permission_contexts[ContentSettingsType::WAKE_LOCK_SCREEN] =
       std::make_unique<permissions::WakeLockPermissionContext>(
           profile, ContentSettingsType::WAKE_LOCK_SCREEN);
   permission_contexts[ContentSettingsType::WAKE_LOCK_SYSTEM] =
       std::make_unique<permissions::WakeLockPermissionContext>(
           profile, ContentSettingsType::WAKE_LOCK_SYSTEM);
-  auto nfc_delegate = std::make_unique<ChromeNfcPermissionContextDelegate>();
-#if !defined(OS_ANDROID)
-  permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<permissions::NfcPermissionContext>(
-          profile, std::move(nfc_delegate));
-#else
-  permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<permissions::NfcPermissionContextAndroid>(
-          profile, std::move(nfc_delegate));
-#endif
-  permission_contexts[ContentSettingsType::VR] =
-      std::make_unique<permissions::WebXrPermissionContext>(
-          profile, ContentSettingsType::VR);
+
+  // Add additional Chrome specific permission contexts. Please add a comment
+  // when adding new contexts here explaining why it can't be shared with other
+  // Content embedders by adding it to CreateDefaultPermissionContexts().
+
+  // TODO(crbug.com/1057106): Move this to default contexts once WebLayer
+  // supports WebXR.
   permission_contexts[ContentSettingsType::AR] =
       std::make_unique<permissions::WebXrPermissionContext>(
           profile, ContentSettingsType::AR);
-  permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
-      std::make_unique<StorageAccessGrantPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
-      std::make_unique<permissions::CameraPanTiltZoomPermissionContext>(
-          profile, MediaCaptureDevicesDispatcher::GetInstance());
-  permission_contexts[ContentSettingsType::WINDOW_PLACEMENT] =
-      std::make_unique<WindowPlacementPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::FONT_ACCESS] =
-      std::make_unique<FontAccessPermissionContext>(profile);
+
+  // Depends on Chrome-only DownloadRequestLimiter.
+  permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =
+      std::make_unique<BackgroundFetchPermissionContext>(profile);
+
+  // TODO(crbug.com/487935): Still in development for Android so we don't
+  // support it on WebLayer yet.
   permission_contexts[ContentSettingsType::DISPLAY_CAPTURE] =
       std::make_unique<DisplayCapturePermissionContext>(profile);
-#if !defined(OS_ANDROID)  // File Handling is not available on Android.
+
+  // TODO(crbug.com/1101999): Permission is granted based on browser heuristics
+  // (e.g. site engagement) and is not planned for WebLayer until it supports
+  // installing PWAs.
+  permission_contexts[ContentSettingsType::DURABLE_STORAGE] =
+      std::make_unique<DurableStoragePermissionContext>(profile);
+
+#if !defined(OS_ANDROID)
+  // TODO(crbug.com/1101999): File Handling is not available on Android and is
+  // only relevant for installed PWAs.
   permission_contexts[ContentSettingsType::FILE_HANDLING] =
       std::make_unique<FileHandlingPermissionContext>(profile);
 #endif  // !defined(OS_ANDROID)
+
+  // TODO(crbug.com/1043295): Still in development for Android so we don't
+  // support it on WebLayer yet.
+  permission_contexts[ContentSettingsType::FONT_ACCESS] =
+      std::make_unique<FontAccessPermissionContext>(profile);
+
+  // TODO(crbug.com/878979): Still in development so we don't support it on
+  // WebLayer yet.
+  permission_contexts[ContentSettingsType::IDLE_DETECTION] =
+      std::make_unique<IdleDetectionPermissionContext>(profile);
+
+  // Depends on Chrome specific policies not available on WebLayer.
+  permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
+      std::make_unique<MediaStreamDevicePermissionContext>(
+          profile, ContentSettingsType::MEDIASTREAM_CAMERA);
+  permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
+      std::make_unique<MediaStreamDevicePermissionContext>(
+          profile, ContentSettingsType::MEDIASTREAM_MIC);
+
+  // TODO(crbug.com/1025610): Move once Notifications are supported on WebLayer.
+  permission_contexts[ContentSettingsType::NOTIFICATIONS] =
+      std::make_unique<NotificationPermissionContext>(profile);
+
+  // TODO(crbug.com/1091211): Move once supported on WebLayer.
+  permission_contexts[ContentSettingsType::PERIODIC_BACKGROUND_SYNC] =
+      std::make_unique<PeriodicBackgroundSyncPermissionContext>(profile);
+
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_WIN)
+  // We don't support Chrome OS and Windows for WebLayer yet so only the Android
+  // specific logic is used on WebLayer.
+  permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
+      std::make_unique<ProtectedMediaIdentifierPermissionContext>(profile);
+#endif  // defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_WIN)
+
+  // TODO(crbug.com/989663): Still in development so we don't support it on
+  // WebLayer yet.
+  permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
+      std::make_unique<StorageAccessGrantPermissionContext>(profile);
+
+  // TODO(crbug.com/1057106): Move this to default contexts once WebLayer
+  // supports WebXR.
+  permission_contexts[ContentSettingsType::VR] =
+      std::make_unique<permissions::WebXrPermissionContext>(
+          profile, ContentSettingsType::VR);
+
+  // TODO(crbug.com/897300): Still in development for Android so we don't
+  // support it on WebLayer yet.
+  permission_contexts[ContentSettingsType::WINDOW_PLACEMENT] =
+      std::make_unique<WindowPlacementPermissionContext>(profile);
+
   return permission_contexts;
 }
+
 }  // namespace
 
 // static
