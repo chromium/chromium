@@ -137,8 +137,7 @@ bool IsNameType(const AutofillField& field) {
 // multiple possible types.
 void SelectRightNameType(AutofillField* field, bool is_credit_card) {
   DCHECK(field);
-  // Currently, there can be up to four possible types for a field.
-  DCHECK_GE(4U, field->possible_types().size());
+  // There should be at least two possible field types.
   DCHECK_LE(2U, field->possible_types().size());
 
   ServerFieldTypeSet types_to_keep;
