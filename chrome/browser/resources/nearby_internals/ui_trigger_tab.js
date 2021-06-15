@@ -9,6 +9,8 @@ import './shared_style.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
 import {NearbyShareStates, ShareTarget, ShareTargetDiscoveryChange, ShareTargetSelectOption, StatusCode, TimestampedMessage, TransferMetadataStatus} from './types.js';
 
@@ -42,6 +44,9 @@ Polymer({
   /** @private {?NearbyUiTriggerBrowserProxy}*/
   browserProxy_: null,
 
+  /** @private {?NearbyPrefsBrowserProxy}*/
+  prefsBrowserProxy_: null,
+
   /**
    * Initialize |browserProxy_|,|selectedShareTargetId_|, and
    * |shareTargetSelectOptionList_|.
@@ -49,6 +54,7 @@ Polymer({
    */
   created() {
     this.browserProxy_ = NearbyUiTriggerBrowserProxy.getInstance();
+    this.prefsBrowserProxy_ = NearbyPrefsBrowserProxy.getInstance();
   },
 
   /**
@@ -101,6 +107,14 @@ Polymer({
   onUnregisterSendSurfaceClicked_() {
     this.browserProxy_.unregisterSendSurface().then(
         statusCode => this.onStatusCodeReturned_(statusCode));
+  },
+
+  /**
+   * Clears Nearby Share Prefs.
+   * @private
+   */
+  onClearPrefsButtonClicked_() {
+    this.prefsBrowserProxy_.clearNearbyPrefs();
   },
 
   /**

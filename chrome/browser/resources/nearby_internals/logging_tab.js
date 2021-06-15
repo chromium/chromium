@@ -11,7 +11,6 @@ import './shared_style.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NearbyLogsBrowserProxy} from './nearby_logs_browser_proxy.js';
-import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {LogMessage, Severity} from './types.js';
 
 /**
@@ -66,16 +65,12 @@ Polymer({
   /** @private {?NearbyLogsBrowserProxy}*/
   browserProxy_: null,
 
-  /** @private {?NearbyPrefsBrowserProxy}*/
-  prefsBrowserProxy_: null,
-
   /**
    * Initialize |browserProxy_| and |logList_|.
    * @override
    */
   created() {
     this.browserProxy_ = NearbyLogsBrowserProxy.getInstance();
-    this.prefsBrowserProxy_ = NearbyPrefsBrowserProxy.getInstance();
   },
 
   /**
@@ -98,14 +93,6 @@ Polymer({
    */
   onClearLogsButtonClicked_() {
     this.clearLogBuffer_();
-  },
-
-  /**
-   * Clears Nearby Share Prefs.
-   * @private
-   */
-  onClearPrefsButtonClicked_() {
-    this.prefsBrowserProxy_.clearNearbyPrefs();
   },
 
   /**
