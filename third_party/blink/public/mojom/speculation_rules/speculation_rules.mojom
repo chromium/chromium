@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "url/mojom/url.mojom";
 
 // See also third_party/blink/renderer/core/speculation_rules/README.md.
@@ -30,14 +31,17 @@ enum SpeculationAction {
   kPrerender,
 };
 
-// A single candidate: a URL, an action, and any associated metadata that
-// might be needed to make a decision.
+// A single candidate: a URL, an action, a referrer, and any associated
+// metadata that might be needed to make a decision.
 struct SpeculationCandidate {
   // The URL which is eligible for some action.
   url.mojom.Url url;
 
   // The action which is proposed for that URL.
   SpeculationAction action = kPrefetch;
+
+  // The referrer to be used when fetching this candidate.
+  Referrer referrer;
 
   // If true, cross-origin requests associated with this speculation must be
   // made in a manner which anonymizes the client IP. If this is not possible,

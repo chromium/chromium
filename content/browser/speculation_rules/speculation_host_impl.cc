@@ -124,8 +124,7 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   // TODO(https://crbug.com/1197133): Set up the field of size.
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = candidate->url;
-  // TODO(https://crbug.com/1197133): Set up the referrer field appropriately.
-  attributes->referrer = blink::mojom::Referrer::New();
+  attributes->referrer = std::move(candidate->referrer);
   attributes->trigger_type =
       blink::mojom::PrerenderTriggerType::kSpeculationRule;
 

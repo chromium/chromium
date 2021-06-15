@@ -71,6 +71,7 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
     auto candidate = blink::mojom::SpeculationCandidate::New();
     candidate->action = blink::mojom::SpeculationAction::kPrerender;
     candidate->url = url;
+    candidate->referrer = blink::mojom::Referrer::New();
     return candidate;
   }
 
