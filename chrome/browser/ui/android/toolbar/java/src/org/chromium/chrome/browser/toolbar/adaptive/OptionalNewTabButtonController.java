@@ -75,11 +75,6 @@ public class OptionalNewTabButtonController
         TabModelSelector getTabModelSelector() {
             return mTabModelSelectorSupplier.get();
         }
-
-        /** Returns {@code true} if the {@code tab} is on the new tab page. */
-        boolean isNTPTab(Tab tab) {
-            return UrlUtilities.isNTPUrl(tab.getUrl());
-        }
     }
 
     /** Minimum width to show the new tab button. */
@@ -216,7 +211,7 @@ public class OptionalNewTabButtonController
             return false;
         }
         // Don't show on the NTP.
-        if (mDelegate.isNTPTab(tab)) {
+        if (UrlUtilities.isNTPUrl(tab.getUrl())) {
             return false;
         }
 
