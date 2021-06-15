@@ -38,6 +38,7 @@ js_library("module_descriptors") {
     ":module_descriptor",
     "..:i18n_setup",
     "cart:module",
+    "cart_v2:module",
     "drive:module",
     "task_module:module",
     "//ui/webui/resources/js:load_time_data.m",
@@ -95,6 +96,7 @@ group("web_components") {
   public_deps = [
     ":web_components_local",
     "cart:web_components",
+    "cart_v2:web_components",
     "drive:web_components",
     "dummy:web_components",
     "task_module:web_components",
@@ -153,6 +155,7 @@ preprocess_if_expr("preprocess_gen") {
     "info_dialog.js",
     "task_module/module.js",
     "cart/module.js",
+    "cart_v2/module.js",
     "drive/module.js",
   ]
   if (!is_official_build) {
