@@ -508,7 +508,7 @@ def _CheckStringResourcePunctuations(input_api, output_api):
   if warnings:
     result += [
         output_api.PresubmitPromptWarning(
-            u'''
+            '''
   Android String Resources Check failed:
     Your new string is using one or more of generic quotes(\u0022 \\u0022, \u0027 \\u0027,
     \u0060 \\u0060, \u00B4 \\u00B4), which is not encouraged. Instead, quotations marks
@@ -521,7 +521,7 @@ def _CheckStringResourcePunctuations(input_api, output_api):
     which punctuation should be correctly used. Ignore this warning if UX has confirmed.
 
     Reach out to writing-strings@chromium.org if you have any question about writing strings.
-  '''.encode('utf-8'), warnings)
+  ''', warnings)
     ]
   return result
 
