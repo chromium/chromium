@@ -970,14 +970,14 @@ TEST(MathUtilTest, MapClippedQuadClampWholePlaneBelow) {
 
   EXPECT_EQ(clipped_quad[0].x(), 0.0f);
   EXPECT_EQ(clipped_quad[0].y(), 0.0f);
-  EXPECT_EQ(clipped_quad[0].z(), -750000.0f);
+  EXPECT_LE_LE(-750001.0f, clipped_quad[0].z(), -750000.0f);
 
   EXPECT_EQ(clipped_quad[1].x(), -1000000.0f);
   EXPECT_LE_LE(11540.0f, clipped_quad[1].y(), 11550.0f);
   EXPECT_LE_LE(-172660.0f, clipped_quad[1].z(), -172640.0f);
 
   EXPECT_LE_LE(433000.0f, clipped_quad[2].x(), 433025.0f);
-  EXPECT_EQ(clipped_quad[2].y(), 5000.0f);
+  EXPECT_LT_LT(4999.9f, clipped_quad[2].y(), 5000.1f);
   EXPECT_EQ(clipped_quad[2].z(), -1000000.0f);
 
   EXPECT_LE_LE(433000.0f, clipped_quad[3].x(), 433025.0f);

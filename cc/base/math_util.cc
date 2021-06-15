@@ -472,13 +472,15 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
     // cross products of adjacent edges.
     gfx::Vector3dF normal(0.0f, 0.0f, 0.0f);
     if (*num_vertices_in_clipped_quad > 2) {
-      gfx::Vector3dF prev_vector =
+      gfx::Vector3dF loop_vector =
           clipped_quad[0] - clipped_quad[*num_vertices_in_clipped_quad - 1];
+      gfx::Vector3dF prev_vector(loop_vector);
       for (int i = 1; i < *num_vertices_in_clipped_quad; ++i) {
         gfx::Vector3dF cur_vector = clipped_quad[i] - clipped_quad[i - 1];
         normal += CrossProduct(prev_vector, cur_vector);
         prev_vector = cur_vector;
       }
+      normal += CrossProduct(prev_vector, loop_vector);
     }
 
     bool clamp_by_points = false;
