@@ -349,6 +349,13 @@ void FullRestoreSaveHandler::RemoveWindowInfo(
   MaybeStartSaveTimer();
 }
 
+void FullRestoreSaveHandler::ClearRestoreData(
+    const base::FilePath& profile_path) {
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
 int32_t FullRestoreSaveHandler::GetArcSessionId() {
   if (!arc_save_handler_)
     return -1;

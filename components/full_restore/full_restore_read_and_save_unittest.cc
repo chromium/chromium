@@ -137,6 +137,10 @@ class FullRestoreSaveHandlerTestApi {
 
   void CheckArcTasks() { arc_save_handler()->CheckTasksForAppLaunching(); }
 
+  void ClearRestoreData() {
+    save_handler_->profile_path_to_restore_data_.clear();
+  }
+
  private:
   ArcSaveHandler* arc_save_handler() {
     DCHECK(save_handler_);
@@ -374,6 +378,54 @@ TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
 
   VerifyRestoreData(tmp_dir1.GetPath(), kId1, kActivationIndex1);
   VerifyRestoreData(tmp_dir2.GetPath(), kId2, kActivationIndex2);
+}
+
+TEST_F(FullRestoreReadAndSaveTest, ClearRestoreData) {
+  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandlerTestApi test_api(save_handler);
+
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add app launch info, and verify the timer starts.
+  AddAppLaunchInfo(GetPath(), kId1);
+  EXPECT_TRUE(timer->IsRunning());
+
+  // Simulate timeout.
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  // Read the restore data.
+  ReadFromFile(GetPath());
+
+  // Clear restore data to simulate the system reboot.
+  test_api.ClearRestoreData();
+
+  // Verify the restore data can be read correctly.
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+
+  const auto& launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, launch_list.size());
+
+  // Verify for `kAppId`.
+  const auto launch_list_it = launch_list.find(kAppId);
+  EXPECT_TRUE(launch_list_it != launch_list.end());
+  EXPECT_EQ(1u, launch_list_it->second.size());
+
+  // Verify for `kId1`.
+  const auto app_restore_data_it1 = launch_list_it->second.find(kId1);
+  EXPECT_TRUE(app_restore_data_it1 != launch_list_it->second.end());
+
+  // Simulate timeout to clear restore data.
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  // Read the restore data.
+  ReadFromFile(GetPath());
+
+  // Verify the restore data has been cleared.
+  ASSERT_TRUE(GetRestoreData(GetPath()));
+  ASSERT_TRUE(GetRestoreData(GetPath())->app_id_to_launch_list().empty());
 }
 
 TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {

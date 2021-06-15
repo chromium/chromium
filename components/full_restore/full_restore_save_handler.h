@@ -128,6 +128,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
                         const std::string& app_id,
                         int window_id);
 
+  // Starts the timer, and when timeout, clears restore data for |profile_path|.
+  void ClearRestoreData(const base::FilePath& profile_path);
+
   // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
   int32_t GetArcSessionId();
 

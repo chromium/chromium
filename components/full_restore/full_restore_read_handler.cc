@@ -15,6 +15,7 @@
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_file_handler.h"
 #include "components/full_restore/full_restore_info.h"
+#include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
@@ -332,6 +333,13 @@ void FullRestoreReadHandler::OnGetRestoreData(
   }
 
   std::move(callback).Run(std::move(restore_data));
+
+  // Call FullRestoreSaveHandler to start a timer to clear the restore data
+  // after reading the restore data. Otherwise, if the user doesn't select
+  // restore, and never launch a new app, the restore data is not cleared. So
+  // when the system is reboot, the restore process could restore the previous
+  // record before the last reboot.
+  FullRestoreSaveHandler::GetInstance()->ClearRestoreData(profile_path);
 }
 
 void FullRestoreReadHandler::RemoveAppRestoreData(int32_t window_id) {
