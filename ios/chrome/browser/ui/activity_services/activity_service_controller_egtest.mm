@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/ios/ios_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -24,43 +25,25 @@
 #endif
 
 namespace {
+id<GREYMatcher> CopyButton() {
+  return grey_allOf(
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_descendant(
+          chrome_test_util::StaticTextWithAccessibilityLabel(@"Copy")),
+      nil);
+}
 
 // Assert the activity service is visible by checking the "copy" button.
 void AssertActivityServiceVisible() {
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   @"Copy")]
+  [[EarlGrey selectElementWithMatcher:CopyButton()]
       assertWithMatcher:grey_interactable()];
 }
 
 // Assert the activity service is not visible by checking the "copy" button.
 void AssertActivityServiceNotVisible() {
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(@"Copy"),
-                     grey_interactable(), nil)] assertWithMatcher:grey_nil()];
-}
-
-// Returns a button with a print label.
-id<GREYMatcher> PrintButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabel(@"Print");
-}
-
-// Returns a button with a copy label.
-id<GREYMatcher> CopyButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabel(@"Copy");
-}
-
-// Returns the collection view for the activity services menu. Since this is a
-// system widget, it does not have an a11y id.  Instead, search for a
-// UICollectionView that is the superview of the "Copy" menu item.  There are
-// two nested UICollectionViews in the activity services menu, so choose the
-// innermost one.
-id<GREYMatcher> ShareMenuCollectionView() {
-  return grey_allOf(
-      grey_kindOfClass([UICollectionView class]), grey_descendant(CopyButton()),
-      // Looking for a nested UICollectionView.
-      grey_descendant(grey_kindOfClass([UICollectionView class])), nil);
+  [[EarlGrey selectElementWithMatcher:grey_allOf(CopyButton(),
+                                                 grey_interactable(), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 }  // namespace
@@ -70,37 +53,6 @@ id<GREYMatcher> ShareMenuCollectionView() {
 @end
 
 @implementation ActivityServiceControllerTestCase
-
-// TODO(crbug.com/747622): re-enable this test on once earl grey can interact
-// with the share menu.
-// TODO(crbug.com/864597): Reenable this test. This test should be rewritten
-// to use Offline Version.
-- (void)DISABLED_testActivityServiceControllerCantPrintUnprintablePages {
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new ErrorPageResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  // Open a page with an error.
-  [ChromeEarlGrey loadURL:ErrorPageResponseProvider::GetDnsFailureUrl()];
-
-  // Verify that you can share, but that the Print action is not available.
-  [ChromeEarlGreyUI openShareMenu];
-  AssertActivityServiceVisible();
-
-  // To verify that the Print action is missing, scroll through the entire
-  // collection view using grey_scrollInDirection(), then make sure the
-  // operation failed with kGREYInteractionElementNotFoundErrorCode.
-  NSError* error;
-  [[[EarlGrey selectElementWithMatcher:PrintButton()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 100)
-      onElementWithMatcher:ShareMenuCollectionView()]
-      assertWithMatcher:grey_notNil()
-                  error:&error];
-
-  GREYAssert([error.domain isEqual:kGREYInteractionErrorDomain] &&
-                 error.code == kGREYInteractionElementNotFoundErrorCode,
-             @"Print action was unexpectedly present");
-}
 
 - (void)testActivityServiceControllerIsDisabled {
   // TODO(crbug.com/996541) Starting in Xcode 11 beta 6, the share button does
@@ -118,9 +70,10 @@ id<GREYMatcher> ShareMenuCollectionView() {
                             UIAccessibilityTraitNotEnabled)];
 }
 
-// TODO(crbug.com/747622): re-enable this test once earl grey can interact
-// with the share menu.
-- (void)DISABLED_testOpenActivityServiceControllerAndCopy {
+- (void)testOpenActivityServiceControllerAndCopy {
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS12.");
+  }
   // Set up mock http server.
   std::map<GURL, std::string> responses;
   GURL url = web::test::HttpServer::MakeUrl("http://potato");

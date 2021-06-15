@@ -224,6 +224,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   self.locationBarSteadyView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.locationBarSteadyView, self.view);
 
+  [self updateTrailingButtonState];
   [self switchToEditing:NO];
 }
 
