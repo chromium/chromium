@@ -1531,8 +1531,12 @@ void BrowserView::UpdateToolbar(content::WebContents* contents) {
 }
 
 void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
-  if (toolbar_)
+  if (toolbar_) {
     toolbar_->UpdateCustomTabBarVisibility(visible, animate);
+
+    if (AppUsesWindowControlsOverlay())
+      frame_->GetFrameView()->SetWindowControlsOverlayToggleVisible(!visible);
+  }
 }
 
 void BrowserView::ResetToolbarTabState(content::WebContents* contents) {
@@ -1609,7 +1613,15 @@ void BrowserView::LinkOpeningFromGesture(WindowOpenDisposition disposition) {
   link_opened_from_gesture_callbacks_.Notify(disposition);
 }
 
+bool BrowserView::AppUsesWindowControlsOverlay() const {
+  return browser()->app_controller() &&
+         browser()->app_controller()->AppUsesWindowControlsOverlay();
+}
+
 bool BrowserView::IsWindowControlsOverlayEnabled() const {
+  if (toolbar_->custom_tab_bar() && toolbar_->custom_tab_bar()->GetVisible())
+    return false;
+
   return browser()->app_controller() &&
          browser()->app_controller()->IsWindowControlsOverlayEnabled();
 }

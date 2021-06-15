@@ -342,6 +342,10 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription AddOnLinkOpeningFromGestureCallback(
       OnLinkOpeningFromGestureCallback callback);
 
+  // Returns true when an app's effective display mode is
+  // window-controls-overlay.
+  bool AppUsesWindowControlsOverlay() const;
+
   // Returns true when the window controls overlay should be displayed instead
   // of a full titlebar. This is only supported for desktop web apps.
   bool IsWindowControlsOverlayEnabled() const;

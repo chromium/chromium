@@ -133,6 +133,9 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // or disabled.
   virtual void WindowControlsOverlayEnabledChanged() {}
 
+  // Set the visibility of the window controls overlay toggle button.
+  void SetWindowControlsOverlayToggleVisible(bool visible);
+
   // views::NonClientFrameView:
   using views::NonClientFrameView::ShouldPaintAsActive;
   void Layout() override;

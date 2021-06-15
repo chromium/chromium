@@ -75,6 +75,10 @@ class WebAppToolbarButtonContainer : public views::View,
 
   WebAppMenuButton* web_app_menu_button() { return web_app_menu_button_; }
 
+  WindowControlsOverlayToggleButton* window_controls_overlay_toggle_button() {
+    return window_controls_overlay_toggle_button_;
+  }
+
   static void DisableAnimationForTesting();
 
  private:

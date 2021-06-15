@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
 
+#include <memory>
+
+struct WebApplicationInfo;
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
@@ -21,6 +24,10 @@ class WebAppFrameToolbarTestHelper {
   ~WebAppFrameToolbarTestHelper();
 
   void InstallAndLaunchWebApp(Browser* browser, const GURL& start_url);
+  void InstallAndLaunchCustomWebApp(
+      Browser* browser,
+      std::unique_ptr<WebApplicationInfo> web_app_info,
+      const GURL& start_url);
 
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }

@@ -124,9 +124,7 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
       frame_background_(new views::FrameBackground()) {
   layout_->set_delegate(this);
 
-  web_app::AppBrowserController* controller =
-      browser_view->browser()->app_controller();
-  if (controller && controller->AppUsesWindowControlsOverlay()) {
+  if (browser_view->AppUsesWindowControlsOverlay()) {
     layout_->SetWindowControlsOverlayEnabled(
         browser_view->IsWindowControlsOverlayEnabled(), this);
   }

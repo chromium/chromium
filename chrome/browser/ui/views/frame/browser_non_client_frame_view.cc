@@ -212,6 +212,12 @@ absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
 
 void BrowserNonClientFrameView::UpdateMinimumSize() {}
 
+void BrowserNonClientFrameView::SetWindowControlsOverlayToggleVisible(
+    bool visible) {
+  DCHECK(browser_view_->AppUsesWindowControlsOverlay());
+  web_app_frame_toolbar_->SetWindowControlsOverlayToggleVisible(visible);
+}
+
 void BrowserNonClientFrameView::Layout() {
   // BrowserView updates most UI visibility on layout based on fullscreen
   // state. However, it doesn't have access to |web_app_frame_toolbar_|. Do

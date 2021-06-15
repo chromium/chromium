@@ -627,21 +627,15 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
   // Make sure the app launches in standalone mode by default.
   EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
-  EXPECT_TRUE(browser_view_->browser()
-                  ->app_controller()
-                  ->AppUsesWindowControlsOverlay());
+  EXPECT_TRUE(browser_view_->AppUsesWindowControlsOverlay());
 
   // Toggle WCO on, and verify that the UI updates accordingly.
   browser_view_->ToggleWindowControlsOverlayEnabled();
   EXPECT_TRUE(browser_view_->IsWindowControlsOverlayEnabled());
-  EXPECT_TRUE(browser_view_->browser()
-                  ->app_controller()
-                  ->AppUsesWindowControlsOverlay());
+  EXPECT_TRUE(browser_view_->AppUsesWindowControlsOverlay());
 
   // Toggle WCO off, and verify that the app returns to 'standalone' mode.
   browser_view_->ToggleWindowControlsOverlayEnabled();
   EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
-  EXPECT_TRUE(browser_view_->browser()
-                  ->app_controller()
-                  ->AppUsesWindowControlsOverlay());
+  EXPECT_TRUE(browser_view_->AppUsesWindowControlsOverlay());
 }

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
@@ -267,6 +268,12 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
     SetBackground(nullptr);
     DestroyLayer();
   }
+}
+
+void WebAppFrameToolbarView::SetWindowControlsOverlayToggleVisible(
+    bool visible) {
+  right_container_->window_controls_overlay_toggle_button()->SetVisible(
+      visible);
 }
 
 PageActionIconController*

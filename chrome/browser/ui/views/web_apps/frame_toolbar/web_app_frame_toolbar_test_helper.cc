@@ -51,3 +51,24 @@ void WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   DCHECK(web_app_frame_toolbar_);
   DCHECK(web_app_frame_toolbar_->GetVisible());
 }
+
+void WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
+    Browser* browser,
+    std::unique_ptr<WebApplicationInfo> web_app_info,
+    const GURL& start_url) {
+  web_app::AppId app_id =
+      web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
+  content::TestNavigationObserver navigation_observer(start_url);
+  navigation_observer.StartWatchingNewWebContents();
+  app_browser_ = web_app::LaunchWebAppBrowser(browser->profile(), app_id);
+  navigation_observer.WaitForNavigationFinished();
+
+  browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  views::NonClientFrameView* frame_view =
+      browser_view_->GetWidget()->non_client_view()->frame_view();
+  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+
+  web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
+  DCHECK(web_app_frame_toolbar_);
+  DCHECK(web_app_frame_toolbar_->GetVisible());
+}
