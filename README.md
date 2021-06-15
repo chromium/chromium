@@ -17,3 +17,5 @@ For historical reasons, there are some small top level directories. Now the
 guidance is that new top level directories are for product (e.g. Chrome,
 Android WebView, Ash). Even if these products have multiple executables, the
 code should be in subdirectories of the product.
+
+If you found a bug, please file it at https://crbug.com/new.
