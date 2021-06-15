@@ -21,6 +21,7 @@ const SASetupElement = {
   ASSIGN_SELECT_CONTENT: 'assign-select',
   AUTO_SCAN_ENABLED_CONTENT: 'auto-scan-enabled',
   CHOOSE_SWITCH_COUNT_CONTENT: 'choose-switch-count',
+  AUTO_SCAN_SPEED_CONTENT: 'auto-scan-speed',
 };
 
 /**
@@ -79,8 +80,16 @@ SASetupPageList[SASetupPageId.AUTO_SCAN_ENABLED] = {
 SASetupPageList[SASetupPageId.CHOOSE_SWITCH_COUNT] = {
   titleId: 'switchAccessSetupChooseSwitchCountTitle',
   visibleElements: [
-    SASetupElement.EXIT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
     SASetupElement.CHOOSE_SWITCH_COUNT_CONTENT
+  ]
+};
+
+SASetupPageList[SASetupPageId.AUTO_SCAN_SPEED] = {
+  titleId: 'switchAccessSetupAutoScanSpeedTitle',
+  visibleElements: [
+    SASetupElement.EXIT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.AUTO_SCAN_SPEED_CONTENT
   ]
 };
 
@@ -93,11 +102,69 @@ Polymer({
   ],
 
   properties: {
+    prefs: {
+      type: Object,
+      notify: true,
+    },
+
     autoScanPreviouslyEnabled_: {type: Boolean, value: false},
+
+    /** @private {!Array<!cr_slider.SliderTick>} */
+    autoScanSpeedRangeMs_: {
+      type: Array,
+      value: [],
+    },
+
     currentPageId_: {
       type: Number,
       value: SASetupPageId.INTRO,
-    }
+    },
+
+    /**
+     * A number formatter, to display values with exactly 1 digit after the
+     * decimal (that has been internationalized properly).
+     * @private {Object}
+     */
+    formatter_: {
+      type: Object,
+      value() {
+        // navigator.language actually returns a locale, not just a language.
+        const locale = window.navigator.language;
+        const options = {minimumFractionDigits: 1, maximumFractionDigits: 1};
+        return new Intl.NumberFormat(locale, options);
+      },
+    },
+
+    maxScanSpeedMs_: {
+      readOnly: true,
+      type: Number,
+      value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1]
+    },
+
+    maxScanSpeedLabelSec_: {
+      readOnly: true,
+      type: String,
+      value() {
+        return this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
+      },
+    },
+
+    minScanSpeedMs_:
+        {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
+
+    minScanSpeedLabelSec_: {
+      readOnly: true,
+      type: String,
+      value() {
+        return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
+      },
+    },
+  },
+
+  /** @override */
+  created() {
+    this.autoScanSpeedRangeMs_ =
+        this.ticksWithLabelsInSec_(AUTO_SCAN_SPEED_RANGE_MS);
   },
 
   /**
@@ -128,8 +195,10 @@ Polymer({
       case SASetupPageId.ASSIGN_SELECT:
         return SASetupPageId.AUTO_SCAN_ENABLED;
       case SASetupPageId.AUTO_SCAN_ENABLED:
-      default:
         return SASetupPageId.CHOOSE_SWITCH_COUNT;
+      case SASetupPageId.CHOOSE_SWITCH_COUNT:
+      default:
+        return SASetupPageId.AUTO_SCAN_SPEED;
     }
   },
 
@@ -140,6 +209,8 @@ Polymer({
    */
   getPreviousPageId_() {
     switch (this.currentPageId_) {
+      case SASetupPageId.AUTO_SCAN_SPEED:
+        return SASetupPageId.CHOOSE_SWITCH_COUNT;
       case SASetupPageId.CHOOSE_SWITCH_COUNT:
         return SASetupPageId.AUTO_SCAN_ENABLED;
       case SASetupPageId.AUTO_SCAN_ENABLED:
@@ -183,5 +254,54 @@ Polymer({
   /** @private */
   onBluetoothClick_() {
     settings.Router.getInstance().navigateTo(settings.routes.BLUETOOTH_DEVICES);
-  }
+  },
+
+  /** @private */
+  onAutoScanSpeedFaster_() {
+    const currentValue = /** @type {number} */ (
+        this.getPref('settings.a11y.switch_access.auto_scan.speed_ms').value);
+    const index =
+        AUTO_SCAN_SPEED_RANGE_MS.findIndex(elem => elem <= currentValue);
+    if (index === -1 || index === AUTO_SCAN_SPEED_RANGE_MS.length - 1) {
+      return;
+    }
+    chrome.settingsPrivate.setPref(
+        'settings.a11y.switch_access.auto_scan.speed_ms',
+        AUTO_SCAN_SPEED_RANGE_MS[index + 1]);
+  },
+
+  /** @private */
+  onAutoScanSpeedSlower_() {
+    const currentValue = /** @type {number} */ (
+        this.getPref('settings.a11y.switch_access.auto_scan.speed_ms').value);
+    const index =
+        AUTO_SCAN_SPEED_RANGE_MS.findIndex(elem => elem <= currentValue);
+    if (index <= 0) {
+      return;
+    }
+    chrome.settingsPrivate.setPref(
+        'settings.a11y.switch_access.auto_scan.speed_ms',
+        AUTO_SCAN_SPEED_RANGE_MS[index - 1]);
+  },
+
+  /**
+   * @param {number} scanSpeedValueMs
+   * @return {string} a string representing the scan speed in seconds.
+   * @private
+   */
+  scanSpeedStringInSec_(scanSpeedValueMs) {
+    const scanSpeedValueSec = scanSpeedValueMs / 1000;
+    return this.i18n(
+        'durationInSeconds', this.formatter_.format(scanSpeedValueSec));
+  },
+
+  /**
+   * @param {!Array<number>} ticksInMs
+   * @return {!Array<!cr_slider.SliderTick>}
+   */
+  ticksWithLabelsInSec_(ticksInMs) {
+    // Dividing by 1000 to convert milliseconds to seconds for the label.
+    return ticksInMs.map(
+        x => ({label: `${this.scanSpeedStringInSec_(x)}`, value: x}));
+  },
 });

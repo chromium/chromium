@@ -21,7 +21,12 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
         'a11y': {
           'switch_access': {
             'auto_scan': {
-              'enabled': false,
+              'enabled': {
+                value: false,
+              },
+              'speed_ms': {
+                value: 1000,
+              },
             },
           },
         },
@@ -56,9 +61,15 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     nextButton.click();
 
     assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Auto-scan speed=*/4, dialog.currentPageId_);
 
     const previousButton = dialog.$.previous;
     assertTrue(!!previousButton);
+    previousButton.click();
+
+    assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
     previousButton.click();
 
     assertEquals(/*Auto-scan enabled=*/2, dialog.currentPageId_);
@@ -84,6 +95,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertTrue(dialog['$']['assign-select']['hidden']);
     assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
     assertTrue(dialog['$']['choose-switch-count']['hidden']);
+    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
 
     dialog.loadPage_(/*Assign select=*/1);
 
@@ -96,6 +108,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertFalse(dialog['$']['assign-select']['hidden']);
     assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
     assertTrue(dialog['$']['choose-switch-count']['hidden']);
+    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
 
     dialog.loadPage_(/*Auto-scan enabled=*/2);
 
@@ -108,10 +121,24 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertTrue(dialog['$']['assign-select']['hidden']);
     assertFalse(dialog['$']['auto-scan-enabled']['hidden']);
     assertTrue(dialog['$']['choose-switch-count']['hidden']);
+    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
 
     dialog.loadPage_(/*Choose switch count=*/3);
 
     // Verify the contents of the choose switch count page.
+    assertTrue(dialog.$.bluetooth.hidden);
+    assertTrue(dialog.$.exit.hidden);
+    assertFalse(dialog.$.next.hidden);
+    assertFalse(dialog.$.previous.hidden);
+    assertTrue(dialog['$']['intro']['hidden']);
+    assertTrue(dialog['$']['assign-select']['hidden']);
+    assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
+    assertFalse(dialog['$']['choose-switch-count']['hidden']);
+    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
+
+    dialog.loadPage_(/*Auto-scan speed=*/4);
+
+    // Verify the contents of the auto-scan speed page.
     assertTrue(dialog.$.bluetooth.hidden);
     assertFalse(dialog.$.exit.hidden);
     assertTrue(dialog.$.next.hidden);
@@ -119,7 +146,8 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertTrue(dialog['$']['intro']['hidden']);
     assertTrue(dialog['$']['assign-select']['hidden']);
     assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
-    assertFalse(dialog['$']['choose-switch-count']['hidden']);
+    assertTrue(dialog['$']['choose-switch-count']['hidden']);
+    assertFalse(dialog['$']['auto-scan-speed']['hidden']);
   });
 
   test('Auto-scan enabled and disabled correctly', function() {
@@ -130,7 +158,8 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     };
 
     assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
-    assertFalse(dialog.prefs.settings.a11y.switch_access.auto_scan.enabled);
+    assertFalse(
+        dialog.prefs.settings.a11y.switch_access.auto_scan.enabled.value);
 
     // Mock that we are on the page before auto scan is enabled.
     dialog.currentPageId_ = /*Assign select=*/1 ;
@@ -169,5 +198,32 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
         assertTrue(data.value);
       }
     }
+  });
+  test('Auto-scan speed slower and faster buttons', function() {
+    const setPrefData = [];
+    // Mock this API to confirm it's getting called, and with the right values.
+    chrome.settingsPrivate.setPref = function(key, value) {
+      setPrefData.push({key, value});
+    };
+
+    assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
+
+    const slowerButton = dialog.$.autoScanSpeedSlower;
+    assertTrue(!!slowerButton);
+
+    slowerButton.click();
+    assertEquals(1, setPrefData.length);
+    assertEquals(
+        'settings.a11y.switch_access.auto_scan.speed_ms', setPrefData[0].key);
+    assertEquals(1100, setPrefData[0].value);
+
+    const fasterButton = dialog.$.autoScanSpeedFaster;
+    assertTrue(!!fasterButton);
+
+    fasterButton.click();
+    assertEquals(2, setPrefData.length);
+    assertEquals(
+        'settings.a11y.switch_access.auto_scan.speed_ms', setPrefData[1].key);
+    assertEquals(900, setPrefData[1].value);
   });
 });

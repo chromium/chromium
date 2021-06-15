@@ -14,13 +14,6 @@
 const PREFIX = 'settings.a11y.switch_access.';
 
 /** @type {!Array<number>} */
-const AUTO_SCAN_SPEED_RANGE_MS = [
-  4000, 3900, 3800, 3700, 3600, 3500, 3400, 3300, 3200, 3100, 3000, 2900,
-  2800, 2700, 2600, 2500, 2400, 2300, 2200, 2100, 2000, 1900, 1800, 1700,
-  1600, 1500, 1400, 1300, 1200, 1100, 1000, 900,  800,  700
-];
-
-/** @type {!Array<number>} */
 const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
 
 /**

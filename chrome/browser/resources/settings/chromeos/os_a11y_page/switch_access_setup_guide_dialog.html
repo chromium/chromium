@@ -2,10 +2,12 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="../../controls/settings_slider.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../os_icons.html">
@@ -149,6 +151,24 @@
             </div>
           </div>
           <div class="illustration"></div>
+        </div>
+        <div id="auto-scan-speed" hidden>
+          <p>$i18n{switchAccessSetupAutoScanSpeedDescription}</p>
+          <cr-button id="autoScanSpeedSlower" on-click="onAutoScanSpeedSlower_">
+            $i18n{switchAccessSetupAutoScanSlower}
+          </cr-button>
+          <settings-slider id="autoScanSpeedSlider"
+            pref="{{prefs.settings.a11y.switch_access.auto_scan.speed_ms}}"
+            ticks="[[autoScanSpeedRangeMs_]]"
+            min="[[minScanSpeedMs_]]"
+            max="[[maxScanSpeedMs_]"
+            label-aria="$i18n{switchAccessAutoScanSpeedLabel}"
+            label-min="[[minScanSpeedLabelSec_]]"
+            label-max="[[maxScanSpeedLabelSec_]]">
+          </settings-slider>
+          <cr-button id="autoScanSpeedFaster" on-click="onAutoScanSpeedFaster_">
+            $i18n{switchAccessSetupAutoScanFaster}
+          </cr-button>
         </div>
       </div>
       <div id="button-container" slot="button-container">
