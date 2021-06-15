@@ -394,12 +394,26 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public TabSwitcher.TabListDelegate getTabListDelegate() {
-        if (mTasksSurface != null) {
-            return mTasksSurface.getTabListDelegate();
+    public TabSwitcher.TabListDelegate getGridTabListDelegate() {
+        if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+            if (mSecondaryTasksSurface == null) {
+                mStartSurfaceMediator.setSecondaryTasksSurfaceController(
+                        initializeSecondaryTasksSurface());
+            }
+            return mSecondaryTasksSurface.getTabListDelegate();
+        } else {
+            return mTabSwitcher.getTabListDelegate();
         }
+    }
 
-        return mTabSwitcher.getTabListDelegate();
+    @Override
+    public TabSwitcher.TabListDelegate getCarouselOrSingleTabListDelegate() {
+        if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+            assert mTasksSurface != null;
+            return mTasksSurface.getTabListDelegate();
+        } else {
+            return null;
+        }
     }
 
     @Override

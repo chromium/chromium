@@ -184,7 +184,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
         when(mStartSurface.getController()).thenReturn(mStartSurfaceController);
-        when(mStartSurface.getTabListDelegate()).thenReturn(mTabListDelegate);
+        when(mStartSurface.getGridTabListDelegate()).thenReturn(mTabListDelegate);
         when(mStartSurface.getTabGridDialogVisibilitySupplier()).thenReturn(() -> false);
 
         mTabModelSelector = new MockTabModelSelector(standardTabCount, incognitoTabCount, this);
@@ -737,7 +737,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
             Assert.assertEquals(expectedTabListMode,
                     startSurfaceLayout.getStartSurfaceForTesting()
-                            .getTabListDelegate()
+                            .getGridTabListDelegate()
                             .getListModeForTesting());
         });
     }

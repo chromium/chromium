@@ -504,6 +504,11 @@ class StartSurfaceMediator
     }
 
     @Override
+    public int getPreviousStartSurfaceState() {
+        return mPreviousStartSurfaceState;
+    }
+
+    @Override
     public void addOverviewModeObserver(StartSurface.OverviewModeObserver observer) {
         mObservers.addObserver(observer);
     }
@@ -728,6 +733,11 @@ class StartSurfaceMediator
         return mSurfaceMode == SurfaceMode.SINGLE_PANE
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
                 && StartSurfaceConfiguration.getFeedArticlesVisibility() && !mHadWarmStart;
+    }
+
+    public void setSecondaryTasksSurfaceController(
+            TabSwitcher.Controller secondaryTasksSurfaceController) {
+        mSecondaryTasksSurfaceController = secondaryTasksSurfaceController;
     }
 
     /** This interface builds the feed surface coordinator when showing if needed. */
