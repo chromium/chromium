@@ -65,11 +65,16 @@ function defaultResponseCallback(request, sendResponse, response) {
  * @param {*} response The response to return.
  */
 function sendResponseToActiveTabOnly(request, sender, sendResponse, response) {
+  let foregroundAlreadyTested =
+      ('foregroundChecked' in response) && response.foregroundChecked;
+  delete response.foregroundChecked;
+
   // For WebAuthn-proxied requests on Windows, dismissing the native Windows
   // UI after a timeout races with the error being returned here. Hence, skip
   // the focus check for all timeouts.
-  if (response.responseData &&
-      response.responseData.errorCode == ErrorCodes.TIMEOUT) {
+  if ((response.responseData &&
+       response.responseData.errorCode == ErrorCodes.TIMEOUT) ||
+      foregroundAlreadyTested) {
     defaultResponseCallback(request, sendResponse, response);
     return;
   }
