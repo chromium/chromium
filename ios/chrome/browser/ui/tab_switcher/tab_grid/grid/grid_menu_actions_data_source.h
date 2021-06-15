@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 @class GridItem;
-@class ShareToData;
 
 // Protocol that is used to pull the data required to execute the grid menus
 // actions.
@@ -17,10 +16,6 @@
 // Asks the delegate for the GridItem object representing the grid cell with
 // |identifier|.
 - (GridItem*)gridItemForCellIdentifier:(NSString*)identifier;
-
-// Asks the delegate for the ShareToData object for the grid cell with
-// |identifier|.
-- (ShareToData*)shareToDataForCellIdentifier:(NSString*)identifier;
 
 // Asks the delegate if the grid |item| is already bookmarked.
 - (BOOL)isGridItemBookmarked:(GridItem*)item;

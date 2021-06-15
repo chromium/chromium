@@ -24,8 +24,7 @@
 namespace activity_services {
 
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
-                                    const GURL& share_url,
-                                    bool disallow_find_in_page) {
+                                    const GURL& share_url) {
   // For crash documented in crbug.com/503955, tab.url which is being passed
   // as a reference parameter caused a crash due to invalid address which
   // suggests that tab may get closed along the way. Check that web_state
@@ -62,13 +61,10 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
   if (visibleItem)
     userAgent = visibleItem->GetUserAgentType();
 
-  BOOL is_page_searchable = NO;
-  if (!disallow_find_in_page) {
-    FindTabHelper* helper = FindTabHelper::FromWebState(web_state);
-    is_page_searchable = (helper && helper->CurrentPageSupportsFindInPage() &&
-                          !helper->IsFindUIActive());
-  }
-
+  FindTabHelper* helper = FindTabHelper::FromWebState(web_state);
+  BOOL is_page_searchable =
+      (helper && helper->CurrentPageSupportsFindInPage() &&
+       !helper->IsFindUIActive());
   NSString* tab_title = tab_util::GetTabTitle(web_state);
 
   ChromeBrowserState* browser_state =

@@ -46,6 +46,8 @@ source_set("context_menu_delegate") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [ "tab_context_menu_delegate.h" ]
+
+  deps = [ "//ios/chrome/browser/ui/activity_services" ]
 }
 
 source_set("unit_tests") {

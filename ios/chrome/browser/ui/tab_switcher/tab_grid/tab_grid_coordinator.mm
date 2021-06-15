@@ -928,24 +928,11 @@
 
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
+        scenario:(ActivityScenario)scenario
         fromView:(UIView*)view {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:URL
-                                    title:title
-                                 scenario:ActivityScenario::RecentTabsEntry];
-  self.sharingCoordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                                     .remoteTabsViewController
-                         browser:self.regularBrowser
-                          params:params
-                      originView:view];
-  [self.sharingCoordinator start];
-}
-
-- (void)shareWithShareToData:(ShareToData*)data fromView:(UIView*)view {
-  ActivityParams* params = [[ActivityParams alloc]
-      initWithShareToData:data
-                 scenario:ActivityScenario::TabGridItem];
+  ActivityParams* params = [[ActivityParams alloc] initWithURL:URL
+                                                         title:title
+                                                      scenario:scenario];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.regularBrowser

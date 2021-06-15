@@ -84,8 +84,6 @@
 
   if (self.params.image) {
     [self shareImage];
-  } else if (self.params.shareToData) {
-    [self shareWithShareToData:self.params.shareToData];
   } else if (!self.params.URL.is_empty()) {
     [self shareURL];
   } else {
@@ -101,15 +99,6 @@
 }
 
 #pragma mark - Private Methods
-
-// Shares the item dsecribed by |data|.
-- (void)shareWithShareToData:(ShareToData*)data {
-  NSArray<ChromeActivityURLSource*>* items =
-      [self.mediator activityItemsForData:data];
-  NSArray* activities = [self.mediator applicationActivitiesForData:data];
-
-  [self shareItems:items activities:activities];
-}
 
 // Sets up the activity ViewController with the given |items| and |activities|.
 - (void)shareItems:(NSArray<id<ChromeActivityItemSource>>*)items
@@ -172,12 +161,15 @@
 // Shares the current page using its |canonicalURL|.
 - (void)sharePageWithCanonicalURL:(const GURL&)canonicalURL {
   ShareToData* data = activity_services::ShareToDataForWebState(
-      self.browser->GetWebStateList()->GetActiveWebState(), canonicalURL,
-      /*disallow_find_in_page=*/false);
+      self.browser->GetWebStateList()->GetActiveWebState(), canonicalURL);
   if (!data)
     return;
 
-  [self shareWithShareToData:data];
+  NSArray<ChromeActivityURLSource*>* items =
+      [self.mediator activityItemsForData:data];
+  NSArray* activities = [self.mediator applicationActivitiesForData:data];
+
+  [self shareItems:items activities:activities];
 }
 
 #pragma mark - Private Methods: Share Image

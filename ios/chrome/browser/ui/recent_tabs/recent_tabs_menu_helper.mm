@@ -94,9 +94,11 @@
     [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
 
     [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                    [weakSelf.contextMenuDelegate shareURL:item.URL
-                                                     title:item.title
-                                                  fromView:view];
+                    [weakSelf.contextMenuDelegate
+                        shareURL:item.URL
+                           title:item.title
+                        scenario:ActivityScenario::RecentTabsEntry
+                        fromView:view];
                   }]];
 
     return [UIMenu menuWithTitle:@"" children:menuElements];

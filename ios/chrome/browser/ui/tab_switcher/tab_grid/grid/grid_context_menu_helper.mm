@@ -72,15 +72,15 @@
             [[NSMutableArray alloc] init];
 
         if (!IsURLNewTabPage(item.URL)) {
-          if ([weakSelf.contextMenuDelegate respondsToSelector:@selector
-                                            (shareWithShareToData:fromView:)]) {
-            ShareToData* data = [weakSelf.actionsDataSource
-                shareToDataForCellIdentifier:gridCell.itemIdentifier];
-
+          if ([weakSelf.contextMenuDelegate
+                  respondsToSelector:@selector(shareURL:
+                                                  title:scenario:fromView:)]) {
             [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                             [weakSelf.contextMenuDelegate
-                                shareWithShareToData:data
-                                            fromView:gridCell];
+                                shareURL:item.URL
+                                   title:item.title
+                                scenario:ActivityScenario::TabGridItem
+                                fromView:gridCell];
                           }]];
           }
 

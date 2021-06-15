@@ -205,11 +205,11 @@
 
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
+        scenario:(ActivityScenario)scenario
         fromView:(UIView*)view {
-  ActivityParams* params =
-      [[ActivityParams alloc] initWithURL:URL
-                                    title:title
-                                 scenario:ActivityScenario::RecentTabsEntry];
+  ActivityParams* params = [[ActivityParams alloc] initWithURL:URL
+                                                         title:title
+                                                      scenario:scenario];
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.recentTabsTableViewController
                          browser:self.browser

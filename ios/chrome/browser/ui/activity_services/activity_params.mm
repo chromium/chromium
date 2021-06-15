@@ -43,15 +43,6 @@
   return self;
 }
 
-- (instancetype)initWithShareToData:(ShareToData*)data
-                           scenario:(ActivityScenario)scenario {
-  DCHECK(data);
-  if (self = [self initWithScenario:scenario]) {
-    _shareToData = data;
-  }
-  return self;
-}
-
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
              additionalText:(NSString*)additionalText
