@@ -474,6 +474,10 @@ id<GREYMatcher> SystemSelectionCalloutCopyButton() {
   return [ChromeMatchersAppInterface systemSelectionCalloutCopyButton];
 }
 
+id<GREYMatcher> SystemSelectionCalloutOverflowButton() {
+  return [ChromeMatchersAppInterface systemSelectionCalloutOverflowButton];
+}
+
 id<GREYMatcher> CopyActivityButton() API_AVAILABLE(ios(13)) {
   return [ChromeMatchersAppInterface copyActivityButton];
 }

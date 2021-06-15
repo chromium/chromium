@@ -370,6 +370,10 @@ id<GREYMatcher> SystemSelectionCalloutLinkToTextButton();
 // Returns matcher for the copy button on the system selection callout.
 id<GREYMatcher> SystemSelectionCalloutCopyButton();
 
+// Returns matcher for the system selection callout overflow button to show more
+// menu items.
+id<GREYMatcher> SystemSelectionCalloutOverflowButton();
+
 // Matcher for a Copy button, such as the one in the Activity View. This matcher
 // is very broad and will look for any button with a matching string.
 // Only the iOS 13 Activity View is reachable by EarlGrey.

@@ -364,6 +364,10 @@
 // Returns matcher for the copy button on the system selection callout.
 + (id<GREYMatcher>)systemSelectionCalloutCopyButton;
 
+// Returns matcher for the system selection callout overflow button to show more
+// menu items.
++ (id<GREYMatcher>)systemSelectionCalloutOverflowButton;
+
 // Matcher for a Copy button, such as the one in the Activity View. This matcher
 // is very broad and will look for any button with a matching string.
 + (id<GREYMatcher>)copyActivityButton API_AVAILABLE(ios(13));

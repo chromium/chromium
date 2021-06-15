@@ -229,13 +229,20 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                               selectorWithElementID:kSimpleTextElementId],
                           true)];
 
-    // Edit menu should be there.
-    id<GREYMatcher> linkToTextButton =
-        chrome_test_util::SystemSelectionCalloutLinkToTextButton();
-    [ChromeEarlGrey
-        waitForSufficientlyVisibleElementWithMatcher:linkToTextButton];
+    // Wait for the menu to open. The "Copy" menu item will always be present,
+    // but other items may be hidden behind the overflow button.
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        chrome_test_util::SystemSelectionCalloutCopyButton()];
 
-    [[EarlGrey selectElementWithMatcher:linkToTextButton]
+    // The link to text button may be in the overflow, so use a search action to
+    // find it, if necessary.
+    id<GREYMatcher> linkToTextMatcher =
+        grey_allOf(chrome_test_util::SystemSelectionCalloutLinkToTextButton(),
+                   grey_sufficientlyVisible(), nil);
+    [[[EarlGrey selectElementWithMatcher:linkToTextMatcher]
+           usingSearchAction:grey_tap()
+        onElementWithMatcher:chrome_test_util::
+                                 SystemSelectionCalloutOverflowButton()]
         performAction:grey_tap()];
 
     // Make sure the Edit menu is gone.

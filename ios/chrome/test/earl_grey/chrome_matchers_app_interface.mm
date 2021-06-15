@@ -750,15 +750,19 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_kindOfClass(NSClassFromString(@"UICalloutBarButton"));
 }
 
++ (id<GREYMatcher>)systemSelectionCalloutLinkToTextButton {
+  return grey_allOf(grey_accessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT)),
+                    [self systemSelectionCallout], nil);
+}
+
 + (id<GREYMatcher>)systemSelectionCalloutCopyButton {
   return grey_allOf(grey_accessibilityLabel(@"Copy"),
                     [self systemSelectionCallout], nil);
 }
 
-+ (id<GREYMatcher>)systemSelectionCalloutLinkToTextButton {
-  return grey_allOf(grey_accessibilityLabel(
-                        l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT)),
-                    [self systemSelectionCallout], nil);
++ (id<GREYMatcher>)systemSelectionCalloutOverflowButton {
+  return grey_accessibilityID(@"show.next.items.menu.button");
 }
 
 + (id<GREYMatcher>)copyActivityButton API_AVAILABLE(ios(13)) {
