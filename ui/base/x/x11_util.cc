@@ -635,28 +635,17 @@ bool HasWMSpecProperty(const base::flat_set<x11::Atom>& properties,
 }
 
 bool GetCustomFramePrefDefault() {
-  // If the window manager doesn't support enough of EWMH to tell us its name,
-  // assume that it doesn't want custom frames. For example, _NET_WM_MOVERESIZE
-  // is needed for frame-drag-initiated window movement.
-  std::string wm_name;
-  if (!GetWindowManagerName(&wm_name))
+  // _NET_WM_MOVERESIZE is needed for frame-drag-initiated window movement.
+  if (!WmSupportsHint(x11::GetAtom("_NET_WM_MOVERESIZE")))
     return false;
 
-  // Also disable custom frames for (at-least-partially-)EWMH-supporting tiling
-  // window managers.
   ui::WindowManagerName wm = GuessWindowManager();
-  if (wm == WM_AWESOME || wm == WM_I3 || wm == WM_ION3 || wm == WM_MATCHBOX ||
-      wm == WM_NOTION || wm == WM_QTILE || wm == WM_RATPOISON ||
-      wm == WM_STUMPWM || wm == WM_WMII)
+  // If we don't know which WM is active, conservatively disable custom frames.
+  if (wm == WM_OTHER || wm == WM_UNNAMED)
     return false;
 
-  // Handle a few more window managers that don't get along well with custom
-  // frames.
-  if (wm == WM_ICE_WM || wm == WM_KWIN)
-    return false;
-
-  // For everything else, use custom frames.
-  return true;
+  // Stacking WMs should use custom frames.
+  return !IsWmTiling(wm);
 }
 
 bool IsWmTiling(WindowManagerName window_manager) {
