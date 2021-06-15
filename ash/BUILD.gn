@@ -1986,10 +1986,7 @@ component("ash") {
       "ambient/backdrop/ambient_backend_controller_impl.h",
     ]
 
-    deps += [
-      "//chromeos/assistant/internal/ambient",
-      "//chromeos/assistant/internal/proto/google3",
-    ]
+    deps += [ "//chromeos/assistant/internal/ambient" ]
   }
 
   if (use_iioservice) {
