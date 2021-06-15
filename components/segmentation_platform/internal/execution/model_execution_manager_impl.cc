@@ -44,7 +44,7 @@ struct ModelExecutionManagerImpl::ExecutionState {
   SegmentationModelHandler* model_handler = nullptr;
   ModelExecutionCallback callback;
   base::TimeDelta bucket_duration;
-  std::deque<const proto::Feature> features;
+  std::deque<proto::Feature> features;
 };
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
