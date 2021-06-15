@@ -127,15 +127,19 @@ builder(
     triggered_by = ["WebRTC Chromium FYI Win Builder"],
 )
 
+# Builders run on the default Win OS version offered
+# in the Chrome infra however the tasks will be sharded
+# to swarming bots with appropriate OS using swarming
+# dimensions.
 builder(
     name = "WebRTC Chromium FYI Win7 Tester",
-    os = os.WINDOWS_7,
+    os = os.WINDOWS_DEFAULT,
     triggered_by = ["WebRTC Chromium FYI Win Builder"],
 )
 
 builder(
     name = "WebRTC Chromium FYI Win8 Tester",
-    os = os.WINDOWS_8_1,
+    os = os.WINDOWS_DEFAULT,
     triggered_by = ["WebRTC Chromium FYI Win Builder"],
 )
 
