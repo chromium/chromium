@@ -41,6 +41,7 @@
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/trusted_vault/fake_security_domains_server.h"
+#include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -113,9 +114,15 @@ GURL GetTrustedVaultRetrievalURL(
 }
 
 GURL GetTrustedVaultRecoverabilityURL(
-    const net::test_server::EmbeddedTestServer& test_server) {
-  return test_server.GetURL(base::StringPrintf(
-      "/sync/encryption_keys_recoverability.html?%s", kGaiaId));
+    const net::test_server::EmbeddedTestServer& test_server,
+    const std::vector<uint8_t>& public_key) {
+  // encryption_keys_recoverability.html would populate encryption key to sync
+  // service upon loading. Key is provided as part of URL and needs to be
+  // encoded with Base64, because |public_key| is binary.
+  const std::string base64_encoded_public_key = base::Base64Encode(public_key);
+  return test_server.GetURL(
+      base::StringPrintf("/sync/encryption_keys_recoverability.html?%s#%s",
+                         kGaiaId, base64_encoded_public_key.c_str()));
 }
 
 std::string ComputeKeyName(const KeyParamsForTesting& key_params) {
@@ -1076,14 +1083,17 @@ class SingleClientNigoriWithRecoverySyncTest
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                        ShouldReportDegradedTrustedVaultRecoverability) {
-  const GURL recoverability_url =
-      GetTrustedVaultRecoverabilityURL(*embedded_test_server());
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  const GURL recoverability_url = GetTrustedVaultRecoverabilityURL(
+      *embedded_test_server(), kTestRecoveryMethodPublicKey);
 
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
-  GetSecurityDomainsServer()->SetRecoverabilityDegraded();
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
@@ -1093,6 +1103,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
   ASSERT_TRUE(SetupSync());
 
+  ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
   ASSERT_EQ(syncer::PassphraseType::kTrustedVaultPassphrase,
             GetSyncService(0)->GetUserSettings()->GetPassphraseType());
   ASSERT_FALSE(GetSyncService(0)
@@ -1134,6 +1145,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
       TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
   EXPECT_FALSE(ShouldShowTrustedVaultDegradedRecoverabilityError(
       GetSyncService(0), GetProfile(0)->GetPrefs()));
+  EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string is empty.
@@ -1146,7 +1158,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                        ShouldDeferAddingTrustedVaultRecoverabilityMethod) {
-  const std::vector<uint8_t> kTestRecoveryMethodPublicKey = {1, 2, 3, 4};
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
   const int kTestMethodTypeHint = 8;
 
   // Mimic the account being already using a trusted vault passphrase.
@@ -1159,7 +1172,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   ASSERT_TRUE(SetupClients());
 
   // Mimic the key being available upon startup but recoverability degraded.
-  GetSecurityDomainsServer()->SetRecoverabilityDegraded();
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
       kGaiaId, {trusted_vault_key},
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
@@ -1171,16 +1185,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
       kGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
       run_loop.QuitClosure());
 
+  ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+
   // Sign in now and wait until sync initializes.
   ASSERT_TRUE(SetupSync());
 
   // Wait until AddTrustedVaultRecoveryMethodFromWeb() completes.
   run_loop.Run();
 
-  // TODO(crbug.com/1201659): This should verify that
-  // |kTestRecoveryMethodPublicKey| is now registered on the server.
   EXPECT_TRUE(
       TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
+  EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 }
 
 // Device registration attempt should be taken upon sign in into primary
@@ -1311,11 +1326,15 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
     DISABLED_ShouldReportDegradedTrustedVaultRecoverability) {
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
-  GetSecurityDomainsServer()->SetRecoverabilityDegraded();
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
@@ -1346,7 +1365,9 @@ IN_PROC_BROWSER_TEST_F(
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
                    /*foreground=*/true);
   OpenTabForSyncTrustedVaultUserActionForTesting(
-      GetBrowser(0), GetTrustedVaultRecoverabilityURL(*embedded_test_server()));
+      GetBrowser(0),
+      GetTrustedVaultRecoverabilityURL(*embedded_test_server(),
+                                       kTestRecoveryMethodPublicKey));
   EXPECT_TRUE(
       TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
 

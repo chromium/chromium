@@ -74,6 +74,8 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void FetchBackendPrimaryAccountForTesting(
       base::OnceCallback<void(const absl::optional<CoreAccountInfo>&)> callback)
       const;
+  // TODO(crbug.com/1201659): This this API and rely exclusively on
+  // FakeSecurityDomainsServer.
   void GetLastAddedRecoveryMethodPublicKeyForTesting(
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
 

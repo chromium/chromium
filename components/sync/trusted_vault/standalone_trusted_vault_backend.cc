@@ -280,9 +280,6 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     return;
   }
 
-  // TODO(crbug.com/1201659): Implement logic properly and add test coverage.
-  // Note for example that |public_key| gets ignored below and a random key is
-  // used instead.
   sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   if (per_user_vault == nullptr) {
     // This should ideally be a DCHECK instead, but currently it's not
@@ -294,6 +291,14 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   const absl::optional<TrustedVaultKeyAndVersion>
       last_trusted_vault_key_and_version =
           GetLastTrustedVaultKeyAndVersion(*per_user_vault);
+
+  std::unique_ptr<SecureBoxPublicKey> imported_public_key =
+      SecureBoxPublicKey::CreateByImport(public_key);
+  if (!imported_public_key) {
+    // Invalid public key.
+    std::move(cb).Run();
+    return;
+  }
 
   last_added_recovery_method_public_key_for_testing_ = public_key;
 
@@ -309,8 +314,8 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   ongoing_add_recovery_method_request_ =
       connection_->RegisterAuthenticationFactor(
           *primary_account_, last_trusted_vault_key_and_version,
-          SecureBoxKeyPair::GenerateRandom()->public_key(),
-          AuthenticationFactorType::kUnspecified, method_type_hint,
+          *imported_public_key, AuthenticationFactorType::kUnspecified,
+          method_type_hint,
           base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
               base::Unretained(this), std::move(cb)));

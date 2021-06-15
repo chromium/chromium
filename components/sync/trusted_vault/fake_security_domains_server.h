@@ -56,12 +56,15 @@ class FakeSecurityDomainsServer {
   std::vector<uint8_t> RotateTrustedVaultKey(
       const std::vector<uint8_t>& last_trusted_vault_key);
 
-  // Causes the security domain to enter the degraded recoverability state.
-  void SetRecoverabilityDegraded();
+  // Causes the security domain to enter the degraded recoverability state
+  // unless the provided |public_key| matches a member's public key.
+  void RequirePublicKeyToAvoidRecoverabilityDegraded(
+      const std::vector<uint8_t>& public_key);
 
   int GetMemberCount() const;
   bool AllMembersHaveKey(const std::vector<uint8_t>& trusted_vault_key) const;
   int GetCurrentEpoch() const;
+  bool IsRecoverabilityDegraded() const;
 
   // Returns true if there was a request that violates supported protocol.
   bool ReceivedInvalidRequest() const;
@@ -102,7 +105,7 @@ class FakeSecurityDomainsServer {
     int current_epoch = 0;
     bool constant_key_allowed = true;
 
-    bool is_recoverability_degraded = false;
+    std::string required_public_key_to_avoid_recoverability_degraded;
   };
 
   // This class is used on main thread and on EmbeddedTestServer IO thread, data

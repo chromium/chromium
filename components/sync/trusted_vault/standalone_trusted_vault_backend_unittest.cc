@@ -32,6 +32,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
+using testing::IsNull;
 using testing::Mock;
 using testing::Ne;
 using testing::NotNull;
@@ -51,6 +52,11 @@ MATCHER_P2(OptionalTrustedVaultKeyAndVersionEq,
   const absl::optional<TrustedVaultKeyAndVersion>& key_and_version = arg;
   return key_and_version.has_value() && key_and_version->key == expected_key &&
          key_and_version->version == expected_version;
+}
+
+MATCHER_P(PublicKeyWhenExportedEq, expected, "") {
+  const SecureBoxPublicKey& actual_public_key = arg;
+  return actual_public_key.ExportToBytes() == expected;
 }
 
 base::FilePath CreateUniqueTempDir(base::ScopedTempDir* temp_dir) {
@@ -670,7 +676,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
   const int kLastKeyVersion = 0;
-  const std::vector<uint8_t> kPublicKey = {1, 2, 3, 4};
+  const std::vector<uint8_t> kPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const int kMethodTypeHint = 7;
 
@@ -683,7 +690,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
                                  Eq(account_info),
                                  OptionalTrustedVaultKeyAndVersionEq(
                                      kVaultKeys.back(), kLastKeyVersion),
-                                 _, AuthenticationFactorType::kUnspecified,
+                                 PublicKeyWhenExportedEq(kPublicKey),
+                                 AuthenticationFactorType::kUnspecified,
                                  Eq(kMethodTypeHint), _))
       .WillOnce([&](const CoreAccountInfo&,
                     const absl::optional<TrustedVaultKeyAndVersion>&,
@@ -710,10 +718,34 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldIgnoreTrustedRecoveryMethodWithInvalidPublicKey) {
+  const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
+  const int kLastKeyVersion = 0;
+  const std::vector<uint8_t> kInvalidPublicKey = {1, 2, 3, 4};
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const int kMethodTypeHint = 7;
+
+  ASSERT_THAT(SecureBoxPublicKey::CreateByImport(kInvalidPublicKey), IsNull());
+
+  backend()->SetPrimaryAccount(account_info);
+  backend()->StoreKeys(account_info.gaia, kVaultKeys, kLastKeyVersion);
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _))
+      .Times(0);
+
+  base::MockCallback<base::OnceClosure> completion_callback;
+  EXPECT_CALL(completion_callback, Run());
+  backend()->AddTrustedRecoveryMethod(account_info.gaia, kInvalidPublicKey,
+                                      kMethodTypeHint,
+                                      completion_callback.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldDeferTrustedRecoveryMethodUntilPrimaryAccount) {
   const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
   const int kLastKeyVersion = 0;
-  const std::vector<uint8_t> kPublicKey = {1, 2, 3, 4};
+  const std::vector<uint8_t> kPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const int kMethodTypeHint = 7;
 
@@ -739,7 +771,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                  Eq(account_info),
                                  OptionalTrustedVaultKeyAndVersionEq(
                                      kVaultKeys.back(), kLastKeyVersion),
-                                 _, AuthenticationFactorType::kUnspecified,
+                                 PublicKeyWhenExportedEq(kPublicKey),
+                                 AuthenticationFactorType::kUnspecified,
                                  Eq(kMethodTypeHint), _))
       .WillOnce([&](const CoreAccountInfo&,
                     const absl::optional<TrustedVaultKeyAndVersion>&,

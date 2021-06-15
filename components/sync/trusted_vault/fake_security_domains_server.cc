@@ -193,9 +193,12 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
   return new_trusted_vault_key;
 }
 
-void FakeSecurityDomainsServer::SetRecoverabilityDegraded() {
+void FakeSecurityDomainsServer::RequirePublicKeyToAvoidRecoverabilityDegraded(
+    const std::vector<uint8_t>& public_key) {
+  DCHECK(!public_key.empty());
   base::AutoLock autolock(lock_);
-  state_.is_recoverability_degraded = true;
+  AssignBytesToProtoString(
+      public_key, &state_.required_public_key_to_avoid_recoverability_degraded);
 }
 
 int FakeSecurityDomainsServer::GetMemberCount() const {
@@ -234,6 +237,16 @@ bool FakeSecurityDomainsServer::AllMembersHaveKey(
 int FakeSecurityDomainsServer::GetCurrentEpoch() const {
   base::AutoLock autolock(lock_);
   return state_.current_epoch;
+}
+
+bool FakeSecurityDomainsServer::IsRecoverabilityDegraded() const {
+  base::AutoLock autolock(lock_);
+  if (state_.required_public_key_to_avoid_recoverability_degraded.empty()) {
+    return false;
+  }
+
+  return state_.public_key_to_shared_keys.count(
+             state_.required_public_key_to_avoid_recoverability_degraded) == 0;
 }
 
 bool FakeSecurityDomainsServer::ReceivedInvalidRequest() const {
@@ -288,12 +301,6 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     state_.public_key_to_shared_keys[member.public_key()] = {shared_key};
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
-
-    // TODO(crbug.com/1201659): This logic should be smarter.
-    if (member.member_type() ==
-        sync_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED) {
-      state_.is_recoverability_degraded = false;
-    }
 
     return response;
   }
@@ -376,12 +383,10 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
 std::unique_ptr<net::test_server::HttpResponse>
 FakeSecurityDomainsServer::HandleGetSecurityDomainRequest(
     const net::test_server::HttpRequest& http_request) {
-  base::AutoLock autolock(lock_);
-
   sync_pb::SecurityDomain security_domain;
   security_domain.mutable_security_domain_details()
       ->mutable_sync_details()
-      ->set_degraded_recoverability(state_.is_recoverability_degraded);
+      ->set_degraded_recoverability(IsRecoverabilityDegraded());
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
