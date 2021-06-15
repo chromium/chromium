@@ -5,12 +5,13 @@
 /**
  * @fileoverview
  * Type aliases for the mojo API.
- *
- * TODO(gavindodd): When the fake API is replaced by mojo these can be
- * re-aliased to the corresponding mojo types, or replaced by them.
  */
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import './mojom/shimless_rma.mojom-lite.js';
 
 /**
  * Return type from state progression methods.
@@ -21,180 +22,84 @@ import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_moj
 export let StateResult;
 
 /**
- * @enum {number}
+ * @typedef {ash.shimlessRma.mojom.RmaState}
  */
-export let RmaState = {
-  kUnknown: 0,
-  kWelcomeScreen: 1,
-  kConfigureNetwork: 2,
-  kUpdateChrome: 3,
-  kSelectComponents: 4,
-  kChooseDestination: 5,
-  kChooseWriteProtectDisableMethod: 6,
-  kEnterRSUWPDisableCode: 7,
-  kWaitForManualWPDisable: 8,
-  kWPDisableComplete: 9,
-  kChooseFirmwareReimageMethod: 10,
-  kRestock: 11,
-  kUpdateDeviceInformation: 12,
-  kCalibrateComponents: 13,
-  kProvisionDevice: 14,
-  kWaitForManualWPEnable: 15,
-  kRepairComplete: 16,
-  MIN_VALUE: 0,
-  MAX_VALUE: 16,
-};
+export let RmaState = ash.shimlessRma.mojom.RmaState;
 
 /**
- * @enum {number}
+ * @typedef {ash.shimlessRma.mojom.RmadErrorCode}
  */
-export let RmadErrorCode = {
-  kNotSet: 0,
-  kOk: 1,
-  kRmaNotRequired: 2,
-  kRequestInvalid: 3,
-  kMissingComponent: 4,
-  kWriteProtectDisableRsuCodeInvalid: 5,
-  kWriteProtectDisableBatteryNotDisconnected: 6,
-  kWriteProtectSignalNotDetected: 7,
-  kReimagingDownloadNoNetwork: 8,
-  kReimagingDownloadNetworkError: 9,
-  kReimagingDownloadCancelled: 10,
-  kReimagingUsbNotFound: 11,
-  kReimagingUsbTooManyFound: 12,
-  kReimagingUsbInvalidImage: 13,
-  kReimagingImagingFailed: 14,
-  kReimagingUnknownFailure: 15,
-  kDeviceInfoInvalid: 16,
-  kCalibrationFailed: 17,
-  kProvisioningFailed: 18,
-  kPowerwashFailed: 19,
-  kFinalizationFailed: 20,
-  kLogUploadFtpServerCannotConnect: 21,
-  kLogUploadFtpServerConnectionRejected: 22,
-  kLogUploadFtpServerTransferFailed: 23,
-  kCannotCancelRma: 24,
-  kTransitionFailed: 25,
-  kAbortFailed: 26,
-  MIN_VALUE: 0,
-  MAX_VALUE: 26,
-};
+export let RmadErrorCode = ash.shimlessRma.mojom.RmadErrorCode;
 
 
 /**
- * @enum {number}
+ * @typedef {ash.shimlessRma.mojom.ComponentType}
  */
-export let ComponentType = {
-  kComponentUnknown: 0,
-  kMainboardRework: 1,
-  kKeyboard: 2,
-  kScreen: 3,
-  kTrackpad: 4,
-  kPowerButton: 5,
-  kThumbReader: 6,
-  MIN_VALUE: 0,
-  MAX_VALUE: 6,
-};
+export let ComponentType = ash.shimlessRma.mojom.ComponentType;
 
 
 /**
- * @enum {number}
+ * @typedef {ash.shimlessRma.mojom.ComponentRepairState}
  */
-export let ComponentRepairState = {
-  kRepairUnknown: 0,
-  kOriginal: 1,
-  kReplaced: 2,
-  kMissing: 3,
-  MIN_VALUE: 0,
-  MAX_VALUE: 3,
-};
+export let ComponentRepairState = ash.shimlessRma.mojom.ComponentRepairState;
 
 
 /**
- * @enum {number}
+ * @typedef {ash.shimlessRma.mojom.CalibrationComponent}
  */
-export let CalibrationComponent = {
-  kCalibrateUnknown: 0,
-  kAccelerometer: 1,
-  MIN_VALUE: 0,
-  MAX_VALUE: 1,
-};
+export let CalibrationComponent = ash.shimlessRma.mojom.CalibrationComponent;
 
 
 /**
- * @enum {number}
+ * @typedef {ash.shimlessRma.mojom.ProvisioningStep}
  */
-export let ProvisioningStep = {
-  kProvisioningUnknown: 0,
-  kInProgress: 1,
-  kProvisioningComplete: 2,
-  MIN_VALUE: 0,
-  MAX_VALUE: 3,
-};
+export let ProvisioningStep = ash.shimlessRma.mojom.ProvisioningStep;
 
 /**
- * @typedef {{
- *   component: !ComponentType,
- *   state: !ComponentRepairState,
- * }}
+ * @typedef {ash.shimlessRma.mojom.Component}
  */
-export let Component;
+export let Component = ash.shimlessRma.mojom.Component;
 
 /**
- * Type alias for ErrorObserver.
- * @typedef {{onError: !function(!RmadErrorCode)}}
+ * Type alias for ErrorObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.ErrorObserverRemote}
  */
-export let ErrorObserverRemote;
+export let ErrorObserverRemote = ash.shimlessRma.mojom.ErrorObserverRemote;
 
 /**
- * Type alias for CalibrationProgressObserver.
- * @typedef {{
- *   onCalibrationUpdated: !function(!CalibrationComponent, number)
- * }}
+ * Type alias for CalibrationObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.CalibrationObserverRemote}
  */
-export let CalibrationObserverRemote;
+export let CalibrationObserverRemote =
+    ash.shimlessRma.mojom.CalibrationObserverRemote;
 
 /**
- * Type alias for ProvisioningProgressObserver.
- * @typedef {{
- *   onProvisioningUpdated: !function(!ProvisioningStep, number)
- * }}
+ * Type alias for ProvisioningObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.ProvisioningObserverRemote}
  */
-export let ProvisioningObserverRemote;
+export let ProvisioningObserverRemote =
+    ash.shimlessRma.mojom.ProvisioningObserverRemote;
 
 /**
- * Type alias for HardwareWriteProtectionState.
- * @typedef {{
- *   onHardwareWriteProtectionStateChanged: !function(boolean)
- * }}
+ * Type alias for HardwareWriteProtectionStateObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverRemote}
  */
-export let HardwareWriteProtectionStateObserverRemote;
+export let HardwareWriteProtectionStateObserverRemote =
+    ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverRemote;
 
 /**
- * Type alias for PowerCableState.
- * @typedef {{
- *   onPowerCableStateChanged: !function(boolean)
- * }}
+ * Type alias for PowerCableStateObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverRemote}
  */
-export let PowerCableStateObserverRemote;
-
-/**
- * Type of ShimlessRmaServiceInterface.setStates function.
- * Only used to make the ShimlessRmaService type an interface.
- * TODO(gavindodd): Remove when a real mojo type is implemented.
- * @typedef {!function(!Array<{ state: !RmaState, error: !RmadErrorCode }>)}
- */
-export let SetStatesFunction;
-
+export let PowerCableStateObserverRemote =
+    ash.shimlessRma.mojom.PowerCableStateObserverRemote;
 
 /**
  * Type alias for the ShimlessRmaServiceInterface.
- * TODO(gavindodd): Replace with a real mojo type when implemented.
- * @typedef {{
- *   setStates: !SetStatesFunction,
- * }}
+ * @typedef {ash.shimlessRma.mojom.ShimlessRmaServiceInterface}
  */
-export let ShimlessRmaServiceInterface;
+export let ShimlessRmaServiceInterface =
+    ash.shimlessRma.mojom.ShimlessRmaServiceInterface;
 
 /**
  * Type alias for NetworkConfigServiceInterface.
