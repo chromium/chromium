@@ -6,6 +6,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -14,7 +15,10 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/arc/arc_util.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -28,6 +32,10 @@ AppServiceAppWindowShelfItemController::AppServiceAppWindowShelfItemController(
     AppServiceAppWindowShelfController* controller)
     : AppWindowShelfItemController(shelf_id), controller_(controller) {
   DCHECK(controller_);
+
+  Profile* profile = controller_->owner()->profile();
+  if (arc::IsArcAllowedForProfile(profile))
+    arc_prefs_observer_.Observe(ArcAppListPrefs::Get(profile));
 }
 
 AppServiceAppWindowShelfItemController::
@@ -158,6 +166,45 @@ void AppServiceAppWindowShelfItemController::OnWindowTitleChanged(
         ChromeShelfController::instance()->SetItemTitle(shelf_id(), title);
     }
     return;
+  }
+}
+
+void AppServiceAppWindowShelfItemController::OnAppStatesChanged(
+    const std::string& arc_app_id,
+    const ArcAppListPrefs::AppInfo& app_info) {
+  if (app_id() != arc_app_id || app_info.suspended || !app_info.ready)
+    return;
+
+  apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(
+          controller_->owner()->profile());
+  DCHECK(proxy);
+
+  for (const ui::BaseWindow* window : windows()) {
+    auto session_id = arc::GetWindowSessionId(window->GetNativeWindow());
+    if (!session_id.has_value())
+      return;
+
+    auto app_launch_info =
+        ::full_restore::GetArcAppLaunchInfo(arc_app_id, session_id.value());
+    if (!app_launch_info)
+      return;
+
+    DCHECK(app_launch_info->event_flag.has_value());
+
+    auto window_info = apps::mojom::WindowInfo::New();
+    window_info->window_id = session_id.value();
+
+    if (app_launch_info->intent.has_value()) {
+      proxy->LaunchAppWithIntent(
+          arc_app_id, app_launch_info->event_flag.value(),
+          std::move(app_launch_info->intent.value()),
+          apps::mojom::LaunchSource::kFromFullRestore, std::move(window_info));
+    } else {
+      proxy->Launch(arc_app_id, app_launch_info->event_flag.value(),
+                    apps::mojom::LaunchSource::kFromFullRestore,
+                    std::move(window_info));
+    }
   }
 }
 
