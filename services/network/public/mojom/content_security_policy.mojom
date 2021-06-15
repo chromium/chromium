@@ -88,6 +88,7 @@ struct CSPSourceList {
   bool allow_inline = false;
   bool allow_eval = false;
   bool allow_wasm_eval = false;
+  bool allow_wasm_unsafe_eval = false;
   bool allow_dynamic = false;
   bool allow_unsafe_hashes = false;
   bool report_sample = false;

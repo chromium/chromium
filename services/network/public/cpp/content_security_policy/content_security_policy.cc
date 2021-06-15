@@ -639,6 +639,11 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
+    if (base::EqualsCaseInsensitiveASCII(expression, "'wasm-unsafe-eval'")) {
+      directive->allow_wasm_unsafe_eval = true;
+      continue;
+    }
+
     if (base::EqualsCaseInsensitiveASCII(expression,
                                          "'unsafe-allow-redirects'") &&
         directive_name == CSPDirectiveName::NavigateTo) {

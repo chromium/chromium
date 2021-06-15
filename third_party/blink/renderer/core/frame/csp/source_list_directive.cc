@@ -90,8 +90,9 @@ bool CSPSourceListIsNone(
   return !source_list.sources.size() && !source_list.allow_self &&
          !source_list.allow_star && !source_list.allow_inline &&
          !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
-         !source_list.allow_wasm_eval && !source_list.allow_dynamic &&
-         !source_list.nonces.size() && !source_list.hashes.size();
+         !source_list.allow_wasm_eval && !source_list.allow_wasm_unsafe_eval &&
+         !source_list.allow_dynamic && !source_list.nonces.size() &&
+         !source_list.hashes.size();
 }
 
 bool CSPSourceListIsSelf(
@@ -99,8 +100,9 @@ bool CSPSourceListIsSelf(
   return source_list.allow_self && !source_list.sources.size() &&
          !source_list.allow_star && !source_list.allow_inline &&
          !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
-         !source_list.allow_wasm_eval && !source_list.allow_dynamic &&
-         !source_list.nonces.size() && !source_list.hashes.size();
+         !source_list.allow_wasm_eval && !source_list.allow_wasm_unsafe_eval &&
+         !source_list.allow_dynamic && !source_list.nonces.size() &&
+         !source_list.hashes.size();
 }
 
 bool CSPSourceListIsHashOrNoncePresent(

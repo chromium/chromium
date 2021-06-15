@@ -62,6 +62,7 @@ struct WebCSPSourceList {
   bool allow_inline;
   bool allow_eval;
   bool allow_wasm_eval;
+  bool allow_wasm_unsafe_eval;
   bool allow_dynamic;
   bool allow_unsafe_hashes;
   bool report_sample;

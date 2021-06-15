@@ -6,11 +6,11 @@ found in the LICENSE file.
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'wasm-unsafe-eval';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'wasm-eval';">
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="instantiate_empty.js"></script>
 <!-- Try to instantiate, success depends on setting of WebAssemblyCSP runtime feature. -->
-<script src="instantiate_flagged.js"></script>
+<script src="instantiate_fail.js"></script>
 </head>
 </html>

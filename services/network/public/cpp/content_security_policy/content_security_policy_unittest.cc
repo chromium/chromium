@@ -1437,6 +1437,17 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          "'wrong' 'wasm-unsafe-eval'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_wasm_unsafe_eval = true;
+            return csp;
+          }),
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
+      },
+      {
           "'wrong' 'strict-dynamic'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();

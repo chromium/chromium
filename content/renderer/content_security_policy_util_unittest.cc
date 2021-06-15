@@ -143,6 +143,9 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversionForCSPSourceList) {
       [](CSPSourceList& source_list) { source_list.allow_inline = true; },
       [](CSPSourceList& source_list) { source_list.allow_eval = true; },
       [](CSPSourceList& source_list) { source_list.allow_wasm_eval = true; },
+      [](CSPSourceList& source_list) {
+        source_list.allow_wasm_unsafe_eval = true;
+      },
       [](CSPSourceList& source_list) { source_list.allow_dynamic = true; },
       [](CSPSourceList& source_list) {
         source_list.allow_unsafe_hashes = true;
