@@ -244,6 +244,28 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
         ->Clone();
   }
 
+  // Finds the element at the given |point| and compares it against
+  // |expected_result|. Retries up to 5 times if there is a mismatch.  Without
+  // the retry logic, these tests fail flakily, possibly because they attempt to
+  // find the element before the webview has completed layout and/or
+  // rendering. This occurs on all iOS versions, but seems to be worse on iOS
+  // 15. Adding a fixed delay seems to give the webview enough time to make
+  // itself ready for the test, but retrying allows for the delay to be as short
+  // as possible.
+  // TODO(crbug.com/1219869): Find a better "ready" signal for the webview and
+  // remove this retry logic.
+  void CheckElementResult(CGPoint point, const base::Value& expected_result) {
+    constexpr int kNumTries = 5;
+    for (int i = 0; i < kNumTries; ++i) {
+      base::Value result = FindElementAtPoint(point);
+      if (result == expected_result) {
+        return;
+      } else if (i == kNumTries - 1) {
+        ASSERT_EQ(result, expected_result);
+      }
+    }
+  }
+
   // Returns web view's content size from the current web state.
   CGSize GetWebViewContentSize() { return web_view_.scrollView.contentSize; }
 
@@ -280,8 +302,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementAtPoint) {
   expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
 
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that the correct title is found for an image.
@@ -300,8 +321,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementWithTitleAtPoint) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementTitle, image_title);
 
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that image details are not returned for a point outside of the document
@@ -314,8 +334,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOutsideDocument);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOutsideDocument, expected_value);
 }
 
 // Tests that image details are not returned for a point outside of the element.
@@ -327,8 +346,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOutsideImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOutsideImage, expected_value);
 }
 
 #pragma mark - Image with link
@@ -348,8 +366,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindLinkImageAtPointForFileUrl) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, image_link);
 
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that an image link does not return image and link details for a point
@@ -364,8 +381,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOutsideDocument);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOutsideDocument, expected_value);
 }
 
 // Tests that an image link does not return image and link details for a point
@@ -380,8 +396,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOutsideImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOutsideImage, expected_value);
 }
 
 // Tests that an image link returns details for both the image and the link
@@ -405,8 +420,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, image_link);
 
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that an image link returns details for both the image and the link when
@@ -431,8 +445,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageLinkedToJavaScript) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, image_link);
 
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that an image link returns details for only the image and not the link
@@ -457,8 +470,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
 
   // Make sure the returned JSON does not have an 'href' key.
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that an image link returns details for only the image and not the link
@@ -482,8 +494,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
 
   // Make sure the returned JSON does not have an 'href' key.
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that an image link returns details for only the image and not the link
@@ -502,8 +513,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
 
   // Make sure the returned JSON does not have an 'href' key.
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that only the parent link details are returned for an image with
@@ -524,8 +534,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfImageWithCalloutNone) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, image_link);
 
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 #pragma mark - SVG shape links
@@ -541,8 +550,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPoint) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, link);
 
-  base::Value result = FindElementAtPoint(kPointOnSvgLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnSvgLink, expected_value);
 }
 
 // Tests that an SVG shape xlink returns details for the link.
@@ -556,8 +564,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgXlinkAtPoint) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, link);
 
-  base::Value result = FindElementAtPoint(kPointOnSvgLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnSvgLink, expected_value);
 }
 
 // Tests that a point within an SVG element but outside a linked shape does not
@@ -570,8 +577,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPointOutsideElement) {
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOutsideSvgLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOutsideSvgLink, expected_value);
 }
 
 #pragma mark -
@@ -593,8 +599,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOnImage);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnImage, expected_value);
 }
 
 // Tests that __gCrWeb.findElementAtPoint reports "never" as the referrer
@@ -617,6 +622,12 @@ TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
 // Tests that __gCrWeb.findElementAtPoint finds an element at the bottom of a
 // very long page.
 TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
+  // TODO(crbug.com/1219869): Fix on iOS 15 and reenable. This test appears to
+  // fail flakily if the webview is not in the view hierarchy.
+  if (@available(iOS 15, *)) {
+    return;
+  }
+
   const char link[] = "http://destination/";
   NSString* body = @"<div style='height:4000px'></div>";
   body = [body stringByAppendingString:GetHtmlForLink(link, @"link")];
@@ -645,9 +656,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
   expected_value.SetStringKey(kContextMenuElementHyperlink, link);
 
   // Link is at bottom of the page content.
-  base::Value result =
-      FindElementAtPoint(CGPointMake(50.0, content_height - 100));
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(CGPointMake(50.0, content_height - 100), expected_value);
 }
 
 // Tests that __gCrWeb.findElementAtPoint finds a link inside shadow DOM
@@ -665,8 +674,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, ShadowDomLink) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, link);
 
-  base::Value result = FindElementAtPoint(kPointOnShadowDomLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnShadowDomLink, expected_value);
 }
 
 // Tests that a point within shadow DOM content but not on a link does not
@@ -681,8 +689,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, PointOutsideShadowDomLink) {
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOutsideShadowDomLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOutsideShadowDomLink, expected_value);
 }
 
 // Tests that a callout information about a link is displayed when
@@ -700,8 +707,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithoutCalloutProperty) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, link);
 
-  base::Value result = FindElementAtPoint(kPointOnLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnLink, expected_value);
 }
 
 // Tests that a callout information about a link is displayed when
@@ -721,8 +727,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutDefault) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, link);
 
-  base::Value result = FindElementAtPoint(kPointOnLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnLink, expected_value);
 }
 
 // Tests that no callout information about a link is displayed when
@@ -739,8 +744,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutNone) {
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOnLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnLink, expected_value);
 }
 
 // Tests that -webkit-touch-callout property can be inherited from ancester
@@ -756,8 +760,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutFromAncester) {
   base::Value expected_value(base::Value::Type::DICTIONARY);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
 
-  base::Value result = FindElementAtPoint(kPointOnLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnLink, expected_value);
 }
 
 // Tests that setting -webkit-touch-callout property can override the value
@@ -778,8 +781,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutOverride) {
   expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
   expected_value.SetStringKey(kContextMenuElementHyperlink, link);
 
-  base::Value result = FindElementAtPoint(kPointOnLink);
-  EXPECT_EQ(expected_value, result);
+  CheckElementResult(kPointOnLink, expected_value);
 }
 
 }  // namespace web
