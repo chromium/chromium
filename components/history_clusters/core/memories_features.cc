@@ -20,7 +20,7 @@ GURL RemoteModelEndpoint() {
 }
 
 const base::FeatureParam<std::string> kRemoteModelEndpointExperimentName{
-    &kRemoteModelForDebugging, "MemoriesRemoteModelEndpointExperimentName", ""};
+    &kMemories, "MemoriesExperimentName", ""};
 
 const base::FeatureParam<int> kMaxVisitsToCluster{
     &kMemories, "MemoriesMaxVisitsToCluster", 1000};

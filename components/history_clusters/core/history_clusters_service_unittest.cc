@@ -73,14 +73,14 @@ class HistoryClustersServiceTest : public testing::Test {
         {
             {
                 kMemories,
-                {},
+                {
+                    {"MemoriesExperimentName", endpoint_experiment},
+                },
             },
             {
                 kRemoteModelForDebugging,
                 {
                     {"MemoriesRemoteModelEndpoint", endpoint_url},
-                    {"MemoriesRemoteModelEndpointExperimentName",
-                     endpoint_experiment},
                 },
             },
         },

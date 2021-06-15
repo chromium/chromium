@@ -963,6 +963,33 @@ const FeatureEntry::FeatureVariation kMemoriesVariations[] = {
         nullptr,
     },
     {
+        "Visit Limit 200, Experiment A",
+        (FeatureEntry::FeatureParam[]){
+            {"MemoriesExperimentName", "A"},
+            {"MemoriesMaxVisitsToCluster", "200"},
+        },
+        2,
+        nullptr,
+    },
+    {
+        "Visit Limit 200, Experiment B",
+        (FeatureEntry::FeatureParam[]){
+            {"MemoriesExperimentName", "B"},
+            {"MemoriesMaxVisitsToCluster", "200"},
+        },
+        2,
+        nullptr,
+    },
+    {
+        "Visit Limit 200, Experiment C",
+        (FeatureEntry::FeatureParam[]){
+            {"MemoriesExperimentName", "C"},
+            {"MemoriesMaxVisitsToCluster", "200"},
+        },
+        2,
+        nullptr,
+    },
+    {
         "Visit Limit 10k",
         (FeatureEntry::FeatureParam[]){{"MemoriesMaxVisitsToCluster", "10000"}},
         1,
