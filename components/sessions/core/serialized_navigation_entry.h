@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -123,13 +122,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
     referrer_policy_ = referrer_policy;
   }
 
-  std::set<std::string> content_pack_categories() const {
-    return content_pack_categories_;
-  }
-  void set_content_pack_categories(
-      const std::set<std::string>& content_pack_categories) {
-    content_pack_categories_ = content_pack_categories;
-  }
   const std::vector<GURL>& redirect_chain() const { return redirect_chain_; }
 
   // This class is analogous to content::ReplacedNavigationEntryData.
@@ -207,7 +199,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   // Additional information.
   BlockedState blocked_state_ = STATE_INVALID;
   PasswordState password_state_ = PASSWORD_STATE_UNKNOWN;
-  std::set<std::string> content_pack_categories_;
 
   // Provides storage for arbitrary key/value pairs used by features. This
   // data is not synced.

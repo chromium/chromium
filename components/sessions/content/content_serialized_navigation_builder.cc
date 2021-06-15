@@ -179,10 +179,9 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
                                                entry.get());
   }
 
-  // These fields should have default values.
+  // This field should have the default value.
   DCHECK_EQ(SerializedNavigationEntry::STATE_INVALID,
             navigation->blocked_state_);
-  DCHECK_EQ(0u, navigation->content_pack_categories_.size());
 
   return entry;
 }

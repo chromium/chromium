@@ -246,11 +246,6 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
       static_cast<sync_pb::TabNavigation_PasswordState>(
           navigation.password_state()));
 
-  for (const std::string& content_pack_category :
-       navigation.content_pack_categories()) {
-    sync_data.add_content_pack_categories(content_pack_category);
-  }
-
   // Copy all redirect chain entries except the last URL (which should match
   // the virtual_url).
   const std::vector<GURL>& redirect_chain = navigation.redirect_chain();

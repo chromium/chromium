@@ -287,7 +287,6 @@ size_t SerializedNavigationEntry::EstimateMemoryUsage() const {
          EstimateMemoryUsage(redirect_chain_) +
          EstimateMemoryUsage(
              replaced_entry_data_.value_or(ReplacedNavigationEntryData())) +
-         EstimateMemoryUsage(content_pack_categories_) +
          EstimateMemoryUsage(extended_info_map_);
 }
 

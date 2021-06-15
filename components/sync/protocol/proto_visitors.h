@@ -955,7 +955,6 @@ VISIT_PROTO_FIELDS(const sync_pb::TabNavigation& proto) {
   VISIT(global_id);
   VISIT(favicon_url);
   VISIT_ENUM(blocked_state);
-  VISIT_REP(content_pack_categories);
   VISIT(http_status_code);
   VISIT(obsolete_referrer_policy);
   VISIT(is_restored);
