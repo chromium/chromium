@@ -3755,7 +3755,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, MouseButtonsNavigate) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, MouseButtonsDontNavigate) {
+// https://crbug.com/1042128 started flaking after Field Trial Testing Config
+// was enabled for content_browsertests. Most likely due to the BFCache
+// experiment that got enabled.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DISABLED_MouseButtonsDontNavigate) {
   // This test injects mouse event listeners in javascript that will
   // preventDefault the action causing the default navigation action not to be
   // taken.
