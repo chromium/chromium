@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
@@ -44,6 +45,11 @@ namespace {
 
 // The rate at which we will poll CUPS for print job updates.
 constexpr base::TimeDelta kPollRate = base::TimeDelta::FromMilliseconds(1000);
+
+// The amount of time elapsed from print job creation before a timeout is
+// acknowledged.
+constexpr base::TimeDelta kMinElaspedPrintJobTimeout =
+    base::TimeDelta::FromMilliseconds(5000);
 
 // Threshold for giving up on communicating with CUPS.
 const int kRetryMax = 6;
@@ -145,18 +151,29 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
 
   bool pages_updated = false;
   switch (job.state) {
-    case ::printing::CupsJob::PROCESSING:
+    case ::printing::CupsJob::PROCESSING: {
       pages_updated = UpdateCurrentPage(job, print_job);
-      if (chromeos::PrinterErrorCodeFromPrinterStatusReasons(printer_status) !=
-          PrinterErrorCode::NO_ERROR) {
-        print_job->set_error_code(
-            chromeos::PrinterErrorCodeFromPrinterStatusReasons(printer_status));
-        print_job->set_state(State::STATE_ERROR);
+
+      const chromeos::PrinterErrorCode printer_error_code =
+          chromeos::PrinterErrorCodeFromPrinterStatusReasons(printer_status);
+      const bool delay_print_job_timeout =
+          printer_error_code == PrinterErrorCode::PRINTER_UNREACHABLE &&
+          (base::Time::Now() - print_job->creation_time() <
+           kMinElaspedPrintJobTimeout);
+
+      if (printer_error_code != PrinterErrorCode::NO_ERROR &&
+          !delay_print_job_timeout) {
+        print_job->set_error_code(printer_error_code);
+        print_job->set_state(printer_error_code ==
+                                     PrinterErrorCode::PRINTER_UNREACHABLE
+                                 ? State::STATE_FAILED
+                                 : State::STATE_ERROR);
       } else {
         print_job->set_state(State::STATE_STARTED);
         print_job->set_error_code(PrinterErrorCode::NO_ERROR);
       }
       break;
+    }
     case ::printing::CupsJob::COMPLETED:
       DCHECK_GE(job.current_pages, print_job->total_page_number());
       print_job->set_error_code(PrinterErrorCode::NO_ERROR);
