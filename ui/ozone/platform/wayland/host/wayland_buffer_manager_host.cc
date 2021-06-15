@@ -467,10 +467,16 @@ class WaylandBufferManagerHost::Surface {
     wl_buffer_add_listener(buffer->wl_buffer.get(), &buffer_listener, this);
   }
 
+  bool enable_release_fences_ = false;
+
   // Called when we receive an immediate or fenced release for a buffer, via
   // the explicit synchronization protocol.
   void BufferExplicitRelease(wl_buffer* wl_buffer,
                              absl::optional<int32_t> fence) {
+    // TODO(crbug.com/1218233): Remove this when we turn on release fences.
+    if (!enable_release_fences_)
+      return;
+
     if (fence) {
       gfx::GpuFenceHandle handle;
       handle.owned_fd.reset(fence.value());
