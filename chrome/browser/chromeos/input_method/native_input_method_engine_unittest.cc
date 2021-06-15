@@ -146,9 +146,9 @@ TEST_F(NativeInputMethodEngineTest, DoesNotLaunchImeServiceIfAutocorrectIsOff) {
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
 
-  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  testing::StrictMock<ime::MockInputChannel> mock_input_method;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel));
+      new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
@@ -163,9 +163,9 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
-  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  testing::StrictMock<ime::MockInputChannel> mock_input_method;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel));
+      new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
@@ -178,9 +178,9 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
 
 TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
-  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  testing::StrictMock<ime::MockInputChannel> mock_input_method;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel));
+      new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
@@ -198,14 +198,14 @@ TEST_F(NativeInputMethodEngineTest, EnableCallsRightMojoFunctions) {
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
-  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  testing::StrictMock<ime::MockInputChannel> mock_input_method;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel));
+      new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
 
-  EXPECT_CALL(mock_input_channel, OnInputMethodChanged(kEngineIdUs));
+  EXPECT_CALL(mock_input_method, OnInputMethodChanged(kEngineIdUs));
 
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();
@@ -217,17 +217,17 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
-  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  testing::StrictMock<ime::MockInputChannel> mock_input_method;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel));
+      new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_channel, OnInputMethodChanged(kEngineIdUs));
-    EXPECT_CALL(mock_input_channel,
+    EXPECT_CALL(mock_input_method, OnInputMethodChanged(kEngineIdUs));
+    EXPECT_CALL(mock_input_method,
                 OnFocus(MojoEq(ime::mojom::InputFieldInfo(
                     ime::mojom::InputFieldType::kText,
                     ime::mojom::AutocorrectMode::kEnabled,
@@ -249,10 +249,10 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
-  testing::NiceMock<ime::MockInputChannel> mock_input_channel;
+  testing::NiceMock<ime::MockInputChannel> mock_input_method;
   mojo::Remote<ime::mojom::InputChannel> remote;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel, &remote));
+      new TestInputMethodManager(&mock_input_method, &remote));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
@@ -280,9 +280,9 @@ TEST_F(NativeInputMethodEngineTest,
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
-  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  testing::StrictMock<ime::MockInputChannel> mock_input_method;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel));
+      new TestInputMethodManager(&mock_input_method));
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
   NativeInputMethodEngine engine;
@@ -291,10 +291,10 @@ TEST_F(NativeInputMethodEngineTest,
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_channel, OnInputMethodChanged(kEngineIdUs));
-    EXPECT_CALL(mock_input_channel, OnFocus(_));
+    EXPECT_CALL(mock_input_method, OnInputMethodChanged(kEngineIdUs));
+    EXPECT_CALL(mock_input_method, OnFocus(_));
     // Each character in "你好" is three UTF-8 code units.
-    EXPECT_CALL(mock_input_channel,
+    EXPECT_CALL(mock_input_method,
                 OnSurroundingTextChanged(u8"你好",
                                          /*offset=*/0,
                                          MojoEq(ime::mojom::SelectionRange(
@@ -320,9 +320,9 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
-  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  testing::StrictMock<ime::MockInputChannel> mock_input_method;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel));
+      new TestInputMethodManager(&mock_input_method));
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
   NativeInputMethodEngine engine;
@@ -331,13 +331,13 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_channel, OnInputMethodChanged(kEngineIdUs));
-    EXPECT_CALL(mock_input_channel, OnFocus(_));
+    EXPECT_CALL(mock_input_method, OnInputMethodChanged(kEngineIdUs));
+    EXPECT_CALL(mock_input_method, OnFocus(_));
 
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
     // once the Mojo API is replaced with protos. GMock does not play well with
     // move-only types like PhysicalKeyEvent.
-    EXPECT_CALL(mock_input_channel, OnKeyEvent(_, _))
+    EXPECT_CALL(mock_input_method, OnKeyEvent(_, _))
         .Times(2)
         .WillRepeatedly(::testing::Invoke(
             [](ime::mojom::PhysicalKeyEventPtr,
@@ -419,10 +419,10 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   auto* testing_profile = static_cast<TestingProfile*>(browser_context());
   SetPhysicalTypingAutocorrectEnabled(*testing_profile, true);
 
-  testing::NiceMock<ime::MockInputChannel> mock_input_channel;
+  testing::NiceMock<ime::MockInputChannel> mock_input_method;
   mojo::Remote<ime::mojom::InputChannel> remote;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel, &remote));
+      new TestInputMethodManager(&mock_input_method, &remote));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", testing_profile);
@@ -471,10 +471,10 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
                                                              url);
 
   auto* testing_profile = static_cast<TestingProfile*>(browser_context());
-  testing::NiceMock<ime::MockInputChannel> mock_input_channel;
+  testing::NiceMock<ime::MockInputChannel> mock_input_method;
   mojo::Remote<ime::mojom::InputChannel> remote;
   input_method::InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_channel, &remote));
+      new TestInputMethodManager(&mock_input_method, &remote));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", testing_profile);
