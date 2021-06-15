@@ -125,7 +125,7 @@ void DownloadUIAdapterDelegate::OpenItem(
     const offline_items_collection::OpenParams& open_params) {
   JNIEnv* env = AttachCurrentThread();
   Java_OfflinePageDownloadBridge_openItem(
-      env, ConvertUTF8ToJavaString(env, item.page_url.spec()), offline_id,
+      env, ConvertUTF8ToJavaString(env, item.url.spec()), offline_id,
       static_cast<int>(open_params.launch_location),
       open_params.open_in_incognito,
       offline_pages::ShouldOfflinePagesInDownloadHomeOpenInCct());

@@ -359,7 +359,7 @@ OfflineItem ContentIndexProviderImpl::EntryToOfflineItem(
   item.state = offline_items_collection::OfflineItemState::COMPLETE;
   item.is_resumable = false;
   item.can_rename = false;
-  item.page_url = entry.launch_url;
+  item.url = entry.launch_url;
 
   if (site_engagement_service_) {
     item.content_quality_score =

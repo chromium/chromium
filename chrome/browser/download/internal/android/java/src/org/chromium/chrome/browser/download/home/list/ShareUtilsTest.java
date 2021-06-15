@@ -165,9 +165,9 @@ public class ShareUtilsTest {
     }
 
     private static Pair<OfflineItem, OfflineItemShareInfo> createItem(
-            String pageUrl, String mimeType, String title, String uri) {
+            String url, String mimeType, String title, String uri) {
         OfflineItem item = new OfflineItem();
-        item.pageUrl = pageUrl;
+        item.url = url;
         item.mimeType = mimeType;
         item.title = title;
 

@@ -51,7 +51,7 @@ public final class OfflineItemBridge {
             boolean isAccelerated, boolean promoteOrigin, long totalSizeBytes,
             boolean externallyRemoved, long creationTimeMs, long completionTimeMs,
             long lastAccessedTimeMs, boolean isOpenable, String filePath, String mimeType,
-            String pageUrl, String originalUrl, boolean isOffTheRecord, String otrProfileId,
+            String url, String originalUrl, boolean isOffTheRecord, String otrProfileId,
             @OfflineItemState int state, @FailState int failState, @PendingState int pendingState,
             boolean isResumable, boolean allowMetered, long receivedBytes, long progressValue,
             long progressMax, @OfflineItemProgressUnit int progressUnit, long timeRemainingMs,
@@ -75,7 +75,7 @@ public final class OfflineItemBridge {
         item.isOpenable = isOpenable;
         item.filePath = filePath;
         item.mimeType = mimeType;
-        item.pageUrl = pageUrl;
+        item.url = url;
         item.originalUrl = originalUrl;
         item.isOffTheRecord = isOffTheRecord;
         item.otrProfileId = otrProfileId;

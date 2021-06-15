@@ -354,7 +354,7 @@ TEST_F(DownloadUIAdapterTest, InitialItemConversion) {
   auto callback =
       base::BindLambdaForTesting([&](const absl::optional<OfflineItem>& item) {
         EXPECT_EQ(kTestGuid1, item.value().id.id);
-        EXPECT_EQ(kTestUrl, item.value().page_url.spec());
+        EXPECT_EQ(kTestUrl, item.value().url.spec());
         EXPECT_EQ(OfflineItemState::COMPLETE, item.value().state);
         EXPECT_EQ(kFileSize, item.value().received_bytes);
         EXPECT_EQ(kTestFilePath, item.value().file_path);

@@ -146,7 +146,7 @@ public class StubbedProvider {
             long totalSize, int filter) {
         OfflineItem offlineItem = new OfflineItem();
         offlineItem.id = new ContentId(LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE, guid);
-        offlineItem.pageUrl = url;
+        offlineItem.url = url;
         offlineItem.state = state;
         offlineItem.receivedBytes = downloadProgressBytes;
         offlineItem.title = title;

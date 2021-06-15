@@ -185,8 +185,8 @@ struct OfflineItem {
 
   // Request Metadata.
   // ---------------------------------------------------------------------------
-  // The URL of the top level frame at the time the content was offlined.
-  GURL page_url;
+  // The URL of the offline item, after all redirections.
+  GURL url;
 
   // The URL that represents the original request (before any redirection).
   GURL original_url;
