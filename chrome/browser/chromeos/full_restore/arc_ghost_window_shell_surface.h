@@ -33,7 +33,8 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
  public:
   ArcGhostWindowShellSurface(std::unique_ptr<exo::Surface> surface,
                              int container,
-                             double scale_factor);
+                             double scale_factor,
+                             const std::string& application_id);
   ArcGhostWindowShellSurface(const ArcGhostWindowShellSurface&) = delete;
   ArcGhostWindowShellSurface& operator=(const ArcGhostWindowShellSurface&) =
       delete;

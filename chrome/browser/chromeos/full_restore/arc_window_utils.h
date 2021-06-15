@@ -31,6 +31,8 @@ apps::mojom::WindowInfoPtr HandleArcWindowInfo(
 // cannot be a topic color.
 bool IsValidThemeColor(uint32_t theme_color);
 
+const std::string WindowIdToAppId(int window_id);
+
 }  // namespace full_restore
 }  // namespace chromeos
 

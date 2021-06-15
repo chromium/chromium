@@ -49,7 +49,8 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
 
   auto surface = std::make_unique<exo::Surface>();
   auto shell_surface = std::make_unique<ArcGhostWindowShellSurface>(
-      std::move(surface), container, scale_factor.value());
+      std::move(surface), container, scale_factor.value(),
+      WindowIdToAppId(window_id));
 
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
@@ -90,7 +91,8 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
 ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
     std::unique_ptr<exo::Surface> surface,
     int container,
-    double scale_factor)
+    double scale_factor,
+    const std::string& application_id)
     : ClientControlledShellSurface(surface.get(),
                                    /*can_minimize=*/true,
                                    container,
@@ -103,6 +105,7 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
           ->CreateGpuMemoryBuffer({1, 1}, gfx::BufferFormat::RGBA_8888,
                                   gfx::BufferUsage::GPU_READ,
                                   gpu::kNullSurfaceHandle, nullptr));
+  SetApplicationId(application_id.c_str());
   controller_surface_->Attach(buffer_.get());
   controller_surface_->SetFrame(exo::SurfaceFrameType::NORMAL);
   SetScale(scale_factor);
