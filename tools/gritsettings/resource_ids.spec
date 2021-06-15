@@ -443,38 +443,42 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2640],
   },
-  "ash/content/scanning/resources/scanning_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/sample_system_web_app_ui/chromeos_sample_system_web_app_untrusted_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
     "includes": [2645],
-    "structures": [2650],
+  },
+  "ash/content/scanning/resources/scanning_app_resources.grd": {
+    "includes": [2650],
+    "structures": [2655],
   },
   "chromeos/components/telemetry_extension_ui/resources/telemetry_extension_resources.grd": {
-    "includes": [2655],
+    "includes": [2660],
   },
   "chromeos/resources/chromeos_resources.grd": {
-    "includes": [2660],
+    "includes": [2670],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/eche_app_ui/chromeos_eche_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
-    "includes": [2670],
+    "includes": [2680],
   },
   # Both eche_bundle_resources.grd and eche_bundle_mock_resources.grd
   # start with the same id because only one of them is built depending on if
   # src_internal is available.
   "chromeos/components/eche_app_ui/resources/prod/eche_bundle_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
-    "includes": [2680],
+    "includes": [2690],
   },
   "chromeos/components/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
-    "includes": [2680],
+    "includes": [2690],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/personalization_app/resources/chromeos_personalization_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
-    "includes": [2690],
+    "includes": [2695],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/demo_mode_app_ui/chromeos_demo_mode_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
-   "includes": [2695],
+   "includes": [2700],
   },
   # END chromeos/ section.
 

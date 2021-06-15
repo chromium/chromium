@@ -5,7 +5,7 @@
 #include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
 
 #include "chromeos/components/sample_system_web_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_sample_system_web_app_resources.h"
+#include "chromeos/grit/chromeos_sample_system_web_app_untrusted_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -32,19 +32,10 @@ UntrustedSampleSystemWebAppUI::UntrustedSampleSystemWebAppUI(
     : ui::UntrustedWebUIController(web_ui) {
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::Create(kChromeUIUntrustedSampleSystemWebAppURL);
-  untrusted_source->AddResourcePath(
-      "untrusted.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_HTML);
-  untrusted_source->AddResourcePath(
-      "untrusted.js", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_JS);
+  untrusted_source->AddResourcePaths(
+      base::make_span(kChromeosSampleSystemWebAppUntrustedResources,
+                      kChromeosSampleSystemWebAppUntrustedResourcesSize));
   untrusted_source->AddFrameAncestor(GURL(kChromeUISampleSystemWebAppURL));
-
-#if !DCHECK_IS_ON()
-  // When DCHECKs are off and a user goes to an invalid url serve a default page
-  // to avoid crashing. We crash when DCHECKs are on to make it clearer that
-  // a resource path was not property specified.
-  untrusted_source->SetDefaultResource(
-      IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_HTML);
-#endif  // !DCHECK_IS_ON()
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, untrusted_source);

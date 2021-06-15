@@ -22,6 +22,7 @@ static_library("sample_system_web_app_ui") {
 
   deps = [
     "//chromeos/resources:sample_system_web_app_resources",
+    "//chromeos/resources:sample_system_web_app_untrusted_resources",
     "//content/public/browser",
     "//ui/webui",
   ]
@@ -43,15 +44,23 @@ js2gtest("browser_tests_js") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
-generate_grd("build_grd") {
+generate_grd("build_untrusted_grd") {
+  input_files_base_dir = rebase_path("resources", "//")
+  input_files = [
+    "untrusted.html",
+    "untrusted.js",
+  ]
+  grd_prefix = "chromeos_sample_system_web_app_untrusted"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+generate_grd("build_trusted_grd") {
   input_files_base_dir = rebase_path("resources", "//")
   input_files = [
     "app_icon_192.png",
     "component_playground.html",
     "index.html",
     "sandbox.html",
-    "untrusted.html",
-    "untrusted.js",
     "main.js",
     "worker.js",
     "timer.html",

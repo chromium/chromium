@@ -267,12 +267,14 @@ template("chrome_extra_paks") {
           "$root_gen_dir/ash/content/file_manager/resources/file_manager_swa_resources.pak",
           "$root_gen_dir/chromeos/chromeos_demo_mode_app_resources.pak",
           "$root_gen_dir/chromeos/chromeos_sample_system_web_app_resources.pak",
+          "$root_gen_dir/chromeos/chromeos_sample_system_web_app_untrusted_resources.pak",
           "$root_gen_dir/chromeos/chromeos_telemetry_extension_resources.pak",
         ]
         deps += [
           "//ash/content/file_manager/resources:file_manager_swa_resources",
           "//chromeos/resources:demo_mode_app_resources",
           "//chromeos/resources:sample_system_web_app_resources",
+          "//chromeos/resources:sample_system_web_app_untrusted_resources",
           "//chromeos/resources:telemetry_extension_resources",
         ]
       }

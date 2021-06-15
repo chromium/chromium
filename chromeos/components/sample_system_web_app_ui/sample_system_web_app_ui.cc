@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/sample_system_web_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_sample_system_web_app_resources.h"
+#include "chromeos/grit/chromeos_sample_system_web_app_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -25,22 +26,9 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
 
   trusted_source->AddResourcePath(
       "", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
-  trusted_source->AddResourcePath(
-      "sandbox.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_SANDBOX_HTML);
-  trusted_source->AddResourcePath(
-      "timer.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_TIMER_HTML);
-  trusted_source->AddResourcePath("main.js",
-                                  IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_MAIN_JS);
-  trusted_source->AddResourcePath("worker.js",
-                                  IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_WORKER_JS);
-  trusted_source->AddResourcePath("timer.js",
-                                  IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_TIMER_JS);
-  trusted_source->AddResourcePath(
-      "component_playground.html",
-      IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_COMPONENT_PLAYGROUND_HTML);
-  trusted_source->AddResourcePath(
-      "component_playground.rollup.js",
-      IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_COMPONENT_PLAYGROUND_ROLLUP_JS);
+  trusted_source->AddResourcePaths(
+      base::make_span(kChromeosSampleSystemWebAppResources,
+                      kChromeosSampleSystemWebAppResourcesSize));
 
   // TODO(https://crbug/1169829): Don't simply disable trusted types. Do the
   // right thing.

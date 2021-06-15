@@ -153,13 +153,33 @@ if (!is_official_build) {
     sample_system_web_app_gen_dir =
         "$root_gen_dir/chromeos/components/sample_system_web_app_ui"
     source = "$sample_system_web_app_gen_dir/chromeos_sample_system_web_app_resources.grd"
-    deps = [ "//chromeos/components/sample_system_web_app_ui:build_grd" ]
+    deps =
+        [ "//chromeos/components/sample_system_web_app_ui:build_trusted_grd" ]
 
     outputs = [
       "grit/chromeos_sample_system_web_app_resources.h",
       "grit/chromeos_sample_system_web_app_resources_map.cc",
       "grit/chromeos_sample_system_web_app_resources_map.h",
       "chromeos_sample_system_web_app_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chromeos"
+  }
+
+  # Resources used by chrome-untrusted://sample-system-web-app
+  grit("sample_system_web_app_untrusted_resources") {
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    sample_system_web_app_gen_dir =
+        "$root_gen_dir/chromeos/components/sample_system_web_app_ui"
+    source = "$sample_system_web_app_gen_dir/chromeos_sample_system_web_app_untrusted_resources.grd"
+    deps =
+        [ "//chromeos/components/sample_system_web_app_ui:build_untrusted_grd" ]
+
+    outputs = [
+      "grit/chromeos_sample_system_web_app_untrusted_resources.h",
+      "grit/chromeos_sample_system_web_app_untrusted_resources_map.cc",
+      "grit/chromeos_sample_system_web_app_untrusted_resources_map.h",
+      "chromeos_sample_system_web_app_untrusted_resources.pak",
     ]
     output_dir = "$root_gen_dir/chromeos"
   }

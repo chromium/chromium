@@ -3254,6 +3254,7 @@ source_set("chromeos") {
       "//chromeos/components/telemetry_extension_ui",
       "//chromeos/resources:demo_mode_app_resources_grit",
       "//chromeos/resources:sample_system_web_app_resources_grit",
+      "//chromeos/resources:sample_system_web_app_untrusted_resources_grit",
       "//chromeos/resources:telemetry_extension_resources",
     ]
     sources += [
