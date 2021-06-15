@@ -4827,6 +4827,8 @@ static_library("browser") {
       "download/trusted_sources_manager_win.cc",
       "enterprise/signals/device_info_fetcher_win.cc",
       "enterprise/signals/device_info_fetcher_win.h",
+      "enterprise/util/critical_policy_section_metrics_win.cc",
+      "enterprise/util/critical_policy_section_metrics_win.h",
       "first_run/first_run_internal_win.cc",
       "first_run/upgrade_util_win.cc",
       "first_run/upgrade_util_win.h",

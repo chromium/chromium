@@ -44,6 +44,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/critical_policy_section_metrics_win.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -733,6 +734,8 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
     AnnounceInActiveBrowser(l10n_util::GetStringUTF16(IDS_WELCOME_TO_CHROME));
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
+
+  chrome::enterprise_util::MeasureAndReportCriticalPolicySectionAcquisition();
 }
 
 // static
