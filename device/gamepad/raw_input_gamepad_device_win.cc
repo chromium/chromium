@@ -75,7 +75,8 @@ RawInputGamepadDeviceWin::RawInputGamepadDeviceWin(HANDLE device_handle,
                                                    int source_id)
     : handle_(device_handle),
       source_id_(source_id),
-      last_update_timestamp_(GamepadDataFetcher::CurrentTimeInMicroseconds()) {
+      last_update_timestamp_(GamepadDataFetcher::CurrentTimeInMicroseconds()),
+      button_indices_used_(Gamepad::kButtonsLengthCap, false) {
   ::ZeroMemory(buttons_, sizeof(buttons_));
   ::ZeroMemory(axes_, sizeof(axes_));
 

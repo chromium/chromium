@@ -128,7 +128,7 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   bool buttons_[Gamepad::kButtonsLengthCap];
 
   // Keep track of which button indices are in use.
-  std::vector<bool> button_indices_used_{Gamepad::kButtonsLengthCap, false};
+  std::vector<bool> button_indices_used_;
 
   // Bitfield to keep track of which axes indices are in use.
   uint32_t axes_used_ = 0;
