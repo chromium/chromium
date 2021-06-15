@@ -665,7 +665,7 @@ TEST_F(QuotaManagerImplTest, GetBucket) {
   GetBucket(origin, "bucket_b");
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(bucket_.ok());
-  EXPECT_EQ(bucket_.error(), QuotaError::kEntryNotFound);
+  EXPECT_EQ(bucket_.error(), QuotaError::kNotFound);
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {

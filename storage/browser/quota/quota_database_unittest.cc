@@ -38,7 +38,7 @@ static const blink::mojom::StorageType kTemp =
 static const blink::mojom::StorageType kPerm =
     blink::mojom::StorageType::kPersistent;
 
-const char kDefaultBucket[] = "default";
+const char kDefaultBucketName[] = "default";
 
 }  // namespace
 
@@ -243,13 +243,13 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
   // Can't retrieve buckets with name mismatch.
   result = db.GetBucket(storage_key, "does_not_exist");
   ASSERT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kEntryNotFound);
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Can't retrieve buckets with StorageKey mismatch.
   result = db.GetBucket(
       StorageKey::CreateFromStringForTesting("http://example/"), bucket_name);
   ASSERT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kEntryNotFound);
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {
@@ -261,7 +261,7 @@ TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {
   std::string bucket_name = "google_bucket";
   QuotaErrorOr<BucketInfo> result = db.GetBucket(storage_key, bucket_name);
   ASSERT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kEntryNotFound);
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
 // TODO(crbug.com/1216094): Update test to have its behavior on Fuchsia match
@@ -690,11 +690,11 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
   using Entry = QuotaDatabase::BucketTableEntry;
   Entry kTableEntries[] = {
       Entry(BucketId(1), StorageKey::CreateFromStringForTesting("http://go/"),
-            kTemp, kDefaultBucket, 2147483647, now, now),
+            kTemp, kDefaultBucketName, 2147483647, now, now),
       Entry(BucketId(2), StorageKey::CreateFromStringForTesting("http://oo/"),
-            kTemp, kDefaultBucket, 0, now, now),
+            kTemp, kDefaultBucketName, 0, now, now),
       Entry(BucketId(3), StorageKey::CreateFromStringForTesting("http://gle/"),
-            kTemp, kDefaultBucket, 1, now, now),
+            kTemp, kDefaultBucketName, 1, now, now),
   };
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
@@ -713,7 +713,7 @@ TEST_P(QuotaDatabaseTest, GetStorageKeyInfo) {
       StorageKey::CreateFromStringForTesting("http://go/");
   using Entry = QuotaDatabase::BucketTableEntry;
   Entry kTableEntries[] = {Entry(BucketId(1), kStorageKey, kTemp,
-                                 kDefaultBucket, 100, base::Time(),
+                                 kDefaultBucketName, 100, base::Time(),
                                  base::Time())};
 
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());

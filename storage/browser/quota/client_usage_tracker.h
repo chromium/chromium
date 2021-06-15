@@ -107,7 +107,6 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   void AddCachedHost(const std::string& host);
 
   int64_t GetCachedHostUsage(const std::string& host) const;
-  int64_t GetCachedGlobalUnlimitedUsage();
   bool GetCachedStorageKeyUsage(const blink::StorageKey& storage_key,
                                 int64_t* usage) const;
 

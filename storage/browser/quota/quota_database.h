@@ -265,7 +265,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   friend class QuotaDatabaseMigrationsTest;
   friend class QuotaManagerImpl;
 
-  static const char kDefaultBucket[];
+  static const char kDefaultBucketName[];
   static const TableSchema kTables[];
   static const size_t kTableCount;
   static const IndexSchema kIndexes[];
