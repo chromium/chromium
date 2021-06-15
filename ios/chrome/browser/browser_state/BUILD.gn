@@ -103,6 +103,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/dom_distiller",
     "//ios/chrome/browser/download",
+    "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/gcm",

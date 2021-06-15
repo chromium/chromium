@@ -36,6 +36,7 @@ class DownloadServiceImpl : public DownloadService {
   void CancelDownload(const std::string& guid) override;
   void ChangeDownloadCriteria(const std::string& guid,
                               const SchedulingParams& params) override;
+  Logger* GetLogger() override;
 
   std::unique_ptr<Configuration> config_;
   ServiceConfigImpl service_config_;

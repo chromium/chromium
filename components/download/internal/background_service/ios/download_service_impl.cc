@@ -56,4 +56,9 @@ void DownloadServiceImpl::ChangeDownloadCriteria(
   NOTIMPLEMENTED();
 }
 
+Logger* DownloadServiceImpl::GetLogger() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 }  // namespace download

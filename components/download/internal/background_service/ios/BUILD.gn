@@ -9,7 +9,10 @@ source_set("background_service") {
     "download_service_impl.h",
   ]
 
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//ios/chrome/browser/download/background_service",
+  ]
 
   deps = [ "//components/download/internal/background_service:service_config" ]
 
