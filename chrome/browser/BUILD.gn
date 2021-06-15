@@ -2363,6 +2363,7 @@ static_library("browser") {
       "//ash/content/scanning",
       "//ash/content/scanning/mojom",
       "//ash/content/shimless_rma",
+      "//ash/content/shimless_rma/mojom",
       "//ash/content/shortcut_customization_ui",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/system_extensions",

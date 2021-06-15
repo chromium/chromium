@@ -44,7 +44,9 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 }  // namespace
 
 ShimlessRMADialogUI::ShimlessRMADialogUI(content::WebUI* web_ui)
-    : ui::MojoWebDialogUI(web_ui) {
+    : ui::MojoWebDialogUI(web_ui),
+      shimless_rma_manager_(
+          std::make_unique<shimless_rma::ShimlessRmaService>()) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIShimlessRMAHost));
   html_source->OverrideContentSecurityPolicy(
@@ -74,6 +76,12 @@ void ShimlessRMADialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
   ash::GetNetworkConfigService(std::move(receiver));
+}
+
+void ShimlessRMADialogUI::BindInterface(
+    mojo::PendingReceiver<shimless_rma::mojom::ShimlessRmaService> receiver) {
+  DCHECK(shimless_rma_manager_);
+  shimless_rma_manager_->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShimlessRMADialogUI)

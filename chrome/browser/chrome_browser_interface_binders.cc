@@ -835,6 +835,14 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<ash::scanning::mojom::ScanService,
                                          ash::ScanningUI>(map);
 
+  // TODO(crbug.com/1218492): When boot RMA state is available disable this when
+  // not in RMA.
+  if (ash::features::IsShimlessRMAFlowEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::shimless_rma::mojom::ShimlessRmaService, ash::ShimlessRMADialogUI>(
+        map);
+  }
+
   if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
     RegisterWebUIControllerInterfaceBinder<
         emoji_picker::mojom::PageHandlerFactory, chromeos::EmojiUI>(map);

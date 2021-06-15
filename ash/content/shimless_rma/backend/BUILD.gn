@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+static_library("backend") {
+  sources = [
+    "shimless_rma_service.cc",
+    "shimless_rma_service.h",
+  ]
+
+  deps = [
+    "//ash/content/shimless_rma/mojom",
+    "//chromeos/dbus/rmad",
+    "//chromeos/dbus/rmad:rmad_proto",
+  ]
+}
