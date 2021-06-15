@@ -1,0 +1,18 @@
+<!doctype html>
+<title>window.attributionReporting.registerAttributionSource: disabled by permissions policy</title>
+<link rel="help" href="https://github.com/WICG/conversion-measurement-api/blob/main/event_attribution_reporting.md#registering-attribution-sources-with-javascript">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(t => {
+  return promise_rejects_dom(t, 'NotAllowedError',
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: '1',
+      attributionDestination: 'https://a.example',
+      attributionReportTo: 'https://b.example',
+    }));
+}, 'disabled by permissions policy');
+
+</script>

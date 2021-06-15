@@ -923,4 +923,81 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_EQ(1000, last_impression.priority);
 }
 
+IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
+                       JSRegisterAttributionSource_ImpressionReceived) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: "200",
+      attributionDestination: "https://a.com",
+    });)"));
+
+  EXPECT_EQ(200UL, host->WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host->num_impressions());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    JSRegisterAttributionSource_MissingAttributionSourceEventId_ImpressionNotReceived) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  EXPECT_FALSE(ExecJs(web_contents(), R"(
+    window.attributionReporting.registerAttributionSource({
+      attributionDestination: "https://a.com",
+    });)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  EXPECT_EQ(0u, host->num_impressions());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    JSRegisterAttributionSource_MissingAttributionDestination_ImpressionNotReceived) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  EXPECT_FALSE(ExecJs(web_contents(), R"(
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: "200",
+    });)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  EXPECT_EQ(0u, host->num_impressions());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    JSRegisterAttributionSource_InsecureAttributionDestination_ImpressionNotReceived) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  EXPECT_FALSE(ExecJs(web_contents(), R"(
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: "200",
+      attributionDestination: "http://a.com",
+    });)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  EXPECT_EQ(0u, host->num_impressions());
+}
+
 }  // namespace content

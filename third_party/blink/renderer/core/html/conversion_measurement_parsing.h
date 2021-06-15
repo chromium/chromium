@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -39,9 +41,12 @@ absl::optional<WebImpression> GetImpressionFromWindowFeatures(
     ExecutionContext* execution_context,
     const ImpressionFeatures& features);
 
+using WebImpressionOrError =
+    absl::variant<WebImpression, mojom::blink::RegisterImpressionError>;
+
 // Same as GetImpressionForAnchor(), but gets an impression specified by an
 // AttributionSourceParams dictionary associated with a window.open call.
-absl::optional<WebImpression> GetImpressionForParams(
+WebImpressionOrError GetImpressionForParams(
     ExecutionContext* execution_context,
     const AttributionSourceParams* params);
 

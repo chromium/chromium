@@ -1,0 +1,13 @@
+<!doctype html>
+<title>window.attributionReporting.registerAttributionSource: insecure context</title>
+<link rel="help" href="https://github.com/WICG/conversion-measurement-api/blob/main/event_attribution_reporting.md#registering-attribution-sources-with-javascript">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+test(() => {
+  assert_equals(window.attributionReporting, undefined);
+}, 'disabled by insecure context');
+
+</script>
