@@ -34,7 +34,7 @@ import org.chromium.base.annotations.NativeMethods;
     private final Parsed mInnerUrl;
     private final boolean mPotentiallyDanglingMarkup;
 
-    /* packaged */ static Parsed createEmpty() {
+    /* package */ static Parsed createEmpty() {
         return new Parsed(0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1, false, null);
     }
 

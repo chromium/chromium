@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -76,7 +77,7 @@ public class GURL {
             return;
         }
         ensureNativeInitializedForGURL();
-        GURLJni.get().init(uri, this);
+        getNatives().init(uri, this);
     }
 
     @CalledByNative
@@ -131,7 +132,7 @@ public class GURL {
 
     @CalledByNative
     private long toNativeGURL() {
-        return GURLJni.get().createNative(mSpec, mIsValid, mParsed.toNativeParsed());
+        return getNatives().createNative(mSpec, mIsValid, mParsed.toNativeParsed());
     }
 
     /**
@@ -245,14 +246,14 @@ public class GURL {
     }
 
     protected void getOriginInternal(GURL target) {
-        GURLJni.get().getOrigin(mSpec, mIsValid, mParsed.toNativeParsed(), target);
+        getNatives().getOrigin(mSpec, mIsValid, mParsed.toNativeParsed(), target);
     }
 
     /**
      * See native GURL::DomainIs().
      */
     public boolean domainIs(String domain) {
-        return GURLJni.get().domainIs(mSpec, mIsValid, mParsed.toNativeParsed(), domain);
+        return getNatives().domainIs(mSpec, mIsValid, mParsed.toNativeParsed(), domain);
     }
 
     @Override
@@ -323,6 +324,23 @@ public class GURL {
             Log.w(TAG, "Exception while deserializing a GURL: " + gurl, e);
             return emptyGURL();
         }
+    }
+
+    /**
+     * Returns the instance of {@link Natives}. The Robolectric Shadow intercepts invocations of
+     * this method.
+     *
+     * <p>Unlike {@code GURLJni.TEST_HOOKS.setInstanceForTesting}, shadowing this method doesn't
+     * rely on tests correctly cleaning up global state.
+     */
+    private static Natives getNatives() {
+        return GURLJni.get();
+    }
+
+    /** Inits this GURL with the internal state of another GURL. */
+    @VisibleForTesting
+    /* package */ void initForTesting(GURL gurl) {
+        init(gurl.mSpec, gurl.mIsValid, gurl.mParsed);
     }
 
     @NativeMethods

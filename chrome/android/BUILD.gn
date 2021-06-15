@@ -1076,6 +1076,7 @@ junit_binary("chrome_junit_tests") {
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
+    "//url:gurl_junit_tests",
     "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",
   ]

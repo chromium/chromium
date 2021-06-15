@@ -294,10 +294,26 @@ if (is_android) {
     ]
   }
 
+  # Targets depending on gurl_junit_test_support do not need to bypass platform
+  # checks.
   android_library("gurl_junit_test_support") {
     testonly = true
     sources = [ "android/test/java/src/org/chromium/url/JUnitTestGURLs.java" ]
     deps = [ ":gurl_java" ]
+  }
+
+  # Unlike gurl_junit_test_support targets depending on gurl_junit_shadows must
+  # bypass platform checks.
+  android_library("gurl_junit_shadows") {
+    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+    bypass_platform_checks = true
+    testonly = true
+    sources = [ "android/test/java/src/org/chromium/url/ShadowGURL.java" ]
+    deps = [
+      ":gurl_java",
+      ":gurl_junit_test_support",
+      "//third_party/android_deps:robolectric_all_java",
+    ]
   }
 
   android_library("gurl_javatests") {
@@ -329,5 +345,23 @@ if (is_android) {
     testonly = true
     sources =
         [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
+  }
+
+  android_library("gurl_junit_tests") {
+    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+    bypass_platform_checks = true
+    testonly = true
+    sources = [ "android/junit/src/org/chromium/url/ShadowGURLTest.java" ]
+    deps = [
+      ":gurl_java",
+      ":gurl_junit_shadows",
+      ":gurl_junit_test_support",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//base/test:test_support_java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/junit",
+    ]
   }
 }
