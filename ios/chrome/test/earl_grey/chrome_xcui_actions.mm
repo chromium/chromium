@@ -21,16 +21,16 @@ const CGFloat kSplitterWidth = 10.0;
 CGVector GetNormalizedEdgeVector(GREYContentEdge edge) {
   switch (edge) {
     case kGREYContentEdgeLeft:
-      return CGVectorMake(0.0, 0.5);
+      return CGVectorMake(0.02, 0.5);
       break;
     case kGREYContentEdgeRight:
-      return CGVectorMake(1.0, 0.5);
+      return CGVectorMake(.98, 0.5);
       break;
     case kGREYContentEdgeTop:
-      return CGVectorMake(0.5, 0.0);
+      return CGVectorMake(0.5, 0.02);
       break;
     case kGREYContentEdgeBottom:
-      return CGVectorMake(0.5, 1.0);
+      return CGVectorMake(0.5, 0.98);
       break;
     default:
       return CGVectorMake(0.5, 0.5);
