@@ -26,7 +26,7 @@ class TimeDelta;
 namespace ui {
 class LocatedEvent;
 class KeyEvent;
-}  // namespace ui
+}
 
 namespace exo {
 
@@ -94,10 +94,6 @@ Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* focused_window);
 // Allows the |window| to activate itself for the duration of |timeout|. Revokes
 // any existing permission.
 void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout);
-
-// Allows the |window| to activate itself indefinitely. Revokes any existing
-// permission.
-void GrantPermissionToActivateIndefinitely(aura::Window* window);
 
 // Revokes the permission for |window| to activate itself.
 void RevokePermissionToActivate(aura::Window* window);

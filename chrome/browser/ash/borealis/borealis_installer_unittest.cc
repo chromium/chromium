@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
-#include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -125,6 +124,24 @@ class BorealisInstallerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void CreateFakeMainApp() {
+    std::string desktop_file_id;
+    ASSERT_TRUE(base::Base64Decode("c3RlYW0=", &desktop_file_id));
+    vm_tools::apps::ApplicationList list;
+    list.set_vm_name(ctx_->vm_name());
+    list.set_container_name(ctx_->container_name());
+    list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+    vm_tools::apps::App* app = list.add_apps();
+    app->set_desktop_file_id(desktop_file_id);
+    vm_tools::apps::App::LocaleString::Entry* entry =
+        app->mutable_name()->add_values();
+    entry->set_locale(std::string());
+    entry->set_value(desktop_file_id);
+    app->set_no_display(false);
+    guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_.get())
+        ->UpdateApplicationList(list);
+  }
+
   void PrepareSuccessfulInstallation() {
     feature_list_.InitAndEnableFeature(features::kBorealis);
     fake_dlcservice_client_->set_install_error(dlcservice::kErrorNone);
@@ -138,7 +155,7 @@ class BorealisInstallerTest : public testing::Test {
                   BorealisContextManager::ContextOrFailure(ctx_.get()));
               // Make a fake main app. We do this inside the callback as it is a
               // better way to simulate garcon's callback.
-              CreateFakeMainApp(profile_.get());
+              CreateFakeMainApp();
             }));
   }
 
@@ -235,7 +252,7 @@ TEST_F(BorealisInstallerTest, HandlesMainAppPreExisting) {
   // Normally we add the main app after signaling completion, which this a
   // better way of modeling how garcon works. In this test we add the main app
   // well before, to simulate when garcon actually wins the race.
-  CreateFakeMainApp(profile_.get());
+  CreateFakeMainApp();
 
   EXPECT_CALL(*observer_, OnInstallationEnded(BorealisInstallResult::kSuccess));
   StartAndRunToCompletion();

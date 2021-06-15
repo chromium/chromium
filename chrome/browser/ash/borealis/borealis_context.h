@@ -17,11 +17,10 @@ class GuestOsStabilityMonitor;
 }
 namespace borealis {
 
-class BorealisDiskManager;
-class BorealisEngagementMetrics;
-class BorealisGameModeController;
 class BorealisLifetimeObserver;
-class SelfActivationPermissionGranter;
+class BorealisGameModeController;
+class BorealisEngagementMetrics;
+class BorealisDiskManager;
 
 // An object to track information about the state of the Borealis VM.
 // BorealisContext objects should only be created by the Borealis Context
@@ -77,8 +76,6 @@ class BorealisContext {
   std::unique_ptr<BorealisEngagementMetrics> engagement_metrics_;
 
   std::unique_ptr<BorealisDiskManager> disk_manager_;
-
-  std::unique_ptr<SelfActivationPermissionGranter> self_activation_granter_;
 };
 
 }  // namespace borealis

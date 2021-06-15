@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
-#include "components/exo/shell_surface_util.h"
 #include "url/gurl.h"
 
 namespace borealis {
@@ -117,46 +116,6 @@ class BorealisLifetimeObserver
       app_delayers_;
 };
 
-// Borealis' main app extensively relies on self-activation, and it does not
-// handle being refused that activation very well. This class exists to allow
-// borealis' main app to self-activate at all times.
-//
-// TODO(b/190141156): Prevent crostini from spoofing borealis, which would allow
-// it to self-activate its windows.  This would only be a problem currently on
-// borealis-enabled systems, and only while borealis is running.
-class SelfActivationPermissionGranter
-    : public BorealisWindowManager::AppWindowLifetimeObserver {
- public:
-  explicit SelfActivationPermissionGranter(Profile* profile)
-      : profile_(profile), observation_{this} {
-    observation_.Observe(
-        &BorealisService::GetForProfile(profile_)->WindowManager());
-  }
-
-  void OnWindowStarted(const std::string& app_id,
-                       aura::Window* window) override {
-    if (app_id == kBorealisMainAppId)
-      exo::GrantPermissionToActivateIndefinitely(window);
-  }
-
-  void OnWindowFinished(const std::string& app_id,
-                        aura::Window* window) override {
-    if (app_id == kBorealisMainAppId)
-      exo::RevokePermissionToActivate(window);
-  }
-
-  void OnWindowManagerDeleted(BorealisWindowManager* window_manager) override {
-    DCHECK(observation_.IsObservingSource(window_manager));
-    observation_.Reset();
-  }
-
- private:
-  Profile* const profile_;
-  base::ScopedObservation<BorealisWindowManager,
-                          BorealisWindowManager::AppWindowLifetimeObserver>
-      observation_;
-};
-
 BorealisContext::~BorealisContext() = default;
 
 void BorealisContext::SetDiskManagerForTesting(
@@ -176,9 +135,7 @@ BorealisContext::BorealisContext(Profile* profile)
               kBorealisStabilityHistogram)),
       game_mode_controller_(std::make_unique<BorealisGameModeController>()),
       engagement_metrics_(std::make_unique<BorealisEngagementMetrics>(profile)),
-      disk_manager_(std::make_unique<BorealisDiskManagerImpl>(this)),
-      self_activation_granter_(
-          std::make_unique<SelfActivationPermissionGranter>(profile)) {}
+      disk_manager_(std::make_unique<BorealisDiskManagerImpl>(this)) {}
 
 std::unique_ptr<BorealisContext>
 BorealisContext::CreateBorealisContextForTesting(Profile* profile) {
