@@ -6,6 +6,7 @@
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
@@ -34,6 +35,10 @@ struct WebAssociatedURLLoaderOptions;
 namespace gfx {
 class Range;
 }  // namespace gfx
+
+namespace printing {
+class MetafileSkia;
+}  // namespace printing
 
 namespace chrome_pdf {
 
@@ -104,6 +109,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidReceiveData(const char* data, size_t data_length) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
+  bool SupportsPaginatedPrint() override;
+  int PrintBegin(const blink::WebPrintParams& print_params) override;
+  void PrintPage(int page_number, cc::PaintCanvas* canvas) override;
+  void PrintEnd() override;
   bool HasSelection() const override;
   blink::WebString SelectionAsText() const override;
   blink::WebString SelectionAsMarkup() const override;
@@ -236,6 +245,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   PostMessageSender post_message_sender_;
 
   cc::PaintImage snapshot_;
+
+  // The metafile in which to save the printed output. Assigned a value only
+  // between `PrintBegin()` and `PrintEnd()` calls.
+  printing::MetafileSkia* printing_metafile_ = nullptr;
+
+  // The indices of pages to print.
+  std::vector<int> pages_to_print_;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

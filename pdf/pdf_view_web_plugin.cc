@@ -39,6 +39,7 @@
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ppapi/c/pp_errors.h"
+#include "printing/metafile_skia.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -314,6 +315,47 @@ void PdfViewWebPlugin::DidReceiveData(const char* data, size_t data_length) {}
 void PdfViewWebPlugin::DidFinishLoading() {}
 
 void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
+
+bool PdfViewWebPlugin::SupportsPaginatedPrint() {
+  return true;
+}
+
+int PdfViewWebPlugin::PrintBegin(const blink::WebPrintParams& print_params) {
+  return PdfViewPluginBase::PrintBegin(print_params);
+}
+
+void PdfViewWebPlugin::PrintPage(int page_number, cc::PaintCanvas* canvas) {
+  // The entire document goes into one metafile. However, it is impossible to
+  // know if a call to `PrintPage()` is the last call. Thus, `PrintPage()` just
+  // stores the pages to print and the metafile. Eventually, the printed output
+  // is generated in `PrintEnd()` and copied over to the metafile.
+
+  // Every `canvas` passed to this method should have a valid `metafile`.
+  printing::MetafileSkia* metafile = canvas->GetPrintingMetafile();
+  DCHECK(metafile);
+
+  // `pages_to_print_` should be empty iff `printing_metafile_` is not set.
+  DCHECK_EQ(pages_to_print_.empty(), !printing_metafile_);
+
+  // The metafile should be the same across all calls for a given print job.
+  DCHECK(!printing_metafile_ || (printing_metafile_ == metafile));
+
+  if (!printing_metafile_)
+    printing_metafile_ = metafile;
+
+  pages_to_print_.push_back(page_number);
+}
+
+void PdfViewWebPlugin::PrintEnd() {
+  if (pages_to_print_.empty())
+    return;
+
+  printing_metafile_->InitFromData(PrintPages(pages_to_print_));
+
+  PdfViewPluginBase::PrintEnd();
+  printing_metafile_ = nullptr;
+  pages_to_print_.clear();
+}
 
 bool PdfViewWebPlugin::HasSelection() const {
   return !selected_text_.IsEmpty();
