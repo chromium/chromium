@@ -70,10 +70,6 @@ class ArcResizeLockManagerTest : public views::ViewsTestBase {
     return !!fake_arc_resize_lock_manager_.resize_toggle_menu_;
   }
 
-  bool OnResizeButtonPressed(views::Widget* widget) {
-    return fake_arc_resize_lock_manager_.OnResizeButtonPressed(widget);
-  }
-
  private:
   FakeArcResizeLockManager fake_arc_resize_lock_manager_;
 };
@@ -134,44 +130,6 @@ TEST_F(ArcResizeLockManagerTest, TestNonArcWindowPropertyChange) {
   non_arc_window->SetProperty(ash::kArcResizeLockTypeKey,
                               ash::ArcResizeLockType::RESIZABLE);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window));
-}
-
-// Test that size button callback changes nothing for fullscreen.
-TEST_F(ArcResizeLockManagerTest, TestSizeButtonOnFullscreenWidget) {
-  auto widget = CreateTestWidget();
-  widget->Show();
-  widget->SetFullscreen(true);
-  EXPECT_TRUE(widget->IsFullscreen());
-  EXPECT_FALSE(OnResizeButtonPressed(widget.get()));
-  EXPECT_TRUE(widget->IsFullscreen());
-  widget->CloseNow();
-}
-
-// Test that size button callback changes nothing for maximized.
-TEST_F(ArcResizeLockManagerTest, TestSizeButtonOnMaximizedWidget) {
-  auto widget = CreateTestWidget();
-  widget->Show();
-  widget->Maximize();
-  EXPECT_TRUE(widget->IsMaximized());
-  EXPECT_FALSE(OnResizeButtonPressed(widget.get()));
-  EXPECT_TRUE(widget->IsMaximized());
-  widget->CloseNow();
-}
-
-// Test that size button callback works properly for freeform.
-TEST_F(ArcResizeLockManagerTest, TestSizeButtonOnFreeformWidget) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
-  widget->Show();
-
-  // Test the toggle menu is shown and the default maximize button
-  // behavior is cancelled.
-  EXPECT_FALSE(widget->IsMaximized());
-  EXPECT_FALSE(IsToggleMenuShown());
-  EXPECT_TRUE(OnResizeButtonPressed(widget.get()));
-  EXPECT_FALSE(widget->IsMaximized());
-  EXPECT_TRUE(IsToggleMenuShown());
-
-  widget->CloseNow();
 }
 
 }  // namespace arc

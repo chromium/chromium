@@ -51,22 +51,27 @@ class ArcResizeLockManager : public KeyedService,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
 
   void SetPrefDelegate(ArcResizeLockPrefDelegate* delegate) {
     pref_delegate_ = delegate;
   }
 
+  void ToggleResizeToggleMenu(views::Widget* widget);
+
  private:
   friend class ArcResizeLockManagerTest;
-
-  bool OnResizeButtonPressed(views::Widget* widget);
 
   // Virtual for testing.
   virtual void EnableResizeLock(aura::Window* window);
   virtual void DisableResizeLock(aura::Window* window);
 
   void MayShowSplashScreen(aura::Window* window);
+  void UpdateCompatModeButton(aura::Window* window);
 
   ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
 

@@ -132,6 +132,8 @@ static_library("arc") {
     "//chromeos/disks",
     "//chromeos/login/login_state",
     "//chromeos/network",
+    "//chromeos/ui/base",
+    "//chromeos/ui/frame",
     "//components/account_id",
     "//components/arc/enterprise",
     "//components/arc/vector_icons",
