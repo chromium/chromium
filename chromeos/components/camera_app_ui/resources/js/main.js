@@ -16,7 +16,6 @@ import * as dom from './dom.js';
 import * as error from './error.js';
 import * as focusRing from './focus_ring.js';
 import {GalleryButton} from './gallerybutton.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
 import * as metrics from './metrics.js';

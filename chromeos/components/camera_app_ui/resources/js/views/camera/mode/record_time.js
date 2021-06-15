@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import * as dom from '../../../dom.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../../../i18n_string.js';
 import {speak} from '../../../toast.js';
 

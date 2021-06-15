@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assertInstanceof, assertString} from '../../../chrome_util.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import * as filesystem from '../../../models/file_system.js';

@@ -14,7 +14,6 @@ import {
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import * as h264 from '../../../h264.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import * as loadTimeData from '../../../models/load_time_data.js';

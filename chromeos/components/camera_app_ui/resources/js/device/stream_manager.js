@@ -4,7 +4,6 @@
 
 import {assert, assertString} from '../chrome_util.js';
 import {reportError} from '../error.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';

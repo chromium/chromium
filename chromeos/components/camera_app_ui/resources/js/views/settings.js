@@ -11,7 +11,6 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';

@@ -4,7 +4,6 @@
 
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from './i18n_string.js';
 import * as localStorage from './models/local_storage.js';
 import {DeviceOperator} from './mojo/device_operator.js';

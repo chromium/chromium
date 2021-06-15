@@ -8,7 +8,6 @@ import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../../i18n_string.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import * as localStorage from '../../models/local_storage.js';

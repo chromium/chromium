@@ -10,7 +10,6 @@ import {
 } from '../device/constraints_preferrer.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../i18n_string.js';
 // eslint-disable-next-line no-unused-vars
 import {Intent} from '../intent.js';
