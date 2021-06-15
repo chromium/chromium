@@ -614,6 +614,15 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Quick Answers.
   (*s_allowlist)[chromeos::quick_answers::prefs::kQuickAnswersEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Misc.
   (*s_allowlist)[::prefs::kUse24HourClock] =

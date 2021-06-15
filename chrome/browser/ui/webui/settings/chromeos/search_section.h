@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SECTION_H_
 
 #include "ash/public/cpp/assistant/assistant_state_base.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
@@ -22,7 +23,8 @@ class SearchTagRegistry;
 // tags for Assistant settings are added/removed depending on whether the
 // feature and relevant flags are enabled/disabled.
 class SearchSection : public OsSettingsSection,
-                      public ash::AssistantStateObserver {
+                      public ash::AssistantStateObserver,
+                      public ash::QuickAnswersStateObserver {
  public:
   SearchSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~SearchSection() override;
@@ -44,8 +46,12 @@ class SearchSection : public OsSettingsSection,
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantHotwordEnabled(bool enabled) override;
 
+  // ash::QuickAnswersStateObserver:
+  void OnSettingsEnabled(bool enabled) override;
+
   bool IsAssistantAllowed() const;
   void UpdateAssistantSearchTags();
+  void UpdateQuickAnswersSearchTags();
 };
 
 }  // namespace settings

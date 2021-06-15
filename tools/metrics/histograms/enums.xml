@@ -59684,6 +59684,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="606" label="Assistant: Voice Input"/>
   <int value="607" label="Assistant: Train voice model"/>
   <int value="608" label="Search: Quick Answers On/Off"/>
+  <int value="609" label="Search: Quick Answers Definition"/>
+  <int value="610" label="Search: Quick Answers Translation"/>
+  <int value="611" label="Search: Quick Answers Unit Conversion"/>
   <int value="700" label="Manage Android Preferences"/>
   <int value="701" label="Remove Play Store"/>
   <int value="702" label="Turn On Play Store"/>

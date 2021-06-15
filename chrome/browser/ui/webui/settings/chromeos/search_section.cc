@@ -68,6 +68,30 @@ const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetQuickAnswersOnSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_DEFINITION,
+       mojom::kSearchSubpagePath,
+       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultDefaultRank::kLow,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kQuickAnswersDefinition}},
+      {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_TRANSLATION,
+       mojom::kSearchSubpagePath,
+       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultDefaultRank::kLow,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kQuickAnswersTranslation}},
+      {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_UNIT_CONVERSION,
+       mojom::kSearchSubpagePath,
+       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultDefaultRank::kLow,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kQuickAnswersUnitConversion}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetAssistantSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ASSISTANT,
@@ -155,6 +179,14 @@ void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
       {"quickAnswersEnable", IDS_SETTINGS_QUICK_ANSWERS_ENABLE},
       {"quickAnswersEnableDescription",
        IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION},
+      {"quickAnswersDefinitionEnable",
+       IDS_SETTINGS_QUICK_ANSWERS_DEFINITION_ENABLE},
+      {"quickAnswersTranslationEnable",
+       IDS_SETTINGS_QUICK_ANSWERS_TRANSLATION_ENABLE},
+      {"quickAnswersTranslationEnableDescription",
+       IDS_SETTINGS_QUICK_ANSWERS_TRANSLATION_ENABLE_DESCRIPTION},
+      {"quickAnswersUnitConversionEnable",
+       IDS_SETTINGS_QUICK_ANSWERS_UNIT_CONVERSION_ENABLE},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -201,18 +233,22 @@ void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
 }
 
 const std::vector<mojom::Setting>& GetSearchSettings() {
-  if (ShouldShowQuickAnswersSettings()) {
-    static const base::NoDestructor<std::vector<mojom::Setting>> settings({
+  static const base::NoDestructor<std::vector<mojom::Setting>> settings([] {
+    std::vector<mojom::Setting> base_settings{
         mojom::Setting::kQuickAnswersOnOff,
-        mojom::Setting::kPreferredSearchEngine,
-    });
-    return *settings;
-  } else {
-    static const base::NoDestructor<std::vector<mojom::Setting>> settings({
-        mojom::Setting::kQuickAnswersOnOff,
-    });
-    return *settings;
-  }
+        mojom::Setting::kQuickAnswersDefinition,
+        mojom::Setting::kQuickAnswersTranslation,
+        mojom::Setting::kQuickAnswersUnitConversion,
+    };
+
+    if (ShouldShowQuickAnswersSettings()) {
+      base_settings.insert(base_settings.end(),
+                           mojom::Setting::kPreferredSearchEngine);
+    }
+
+    return base_settings;
+  }());
+  return *settings;
 }
 
 }  // namespace
@@ -232,6 +268,11 @@ SearchSection::SearchSection(Profile* profile,
 
     assistant_state->AddObserver(this);
     UpdateAssistantSearchTags();
+  }
+
+  if (ShouldShowQuickAnswersSettings()) {
+    ash::QuickAnswersState::Get()->AddObserver(this);
+    UpdateQuickAnswersSearchTags();
   }
 }
 
@@ -347,6 +388,10 @@ void SearchSection::OnAssistantHotwordEnabled(bool enabled) {
   UpdateAssistantSearchTags();
 }
 
+void SearchSection::OnSettingsEnabled(bool enabled) {
+  UpdateQuickAnswersSearchTags();
+}
+
 bool SearchSection::IsAssistantAllowed() const {
   // NOTE: This will be false when the flag is disabled.
   return ::assistant::IsAssistantAllowedForProfile(profile()) ==
@@ -380,6 +425,14 @@ void SearchSection::UpdateAssistantSearchTags() {
           assistant::prefs::ConsentStatus::kActivityControlAccepted) {
     updater.AddSearchTags(GetAssistantVoiceMatchSearchConcepts());
   }
+}
+
+void SearchSection::UpdateQuickAnswersSearchTags() {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
+
+  if (ash::QuickAnswersState::Get()->settings_enabled())
+    updater.AddSearchTags(GetQuickAnswersOnSearchConcepts());
 }
 
 }  // namespace settings

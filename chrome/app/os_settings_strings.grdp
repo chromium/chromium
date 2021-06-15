@@ -777,6 +777,18 @@
   <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers toggle.">
     With a right-click or long press, show related info for your text selection
   </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_DEFINITION_ENABLE" desc="Title for a toggle that controls the Quick Answers definiton feature.">
+    Definition
+  </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_TRANSLATION_ENABLE" desc="Title for a toggle that controls the Quick Answers translation feature.">
+    Translation
+  </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_TRANSLATION_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers translation toggle.">
+    Add your preferred website languages. The top language from the list will be used for translations.
+  </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_UNIT_CONVERSION_ENABLE" desc="Title for a toggle that controls the Quick Answers unit conversion feature.">
+    Unit Conversion
+  </message>
 
   <!-- Files Page (OS settings) -->
   <message name="IDS_OS_SETTINGS_FILES" desc="Name of the settings page which displays file preferences.">

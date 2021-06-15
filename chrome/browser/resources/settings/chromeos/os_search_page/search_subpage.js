@@ -12,6 +12,7 @@ Polymer({
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
+    PrefsBehavior,
     settings.RouteObserverBehavior,
   ],
 
@@ -25,6 +26,9 @@ Polymer({
       value: () => new Set([
         chromeos.settings.mojom.Setting.kPreferredSearchEngine,
         chromeos.settings.mojom.Setting.kQuickAnswersOnOff,
+        chromeos.settings.mojom.Setting.kQuickAnswersDefinition,
+        chromeos.settings.mojom.Setting.kQuickAnswersTranslation,
+        chromeos.settings.mojom.Setting.kQuickAnswersUnitConversion,
       ]),
     },
   },
