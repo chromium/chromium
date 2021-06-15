@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -272,7 +273,7 @@ FileManagerPrivateSetPreferencesFunction::Run() {
 
 // Collection of active ZipFileCreator objects, indexed by ZIP file path.
 using ZipCreators =
-    std::unordered_map<base::FilePath, std::unique_ptr<ZipFileCreator>>;
+    std::unordered_map<base::FilePath, scoped_refptr<ZipFileCreator>>;
 static base::NoDestructor<ZipCreators> zip_creators;
 
 FileManagerPrivateInternalZipSelectionFunction::
@@ -336,9 +337,9 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
           << src_files.size() << " items...";
 
   // Create a ZipFileCreator.
-  std::unique_ptr<ZipFileCreator>& creator = (*zip_creators)[dest_file];
+  scoped_refptr<ZipFileCreator>& creator = (*zip_creators)[dest_file];
   DCHECK(!creator);
-  creator = std::make_unique<ZipFileCreator>(
+  creator = base::MakeRefCounted<ZipFileCreator>(
       base::BindOnce(&FileManagerPrivateInternalZipSelectionFunction::OnZipDone,
                      this, dest_file),
       parent_dir, src_files, dest_file);

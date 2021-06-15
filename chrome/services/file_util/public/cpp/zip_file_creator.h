@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/zip_file_creator.mojom.h"
@@ -21,7 +22,7 @@
 // directories under a common parent directory. This is done in a sandboxed
 // utility process to protect the browser process from handling arbitrary
 // input data from untrusted sources.
-class ZipFileCreator {
+class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator> {
  public:
   // Callback reporting the success or failure of the ZIP creation.
   using ResultCallback = base::OnceCallback<void(bool)>;
@@ -32,8 +33,6 @@ class ZipFileCreator {
                  std::vector<base::FilePath> src_relative_paths,
                  base::FilePath dest_file);
 
-  ~ZipFileCreator();
-
   // Starts creating the ZIP file.
   void Start(mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
@@ -41,6 +40,10 @@ class ZipFileCreator {
   void Stop();
 
  private:
+  friend class base::RefCountedThreadSafe<ZipFileCreator>;
+
+  ~ZipFileCreator();
+
   // Called after the dest_file |file| is opened on the blocking pool to
   // create the ZIP file in it using a sandboxed utility process.
   void CreateZipFile(

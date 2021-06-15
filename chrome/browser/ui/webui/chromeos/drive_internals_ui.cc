@@ -841,9 +841,9 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
   static constexpr char kLogsZipName[] = "drivefs_logs.zip";
 
   void ZipLogFiles(const std::vector<base::FilePath>& files) {
-    (new ZipFileCreator(
-         base::BindOnce(&LogsZipper::OnZipDone, base::Unretained(this)),
-         logs_directory_, files, zip_path_))
+    base::MakeRefCounted<ZipFileCreator>(
+        base::BindOnce(&LogsZipper::OnZipDone, base::Unretained(this)),
+        logs_directory_, files, zip_path_)
         ->Start(LaunchFileUtilService());
   }
 

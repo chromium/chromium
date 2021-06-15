@@ -43,13 +43,10 @@ void ZipFileCreator::Start(
     mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Note this class owns itself (it self-deletes when finished in ReportDone),
-  // so it is safe to use base::Unretained(this).
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&OpenFileHandleAsync, dest_file_),
-      base::BindOnce(&ZipFileCreator::CreateZipFile, base::Unretained(this),
-                     std::move(service)));
+      base::BindOnce(&ZipFileCreator::CreateZipFile, this, std::move(service)));
 }
 
 void ZipFileCreator::Stop() {
@@ -76,13 +73,12 @@ void ZipFileCreator::CreateZipFile(
   service_->BindZipFileCreator(
       remote_zip_file_creator_.BindNewPipeAndPassReceiver());
 
-  // See comment in Start() on why using base::Unretained(this) is safe.
-  remote_zip_file_creator_.set_disconnect_handler(base::BindOnce(
-      &ZipFileCreator::ReportDone, base::Unretained(this), false));
+  remote_zip_file_creator_.set_disconnect_handler(
+      base::BindOnce(&ZipFileCreator::ReportDone, this, false));
 
   remote_zip_file_creator_->CreateZipFile(
       std::move(directory), src_relative_paths_, std::move(file),
-      base::BindOnce(&ZipFileCreator::ReportDone, base::Unretained(this)));
+      base::BindOnce(&ZipFileCreator::ReportDone, this));
 }
 
 void ZipFileCreator::BindDirectory(

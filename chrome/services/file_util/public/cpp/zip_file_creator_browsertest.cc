@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
@@ -69,10 +70,11 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, FailZipForAbsentFile) {
   std::vector<base::FilePath> paths;
   paths.push_back(base::FilePath(FILE_PATH_LITERAL("not.exist")));
 
-  ZipFileCreator creator(
-      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-      zip_base_dir(), paths, zip_archive_path());
-  creator.Start(LaunchService());
+  const scoped_refptr<ZipFileCreator> creator =
+      base::MakeRefCounted<ZipFileCreator>(
+          base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+          zip_base_dir(), paths, zip_archive_path());
+  creator->Start(LaunchService());
 
   run_loop.Run();
   EXPECT_FALSE(success);
@@ -95,10 +97,12 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   bool success = false;
   base::RunLoop run_loop;
 
-  ZipFileCreator creator(
-      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-      zip_base_dir(), {kDir1, kFile2}, zip_archive_path());
-  creator.Start(LaunchService());
+  const scoped_refptr<ZipFileCreator> creator =
+      base::MakeRefCounted<ZipFileCreator>(
+          base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+          zip_base_dir(), std::initializer_list<base::FilePath>{kDir1, kFile2},
+          zip_archive_path());
+  creator->Start(LaunchService());
 
   run_loop.Run();
   EXPECT_TRUE(success);
@@ -150,11 +154,13 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, DISABLED_BigFile) {
   bool success = false;
   base::RunLoop run_loop;
 
-  ZipFileCreator creator(
-      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
-      zip_base_dir(), {kFile}, zip_archive_path());
+  const scoped_refptr<ZipFileCreator> creator =
+      base::MakeRefCounted<ZipFileCreator>(
+          base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+          zip_base_dir(), std::initializer_list<base::FilePath>{kFile},
+          zip_archive_path());
 
-  creator.Start(LaunchService());
+  creator->Start(LaunchService());
 
   run_loop.Run();
   EXPECT_TRUE(success);
@@ -233,11 +239,13 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
 
   bool success = false;
   base::RunLoop run_loop;
-  ZipFileCreator creator(
-      base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()), root_dir,
-      {},  // Empty means zip everything in root_dir.
-      zip_archive_path());
-  creator.Start(LaunchService());
+  const scoped_refptr<ZipFileCreator> creator =
+      base::MakeRefCounted<ZipFileCreator>(
+          base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+          root_dir,
+          std::initializer_list<base::FilePath>{},  // Everything in root_dir
+          zip_archive_path());
+  creator->Start(LaunchService());
 
   run_loop.Run();
   EXPECT_TRUE(success);
