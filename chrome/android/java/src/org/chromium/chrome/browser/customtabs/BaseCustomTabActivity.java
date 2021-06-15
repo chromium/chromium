@@ -443,8 +443,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     public int getActivityThemeColor() {
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
-        if (!intentDataProvider.isOpenedByChrome()
-                && intentDataProvider.getColorProvider().hasCustomToolbarColor()) {
+        if (intentDataProvider.getColorProvider().hasCustomToolbarColor()) {
             return intentDataProvider.getColorProvider().getToolbarColor();
         }
         return TabState.UNSPECIFIED_THEME_COLOR;
