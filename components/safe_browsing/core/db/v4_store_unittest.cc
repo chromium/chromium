@@ -10,9 +10,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/db/v4_store.pb.h"
 #include "crypto/sha2.h"
 #include "testing/platform_test.h"
@@ -30,7 +30,6 @@ class V4StoreTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    task_environment_ = CreateTestTaskEnvironment();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     store_path_ = temp_dir_.GetPath().AppendASCII("V4StoreTest.store");
     DVLOG(1) << "store_path_: " << store_path_.value();
@@ -78,7 +77,7 @@ class V4StoreTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
   base::FilePath store_path_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<V4Store> updated_store_;
 };
 

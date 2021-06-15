@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 
-#include "components/safe_browsing/core/common/test_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "testing/platform_test.h"
@@ -13,9 +13,9 @@ namespace safe_browsing {
 
 class SyncUtilsTest : public PlatformTest {
  public:
-  SyncUtilsTest() : task_environment_(CreateTestTaskEnvironment()) {}
+  SyncUtilsTest() {}
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(SyncUtilsTest, AreSigninAndSyncSetUpForSafeBrowsingTokenFetches_Sync) {
