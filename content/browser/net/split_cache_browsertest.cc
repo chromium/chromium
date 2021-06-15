@@ -891,8 +891,10 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
       GenURL("e.com", "/worker.js")));
 }
 
+// https://crbug.com/1218723 started flaking after Field Trial Testing Config
+// was enabled for content_browsertests.
 IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
-                       SplitCacheDedicatedWorkersScripts) {
+                       DISABLED_SplitCacheDedicatedWorkersScripts) {
   // Load a.com's worker. The first time the worker script is loaded from the
   // network and the second it's cached.
   EXPECT_FALSE(DedicatedWorkerScriptCached(
