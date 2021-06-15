@@ -51,10 +51,8 @@ let checkIfIframeBlocked = `
 
 // Check of CSP directives in headers can be modified by extensions.
 //
-// TODO(antoniosartori): We should make the behaviour consistent, independent of
-// the particular CSP directive.
 runTests([
-  // Test that modifications to CSP 'frame-ancestors' are ignored.
+  // Test that modifications to CSP 'frame-ancestors' are honored.
   async function testModifyCSPHeaderFrameAncestors() {
     let url = getServerURL(
         'extensions/api_test/webrequest/csp/document-with-iframe.html');
@@ -68,7 +66,7 @@ runTests([
 
     await navigate(url);
     let blocked = await resultFromTab(checkIfIframeBlocked);
-    chrome.test.assertFalse(blocked, 'CSP was modified.');
+    chrome.test.assertTrue(blocked, 'CSP was not modified.');
     chrome.webRequest.onHeadersReceived.removeListener(headersListener);
     chrome.test.succeed();
   },

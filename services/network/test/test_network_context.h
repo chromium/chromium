@@ -215,9 +215,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& ocsp_result,
       const std::string& sct_list,
       VerifyCertForSignedExchangeCallback callback) override {}
-  void ParseHeaders(const GURL& base_url,
-                    const scoped_refptr<net::HttpResponseHeaders>& headers,
-                    ParseHeadersCallback callback) override {}
   void IsHSTSActiveForHost(const std::string& host,
                            IsHSTSActiveForHostCallback callback) override {}
   void SetCorsOriginAccessListsForOrigin(

@@ -150,7 +150,8 @@ class WebRequestProxyingURLLoaderFactory
     void ContinueToStartRequest(State state_on_error, int error_code);
     void ContinueToStartRequestWithOk();
     void ContinueToHandleOverrideHeaders(int error_code);
-    void ContinueToResponseStarted(int error_code);
+    void OverwriteHeadersAndContinueToResponseStarted(int error_code);
+    void ContinueToResponseStarted();
     void ContinueAuthRequest(const net::AuthChallengeInfo& auth_info,
                              WebRequestAPI::AuthRequestCallback callback,
                              int error_code);

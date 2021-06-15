@@ -181,6 +181,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       std::vector<mojom::EnvironmentVariablePtr> environment) override;
   void SetTrustTokenKeyCommitments(const std::string& raw_commitments,
                                    base::OnceClosure done) override;
+  void ParseHeaders(const GURL& url,
+                    const scoped_refptr<net::HttpResponseHeaders>& headers,
+                    ParseHeadersCallback callback) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
   void ConfigureSCTAuditing(

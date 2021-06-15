@@ -53,6 +53,7 @@
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_ui_data.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -1090,7 +1091,7 @@ void NavigationURLLoaderImpl::ParseHeaders(
     std::move(continuation).Run();
   };
 
-  storage_partition_->GetNetworkContext()->ParseHeaders(
+  GetNetworkService()->ParseHeaders(
       url, head->headers,
       base::BindOnce(assign, std::move(continuation), head));
 }

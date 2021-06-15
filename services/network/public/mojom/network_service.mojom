@@ -26,6 +26,7 @@ import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
@@ -372,4 +373,15 @@ interface NetworkService {
   // Sets the list of ports which will be permitted even if they normally would
   // be restricted.
   SetExplicitlyAllowedPorts(array<uint16> ports);
+
+  // Parses response headers and returns a structured version to the caller.
+  // This call originates from the browser process. Used for navigations when
+  // the URLLoader didn't provide ParsedHeader in the first place. This happens
+  // when the raw headers represent untrustworthy input and the URLLoader used
+  // lives in a non-sandboxed process. It can also happen from some exotic
+  // URLLoader where parsing hasn't been implemented.
+  // In particular, this is used for request served from AppCache, WebBundle,
+  // Extensions, etc.
+  ParseHeaders(url.mojom.Url url, HttpResponseHeaders headers)
+      => (ParsedHeaders parsed_headers);
 };

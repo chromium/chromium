@@ -1328,7 +1328,7 @@ class CONTENT_EXPORT NavigationRequest
   // Compute the sandbox policy of the document to be loaded. This is called
   // once the final response is known. It is based on the current FramePolicy,
   // the response's CSP and the embedder's HTMLIframeElement.csp.
-  void ComputeSandboxFlagsToCommit(bool for_error);
+  void ComputeSandboxFlagsToCommit();
 
   // DCHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.

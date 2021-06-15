@@ -2685,18 +2685,13 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   // Add policies from the policy container. If this is a XSLT or javascript:
   // document, this will just keep the current policies. If this is a local
   // scheme document, the policy container contains the right policies (as
-  // inherited in the NavigationRequest in the browser). If CSP Embedded
-  // Enforcement was used on this frame and the response allowed blanket
-  // enforcement, the policy container includes the enforced policy. Otherwise,
-  // the policy container is empty.
+  // inherited in the NavigationRequest in the browser). If this is a network
+  // scheme document, the policy container will contain the parsed CSP from the
+  // response. If CSP Embedded Enforcement was used on this frame and the
+  // response allowed blanket enforcement, the policy container includes the
+  // enforced policy.
   csp->AddPolicies(
       mojo::Clone(policy_container_->GetPolicies().content_security_policies));
-
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
-      ParseContentSecurityPolicyHeaders(
-          ContentSecurityPolicyResponseHeaders(response_));
-  policy_container_->AddContentSecurityPolicies(mojo::Clone(parsed_policies));
-  csp->AddPolicies(std::move(parsed_policies));
 
   // Check if the embedder wants to add any default policies, and add them.
   WebVector<WebContentSecurityPolicyHeader> embedder_default_csp;

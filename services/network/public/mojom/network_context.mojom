@@ -1201,17 +1201,6 @@ interface NetworkContext {
                               string sct_list) => (int32 error_code,
                                                    CertVerifyResult cv_result);
 
-  // Parses response headers and returns a structured version to the caller.
-  // This call originates from the browser process. Used for navigations when
-  // the URLLoader didn't provide ParsedHeader in the first place. This happens
-  // when the raw headers represent untrustworthy input and the URLLoader used
-  // lives in a non-sandboxed process. It can also happen from some exotic
-  // URLLoader where parsing hasn't been implemented.
-  // In particular, this is used for request served from AppCache, WebBundle,
-  // Extensions, etc.
-  ParseHeaders(url.mojom.Url url, HttpResponseHeaders headers)
-      => (ParsedHeaders parsed_headers);
-
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.
   AddHSTS(string host, mojo_base.mojom.Time expiry,

@@ -18,8 +18,12 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
@@ -37,6 +41,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "url/origin.h"
 
@@ -349,12 +354,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
     auto saved_headers = current_response_->headers;
     current_response_ = std::move(head);
     current_response_->headers = saved_headers;
-    ContinueToResponseStarted(net::OK);
+    ContinueToResponseStarted();
   } else {
     current_response_ = std::move(head);
-    HandleResponseOrRedirectHeaders(
-        base::BindOnce(&InProgressRequest::ContinueToResponseStarted,
-                       weak_factory_.GetWeakPtr()));
+    HandleResponseOrRedirectHeaders(base::BindOnce(
+        &InProgressRequest::OverwriteHeadersAndContinueToResponseStarted,
+        weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -885,7 +890,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    ContinueToResponseStarted(int error_code) {
+    OverwriteHeadersAndContinueToResponseStarted(int error_code) {
   DCHECK(!for_cors_preflight_);
   if (error_code != net::OK) {
     OnRequestError(CreateURLLoaderCompletionStatus(error_code),
@@ -893,13 +898,61 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     return;
   }
 
+  DCHECK(!current_request_uses_header_client_ || !override_headers_);
+
+  if (!override_headers_) {
+    ContinueToResponseStarted();
+    return;
+  }
+
+  current_response_->headers = override_headers_;
+
+  // The extension modified the response headers without specifying the
+  // 'extraHeaders' option. We need to repopulate the ParsedHeader to reflect
+  // the modified headers.
+  //
+  // TODO(https://crbug.com/1208142): Once problems with 'extraHeaders' are
+  // sorted out, migrate these headers over to requiring 'extraHeaders' and
+  // remove this code.
+  //
+  // Note: As an optimization, we reparse the ParsedHeaders only for navigation
+  // and worker requests, since they are not used for subresource requests.
+  using URLLoaderFactoryType =
+      content::ContentBrowserClient::URLLoaderFactoryType;
+  switch (factory_->loader_factory_type()) {
+    case URLLoaderFactoryType::kDocumentSubResource:
+    case URLLoaderFactoryType::kWorkerSubResource:
+    case URLLoaderFactoryType::kServiceWorkerSubResource:
+      ContinueToResponseStarted();
+      return;
+    case URLLoaderFactoryType::kNavigation:
+    case URLLoaderFactoryType::kWorkerMainResource:
+    case URLLoaderFactoryType::kServiceWorkerScript:
+    case URLLoaderFactoryType::kDownload:
+      break;
+  }
+
+  proxied_client_receiver_.Pause();
+  auto assign = [](base::OnceClosure continuation,
+                   network::mojom::URLResponseHead* head,
+                   network::mojom::ParsedHeadersPtr parsed_headers) {
+    head->parsed_headers = std::move(parsed_headers);
+    std::move(continuation).Run();
+  };
+  content::GetNetworkService()->ParseHeaders(
+      request_.url, current_response_->headers,
+      base::BindOnce(
+          assign,
+          base::BindOnce(&InProgressRequest::ContinueToResponseStarted,
+                         weak_factory_.GetWeakPtr()),
+          current_response_.get()));
+}
+
+void WebRequestProxyingURLLoaderFactory::InProgressRequest::
+    ContinueToResponseStarted() {
   if (state_ == State::kInProgress) {
     state_ = State::kInProgressWithFinalResponseReceived;
   }
-
-  DCHECK(!current_request_uses_header_client_ || !override_headers_);
-  if (override_headers_)
-    current_response_->headers = override_headers_;
 
   std::string redirect_location;
   if (override_headers_ && override_headers_->IsRedirect(&redirect_location)) {

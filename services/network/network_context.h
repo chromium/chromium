@@ -351,9 +351,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::string& ocsp_result,
       const std::string& sct_list,
       VerifyCertForSignedExchangeCallback callback) override;
-  void ParseHeaders(const GURL& url,
-                    const scoped_refptr<net::HttpResponseHeaders>& headers,
-                    ParseHeadersCallback callback) override;
   void AddHSTS(const std::string& host,
                base::Time expiry,
                bool include_subdomains,
