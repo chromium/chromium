@@ -253,6 +253,11 @@ void PrintPreviewHandlerChromeOS::SendEulaUrl(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(eula_url));
 }
 
+// Resolves the callback (via ResolveJavascriptCallback) with a
+// PrinterSetupResponse object (defined in
+// chrome/browser/resources/print_preview/native_layer_cros.js).
+// destination_info is a CapabilitiesResponse object (defined in
+// chrome/browser/resources/print_preview/native_layer.js).
 void PrintPreviewHandlerChromeOS::SendPrinterSetup(
     const std::string& callback_id,
     const std::string& printer_name,

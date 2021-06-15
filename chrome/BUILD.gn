@@ -481,9 +481,7 @@ if (is_win) {
       # executable because dlopen() and loading all the dependent dylibs
       # is time-consuming, see https://crbug.com/1197495.
       deps += [ ":chrome_framework+link" ]
-      ldflags = [
-        "-Wl,-rpath,@executable_path/../Frameworks",
-      ]
+      ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
 
       # The Framework is packaged inside the .app bundle. But when using the
       # component build, all the dependent shared libraries of :chrome_dll are
@@ -1352,7 +1350,7 @@ group("browser_dependencies") {
 
   if (enable_basic_printing) {
     public_deps += [ "//printing" ]
-    if (enable_print_preview && !is_chromeos_ash) {
+    if (enable_print_preview && !is_chromeos) {
       public_deps += [ "//chrome/service" ]
     }
   }

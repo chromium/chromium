@@ -7,82 +7,90 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/printer_configurer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
-#include "chromeos/printing/ppd_provider.h"
-#include "chromeos/printing/printer_configuration.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Value;
+}
 
 namespace content {
 class WebContents;
 }
-
-class Profile;
 
 namespace printing {
 
 // This class must be created and used on the UI thread.
 class LocalPrinterHandlerChromeos : public PrinterHandler {
  public:
-  static std::unique_ptr<LocalPrinterHandlerChromeos> CreateDefault(
-      Profile* profile,
+  static std::unique_ptr<LocalPrinterHandlerChromeos> Create(
       content::WebContents* preview_web_contents);
 
-  static std::unique_ptr<LocalPrinterHandlerChromeos> CreateForTesting(
-      Profile* profile,
-      content::WebContents* preview_web_contents,
-      chromeos::CupsPrintersManager* printers_manager,
-      std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
-      scoped_refptr<chromeos::PpdProvider> ppd_provider);
+  // Creates an instance suitable for testing without a mojo connection to Ash
+  // Chrome and with `preview_web_contents_` set to nullptr. PrinterHandler
+  // methods run input callbacks with reasonable defaults when the mojo
+  // connection is unavailable.
+  static std::unique_ptr<LocalPrinterHandlerChromeos> CreateForTesting();
 
+  // Prefer using Create() above.
+  explicit LocalPrinterHandlerChromeos(
+      content::WebContents* preview_web_contents);
   LocalPrinterHandlerChromeos(const LocalPrinterHandlerChromeos&) = delete;
   LocalPrinterHandlerChromeos& operator=(const LocalPrinterHandlerChromeos&) =
       delete;
   ~LocalPrinterHandlerChromeos() override;
 
-  // PrinterHandler implementation
+  // Returns a LocalDestinationInfo object (defined in
+  // chrome/browser/resources/print_preview/data/local_parsers.js).
+  static base::Value PrinterToValue(
+      const crosapi::mojom::LocalDestinationInfo& printer);
+
+  // Returns a CapabilitiesResponse object (defined in
+  // chrome/browser/resources/print_preview/native_layer.js).
+  static base::Value CapabilityToValue(
+      crosapi::mojom::CapabilitiesResponsePtr caps);
+
+  // Returns a PrinterStatus object (defined in
+  // chrome/browser/resources/print_preview/data/printer_status_cros.js).
+  static base::Value StatusToValue(const crosapi::mojom::PrinterStatus& status);
+
+  // PrinterHandler implementation.
   void Reset() override;
-  void GetDefaultPrinter(DefaultPrinterCallback cb) override;
+  void GetDefaultPrinter(DefaultPrinterCallback callback) override;
   void StartGetPrinters(AddedPrintersCallback added_printers_callback,
                         GetPrintersDoneCallback done_callback) override;
-  void StartGetCapability(const std::string& printer_name,
-                          GetCapabilityCallback cb) override;
+  void StartGetCapability(const std::string& destination_id,
+                          GetCapabilityCallback callback) override;
   void StartPrint(const std::u16string& job_title,
                   base::Value settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
   void StartGetEulaUrl(const std::string& destination_id,
-                       GetEulaUrlCallback cb) override;
+                       GetEulaUrlCallback callback) override;
   void StartPrinterStatusRequest(
       const std::string& printer_id,
       PrinterStatusRequestCallback callback) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(LocalPrinterHandlerChromeosTest,
-                           GetNativePrinterPolicies);
+  void OnProfileUsernameReady(base::Value settings,
+                              scoped_refptr<base::RefCountedMemory> print_data,
+                              PrinterHandler::PrintCallback callback,
+                              const absl::optional<std::string>& username);
 
-  LocalPrinterHandlerChromeos(
-      Profile* profile,
-      content::WebContents* preview_web_contents,
-      chromeos::CupsPrintersManager* printers_manager,
-      std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
-      scoped_refptr<chromeos::PpdProvider> ppd_provider);
-
-  // Creates a value dictionary containing the printing policies set by
-  // |profile_|.
-  // This function must be called from the UI thread.
-  base::Value GetNativePrinterPolicies() const;
-
-  Profile* const profile_;
   content::WebContents* const preview_web_contents_;
-  chromeos::CupsPrintersManager* printers_manager_;
-  std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer_;
-  const scoped_refptr<chromeos::PpdProvider> ppd_provider_;
-  base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_factory_{this};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<crosapi::mojom::LocalPrinter> local_printer_;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
+#endif
+  int local_printer_version_ = 0;
+  base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_ptr_factory_{this};
 };
 
 }  // namespace printing

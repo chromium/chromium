@@ -4862,20 +4862,10 @@ static_library("ui") {
 
     if (is_chromeos) {
       sources += [
-        "webui/print_preview/print_preview_handler_chromeos.cc",
-        "webui/print_preview/print_preview_handler_chromeos.h",
-      ]
-    }
-    if (is_chromeos_lacros) {
-      sources += [
-        "webui/print_preview/local_printer_handler_lacros.cc",
-        "webui/print_preview/local_printer_handler_lacros.h",
-      ]
-    }
-    if (is_chromeos_ash) {
-      sources += [
         "webui/print_preview/local_printer_handler_chromeos.cc",
         "webui/print_preview/local_printer_handler_chromeos.h",
+        "webui/print_preview/print_preview_handler_chromeos.cc",
+        "webui/print_preview/print_preview_handler_chromeos.h",
       ]
     } else {
       sources += [
