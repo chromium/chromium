@@ -22,6 +22,7 @@
 #include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
 #include "chromecast/browser/cast_media_blocker.h"
 #include "chromecast/browser/cast_web_contents.h"
+#include "chromecast/browser/named_message_port_connector_cast.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -75,8 +76,6 @@ class CastWebContentsImpl : public CastWebContents,
   void BlockMediaLoading(bool blocked) override;
   void BlockMediaStarting(bool blocked) override;
   void EnableBackgroundVideoPlayback(bool enabled) override;
-  on_load_script_injector::OnLoadScriptInjectorHost<uint64_t>* script_injector()
-      override;
   void AddBeforeLoadJavaScript(uint64_t id, base::StringPiece script) override;
   void PostMessageToMainFrame(
       const std::string& target_origin,
@@ -154,6 +153,8 @@ class CastWebContentsImpl : public CastWebContents,
   std::vector<chromecast::shell::mojom::FeaturePtr> GetRendererFeatures();
   void OnBindingsReceived(
       std::vector<chromecast::mojom::ApiBindingPtr> bindings);
+  bool OnPortConnected(base::StringPiece port_name,
+                       std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   content::WebContents* web_contents_;
   base::WeakPtr<Delegate> delegate_;
@@ -198,6 +199,9 @@ class CastWebContentsImpl : public CastWebContents,
   // will be invoked once bindings are received.
   bool bindings_received_{false};
   GURL pending_load_url_;
+
+  // Used to open a MessageChannel for connecting API bindings.
+  std::unique_ptr<NamedMessagePortConnectorCast> named_message_port_connector_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

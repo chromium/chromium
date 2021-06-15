@@ -4,31 +4,18 @@
 
 #include "chromecast/bindings/bindings_manager_cast.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/bind.h"
 #include "base/macros.h"
-#include "base/notreached.h"
-#include "chromecast/bindings/named_message_port_connector_cast.h"
-#include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
+#include "components/cast/message_port/message_port_cast.h"
 
 namespace chromecast {
 namespace bindings {
 
-BindingsManagerCast::BindingsManagerCast(
-    chromecast::CastWebContents* cast_web_contents)
-    : cast_web_contents_(cast_web_contents) {
-  DCHECK(cast_web_contents_);
-
-  CastWebContents::Observer::Observe(cast_web_contents_);
-
-  port_connector_ =
-      std::make_unique<NamedMessagePortConnectorCast>(cast_web_contents_, this);
-
-  port_connector_->RegisterPortHandler(base::BindRepeating(
-      &BindingsManagerCast::OnPortConnected, base::Unretained(this)));
-}
+BindingsManagerCast::BindingsManagerCast() = default;
 
 BindingsManagerCast::~BindingsManagerCast() = default;
 
@@ -52,30 +39,6 @@ void BindingsManagerCast::OnClientDisconnected() {
   receiver_.reset();
 }
 
-void BindingsManagerCast::OnPageStateChanged(
-    CastWebContents* cast_web_contents) {
-  // TODO(b/183378843): Remove usage of CWC in this class and
-  // move the CWC::Observer logics to other components, e.g.
-  // NMPC or |ApiBindingsClient|.
-  auto page_state = cast_web_contents->page_state();
-
-  switch (page_state) {
-    case CastWebContents::PageState::DESTROYED:
-    case CastWebContents::PageState::ERROR:
-      CastWebContents::Observer::Observe(nullptr);
-      cast_web_contents_ = nullptr;
-      port_connector_.reset();
-      break;
-    case CastWebContents::PageState::LOADED:
-      port_connector_->OnPageLoaded();
-      break;
-    case CastWebContents::PageState::IDLE:
-    case CastWebContents::PageState::LOADING:
-    case CastWebContents::PageState::CLOSED:
-      break;
-  }
-}
-
 void BindingsManagerCast::GetAll(GetAllCallback callback) {
   std::vector<chromecast::mojom::ApiBindingPtr> bindings_vector;
   for (const auto& bindings_name_and_script : bindings_) {
@@ -87,8 +50,8 @@ void BindingsManagerCast::GetAll(GetAllCallback callback) {
 
 void BindingsManagerCast::Connect(const std::string& port_name,
                                   blink::MessagePortDescriptor port) {
-  // TODO(b/183378843): Implements this method and migrate NMPC to use it.
-  NOTIMPLEMENTED_LOG_ONCE();
+  OnPortConnected(port_name,
+                  cast_api_bindings::MessagePortCast::Create(std::move(port)));
 }
 
 }  // namespace bindings
