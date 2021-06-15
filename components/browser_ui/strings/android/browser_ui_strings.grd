@@ -761,28 +761,19 @@
 
       <!-- WebApk name/icon update dialog -->
       <message name="IDS_WEBAPK_UPDATE_DIALOG_TITLE_NAME" desc="The title at the top of the dialog when only the name changed.">
-        Update name on your homescreen?
+        Review name updates
       </message>
       <message name="IDS_WEBAPK_UPDATE_DIALOG_TITLE_ICON" desc="The title at the top of the dialog when only the icon changed.">
-        Update icon on your homescreen?
+        Review icon updates
       </message>
       <message name="IDS_WEBAPK_UPDATE_DIALOG_TITLE_NAME_AND_ICON" desc="The title at the top of the dialog when the name and icon changed.">
-        Update name &amp; icon on your homescreen?
+        Review name &amp; icon updates
       </message>
-      <message name="IDS_WEBAPK_UPDATE_EXPLANATION_NAME" desc="The text at the top of the dialog, explaining that an app has changed its name.">
-        A web app that you installed has changed its name.
+      <message name="IDS_WEBAPK_UPDATE_EXPLANATION" desc="The text at the top of the dialog, explaining what to do when an app changes its identity.">
+        If this web app is trying to trick you into thinking it is a different app, uninstall it.
       </message>
-      <message name="IDS_WEBAPK_UPDATE_EXPLANATION_ICON" desc="The text at the top of the dialog, explaining that an app has changed its icon.">
-        A web app that you installed has changed its icon.
-      </message>
-      <message name="IDS_WEBAPK_UPDATE_EXPLANATION_NAME_AND_ICON" desc="The text at the top of the dialog, explaining that an app has changed its name and icon.">
-        A web app that you installed has changed its name and icon.
-      </message>
-      <message name="IDS_WEBAPK_UPDATE_BUTTON_UPDATE" desc="The text in the confirm button that starts an update of the WebApk.">
-        Update
-      </message>
-      <message name="IDS_WEBAPK_UPDATE_BUTTON_CLOSE" desc="The text for the cancel button, allowing the user to close and report the app to the abuse team.">
-        Close and report abuse
+      <message name="IDS_WEBAPK_UPDATE_NEGATIVE_BUTTON" desc="The text for the negative button (aka. cancel button), allowing the user to uninstall the app and report it to the abuse team.">
+        Uninstall app
       </message>
       <message name="IDS_UPDATE_WEBAPK_CURRENT_ICON" desc="The accessibility string explaining which icon is the current icon.">
         Current icon

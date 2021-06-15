@@ -72,15 +72,11 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
         mDialogResultCallback = callback;
 
         int titleId = 0;
-        int explanationId = 0;
         if (iconChanging && (shortNameChanging || nameChanging)) {
             titleId = R.string.webapk_update_dialog_title_name_and_icon;
-            explanationId = R.string.webapk_update_explanation_name_and_icon;
         } else {
             titleId = iconChanging ? R.string.webapk_update_dialog_title_icon
                                    : R.string.webapk_update_dialog_title_name;
-            explanationId = iconChanging ? R.string.webapk_update_explanation_icon
-                                         : R.string.webapk_update_explanation_name;
         }
 
         WebApkIconNameUpdateCustomView dialogCustomView =
@@ -101,18 +97,19 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
             dialogCustomView.configureShortNames(oldAppShortName, newAppShortName);
         }
 
-        mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                               .with(ModalDialogProperties.CONTROLLER, this)
-                               .with(ModalDialogProperties.TITLE, resources, titleId)
-                               .with(ModalDialogProperties.MESSAGE, resources, explanationId)
-                               .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
-                               .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
-                               .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                       R.string.webapk_update_button_update)
-                               .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                       R.string.webapk_update_button_close)
-                               .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
-                               .build();
+        mDialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.TITLE, resources, titleId)
+                        .with(ModalDialogProperties.MESSAGE, resources,
+                                R.string.webapk_update_explanation)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
+                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                                R.string.webapk_update_negative_button)
+                        .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
+                        .build();
 
         mModalDialogManager = manager;
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
