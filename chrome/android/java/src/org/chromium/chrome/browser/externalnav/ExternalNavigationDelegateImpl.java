@@ -193,7 +193,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public void presentLeavingIncognitoDialog(Callback<Boolean> onUserDecision) {
+    public void presentLeavingIncognitoModalDialog(Callback<Boolean> onUserDecision) {
         // This should never be called due to returning false in
         // hasCustomLeavingIncognitoDialog().
         assert false;

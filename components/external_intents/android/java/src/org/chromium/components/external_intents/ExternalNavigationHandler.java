@@ -951,7 +951,7 @@ public class ExternalNavigationHandler {
         if (!canLaunchIncognitoIntent(intent, context)) return false;
 
         if (mDelegate.hasCustomLeavingIncognitoDialog()) {
-            mDelegate.presentLeavingIncognitoDialog(shouldLaunch -> {
+            mDelegate.presentLeavingIncognitoModalDialog(shouldLaunch -> {
                 onUserDecidedWhetherToLaunchIncognitoIntent(
                         shouldLaunch.booleanValue(), params, intent, fallbackUrl, proxy);
             });

@@ -181,15 +181,16 @@ public interface ExternalNavigationDelegate {
 
     /* Returns whether the delegate implementation wishes to present its own warning dialog gating
      * the user launching an intent in incognito mode. If this method returns true,
-     * ExternalNavigationHandler will invoke presentLeavingIncognitoDialog(). If this method returns
-     * false, ExternalNavigationHandler will present its own dialog. */
+     * ExternalNavigationHandler will invoke presentLeavingIncognitoModalDialog(). If this method
+     * returns false, ExternalNavigationHandler will present its own dialog. */
     boolean hasCustomLeavingIncognitoDialog();
 
     /* Invoked when the user initiates a launch of an intent in incognito mode and the delegate has
      * returned true for hasCustomLeavingIncognitoDialog(). The delegate should
      * invoke onUserDecision() with the user's decision once obtained, passing true if the user has
-     * consented to launch the intent and false otherwise. */
-    void presentLeavingIncognitoDialog(Callback<Boolean> onUserDecision);
+     * consented to launch the intent and false otherwise.
+     * NOTE: The dialog presented should be modal, as confusion of state can otherwise occur. */
+    void presentLeavingIncognitoModalDialog(Callback<Boolean> onUserDecision);
 
     /**
      * @param intent The intent to launch.

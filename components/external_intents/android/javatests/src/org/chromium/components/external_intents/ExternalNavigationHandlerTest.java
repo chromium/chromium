@@ -2482,7 +2482,7 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public void presentLeavingIncognitoDialog(Callback<Boolean> onUserDecision) {
+        public void presentLeavingIncognitoModalDialog(Callback<Boolean> onUserDecision) {
             incognitoDialogUserDecisionCallback = onUserDecision;
         }
 
