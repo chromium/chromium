@@ -55,18 +55,21 @@ mojom::IframeAttributionDataPtr GetFakeIframeAttributionDataPtr() {
 
 class V8ContextTrackerTest : public GraphTestHarness {
  public:
-  V8ContextTrackerTest()
-      : registry(graph()->PassToGraph(
-            std::make_unique<
-                execution_context::ExecutionContextRegistryImpl>())),
-        tracker(graph()->PassToGraph(std::make_unique<V8ContextTracker>())),
-        mock_graph(graph()) {}
+  V8ContextTrackerTest() = default;
 
   ~V8ContextTrackerTest() override = default;
 
-  execution_context::ExecutionContextRegistry* const registry = nullptr;
-  V8ContextTracker* const tracker = nullptr;
-  MockSinglePageWithMultipleProcessesGraph mock_graph;
+  void OnGraphCreated(GraphImpl* graph_impl) override {
+    registry_ = graph_impl->PassToGraph(
+        std::make_unique<execution_context::ExecutionContextRegistryImpl>());
+    tracker_ = graph_impl->PassToGraph(std::make_unique<V8ContextTracker>());
+    mock_graph_ =
+        std::make_unique<MockSinglePageWithMultipleProcessesGraph>(graph());
+  }
+
+  execution_context::ExecutionContextRegistry* registry_ = nullptr;
+  V8ContextTracker* tracker_ = nullptr;
+  std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
 };
 
 using V8ContextTrackerDeathTest = V8ContextTrackerTest;
@@ -92,8 +95,8 @@ auto DetachedCountsMatch(size_t detached_v8_context_count,
 TEST_F(V8ContextTrackerDeathTest, MissingExecutionContextForMainFrameExplodes) {
   // A main-frame should not have iframe data, and it must have an execution
   // context token. So this should fail.
-  EXPECT_DCHECK_DEATH(tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  EXPECT_DCHECK_DEATH(tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
@@ -107,67 +110,67 @@ TEST_F(V8ContextTrackerDeathTest, DoubleCreationExplodes) {
       /* token */ kFrameMainWorld,
       /* world_type */ mojom::V8ContextWorldType::kMain,
       /* world_name */ absl::nullopt,
-      /* execution_context_token */ mock_graph.frame->frame_token());
+      /* execution_context_token */ mock_graph_->frame->frame_token());
 
-  tracker->OnV8ContextCreated(ProcessNodeImpl::CreatePassKeyForTesting(),
-                              mock_graph.process.get(), v8_desc, nullptr);
+  tracker_->OnV8ContextCreated(ProcessNodeImpl::CreatePassKeyForTesting(),
+                               mock_graph_->process.get(), v8_desc, nullptr);
 
   // Trying to create the context a second time should explode.
-  EXPECT_DCHECK_DEATH(
-      tracker->OnV8ContextCreated(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                  mock_graph.process.get(), v8_desc, nullptr));
+  EXPECT_DCHECK_DEATH(tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
+      v8_desc, nullptr));
 }
 
 TEST_F(V8ContextTrackerDeathTest, MissingContextExplodes) {
   // There was no OnV8ContextCreated called first, so this should explode.
-  EXPECT_DCHECK_DEATH(
-      tracker->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                   mock_graph.process.get(), kFrameMainWorld));
+  EXPECT_DCHECK_DEATH(tracker_->OnV8ContextDetached(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
+      kFrameMainWorld));
 
   // Similarly with a destroyed notification.
-  EXPECT_DCHECK_DEATH(
-      tracker->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                    mock_graph.process.get(), kFrameMainWorld));
+  EXPECT_DCHECK_DEATH(tracker_->OnV8ContextDestroyed(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
+      kFrameMainWorld));
 }
 
 TEST_F(V8ContextTrackerDeathTest, DoubleRemoteFrameCreatedExplodes) {
-  tracker->OnRemoteIframeAttachedForTesting(
-      mock_graph.child_frame.get(), mock_graph.frame.get(),
+  tracker_->OnRemoteIframeAttachedForTesting(
+      mock_graph_->child_frame.get(), mock_graph_->frame.get(),
       kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
 
-  EXPECT_DCHECK_DEATH(tracker->OnRemoteIframeAttachedForTesting(
-      mock_graph.child_frame.get(), mock_graph.frame.get(),
+  EXPECT_DCHECK_DEATH(tracker_->OnRemoteIframeAttachedForTesting(
+      mock_graph_->child_frame.get(), mock_graph_->frame.get(),
       kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr()));
 }
 
 TEST_F(V8ContextTrackerDeathTest, RemoteFrameWithBadParentExplodes) {
   // child_frame's real parent is frame.
-  EXPECT_DCHECK_DEATH(tracker->OnRemoteIframeAttachedForTesting(
-      mock_graph.child_frame.get(), mock_graph.child_frame.get(),
+  EXPECT_DCHECK_DEATH(tracker_->OnRemoteIframeAttachedForTesting(
+      mock_graph_->child_frame.get(), mock_graph_->child_frame.get(),
       kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr()));
 }
 
 TEST_F(V8ContextTrackerDeathTest, IframeAttributionDataForMainFrameExplodes) {
-  EXPECT_DCHECK_DEATH(tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  EXPECT_DCHECK_DEATH(tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
           /* world_name */ absl::nullopt,
-          /* execution_context_token */ mock_graph.frame->frame_token()),
+          /* execution_context_token */ mock_graph_->frame->frame_token()),
       GetFakeIframeAttributionDataPtr()));
 }
 
 TEST_F(V8ContextTrackerDeathTest,
        NoIframeAttributionDataForInProcessChildFrameExplodes) {
-  // Create a child of mock_graph.frame that is in the same process.
+  // Create a child of mock_graph_->frame that is in the same process.
   TestNodeWrapper<FrameNodeImpl> child2_frame(graph()->CreateFrameNodeAutoId(
-      mock_graph.process.get(), mock_graph.page.get(), mock_graph.frame.get(),
-      3));
+      mock_graph_->process.get(), mock_graph_->page.get(),
+      mock_graph_->frame.get(), 3));
   // This should explode because synchronous iframe data is expected, but not
   // provided.
-  EXPECT_DCHECK_DEATH(tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  EXPECT_DCHECK_DEATH(tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kChildFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
@@ -178,243 +181,244 @@ TEST_F(V8ContextTrackerDeathTest,
 
 TEST_F(V8ContextTrackerDeathTest, MultipleMainContextsForExecutionContext) {
   // Create a main-frame with two main worlds.
-  tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
           /* world_name */ absl::nullopt,
-          /* execution_context_token */ mock_graph.frame->frame_token()),
+          /* execution_context_token */ mock_graph_->frame->frame_token()),
       /* iframe_attribution_data */ nullptr);
 
-  EXPECT_DCHECK_DEATH(tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  EXPECT_DCHECK_DEATH(tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ blink::V8ContextToken(),
           /* world_type */ mojom::V8ContextWorldType::kMain,
           /* world_name */ absl::nullopt,
-          /* execution_context_token */ mock_graph.frame->frame_token()),
+          /* execution_context_token */ mock_graph_->frame->frame_token()),
       /* iframe_attribution_data */ nullptr));
 }
 
 TEST_F(V8ContextTrackerTest, NormalV8ContextLifecycleWithExecutionContext) {
-  EXPECT_THAT(tracker, CountsMatch(0, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(0, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
-  tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
           /* world_name */ absl::nullopt,
-          /* execution_context_token */ mock_graph.frame->frame_token()),
+          /* execution_context_token */ mock_graph_->frame->frame_token()),
       /* iframe_attribution_data */ nullptr);
-  EXPECT_THAT(tracker, CountsMatch(1, 1));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(1, 1));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
-  tracker->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
-                               mock_graph.process.get(), kFrameMainWorld);
-  EXPECT_THAT(tracker, CountsMatch(1, 1));
-  EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+  tracker_->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                mock_graph_->process.get(), kFrameMainWorld);
+  EXPECT_THAT(tracker_, CountsMatch(1, 1));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
 
-  tracker->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                mock_graph.process.get(), kFrameMainWorld);
-  EXPECT_THAT(tracker, CountsMatch(0, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  tracker_->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                 mock_graph_->process.get(), kFrameMainWorld);
+  EXPECT_THAT(tracker_, CountsMatch(0, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 }
 
 TEST_F(V8ContextTrackerTest, NormalV8ContextLifecycleNoExecutionContext) {
-  EXPECT_THAT(tracker, CountsMatch(0, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(0, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
-  tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kRegExp,
           /* world_name */ absl::nullopt,
           /* execution_context_token */ absl::nullopt),
       /* iframe_attribution_data */ nullptr);
-  EXPECT_THAT(tracker, CountsMatch(1, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(1, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
-  tracker->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
-                               mock_graph.process.get(), kFrameMainWorld);
-  EXPECT_THAT(tracker, CountsMatch(1, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+  tracker_->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                mock_graph_->process.get(), kFrameMainWorld);
+  EXPECT_THAT(tracker_, CountsMatch(1, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
 
-  tracker->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                mock_graph.process.get(), kFrameMainWorld);
-  EXPECT_THAT(tracker, CountsMatch(0, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  tracker_->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                 mock_graph_->process.get(), kFrameMainWorld);
+  EXPECT_THAT(tracker_, CountsMatch(0, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 }
 
 TEST_F(V8ContextTrackerTest, MultipleV8ContextsForExecutionContext) {
-  EXPECT_THAT(tracker, CountsMatch(0, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(0, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
   // Create a main-frame main world context, and an isolated world.
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextCreated(
-        ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+    tracker_->OnV8ContextCreated(
+        ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
         mojom::V8ContextDescription(
             /* token */ kFrameMainWorld,
             /* world_type */ mojom::V8ContextWorldType::kMain,
             /* world_name */ absl::nullopt,
-            /* execution_context_token */ mock_graph.frame->frame_token()),
+            /* execution_context_token */ mock_graph_->frame->frame_token()),
         /* iframe_attribution_data */ nullptr);
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextCreated(
-        ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+    tracker_->OnV8ContextCreated(
+        ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
         mojom::V8ContextDescription(
             /* token */ kFrameIsolatedWorld,
             /* world_type */ mojom::V8ContextWorldType::kExtension,
             /* world_name */ kExtensionId,
-            /* execution_context_token */ mock_graph.frame->frame_token()),
+            /* execution_context_token */ mock_graph_->frame->frame_token()),
         /* iframe_attribution_data */ nullptr);
-    EXPECT_THAT(tracker, CountsMatch(2, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   // Create a child-frame main world context, and an isolated world. This child
   // is cross-process so expects no iframe data at creation.
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextCreated(
+    tracker_->OnV8ContextCreated(
         ProcessNodeImpl::CreatePassKeyForTesting(),
-        mock_graph.other_process.get(),
+        mock_graph_->other_process.get(),
         mojom::V8ContextDescription(
             /* token */ kChildFrameMainWorld,
             /* world_type */ mojom::V8ContextWorldType::kMain,
             /* world_name */ absl::nullopt,
             /* execution_context_token */
-            mock_graph.child_frame->frame_token()),
+            mock_graph_->child_frame->frame_token()),
         /* iframe_attribution_data */ nullptr);
-    EXPECT_THAT(tracker, CountsMatch(3, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(3, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextCreated(
+    tracker_->OnV8ContextCreated(
         ProcessNodeImpl::CreatePassKeyForTesting(),
-        mock_graph.other_process.get(),
+        mock_graph_->other_process.get(),
         mojom::V8ContextDescription(
             /* token */ kChildFrameIsolatedWorld,
             /* world_type */ mojom::V8ContextWorldType::kExtension,
             /* world_name */ kExtensionId,
             /* execution_context_token */
-            mock_graph.child_frame->frame_token()),
+            mock_graph_->child_frame->frame_token()),
         /* iframe_attribution_data */ nullptr);
-    EXPECT_THAT(tracker, CountsMatch(4, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(4, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   // Provide iframe data for the child frame.
   {
     SCOPED_TRACE("");
-    tracker->OnRemoteIframeAttachedForTesting(
-        mock_graph.child_frame.get(), mock_graph.frame.get(),
+    tracker_->OnRemoteIframeAttachedForTesting(
+        mock_graph_->child_frame.get(), mock_graph_->frame.get(),
         kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
-    EXPECT_THAT(tracker, CountsMatch(4, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(4, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   // Detach the child frame contexts.
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                 mock_graph.other_process.get(),
-                                 kChildFrameIsolatedWorld);
-    EXPECT_THAT(tracker, CountsMatch(4, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    tracker_->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                  mock_graph_->other_process.get(),
+                                  kChildFrameIsolatedWorld);
+    EXPECT_THAT(tracker_, CountsMatch(4, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
   }
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                 mock_graph.other_process.get(),
-                                 kChildFrameMainWorld);
-    EXPECT_THAT(tracker, CountsMatch(4, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(2, 0));
+    tracker_->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                  mock_graph_->other_process.get(),
+                                  kChildFrameMainWorld);
+    EXPECT_THAT(tracker_, CountsMatch(4, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(2, 0));
   }
 
   // Destroy the child frame main world context.
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                  mock_graph.other_process.get(),
-                                  kChildFrameMainWorld);
-    EXPECT_THAT(tracker, CountsMatch(3, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    tracker_->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                   mock_graph_->other_process.get(),
+                                   kChildFrameMainWorld);
+    EXPECT_THAT(tracker_, CountsMatch(3, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
   }
 
   // Detach the main frame contexts, main and isolated.
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                 mock_graph.process.get(), kFrameMainWorld);
-    EXPECT_THAT(tracker, CountsMatch(3, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(2, 0));
+    tracker_->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                  mock_graph_->process.get(), kFrameMainWorld);
+    EXPECT_THAT(tracker_, CountsMatch(3, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(2, 0));
   }
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                 mock_graph.process.get(), kFrameIsolatedWorld);
-    EXPECT_THAT(tracker, CountsMatch(3, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(3, 0));
+    tracker_->OnV8ContextDetached(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                  mock_graph_->process.get(),
+                                  kFrameIsolatedWorld);
+    EXPECT_THAT(tracker_, CountsMatch(3, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(3, 0));
   }
 
   // Destroy the main frame isolated world.
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                  mock_graph.process.get(),
-                                  kFrameIsolatedWorld);
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(2, 0));
+    tracker_->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                   mock_graph_->process.get(),
+                                   kFrameIsolatedWorld);
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(2, 0));
   }
 
   // Destroy the child frame isolated world..
   {
     SCOPED_TRACE("");
-    tracker->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
-                                  mock_graph.other_process.get(),
-                                  kChildFrameIsolatedWorld);
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    tracker_->OnV8ContextDestroyed(ProcessNodeImpl::CreatePassKeyForTesting(),
+                                   mock_graph_->other_process.get(),
+                                   kChildFrameIsolatedWorld);
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
   }
 
   // Destroy the remote iframe reference to the child frame, which should
   // finally tear down the ExecutionContext as well.
   {
     SCOPED_TRACE("");
-    tracker->OnRemoteIframeDetachedForTesting(mock_graph.frame.get(),
-                                              kChildFrameRemoteToken);
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    tracker_->OnRemoteIframeDetachedForTesting(mock_graph_->frame.get(),
+                                               kChildFrameRemoteToken);
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
   }
 }
 
 TEST_F(V8ContextTrackerTest, AllEventOrders) {
-  EXPECT_THAT(tracker, CountsMatch(0, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(0, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
   // Create a main frame. This exists for the duration of the test, and we
   // repeatedly attach/detach child frames to it.
-  tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
           /* world_name */ absl::nullopt,
-          /* execution_context_token */ mock_graph.frame->frame_token()),
+          /* execution_context_token */ mock_graph_->frame->frame_token()),
       /* iframe_attribution_data */ nullptr);
-  EXPECT_THAT(tracker, CountsMatch(1, 1));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(1, 1));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
   // Bind lambdas for all the events that can occur to a frame in its lifetime.
   // This test will explore all possible valid combinations of these events.
@@ -422,51 +426,52 @@ TEST_F(V8ContextTrackerTest, AllEventOrders) {
   // Creates a child frame V8Context.
   auto v8create = [self = this]() {
     SCOPED_TRACE("");
-    self->tracker->OnV8ContextCreated(
+    self->tracker_->OnV8ContextCreated(
         ProcessNodeImpl::CreatePassKeyForTesting(),
-        self->mock_graph.other_process.get(),
+        self->mock_graph_->other_process.get(),
         mojom::V8ContextDescription(
             /* token */ kChildFrameMainWorld,
             /* world_type */ mojom::V8ContextWorldType::kMain,
             /* world_name */ absl::nullopt,
             /* execution_context_token */
-            self->mock_graph.child_frame->frame_token()),
+            self->mock_graph_->child_frame->frame_token()),
         /* iframe_attribution_data */ nullptr);
   };
 
   // Detaches a child frame V8Context.
   auto v8detach = [self = this]() {
     SCOPED_TRACE("");
-    self->tracker->OnV8ContextDetached(
+    self->tracker_->OnV8ContextDetached(
         ProcessNodeImpl::CreatePassKeyForTesting(),
-        self->mock_graph.other_process.get(), kChildFrameMainWorld);
+        self->mock_graph_->other_process.get(), kChildFrameMainWorld);
   };
 
   // Destroys a child frame V8Context.
   auto v8destroy = [self = this]() {
     SCOPED_TRACE("");
-    self->tracker->OnV8ContextDestroyed(
+    self->tracker_->OnV8ContextDestroyed(
         ProcessNodeImpl::CreatePassKeyForTesting(),
-        self->mock_graph.other_process.get(), kChildFrameMainWorld);
+        self->mock_graph_->other_process.get(), kChildFrameMainWorld);
   };
 
   // Attaches a child iframe. This is after frame resolution has occurred so it
   // is aimed at the frame that is represented by the remote frame token
-  // (hence mock_graph.child_frame). The actual "OnRemoteIframeAttached"
+  // (hence mock_graph_->child_frame). The actual "OnRemoteIframeAttached"
   // message originally arrives over the parent frame interface.
   auto iframeattach = [self = this]() {
     SCOPED_TRACE("");
-    self->tracker->OnRemoteIframeAttachedForTesting(
-        self->mock_graph.child_frame.get(), self->mock_graph.frame.get(),
+    self->tracker_->OnRemoteIframeAttachedForTesting(
+        self->mock_graph_->child_frame.get(), self->mock_graph_->frame.get(),
         kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
   };
 
   // Detaches a child iframe. This message is sent over the interface associated
-  // with the parent frame that hosts the child frame (hence mock_graph.frame).
+  // with the parent frame that hosts the child frame (hence
+  // mock_graph_->frame).
   auto iframedetach = [self = this]() {
     SCOPED_TRACE("");
-    self->tracker->OnRemoteIframeDetachedForTesting(
-        self->mock_graph.frame.get(), kChildFrameRemoteToken);
+    self->tracker_->OnRemoteIframeDetachedForTesting(
+        self->mock_graph_->frame.get(), kChildFrameRemoteToken);
   };
 
   // The following tests look at all 10 possible orderings of the 3 ordered
@@ -475,264 +480,266 @@ TEST_F(V8ContextTrackerTest, AllEventOrders) {
   {
     SCOPED_TRACE("Case 1");
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 2");
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 3");
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 4");
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 5");
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 6");
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 7");
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 8");
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 9");
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 
   {
     SCOPED_TRACE("Case 10");
     iframeattach();
-    EXPECT_THAT(tracker, CountsMatch(1, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     iframedetach();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8create();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
     v8detach();
-    EXPECT_THAT(tracker, CountsMatch(2, 2));
-    EXPECT_THAT(tracker, DetachedCountsMatch(1, 0));
+    EXPECT_THAT(tracker_, CountsMatch(2, 2));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(1, 0));
     v8destroy();
-    EXPECT_THAT(tracker, CountsMatch(1, 1));
-    EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+    EXPECT_THAT(tracker_, CountsMatch(1, 1));
+    EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
   }
 }
 
 TEST_F(V8ContextTrackerTest, PublicApi) {
-  EXPECT_THAT(tracker, CountsMatch(0, 0));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(0, 0));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
   // Create a main frame.
 
-  EXPECT_FALSE(tracker->GetV8ContextState(kFrameMainWorld));
+  EXPECT_FALSE(tracker_->GetV8ContextState(kFrameMainWorld));
   EXPECT_FALSE(
-      tracker->GetExecutionContextState(mock_graph.frame->frame_token()));
+      tracker_->GetExecutionContextState(mock_graph_->frame->frame_token()));
 
-  tracker->OnV8ContextCreated(
-      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph.process.get(),
+  tracker_->OnV8ContextCreated(
+      ProcessNodeImpl::CreatePassKeyForTesting(), mock_graph_->process.get(),
       mojom::V8ContextDescription(
           /* token */ kFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
           /* world_name */ absl::nullopt,
-          /* execution_context_token */ mock_graph.frame->frame_token()),
+          /* execution_context_token */ mock_graph_->frame->frame_token()),
       /* iframe_attribution_data */ nullptr);
-  EXPECT_THAT(tracker, CountsMatch(1, 1));
-  EXPECT_THAT(tracker, DetachedCountsMatch(0, 0));
+  EXPECT_THAT(tracker_, CountsMatch(1, 1));
+  EXPECT_THAT(tracker_, DetachedCountsMatch(0, 0));
 
-  const auto* v8_state = tracker->GetV8ContextState(kFrameMainWorld);
+  const auto* v8_state = tracker_->GetV8ContextState(kFrameMainWorld);
   ASSERT_TRUE(v8_state);
   EXPECT_EQ(kFrameMainWorld, v8_state->description.token);
   EXPECT_EQ(mojom::V8ContextWorldType::kMain, v8_state->description.world_type);
   EXPECT_FALSE(v8_state->description.world_name);
   ASSERT_TRUE(v8_state->description.execution_context_token);
-  EXPECT_EQ(blink::ExecutionContextToken(mock_graph.frame->frame_token()),
+  EXPECT_EQ(blink::ExecutionContextToken(mock_graph_->frame->frame_token()),
             v8_state->description.execution_context_token.value());
   const auto* ec_state =
-      tracker->GetExecutionContextState(mock_graph.frame->frame_token());
+      tracker_->GetExecutionContextState(mock_graph_->frame->frame_token());
   ASSERT_TRUE(ec_state);
-  EXPECT_EQ(blink::ExecutionContextToken(mock_graph.frame->frame_token()),
+  EXPECT_EQ(blink::ExecutionContextToken(mock_graph_->frame->frame_token()),
             ec_state->token);
 
   // Create a child frame.
 
-  ASSERT_FALSE(tracker->GetV8ContextState(kChildFrameMainWorld));
-  ASSERT_FALSE(
-      tracker->GetExecutionContextState(mock_graph.child_frame->frame_token()));
+  ASSERT_FALSE(tracker_->GetV8ContextState(kChildFrameMainWorld));
+  ASSERT_FALSE(tracker_->GetExecutionContextState(
+      mock_graph_->child_frame->frame_token()));
 
-  tracker->OnV8ContextCreated(
+  tracker_->OnV8ContextCreated(
       ProcessNodeImpl::CreatePassKeyForTesting(),
-      mock_graph.other_process.get(),
+      mock_graph_->other_process.get(),
       mojom::V8ContextDescription(
           /* token */ kChildFrameMainWorld,
           /* world_type */ mojom::V8ContextWorldType::kMain,
           /* world_name */ absl::nullopt,
           /* execution_context_token */
-          mock_graph.child_frame->frame_token()),
+          mock_graph_->child_frame->frame_token()),
       /* iframe_attribution_data */ nullptr);
-  v8_state = tracker->GetV8ContextState(kChildFrameMainWorld);
+  v8_state = tracker_->GetV8ContextState(kChildFrameMainWorld);
   ASSERT_TRUE(v8_state);
   EXPECT_EQ(kChildFrameMainWorld, v8_state->description.token);
   EXPECT_EQ(mojom::V8ContextWorldType::kMain, v8_state->description.world_type);
   EXPECT_FALSE(v8_state->description.world_name);
   ASSERT_TRUE(v8_state->description.execution_context_token);
-  EXPECT_EQ(blink::ExecutionContextToken(mock_graph.child_frame->frame_token()),
-            v8_state->description.execution_context_token.value());
-  ec_state =
-      tracker->GetExecutionContextState(mock_graph.child_frame->frame_token());
+  EXPECT_EQ(
+      blink::ExecutionContextToken(mock_graph_->child_frame->frame_token()),
+      v8_state->description.execution_context_token.value());
+  ec_state = tracker_->GetExecutionContextState(
+      mock_graph_->child_frame->frame_token());
   ASSERT_TRUE(ec_state);
-  EXPECT_EQ(blink::ExecutionContextToken(mock_graph.child_frame->frame_token()),
-            ec_state->token);
+  EXPECT_EQ(
+      blink::ExecutionContextToken(mock_graph_->child_frame->frame_token()),
+      ec_state->token);
 
   // Provide iframe data for the child frame.
 
   ASSERT_FALSE(ec_state->iframe_attribution_data);
-  tracker->OnRemoteIframeAttachedForTesting(
-      mock_graph.child_frame.get(), mock_graph.frame.get(),
+  tracker_->OnRemoteIframeAttachedForTesting(
+      mock_graph_->child_frame.get(), mock_graph_->frame.get(),
       kChildFrameRemoteToken, GetFakeIframeAttributionDataPtr());
 
   const auto& iad = ec_state->iframe_attribution_data;

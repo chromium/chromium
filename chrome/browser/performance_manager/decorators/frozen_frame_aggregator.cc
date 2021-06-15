@@ -188,7 +188,7 @@ void FrozenFrameAggregator::RegisterObservers(Graph* graph) {
   // This observer presumes that it's been added before any nodes exist in the
   // graph.
   // TODO(chrisha): Add graph introspection functions to Graph.
-  DCHECK(GraphImpl::FromGraph(graph)->nodes().empty());
+  DCHECK(graph->HasOnlySystemNode());
   graph->AddFrameNodeObserver(this);
   graph->AddPageNodeObserver(this);
   graph->AddProcessNodeObserver(this);

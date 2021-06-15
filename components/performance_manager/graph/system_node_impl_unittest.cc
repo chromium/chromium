@@ -46,8 +46,7 @@ TEST_F(SystemNodeImplTest, SafeDowncast) {
 using SystemNodeImplDeathTest = SystemNodeImplTest;
 
 TEST_F(SystemNodeImplDeathTest, SafeDowncast) {
-  const NodeBase* system =
-      NodeBase::FromNode(graph()->FindOrCreateSystemNode());
+  const NodeBase* system = NodeBase::FromNode(graph()->GetSystemNodeImpl());
   ASSERT_DEATH_IF_SUPPORTED(PageNodeImpl::FromNodeBase(system), "");
 }
 
@@ -58,8 +57,6 @@ class LenientMockObserver : public SystemNodeImpl::Observer {
   LenientMockObserver() {}
   ~LenientMockObserver() override {}
 
-  MOCK_METHOD1(OnSystemNodeAdded, void(const SystemNode*));
-  MOCK_METHOD1(OnBeforeSystemNodeRemoved, void(const SystemNode*));
   MOCK_METHOD1(OnProcessMemoryMetricsAvailable, void(const SystemNode*));
   MOCK_METHOD1(OnMemoryPressure,
                void(base::MemoryPressureListener::MemoryPressureLevel));
@@ -92,11 +89,7 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
   MockObserver obs;
   graph()->AddSystemNodeObserver(&obs);
 
-  // Fetch the system node and expect a matching call to "OnSystemNodeAdded".
-  EXPECT_CALL(obs, OnSystemNodeAdded(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
-  const SystemNode* system_node = graph()->FindOrCreateSystemNode();
-  EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
+  const SystemNode* system_node = graph()->GetSystemNode();
 
   EXPECT_CALL(obs, OnProcessMemoryMetricsAvailable(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
@@ -114,24 +107,12 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
           base::MemoryPressureListener::MemoryPressureLevel::
               MEMORY_PRESSURE_LEVEL_CRITICAL);
 
-  // Release the system node and expect a call to "OnBeforeSystemNodeRemoved".
-  EXPECT_CALL(obs, OnBeforeSystemNodeRemoved(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
-  graph()->ReleaseSystemNodeForTesting();
-  EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
-
   graph()->RemoveSystemNodeObserver(&obs);
 }
 
-TEST_F(SystemNodeImplTest, MemoryPressureNotifiation) {
+TEST_F(SystemNodeImplTest, MemoryPressureNotification) {
   MockObserver obs;
   graph()->AddSystemNodeObserver(&obs);
-
-  EXPECT_CALL(obs, OnSystemNodeAdded(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
-  const SystemNode* system_node = graph()->FindOrCreateSystemNode();
-  EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
-
   util::test::FakeMemoryPressureMonitor mem_pressure_monitor;
 
   {
@@ -165,11 +146,6 @@ TEST_F(SystemNodeImplTest, MemoryPressureNotifiation) {
             MEMORY_PRESSURE_LEVEL_MODERATE);
     run_loop.Run();
   }
-
-  EXPECT_CALL(obs, OnBeforeSystemNodeRemoved(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
-  graph()->ReleaseSystemNodeForTesting();
-  EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
 
   graph()->RemoveSystemNodeObserver(&obs);
 }

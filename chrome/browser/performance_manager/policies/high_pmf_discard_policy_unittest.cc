@@ -61,7 +61,7 @@ TEST_F(HighPMFDiscardPolicyTest, EndToEnd) {
   policy()->set_pmf_limit_for_testing(kPMFLimitKb);
 
   process_node()->set_private_footprint_kb(kPMFLimitKb - 1);
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   // Make sure that no task get posted to the discarder.
   task_env().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
@@ -71,7 +71,7 @@ TEST_F(HighPMFDiscardPolicyTest, EndToEnd) {
   process_node()->set_private_footprint_kb(kPMFLimitKb);
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   task_env().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -79,7 +79,7 @@ TEST_F(HighPMFDiscardPolicyTest, EndToEnd) {
   // lowering the total PMF.
   process_node()->set_private_footprint_kb(kPMFLimitKb - 1);
   // Call OnProcessMemoryMetricsAvailable to record the post discard metrics.
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   histogram_tester()->ExpectUniqueSample(
       "Discarding.HighPMFPolicy.DiscardAttemptsCount", 1, 1);
   histogram_tester()->ExpectUniqueSample(
@@ -101,7 +101,7 @@ TEST_F(HighPMFDiscardPolicyTest, Histograms) {
   // Pretend that the discard attempt has failed.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(false));
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
   // There's been one unsuccessful discard attempt so far. The total PMF is
@@ -110,7 +110,7 @@ TEST_F(HighPMFDiscardPolicyTest, Histograms) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
   PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(page_node());
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   histogram_tester()->ExpectTotalCount(
       "Discarding.HighPMFPolicy.DiscardAttemptsCount", 0);
   histogram_tester()->ExpectTotalCount(
@@ -128,7 +128,7 @@ TEST_F(HighPMFDiscardPolicyTest, Histograms) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
   PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(page_node());
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   histogram_tester()->ExpectTotalCount(
       "Discarding.HighPMFPolicy.DiscardAttemptsCount", 0);
   histogram_tester()->ExpectTotalCount(
@@ -141,7 +141,7 @@ TEST_F(HighPMFDiscardPolicyTest, Histograms) {
       "Discarding.HighPMFPolicy.DiscardSuccess", true, 1);
 
   process_node()->set_private_footprint_kb(kPMFLimitKb - 1);
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
 
   histogram_tester()->ExpectUniqueSample(
       "Discarding.HighPMFPolicy.DiscardAttemptsCount", 3, 1);
@@ -161,12 +161,12 @@ TEST_F(HighPMFDiscardPolicyTest, NegativeMemoryReclaimGoesInUnderflowBucket) {
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
   process_node()->set_private_footprint_kb(
       process_node()->private_footprint_kb() + 1);
 
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
 
   // The total PMF has increased, the memory reclaimed should be reported in the
   // underflow bucket.
@@ -183,7 +183,7 @@ TEST_F(HighPMFDiscardPolicyTest, MemoryPressureHistograms) {
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(false));
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   task_env().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -195,7 +195,7 @@ TEST_F(HighPMFDiscardPolicyTest, MemoryPressureHistograms) {
   // Test with MEMORY_PRESSURE_LEVEL_MODERATE.
   memory_pressure_monitor().SetAndNotifyMemoryPressure(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   task_env().RunUntilIdle();
 
   histogram_tester()->ExpectBucketCount(
@@ -206,7 +206,7 @@ TEST_F(HighPMFDiscardPolicyTest, MemoryPressureHistograms) {
   // Test with MEMORY_PRESSURE_LEVEL_CRITICAL.
   memory_pressure_monitor().SetAndNotifyMemoryPressure(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  graph()->FindOrCreateSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
+  graph()->GetSystemNodeImpl()->OnProcessMemoryMetricsAvailable();
   task_env().RunUntilIdle();
 
   histogram_tester()->ExpectBucketCount(

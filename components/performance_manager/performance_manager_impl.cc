@@ -369,6 +369,7 @@ void PerformanceManagerImpl::OnStartImpl(GraphImplCallback on_start) {
   DCHECK(!g_performance_manager);
 
   g_performance_manager = this;
+  graph_.SetUp();
   graph_.set_ukm_recorder(ukm::UkmRecorder::Get());
   std::move(on_start).Run(&graph_);
 }

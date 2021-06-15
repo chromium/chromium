@@ -178,7 +178,7 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
   }
 
   GraphImpl::FromGraph(graph_)
-      ->FindOrCreateSystemNodeImpl()
+      ->GetSystemNodeImpl()
       ->OnProcessMemoryMetricsAvailable();
   refresh_timer_.Reset();
 }

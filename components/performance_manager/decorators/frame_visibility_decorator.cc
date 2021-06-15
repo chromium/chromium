@@ -51,7 +51,7 @@ FrameVisibilityDecorator::FrameVisibilityDecorator() = default;
 FrameVisibilityDecorator::~FrameVisibilityDecorator() = default;
 
 void FrameVisibilityDecorator::OnPassedToGraph(Graph* graph) {
-  DCHECK(graph->IsEmpty());
+  DCHECK(graph->HasOnlySystemNode());
   graph->AddPageNodeObserver(this);
   graph->AddFrameNodeObserver(this);
 }

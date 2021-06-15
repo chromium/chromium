@@ -110,14 +110,14 @@ class Graph {
   }
 
   // Returns a collection of all known nodes of the given type.
-  virtual const SystemNode* FindOrCreateSystemNode() = 0;
+  virtual const SystemNode* GetSystemNode() const = 0;
   virtual std::vector<const ProcessNode*> GetAllProcessNodes() const = 0;
   virtual std::vector<const FrameNode*> GetAllFrameNodes() const = 0;
   virtual std::vector<const PageNode*> GetAllPageNodes() const = 0;
   virtual std::vector<const WorkerNode*> GetAllWorkerNodes() const = 0;
 
-  // Returns true if the graph is currently empty.
-  virtual bool IsEmpty() const = 0;
+  // Returns true if the graph only contains the default nodes.
+  virtual bool HasOnlySystemNode() const = 0;
 
   // Returns the associated UKM recorder if it is defined.
   virtual ukm::UkmRecorder* GetUkmRecorder() const = 0;

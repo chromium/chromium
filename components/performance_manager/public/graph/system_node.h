@@ -13,8 +13,8 @@ namespace performance_manager {
 
 class SystemNodeObserver;
 
-// The SystemNode represents system-wide state. There is at most one system node
-// in a graph.
+// The SystemNode represents system-wide state. Each graph owns exactly one
+// system node. This node has the same lifetime has the graph that owns it.
 class SystemNode : public Node {
  public:
   using Observer = SystemNodeObserver;
@@ -34,19 +34,6 @@ class SystemNodeObserver {
  public:
   SystemNodeObserver();
   virtual ~SystemNodeObserver();
-
-  // Node lifetime notifications.
-
-  // Called when the |system_node| is added to the graph. Observers must not
-  // make any property changes or cause re-entrant notifications during the
-  // scope of this call. Instead, make property changes via a separate posted
-  // task.
-  virtual void OnSystemNodeAdded(const SystemNode* system_node) = 0;
-
-  // Called before the |system_node| is removed from the graph. Observers must
-  // not make any property changes or cause re-entrant notifications during the
-  // scope of this call.
-  virtual void OnBeforeSystemNodeRemoved(const SystemNode* system_node) = 0;
 
   // Called when a new set of process memory metrics is available.
   //
@@ -87,8 +74,6 @@ class SystemNode::ObserverDefaultImpl : public SystemNodeObserver {
   ~ObserverDefaultImpl() override;
 
   // SystemNodeObserver implementation:
-  void OnSystemNodeAdded(const SystemNode* system_node) override {}
-  void OnBeforeSystemNodeRemoved(const SystemNode* system_node) override {}
   void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override {
   }
   void OnBeforeMemoryPressure(

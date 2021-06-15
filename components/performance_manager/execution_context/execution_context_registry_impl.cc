@@ -175,7 +175,7 @@ ExecutionContextRegistryImpl::GetExecutionContextForWorkerNodeImpl(
 
 void ExecutionContextRegistryImpl::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(graph->IsEmpty());
+  DCHECK(graph->HasOnlySystemNode());
   graph->RegisterObject(this);
   graph->AddFrameNodeObserver(this);
   graph->AddWorkerNodeObserver(this);

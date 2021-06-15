@@ -104,7 +104,7 @@ void ProcessPriorityPolicy::ClearCallbackForTesting() {
 }
 
 void ProcessPriorityPolicy::OnPassedToGraph(Graph* graph) {
-  DCHECK(graph->IsEmpty());
+  DCHECK(graph->HasOnlySystemNode());
   graph->AddProcessNodeObserver(this);
 }
 

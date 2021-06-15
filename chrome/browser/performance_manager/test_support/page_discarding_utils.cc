@@ -27,8 +27,7 @@ void LenientMockPageDiscarder::DiscardPageNode(
   std::move(post_discard_cb).Run(DiscardPageNodeImpl(page_node));
 }
 
-GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder()
-    : system_node_(TestNodeWrapper<SystemNodeImpl>::Create(graph())) {
+GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder() {
   // Some tests depends on the existence of the PageAggregator.
   graph()->PassToGraph(std::make_unique<PageAggregator>());
 }

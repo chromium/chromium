@@ -23,6 +23,8 @@ TEST(GraphFeaturesHelperTest, ConfigureGraph) {
   EXPECT_TRUE(features.flags().v8_context_tracker);
 
   TestGraphImpl graph;
+  graph.SetUp();
+
   EXPECT_FALSE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
   features.ConfigureGraph(&graph);
   EXPECT_TRUE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
@@ -33,6 +35,7 @@ TEST(GraphFeaturesHelperTest, ConfigureGraph) {
 TEST(GraphFeaturesHelperTest, EnableDefault) {
   GraphFeaturesHelper features;
   TestGraphImpl graph;
+  graph.SetUp();
 
   EXPECT_EQ(0u, graph.GraphOwnedCountForTesting());
   EXPECT_EQ(0u, graph.GraphRegisteredCountForTesting());

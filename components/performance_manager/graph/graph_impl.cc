@@ -182,6 +182,11 @@ GraphImpl::~GraphImpl() {
   DCHECK(nodes_.empty());
 }
 
+void GraphImpl::SetUp() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CreateSystemNode();
+}
+
 void GraphImpl::TearDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -286,9 +291,10 @@ void GraphImpl::UnregisterObject(GraphRegistered* object) {
   registered_objects_.UnregisterObject(object);
 }
 
-const SystemNode* GraphImpl::FindOrCreateSystemNode() {
+const SystemNode* GraphImpl::GetSystemNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return FindOrCreateSystemNodeImpl();
+  DCHECK(system_node_.get());
+  return system_node_.get();
 }
 
 std::vector<const ProcessNode*> GraphImpl::GetAllProcessNodes() const {
@@ -307,9 +313,9 @@ std::vector<const WorkerNode*> GraphImpl::GetAllWorkerNodes() const {
   return GetAllNodesOfType<WorkerNodeImpl, const WorkerNode*>();
 }
 
-bool GraphImpl::IsEmpty() const {
+bool GraphImpl::HasOnlySystemNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nodes_.empty();
+  return nodes_.size() == 1 && *nodes_.begin() == GetSystemNodeImpl();
 }
 
 ukm::UkmRecorder* GraphImpl::GetUkmRecorder() const {
@@ -348,18 +354,6 @@ GraphRegistered* GraphImpl::GetRegisteredObject(uintptr_t type_id) {
 GraphImpl* GraphImpl::FromGraph(const Graph* graph) {
   CHECK_EQ(kGraphImplType, graph->GetImplType());
   return reinterpret_cast<GraphImpl*>(const_cast<void*>(graph->GetImpl()));
-}
-
-SystemNodeImpl* GraphImpl::FindOrCreateSystemNodeImpl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!system_node_) {
-    // Create the singleton system node instance. Ownership is taken by the
-    // graph.
-    system_node_ = std::make_unique<SystemNodeImpl>();
-    AddNewNode(system_node_.get());
-  }
-
-  return system_node_.get();
 }
 
 bool GraphImpl::NodeInGraph(const NodeBase* node) {
@@ -550,11 +544,8 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
       for (auto* observer : process_node_observers_)
         observer->OnProcessNodeAdded(process_node);
     } break;
-    case NodeTypeEnum::kSystem: {
-      auto* system_node = SystemNodeImpl::FromNodeBase(node);
-      for (auto* observer : system_node_observers_)
-        observer->OnSystemNodeAdded(system_node);
-    } break;
+    case NodeTypeEnum::kSystem:
+      break;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
       for (auto* observer : worker_node_observers_)
@@ -585,11 +576,8 @@ void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
       for (auto* observer : process_node_observers_)
         observer->OnBeforeProcessNodeRemoved(process_node);
     } break;
-    case NodeTypeEnum::kSystem: {
-      auto* system_node = SystemNodeImpl::FromNodeBase(node);
-      for (auto* observer : system_node_observers_)
-        observer->OnBeforeSystemNodeRemoved(system_node);
-    } break;
+    case NodeTypeEnum::kSystem:
+      break;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
       for (auto* observer : worker_node_observers_)
@@ -662,6 +650,14 @@ std::vector<ReturnNodeType> GraphImpl::GetAllNodesOfType() const {
       ret.push_back(NodeType::FromNodeBase(node));
   }
   return ret;
+}
+
+void GraphImpl::CreateSystemNode() {
+  DCHECK(!system_node_);
+  // Create the singleton system node instance. Ownership is taken by the
+  // graph.
+  system_node_ = std::make_unique<SystemNodeImpl>();
+  AddNewNode(system_node_.get());
 }
 
 void GraphImpl::ReleaseSystemNode() {
