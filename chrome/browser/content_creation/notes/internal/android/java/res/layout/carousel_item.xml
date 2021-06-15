@@ -2,13 +2,15 @@
 <!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:background="@color/modern_grey_200"
+    android:paddingEnd="@dimen/note_side_padding"
+    android:paddingStart="@dimen/note_side_padding"
     android:id="@+id/item">
 
         <!-- Note template -->
@@ -73,4 +75,4 @@
                     android:importantForAccessibility="no"/>
             </RelativeLayout>
         </LinearLayout>
-</ScrollView>
+</LinearLayout>

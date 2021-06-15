@@ -5,4 +5,5 @@
 
 <resources>
     <dimen name="note_width">280dp</dimen>
+    <dimen name="note_side_padding">20dp</dimen>
 </resources>

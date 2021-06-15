@@ -16,8 +16,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
+import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
@@ -32,7 +34,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  */
 public class NoteCreationDialog extends DialogFragment {
     private static final float FIRST_NOTE_PADDING_RATIO = 0.5f;
-    private static final float NOTE_PADDING_RATIO = 0.25f;
 
     private View mContentView;
     private String mUrlDomain;
@@ -82,13 +83,19 @@ public class NoteCreationDialog extends DialogFragment {
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         noteCarousel.setLayoutManager(layoutManager);
 
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(noteCarousel);
+
         noteCarousel.addOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 LinearLayoutManager layoutManager =
                         (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (layoutManager.findFirstCompletelyVisibleItemPosition() < 0) return;
-                mSelectedItemIndex = layoutManager.findFirstCompletelyVisibleItemPosition();
+
+                int first_visible = layoutManager.findFirstCompletelyVisibleItemPosition();
+                int last_visible = layoutManager.findLastCompletelyVisibleItemPosition();
+                mSelectedItemIndex = (last_visible - first_visible) / 2 + first_visible;
                 ((TextView) mContentView.findViewById(R.id.title))
                         .setText(carouselItems.get(mSelectedItemIndex)
                                          .model.get(NoteProperties.TEMPLATE)
@@ -153,9 +160,11 @@ public class NoteCreationDialog extends DialogFragment {
     private void setLeftPadding(boolean isFirst, View itemView) {
         int dialogWidth = mContentView.getWidth();
         int templateWidth = getActivity().getResources().getDimensionPixelSize(R.dimen.note_width);
-        int paddingLeft = (int) ((dialogWidth - templateWidth)
-                        * (isFirst ? FIRST_NOTE_PADDING_RATIO : NOTE_PADDING_RATIO)
-                + 0.5f);
+        int paddingLeft =
+                getActivity().getResources().getDimensionPixelSize(R.dimen.note_side_padding);
+        if (isFirst) {
+            paddingLeft = (int) ((dialogWidth - templateWidth) * FIRST_NOTE_PADDING_RATIO + 0.5f);
+        }
         itemView.setPadding(paddingLeft, itemView.getPaddingTop(), itemView.getPaddingRight(),
                 itemView.getPaddingBottom());
     }
