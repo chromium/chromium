@@ -12,7 +12,10 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
+#include "components/arc/arc_service_manager.h"
+#include "components/arc/memory/arc_memory_bridge.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,25 +37,37 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)));
+    testing_profile_ = std::make_unique<TestingProfile>();
+    CreateTrimmer(testing_profile_.get());
+    arc::ArcMemoryBridge::GetForBrowserContextForTesting(
+        testing_profile_.get());
   }
 
   void TearDown() override {
+    trimmer_.reset();
+    testing_profile_.reset();
     TearDownArcSessionManager();
     chromeos::ConciergeClient::Shutdown();
   }
 
  protected:
+  void CreateTrimmer(content::BrowserContext* context) {
+    trimmer_ = WorkingSetTrimmerChromeOS::CreateForTesting(context);
+  }
   void TrimArcVmWorkingSet(
       WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback) {
-    trimmer_.TrimArcVmWorkingSet(std::move(callback));
+    trimmer_->TrimArcVmWorkingSet(std::move(callback));
   }
 
   void TearDownArcSessionManager() { arc_session_manager_.reset(); }
 
+  std::unique_ptr<WorkingSetTrimmerChromeOS> trimmer_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  arc::ArcServiceManager arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
-  WorkingSetTrimmerChromeOS trimmer_;
+  std::unique_ptr<TestingProfile> testing_profile_;
 };
 
 namespace {
@@ -67,10 +82,42 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSet) {
 }
 
 // Tests that TrimArcVmWorkingSet runs the passed callback even when
+// BrowserContext is not available.
+TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoBrowserContext) {
+  // Create a trimmer again with a null BrowserContext to make it unavailable.
+  CreateTrimmer(nullptr);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSet(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+}
+
+// Tests that TrimArcVmWorkingSet runs the passed callback even when
+// ArcMemoryBridge is not available.
+TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoArcMemoryBridge) {
+  // Create a trimmer again with a different profile (BrowserContext) to make
+  // ArcMemoryBridge unavailable.
+  TestingProfile another_profile;
+  CreateTrimmer(&another_profile);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSet(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+
+  trimmer_.reset();
+}
+
+// Tests that TrimArcVmWorkingSet runs the passed callback even when
 // ArcSessionManager is not available.
 TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoArcSessionManager) {
-  absl::optional<bool> result;
+  // Make ArcSessionManager unavailable.
   TearDownArcSessionManager();
+
+  absl::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
