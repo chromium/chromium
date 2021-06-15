@@ -8,14 +8,9 @@
 #include "content/public/browser/overlay_window.h"
 
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/rounded_corner_decorator.h"
-#endif
 
 namespace views {
 class BackToTabImageButton;
@@ -241,9 +236,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   ToggleMicrophoneButton* toggle_microphone_button_ = nullptr;
   ToggleCameraButton* toggle_camera_button_ = nullptr;
   HangUpButton* hang_up_button_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<ash::RoundedCornerDecorator> decorator_;
-#endif
 
   // Automatically hides the controls a few seconds after user tap gesture.
   base::RetainingOneShotTimer hide_controls_timer_;

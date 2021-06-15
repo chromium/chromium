@@ -11,8 +11,9 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
+#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/rounded_corner_decorator.h"
+#include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
@@ -53,7 +54,9 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/class_property.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_lock.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -1182,16 +1185,14 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
       break;
   }
 
-  if (pending_window_state_ == chromeos::WindowStateType::kPip) {
-    if (ash::features::IsPipRoundedCornersEnabled()) {
-      // The host window's transform scales by |1/scale_| but we do not want the
-      // rounded corners scaled that way. So we multiply the radius by |scale_|.
-      decorator_ = std::make_unique<ash::RoundedCornerDecorator>(
-          window_state->window(), host_window(), host_window()->layer(),
-          base::ClampRound(scale_ * ash::kPipRoundedCornerRadius));
-    }
-  } else {
-    decorator_.reset();  // Remove rounded corners.
+  if (ash::features::IsPipRoundedCornersEnabled()) {
+    // The host window's transform scales by |1/scale_| but we do not want the
+    // rounded corners scaled that way. So we multiply the radius by |scale_|.
+    ash::SetCornerRadius(
+        window_state->window(), host_window()->layer(),
+        pending_window_state_ == chromeos::WindowStateType::kPip
+            ? base::ClampRound(scale_ * ash::kPipRoundedCornerRadius)
+            : 0);
   }
 
   bool wasPip = window_state->IsPip();

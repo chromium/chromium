@@ -22,6 +22,8 @@ constexpr FloatingMenuPosition kDefaultAutoclickMenuPosition =
 constexpr FloatingMenuPosition kDefaultFloatingMenuPosition =
     FloatingMenuPosition::kSystemDefault;
 
+constexpr int kPipRoundedCornerRadius = 8;
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ASH_CONSTANTS_H_

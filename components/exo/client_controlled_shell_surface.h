@@ -19,7 +19,6 @@
 
 namespace ash {
 class NonClientFrameViewAsh;
-class RoundedCornerDecorator;
 class WideFrameView;
 
 namespace mojom {
@@ -335,8 +334,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
       immersive_fullscreen_controller_;
 
   std::unique_ptr<ash::WideFrameView> wide_frame_;
-
-  std::unique_ptr<ash::RoundedCornerDecorator> decorator_;
 
   std::unique_ptr<ui::CompositorLock> orientation_compositor_lock_;
 

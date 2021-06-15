@@ -51,7 +51,9 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "ui/aura/window.h"
 #endif
@@ -853,9 +855,8 @@ void OverlayWindowViews::ShowInactive() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For rounded corners.
   if (ash::features::IsPipRoundedCornersEnabled()) {
-    decorator_ = std::make_unique<ash::RoundedCornerDecorator>(
-        GetNativeWindow(), GetNativeWindow(), GetRootView()->layer(),
-        ash::kPipRoundedCornerRadius);
+    ash::SetCornerRadius(GetNativeWindow(), GetRootView()->layer(),
+                         ash::kPipRoundedCornerRadius);
   }
 #endif
 
