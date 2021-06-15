@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -44,10 +45,10 @@ public class AssistantOverlayCoordinator {
         model.addObserver((source, propertyKey) -> {
             if (AssistantOverlayModel.STATE == propertyKey) {
                 setState(model.get(AssistantOverlayModel.STATE));
-            } else if (AssistantOverlayModel.VISUAL_VIEWPORT == propertyKey) {
-                RectF rect = model.get(AssistantOverlayModel.VISUAL_VIEWPORT);
-                mEventFilter.setVisualViewport(rect);
-                mDrawable.setVisualViewport(rect);
+            } else if (AssistantOverlayModel.WEB_CONTENTS == propertyKey) {
+                WebContents webContents = model.get(AssistantOverlayModel.WEB_CONTENTS);
+                mEventFilter.setWebContents(webContents);
+                mDrawable.setWebContents(webContents);
             } else if (AssistantOverlayModel.TOUCHABLE_AREA == propertyKey) {
                 List<RectF> area = model.get(AssistantOverlayModel.TOUCHABLE_AREA);
                 mEventFilter.setTouchableArea(area);

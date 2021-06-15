@@ -9,10 +9,12 @@ import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDrawable;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -25,13 +27,13 @@ import java.util.List;
 public class AssistantOverlayModel extends PropertyModel {
     public static final WritableIntPropertyKey STATE = new WritableIntPropertyKey();
 
+    public static final WritableObjectPropertyKey<WebContents> WEB_CONTENTS =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<List<RectF>> TOUCHABLE_AREA =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<RectF>> RESTRICTED_AREA =
-            new WritableObjectPropertyKey<>();
-
-    public static final WritableObjectPropertyKey<RectF> VISUAL_VIEWPORT =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<AssistantOverlayDelegate> DELEGATE =
@@ -53,7 +55,7 @@ public class AssistantOverlayModel extends PropertyModel {
             new WritableObjectPropertyKey<>();
 
     public AssistantOverlayModel() {
-        super(STATE, TOUCHABLE_AREA, RESTRICTED_AREA, VISUAL_VIEWPORT, DELEGATE, BACKGROUND_COLOR,
+        super(WEB_CONTENTS, STATE, TOUCHABLE_AREA, RESTRICTED_AREA, DELEGATE, BACKGROUND_COLOR,
                 HIGHLIGHT_BORDER_COLOR, TAP_TRACKING_COUNT, TAP_TRACKING_DURATION_MS,
                 OVERLAY_IMAGE);
     }
@@ -64,13 +66,9 @@ public class AssistantOverlayModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setVisualViewport(float left, float top, float right, float bottom) {
-        set(VISUAL_VIEWPORT, new RectF(left, top, right, bottom));
-    }
-
-    @CalledByNative
-    private void setTouchableArea(float[] coords) {
-        set(TOUCHABLE_AREA, toRectangles(coords));
+    @VisibleForTesting
+    private void setWebContents(WebContents webContents) {
+        set(WEB_CONTENTS, webContents);
     }
 
     private static List<RectF> toRectangles(float[] coords) {
@@ -80,6 +78,11 @@ public class AssistantOverlayModel extends PropertyModel {
                     /* right= */ coords[i + 2], /* bottom= */ coords[i + 3]));
         }
         return boxes;
+    }
+
+    @CalledByNative
+    private void setTouchableArea(float[] coords) {
+        set(TOUCHABLE_AREA, toRectangles(coords));
     }
 
     @CalledByNative

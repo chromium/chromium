@@ -95,11 +95,9 @@ class ElementAreaTest : public testing::Test {
 
   void Update() { element_area_.Update(); }
 
-  void OnUpdate(const RectF& visual_viewport,
-                const std::vector<RectF>& touchable_area,
+  void OnUpdate(const std::vector<RectF>& touchable_area,
                 const std::vector<RectF>& restricted_area) {
     on_update_call_count_++;
-    reported_visual_viewport_ = visual_viewport;
     reported_area_ = touchable_area;
     reported_restricted_area_ = restricted_area;
   }
@@ -112,7 +110,6 @@ class ElementAreaTest : public testing::Test {
   FakeScriptExecutorDelegate delegate_;
   ElementArea element_area_;
   int on_update_call_count_ = 0;
-  RectF reported_visual_viewport_;
   std::vector<RectF> reported_area_;
   std::vector<RectF> reported_restricted_area_;
 };
@@ -123,10 +120,6 @@ TEST_F(ElementAreaTest, Empty) {
   std::vector<RectF> rectangles;
   element_area_.GetTouchableRectangles(&rectangles);
   EXPECT_THAT(rectangles, IsEmpty());
-
-  RectF viewport;
-  element_area_.GetVisualViewport(&viewport);
-  EXPECT_THAT(viewport, EmptyRectF());
 }
 
 TEST_F(ElementAreaTest, ElementNotFound) {
@@ -136,13 +129,6 @@ TEST_F(ElementAreaTest, ElementNotFound) {
   std::vector<RectF> rectangles;
   element_area_.GetTouchableRectangles(&rectangles);
   EXPECT_THAT(rectangles, ElementsAre(EmptyRectF()));
-}
-
-TEST_F(ElementAreaTest, GetVisualViewport) {
-  SetElement("#some_element");
-  RectF viewport;
-  element_area_.GetVisualViewport(&viewport);
-  EXPECT_THAT(viewport, MatchingRectF(0, 0, 200, 400));
 }
 
 TEST_F(ElementAreaTest, OneRectangle) {
@@ -169,7 +155,6 @@ TEST_F(ElementAreaTest, CallOnUpdate) {
 
   SetElement("#found");
   EXPECT_EQ(on_update_call_count_, 1);
-  EXPECT_THAT(reported_visual_viewport_, MatchingRectF(0, 0, 200, 400));
   EXPECT_THAT(reported_area_, ElementsAre(MatchingRectF(25, 25, 75, 75)));
 }
 
@@ -217,7 +202,6 @@ TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
   element_area_.Clear();
 
   EXPECT_EQ(on_update_call_count_, 1);
-  EXPECT_THAT(reported_visual_viewport_, EmptyRectF());
   EXPECT_THAT(reported_area_, IsEmpty());
 }
 

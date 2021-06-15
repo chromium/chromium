@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -570,19 +571,21 @@ class AutofillAssistantUiTestUtil {
          * - First, convert viewport to compositor space (scrolling offset, multiply with factor).
          * - Then, convert compositor space to screen space (add content offset).
          */
-        Rect viewport = getViewport(testRule.getWebContents());
-        float cssToPysicalPixels =
-                (((float) testRule.getActivity().getCompositorViewHolder().getWidth()
-                        / (float) viewport.width()));
+        Coordinates coordinates = Coordinates.createFor(testRule.getWebContents());
+        float left = coordinates.getScrollXPixInt() / coordinates.getPageScaleFactor()
+                / coordinates.getDeviceScaleFactor();
+        float top = coordinates.getScrollYPixInt() / coordinates.getPageScaleFactor()
+                / coordinates.getDeviceScaleFactor();
 
         int[] compositorLocation = new int[2];
         testRule.getActivity().getCompositorViewHolder().getLocationOnScreen(compositorLocation);
         int offsetY = compositorLocation[1]
                 + testRule.getActivity().getBrowserControlsManager().getContentOffset();
-        return new Rect((int) ((elementRect.left - viewport.left) * cssToPysicalPixels),
-                (int) ((elementRect.top - viewport.top) * cssToPysicalPixels + offsetY),
-                (int) ((elementRect.right - viewport.left) * cssToPysicalPixels),
-                (int) ((elementRect.bottom - viewport.top) * cssToPysicalPixels + offsetY));
+
+        return new Rect((int) (coordinates.fromLocalCssToPix(elementRect.left - left)),
+                (int) (coordinates.fromLocalCssToPix(elementRect.top - top) + offsetY),
+                (int) (coordinates.fromLocalCssToPix(elementRect.right - left)),
+                (int) (coordinates.fromLocalCssToPix(elementRect.bottom - top) + offsetY));
     }
 
     /**
@@ -669,25 +672,6 @@ class AutofillAssistantUiTestUtil {
     }
 
     /**
-     * Retrieves the visual viewport of the webpage in CSS pixel coordinates.
-     */
-    public static Rect getViewport(WebContents webContents) throws Exception {
-        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
-                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
-        javascriptHelper.evaluateJavaScriptForTests(webContents,
-                "(function() {"
-                        + " const v = window.visualViewport;"
-                        + " return ["
-                        + "   v.pageLeft, v.pageTop,"
-                        + "   v.pageLeft + v.width, v.pageTop + v.height"
-                        + " ];"
-                        + "})()");
-        javascriptHelper.waitUntilHasValue();
-        JSONArray values = new JSONArray(javascriptHelper.getJsonResultAndClear());
-        return new Rect(values.getInt(0), values.getInt(1), values.getInt(2), values.getInt(3));
-    }
-
-    /**
      * Retrieves the value of the specified element.
      */
     public static String getElementValue(WebContents webContents, String... elementIds)
@@ -704,23 +688,6 @@ class AutofillAssistantUiTestUtil {
         javascriptHelper.waitUntilHasValue();
         JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
         return result.getString(0);
-    }
-
-    /**
-     * Scroll the element into view.
-     */
-    public static void scrollIntoView(WebContents webContents, String... elementIds)
-            throws Exception {
-        if (!checkElementExists(webContents, elementIds)) {
-            throw new IllegalArgumentException(Arrays.toString(elementIds) + " does not exist");
-        }
-        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
-                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
-        javascriptHelper.evaluateJavaScriptForTests(webContents,
-                "(function() {" + getElementSelectorString(elementIds) + ".scrollIntoView();"
-                        + "return true;"
-                        + "})()");
-        javascriptHelper.waitUntilHasValue();
     }
 
     /**

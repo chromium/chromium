@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getBoundingRectForElement;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getViewport;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitForElementRemoved;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
@@ -177,10 +176,9 @@ public class AutofillAssistantOverlayUiTest {
         tapElement("touch_area_one");
         assertThat(checkElementExists(getWebContents(), "touch_area_one"), is(true));
 
-        // Set viewport.
-        Rect viewport = getViewport(getWebContents());
+        // Set WebContents.
         runOnUiThreadBlocking(
-                () -> model.set(AssistantOverlayModel.VISUAL_VIEWPORT, new RectF(viewport)));
+                () -> model.set(AssistantOverlayModel.WEB_CONTENTS, getWebContents()));
 
         // Now the partial overlay allows tapping the highlighted touch area.
         tapElement("touch_area_one");
@@ -201,10 +199,9 @@ public class AutofillAssistantOverlayUiTest {
 
         scrollIntoViewIfNeeded("touch_area_five");
         Rect rect = getBoundingRectForElement(getWebContents(), "touch_area_five");
-        Rect viewport = getViewport(getWebContents());
         runOnUiThreadBlocking(() -> {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.PARTIAL);
-            model.set(AssistantOverlayModel.VISUAL_VIEWPORT, new RectF(viewport));
+            model.set(AssistantOverlayModel.WEB_CONTENTS, getWebContents());
             model.set(AssistantOverlayModel.TOUCHABLE_AREA,
                     Collections.singletonList(new RectF(rect)));
         });

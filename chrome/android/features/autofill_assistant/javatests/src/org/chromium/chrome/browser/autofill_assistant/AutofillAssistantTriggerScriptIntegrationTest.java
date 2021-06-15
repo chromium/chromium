@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.createDefaultTriggerScriptUI;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.scrollIntoView;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
@@ -747,8 +746,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         startAutofillAssistantOnTab(TEST_PAGE_A);
         waitUntilViewMatchesCondition(withText("Hello world"), isCompletelyDisplayed());
 
-        scrollIntoView(mTestRule.getWebContents(), "input1");
-        tapElement(mTestRule, "input1");
+        tapElement(mTestRule, "trigger-keyboard");
         waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ true);
         waitUntilViewAssertionTrue(
                 withText("Hello World"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);

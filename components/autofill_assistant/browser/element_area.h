@@ -42,8 +42,7 @@ class ElementArea {
   // The argument reports the areas that corresponds to currently known
   // elements, which might be empty.
   void SetOnUpdate(
-      base::RepeatingCallback<void(const RectF& visual_viewport,
-                                   const std::vector<RectF>& touchable_area,
+      base::RepeatingCallback<void(const std::vector<RectF>& touchable_area,
                                    const std::vector<RectF>& restricted_area)>
           cb) {
     on_update_ = cb;
@@ -58,12 +57,6 @@ class ElementArea {
   // Note that the vector is not cleared before rectangles are added.
   void GetTouchableRectangles(std::vector<RectF>* area);
   void GetRestrictedRectangles(std::vector<RectF>* area);
-
-  // Gets the coordinates of the visual viewport, in CSS pixels relative to the
-  // layout viewport. Empty if the size of the visual viewport is not known.
-  void GetVisualViewport(RectF* visual_viewport) {
-    *visual_viewport = visual_viewport_;
-  }
 
  private:
   friend class ElementAreaTest;
@@ -144,8 +137,7 @@ class ElementArea {
   // While running, regularly calls Update().
   base::RepeatingTimer timer_;
 
-  base::RepeatingCallback<void(const RectF& visual_viewport,
-                               const std::vector<RectF>& touchable_area,
+  base::RepeatingCallback<void(const std::vector<RectF>& touchable_area,
                                const std::vector<RectF>& restricted_area)>
       on_update_;
 

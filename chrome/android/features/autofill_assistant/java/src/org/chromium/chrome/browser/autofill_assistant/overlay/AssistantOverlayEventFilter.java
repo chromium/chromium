@@ -11,8 +11,13 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.content.browser.RenderCoordinatesImpl;
+import org.chromium.content_public.browser.GestureListenerManager;
+import org.chromium.content_public.browser.GestureStateListenerWithScroll;
+import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,8 +28,12 @@ import java.util.List;
 
 /**
  * Filters gestures that happen on the overlay.
+ *
+ * <p>This must implement and add itself as a {@link GestureStateListenerWithScroll} such that the
+ * {@link RenderCoordinatesImpl} receive proper updates when scrolling.
  */
-class AssistantOverlayEventFilter extends GestureDetector {
+class AssistantOverlayEventFilter
+        extends GestureDetector implements GestureStateListenerWithScroll {
     /** A mode that describes what's happening to the current gesture. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({GestureMode.NONE, GestureMode.TRACKING, GestureMode.FORWARDING})
@@ -41,8 +50,8 @@ class AssistantOverlayEventFilter extends GestureDetector {
     }
 
     private AssistantOverlayDelegate mDelegate;
-    private BrowserControlsStateProvider mBrowserControls;
-    private View mCompositorView;
+    private final BrowserControlsStateProvider mBrowserControls;
+    private final View mCompositorView;
 
     /**
      * Complain after there's been {@link #mTapTrackingCount} taps within
@@ -64,14 +73,8 @@ class AssistantOverlayEventFilter extends GestureDetector {
      */
     private boolean mPartial;
 
-    /**
-     * Coordinates of the visual viewport within the page, if known, in CSS pixels relative to the
-     * origin of the page. This is used to convert pixel coordinates to CSS coordinates.
-     *
-     * The visual viewport includes the portion of the page that is really visible, excluding any
-     * area not fully visible because of the current zoom value.
-     */
-    private final RectF mVisualViewport = new RectF();
+    /** The {@link WebContents} this Autofill Assistant is currently associated with. */
+    private WebContents mWebContents;
 
     /** Touchable area, expressed in CSS pixels relative to the layout viewport. */
     private List<RectF> mTouchableArea = Collections.emptyList();
@@ -135,6 +138,9 @@ class AssistantOverlayEventFilter extends GestureDetector {
 
     void destroy() {
         cleanupCurrentGestureBuffer();
+        if (mWebContents != null) {
+            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
+        }
     }
 
     /** Resets tap times and current gestures. */
@@ -174,9 +180,13 @@ class AssistantOverlayEventFilter extends GestureDetector {
         mRestrictedArea = restrictedArea;
     }
 
-    /** Sets the visual viewport. */
-    void setVisualViewport(RectF visualViewport) {
-        mVisualViewport.set(visualViewport);
+    /** Sets the current {@link WebContents}. */
+    void setWebContents(@NonNull WebContents webContents) {
+        if (mWebContents != null) {
+            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
+        }
+        mWebContents = webContents;
+        GestureListenerManager.fromWebContents(mWebContents).addListener(this);
     }
 
     @Override
@@ -327,8 +337,7 @@ class AssistantOverlayEventFilter extends GestureDetector {
      * or the top/bottom bar.
      */
     private boolean shouldLetEventThrough(MotionEvent event) {
-        int yTop = (int) mBrowserControls.getContentOffset();
-        int height = mCompositorView.getHeight() - getBottomBarHeight() - yTop;
+        int yTop = mBrowserControls.getContentOffset();
         return isInTouchableArea(event.getX(), event.getY() - yTop);
     }
 
@@ -351,15 +360,19 @@ class AssistantOverlayEventFilter extends GestureDetector {
     }
 
     private boolean isInTouchableArea(float x, float y) {
-        if (mVisualViewport.isEmpty() || mTouchableArea.isEmpty()) return false;
+        if (mWebContents == null || mTouchableArea.isEmpty()) return false;
+
+        RenderCoordinatesImpl renderCoordinates =
+                RenderCoordinatesImpl.fromWebContents(mWebContents);
 
         // Ratio of to use to convert physical pixels to zoomed CSS pixels. Aspect ratio is
-        // conserved, so width and height are always converted with the same value. Using width
-        // here, since viewport width always corresponds to the overlay width.
-        float physicalPixelsToCss =
-                ((float) mVisualViewport.width()) / ((float) mCompositorView.getWidth());
-        float absoluteXCss = (x * physicalPixelsToCss) + mVisualViewport.left;
-        float absoluteYCss = (y * physicalPixelsToCss) + mVisualViewport.top;
+        // conserved, so width and height are always converted with the same value.
+        float physicalToCssPixels = 1.0f
+                / (renderCoordinates.getPageScaleFactor()
+                        * renderCoordinates.getDeviceScaleFactor());
+
+        float absoluteXCss = (x * physicalToCssPixels) + renderCoordinates.getScrollX();
+        float absoluteYCss = (y * physicalToCssPixels) + renderCoordinates.getScrollY();
 
         for (RectF rect : mRestrictedArea) {
             if (rect.contains(absoluteXCss, absoluteYCss)) return false;
@@ -369,11 +382,5 @@ class AssistantOverlayEventFilter extends GestureDetector {
             if (rect.contains(absoluteXCss, absoluteYCss)) return true;
         }
         return false;
-    }
-
-    /** Gets the current height of the bottom bar. */
-    private int getBottomBarHeight() {
-        return (int) (mBrowserControls.getBottomControlsHeight()
-                - mBrowserControls.getBottomControlOffset());
     }
 }

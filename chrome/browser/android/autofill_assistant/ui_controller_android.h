@@ -112,7 +112,6 @@ class UiControllerAndroid : public ControllerObserver {
       const ShowProgressBarProto::StepProgressBarConfiguration& configuration)
       override;
   void OnTouchableAreaChanged(
-      const RectF& visual_viewport,
       const std::vector<RectF>& touchable_areas,
       const std::vector<RectF>& restricted_areas) override;
   void OnViewportModeChanged(ViewportMode mode) override;

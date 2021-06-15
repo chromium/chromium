@@ -253,7 +253,7 @@ void ElementArea::ReportUpdate() {
   if (rectangles_.empty()) {
     // Reporting of visual viewport is best effort when reporting empty
     // rectangles. It might also be empty.
-    on_update_.Run(visual_viewport_, {}, {});
+    on_update_.Run({}, {});
     return;
   }
 
@@ -296,7 +296,7 @@ void ElementArea::ReportUpdate() {
 
   last_visual_viewport_ = visual_viewport_;
   last_rectangles_ = rectangles_;
-  on_update_.Run(visual_viewport_, touchable_area, restricted_area);
+  on_update_.Run(touchable_area, restricted_area);
 }
 
 }  // namespace autofill_assistant

@@ -2914,7 +2914,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementQueryIndex) {
   int index;
   EXPECT_EQ(ACTION_APPLIED,
             GetElementQueryIndex("input", element, &index).proto_status());
-  EXPECT_EQ(2, index);
+  EXPECT_EQ(3, index);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, UniqueElementSelector) {
@@ -2928,7 +2928,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, UniqueElementSelector) {
   EXPECT_EQ(ACTION_APPLIED,
             GetUniqueElementSelector(element, &query, &index).proto_status());
   EXPECT_EQ("INPUT", query);
-  EXPECT_EQ(2, index);
+  EXPECT_EQ(3, index);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOptionElement) {

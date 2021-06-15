@@ -26,11 +26,16 @@ import android.util.TypedValue;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.content.browser.RenderCoordinatesImpl;
+import org.chromium.content_public.browser.GestureListenerManager;
+import org.chromium.content_public.browser.GestureStateListenerWithScroll;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 import java.lang.annotation.Retention;
@@ -48,8 +53,12 @@ import java.util.List;
  *
  * <p>While scrolling, it keeps track of the current scrolling offset and avoids drawing on top of
  * the top bar which is can be, during animations, just drawn on top of the compositor.
+ *
+ * <p>This must implement and add itself as a {@link GestureStateListenerWithScroll} such that the
+ * {@link RenderCoordinatesImpl} receive proper updates when scrolling.
  */
-class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateProvider.Observer {
+class AssistantOverlayDrawable extends Drawable
+        implements BrowserControlsStateProvider.Observer, GestureStateListenerWithScroll {
     private static final int FADE_DURATION_MS = 250;
 
     /** '…' in UTF-8. */
@@ -81,16 +90,8 @@ class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateP
     /** When in partial mode, don't draw on {@link #mTransparentArea}. */
     private boolean mPartial;
 
-    /**
-     * Coordinates of the visual viewport within the page, if known, in CSS pixels relative to the
-     * origin of the page.
-     *
-     * The visual viewport includes the portion of the page that is really visible, excluding any
-     * area not fully visible because of the current zoom value.
-     *
-     * Only relevant in partial mode, when the transparent area is non-empty.
-     */
-    private final RectF mVisualViewport = new RectF();
+    /** The {@link WebContents} this Autofill Assistant is currently associated with. */
+    private WebContents mWebContents;
 
     private final List<Box> mTransparentArea = new ArrayList<>();
     private List<RectF> mRestrictedArea = Collections.emptyList();
@@ -177,6 +178,9 @@ class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateP
 
     void destroy() {
         mBrowserControlsStateProvider.removeObserver(this);
+        if (mWebContents != null) {
+            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
+        }
     }
 
     /**
@@ -200,8 +204,12 @@ class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateP
         invalidateSelf();
     }
 
-    void setVisualViewport(RectF visualViewport) {
-        mVisualViewport.set(visualViewport);
+    void setWebContents(@NonNull WebContents webContents) {
+        if (mWebContents != null) {
+            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
+        }
+        mWebContents = webContents;
+        GestureListenerManager.fromWebContents(mWebContents).addListener(this);
         invalidateSelf();
     }
 
@@ -312,19 +320,19 @@ class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateP
             }
         }
 
-        if (mVisualViewport.isEmpty()) return;
+        if (mWebContents == null) return;
+        RenderCoordinatesImpl renderCoordinates =
+                RenderCoordinatesImpl.fromWebContents(mWebContents);
 
-        // Ratio of to use to convert zoomed CSS pixels, to physical pixels. Aspect ratio is
-        // conserved, so width and height are always converted with the same value. Using width
-        // here, since viewport width always corresponds to the overlay width.
-        float cssPixelsToPhysical = ((float) width) / mVisualViewport.width();
+        float left = renderCoordinates.getScrollX();
+        float top = renderCoordinates.getScrollY();
 
         // Don't draw on top of the restricted area.
         for (RectF rect : mRestrictedArea) {
-            mDrawRect.left = (rect.left - mVisualViewport.left) * cssPixelsToPhysical;
-            mDrawRect.top = yTop + (rect.top - mVisualViewport.top) * cssPixelsToPhysical;
-            mDrawRect.right = (rect.right - mVisualViewport.left) * cssPixelsToPhysical;
-            mDrawRect.bottom = yTop + (rect.bottom - mVisualViewport.top) * cssPixelsToPhysical;
+            mDrawRect.left = renderCoordinates.fromLocalCssToPix(rect.left - left);
+            mDrawRect.top = yTop + renderCoordinates.fromLocalCssToPix(rect.top - top);
+            mDrawRect.right = renderCoordinates.fromLocalCssToPix(rect.right - left);
+            mDrawRect.bottom = yTop + renderCoordinates.fromLocalCssToPix(rect.bottom - top);
             canvas.clipRect(mDrawRect, Region.Op.DIFFERENCE);
         }
 
@@ -338,13 +346,11 @@ class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateP
             int fillAlpha = (int) (mBackgroundAlpha * (1f - box.getVisibility()));
             mBoxFill.setAlpha(fillAlpha);
 
-            mDrawRect.left = (rect.left - mVisualViewport.left) * cssPixelsToPhysical - mPaddingPx;
-            mDrawRect.top =
-                    yTop + (rect.top - mVisualViewport.top) * cssPixelsToPhysical - mPaddingPx;
-            mDrawRect.right =
-                    (rect.right - mVisualViewport.left) * cssPixelsToPhysical + mPaddingPx;
+            mDrawRect.left = renderCoordinates.fromLocalCssToPix(rect.left - left) - mPaddingPx;
+            mDrawRect.top = yTop + renderCoordinates.fromLocalCssToPix(rect.top - top) - mPaddingPx;
+            mDrawRect.right = renderCoordinates.fromLocalCssToPix(rect.right - left) + mPaddingPx;
             mDrawRect.bottom =
-                    yTop + (rect.bottom - mVisualViewport.top) * cssPixelsToPhysical + mPaddingPx;
+                    yTop + renderCoordinates.fromLocalCssToPix(rect.bottom - top) + mPaddingPx;
             if (mDrawRect.left <= 0 && mDrawRect.right >= width) {
                 // Rounded corners look strange in the case where the rectangle takes exactly the
                 // width of the screen.
@@ -368,6 +374,11 @@ class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateP
     @Override
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
+        invalidateSelf();
+    }
+
+    @Override
+    public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
         invalidateSelf();
     }
 
