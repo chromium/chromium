@@ -754,7 +754,7 @@ void OverviewSession::OnWindowActivating(
        Shell::GetAllRootWindowControllers()) {
     UnifiedSystemTray* system_tray =
         root_window_controller->GetStatusAreaWidget()->unified_system_tray();
-    if (system_tray->IsBubbleShown()) {
+    if (system_tray->IsMessageCenterBubbleShown()) {
       if (gained_active == system_tray->message_center_bubble()
                                ->GetBubbleWidget()
                                ->GetNativeWindow()) {
