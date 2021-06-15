@@ -4,6 +4,8 @@
 
 """Presubmit script for Chromium browser code."""
 
+USE_PYTHON3 = True
+
 import re
 
 def _RunHistogramChecks(input_api, output_api, histogram_name):
