@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -30,6 +31,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
 namespace content {
 namespace service_worker_updated_script_loader_unittest {

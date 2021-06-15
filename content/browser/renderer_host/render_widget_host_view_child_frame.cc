@@ -34,6 +34,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/gfx/geometry/dip_util.h"

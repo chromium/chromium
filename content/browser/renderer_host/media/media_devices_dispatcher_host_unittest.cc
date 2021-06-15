@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "url/origin.h"
 
 using blink::mojom::MediaDeviceType;

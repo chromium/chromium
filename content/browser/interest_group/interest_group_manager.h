@@ -10,7 +10,6 @@
 #include "base/threading/sequence_bound.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 
 namespace content {
 

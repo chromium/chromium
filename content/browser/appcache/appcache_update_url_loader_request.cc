@@ -10,6 +10,8 @@
 #include "content/browser/storage_partition_impl.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_info.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
 

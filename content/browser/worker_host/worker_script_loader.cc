@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 
 namespace content {
 

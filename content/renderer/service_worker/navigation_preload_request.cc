@@ -8,6 +8,8 @@
 
 #include "content/renderer/service_worker/service_worker_context_client.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 

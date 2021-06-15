@@ -315,7 +315,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void FullscreenStateChanged(
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
-      blink::mojom::FullscreenOptionsPtr options) {}
+      blink::mojom::FullscreenOptionsPtr options);
 
 #if defined(OS_ANDROID)
   // Updates information to determine whether a user gesture should carryover to
@@ -574,7 +574,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   virtual void OnTextAutosizerPageInfoChanged(
       RenderFrameHostImpl* source,
-      blink::mojom::TextAutosizerPageInfoPtr page_info) {}
+      blink::mojom::TextAutosizerPageInfoPtr page_info);
 
   // Return true if we have seen a recent orientation change, which is used to
   // decide if we should consume user activation when entering fullscreen.

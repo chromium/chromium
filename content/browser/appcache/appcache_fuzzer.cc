@@ -22,6 +22,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"

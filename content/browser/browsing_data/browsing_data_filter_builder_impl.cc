@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 using net::registry_controlled_domains::GetDomainAndRegistry;
 using net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;

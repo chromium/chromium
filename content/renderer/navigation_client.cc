@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/renderer/navigation_client.h"
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "content/renderer/render_frame_impl.h"
+#include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/platform/task_type.h"
 
 namespace content {

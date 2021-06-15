@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"

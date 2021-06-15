@@ -13,6 +13,8 @@
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -86,6 +88,11 @@ void RenderFrameHostDelegate::GetNFC(
 bool RenderFrameHostDelegate::CanEnterFullscreenMode() {
   return true;
 }
+
+void RenderFrameHostDelegate::FullscreenStateChanged(
+    RenderFrameHostImpl* rfh,
+    bool is_fullscreen,
+    blink::mojom::FullscreenOptionsPtr options) {}
 
 bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
     RenderFrameHostImpl* target_rfh,
@@ -167,6 +174,10 @@ void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
     IsClipboardPasteContentAllowedCallback callback) {
   std::move(callback).Run(ClipboardPasteContentAllowed(true));
 }
+
+void RenderFrameHostDelegate::OnTextAutosizerPageInfoChanged(
+    RenderFrameHostImpl* source,
+    blink::mojom::TextAutosizerPageInfoPtr page_info) {}
 
 bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {
   return false;

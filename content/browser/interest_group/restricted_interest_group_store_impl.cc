@@ -10,6 +10,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
 namespace content {
 

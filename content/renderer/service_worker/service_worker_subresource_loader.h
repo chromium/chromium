@@ -151,8 +151,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   void TransitionToStatus(Status new_status);
 
-  network::mojom::URLResponseHeadPtr response_head_ =
-      network::mojom::URLResponseHead::New();
+  network::mojom::URLResponseHeadPtr response_head_;
   absl::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
 

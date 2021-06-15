@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "content/common/navigation_client.mojom.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "url/gurl.h"
 

@@ -5,7 +5,14 @@
 #include "content/public/test/fake_local_frame.h"
 
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
+
+#if defined(OS_MAC)
+#include "ui/base/mojom/attributed_string.mojom.h"
+#endif
 
 namespace content {
 
