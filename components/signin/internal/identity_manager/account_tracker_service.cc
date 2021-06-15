@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -26,9 +27,11 @@
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/internal/identity_manager/account_info_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "ui/gfx/image/image.h"
 
 #if defined(OS_ANDROID)
@@ -97,6 +100,25 @@ bool SaveImage(scoped_refptr<base::RefCountedMemory> png_data,
 void RemoveImage(const base::FilePath& image_path) {
   if (!base::DeleteFile(image_path))
     LOG(ERROR) << "Failed to delete image.";
+}
+
+void SetAccountCapabilityPath(base::Value* value,
+                              base::StringPiece path,
+                              AccountCapabilities::Tribool state) {
+  if (state == AccountCapabilities::Tribool::kUnknown)
+    value->RemovePath(path);
+  else
+    value->SetBoolPath(path, state == AccountCapabilities::Tribool::kTrue);
+}
+
+AccountCapabilities::Tribool FindAccountCapabilityPath(const base::Value& value,
+                                                       base::StringPiece path) {
+  absl::optional<bool> boolean_value = value.FindBoolPath(path);
+  if (!boolean_value.has_value())
+    return AccountCapabilities::Tribool::kUnknown;
+
+  return *boolean_value ? AccountCapabilities::Tribool::kTrue
+                        : AccountCapabilities::Tribool::kFalse;
 }
 
 }  // namespace
@@ -268,6 +290,21 @@ void AccountTrackerService::SetAccountImage(
   account_info.last_downloaded_image_url_with_size = image_url_with_size;
   SaveAccountImageToDisk(account_id, image, image_url_with_size);
   NotifyAccountUpdated(account_info);
+}
+
+void AccountTrackerService::SetAccountCapabilities(
+    const CoreAccountId& account_id,
+    const AccountCapabilities& account_capabilities) {
+  DCHECK(base::Contains(accounts_, account_id));
+  AccountInfo& account_info = accounts_[account_id];
+
+  bool modified = account_info.capabilities.UpdateWith(account_capabilities);
+  if (!modified)
+    return;
+
+  if (!account_info.gaia.empty())
+    NotifyAccountUpdated(account_info);
+  SaveToPrefs(account_info);
 }
 
 void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
@@ -545,6 +582,20 @@ void AccountTrackerService::LoadFromPrefs() {
               is_under_advanced_protection;
         }
 
+        switch (FindAccountCapabilityPath(
+            *dict, kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath)) {
+          case AccountCapabilities::Tribool::kUnknown:
+            break;
+          case AccountCapabilities::Tribool::kTrue:
+            account_info.capabilities.set_can_offer_extended_chrome_sync_promos(
+                true);
+            break;
+          case AccountCapabilities::Tribool::kFalse:
+            account_info.capabilities.set_can_offer_extended_chrome_sync_promos(
+                false);
+            break;
+        }
+
         if (!account_info.gaia.empty())
           NotifyAccountUpdated(account_info);
       }
@@ -613,6 +664,9 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   // |kLastDownloadedImageURLWithSizePath| should only be set after the GAIA
   // picture is successufly saved to disk. Otherwise, there is no guarantee that
   // |kLastDownloadedImageURLWithSizePath| matches the picture on disk.
+  SetAccountCapabilityPath(
+      dict, kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath,
+      account_info.capabilities.can_offer_extended_chrome_sync_promos());
 }
 
 void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {

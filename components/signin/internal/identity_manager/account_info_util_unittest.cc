@@ -4,6 +4,8 @@
 
 #include "components/signin/internal/identity_manager/account_info_util.h"
 
+#include "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "testing/platform_test.h"
 
@@ -42,6 +44,23 @@ base::Value CreateUserInfoWithValues(const char* email,
 
   return user_info;
 }
+
+base::Value CreateAccountCapabilitiesValue(
+    const std::vector<std::pair<std::string, bool>>& capabilities) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value* list =
+      dict.SetKey("accountCapabilities", base::Value(base::Value::Type::LIST));
+
+  for (const auto& capability : capabilities) {
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetStringKey("name", capability.first);
+    entry.SetBoolKey("booleanValue", capability.second);
+    list->Append(std::move(entry));
+  }
+
+  return dict;
+}
+
 }  // namespace
 
 using AccountInfoUtilTest = PlatformTest;
@@ -155,4 +174,83 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NotADictionary) {
       AccountInfoFromUserInfo(base::Value("not a dictionary"));
 
   EXPECT_FALSE(maybe_account_info.has_value());
+}
+
+TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue) {
+  absl::optional<AccountCapabilities> capabilities =
+      AccountCapabilitiesFromValue(CreateAccountCapabilitiesValue(
+          {{kCanOfferExtendedChromeSyncPromosCapabilityName, true}}));
+
+  ASSERT_TRUE(capabilities.has_value());
+  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
+            AccountCapabilities::Tribool::kTrue);
+}
+
+TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_EmptyList) {
+  absl::optional<AccountCapabilities> capabilities =
+      AccountCapabilitiesFromValue(CreateAccountCapabilitiesValue({}));
+
+  ASSERT_TRUE(capabilities.has_value());
+  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
+            AccountCapabilities::Tribool::kUnknown);
+}
+
+TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_SeveralCapabilities) {
+  absl::optional<AccountCapabilities> capabilities =
+      AccountCapabilitiesFromValue(CreateAccountCapabilitiesValue(
+          {{"testcapability", true},
+           {kCanOfferExtendedChromeSyncPromosCapabilityName, false}}));
+
+  ASSERT_TRUE(capabilities.has_value());
+  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
+            AccountCapabilities::Tribool::kFalse);
+}
+
+TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NonBooleanValue) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value* list =
+      value.SetKey("accountCapabilities", base::Value(base::Value::Type::LIST));
+  base::Value entry(base::Value::Type::DICTIONARY);
+  entry.SetStringKey("name", kCanOfferExtendedChromeSyncPromosCapabilityName);
+  entry.SetIntKey("intValue", 42);
+  list->Append(std::move(entry));
+
+  absl::optional<AccountCapabilities> capabilities =
+      AccountCapabilitiesFromValue(value);
+
+  ASSERT_TRUE(capabilities.has_value());
+  EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
+            AccountCapabilities::Tribool::kUnknown);
+}
+
+TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NotADictionary) {
+  absl::optional<AccountCapabilities> capabilities =
+      AccountCapabilitiesFromValue(base::Value("not a dictionary"));
+
+  EXPECT_FALSE(capabilities.has_value());
+}
+
+TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_DoesNotContainList) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetKey("accountCapabilities",
+               base::Value(base::Value::Type::DICTIONARY));
+
+  absl::optional<AccountCapabilities> capabilities =
+      AccountCapabilitiesFromValue(value);
+
+  EXPECT_FALSE(capabilities.has_value());
+}
+
+TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NameNotFound) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value* list =
+      value.SetKey("accountCapabilities", base::Value(base::Value::Type::LIST));
+  base::Value entry(base::Value::Type::DICTIONARY);
+  entry.SetBoolKey("booleanValue", true);
+  list->Append(std::move(entry));
+
+  absl::optional<AccountCapabilities> capabilities =
+      AccountCapabilitiesFromValue(value);
+
+  EXPECT_FALSE(capabilities.has_value());
 }

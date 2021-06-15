@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_UTIL_H_
 
 #include "base/values.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -13,5 +14,10 @@
 // data should have been converted to base::Value), if possible.
 absl::optional<AccountInfo> AccountInfoFromUserInfo(
     const base::Value& user_info);
+
+// Builds an AccountCapabilities from the JSON data returned by the server,
+// if possible.
+absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
+    const base::Value& account_capabilities);
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_UTIL_H_

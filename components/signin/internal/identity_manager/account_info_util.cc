@@ -4,7 +4,14 @@
 
 #include "components/signin/internal/identity_manager/account_info_util.h"
 
+#include <map>
+#include <string>
+
+#include "base/values.h"
+#include "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // Keys used to store the different values in the JSON dictionary received
@@ -16,6 +23,9 @@ const char kFullNameKey[] = "name";
 const char kGivenNameKey[] = "given_name";
 const char kLocaleKey[] = "locale";
 const char kPictureUrlKey[] = "picture";
+const char kAccountCapabilitiesListKey[] = "accountCapabilities";
+const char kAccountCapabilityNameKey[] = "name";
+const char kAccountCapabilityBooleanValueKey[] = "booleanValue";
 }  // namespace
 
 absl::optional<AccountInfo> AccountInfoFromUserInfo(
@@ -70,4 +80,40 @@ absl::optional<AccountInfo> AccountInfoFromUserInfo(
     account_info.picture_url = kNoPictureURLFound;
 
   return account_info;
+}
+
+absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
+    const base::Value& account_capabilities) {
+  if (!account_capabilities.is_dict())
+    return absl::nullopt;
+
+  const base::Value* list =
+      account_capabilities.FindListKey(kAccountCapabilitiesListKey);
+  if (!list)
+    return absl::nullopt;
+
+  // 1. Create "capability name" -> "boolean value" mapping.
+  std::map<std::string, bool> boolean_capabilities;
+  for (const auto& capability_value : list->GetList()) {
+    const std::string* name =
+        capability_value.FindStringKey(kAccountCapabilityNameKey);
+    if (!name)
+      return absl::nullopt;  // name is a required field.
+
+    // Check whether a capability has a boolean value.
+    absl::optional<bool> boolean_value =
+        capability_value.FindBoolKey(kAccountCapabilityBooleanValueKey);
+    if (boolean_value.has_value()) {
+      boolean_capabilities[*name] = *boolean_value;
+    }
+  }
+
+  // 2. Fill AccountCapabilities fields based on the mapping.
+  AccountCapabilities capabilities;
+  auto it = boolean_capabilities.find(
+      kCanOfferExtendedChromeSyncPromosCapabilityName);
+  if (it != boolean_capabilities.end())
+    capabilities.set_can_offer_extended_chrome_sync_promos(it->second);
+
+  return capabilities;
 }

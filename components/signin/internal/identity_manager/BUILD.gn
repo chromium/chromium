@@ -9,6 +9,10 @@ import("//components/signin/features.gni")
 # (//components/signin/public/identity_manager/identity_manager.*).
 source_set("identity_manager") {
   sources = [
+    "account_capabilities_constants.cc",
+    "account_capabilities_constants.h",
+    "account_capabilities_fetcher.cc",
+    "account_capabilities_fetcher.h",
     "account_fetcher_service.cc",
     "account_fetcher_service.h",
     "account_info_fetcher.cc",

@@ -10,20 +10,25 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_info_fetcher.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -99,6 +104,10 @@ bool AccountFetcherService::IsAllUserInfoFetched() const {
   return user_info_requests_.empty();
 }
 
+bool AccountFetcherService::AreAllAccountCapabilitiesFetched() const {
+  return account_capabilities_requests_.empty();
+}
+
 void AccountFetcherService::ForceRefreshOfAccountInfo(
     const CoreAccountId& account_id) {
   DCHECK(network_fetches_enabled_);
@@ -125,6 +134,11 @@ void AccountFetcherService::EnableNetworkFetchesForTest() {
 
 void AccountFetcherService::EnableAccountRemovalForTest() {
   enable_account_removal_for_test_ = true;
+}
+
+void AccountFetcherService::EnableAccountCapabilitiesFetcherForTest(
+    bool enabled) {
+  enable_account_capabilities_fetcher_for_test_ = enabled;
 }
 
 void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
@@ -212,12 +226,43 @@ void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
 }
 #endif
 
+bool AccountFetcherService::IsAccountCapabilitiesFetcherEnabled() {
+  if (enable_account_capabilities_fetcher_for_test_)
+    return true;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(switches::kMinorModeSupport);
+#endif
+  return false;
+}
+
+void AccountFetcherService::StartFetchingAccountCapabilities(
+    const CoreAccountId& account_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(network_fetches_enabled_);
+
+  std::unique_ptr<AccountCapabilitiesFetcher>& request =
+      account_capabilities_requests_[account_id];
+  if (!request) {
+    request = std::make_unique<AccountCapabilitiesFetcher>(
+        token_service_, signin_client_->GetURLLoaderFactory(), this,
+        account_id);
+    request->Start();
+  }
+}
+
 void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
                                                bool only_fetch_if_invalid) {
   DCHECK(network_fetches_enabled_);
   account_tracker_service_->StartTrackingAccount(account_id);
   const AccountInfo& info =
       account_tracker_service_->GetAccountInfo(account_id);
+
+  if ((!only_fetch_if_invalid ||
+       !info.capabilities.AreAllCapabilitiesKnown()) &&
+      IsAccountCapabilitiesFetcherEnabled()) {
+    StartFetchingAccountCapabilities(account_id);
+  }
 
   // |only_fetch_if_invalid| is false when the service is due for a timed
   // update.
@@ -323,6 +368,21 @@ void AccountFetcherService::OnUserInfoFetchFailure(
   user_info_requests_.erase(account_id);
 }
 
+void AccountFetcherService::OnAccountCapabilitiesFetchSuccess(
+    const CoreAccountId& account_id,
+    const AccountCapabilities& account_capabilities) {
+  account_tracker_service_->SetAccountCapabilities(account_id,
+                                                   account_capabilities);
+  account_capabilities_requests_.erase(account_id);
+}
+
+void AccountFetcherService::OnAccountCapabilitiesFetchFailure(
+    const CoreAccountId& account_id) {
+  VLOG(1) << "Failed to get AccountCapabilities for " << account_id;
+  // |account_id| is owned by the request. Cannot be used after this line.
+  account_capabilities_requests_.erase(account_id);
+}
+
 void AccountFetcherService::OnRefreshTokenAvailable(
     const CoreAccountId& account_id) {
   TRACE_EVENT1("AccountFetcherService",
@@ -359,6 +419,7 @@ void AccountFetcherService::OnRefreshTokenRevoked(
   }
 
   user_info_requests_.erase(account_id);
+  account_capabilities_requests_.erase(account_id);
 #if defined(OS_ANDROID)
   UpdateChildInfo();
 #endif
