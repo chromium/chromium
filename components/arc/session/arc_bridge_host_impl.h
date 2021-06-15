@@ -110,6 +110,8 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnMediaSessionInstanceReady(
       mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote)
       override;
+  void OnMemoryInstanceReady(
+      mojo::PendingRemote<mojom::MemoryInstance> memory_remote) override;
   void OnMetricsInstanceReady(
       mojo::PendingRemote<mojom::MetricsInstance> metrics_remote) override;
   void OnMidisInstanceReady(

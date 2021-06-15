@@ -43,6 +43,7 @@ if (is_chromeos_ash) {
       "kiosk.mojom",
       "lock_screen.mojom",
       "media_session.mojom",
+      "memory.mojom",
       "metrics.mojom",
       "midis.mojom",
       "nearby_share.mojom",

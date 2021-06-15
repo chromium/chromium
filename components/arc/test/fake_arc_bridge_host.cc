@@ -32,6 +32,7 @@
 #include "components/arc/mojom/kiosk.mojom.h"
 #include "components/arc/mojom/lock_screen.mojom.h"
 #include "components/arc/mojom/media_session.mojom.h"
+#include "components/arc/mojom/memory.mojom.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/midis.mojom.h"
 #include "components/arc/mojom/nearby_share.mojom.h"
@@ -161,6 +162,9 @@ void FakeArcBridgeHost::OnLockScreenInstanceReady(
 
 void FakeArcBridgeHost::OnMediaSessionInstanceReady(
     mojo::PendingRemote<mojom::MediaSessionInstance> media_sesssion_remote) {}
+
+void FakeArcBridgeHost::OnMemoryInstanceReady(
+    mojo::PendingRemote<mojom::MemoryInstance> memory_remote) {}
 
 void FakeArcBridgeHost::OnMetricsInstanceReady(
     mojo::PendingRemote<mojom::MetricsInstance> metrics_remote) {}

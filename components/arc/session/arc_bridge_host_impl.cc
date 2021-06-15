@@ -41,6 +41,7 @@
 #include "components/arc/mojom/kiosk.mojom.h"
 #include "components/arc/mojom/lock_screen.mojom.h"
 #include "components/arc/mojom/media_session.mojom.h"
+#include "components/arc/mojom/memory.mojom.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/midis.mojom.h"
 #include "components/arc/mojom/nearby_share.mojom.h"
@@ -260,6 +261,11 @@ void ArcBridgeHostImpl::OnMediaSessionInstanceReady(
     mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote) {
   OnInstanceReady(arc_bridge_service_->media_session(),
                   std::move(media_session_remote));
+}
+
+void ArcBridgeHostImpl::OnMemoryInstanceReady(
+    mojo::PendingRemote<mojom::MemoryInstance> memory_remote) {
+  OnInstanceReady(arc_bridge_service_->memory(), std::move(memory_remote));
 }
 
 void ArcBridgeHostImpl::OnMetricsInstanceReady(
