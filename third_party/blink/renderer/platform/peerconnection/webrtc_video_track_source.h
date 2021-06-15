@@ -42,6 +42,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
                          absl::optional<bool> needs_denoising,
                          media::VideoCaptureFeedbackCB callback,
                          media::GpuVideoAcceleratorFactories* gpu_factories);
+  WebRtcVideoTrackSource(const WebRtcVideoTrackSource&) = delete;
+  WebRtcVideoTrackSource& operator=(const WebRtcVideoTrackSource&) = delete;
   ~WebRtcVideoTrackSource() override;
 
   void SetCustomFrameAdaptationParamsForTesting(
@@ -97,8 +99,6 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
       custom_frame_adaptation_params_for_testing_;
 
   const media::VideoCaptureFeedbackCB callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoTrackSource);
 };
 
 }  // namespace blink

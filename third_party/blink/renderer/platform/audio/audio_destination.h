@@ -77,6 +77,8 @@ class PLATFORM_EXPORT AudioDestination
                    const WebAudioLatencyHint&,
                    absl::optional<float> context_sample_rate,
                    unsigned render_quantum_frames);
+  AudioDestination(const AudioDestination&) = delete;
+  AudioDestination& operator=(const AudioDestination&) = delete;
   ~AudioDestination() override;
 
   static scoped_refptr<AudioDestination> Create(
@@ -193,8 +195,6 @@ class PLATFORM_EXPORT AudioDestination
   // Modified only on the main thread, so it can be read without holding a lock
   // there.
   DeviceState device_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDestination);
 };
 
 }  // namespace blink

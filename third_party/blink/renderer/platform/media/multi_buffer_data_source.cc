@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
@@ -66,10 +65,13 @@ namespace media {
 
 class MultiBufferDataSource::ReadOperation {
  public:
+  ReadOperation() = delete;
   ReadOperation(int64_t position,
                 int size,
                 uint8_t* data,
                 DataSource::ReadCB callback);
+  ReadOperation(const ReadOperation&) = delete;
+  ReadOperation& operator=(const ReadOperation&) = delete;
   ~ReadOperation();
 
   // Runs |callback_| with the given |result|, deleting the operation
@@ -85,8 +87,6 @@ class MultiBufferDataSource::ReadOperation {
   const int size_;
   uint8_t* data_;
   DataSource::ReadCB callback_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ReadOperation);
 };
 
 MultiBufferDataSource::ReadOperation::ReadOperation(int64_t position,

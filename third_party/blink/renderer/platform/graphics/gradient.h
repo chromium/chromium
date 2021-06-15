@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -89,6 +88,8 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
       ColorInterpolation = ColorInterpolation::kUnpremultiplied,
       DegenerateHandling = DegenerateHandling::kAllow);
 
+  Gradient(const Gradient&) = delete;
+  Gradient& operator=(const Gradient&) = delete;
   virtual ~Gradient();
 
   Type GetType() const { return type_; }
@@ -140,8 +141,6 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
 
   mutable sk_sp<PaintShader> cached_shader_;
   mutable sk_sp<SkColorFilter> color_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Gradient);
 };
 
 }  // namespace blink

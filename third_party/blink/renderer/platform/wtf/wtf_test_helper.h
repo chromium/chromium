@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -52,8 +51,6 @@ class MoveOnly {
 
  private:
   int i_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveOnly);
 };
 
 class MoveOnlyHashValue {

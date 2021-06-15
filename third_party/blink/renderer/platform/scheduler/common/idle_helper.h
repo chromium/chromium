@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_IDLE_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_IDLE_HELPER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -48,6 +47,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   class PLATFORM_EXPORT Delegate {
    public:
     Delegate();
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate();
 
     // If it's ok to enter a long idle period, return true.  Otherwise return
@@ -69,9 +70,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
 
     // Signals that the task list has changed.
     virtual void OnPendingTasksChanged(bool has_tasks) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Keep IdleHelper::IdlePeriodStateToString in sync with this enum.
@@ -97,6 +95,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
       const char* idle_period_tracing_name,
       base::TimeDelta required_quiescence_duration_before_long_idle_period,
       scoped_refptr<base::sequence_manager::TaskQueue> idle_queue);
+  IdleHelper(const IdleHelper&) = delete;
+  IdleHelper& operator=(const IdleHelper&) = delete;
   ~IdleHelper() override;
 
   // Prevents any further idle tasks from running.
@@ -166,6 +166,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
     State(SchedulerHelper* helper,
           Delegate* delegate,
           const char* idle_period_tracing_name);
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
     virtual ~State();
 
     void UpdateState(IdlePeriodState new_state,
@@ -196,8 +198,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
     bool running_idle_task_for_tracing_;
     const char* idle_period_tracing_name_;
     const char* last_sub_trace_event_name_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(State);
   };
 
   // The minimum duration of an idle period.
@@ -242,8 +242,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
 
   base::WeakPtr<IdleHelper> weak_idle_helper_ptr_;
   base::WeakPtrFactory<IdleHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IdleHelper);
 };
 
 }  // namespace scheduler

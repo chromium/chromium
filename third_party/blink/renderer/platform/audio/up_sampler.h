@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/direct_convolver.h"
 #include "third_party/blink/renderer/platform/audio/simple_fft_convolver.h"
@@ -48,6 +47,8 @@ class PLATFORM_EXPORT UpSampler {
 
  public:
   explicit UpSampler(size_t input_block_size);
+  UpSampler(const UpSampler&) = delete;
+  UpSampler& operator=(const UpSampler&) = delete;
 
   // The destination buffer |destP| is of size sourceFramesToProcess * 2.
   void Process(const float* source_p,
@@ -75,8 +76,6 @@ class PLATFORM_EXPORT UpSampler {
   // the FIR filter (convolution) used to generate the odd sample-frames of the
   // output.
   AudioFloatArray input_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpSampler);
 };
 
 }  // namespace blink

@@ -24,7 +24,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -65,6 +64,8 @@ class PLATFORM_EXPORT P2PSocketDispatcher
 
   P2PSocketDispatcher(MojoBindingContext& context,
                       base::PassKey<P2PSocketDispatcher>);
+  P2PSocketDispatcher(const P2PSocketDispatcher&) = delete;
+  P2PSocketDispatcher& operator=(const P2PSocketDispatcher&) = delete;
   ~P2PSocketDispatcher() override;
 
   // blink::NetworkListManager interface:
@@ -112,8 +113,6 @@ class PLATFORM_EXPORT P2PSocketDispatcher
   HeapMojoReceiver<network::mojom::blink::P2PNetworkNotificationClient,
                    P2PSocketDispatcher>
       network_notification_client_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketDispatcher);
 };
 
 }  // namespace blink

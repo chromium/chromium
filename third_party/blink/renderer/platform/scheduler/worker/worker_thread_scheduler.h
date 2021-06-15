@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_SCHEDULER_H_
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
@@ -44,6 +43,8 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
       ThreadType thread_type,
       base::sequence_manager::SequenceManager* sequence_manager,
       WorkerSchedulerProxy* proxy);
+  WorkerThreadScheduler(const WorkerThreadScheduler&) = delete;
+  WorkerThreadScheduler& operator=(const WorkerThreadScheduler&) = delete;
   ~WorkerThreadScheduler() override;
 
   // WebThreadScheduler implementation:
@@ -155,8 +156,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
 
   const ukm::SourceId ukm_source_id_;
   std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadScheduler);
 };
 
 }  // namespace scheduler

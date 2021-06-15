@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_TABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_TABLE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -22,6 +21,8 @@ class WTF_EXPORT AtomicStringTable final {
 
  public:
   AtomicStringTable();
+  AtomicStringTable(const AtomicStringTable&) = delete;
+  AtomicStringTable& operator=(const AtomicStringTable&) = delete;
   ~AtomicStringTable();
 
   // Gets the shared table for the current thread.
@@ -128,8 +129,6 @@ class WTF_EXPORT AtomicStringTable final {
   WeakResult WeakFindLowercasedSlow(const StringView& string);
 
   HashSet<StringImpl*> table_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicStringTable);
 };
 
 inline bool operator==(const AtomicStringTable::WeakResult& lhs,

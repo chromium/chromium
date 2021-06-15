@@ -19,6 +19,8 @@ class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
  public:
   explicit WorkerMetricsHelper(ThreadType thread_type,
                                bool has_cpu_timing_for_each_task);
+  WorkerMetricsHelper(const WorkerMetricsHelper&) = delete;
+  WorkerMetricsHelper& operator=(const WorkerMetricsHelper&) = delete;
   ~WorkerMetricsHelper();
 
   void RecordTaskMetrics(
@@ -38,8 +40,6 @@ class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
       background_dedicated_worker_per_parent_frame_status_duration_reporter_;
 
   absl::optional<FrameOriginType> parent_frame_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerMetricsHelper);
 };
 
 }  // namespace scheduler

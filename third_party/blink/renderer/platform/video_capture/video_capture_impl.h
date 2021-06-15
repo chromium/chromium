@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
@@ -61,6 +60,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   VideoCaptureImpl(media::VideoCaptureSessionId session_id,
                    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
                    BrowserInterfaceBrokerProxy* browser_interface_broker);
+  VideoCaptureImpl(const VideoCaptureImpl&) = delete;
+  VideoCaptureImpl& operator=(const VideoCaptureImpl&) = delete;
   ~VideoCaptureImpl() override;
 
   // Stop/resume delivering video frames to clients, based on flag |suspend|.
@@ -289,8 +290,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // media::VideoFrames constructed in OnBufferReceived() from buffers cached
   // in |client_buffers_|.
   base::WeakPtrFactory<VideoCaptureImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureImpl);
 };
 
 }  // namespace blink

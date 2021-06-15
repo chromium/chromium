@@ -171,6 +171,8 @@ class SmoothnessHelperImpl : public SmoothnessHelper {
     Task(std::unique_ptr<LearningTaskController> controller)
         : controller_(std::move(controller)) {}
 
+    Task(const Task&) = delete;
+    Task& operator=(const Task&) = delete;
     ~Task() = default;
 
     // Return true if and only if we've started an observation.
@@ -194,8 +196,6 @@ class SmoothnessHelperImpl : public SmoothnessHelper {
     absl::optional<base::UnguessableToken> id_;
     std::unique_ptr<LearningTaskController> controller_;
     TargetValue target_value_;
-
-    DISALLOW_COPY_AND_ASSIGN(Task);
   };
 
   // Struct to hold all of the "at least |n| consecutive bad windows" data.

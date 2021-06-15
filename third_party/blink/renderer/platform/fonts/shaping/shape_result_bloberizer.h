@@ -35,6 +35,8 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   ShapeResultBloberizer(const FontDescription&,
                         float device_scale_factor,
                         Type);
+  ShapeResultBloberizer(const ShapeResultBloberizer&) = delete;
+  ShapeResultBloberizer& operator=(const ShapeResultBloberizer&) = delete;
 
   struct BlobInfo {
     BlobInfo(sk_sp<SkTextBlob> b, CanvasRotationInVertical r)
@@ -196,8 +198,6 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   // Constructed blobs.
   BlobBuffer blobs_;
   float advance_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapeResultBloberizer);
 };
 
 struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphsNG

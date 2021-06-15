@@ -59,6 +59,8 @@ class PLATFORM_EXPORT V8PerContextData final
     : public GarbageCollected<V8PerContextData> {
  public:
   explicit V8PerContextData(v8::Local<v8::Context>);
+  V8PerContextData(const V8PerContextData&) = delete;
+  V8PerContextData& operator=(const V8PerContextData&) = delete;
 
   static V8PerContextData* From(v8::Local<v8::Context>);
 
@@ -151,8 +153,6 @@ class PLATFORM_EXPORT V8PerContextData final
 
   using DataMap = HeapHashMap<const char*, Member<Data>>;
   DataMap data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8PerContextData);
 };
 
 }  // namespace blink

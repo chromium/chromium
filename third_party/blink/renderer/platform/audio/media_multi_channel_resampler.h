@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/multi_channel_resampler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -44,6 +43,10 @@ class PLATFORM_EXPORT MediaMultiChannelResampler {
                              size_t request_frames,
                              ReadCB read_cb);
 
+  MediaMultiChannelResampler(const MediaMultiChannelResampler&) = delete;
+  MediaMultiChannelResampler& operator=(const MediaMultiChannelResampler&) =
+      delete;
+
   // Resamples |frames| of data from |read_cb_| into a blink::AudioBus, this
   // requires creating a wrapper for the media::AudioBus on each call and so
   // resampling directly into a media::AudioBus using ResampleInternal() is
@@ -73,8 +76,6 @@ class PLATFORM_EXPORT MediaMultiChannelResampler {
   // The callback using a blink::AudioBus that will be called by
   // ProvideResamplerInput().
   ReadCB read_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaMultiChannelResampler);
 };
 
 }  // namespace blink

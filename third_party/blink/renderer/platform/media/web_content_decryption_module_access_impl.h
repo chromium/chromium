@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_config.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_access.h"
@@ -40,6 +39,10 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
       const blink::WebMediaKeySystemConfiguration& configuration,
       const CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
+  WebContentDecryptionModuleAccessImpl(
+      const WebContentDecryptionModuleAccessImpl&) = delete;
+  WebContentDecryptionModuleAccessImpl& operator=(
+      const WebContentDecryptionModuleAccessImpl&) = delete;
   ~WebContentDecryptionModuleAccessImpl() override;
 
   // blink::WebContentDecryptionModuleAccess interface.
@@ -58,8 +61,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
 
   // Keep a WeakPtr as client is owned by render_frame_impl.
   base::WeakPtr<WebEncryptedMediaClientImpl> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentDecryptionModuleAccessImpl);
 };
 
 }  // namespace media

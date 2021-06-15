@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -192,6 +191,8 @@ class BaseIdleHelperTest : public testing::Test {
         base::TimeDelta::FromMicroseconds(5000));
   }
 
+  BaseIdleHelperTest(const BaseIdleHelperTest&) = delete;
+  BaseIdleHelperTest& operator=(const BaseIdleHelperTest&) = delete;
   ~BaseIdleHelperTest() override = default;
 
   void SetUp() override {
@@ -269,18 +270,15 @@ class BaseIdleHelperTest : public testing::Test {
   scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseIdleHelperTest);
 };
 
 class IdleHelperTest : public BaseIdleHelperTest {
  public:
   IdleHelperTest() : BaseIdleHelperTest(base::TimeDelta()) {}
+  IdleHelperTest(const IdleHelperTest&) = delete;
+  IdleHelperTest& operator=(const IdleHelperTest&) = delete;
 
   ~IdleHelperTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdleHelperTest);
 };
 
 TEST_F(IdleHelperTest, TestPostIdleTask) {
@@ -387,6 +385,10 @@ class IdleHelperTestWithIdlePeriodObserver : public BaseIdleHelperTest {
  public:
   IdleHelperTestWithIdlePeriodObserver()
       : BaseIdleHelperTest(base::TimeDelta()) {}
+  IdleHelperTestWithIdlePeriodObserver(
+      const IdleHelperTestWithIdlePeriodObserver&) = delete;
+  IdleHelperTestWithIdlePeriodObserver& operator=(
+      const IdleHelperTestWithIdlePeriodObserver&) = delete;
 
   ~IdleHelperTestWithIdlePeriodObserver() override = default;
 
@@ -403,9 +405,6 @@ class IdleHelperTestWithIdlePeriodObserver : public BaseIdleHelperTest {
     EXPECT_CALL(*idle_helper_, OnIdlePeriodStarted()).Times(cardinality);
     EXPECT_CALL(*idle_helper_, OnIdlePeriodEnded()).Times(cardinality);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdleHelperTestWithIdlePeriodObserver);
 };
 
 TEST_F(IdleHelperTestWithIdlePeriodObserver, TestEnterButNotExitIdlePeriod) {
@@ -764,6 +763,10 @@ TEST_F(IdleHelperTest, CanExceedIdleDeadlineIfRequired) {
 
 class IdleHelperWithQuiescencePeriodTest : public BaseIdleHelperTest {
  public:
+  IdleHelperWithQuiescencePeriodTest(
+      const IdleHelperWithQuiescencePeriodTest&) = delete;
+  IdleHelperWithQuiescencePeriodTest& operator=(
+      const IdleHelperWithQuiescencePeriodTest&) = delete;
   enum {
     kQuiescenceDelayMs = 100,
     kLongIdlePeriodMs = 50,
@@ -792,7 +795,6 @@ class IdleHelperWithQuiescencePeriodTest : public BaseIdleHelperTest {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(IdleHelperWithQuiescencePeriodTest);
 };
 
 class IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver
@@ -801,16 +803,17 @@ class IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver
   IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver()
       : IdleHelperWithQuiescencePeriodTest() {}
 
+  IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver(
+      const IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver&) = delete;
+  IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver& operator=(
+      const IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver&) = delete;
+
   ~IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver() override =
       default;
 
   void SetUp() override {
     EXPECT_CALL(*idle_helper_, OnPendingTasksChanged(_)).Times(AnyNumber());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver);
 };
 
 TEST_F(IdleHelperWithQuiescencePeriodTest,

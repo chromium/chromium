@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_decoder_config.h"
@@ -47,6 +46,8 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   RTCVideoEncoder(media::VideoCodecProfile profile,
                   bool is_constrained_h264,
                   media::GpuVideoAcceleratorFactories* gpu_factories);
+  RTCVideoEncoder(const RTCVideoEncoder&) = delete;
+  RTCVideoEncoder& operator=(const RTCVideoEncoder&) = delete;
   ~RTCVideoEncoder() override;
 
   // webrtc::VideoEncoder implementation.  Tasks are posted to |impl_| using the
@@ -79,8 +80,6 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
   // The RTCVideoEncoder::Impl that does all the work.
   scoped_refptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCVideoEncoder);
 };
 
 }  // namespace blink

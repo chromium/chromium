@@ -29,7 +29,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
@@ -53,6 +52,8 @@ class LineBreakIteratorPool final {
   }
 
   LineBreakIteratorPool() = default;
+  LineBreakIteratorPool(const LineBreakIteratorPool&) = delete;
+  LineBreakIteratorPool& operator=(const LineBreakIteratorPool&) = delete;
 
   icu::BreakIterator* Take(const AtomicString& locale) {
     icu::BreakIterator* iterator = nullptr;
@@ -112,8 +113,6 @@ class LineBreakIteratorPool final {
 
   friend WTF::ThreadSpecific<LineBreakIteratorPool>::
   operator LineBreakIteratorPool*();
-
-  DISALLOW_COPY_AND_ASSIGN(LineBreakIteratorPool);
 };
 
 enum TextContext { kNoContext, kPriorContext, kPrimaryContext };

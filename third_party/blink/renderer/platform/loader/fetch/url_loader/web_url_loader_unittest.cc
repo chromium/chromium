@@ -67,6 +67,9 @@ const char kTestData[] = "blah!";
 class MockResourceRequestSender : public WebResourceRequestSender {
  public:
   MockResourceRequestSender() = default;
+  MockResourceRequestSender(const MockResourceRequestSender&) = delete;
+  MockResourceRequestSender& operator=(const MockResourceRequestSender&) =
+      delete;
   ~MockResourceRequestSender() override = default;
 
   // WebResourceRequestSender implementation:
@@ -133,13 +136,13 @@ class MockResourceRequestSender : public WebResourceRequestSender {
   bool canceled_ = false;
   WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
   SyncLoadResponse sync_load_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockResourceRequestSender);
 };
 
 class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
  public:
   FakeURLLoaderFactory() = default;
+  FakeURLLoaderFactory(const FakeURLLoaderFactory&) = delete;
+  FakeURLLoaderFactory& operator=(const FakeURLLoaderFactory&) = delete;
   ~FakeURLLoaderFactory() override = default;
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -156,9 +159,6 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
       override {
     NOTREACHED();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeURLLoaderFactory);
 };
 
 class TestWebURLLoaderClient : public WebURLLoaderClient {
@@ -183,6 +183,9 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
         did_receive_redirect_(false),
         did_receive_response_(false),
         did_finish_(false) {}
+
+  TestWebURLLoaderClient(const TestWebURLLoaderClient&) = delete;
+  TestWebURLLoaderClient& operator=(const TestWebURLLoaderClient&) = delete;
 
   ~TestWebURLLoaderClient() override {
     // During the deconstruction of the `loader_`, the request context will be
@@ -301,8 +304,6 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
   bool did_finish_;
   absl::optional<WebURLError> error_;
   WebURLResponse response_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebURLLoaderClient);
 };
 
 class WebURLLoaderTest : public testing::Test {

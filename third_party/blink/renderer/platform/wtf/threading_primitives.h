@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -66,6 +65,8 @@ class WTF_EXPORT MutexBase {
   USING_FAST_MALLOC(MutexBase);
 
  public:
+  MutexBase(const MutexBase&) = delete;
+  MutexBase& operator=(const MutexBase&) = delete;
   ~MutexBase();
 
   void lock();
@@ -83,8 +84,6 @@ class WTF_EXPORT MutexBase {
   MutexBase(bool recursive);
 
   PlatformMutex mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexBase);
 };
 
 class LOCKABLE WTF_EXPORT Mutex : public MutexBase {
@@ -116,12 +115,12 @@ class SCOPED_LOCKABLE MutexLocker final {
   MutexLocker(Mutex& mutex) EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex) {
     mutex_.lock();
   }
+  MutexLocker(const MutexLocker&) = delete;
+  MutexLocker& operator=(const MutexLocker&) = delete;
   ~MutexLocker() UNLOCK_FUNCTION() { mutex_.unlock(); }
 
  private:
   Mutex& mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexLocker);
 };
 
 class MutexTryLocker final {
@@ -129,6 +128,8 @@ class MutexTryLocker final {
 
  public:
   MutexTryLocker(Mutex& mutex) : mutex_(mutex), locked_(mutex.TryLock()) {}
+  MutexTryLocker(const MutexTryLocker&) = delete;
+  MutexTryLocker& operator=(const MutexTryLocker&) = delete;
   ~MutexTryLocker() {
     if (locked_)
       mutex_.unlock();
@@ -139,8 +140,6 @@ class MutexTryLocker final {
  private:
   Mutex& mutex_;
   bool locked_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexTryLocker);
 };
 
 class WTF_EXPORT ThreadCondition final {
@@ -148,6 +147,8 @@ class WTF_EXPORT ThreadCondition final {
 
  public:
   explicit ThreadCondition(Mutex&);
+  ThreadCondition(const ThreadCondition&) = delete;
+  ThreadCondition& operator=(const ThreadCondition&) = delete;
   ~ThreadCondition();
 
   void Wait();
@@ -157,8 +158,6 @@ class WTF_EXPORT ThreadCondition final {
  private:
   PlatformCondition condition_;
   PlatformMutex& mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCondition);
 };
 
 }  // namespace WTF

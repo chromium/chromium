@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -41,6 +40,8 @@ class SimpleFontData;
 class PLATFORM_EXPORT FontData : public RefCounted<FontData> {
  public:
   FontData() = default;
+  FontData(const FontData&) = delete;
+  FontData& operator=(const FontData&) = delete;
 
   virtual ~FontData();
 
@@ -52,9 +53,6 @@ class PLATFORM_EXPORT FontData : public RefCounted<FontData> {
   virtual bool IsLoadingFallback() const = 0;
   virtual bool IsSegmented() const = 0;
   virtual bool ShouldSkipDrawing() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FontData);
 };
 
 }  // namespace blink

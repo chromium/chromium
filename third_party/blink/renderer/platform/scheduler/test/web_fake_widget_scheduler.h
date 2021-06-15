@@ -16,6 +16,8 @@ class WebFakeWidgetScheduler final : public WebWidgetScheduler {
   WebFakeWidgetScheduler() {
     input_task_runner_ = base::MakeRefCounted<FakeTaskRunner>();
   }
+  WebFakeWidgetScheduler(const WebFakeWidgetScheduler&) = delete;
+  WebFakeWidgetScheduler& operator=(const WebFakeWidgetScheduler&) = delete;
   ~WebFakeWidgetScheduler() override;
 
   // Returns the input task runner.
@@ -25,8 +27,6 @@ class WebFakeWidgetScheduler final : public WebWidgetScheduler {
 
  private:
   scoped_refptr<FakeTaskRunner> input_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebFakeWidgetScheduler);
 };
 
 }  // namespace scheduler

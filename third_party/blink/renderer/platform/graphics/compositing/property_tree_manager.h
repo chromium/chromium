@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PROPERTY_TREE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PROPERTY_TREE_MANAGER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -60,6 +59,8 @@ class PropertyTreeManager {
                       cc::Layer& root_layer,
                       LayerListBuilder& layer_list_builder,
                       int new_sequence_number);
+  PropertyTreeManager(const PropertyTreeManager&) = delete;
+  PropertyTreeManager& operator=(const PropertyTreeManager&) = delete;
   ~PropertyTreeManager();
 
   // A brief discourse on cc property tree nodes, identifiers, and current and
@@ -315,8 +316,6 @@ class PropertyTreeManager {
   // A set of synthetic clips masks which will be applied if a layer under them
   // is encountered which draws content (and thus necessitates the mask).
   HashSet<int> pending_synthetic_mask_layers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PropertyTreeManager);
 };
 
 }  // namespace blink

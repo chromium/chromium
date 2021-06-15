@@ -55,6 +55,8 @@ namespace blink {
 class RawResourceTest : public testing::Test {
  public:
   RawResourceTest() = default;
+  RawResourceTest(const RawResourceTest&) = delete;
+  RawResourceTest& operator=(const RawResourceTest&) = delete;
   ~RawResourceTest() override = default;
 
  protected:
@@ -71,9 +73,6 @@ class RawResourceTest : public testing::Test {
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RawResourceTest);
 };
 
 TEST_F(RawResourceTest, DontIgnoreAcceptForCacheReuse) {

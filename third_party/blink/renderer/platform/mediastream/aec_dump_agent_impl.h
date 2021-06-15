@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_AEC_DUMP_AGENT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_AEC_DUMP_AGENT_IMPL_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/mediastream/aec_dump.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -25,6 +24,8 @@ class PLATFORM_EXPORT AecDumpAgentImpl : public mojom::blink::AecDumpAgent {
   // This may fail in unit tests, in which case a null object is returned.
   static std::unique_ptr<AecDumpAgentImpl> Create(Delegate* delegate);
 
+  AecDumpAgentImpl(const AecDumpAgentImpl&) = delete;
+  AecDumpAgentImpl& operator=(const AecDumpAgentImpl&) = delete;
   ~AecDumpAgentImpl() override;
 
   // AecDumpAgent methods:
@@ -38,8 +39,6 @@ class PLATFORM_EXPORT AecDumpAgentImpl : public mojom::blink::AecDumpAgent {
 
   Delegate* delegate_;
   mojo::Receiver<mojom::blink::AecDumpAgent> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AecDumpAgentImpl);
 };
 
 }  // namespace blink

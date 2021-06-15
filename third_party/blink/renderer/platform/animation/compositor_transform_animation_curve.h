@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_keyframe.h"
@@ -29,6 +28,10 @@ class PLATFORM_EXPORT CompositorTransformAnimationCurve
     : public CompositorAnimationCurve {
  public:
   CompositorTransformAnimationCurve();
+  CompositorTransformAnimationCurve(const CompositorTransformAnimationCurve&) =
+      delete;
+  CompositorTransformAnimationCurve& operator=(
+      const CompositorTransformAnimationCurve&) = delete;
   ~CompositorTransformAnimationCurve() override;
 
   void AddKeyframe(const CompositorTransformKeyframe&);
@@ -40,8 +43,6 @@ class PLATFORM_EXPORT CompositorTransformAnimationCurve
 
  private:
   std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorTransformAnimationCurve);
 };
 
 }  // namespace blink

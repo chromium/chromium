@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -26,6 +25,8 @@ namespace scheduler {
 class BudgetPoolTest : public testing::Test {
  public:
   BudgetPoolTest() = default;
+  BudgetPoolTest(const BudgetPoolTest&) = delete;
+  BudgetPoolTest& operator=(const BudgetPoolTest&) = delete;
   ~BudgetPoolTest() override = default;
 
   void SetUp() override {
@@ -58,8 +59,6 @@ class BudgetPoolTest : public testing::Test {
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   TaskQueueThrottler* task_queue_throttler_;  // NOT OWNED
   base::TimeTicks start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(BudgetPoolTest);
 };
 
 TEST_F(BudgetPoolTest, CPUTimeBudgetPool) {

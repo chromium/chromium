@@ -190,11 +190,11 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
 
    public:
     DerivedFontData() = default;
+    DerivedFontData(const DerivedFontData&) = delete;
+    DerivedFontData& operator=(const DerivedFontData&) = delete;
 
     scoped_refptr<SimpleFontData> small_caps;
     scoped_refptr<SimpleFontData> emphasis_mark;
-
-    DISALLOW_COPY_AND_ASSIGN(DerivedFontData);
   };
 
   mutable std::unique_ptr<DerivedFontData> derived_font_data_;

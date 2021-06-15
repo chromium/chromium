@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"

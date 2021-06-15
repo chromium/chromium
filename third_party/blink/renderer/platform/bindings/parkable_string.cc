@@ -130,6 +130,9 @@ class NullableCharBuffer final {
     size_ = size;
   }
 
+  NullableCharBuffer(const NullableCharBuffer&) = delete;
+  NullableCharBuffer& operator=(const NullableCharBuffer&) = delete;
+
   ~NullableCharBuffer() {
     if (data_)
       WTF::Partitions::BufferPartition()->Free(data_);
@@ -142,8 +145,6 @@ class NullableCharBuffer final {
  private:
   char* data_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullableCharBuffer);
 };
 
 }  // namespace
@@ -162,15 +163,14 @@ struct BackgroundTaskParams final {
         data(data),
         size(size) {}
 
+  BackgroundTaskParams(const BackgroundTaskParams&) = delete;
+  BackgroundTaskParams& operator=(const BackgroundTaskParams&) = delete;
   ~BackgroundTaskParams() { DCHECK(IsMainThread()); }
 
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
   const scoped_refptr<ParkableStringImpl> string;
   const void* data;
   const size_t size;
-
-  BackgroundTaskParams(BackgroundTaskParams&&) = delete;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskParams);
 };
 
 // Valid transitions are:

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_METRICS_HELPER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"
@@ -43,6 +42,8 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
                           bool has_cpu_timing_for_each_task,
                           base::TimeTicks now,
                           bool renderer_backgrounded);
+  MainThreadMetricsHelper(const MainThreadMetricsHelper&) = delete;
+  MainThreadMetricsHelper& operator=(const MainThreadMetricsHelper&) = delete;
   ~MainThreadMetricsHelper();
 
   void RecordTaskMetrics(
@@ -123,8 +124,6 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   // cooperative scheduling had a chance to run a task (as we don't necessarily
   // run a task in each safepoint).
   int safepoints_in_current_toplevel_task_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadMetricsHelper);
 };
 
 }  // namespace scheduler

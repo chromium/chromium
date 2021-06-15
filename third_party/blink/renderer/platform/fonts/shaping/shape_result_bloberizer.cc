@@ -264,11 +264,11 @@ class GlyphCallbackContext {
   STACK_ALLOCATED();
 
  public:
+  GlyphCallbackContext(const GlyphCallbackContext&) = delete;
+  GlyphCallbackContext& operator=(const GlyphCallbackContext&) = delete;
+
   ShapeResultBloberizer* bloberizer;
   const StringView& text;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlyphCallbackContext);
 };
 }  // namespace
 
@@ -328,13 +328,13 @@ class ClusterCallbackContext {
   STACK_ALLOCATED();
 
  public:
+  ClusterCallbackContext(const ClusterCallbackContext&) = delete;
+  ClusterCallbackContext& operator=(const ClusterCallbackContext&) = delete;
+
   ShapeResultBloberizer* bloberizer;
   const StringView& text;
   const GlyphData& emphasis_data;
   FloatPoint glyph_center;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClusterCallbackContext);
 };
 }  // namespace
 
@@ -378,6 +378,8 @@ class ClusterStarts {
 
  public:
   ClusterStarts() = default;
+  ClusterStarts(const ClusterStarts&) = delete;
+  ClusterStarts& operator=(const ClusterStarts&) = delete;
 
   static void Accumulate(void* context,
                          unsigned character_index,
@@ -413,8 +415,6 @@ class ClusterStarts {
   base::span<const unsigned> Data() { return cluster_starts_; }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ClusterStarts);
-
   Vector<unsigned, 256> cluster_starts_;
   unsigned last_seen_character_index_ = 0;
 };

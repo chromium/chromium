@@ -100,6 +100,8 @@ class PLATFORM_EXPORT ShapeResultView final
                                                unsigned start_index,
                                                unsigned end_index);
 
+  ShapeResultView(const ShapeResultView&) = delete;
+  ShapeResultView& operator=(const ShapeResultView&) = delete;
   ~ShapeResultView();
 
   scoped_refptr<ShapeResult> CreateShapeResult() const;
@@ -221,8 +223,6 @@ class PLATFORM_EXPORT ShapeResultView final
                          GlyphCallback,
                          void* context,
                          const RunInfoPart& part) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapeResultView);
 };
 
 }  // namespace blink

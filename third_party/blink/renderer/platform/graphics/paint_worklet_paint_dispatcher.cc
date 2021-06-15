@@ -24,12 +24,12 @@ class AutoSignal {
   explicit AutoSignal(base::WaitableEvent* event) : event_(event) {
     DCHECK(event);
   }
+  AutoSignal(const AutoSignal&) = delete;
+  AutoSignal& operator=(const AutoSignal&) = delete;
   ~AutoSignal() { event_->Signal(); }
 
  private:
   base::WaitableEvent* event_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoSignal);
 };
 }  // namespace
 

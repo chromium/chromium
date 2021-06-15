@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/trace_event/heap_profiler_allocation_context.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
@@ -51,6 +50,8 @@ class PLATFORM_EXPORT WebProcessMemoryDump final {
   // Creates a standalone WebProcessMemoryDump, which owns the underlying
   // ProcessMemoryDump.
   WebProcessMemoryDump();
+  WebProcessMemoryDump(const WebProcessMemoryDump&) = delete;
+  WebProcessMemoryDump& operator=(const WebProcessMemoryDump&) = delete;
 
   // Wraps (without owning) an existing ProcessMemoryDump.
   explicit WebProcessMemoryDump(
@@ -162,8 +163,6 @@ class PLATFORM_EXPORT WebProcessMemoryDump final {
 
   // Stores SkTraceMemoryDump for the current ProcessMemoryDump.
   Vector<std::unique_ptr<skia::SkiaTraceMemoryDumpImpl>> sk_trace_dump_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebProcessMemoryDump);
 };
 
 }  // namespace blink

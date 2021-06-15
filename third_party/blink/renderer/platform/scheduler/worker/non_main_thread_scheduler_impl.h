@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -28,6 +27,9 @@ class WorkerSchedulerProxy;
 
 class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
  public:
+  NonMainThreadSchedulerImpl(const NonMainThreadSchedulerImpl&) = delete;
+  NonMainThreadSchedulerImpl& operator=(const NonMainThreadSchedulerImpl&) =
+      delete;
   ~NonMainThreadSchedulerImpl() override;
 
   // |sequence_manager| and |proxy| must remain valid for the entire lifetime of
@@ -116,8 +118,6 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
 
  private:
   NonMainThreadSchedulerHelper helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonMainThreadSchedulerImpl);
 };
 
 }  // namespace scheduler

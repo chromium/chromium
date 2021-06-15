@@ -66,6 +66,8 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   };
 
   explicit MediaStreamTrackPlatform(bool is_local_track);
+  MediaStreamTrackPlatform(const MediaStreamTrackPlatform&) = delete;
+  MediaStreamTrackPlatform& operator=(const MediaStreamTrackPlatform&) = delete;
   virtual ~MediaStreamTrackPlatform();
 
   static MediaStreamTrackPlatform* GetTrack(const WebMediaStreamTrack& track);
@@ -88,9 +90,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
  private:
   const bool is_local_track_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamTrackPlatform);
 };
 
 }  // namespace blink

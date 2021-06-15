@@ -91,6 +91,8 @@ class IdleDelayedTaskHelper : public base::SingleThreadTaskRunner {
 
  public:
   IdleDelayedTaskHelper() = default;
+  IdleDelayedTaskHelper(const IdleDelayedTaskHelper&) = delete;
+  IdleDelayedTaskHelper& operator=(const IdleDelayedTaskHelper&) = delete;
 
   bool RunsTasksInCurrentSequence() const override { return IsMainThread(); }
 
@@ -118,7 +120,6 @@ class IdleDelayedTaskHelper : public base::SingleThreadTaskRunner {
 
  private:
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(IdleDelayedTaskHelper);
 };
 
 }  // namespace

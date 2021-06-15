@@ -146,7 +146,6 @@ class PLATFORM_EXPORT ThreadHeapStatsCollector {
             ScopeContext scope_category = kMutatorThread>
   class PLATFORM_EXPORT InternalScope {
     DISALLOW_NEW();
-    DISALLOW_COPY_AND_ASSIGN(InternalScope);
 
     using IdType =
         std::conditional_t<scope_category == kMutatorThread, Id, ConcurrentId>;
@@ -157,6 +156,8 @@ class PLATFORM_EXPORT ThreadHeapStatsCollector {
         : tracer_(tracer), start_time_(base::TimeTicks::Now()), id_(id) {
       StartTrace(args...);
     }
+    InternalScope(const InternalScope&) = delete;
+    InternalScope& operator=(const InternalScope&) = delete;
 
     ~InternalScope() {
       StopTrace();
@@ -194,12 +195,13 @@ class PLATFORM_EXPORT ThreadHeapStatsCollector {
   // the overall time (V8 + Blink) spent in GC on the main thread.
   class PLATFORM_EXPORT BlinkGCInV8Scope {
     DISALLOW_NEW();
-    DISALLOW_COPY_AND_ASSIGN(BlinkGCInV8Scope);
 
    public:
     template <typename... Args>
     BlinkGCInV8Scope(ThreadHeapStatsCollector* tracer)
         : tracer_(tracer), start_time_(base::TimeTicks::Now()) {}
+    BlinkGCInV8Scope(const BlinkGCInV8Scope&) = delete;
+    BlinkGCInV8Scope& operator=(const BlinkGCInV8Scope&) = delete;
 
     ~BlinkGCInV8Scope() {
       if (tracer_)

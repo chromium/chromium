@@ -40,13 +40,13 @@ constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
 class MojoURLLoaderClient::DeferredMessage {
  public:
   DeferredMessage() = default;
+  DeferredMessage(const DeferredMessage&) = delete;
+  DeferredMessage& operator=(const DeferredMessage&) = delete;
+  virtual ~DeferredMessage() = default;
+
   virtual void HandleMessage(
       WebResourceRequestSender* resource_request_sender) = 0;
   virtual bool IsCompletionMessage() const = 0;
-  virtual ~DeferredMessage() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeferredMessage);
 };
 
 class MojoURLLoaderClient::DeferredOnReceiveResponse final

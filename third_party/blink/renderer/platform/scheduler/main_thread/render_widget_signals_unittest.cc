@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
@@ -23,14 +22,13 @@ namespace render_widget_signals_unittest {
 class MockObserver : public RenderWidgetSignals::Observer {
  public:
   MockObserver() = default;
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
   ~MockObserver() override = default;
 
   MOCK_METHOD1(SetAllRenderWidgetsHidden, void(bool hidden));
   MOCK_METHOD1(SetHasVisibleRenderWidgetWithTouchHandler,
                void(bool has_visible_render_widget_with_touch_handler));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class RenderWidgetSignalsTest : public testing::Test {

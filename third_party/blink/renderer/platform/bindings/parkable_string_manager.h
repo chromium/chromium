@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -33,6 +32,10 @@ class PLATFORM_EXPORT ParkableStringManagerDumpProvider
 
  public:
   static ParkableStringManagerDumpProvider* Instance();
+  ParkableStringManagerDumpProvider(const ParkableStringManagerDumpProvider&) =
+      delete;
+  ParkableStringManagerDumpProvider& operator=(
+      const ParkableStringManagerDumpProvider&) = delete;
   ~ParkableStringManagerDumpProvider() override;
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs&,
@@ -40,8 +43,6 @@ class PLATFORM_EXPORT ParkableStringManagerDumpProvider
 
  private:
   ParkableStringManagerDumpProvider();
-
-  DISALLOW_COPY_AND_ASSIGN(ParkableStringManagerDumpProvider);
 };
 
 // Manages all the ParkableStrings, and parks eligible strings after the
@@ -54,6 +55,8 @@ class PLATFORM_EXPORT ParkableStringManager {
   struct Statistics;
 
   static ParkableStringManager& Instance();
+  ParkableStringManager(const ParkableStringManager&) = delete;
+  ParkableStringManager& operator=(const ParkableStringManager&) = delete;
   ~ParkableStringManager();
 
   void PurgeMemory();
@@ -139,7 +142,6 @@ class PLATFORM_EXPORT ParkableStringManager {
 
   friend class ParkableStringTest;
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, SynchronousCompression);
-  DISALLOW_COPY_AND_ASSIGN(ParkableStringManager);
 };
 
 }  // namespace blink

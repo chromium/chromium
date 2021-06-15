@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -20,6 +19,8 @@ class PLATFORM_EXPORT TracedValue
     : public base::trace_event::ConvertableToTraceFormat {
  public:
   TracedValue();
+  TracedValue(const TracedValue&) = delete;
+  TracedValue& operator=(const TracedValue&) = delete;
   ~TracedValue() override;
 
   void EndDictionary();
@@ -59,8 +60,6 @@ class PLATFORM_EXPORT TracedValue
   bool AppendToProto(ProtoAppender* appender) final;
   void EstimateTraceMemoryOverhead(
       base::trace_event::TraceEventMemoryOverhead*) final;
-
-  DISALLOW_COPY_AND_ASSIGN(TracedValue);
 };
 
 // Thin wrapper around base::trace_event::TracedValueJSON.

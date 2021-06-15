@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/timer/timer.h"
@@ -75,6 +74,8 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
+  SyncLoadContext(const SyncLoadContext&) = delete;
+  SyncLoadContext& operator=(const SyncLoadContext&) = delete;
   ~SyncLoadContext() override;
 
   void FollowRedirect();
@@ -147,8 +148,6 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
 
   class SignalHelper;
   std::unique_ptr<SignalHelper> signals_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncLoadContext);
 };
 
 }  // namespace blink

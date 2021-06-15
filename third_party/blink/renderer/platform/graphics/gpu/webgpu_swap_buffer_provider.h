@@ -65,6 +65,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
                gpu::Mailbox mailbox,
                gpu::SyncToken creation_token,
                gfx::Size size);
+    SwapBuffer(const SwapBuffer&) = delete;
+    SwapBuffer& operator=(const SwapBuffer&) = delete;
     ~SwapBuffer();
 
     gfx::Size size;
@@ -80,9 +82,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     // A token signaled when the previous user of the image is finished using
     // it. It could be WebGPU, the compositor or the shared image creation.
     gpu::SyncToken access_finished_token;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SwapBuffer);
   };
 
   std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(

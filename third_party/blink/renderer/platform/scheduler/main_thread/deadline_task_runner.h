@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_DEADLINE_TASK_RUNNER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -23,6 +22,8 @@ class PLATFORM_EXPORT DeadlineTaskRunner {
  public:
   DeadlineTaskRunner(const base::RepeatingClosure& callback,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  DeadlineTaskRunner(const DeadlineTaskRunner&) = delete;
+  DeadlineTaskRunner& operator=(const DeadlineTaskRunner&) = delete;
 
   ~DeadlineTaskRunner();
 
@@ -44,8 +45,6 @@ class PLATFORM_EXPORT DeadlineTaskRunner {
   base::RepeatingClosure callback_;
   base::TimeTicks deadline_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeadlineTaskRunner);
 };
 
 }  // namespace scheduler

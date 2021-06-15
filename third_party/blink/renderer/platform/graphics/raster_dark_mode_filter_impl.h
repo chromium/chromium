@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RASTER_DARK_MODE_FILTER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RASTER_DARK_MODE_FILTER_IMPL_H_
 
-#include "base/macros.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -20,6 +19,8 @@ class PLATFORM_EXPORT RasterDarkModeFilterImpl
     : public cc::RasterDarkModeFilter {
  public:
   explicit RasterDarkModeFilterImpl(const DarkModeSettings& settings);
+  RasterDarkModeFilterImpl(const RasterDarkModeFilterImpl&) = delete;
+  RasterDarkModeFilterImpl& operator=(const RasterDarkModeFilterImpl&) = delete;
 
   // RasterDarkModeFilter API.
   sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
@@ -27,8 +28,6 @@ class PLATFORM_EXPORT RasterDarkModeFilterImpl
 
  private:
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(RasterDarkModeFilterImpl);
 };
 
 }  // namespace blink

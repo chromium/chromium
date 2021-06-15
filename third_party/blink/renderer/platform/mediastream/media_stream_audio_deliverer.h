@@ -32,6 +32,9 @@ template <typename Consumer>
 class MediaStreamAudioDeliverer {
  public:
   MediaStreamAudioDeliverer() {}
+  MediaStreamAudioDeliverer(const MediaStreamAudioDeliverer&) = delete;
+  MediaStreamAudioDeliverer& operator=(const MediaStreamAudioDeliverer&) =
+      delete;
   ~MediaStreamAudioDeliverer() {}
 
   // Returns the current audio parameters. These will be invalid before the
@@ -181,8 +184,6 @@ class MediaStreamAudioDeliverer {
   // Specifies the current format of the audio passing through this
   // MediaStreamAudioDeliverer.
   media::AudioParameters params_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamAudioDeliverer);
 };
 
 }  // namespace blink

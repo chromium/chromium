@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 
-#include "base/macros.h"
 #include "base/task/task_observer.h"
 #include "base/time/tick_clock.h"
 #include "cc/base/rolling_time_delta_history.h"
@@ -22,6 +21,8 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
       const base::TickClock* time_source,
       int sample_count,
       double estimation_percentile);
+  IdleTimeEstimator(const IdleTimeEstimator&) = delete;
+  IdleTimeEstimator& operator=(const IdleTimeEstimator&) = delete;
 
   ~IdleTimeEstimator() override;
 
@@ -54,8 +55,6 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
   base::TimeDelta cumulative_compositor_runtime_;
   int nesting_level_;
   bool did_commit_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleTimeEstimator);
 };
 
 }  // namespace scheduler

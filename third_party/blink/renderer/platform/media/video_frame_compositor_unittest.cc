@@ -5,7 +5,6 @@
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -59,6 +58,8 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
  public:
   VideoFrameCompositorTest()
       : client_(new StrictMock<MockWebVideoFrameSubmitter>()) {}
+  VideoFrameCompositorTest(const VideoFrameCompositorTest&) = delete;
+  VideoFrameCompositorTest& operator=(const VideoFrameCompositorTest&) = delete;
 
   void SetUp() override {
     submitter_ = client_.get();
@@ -145,9 +146,6 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
   std::unique_ptr<VideoFrameCompositor> compositor_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
       task_environment_.GetMainThreadTaskRunner();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameCompositorTest);
 };
 
 TEST_F(VideoFrameCompositorTest, InitialValues) {

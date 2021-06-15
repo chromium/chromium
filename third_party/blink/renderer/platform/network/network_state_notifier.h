@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -97,6 +96,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
                                ObserverType,
                                NetworkStateObserver*,
                                scoped_refptr<base::SingleThreadTaskRunner>);
+    NetworkStateObserverHandle(const NetworkStateObserverHandle&) = delete;
+    NetworkStateObserverHandle& operator=(const NetworkStateObserverHandle&) =
+        delete;
     ~NetworkStateObserverHandle();
 
    private:
@@ -104,11 +106,11 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     ObserverType type_;
     NetworkStateObserver* observer_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(NetworkStateObserverHandle);
   };
 
   NetworkStateNotifier() : has_override_(false) {}
+  NetworkStateNotifier(const NetworkStateNotifier&) = delete;
+  NetworkStateNotifier& operator=(const NetworkStateNotifier&) = delete;
 
   ~NetworkStateNotifier() {
     DCHECK(connection_observers_.IsEmpty());
@@ -370,8 +372,6 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   ObserverListMap on_line_state_observers_;
 
   const uint8_t randomization_salt_ = base::RandInt(1, 20);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateNotifier);
 };
 
 PLATFORM_EXPORT NetworkStateNotifier& GetNetworkStateNotifier();

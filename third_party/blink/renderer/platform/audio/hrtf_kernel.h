@@ -32,7 +32,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -64,6 +63,8 @@ class PLATFORM_EXPORT HRTFKernel {
       : fft_frame_(std::move(fft_frame)),
         frame_delay_(frame_delay),
         sample_rate_(sample_rate) {}
+  HRTFKernel(const HRTFKernel&) = delete;
+  HRTFKernel& operator=(const HRTFKernel&) = delete;
 
   // Given two HRTFKernels, and an interpolation factor x: 0 -> 1, returns an
   // interpolated HRTFKernel.
@@ -82,8 +83,6 @@ class PLATFORM_EXPORT HRTFKernel {
   std::unique_ptr<FFTFrame> fft_frame_;
   float frame_delay_;
   float sample_rate_;
-
-  DISALLOW_COPY_AND_ASSIGN(HRTFKernel);
 };
 
 typedef Vector<std::unique_ptr<HRTFKernel>> HRTFKernelList;

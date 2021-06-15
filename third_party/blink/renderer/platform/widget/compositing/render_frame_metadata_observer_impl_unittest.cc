@@ -38,6 +38,10 @@ class MockRenderFrameMetadataObserverClient
             this,
             std::move(client_receiver)),
         render_frame_metadata_observer_remote_(std::move(observer)) {}
+  MockRenderFrameMetadataObserverClient(
+      const MockRenderFrameMetadataObserverClient&) = delete;
+  MockRenderFrameMetadataObserverClient& operator=(
+      const MockRenderFrameMetadataObserverClient&) = delete;
 
   MOCK_METHOD2(OnRenderFrameMetadataChanged,
                void(uint32_t frame_token,
@@ -52,13 +56,15 @@ class MockRenderFrameMetadataObserverClient
       render_frame_metadata_observer_client_receiver_;
   mojo::Remote<cc::mojom::blink::RenderFrameMetadataObserver>
       render_frame_metadata_observer_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderFrameMetadataObserverClient);
 };
 
 class RenderFrameMetadataObserverImplTest : public testing::Test {
  public:
   RenderFrameMetadataObserverImplTest() = default;
+  RenderFrameMetadataObserverImplTest(
+      const RenderFrameMetadataObserverImplTest&) = delete;
+  RenderFrameMetadataObserverImplTest& operator=(
+      const RenderFrameMetadataObserverImplTest&) = delete;
   ~RenderFrameMetadataObserverImplTest() override = default;
 
   RenderFrameMetadataObserverImpl& observer_impl() { return *observer_impl_; }
@@ -94,8 +100,6 @@ class RenderFrameMetadataObserverImplTest : public testing::Test {
   std::unique_ptr<testing::NiceMock<MockRenderFrameMetadataObserverClient>>
       client_;
   std::unique_ptr<RenderFrameMetadataObserverImpl> observer_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataObserverImplTest);
 };
 
 // This test verifies that the RenderFrameMetadataObserverImpl picks up

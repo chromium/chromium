@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNKER_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/region.h"
@@ -28,6 +27,8 @@ class PLATFORM_EXPORT PaintChunker final {
 
  public:
   explicit PaintChunker(Vector<PaintChunk>& chunks) { ResetChunks(&chunks); }
+  PaintChunker(const PaintChunker&) = delete;
+  PaintChunker& operator=(const PaintChunker&) = delete;
 
   // Finishes current chunks if any, and makes it ready to create chunks into
   // the given vector if not null.
@@ -118,8 +119,6 @@ class PLATFORM_EXPORT PaintChunker final {
 
   Color candidate_background_color_ = Color::kTransparent;
   float candidate_background_area_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintChunker);
 };
 
 }  // namespace blink

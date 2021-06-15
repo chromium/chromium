@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_DATE_TIME_FORMAT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_DATE_TIME_FORMAT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -104,11 +103,11 @@ class PLATFORM_EXPORT DateTimeFormat {
 
    public:
     TokenHandler() = default;
+    TokenHandler(const TokenHandler&) = delete;
+    TokenHandler& operator=(const TokenHandler&) = delete;
     virtual ~TokenHandler() = default;
     virtual void VisitField(FieldType, int number_of_pattern_characters) = 0;
     virtual void VisitLiteral(const String&) = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenHandler);
   };
 
   // Returns true if succeeded, false if failed.

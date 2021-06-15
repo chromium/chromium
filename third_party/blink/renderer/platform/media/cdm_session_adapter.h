@@ -13,7 +13,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_config.h"
@@ -37,6 +36,8 @@ class PLATFORM_EXPORT CdmSessionAdapter
     : public base::RefCounted<CdmSessionAdapter> {
  public:
   CdmSessionAdapter();
+  CdmSessionAdapter(const CdmSessionAdapter&) = delete;
+  CdmSessionAdapter& operator=(const CdmSessionAdapter&) = delete;
 
   // Creates the CDM for |key_system| using |cdm_factory| and returns the result
   // via |result|.
@@ -161,8 +162,6 @@ class PLATFORM_EXPORT CdmSessionAdapter
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CdmSessionAdapter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CdmSessionAdapter);
 };
 
 }  // namespace media

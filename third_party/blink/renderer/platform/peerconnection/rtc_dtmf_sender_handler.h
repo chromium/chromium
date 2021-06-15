@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_DTMF_SENDER_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_DTMF_SENDER_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -42,6 +41,8 @@ class PLATFORM_EXPORT RtcDtmfSenderHandler final {
 
   RtcDtmfSenderHandler(scoped_refptr<base::SingleThreadTaskRunner> main_thread,
                        webrtc::DtmfSenderInterface* dtmf_sender);
+  RtcDtmfSenderHandler(const RtcDtmfSenderHandler&) = delete;
+  RtcDtmfSenderHandler& operator=(const RtcDtmfSenderHandler&) = delete;
   ~RtcDtmfSenderHandler();
 
   void SetClient(RtcDtmfSenderHandler::Client* client);
@@ -61,8 +62,6 @@ class PLATFORM_EXPORT RtcDtmfSenderHandler final {
 
   // |weak_factory_| must be the last member.
   base::WeakPtrFactory<RtcDtmfSenderHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RtcDtmfSenderHandler);
 };
 
 }  // namespace blink

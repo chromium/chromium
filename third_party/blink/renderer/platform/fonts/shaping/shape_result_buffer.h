@@ -24,6 +24,8 @@ class PLATFORM_EXPORT ShapeResultBuffer {
 
  public:
   ShapeResultBuffer() : has_vertical_offsets_(false) {}
+  ShapeResultBuffer(const ShapeResultBuffer&) = delete;
+  ShapeResultBuffer& operator=(const ShapeResultBuffer&) = delete;
 
   void AppendResult(scoped_refptr<const ShapeResult> result) {
     has_vertical_offsets_ |= result->HasVerticalOffsets();
@@ -64,8 +66,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
   // rare.
   Vector<scoped_refptr<const ShapeResult>, 64> results_;
   bool has_vertical_offsets_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapeResultBuffer);
 };
 
 }  // namespace blink

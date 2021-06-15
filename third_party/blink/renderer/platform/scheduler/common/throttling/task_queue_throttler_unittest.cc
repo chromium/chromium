@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/bind.h"
@@ -71,6 +70,8 @@ class TaskQueueThrottlerTest : public testing::Test {
  public:
   TaskQueueThrottlerTest()
       : test_task_runner_(base::MakeRefCounted<TestMockTimeTaskRunner>()) {}
+  TaskQueueThrottlerTest(const TaskQueueThrottlerTest&) = delete;
+  TaskQueueThrottlerTest& operator=(const TaskQueueThrottlerTest&) = delete;
   ~TaskQueueThrottlerTest() override = default;
 
   void SetUp() override {
@@ -158,9 +159,6 @@ class TaskQueueThrottlerTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner_;
   TaskQueueThrottler* task_queue_throttler_ = nullptr;
   WakeUpBudgetPool* wake_up_budget_pool_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskQueueThrottlerTest);
 };
 
 // Advances mock clock every time we call NowTicks() from the scheduler.
@@ -191,6 +189,10 @@ class TaskQueueThrottlerWithAutoAdvancingTimeTest
  public:
   TaskQueueThrottlerWithAutoAdvancingTimeTest()
       : proxy_clock_(test_task_runner_) {}
+  TaskQueueThrottlerWithAutoAdvancingTimeTest(
+      const TaskQueueThrottlerWithAutoAdvancingTimeTest&) = delete;
+  TaskQueueThrottlerWithAutoAdvancingTimeTest& operator=(
+      const TaskQueueThrottlerWithAutoAdvancingTimeTest&) = delete;
   ~TaskQueueThrottlerWithAutoAdvancingTimeTest() override = default;
 
   void SetUp() override {
@@ -207,8 +209,6 @@ class TaskQueueThrottlerWithAutoAdvancingTimeTest
 
  private:
   AutoAdvancingProxyClock proxy_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskQueueThrottlerWithAutoAdvancingTimeTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

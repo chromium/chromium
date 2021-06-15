@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
@@ -40,6 +39,8 @@ class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
                    rtc::PacketSocketFactory* socket_factory,
                    const Config& config,
                    const GURL& origin);
+  P2PPortAllocator(const P2PPortAllocator&) = delete;
+  P2PPortAllocator& operator=(const P2PPortAllocator&) = delete;
   ~P2PPortAllocator() override;
 
   // Will also initialize the network manager passed into the constructor.
@@ -49,8 +50,6 @@ class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
   std::unique_ptr<rtc::NetworkManager> network_manager_;
   Config config_;
   GURL origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PPortAllocator);
 };
 
 }  // namespace blink

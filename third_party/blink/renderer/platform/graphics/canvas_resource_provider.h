@@ -208,6 +208,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return 0;
   }
 
+  CanvasResourceProvider(const CanvasResourceProvider&) = delete;
+  CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
   ~CanvasResourceProvider() override;
 
   base::WeakPtr<CanvasResourceProvider> CreateWeakPtr() {
@@ -355,8 +357,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   IdentifiabilityPaintOpDigest identifiability_paint_op_digest_;
 
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasResourceProvider);
 };
 
 }  // namespace blink

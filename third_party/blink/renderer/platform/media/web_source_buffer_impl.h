@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -24,6 +23,8 @@ enum class SourceBufferParseWarning;
 class PLATFORM_EXPORT WebSourceBufferImpl : public blink::WebSourceBuffer {
  public:
   WebSourceBufferImpl(const std::string& id, ChunkDemuxer* demuxer);
+  WebSourceBufferImpl(const WebSourceBufferImpl&) = delete;
+  WebSourceBufferImpl& operator=(const WebSourceBufferImpl&) = delete;
   ~WebSourceBufferImpl() override;
 
   // blink::WebSourceBuffer implementation.
@@ -71,8 +72,6 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public blink::WebSourceBuffer {
 
   base::TimeDelta append_window_start_;
   base::TimeDelta append_window_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSourceBufferImpl);
 };
 
 }  // namespace media

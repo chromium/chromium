@@ -35,7 +35,6 @@
 
 #include <iterator>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -182,10 +181,10 @@ class Deque
    public:
     BackingBuffer() : Base() {}
     explicit BackingBuffer(wtf_size_t capacity) : Base(capacity) {}
+    BackingBuffer(const BackingBuffer&) = delete;
+    BackingBuffer& operator=(const BackingBuffer&) = delete;
 
     void SetSize(wtf_size_t size) { size_ = size; }
-
-    DISALLOW_COPY_AND_ASSIGN(BackingBuffer);
   };
 
   typedef VectorTypeOperations<T, Allocator> TypeOperations;

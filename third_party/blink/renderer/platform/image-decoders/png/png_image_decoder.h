@@ -40,6 +40,8 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
                   const ColorBehavior&,
                   size_t max_decoded_bytes,
                   size_t offset = 0);
+  PNGImageDecoder(const PNGImageDecoder&) = delete;
+  PNGImageDecoder& operator=(const PNGImageDecoder&) = delete;
   ~PNGImageDecoder() override;
 
   // ImageDecoder:
@@ -81,8 +83,6 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_;
   size_t bit_depth_;
   std::unique_ptr<ImageFrame::PixelData[]> color_transform_scanline_;
-
-  DISALLOW_COPY_AND_ASSIGN(PNGImageDecoder);
 };
 
 }  // namespace blink

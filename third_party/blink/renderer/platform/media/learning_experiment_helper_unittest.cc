@@ -24,6 +24,9 @@ namespace media {
 class MockLearningTaskController : public LearningTaskController {
  public:
   explicit MockLearningTaskController(const LearningTask& task) : task_(task) {}
+  MockLearningTaskController(const MockLearningTaskController&) = delete;
+  MockLearningTaskController& operator=(const MockLearningTaskController&) =
+      delete;
   ~MockLearningTaskController() override = default;
 
   MOCK_METHOD4(BeginObservation,
@@ -45,7 +48,6 @@ class MockLearningTaskController : public LearningTaskController {
 
  private:
   LearningTask task_;
-  DISALLOW_COPY_AND_ASSIGN(MockLearningTaskController);
 };
 
 class LearningExperimentHelperTest : public testing::Test {

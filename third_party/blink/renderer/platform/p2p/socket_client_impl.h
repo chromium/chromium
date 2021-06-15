@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,6 +38,8 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
   P2PSocketClientImpl(
       P2PSocketDispatcher* dispatcher,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+  P2PSocketClientImpl(const P2PSocketClientImpl&) = delete;
+  P2PSocketClientImpl& operator=(const P2PSocketClientImpl&) = delete;
   ~P2PSocketClientImpl() override;
 
   // Initialize socket of the specified |type| and connected to the
@@ -116,8 +117,6 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
 
   mojo::Remote<network::mojom::blink::P2PSocket> socket_;
   mojo::Receiver<network::mojom::blink::P2PSocketClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketClientImpl);
 };
 
 }  // namespace blink

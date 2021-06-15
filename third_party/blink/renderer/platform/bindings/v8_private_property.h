@@ -40,6 +40,8 @@ class PLATFORM_EXPORT V8PrivateProperty {
   };
 
   V8PrivateProperty() = default;
+  V8PrivateProperty(const V8PrivateProperty&) = delete;
+  V8PrivateProperty& operator=(const V8PrivateProperty&) = delete;
 
   // Provides fast access to V8's private properties.
   //
@@ -134,8 +136,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
   ScopedPersistent<v8::Private> symbol_window_document_cached_accessor_;
 
   WTF::HashMap<const void*, v8::Eternal<v8::Private>> symbol_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8PrivateProperty);
 };
 
 }  // namespace blink

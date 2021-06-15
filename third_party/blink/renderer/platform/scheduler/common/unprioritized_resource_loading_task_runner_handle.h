@@ -23,6 +23,11 @@ class PLATFORM_EXPORT UnprioritizedResourceLoadingTaskRunnerHandle
   static std::unique_ptr<UnprioritizedResourceLoadingTaskRunnerHandle>
   WrapTaskRunner(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  UnprioritizedResourceLoadingTaskRunnerHandle(
+      const UnprioritizedResourceLoadingTaskRunnerHandle&) = delete;
+  UnprioritizedResourceLoadingTaskRunnerHandle& operator=(
+      const UnprioritizedResourceLoadingTaskRunnerHandle&) = delete;
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override;
 
   void DidChangeRequestPriority(net::RequestPriority priority) override;
@@ -35,8 +40,6 @@ class PLATFORM_EXPORT UnprioritizedResourceLoadingTaskRunnerHandle
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnprioritizedResourceLoadingTaskRunnerHandle);
 };
 
 }  // namespace scheduler

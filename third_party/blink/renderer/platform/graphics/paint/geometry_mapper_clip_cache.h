@@ -24,6 +24,8 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
 
  public:
   GeometryMapperClipCache();
+  GeometryMapperClipCache(const GeometryMapperClipCache&) = delete;
+  GeometryMapperClipCache& operator=(const GeometryMapperClipCache&) = delete;
 
   struct ClipAndTransform {
     const ClipPaintPropertyNode* ancestor_clip;
@@ -72,8 +74,6 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
 
   Vector<ClipCacheEntry> clip_cache_;
   unsigned cache_generation_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeometryMapperClipCache);
 };
 
 }  // namespace blink

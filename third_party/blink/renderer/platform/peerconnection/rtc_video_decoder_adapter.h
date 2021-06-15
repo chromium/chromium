@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -75,6 +74,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   static std::unique_ptr<RTCVideoDecoderAdapter> Create(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       const webrtc::SdpVideoFormat& format);
+
+  RTCVideoDecoderAdapter(const RTCVideoDecoderAdapter&) = delete;
+  RTCVideoDecoderAdapter& operator=(const RTCVideoDecoderAdapter&) = delete;
 
   // Called on |media_task_runner_|.
   ~RTCVideoDecoderAdapter() override;
@@ -176,8 +178,6 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   base::WeakPtr<RTCVideoDecoderAdapter> weak_this_;
   base::WeakPtrFactory<RTCVideoDecoderAdapter> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderAdapter);
 };
 
 }  // namespace blink

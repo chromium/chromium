@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -44,6 +43,9 @@ enum FailureMode {
 class FakeLayerTreeViewDelegate : public StubLayerTreeViewDelegate {
  public:
   FakeLayerTreeViewDelegate() = default;
+  FakeLayerTreeViewDelegate(const FakeLayerTreeViewDelegate&) = delete;
+  FakeLayerTreeViewDelegate& operator=(const FakeLayerTreeViewDelegate&) =
+      delete;
 
   void RequestNewLayerTreeFrameSink(
       LayerTreeFrameSinkCallback callback) override {
@@ -111,8 +113,6 @@ class FakeLayerTreeViewDelegate : public StubLayerTreeViewDelegate {
   int num_failures_before_success_ = 0;
   int num_failures_since_last_success_ = 0;
   int num_successes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLayerTreeViewDelegate);
 };
 
 // Verify that failing to create an output surface will cause the compositor
@@ -128,6 +128,10 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
       : LayerTreeView(delegate,
                       scheduler),
         delegate_(delegate) {}
+  LayerTreeViewWithFrameSinkTracking(
+      const LayerTreeViewWithFrameSinkTracking&) = delete;
+  LayerTreeViewWithFrameSinkTracking& operator=(
+      const LayerTreeViewWithFrameSinkTracking&) = delete;
 
   // Force a new output surface to be created.
   void SynchronousComposite() {
@@ -197,8 +201,6 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
   int expected_successes_ = 0;
   int expected_requests_ = 0;
   FailureMode failure_mode_ = NO_FAILURE;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeViewWithFrameSinkTracking);
 };
 
 class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
@@ -215,6 +217,10 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
         /*main_thread_pipeline=*/nullptr,
         /*compositor_thread_pipeline=*/nullptr);
   }
+  LayerTreeViewWithFrameSinkTrackingTest(
+      const LayerTreeViewWithFrameSinkTrackingTest&) = delete;
+  LayerTreeViewWithFrameSinkTrackingTest& operator=(
+      const LayerTreeViewWithFrameSinkTrackingTest&) = delete;
 
   void RunTest(int expected_successes, FailureMode failure_mode) {
     layer_tree_view_delegate_.Reset();
@@ -256,9 +262,6 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
   blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler_;
   FakeLayerTreeViewDelegate layer_tree_view_delegate_;
   LayerTreeViewWithFrameSinkTracking layer_tree_view_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeViewWithFrameSinkTrackingTest);
 };
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, SucceedOnce) {

@@ -48,8 +48,6 @@ const char kCnameAliasWasBlockedHistogram[] =
     "SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias";
 
 class ResourceLoaderTest : public testing::Test {
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoaderTest);
-
  public:
   enum class From {
     kServiceWorker,
@@ -58,6 +56,8 @@ class ResourceLoaderTest : public testing::Test {
 
   ResourceLoaderTest()
       : foo_url_("https://foo.test"), bar_url_("https://bar.test") {}
+  ResourceLoaderTest(const ResourceLoaderTest&) = delete;
+  ResourceLoaderTest& operator=(const ResourceLoaderTest&) = delete;
 
  protected:
   using RequestMode = network::mojom::RequestMode;

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
@@ -24,6 +23,8 @@ class RTCVideoEncoderFactory : public webrtc::VideoEncoderFactory {
  public:
   explicit RTCVideoEncoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories);
+  RTCVideoEncoderFactory(const RTCVideoEncoderFactory&) = delete;
+  RTCVideoEncoderFactory& operator=(const RTCVideoEncoderFactory&) = delete;
   ~RTCVideoEncoderFactory() override;
 
   // webrtc::VideoEncoderFactory implementation.
@@ -37,8 +38,6 @@ class RTCVideoEncoderFactory : public webrtc::VideoEncoderFactory {
   media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   GpuCodecSupportWaiter gpu_codec_support_waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCVideoEncoderFactory);
 };
 
 }  // namespace blink

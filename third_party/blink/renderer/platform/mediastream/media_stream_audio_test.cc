@@ -47,6 +47,10 @@ class FakeMediaStreamAudioSource : public MediaStreamAudioSource,
         next_buffer_size_(kBufferSize),
         sample_count_(0) {}
 
+  FakeMediaStreamAudioSource(const FakeMediaStreamAudioSource&) = delete;
+  FakeMediaStreamAudioSource& operator=(const FakeMediaStreamAudioSource&) =
+      delete;
+
   ~FakeMediaStreamAudioSource() final {
     DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
     EnsureSourceIsStopped();
@@ -123,8 +127,6 @@ class FakeMediaStreamAudioSource : public MediaStreamAudioSource,
   base::subtle::Atomic32 next_buffer_size_;
   std::unique_ptr<media::AudioBus> audio_bus_;
   int sample_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaStreamAudioSource);
 };
 
 // A simple WebMediaStreamAudioSink that consumes audio and confirms the
@@ -142,6 +144,9 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
         audio_is_silent_(true),
         was_ended_(false),
         enable_state_(NO_ENABLE_NOTIFICATION) {}
+
+  FakeMediaStreamAudioSink(const FakeMediaStreamAudioSink&) = delete;
+  FakeMediaStreamAudioSink& operator=(const FakeMediaStreamAudioSink&) = delete;
 
   ~FakeMediaStreamAudioSink() final {
     DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
@@ -232,8 +237,6 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
   base::subtle::Atomic32 audio_is_silent_;
   bool was_ended_;
   EnableState enable_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaStreamAudioSink);
 };
 
 }  // namespace

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_WEBRTC_UMA_HISTOGRAMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_WEBRTC_UMA_HISTOGRAMS_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -58,6 +57,9 @@ PLATFORM_EXPORT void UpdateWebRTCMethodCount(RTCAPIName api_name);
 // metric at most once per session.
 class PLATFORM_EXPORT PerSessionWebRTCAPIMetrics {
  public:
+  PerSessionWebRTCAPIMetrics(const PerSessionWebRTCAPIMetrics&) = delete;
+  PerSessionWebRTCAPIMetrics& operator=(const PerSessionWebRTCAPIMetrics&) =
+      delete;
   virtual ~PerSessionWebRTCAPIMetrics();
 
   static PerSessionWebRTCAPIMetrics* GetInstance();
@@ -89,8 +91,6 @@ class PLATFORM_EXPORT PerSessionWebRTCAPIMetrics {
   bool has_used_api_[static_cast<int>(RTCAPIName::kInvalidName)];
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PerSessionWebRTCAPIMetrics);
 };
 
 }  //  namespace blink

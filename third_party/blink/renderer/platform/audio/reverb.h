@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/reverb_convolver.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -55,6 +54,8 @@ class PLATFORM_EXPORT Reverb {
          size_t max_fft_size,
          bool use_background_threads,
          bool normalize);
+  Reverb(const Reverb&) = delete;
+  Reverb& operator=(const Reverb&) = delete;
 
   void Process(const AudioBus* source_bus,
                AudioBus* destination_bus,
@@ -80,8 +81,6 @@ class PLATFORM_EXPORT Reverb {
 
   // For "True" stereo processing
   scoped_refptr<AudioBus> temp_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Reverb);
 };
 
 }  // namespace blink

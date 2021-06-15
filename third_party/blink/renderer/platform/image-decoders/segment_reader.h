@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_READER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -48,15 +47,14 @@ class PLATFORM_EXPORT SegmentReader
       scoped_refptr<ParkableImage>);
 
   SegmentReader() = default;
+  SegmentReader(const SegmentReader&) = delete;
+  SegmentReader& operator=(const SegmentReader&) = delete;
   virtual ~SegmentReader() = default;
   virtual size_t size() const = 0;
   virtual size_t GetSomeData(const char*& data, size_t position) const = 0;
   virtual sk_sp<SkData> GetAsSkData() const = 0;
   virtual void LockData() {}
   virtual void UnlockData() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SegmentReader);
 };
 
 }  // namespace blink

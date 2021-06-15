@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
@@ -119,6 +118,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     return static_cast<V8PerIsolateData*>(
         isolate->GetData(gin::kEmbedderBlink));
   }
+
+  V8PerIsolateData(const V8PerIsolateData&) = delete;
+  V8PerIsolateData& operator=(const V8PerIsolateData&) = delete;
 
   static void WillBeDestroyed(v8::Isolate*);
   static void Destroy(v8::Isolate*);
@@ -276,8 +278,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   v8::Isolate::GCCallback prologue_callback_;
   v8::Isolate::GCCallback epilogue_callback_;
   size_t gc_callback_depth_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(V8PerIsolateData);
 };
 
 }  // namespace blink

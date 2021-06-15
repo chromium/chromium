@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_THROTTLED_TIME_DOMAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_THROTTLED_TIME_DOMAIN_H_
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -18,6 +17,8 @@ class PLATFORM_EXPORT ThrottledTimeDomain
     : public base::sequence_manager::TimeDomain {
  public:
   ThrottledTimeDomain();
+  ThrottledTimeDomain(const ThrottledTimeDomain&) = delete;
+  ThrottledTimeDomain& operator=(const ThrottledTimeDomain&) = delete;
   ~ThrottledTimeDomain() override;
 
   void SetNextTaskRunTime(base::TimeTicks run_time);
@@ -38,8 +39,6 @@ class PLATFORM_EXPORT ThrottledTimeDomain
   // Next task run time provided by task queue throttler. Note that it does not
   // get reset, so it is valid only when in the future.
   absl::optional<base::TimeTicks> next_task_run_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottledTimeDomain);
 };
 
 }  // namespace scheduler

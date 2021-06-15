@@ -52,6 +52,10 @@ struct CrossThreadFetchClientSettingsObjectData {
         address_space(address_space),
         insecure_requests_policy(insecure_requests_policy),
         insecure_navigations_set(std::move(insecure_navigations_set)) {}
+  CrossThreadFetchClientSettingsObjectData(
+      const CrossThreadFetchClientSettingsObjectData&) = delete;
+  CrossThreadFetchClientSettingsObjectData& operator=(
+      const CrossThreadFetchClientSettingsObjectData&) = delete;
 
   const KURL global_object_url;
   const KURL base_url;
@@ -65,9 +69,6 @@ struct CrossThreadFetchClientSettingsObjectData {
   const mojom::blink::InsecureRequestPolicy insecure_requests_policy;
   const FetchClientSettingsObject::InsecureNavigationsSet
       insecure_navigations_set;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrossThreadFetchClientSettingsObjectData);
 };
 
 // This takes a partial snapshot of the execution context's states so that an

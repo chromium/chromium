@@ -102,6 +102,8 @@ class WatchTimeReporterTest
   class WatchTimeInterceptor : public mojom::WatchTimeRecorder {
    public:
     WatchTimeInterceptor(WatchTimeReporterTest* parent) : parent_(parent) {}
+    WatchTimeInterceptor(const WatchTimeInterceptor&) = delete;
+    WatchTimeInterceptor& operator=(const WatchTimeInterceptor&) = delete;
     ~WatchTimeInterceptor() override = default;
 
     // mojom::WatchTimeRecorder implementation:
@@ -235,8 +237,6 @@ class WatchTimeReporterTest
 
    private:
     WatchTimeReporterTest* parent_;
-
-    DISALLOW_COPY_AND_ASSIGN(WatchTimeInterceptor);
   };
 
   class FakeMediaMetricsProvider : public mojom::MediaMetricsProvider {
@@ -292,6 +292,9 @@ class WatchTimeReporterTest
       : has_video_(std::get<0>(GetParam())),
         has_audio_(std::get<1>(GetParam())),
         fake_metrics_provider_(this) {}
+
+  WatchTimeReporterTest(const WatchTimeReporterTest&) = delete;
+  WatchTimeReporterTest& operator=(const WatchTimeReporterTest&) = delete;
 
   ~WatchTimeReporterTest() override {
     CycleReportingTimer();
@@ -639,9 +642,6 @@ class WatchTimeReporterTest
   FakeMediaMetricsProvider fake_metrics_provider_;
   std::unique_ptr<blink::WatchTimeReporter> wtr_;
   base::TimeDelta reporting_interval_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeReporterTest);
 };
 
 class DisplayTypeWatchTimeReporterTest : public WatchTimeReporterTest {};

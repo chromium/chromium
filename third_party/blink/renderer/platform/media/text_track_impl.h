@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/text_track.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -31,6 +30,8 @@ class PLATFORM_EXPORT TextTrackImpl : public TextTrack {
                 blink::WebMediaPlayerClient* client,
                 std::unique_ptr<WebInbandTextTrackImpl> text_track);
 
+  TextTrackImpl(const TextTrackImpl&) = delete;
+  TextTrackImpl& operator=(const TextTrackImpl&) = delete;
   ~TextTrackImpl() override;
 
   void addWebVTTCue(base::TimeDelta start,
@@ -53,7 +54,6 @@ class PLATFORM_EXPORT TextTrackImpl : public TextTrack {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   blink::WebMediaPlayerClient* client_;
   std::unique_ptr<WebInbandTextTrackImpl> text_track_;
-  DISALLOW_COPY_AND_ASSIGN(TextTrackImpl);
 };
 
 }  // namespace media

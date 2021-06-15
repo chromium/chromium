@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -86,6 +85,10 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const gfx::ColorSpace& render_color_space,
       const webrtc::SdpVideoFormat& format);
+
+  RTCVideoDecoderStreamAdapter(const RTCVideoDecoderStreamAdapter&) = delete;
+  RTCVideoDecoderStreamAdapter& operator=(const RTCVideoDecoderStreamAdapter&) =
+      delete;
 
   // Called on |media_task_runner_|.
   ~RTCVideoDecoderStreamAdapter() override;
@@ -222,8 +225,6 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   base::WeakPtr<RTCVideoDecoderStreamAdapter> weak_this_;
   base::WeakPtrFactory<RTCVideoDecoderStreamAdapter> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderStreamAdapter);
 };
 
 }  // namespace blink

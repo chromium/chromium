@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_CANCELABLE_CLOSURE_HOLDER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -19,6 +18,8 @@ class CancelableClosureHolder {
 
  public:
   CancelableClosureHolder();
+  CancelableClosureHolder(const CancelableClosureHolder&) = delete;
+  CancelableClosureHolder& operator=(const CancelableClosureHolder&) = delete;
   ~CancelableClosureHolder();
 
   // Resets the closure to be wrapped by the cancelable callback.  Cancels any
@@ -35,8 +36,6 @@ class CancelableClosureHolder {
  private:
   base::RepeatingClosure callback_;
   base::CancelableRepeatingClosure cancelable_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CancelableClosureHolder);
 };
 
 }  // namespace scheduler

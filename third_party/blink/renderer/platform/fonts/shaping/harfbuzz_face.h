@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
@@ -53,6 +52,8 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
                                             uint64_t unique_id) {
     return base::AdoptRef(new HarfBuzzFace(platform_data, unique_id));
   }
+  HarfBuzzFace(const HarfBuzzFace&) = delete;
+  HarfBuzzFace& operator=(const HarfBuzzFace&) = delete;
   ~HarfBuzzFace();
 
   enum VerticalLayoutCallbacks { PrepareForVerticalLayout, NoVerticalLayout };
@@ -78,8 +79,6 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
   uint64_t unique_id_;
   hb_font_t* unscaled_font_;
   HarfBuzzFontData* harfbuzz_font_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HarfBuzzFace);
 };
 
 }  // namespace blink

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "media/base/cdm_config.h"
@@ -402,6 +401,9 @@ class KeySystemConfigSelectorTest : public testing::Test {
       : key_systems_(std::make_unique<FakeKeySystems>()),
         media_permission_(std::make_unique<FakeMediaPermission>()),
         web_frame_delegate_(std::make_unique<FakeWebLocalFrameDelegate>()) {}
+  KeySystemConfigSelectorTest(const KeySystemConfigSelectorTest&) = delete;
+  KeySystemConfigSelectorTest& operator=(const KeySystemConfigSelectorTest&) =
+      delete;
 
   void SelectConfig() {
     media_permission_->requests = 0;
@@ -484,8 +486,6 @@ class KeySystemConfigSelectorTest : public testing::Test {
 
   int succeeded_count_;
   int not_supported_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeySystemConfigSelectorTest);
 };
 
 // --- Basics ---

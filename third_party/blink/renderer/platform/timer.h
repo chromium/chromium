@@ -28,7 +28,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -46,6 +45,8 @@ namespace blink {
 class PLATFORM_EXPORT TimerBase {
  public:
   explicit TimerBase(scoped_refptr<base::SingleThreadTaskRunner>);
+  TimerBase(const TimerBase&) = delete;
+  TimerBase& operator=(const TimerBase&) = delete;
   virtual ~TimerBase();
 
   void Start(base::TimeDelta next_fire_interval,
@@ -109,8 +110,6 @@ class PLATFORM_EXPORT TimerBase {
   // Used for invalidating tasks at arbitrary times and after the timer has been
   // destructed.
   base::WeakPtrFactory<TimerBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TimerBase);
 };
 
 template <typename TimerFiredClass>

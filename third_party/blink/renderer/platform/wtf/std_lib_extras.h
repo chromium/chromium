@@ -30,7 +30,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
@@ -95,6 +94,9 @@ class StaticSingleton final {
     LEAK_SANITIZER_IGNORE_OBJECT(instance_.Get());
   }
 
+  StaticSingleton(const StaticSingleton&) = delete;
+  StaticSingleton& operator=(const StaticSingleton&) = delete;
+
   Type& Get(bool allow_cross_thread_use) {
 #if DCHECK_IS_ON()
     DCHECK(IsNotRacy(allow_cross_thread_use));
@@ -146,8 +148,6 @@ class StaticSingleton final {
   bool safely_initialized_;
   base::PlatformThreadId thread_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(StaticSingleton);
 };
 
 }  // namespace WTF

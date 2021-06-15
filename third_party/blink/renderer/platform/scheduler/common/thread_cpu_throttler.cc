@@ -8,7 +8,6 @@
 
 #include "base/atomicops.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/threading/platform_thread.h"
@@ -32,6 +31,8 @@ class ThreadCPUThrottler::ThrottlingThread final
     : public base::PlatformThread::Delegate {
  public:
   explicit ThrottlingThread(double rate);
+  ThrottlingThread(const ThrottlingThread&) = delete;
+  ThrottlingThread& operator=(const ThrottlingThread&) = delete;
   ~ThrottlingThread() override;
 
   void SetThrottlingRate(double rate);
@@ -61,8 +62,6 @@ class ThreadCPUThrottler::ThrottlingThread final
   base::PlatformThreadHandle throttled_thread_handle_;
   base::PlatformThreadHandle throttling_thread_handle_;
   base::AtomicFlag cancellation_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingThread);
 };
 
 #ifdef USE_SIGNALS

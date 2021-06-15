@@ -39,6 +39,8 @@ class PLATFORM_EXPORT MetricsHelper {
 
  public:
   MetricsHelper(ThreadType thread_type, bool has_cpu_timing_for_each_task);
+  MetricsHelper(const MetricsHelper&) = delete;
+  MetricsHelper& operator=(const MetricsHelper&) = delete;
   ~MetricsHelper();
 
  protected:
@@ -69,8 +71,6 @@ class PLATFORM_EXPORT MetricsHelper {
       background_thread_task_duration_reporter_;
   scheduling_metrics::TaskDurationMetricReporter<ThreadType>
       background_thread_task_cpu_duration_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsHelper);
 };
 
 }  // namespace scheduler

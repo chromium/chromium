@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_STATE_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
@@ -148,6 +147,9 @@ class PLATFORM_EXPORT ExceptionState {
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
 
+  ExceptionState(const ExceptionState&) = delete;
+  ExceptionState& operator=(const ExceptionState&) = delete;
+
   ~ExceptionState() {
     if (!exception_.IsEmpty()) {
       V8ThrowException::ThrowException(isolate_, exception_.NewLocal(isolate_));
@@ -261,7 +263,6 @@ class PLATFORM_EXPORT ExceptionState {
   TraceWrapperV8Reference<v8::Value> exception_;
 
   friend class ContextScope;
-  DISALLOW_COPY_AND_ASSIGN(ExceptionState);
 };
 
 // NonThrowableExceptionState never allow call sites to throw an exception.

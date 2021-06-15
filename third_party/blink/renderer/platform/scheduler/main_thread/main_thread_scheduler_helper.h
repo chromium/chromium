@@ -23,6 +23,9 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
   MainThreadSchedulerHelper(
       base::sequence_manager::SequenceManager* sequence_manager,
       MainThreadSchedulerImpl* main_thread_scheduler);
+  MainThreadSchedulerHelper(const MainThreadSchedulerHelper&) = delete;
+  MainThreadSchedulerHelper& operator=(const MainThreadSchedulerHelper&) =
+      delete;
   ~MainThreadSchedulerHelper() override;
 
   scoped_refptr<MainThreadTaskQueue> NewTaskQueue(
@@ -45,8 +48,6 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
 
   const scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<MainThreadTaskQueue> control_task_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadSchedulerHelper);
 };
 
 }  // namespace scheduler

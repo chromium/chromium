@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_delegate.h"
@@ -38,6 +37,8 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
       std::unique_ptr<cc::AnimationEffectTimings> effect_timings);
 
   explicit CompositorAnimation(scoped_refptr<cc::Animation>);
+  CompositorAnimation(const CompositorAnimation&) = delete;
+  CompositorAnimation& operator=(const CompositorAnimation&) = delete;
   ~CompositorAnimation() override;
 
   cc::Animation* CcAnimation() const;
@@ -87,8 +88,6 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
 
   scoped_refptr<cc::Animation> animation_;
   CompositorAnimationDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorAnimation);
 };
 
 }  // namespace blink

@@ -47,6 +47,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   VideoFrameSubmitter(WebContextProviderCallback,
                       cc::VideoPlaybackRoughnessReporter::ReportingCallback,
                       std::unique_ptr<VideoFrameResourceProvider>);
+  VideoFrameSubmitter(const VideoFrameSubmitter&) = delete;
+  VideoFrameSubmitter& operator=(const VideoFrameSubmitter&) = delete;
   ~VideoFrameSubmitter() override;
 
   // cc::VideoFrameProvider::Client implementation.
@@ -201,8 +203,6 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<VideoFrameSubmitter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameSubmitter);
 };
 
 }  // namespace blink

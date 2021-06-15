@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
@@ -32,6 +31,8 @@ class PLATFORM_EXPORT CdmResultPromise : public CdmPromiseTemplate<T...> {
   CdmResultPromise(const blink::WebContentDecryptionModuleResult& result,
                    const std::string& key_system_uma_prefix,
                    const std::string& uma_name);
+  CdmResultPromise(const CdmResultPromise&) = delete;
+  CdmResultPromise& operator=(const CdmResultPromise&) = delete;
   ~CdmResultPromise() override;
 
   // CdmPromiseTemplate<T> implementation.
@@ -53,8 +54,6 @@ class PLATFORM_EXPORT CdmResultPromise : public CdmPromiseTemplate<T...> {
 
   // Time when |this| is created.
   base::TimeTicks creation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmResultPromise);
 };
 
 template <typename... T>

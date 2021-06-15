@@ -54,6 +54,8 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
                           String sdp_mid,
                           absl::optional<uint16_t> sdp_m_line_index,
                           String username_fragment);
+  RTCIceCandidatePlatform(const RTCIceCandidatePlatform&) = delete;
+  RTCIceCandidatePlatform& operator=(const RTCIceCandidatePlatform&) = delete;
   ~RTCIceCandidatePlatform() = default;
 
   const String& Candidate() const { return candidate_; }
@@ -92,8 +94,6 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
   String related_address_;
   absl::optional<uint16_t> related_port_;
   String username_fragment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCIceCandidatePlatform);
 };
 
 }  // namespace blink

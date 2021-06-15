@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HANDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HANDLE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"

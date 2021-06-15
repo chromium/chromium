@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -41,6 +40,8 @@ class WTF_EXPORT StringBuilder {
 
  public:
   StringBuilder() : no_buffer_() {}
+  StringBuilder(const StringBuilder&) = delete;
+  StringBuilder& operator=(const StringBuilder&) = delete;
   ~StringBuilder() { Clear(); }
 
   void Append(const UChar*, unsigned length);
@@ -254,8 +255,6 @@ class WTF_EXPORT StringBuilder {
   unsigned length_ = 0;
   bool is_8bit_ = true;
   bool has_buffer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(StringBuilder);
 };
 
 template <typename CharType>

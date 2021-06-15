@@ -20,6 +20,9 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   USING_FAST_MALLOC(GeometryMapperTransformCache);
  public:
   GeometryMapperTransformCache() = default;
+  GeometryMapperTransformCache(const GeometryMapperTransformCache&) = delete;
+  GeometryMapperTransformCache& operator=(const GeometryMapperTransformCache&) =
+      delete;
 
   static void ClearCache();
   bool IsValid() const;
@@ -209,7 +212,6 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   bool has_fixed_ = false;
 
   unsigned cache_generation_ = s_global_generation - 1;
-  DISALLOW_COPY_AND_ASSIGN(GeometryMapperTransformCache);
 };
 
 }  // namespace blink

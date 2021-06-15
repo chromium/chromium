@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/input/layer_selection_bound.h"
@@ -137,6 +136,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
  public:
   PaintArtifactCompositor(
       base::WeakPtr<CompositorScrollCallbacks> scroll_callbacks);
+  PaintArtifactCompositor(const PaintArtifactCompositor&) = delete;
+  PaintArtifactCompositor& operator=(const PaintArtifactCompositor&) = delete;
   ~PaintArtifactCompositor() override;
 
   struct ViewportProperties {
@@ -468,8 +469,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   friend class StubChromeClientForCAP;
   friend class PaintArtifactCompositorTest;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintArtifactCompositor);
 };
 
 }  // namespace blink

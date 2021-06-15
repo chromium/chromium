@@ -15,6 +15,8 @@ namespace blink {
 class CodeCacheLoaderMock : public WebCodeCacheLoader {
  public:
   CodeCacheLoaderMock() {}
+  CodeCacheLoaderMock(const CodeCacheLoaderMock&) = delete;
+  CodeCacheLoaderMock& operator=(const CodeCacheLoaderMock&) = delete;
   ~CodeCacheLoaderMock() override = default;
 
   // CodeCacheLoader methods:
@@ -31,8 +33,6 @@ class CodeCacheLoaderMock : public WebCodeCacheLoader {
 
  private:
   base::WeakPtrFactory<CodeCacheLoaderMock> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CodeCacheLoaderMock);
 };
 
 }  // namespace blink

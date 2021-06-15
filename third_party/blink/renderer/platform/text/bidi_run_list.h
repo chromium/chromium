@@ -37,6 +37,8 @@ class BidiRunList final {
         last_run_(nullptr),
         logically_last_run_(nullptr),
         run_count_(0) {}
+  BidiRunList(const BidiRunList&) = delete;
+  BidiRunList& operator=(const BidiRunList&) = delete;
 
   // FIXME: Once BidiResolver no longer owns the BidiRunList,
   // then ~BidiRunList should call deleteRuns() automatically.
@@ -67,8 +69,6 @@ class BidiRunList final {
   Run* last_run_;
   Run* logically_last_run_;
   unsigned run_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidiRunList);
 };
 
 template <class Run>

@@ -94,6 +94,8 @@ class PLATFORM_EXPORT MainThreadEventQueue
       const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
       scheduler::WebThreadScheduler* main_thread_scheduler,
       bool allow_raf_aligned_input);
+  MainThreadEventQueue(const MainThreadEventQueue&) = delete;
+  MainThreadEventQueue& operator=(const MainThreadEventQueue&) = delete;
 
   // Type of dispatching of the event.
   enum class DispatchType { kBlocking, kNonBlocking };
@@ -191,8 +193,6 @@ class PLATFORM_EXPORT MainThreadEventQueue
   std::unique_ptr<base::OneShotTimer> raf_fallback_timer_;
 
   std::unique_ptr<InputEventPrediction> event_predictor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadEventQueue);
 };
 
 }  // namespace blink

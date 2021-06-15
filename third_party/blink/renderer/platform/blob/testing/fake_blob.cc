@@ -15,6 +15,8 @@ namespace {
 class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
  public:
   SimpleDataPipeGetter(const String& str) : str_(str) {}
+  SimpleDataPipeGetter(const SimpleDataPipeGetter&) = delete;
+  SimpleDataPipeGetter& operator=(const SimpleDataPipeGetter&) = delete;
   ~SimpleDataPipeGetter() override = default;
 
   // network::mojom::DataPipeGetter implementation:
@@ -33,8 +35,6 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
 
  private:
   String str_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDataPipeGetter);
 };
 
 }  // namespace

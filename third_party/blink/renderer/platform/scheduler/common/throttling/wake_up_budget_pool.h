@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
@@ -20,6 +19,8 @@ class PLATFORM_EXPORT WakeUpBudgetPool : public BudgetPool {
   WakeUpBudgetPool(const char* name,
                    BudgetPoolController* budget_pool_controller,
                    base::TimeTicks now);
+  WakeUpBudgetPool(const WakeUpBudgetPool&) = delete;
+  WakeUpBudgetPool& operator=(const WakeUpBudgetPool&) = delete;
   ~WakeUpBudgetPool() override;
 
   // Sets the interval between wake ups. This can be invoked at any time. If a
@@ -68,8 +69,6 @@ class PLATFORM_EXPORT WakeUpBudgetPool : public BudgetPool {
   bool allow_unaligned_wake_up_is_no_recent_wake_up_ = false;
 
   absl::optional<base::TimeTicks> last_wake_up_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeUpBudgetPool);
 };
 
 }  // namespace scheduler

@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORM_OPERATION_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -65,6 +64,8 @@ class PLATFORM_EXPORT TransformOperation
   };
 
   TransformOperation() = default;
+  TransformOperation(const TransformOperation&) = delete;
+  TransformOperation& operator=(const TransformOperation&) = delete;
   virtual ~TransformOperation() = default;
 
   virtual bool operator==(const TransformOperation&) const = 0;
@@ -122,9 +123,6 @@ class PLATFORM_EXPORT TransformOperation
                                                       BoxSizeDependency b) {
     return static_cast<BoxSizeDependency>(a | b);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransformOperation);
 };
 
 }  // namespace blink

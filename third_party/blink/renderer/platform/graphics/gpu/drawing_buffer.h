@@ -34,7 +34,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -143,6 +142,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       const CanvasColorParams&,
       gl::GpuPreference);
 
+  DrawingBuffer(const DrawingBuffer&) = delete;
+  DrawingBuffer& operator=(const DrawingBuffer&) = delete;
   ~DrawingBuffer() override;
 
   // Destruction will be completed after all mailboxes are released.
@@ -386,6 +387,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 GLuint texture_id,
                 std::unique_ptr<gfx::GpuMemoryBuffer>,
                 gpu::Mailbox mailbox);
+    ColorBuffer(const ColorBuffer&) = delete;
+    ColorBuffer& operator=(const ColorBuffer&) = delete;
     ~ColorBuffer();
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
@@ -420,9 +423,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // The sync token for when this buffer was received back from the
     // compositor.
     gpu::SyncToken receive_sync_token;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ColorBuffer);
   };
 
   template <typename CopyFunction>
@@ -659,8 +659,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   gl::GpuPreference current_active_gpu_;
 
   base::WeakPtrFactory<DrawingBuffer> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrawingBuffer);
 };
 
 }  // namespace blink

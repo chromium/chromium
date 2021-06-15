@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -29,6 +28,9 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   // Returns nullptr if instrumentation is not enabled.
   static std::unique_ptr<DocumentResourceCoordinator> MaybeCreate(
       const BrowserInterfaceBrokerProxy&);
+  DocumentResourceCoordinator(const DocumentResourceCoordinator&) = delete;
+  DocumentResourceCoordinator& operator=(const DocumentResourceCoordinator&) =
+      delete;
   ~DocumentResourceCoordinator();
 
   void SetNetworkAlmostIdle();
@@ -49,8 +51,6 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
       service_;
 
   bool had_form_interaction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentResourceCoordinator);
 };
 
 }  // namespace blink

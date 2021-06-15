@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_parameters.h"
@@ -44,6 +43,10 @@ class WebAudioSourceProviderImplTest : public testing::Test,
         mock_sink_(new media::MockAudioRendererSink()),
         wasp_impl_(new WebAudioSourceProviderImpl(mock_sink_, &media_log_)) {}
 
+  WebAudioSourceProviderImplTest(const WebAudioSourceProviderImplTest&) =
+      delete;
+  WebAudioSourceProviderImplTest& operator=(
+      const WebAudioSourceProviderImplTest&) = delete;
   virtual ~WebAudioSourceProviderImplTest() = default;
 
   void CallAllSinkMethodsAndVerify(bool verify) {
@@ -116,8 +119,6 @@ class WebAudioSourceProviderImplTest : public testing::Test,
   scoped_refptr<WebAudioSourceProviderImpl> wasp_impl_;
 
   base::WeakPtrFactory<WebAudioSourceProviderImplTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebAudioSourceProviderImplTest);
 };
 
 TEST_F(WebAudioSourceProviderImplTest, SetClientBeforeInitialize) {

@@ -120,6 +120,8 @@ class PartialResourceRequest {
 class ResourceFetcherTest : public testing::Test {
  public:
   ResourceFetcherTest() = default;
+  ResourceFetcherTest(const ResourceFetcherTest&) = delete;
+  ResourceFetcherTest& operator=(const ResourceFetcherTest&) = delete;
   ~ResourceFetcherTest() override { GetMemoryCache()->EvictResources(); }
 
   class TestResourceLoadObserver final : public ResourceLoadObserver {
@@ -202,9 +204,6 @@ class ResourceFetcherTest : public testing::Test {
   }
 
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceFetcherTest);
 };
 
 TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {
@@ -796,6 +795,9 @@ class ScopedMockRedirectRequester {
       : mock_factory_(mock_factory),
         context_(context),
         task_runner_(std::move(task_runner)) {}
+  ScopedMockRedirectRequester(const ScopedMockRedirectRequester&) = delete;
+  ScopedMockRedirectRequester& operator=(const ScopedMockRedirectRequester&) =
+      delete;
 
   void RegisterRedirect(const WebString& from_url, const WebString& to_url) {
     KURL redirect_url(from_url);
@@ -835,8 +837,6 @@ class ScopedMockRedirectRequester {
   WebURLLoaderMockFactory* mock_factory_;
   MockFetchContext* context_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockRedirectRequester);
 };
 
 TEST_F(ResourceFetcherTest, SynchronousRequest) {

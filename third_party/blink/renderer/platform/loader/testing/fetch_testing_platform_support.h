@@ -18,6 +18,9 @@ class FetchTestingPlatformSupport
     : public TestingPlatformSupportWithMockScheduler {
  public:
   FetchTestingPlatformSupport();
+  FetchTestingPlatformSupport(const FetchTestingPlatformSupport&) = delete;
+  FetchTestingPlatformSupport& operator=(const FetchTestingPlatformSupport&) =
+      delete;
   ~FetchTestingPlatformSupport() override;
 
   WebURLLoaderMockFactory* GetURLLoaderMockFactory();
@@ -27,8 +30,6 @@ class FetchTestingPlatformSupport
   class FetchTestingWebURLLoaderMockFactory;
 
   std::unique_ptr<WebURLLoaderMockFactory> url_loader_mock_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FetchTestingPlatformSupport);
 };
 
 }  // namespace blink

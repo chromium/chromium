@@ -33,7 +33,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -105,6 +104,9 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   static scoped_refptr<SecurityOrigin> CreateFromUrlOrigin(const url::Origin&);
   url::Origin ToUrlOrigin() const;
+
+  SecurityOrigin(const SecurityOrigin&) = delete;
+  SecurityOrigin& operator=(const SecurityOrigin&) = delete;
 
   // Some URL schemes use nested URLs for their security context. For example,
   // filesystem URLs look like the following:
@@ -436,8 +438,6 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // For opaque origins, tracks the non-opaque origin from which the opaque
   // origin is derived.
   const scoped_refptr<const SecurityOrigin> precursor_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityOrigin);
 };
 
 }  // namespace blink

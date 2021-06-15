@@ -7,7 +7,6 @@
 
 #include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -71,6 +70,8 @@ class PLATFORM_EXPORT DrawingRecorder {
                         client,
                         DisplayItem::PaintPhaseToDrawingType(phase)) {}
 
+  DrawingRecorder(const DrawingRecorder&) = delete;
+  DrawingRecorder& operator=(const DrawingRecorder&) = delete;
   ~DrawingRecorder();
 
   // Sometimes we don't the the exact visual rect when we create a
@@ -84,8 +85,6 @@ class PLATFORM_EXPORT DrawingRecorder {
   const DisplayItem::Type type_;
   IntRect visual_rect_;
   absl::optional<DOMNodeId> dom_node_id_to_restore_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrawingRecorder);
 };
 
 #if DCHECK_IS_ON()
@@ -94,11 +93,12 @@ class DisableListModificationCheck {
 
  public:
   DisableListModificationCheck();
+  DisableListModificationCheck(const DisableListModificationCheck&) = delete;
+  DisableListModificationCheck& operator=(const DisableListModificationCheck&) =
+      delete;
 
  private:
   base::AutoReset<bool> disabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisableListModificationCheck);
 };
 #endif  // DCHECK_IS_ON()
 

@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/vdmx_parser.h"
 
-#include "base/macros.h"
 #include "base/sys_byteorder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -51,6 +50,8 @@ class Buffer {
  public:
   Buffer(const uint8_t* buffer, size_t length)
       : buffer_(buffer), length_(length), offset_(0) {}
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
 
   bool skip(size_t numBytes) {
     if (offset_ + numBytes > length_)
@@ -88,8 +89,6 @@ class Buffer {
   const uint8_t* const buffer_;
   const size_t length_;
   size_t offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 }  // namespace

@@ -44,6 +44,10 @@ class InterceptingCanvasBase : public SkCanvas {
   class CanvasInterceptorBase {
     STACK_ALLOCATED();
 
+   public:
+    CanvasInterceptorBase(const CanvasInterceptorBase&) = delete;
+    CanvasInterceptorBase& operator=(const CanvasInterceptorBase&) = delete;
+
    protected:
     CanvasInterceptorBase(InterceptingCanvasBase* canvas) : canvas_(canvas) {
       ++canvas_->call_nesting_depth_;
@@ -58,10 +62,10 @@ class InterceptingCanvasBase : public SkCanvas {
     DerivedCanvas* Canvas() { return static_cast<DerivedCanvas*>(canvas_); }
     bool TopLevelCall() const { return canvas_->CallNestingDepth() == 1; }
     InterceptingCanvasBase* canvas_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CanvasInterceptorBase);
   };
+
+  InterceptingCanvasBase(const InterceptingCanvasBase&) = delete;
+  InterceptingCanvasBase& operator=(const InterceptingCanvasBase&) = delete;
 
   void ResetStepCount() { call_count_ = 0; }
 
@@ -130,8 +134,6 @@ class InterceptingCanvasBase : public SkCanvas {
  private:
   unsigned call_nesting_depth_;
   unsigned call_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptingCanvasBase);
 };
 
 template <typename DerivedCanvas>

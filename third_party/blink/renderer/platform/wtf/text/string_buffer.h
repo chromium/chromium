@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUFFER_H_
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -49,6 +48,9 @@ class StringBuffer {
     CharType* characters;
     data_ = StringImpl::CreateUninitialized(length, characters);
   }
+
+  StringBuffer(const StringBuffer&) = delete;
+  StringBuffer& operator=(const StringBuffer&) = delete;
 
   ~StringBuffer() = default;
 
@@ -74,8 +76,6 @@ class StringBuffer {
 
  private:
   scoped_refptr<StringImpl> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringBuffer);
 };
 
 template <typename CharType>

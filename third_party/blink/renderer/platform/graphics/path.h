@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -115,11 +114,12 @@ class PLATFORM_EXPORT Path {
   // vary depending on curvature and number of segments, but should never be
   // worse than that of the state-less method on Path.
   class PLATFORM_EXPORT PositionCalculator {
-    DISALLOW_COPY_AND_ASSIGN(PositionCalculator);
     USING_FAST_MALLOC(PositionCalculator);
 
    public:
     explicit PositionCalculator(const Path&);
+    PositionCalculator(const PositionCalculator&) = delete;
+    PositionCalculator& operator=(const PositionCalculator&) = delete;
 
     PointAndTangent PointAndNormalAtLength(float length);
 

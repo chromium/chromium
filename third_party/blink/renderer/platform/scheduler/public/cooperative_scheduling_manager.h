@@ -36,6 +36,9 @@ class PLATFORM_EXPORT CooperativeSchedulingManager {
   static CooperativeSchedulingManager* Instance();
 
   CooperativeSchedulingManager();
+  CooperativeSchedulingManager(const CooperativeSchedulingManager&) = delete;
+  CooperativeSchedulingManager& operator=(const CooperativeSchedulingManager&) =
+      delete;
   virtual ~CooperativeSchedulingManager() = default;
 
   // Returns true if reentry is allowed in the current C++ stack.
@@ -65,8 +68,6 @@ class PLATFORM_EXPORT CooperativeSchedulingManager {
   base::TimeTicks wait_until_;
   const base::TickClock* clock_;
   bool feature_enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(CooperativeSchedulingManager);
 };
 
 inline void CooperativeSchedulingManager::Safepoint() {

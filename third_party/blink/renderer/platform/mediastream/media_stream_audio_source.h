@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/limits.h"
@@ -70,6 +69,8 @@ class PLATFORM_EXPORT MediaStreamAudioSource
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool is_local_source,
       bool disable_local_echo);
+  MediaStreamAudioSource(const MediaStreamAudioSource&) = delete;
+  MediaStreamAudioSource& operator=(const MediaStreamAudioSource&) = delete;
   ~MediaStreamAudioSource() override;
 
   // Returns the MediaStreamAudioSource instance owned by the given blink
@@ -236,8 +237,6 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // Provides weak pointers so that MediaStreamAudioTracks won't call
   // StopAudioDeliveryTo() if this instance dies first.
   base::WeakPtrFactory<MediaStreamAudioSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamAudioSource);
 };
 
 }  // namespace blink

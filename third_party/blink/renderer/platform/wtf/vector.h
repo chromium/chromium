@@ -28,7 +28,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
@@ -573,8 +572,6 @@ class VectorBufferBase {
   T* buffer_;
   wtf_size_t capacity_;
   wtf_size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorBufferBase);
 };
 
 template <typename T,
@@ -700,6 +697,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
     if (capacity > inlineCapacity)
       Base::AllocateBuffer(capacity);
   }
+
+  VectorBuffer(const VectorBuffer&) = delete;
+  VectorBuffer& operator=(const VectorBuffer&) = delete;
 
   void Destruct() {
     DeallocateBuffer(buffer_);
@@ -983,8 +983,6 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   alignas(T) char inline_buffer_[kInlineBufferSize];
   template <typename U, wtf_size_t inlineBuffer, typename V>
   friend class Deque;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorBuffer);
 };
 
 //

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -41,6 +40,8 @@ class SharedContextRateLimiter final {
 
  public:
   explicit SharedContextRateLimiter(unsigned max_pending_ticks);
+  SharedContextRateLimiter(const SharedContextRateLimiter&) = delete;
+  SharedContextRateLimiter& operator=(const SharedContextRateLimiter&) = delete;
 
   void Tick();
   void Reset();
@@ -50,8 +51,6 @@ class SharedContextRateLimiter final {
   Deque<GLuint> queries_;
   unsigned max_pending_ticks_;
   bool can_use_sync_queries_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedContextRateLimiter);
 };
 
 }  // namespace blink

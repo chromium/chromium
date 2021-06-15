@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/heap/unified_heap_controller.h"
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"

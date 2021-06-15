@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_TRANSFORM_KEYFRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_TRANSFORM_KEYFRAME_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
@@ -19,6 +18,9 @@ class PLATFORM_EXPORT CompositorTransformKeyframe : public CompositorKeyframe {
   CompositorTransformKeyframe(double time,
                               CompositorTransformOperations value,
                               const TimingFunction&);
+  CompositorTransformKeyframe(const CompositorTransformKeyframe&) = delete;
+  CompositorTransformKeyframe& operator=(const CompositorTransformKeyframe&) =
+      delete;
   ~CompositorTransformKeyframe() override;
 
   std::unique_ptr<gfx::TransformKeyframe> CloneToCC() const;
@@ -29,8 +31,6 @@ class PLATFORM_EXPORT CompositorTransformKeyframe : public CompositorKeyframe {
 
  private:
   std::unique_ptr<gfx::TransformKeyframe> transform_keyframe_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorTransformKeyframe);
 };
 
 }  // namespace blink

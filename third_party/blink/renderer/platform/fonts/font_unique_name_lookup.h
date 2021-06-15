@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_UNIQUE_NAME_LOOKUP_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -34,6 +33,8 @@ class FontUniqueNameLookup {
 
   virtual sk_sp<SkTypeface> MatchUniqueName(const String& font_unique_name) = 0;
 
+  FontUniqueNameLookup(const FontUniqueNameLookup&) = delete;
+  FontUniqueNameLookup& operator=(const FontUniqueNameLookup&) = delete;
   virtual ~FontUniqueNameLookup() = default;
 
   // Below: Methods for asynchronously retrieving the FontUniqueNameLookup
@@ -62,8 +63,6 @@ class FontUniqueNameLookup {
 #if defined(OS_WIN) || defined(OS_ANDROID)
   std::unique_ptr<FontTableMatcher> font_table_matcher_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookup);
 };
 
 }  // namespace blink

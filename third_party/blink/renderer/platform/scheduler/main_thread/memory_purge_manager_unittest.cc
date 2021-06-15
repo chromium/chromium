@@ -26,6 +26,8 @@ class MemoryPurgeManagerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         memory_purge_manager_(task_environment_.GetMainThreadTaskRunner()) {}
+  MemoryPurgeManagerTest(const MemoryPurgeManagerTest&) = delete;
+  MemoryPurgeManagerTest& operator=(const MemoryPurgeManagerTest&) = delete;
 
   void SetUp() override {
     memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
@@ -67,8 +69,6 @@ class MemoryPurgeManagerTest : public testing::Test {
   void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel) {
     memory_pressure_count_++;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryPurgeManagerTest);
 };
 
 // Verify that OnPageFrozen() triggers a memory pressure notification in a

@@ -23,7 +23,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FILTER_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FILTER_EFFECT_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -51,6 +50,8 @@ enum FilterEffectType {
 
 class PLATFORM_EXPORT FilterEffect : public GarbageCollected<FilterEffect> {
  public:
+  FilterEffect(const FilterEffect&) = delete;
+  FilterEffect& operator=(const FilterEffect&) = delete;
   virtual ~FilterEffect();
   virtual void Trace(Visitor*) const;
 
@@ -164,8 +165,6 @@ class PLATFORM_EXPORT FilterEffect : public GarbageCollected<FilterEffect> {
   InterpolationSpace operating_interpolation_space_;
 
   sk_sp<PaintFilter> image_filters_[4];
-
-  DISALLOW_COPY_AND_ASSIGN(FilterEffect);
 };
 
 }  // namespace blink

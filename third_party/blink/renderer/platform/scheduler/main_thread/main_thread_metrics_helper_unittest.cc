@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
 #include <memory>
-#include "base/macros.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -52,6 +51,9 @@ class MainThreadMetricsHelperTest : public testing::Test {
       : task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
+  MainThreadMetricsHelperTest(const MainThreadMetricsHelperTest&) = delete;
+  MainThreadMetricsHelperTest& operator=(const MainThreadMetricsHelperTest&) =
+      delete;
 
   ~MainThreadMetricsHelperTest() override = default;
 
@@ -241,8 +243,6 @@ class MainThreadMetricsHelperTest : public testing::Test {
       FakePageScheduler::Builder().SetIsAudioPlaying(true).Build();
   std::unique_ptr<FakePageScheduler> throtting_exempt_view_ =
       FakePageScheduler::Builder().SetIsThrottlingExempt(true).Build();
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadMetricsHelperTest);
 };
 
 TEST_F(MainThreadMetricsHelperTest, GetFrameStatusTest) {

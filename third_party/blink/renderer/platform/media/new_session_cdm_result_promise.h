@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/cdm_promise.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
@@ -52,6 +51,9 @@ class PLATFORM_EXPORT NewSessionCdmResultPromise
       const std::string& uma_name,
       SessionInitializedCB new_session_created_cb,
       const std::vector<SessionInitStatus>& expected_statuses);
+  NewSessionCdmResultPromise(const NewSessionCdmResultPromise&) = delete;
+  NewSessionCdmResultPromise& operator=(const NewSessionCdmResultPromise&) =
+      delete;
   ~NewSessionCdmResultPromise() override;
 
   // CdmPromiseTemplate<T> implementation.
@@ -75,8 +77,6 @@ class PLATFORM_EXPORT NewSessionCdmResultPromise
 
   // Time when |this| is created.
   base::TimeTicks creation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewSessionCdmResultPromise);
 };
 
 }  // namespace media

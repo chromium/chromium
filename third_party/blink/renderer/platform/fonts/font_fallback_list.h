@@ -51,6 +51,8 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
     return base::AdoptRef(new FontFallbackList(font_fallback_map));
   }
 
+  FontFallbackList(const FontFallbackList&) = delete;
+  FontFallbackList& operator=(const FontFallbackList&) = delete;
   ~FontFallbackList();
 
   // Returns whether the cached data is valid. We can use a FontFallbackList
@@ -133,8 +135,6 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool is_invalid_ : 1;
 
   base::WeakPtr<ShapeCache> shape_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontFallbackList);
 };
 
 }  // namespace blink

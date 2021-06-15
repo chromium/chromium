@@ -13,7 +13,6 @@
 #include "base/atomicops.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "base/profiler/sample_metadata.h"
@@ -161,6 +160,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   MainThreadSchedulerImpl(
       std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
       absl::optional<base::Time> initial_virtual_time);
+  MainThreadSchedulerImpl(const MainThreadSchedulerImpl&) = delete;
+  MainThreadSchedulerImpl& operator=(const MainThreadSchedulerImpl&) = delete;
 
   ~MainThreadSchedulerImpl() override;
 
@@ -1040,8 +1041,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   WebAgentGroupScheduler* current_agent_group_scheduler_{nullptr};
 
   base::WeakPtrFactory<MainThreadSchedulerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadSchedulerImpl);
 };
 
 }  // namespace scheduler

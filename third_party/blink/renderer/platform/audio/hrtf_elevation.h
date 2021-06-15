@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_kernel.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -62,6 +61,9 @@ class PLATFORM_EXPORT HRTFElevation {
       HRTFElevation* hrtf_elevation2,
       float x,
       float sample_rate);
+
+  HRTFElevation(const HRTFElevation&) = delete;
+  HRTFElevation& operator=(const HRTFElevation&) = delete;
 
   // Returns the list of left or right ear HRTFKernels for all the azimuths
   // going from 0 to 360 degrees.
@@ -122,8 +124,6 @@ class PLATFORM_EXPORT HRTFElevation {
   std::unique_ptr<HRTFKernelList> kernel_list_r_;
   double elevation_angle_;
   float sample_rate_;
-
-  DISALLOW_COPY_AND_ASSIGN(HRTFElevation);
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_UNIFIED_HEAP_MARKING_VISITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_UNIFIED_HEAP_MARKING_VISITOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/impl/marking_visitor.h"
 #include "v8/include/v8.h"
 
@@ -23,6 +22,9 @@ struct WrapperTypeInfo;
 // used from any thread.
 class PLATFORM_EXPORT UnifiedHeapMarkingVisitorBase {
  public:
+  UnifiedHeapMarkingVisitorBase(const UnifiedHeapMarkingVisitorBase&) = delete;
+  UnifiedHeapMarkingVisitorBase& operator=(
+      const UnifiedHeapMarkingVisitorBase&) = delete;
   virtual ~UnifiedHeapMarkingVisitorBase() = default;
 
  protected:
@@ -37,8 +39,6 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitorBase {
 
  private:
   int task_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedHeapMarkingVisitorBase);
 };
 
 // Same as the base visitor with the difference that it is bound to main thread.
@@ -56,14 +56,14 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitor
                            const void*);
 
   UnifiedHeapMarkingVisitor(ThreadState*, MarkingMode, v8::Isolate*);
+  UnifiedHeapMarkingVisitor(const UnifiedHeapMarkingVisitor&) = delete;
+  UnifiedHeapMarkingVisitor& operator=(const UnifiedHeapMarkingVisitor&) =
+      delete;
   ~UnifiedHeapMarkingVisitor() override = default;
 
  protected:
   using Visitor::Visit;
   void Visit(const TraceWrapperV8Reference<v8::Value>&) final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnifiedHeapMarkingVisitor);
 };
 
 // Same as the base visitor with the difference that it is bound to a
@@ -76,6 +76,10 @@ class PLATFORM_EXPORT ConcurrentUnifiedHeapMarkingVisitor
                                       MarkingMode,
                                       v8::Isolate*,
                                       int task_id);
+  ConcurrentUnifiedHeapMarkingVisitor(
+      const ConcurrentUnifiedHeapMarkingVisitor&) = delete;
+  ConcurrentUnifiedHeapMarkingVisitor& operator=(
+      const ConcurrentUnifiedHeapMarkingVisitor&) = delete;
   ~ConcurrentUnifiedHeapMarkingVisitor() override = default;
 
   void FlushWorklists() override;
@@ -83,9 +87,6 @@ class PLATFORM_EXPORT ConcurrentUnifiedHeapMarkingVisitor
  protected:
   using Visitor::Visit;
   void Visit(const TraceWrapperV8Reference<v8::Value>&) final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConcurrentUnifiedHeapMarkingVisitor);
 };
 
 }  // namespace blink

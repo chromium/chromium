@@ -42,6 +42,8 @@ class PLATFORM_EXPORT AudioResamplerKernel {
 
  public:
   AudioResamplerKernel(AudioResampler*);
+  AudioResamplerKernel(const AudioResamplerKernel&) = delete;
+  AudioResamplerKernel& operator=(const AudioResamplerKernel&) = delete;
 
   // getSourcePointer() should be called each time before process() is called.
   // Given a number of frames to process (for subsequent call to process()), it
@@ -79,8 +81,6 @@ class PLATFORM_EXPORT AudioResamplerKernel {
   // there will be no buffered samples.
   float last_values_[2];
   unsigned fill_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioResamplerKernel);
 };
 
 }  // namespace blink

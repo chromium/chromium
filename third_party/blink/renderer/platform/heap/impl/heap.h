@@ -36,7 +36,6 @@
 #include <unordered_set>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/impl/gc_info.h"
 #include "third_party/blink/renderer/platform/heap/impl/heap_page.h"

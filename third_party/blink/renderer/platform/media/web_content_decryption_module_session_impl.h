@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -32,6 +31,10 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   WebContentDecryptionModuleSessionImpl(
       const scoped_refptr<CdmSessionAdapter>& adapter,
       blink::WebEncryptedMediaSessionType session_type);
+  WebContentDecryptionModuleSessionImpl(
+      const WebContentDecryptionModuleSessionImpl&) = delete;
+  WebContentDecryptionModuleSessionImpl& operator=(
+      const WebContentDecryptionModuleSessionImpl&) = delete;
   ~WebContentDecryptionModuleSessionImpl() override;
 
   // blink::WebContentDecryptionModuleSession implementation.
@@ -96,8 +99,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   // actually fires.
   base::WeakPtrFactory<WebContentDecryptionModuleSessionImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentDecryptionModuleSessionImpl);
 };
 
 }  // namespace media

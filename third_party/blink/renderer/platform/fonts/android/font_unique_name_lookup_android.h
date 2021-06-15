@@ -23,6 +23,9 @@ namespace blink {
 class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
  public:
   FontUniqueNameLookupAndroid() = default;
+  FontUniqueNameLookupAndroid(const FontUniqueNameLookupAndroid&) = delete;
+  FontUniqueNameLookupAndroid& operator=(const FontUniqueNameLookupAndroid&) =
+      delete;
   ~FontUniqueNameLookupAndroid() override;
 
   bool IsFontUniqueNameLookupReadyForSyncLookup() override;
@@ -51,8 +54,6 @@ class FontUniqueNameLookupAndroid : public FontUniqueNameLookup {
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
   absl::optional<bool> sync_available_;
   absl::optional<Vector<String>> queryable_fonts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookupAndroid);
 };
 
 }  // namespace blink

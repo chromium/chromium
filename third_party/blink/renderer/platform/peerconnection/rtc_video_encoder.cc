@@ -361,6 +361,8 @@ class RTCVideoEncoder::Impl
   Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
        webrtc::VideoCodecType video_codec_type,
        webrtc::VideoContentType video_content_type);
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
 
   // Create the VEA and call Initialize() on it.  Called once per instantiation,
   // and then the instance is bound forevermore to whichever thread made the
@@ -559,8 +561,6 @@ class RTCVideoEncoder::Impl
   // Instead, we cache an error status here and return it the next time an
   // interface entry point is called. This is protected by |lock_|.
   int32_t status_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,

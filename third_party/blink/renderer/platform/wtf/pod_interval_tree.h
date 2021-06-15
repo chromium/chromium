@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
@@ -87,6 +86,9 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
       : PODRedBlackTree<IntervalType>(arena) {
     Init();
   }
+
+  PODIntervalTree(const PODIntervalTree&) = delete;
+  PODIntervalTree& operator=(const PODIntervalTree&) = delete;
 
   // Returns all intervals in the tree which overlap the given query
   // interval. The returned intervals are sorted by increasing low
@@ -327,8 +329,6 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
 #else
   static void LogVerificationFailedAtNode(IntervalNode const*) {}
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PODIntervalTree);
 };
 
 #ifndef NDEBUG

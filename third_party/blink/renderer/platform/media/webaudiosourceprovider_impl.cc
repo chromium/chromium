@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -34,6 +33,8 @@ class AutoTryLock {
  public:
   explicit AutoTryLock(base::Lock& lock)
       : lock_(lock), acquired_(lock_.Try()) {}
+  AutoTryLock(const AutoTryLock&) = delete;
+  AutoTryLock& operator=(const AutoTryLock&) = delete;
 
   bool locked() const { return acquired_; }
 
@@ -47,7 +48,6 @@ class AutoTryLock {
  private:
   base::Lock& lock_;
   const bool acquired_;
-  DISALLOW_COPY_AND_ASSIGN(AutoTryLock);
 };
 
 }  // namespace
@@ -59,6 +59,8 @@ class WebAudioSourceProviderImpl::TeeFilter
     : public AudioRendererSink::RenderCallback {
  public:
   TeeFilter() : copy_required_(false) {}
+  TeeFilter(const TeeFilter&) = delete;
+  TeeFilter& operator=(const TeeFilter&) = delete;
   ~TeeFilter() override = default;
 
   void Initialize(AudioRendererSink::RenderCallback* renderer,
@@ -138,8 +140,6 @@ class WebAudioSourceProviderImpl::TeeFilter
   std::atomic<bool> copy_required_;
   base::Lock copy_lock_;
   CopyAudioCB copy_audio_bus_callback_ GUARDED_BY(copy_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(TeeFilter);
 };
 
 WebAudioSourceProviderImpl::WebAudioSourceProviderImpl(

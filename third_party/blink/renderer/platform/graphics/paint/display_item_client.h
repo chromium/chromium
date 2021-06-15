@@ -32,6 +32,8 @@ class PLATFORM_EXPORT DisplayItemClient {
     OnCreate();
 #endif
   }
+  DisplayItemClient(const DisplayItemClient&) = delete;
+  DisplayItemClient& operator=(const DisplayItemClient&) = delete;
   virtual ~DisplayItemClient() {
 #if DCHECK_IS_ON()
     OnDestroy();
@@ -116,8 +118,6 @@ class PLATFORM_EXPORT DisplayItemClient {
 
   mutable PaintInvalidationReason paint_invalidation_reason_ =
       PaintInvalidationReason::kJustCreated;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayItemClient);
 };
 
 inline bool operator==(const DisplayItemClient& client1,

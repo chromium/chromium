@@ -4,7 +4,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"

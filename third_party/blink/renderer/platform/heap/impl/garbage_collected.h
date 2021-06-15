@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_GARBAGE_COLLECTED_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_GARBAGE_COLLECTED_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"

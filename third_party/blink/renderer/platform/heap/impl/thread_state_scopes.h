@@ -17,12 +17,13 @@ namespace blink {
 // allocations. E.g. allocations during GC.
 class ThreadState::NoAllocationScope final {
   STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(NoAllocationScope);
 
  public:
   explicit NoAllocationScope(ThreadState* state) : state_(state) {
     state_->EnterNoAllocationScope();
   }
+  NoAllocationScope(const NoAllocationScope&) = delete;
+  NoAllocationScope& operator=(const NoAllocationScope&) = delete;
   ~NoAllocationScope() { state_->LeaveNoAllocationScope(); }
 
  private:
@@ -31,13 +32,14 @@ class ThreadState::NoAllocationScope final {
 
 class ThreadState::SweepForbiddenScope final {
   STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(SweepForbiddenScope);
 
  public:
   explicit SweepForbiddenScope(ThreadState* state) : state_(state) {
     DCHECK(!state_->sweep_forbidden_);
     state_->sweep_forbidden_ = true;
   }
+  SweepForbiddenScope(const SweepForbiddenScope&) = delete;
+  SweepForbiddenScope& operator=(const SweepForbiddenScope&) = delete;
   ~SweepForbiddenScope() {
     DCHECK(state_->sweep_forbidden_);
     state_->sweep_forbidden_ = false;

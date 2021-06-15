@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/platform/geometry/length.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -38,6 +37,9 @@ class CalculationValueHandleMap {
 
  public:
   CalculationValueHandleMap() = default;
+  CalculationValueHandleMap(const CalculationValueHandleMap&) = delete;
+  CalculationValueHandleMap& operator=(const CalculationValueHandleMap&) =
+      delete;
 
   int insert(scoped_refptr<const CalculationValue> calc_value) {
     DCHECK(index_);
@@ -78,8 +80,6 @@ class CalculationValueHandleMap {
  private:
   int index_ = 1;
   HashMap<int, scoped_refptr<const CalculationValue>> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CalculationValueHandleMap);
 };
 
 static CalculationValueHandleMap& CalcHandles() {

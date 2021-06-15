@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -77,6 +76,10 @@ class TestResourceRequestSenderDelegate
     : public WebResourceRequestSenderDelegate {
  public:
   TestResourceRequestSenderDelegate() = default;
+  TestResourceRequestSenderDelegate(const TestResourceRequestSenderDelegate&) =
+      delete;
+  TestResourceRequestSenderDelegate& operator=(
+      const TestResourceRequestSenderDelegate&) = delete;
   ~TestResourceRequestSenderDelegate() override = default;
 
   void OnRequestComplete() override {}
@@ -92,6 +95,8 @@ class TestResourceRequestSenderDelegate
    public:
     explicit WrapperPeer(scoped_refptr<WebRequestPeer> original_peer)
         : original_peer_(std::move(original_peer)) {}
+    WrapperPeer(const WrapperPeer&) = delete;
+    WrapperPeer& operator=(const WrapperPeer&) = delete;
 
     // WebRequestPeer overrides:
     void OnUploadProgress(uint64_t position, uint64_t size) override {}
@@ -119,12 +124,7 @@ class TestResourceRequestSenderDelegate
     scoped_refptr<WebRequestPeer> original_peer_;
     network::mojom::URLResponseHeadPtr response_head_;
     mojo::ScopedDataPipeConsumerHandle body_handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(WrapperPeer);
   };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestResourceRequestSenderDelegate);
 };
 
 // A mock WebRequestPeer to receive messages from the WebResourceRequestSender.

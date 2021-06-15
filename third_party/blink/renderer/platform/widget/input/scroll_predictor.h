@@ -27,6 +27,8 @@ class PLATFORM_EXPORT ScrollPredictor {
   // Select the predictor type from field trial params and initialize the
   // predictor.
   explicit ScrollPredictor();
+  ScrollPredictor(const ScrollPredictor&) = delete;
+  ScrollPredictor& operator=(const ScrollPredictor&) = delete;
   ~ScrollPredictor();
 
   // Reset the predictors on each GSB.
@@ -81,8 +83,6 @@ class PLATFORM_EXPORT ScrollPredictor {
 
   // Handler used for evaluating the prediction
   ui::PredictionMetricsHandler metrics_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollPredictor);
 };
 
 }  // namespace blink

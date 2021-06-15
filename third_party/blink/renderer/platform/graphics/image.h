@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
@@ -70,6 +69,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   friend class GraphicsContext;
 
  public:
+  Image(const Image&) = delete;
+  Image& operator=(const Image&) = delete;
   virtual ~Image();
 
   static cc::ImageDecodeCache& SharedCCDecodeCache(SkColorType);
@@ -332,7 +333,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   PaintImage::Id stable_image_id_;
   const bool is_multipart_;
   std::unique_ptr<DarkModeImageCache> dark_mode_image_cache_;
-  DISALLOW_COPY_AND_ASSIGN(Image);
 };
 
 }  // namespace blink

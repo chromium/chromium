@@ -29,6 +29,9 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
   WebAudioMediaStreamSource(
       MediaStreamSource* media_stream_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  WebAudioMediaStreamSource(const WebAudioMediaStreamSource&) = delete;
+  WebAudioMediaStreamSource& operator=(const WebAudioMediaStreamSource&) =
+      delete;
 
   ~WebAudioMediaStreamSource() override;
 
@@ -76,8 +79,6 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
   // This object registers with a MediaStreamSource. We keep track of
   // that in order to be able to deregister before stopping this source.
   Persistent<MediaStreamSource> media_stream_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAudioMediaStreamSource);
 };
 
 }  // namespace blink

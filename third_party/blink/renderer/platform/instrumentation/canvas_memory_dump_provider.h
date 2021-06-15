@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_CANVAS_MEMORY_DUMP_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_CANVAS_MEMORY_DUMP_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -28,6 +27,8 @@ class PLATFORM_EXPORT CanvasMemoryDumpProvider final
 
  public:
   static CanvasMemoryDumpProvider* Instance();
+  CanvasMemoryDumpProvider(const CanvasMemoryDumpProvider&) = delete;
+  CanvasMemoryDumpProvider& operator=(const CanvasMemoryDumpProvider&) = delete;
   ~CanvasMemoryDumpProvider() override = default;
 
   // MemoryDumpProvider implementation.
@@ -42,8 +43,6 @@ class PLATFORM_EXPORT CanvasMemoryDumpProvider final
 
   base::Lock lock_;
   WTF::HashSet<CanvasMemoryDumpClient*> clients_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasMemoryDumpProvider);
 };
 
 }  // namespace blink

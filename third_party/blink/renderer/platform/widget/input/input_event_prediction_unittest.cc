@@ -23,6 +23,8 @@ class InputEventPredictionTest : public testing::Test {
     ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
                                      ::features::kPredictorNameEmpty);
   }
+  InputEventPredictionTest(const InputEventPredictionTest&) = delete;
+  InputEventPredictionTest& operator=(const InputEventPredictionTest&) = delete;
 
   int GetPredictorMapSize() const {
     return event_predictor_->pointer_id_predictor_map_.size();
@@ -69,8 +71,6 @@ class InputEventPredictionTest : public testing::Test {
   std::unique_ptr<InputEventPrediction> event_predictor_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputEventPredictionTest);
 };
 
 TEST_F(InputEventPredictionTest, PredictorType) {

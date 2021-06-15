@@ -21,7 +21,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -103,6 +102,8 @@ struct VideoCaptureImpl::BufferContext
         break;
     }
   }
+  BufferContext(const BufferContext&) = delete;
+  BufferContext& operator=(const BufferContext&) = delete;
 
   VideoFrameBufferHandleType buffer_type() const { return buffer_type_; }
   const uint8_t* data() const { return data_; }
@@ -242,8 +243,6 @@ struct VideoCaptureImpl::BufferContext
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   std::unique_ptr<GpuMemoryBufferResources> gmb_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferContext);
 };
 
 VideoCaptureImpl::VideoFrameBufferPreparer::VideoFrameBufferPreparer(

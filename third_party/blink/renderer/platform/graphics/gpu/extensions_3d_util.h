@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -30,6 +29,8 @@ class PLATFORM_EXPORT Extensions3DUtil final {
   // Creates a new Extensions3DUtil. If the passed GLES2Interface has been
   // spontaneously lost, returns null.
   static std::unique_ptr<Extensions3DUtil> Create(gpu::gles2::GLES2Interface*);
+  Extensions3DUtil(const Extensions3DUtil&) = delete;
+  Extensions3DUtil& operator=(const Extensions3DUtil&) = delete;
   ~Extensions3DUtil();
 
   bool IsValid() { return is_valid_; }
@@ -49,8 +50,6 @@ class PLATFORM_EXPORT Extensions3DUtil final {
   HashSet<String> enabled_extensions_;
   HashSet<String> requestable_extensions_;
   bool is_valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(Extensions3DUtil);
 };
 
 }  // namespace blink

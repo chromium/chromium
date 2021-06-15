@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -36,6 +35,9 @@ class WebURLLoaderTestDelegate;
 class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
  public:
   WebURLLoaderMockFactoryImpl(TestingPlatformSupport*);
+  WebURLLoaderMockFactoryImpl(const WebURLLoaderMockFactoryImpl&) = delete;
+  WebURLLoaderMockFactoryImpl& operator=(const WebURLLoaderMockFactoryImpl&) =
+      delete;
   ~WebURLLoaderMockFactoryImpl() override;
 
   // WebURLLoaderMockFactory:
@@ -124,8 +126,6 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
   ProtocolToResponseMap protocol_to_response_info_;
 
   TestingPlatformSupport* platform_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebURLLoaderMockFactoryImpl);
 };
 
 }  // namespace blink

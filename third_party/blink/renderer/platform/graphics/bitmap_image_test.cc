@@ -103,6 +103,10 @@ class TestingPlatformSupportWithMaxDecodedBytes
     : public TestingPlatformSupportWithMockScheduler {
  public:
   TestingPlatformSupportWithMaxDecodedBytes() {}
+  TestingPlatformSupportWithMaxDecodedBytes(
+      const TestingPlatformSupportWithMaxDecodedBytes&) = delete;
+  TestingPlatformSupportWithMaxDecodedBytes& operator=(
+      const TestingPlatformSupportWithMaxDecodedBytes&) = delete;
   ~TestingPlatformSupportWithMaxDecodedBytes() override {}
 
   void SetMaxDecodedImageBytes(size_t max_decoded_image_bytes) {
@@ -113,8 +117,6 @@ class TestingPlatformSupportWithMaxDecodedBytes
 
  private:
   size_t max_decoded_image_bytes_ = Platform::kNoDecodedImageByteLimit;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPlatformSupportWithMaxDecodedBytes);
 };
 
 class BitmapImageTest : public testing::Test {

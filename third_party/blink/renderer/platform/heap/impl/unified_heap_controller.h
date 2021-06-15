@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_UNIFIED_HEAP_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_UNIFIED_HEAP_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/heap_stats_collector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "v8/include/v8.h"
@@ -32,10 +31,11 @@ class ThreadState;
 class PLATFORM_EXPORT UnifiedHeapController final
     : public v8::EmbedderHeapTracer,
       public ThreadHeapStatsObserver {
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UnifiedHeapController);
-
  public:
+  UnifiedHeapController() = delete;
   explicit UnifiedHeapController(ThreadState*);
+  UnifiedHeapController(const UnifiedHeapController&) = delete;
+  UnifiedHeapController& operator=(const UnifiedHeapController&) = delete;
   ~UnifiedHeapController() override;
 
   // v8::EmbedderHeapTracer implementation.

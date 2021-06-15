@@ -31,7 +31,6 @@
 
 #include <string.h>
 
-#include "base/macros.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -50,6 +49,8 @@ class AudioArray {
       : allocation_(nullptr), aligned_data_(nullptr), size_(0) {
     Allocate(n);
   }
+  AudioArray(const AudioArray&) = delete;
+  AudioArray& operator=(const AudioArray&) = delete;
 
   ~AudioArray() { WTF::Partitions::FastFree(allocation_); }
 
@@ -138,8 +139,6 @@ class AudioArray {
   T* allocation_;
   T* aligned_data_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioArray);
 };
 
 typedef AudioArray<float> AudioFloatArray;

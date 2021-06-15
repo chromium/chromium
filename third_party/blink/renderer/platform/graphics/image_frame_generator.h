@@ -29,7 +29,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -56,11 +55,10 @@ class PLATFORM_EXPORT ImageDecoderFactory {
 
  public:
   ImageDecoderFactory() = default;
+  ImageDecoderFactory(const ImageDecoderFactory&) = delete;
+  ImageDecoderFactory& operator=(const ImageDecoderFactory&) = delete;
   virtual ~ImageDecoderFactory() = default;
   virtual std::unique_ptr<ImageDecoder> Create() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoderFactory);
 };
 
 class PLATFORM_EXPORT ImageFrameGenerator final
@@ -75,6 +73,8 @@ class PLATFORM_EXPORT ImageFrameGenerator final
         full_size, is_multi_frame, color_behavior, std::move(supported_sizes)));
   }
 
+  ImageFrameGenerator(const ImageFrameGenerator&) = delete;
+  ImageFrameGenerator& operator=(const ImageFrameGenerator&) = delete;
   ~ImageFrameGenerator();
 
   // Decodes and scales the specified frame at |index|. The dimensions and
@@ -177,8 +177,6 @@ class PLATFORM_EXPORT ImageFrameGenerator final
       mutex_map_ GUARDED_BY(generator_mutex_);
 
   std::unique_ptr<ImageDecoderFactory> image_decoder_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFrameGenerator);
 };
 
 }  // namespace blink

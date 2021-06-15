@@ -47,6 +47,8 @@ class PLATFORM_EXPORT CachingWordShaper final {
 
  public:
   explicit CachingWordShaper(const Font& font) : font_(font) {}
+  CachingWordShaper(const CachingWordShaper&) = delete;
+  CachingWordShaper& operator=(const CachingWordShaper&) = delete;
   ~CachingWordShaper() = default;
 
   float Width(const TextRun&,
@@ -70,8 +72,6 @@ class PLATFORM_EXPORT CachingWordShaper final {
   ShapeCache* GetShapeCache() const;
 
   const Font& font_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachingWordShaper);
 };
 
 }  // namespace blink

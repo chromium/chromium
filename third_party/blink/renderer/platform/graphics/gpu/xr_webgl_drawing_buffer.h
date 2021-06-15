@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_XR_WEBGL_DRAWING_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_XR_WEBGL_DRAWING_BUFFER_H_
 
-#include "base/macros.h"
 #include "cc/layers/texture_layer_client.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -60,6 +59,8 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
                 const IntSize&,
                 const gpu::Mailbox& mailbox,
                 GLuint texture_id);
+    ColorBuffer(const ColorBuffer&) = delete;
+    ColorBuffer& operator=(const ColorBuffer&) = delete;
     ~ColorBuffer();
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
@@ -85,9 +86,6 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     // The sync token for when this buffer was received back from the
     // compositor.
     gpu::SyncToken receive_sync_token;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ColorBuffer);
   };
 
   XRWebGLDrawingBuffer(DrawingBuffer*,

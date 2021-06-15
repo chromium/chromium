@@ -12,11 +12,11 @@ namespace blink {
 class FontUniqueNameLookupLinux : public FontUniqueNameLookup {
  public:
   FontUniqueNameLookupLinux() = default;
+  FontUniqueNameLookupLinux(const FontUniqueNameLookupLinux&) = delete;
+  FontUniqueNameLookupLinux& operator=(const FontUniqueNameLookupLinux&) =
+      delete;
   ~FontUniqueNameLookupLinux() override;
   sk_sp<SkTypeface> MatchUniqueName(const String& font_unique_name) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookupLinux);
 };
 
 }  // namespace blink

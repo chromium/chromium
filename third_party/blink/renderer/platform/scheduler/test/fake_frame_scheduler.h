@@ -70,6 +70,8 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
     DCHECK(frame_type_ != FrameType::kMainFrame ||
            !is_cross_origin_to_main_frame);
   }
+  FakeFrameScheduler(const FakeFrameScheduler&) = delete;
+  FakeFrameScheduler& operator=(const FakeFrameScheduler&) = delete;
   ~FakeFrameScheduler() override = default;
 
   class Builder {
@@ -181,7 +183,6 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   FrameScheduler::FrameType frame_type_;
   bool is_cross_origin_to_main_frame_;
   bool is_exempt_from_throttling_;
-  DISALLOW_COPY_AND_ASSIGN(FakeFrameScheduler);
 };
 
 }  // namespace scheduler

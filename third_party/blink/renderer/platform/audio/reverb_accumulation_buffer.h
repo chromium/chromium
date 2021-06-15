@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_ACCUMULATION_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_ACCUMULATION_BUFFER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -46,6 +45,8 @@ class PLATFORM_EXPORT ReverbAccumulationBuffer {
 
  public:
   ReverbAccumulationBuffer(size_t length);
+  ReverbAccumulationBuffer(const ReverbAccumulationBuffer&) = delete;
+  ReverbAccumulationBuffer& operator=(const ReverbAccumulationBuffer&) = delete;
 
   // This will read from, then clear-out numberOfFrames
   void ReadAndClear(float* destination, size_t number_of_frames);
@@ -72,8 +73,6 @@ class PLATFORM_EXPORT ReverbAccumulationBuffer {
   AudioFloatArray buffer_;
   size_t read_index_;
   size_t read_time_frame_;  // for debugging (frame on continuous timeline)
-
-  DISALLOW_COPY_AND_ASSIGN(ReverbAccumulationBuffer);
 };
 
 }  // namespace blink

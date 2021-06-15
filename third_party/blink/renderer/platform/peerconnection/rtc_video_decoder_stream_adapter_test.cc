@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
@@ -118,6 +117,8 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
   explicit DecodedImageCallback(
       base::RepeatingCallback<void(const webrtc::VideoFrame&)> callback)
       : callback_(callback) {}
+  DecodedImageCallback(const DecodedImageCallback&) = delete;
+  DecodedImageCallback& operator=(const DecodedImageCallback&) = delete;
 
   int32_t Decoded(webrtc::VideoFrame& decodedImage) override {
     callback_.Run(decodedImage);
@@ -128,8 +129,6 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
 
  private:
   base::RepeatingCallback<void(const webrtc::VideoFrame&)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecodedImageCallback);
 };
 
 }  // namespace
@@ -147,6 +146,11 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
             webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecVP9))) {
     decoder_factory_ = std::make_unique<MockDecoderFactory>();
   }
+
+  RTCVideoDecoderStreamAdapterTest(const RTCVideoDecoderStreamAdapterTest&) =
+      delete;
+  RTCVideoDecoderStreamAdapterTest& operator=(
+      const RTCVideoDecoderStreamAdapterTest&) = delete;
 
   ~RTCVideoDecoderStreamAdapterTest() override {
     if (!adapter_)
@@ -272,8 +276,6 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
   webrtc::SdpVideoFormat sdp_format_;
 
   media::VideoDecoderConfig vda_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderStreamAdapterTest);
 };
 
 TEST_P(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -45,6 +44,8 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
       IpcNetworkManager* network_manager,
       media::MediaPermission* media_permission,
       bool allow_mdns_obfuscation);
+  FilteringNetworkManager(const FilteringNetworkManager&) = delete;
+  FilteringNetworkManager& operator=(const FilteringNetworkManager&) = delete;
 
   PLATFORM_EXPORT ~FilteringNetworkManager() override;
 
@@ -130,8 +131,6 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   bool allow_mdns_obfuscation_ = true;
 
   base::WeakPtrFactory<FilteringNetworkManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FilteringNetworkManager);
 };
 
 }  // namespace blink

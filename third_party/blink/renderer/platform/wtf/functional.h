@@ -197,6 +197,9 @@ class ThreadCheckingCallbackWrapper<CallbackType, R(Args...)> {
  public:
   explicit ThreadCheckingCallbackWrapper(CallbackType callback)
       : callback_(std::move(callback)) {}
+  ThreadCheckingCallbackWrapper(const ThreadCheckingCallbackWrapper&) = delete;
+  ThreadCheckingCallbackWrapper& operator=(
+      const ThreadCheckingCallbackWrapper&) = delete;
 
   ~ThreadCheckingCallbackWrapper() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -224,8 +227,6 @@ class ThreadCheckingCallbackWrapper<CallbackType, R(Args...)> {
 
   SEQUENCE_CHECKER(sequence_checker_);
   CallbackType callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckingCallbackWrapper);
 };
 
 }  // namespace WTF

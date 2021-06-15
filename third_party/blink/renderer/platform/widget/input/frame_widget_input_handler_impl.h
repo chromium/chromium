@@ -48,6 +48,9 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
           frame_widget_input_handler,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       scoped_refptr<MainThreadEventQueue> input_event_queue);
+  FrameWidgetInputHandlerImpl(const FrameWidgetInputHandlerImpl&) = delete;
+  FrameWidgetInputHandlerImpl& operator=(const FrameWidgetInputHandlerImpl&) =
+      delete;
   ~FrameWidgetInputHandlerImpl() override;
 
   void AddImeTextSpansToExistingText(
@@ -129,8 +132,6 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
 
   scoped_refptr<MainThreadEventQueue> input_event_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameWidgetInputHandlerImpl);
 };
 
 }  // namespace blink

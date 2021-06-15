@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "cc/animation/keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
@@ -51,6 +50,8 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
       int keyframe_model_id,
       int group_id,
       CompositorPaintWorkletInput::NativePropertyType native_property_type);
+  CompositorKeyframeModel(const CompositorKeyframeModel&) = delete;
+  CompositorKeyframeModel& operator=(const CompositorKeyframeModel&) = delete;
   ~CompositorKeyframeModel();
 
   // An id must be unique.
@@ -102,8 +103,6 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
                           const cc::KeyframeModel::TargetPropertyId& id);
 
   std::unique_ptr<cc::KeyframeModel> keyframe_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorKeyframeModel);
 };
 
 }  // namespace blink

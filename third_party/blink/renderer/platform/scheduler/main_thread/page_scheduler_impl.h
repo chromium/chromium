@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/time/time.h"
@@ -54,6 +53,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
       base::TimeDelta::FromSeconds(1);
 
   PageSchedulerImpl(PageScheduler::Delegate*, AgentGroupSchedulerImpl&);
+  PageSchedulerImpl(const PageSchedulerImpl&) = delete;
+  PageSchedulerImpl& operator=(const PageSchedulerImpl&) = delete;
 
   ~PageSchedulerImpl() override;
 
@@ -197,6 +198,9 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
    public:
     explicit PageLifecycleStateTracker(PageSchedulerImpl*, PageLifecycleState);
+    PageLifecycleStateTracker(const PageLifecycleStateTracker&) = delete;
+    PageLifecycleStateTracker& operator=(const PageLifecycleStateTracker&) =
+        delete;
     ~PageLifecycleStateTracker() = default;
 
     void SetPageLifecycleState(PageLifecycleState);
@@ -212,8 +216,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
     PageSchedulerImpl* page_scheduler_impl_;
     PageLifecycleState current_state_;
-
-    DISALLOW_COPY_AND_ASSIGN(PageLifecycleStateTracker);
   };
 
   void RegisterFrameSchedulerImpl(FrameSchedulerImpl* frame_scheduler);
@@ -367,8 +369,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   std::unique_ptr<PageLifecycleStateTracker> page_lifecycle_state_tracker_;
   base::WeakPtrFactory<PageSchedulerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageSchedulerImpl);
 };
 
 }  // namespace scheduler

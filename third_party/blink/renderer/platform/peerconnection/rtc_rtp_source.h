@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_SOURCE_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/rtp_receiver_interface.h"
@@ -28,6 +27,8 @@ class PLATFORM_EXPORT RTCRtpSource {
   };
 
   explicit RTCRtpSource(const webrtc::RtpSource& source);
+  RTCRtpSource(const RTCRtpSource&) = delete;
+  RTCRtpSource& operator=(const RTCRtpSource&) = delete;
   ~RTCRtpSource();
 
   Type SourceType() const;
@@ -40,8 +41,6 @@ class PLATFORM_EXPORT RTCRtpSource {
 
  private:
   const webrtc::RtpSource source_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCRtpSource);
 };
 
 }  // namespace blink

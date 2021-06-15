@@ -33,7 +33,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -64,6 +63,8 @@ class PLATFORM_EXPORT BMPImageReader final {
                  size_t decoded_and_header_offset,
                  size_t img_data_offset,
                  bool is_in_ico);
+  BMPImageReader(const BMPImageReader&) = delete;
+  BMPImageReader& operator=(const BMPImageReader&) = delete;
   ~BMPImageReader();
 
   void SetBuffer(ImageFrame* buffer) { buffer_ = buffer; }
@@ -395,8 +396,6 @@ class PLATFORM_EXPORT BMPImageReader final {
   // header, thus doubling it). If |is_in_ico_| is true, this variable tracks
   // whether we've begun decoding this mask yet.
   bool decoding_and_mask_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BMPImageReader);
 };
 
 }  // namespace blink

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
@@ -319,10 +318,9 @@ class MockPageSchedulerImpl : public PageSchedulerImpl {
         .WillByDefault(Return(true));
     ON_CALL(*this, IsMainFrameLocal).WillByDefault(Return(true));
   }
-  ~MockPageSchedulerImpl() override = default;
-
   MockPageSchedulerImpl(const MockPageSchedulerImpl&) = delete;
   MockPageSchedulerImpl& operator=(const MockPageSchedulerImpl&) = delete;
+  ~MockPageSchedulerImpl() override = default;
 
   MOCK_METHOD(bool, RequestBeginMainFrameNotExpected, (bool));
   MOCK_METHOD(bool, IsWaitingForMainFrameContentfulPaint, (), (const));
@@ -409,6 +407,10 @@ class MainThreadSchedulerImplTest : public testing::Test {
   }
 
   MainThreadSchedulerImplTest() : MainThreadSchedulerImplTest({}, {}) {}
+
+  MainThreadSchedulerImplTest(const MainThreadSchedulerImplTest&) = delete;
+  MainThreadSchedulerImplTest& operator=(const MainThreadSchedulerImplTest&) =
+      delete;
 
   ~MainThreadSchedulerImplTest() override = default;
 
@@ -984,8 +986,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
   bool simulate_throttleable_task_ran_;
   bool initially_ensure_usecase_none_ = true;
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadSchedulerImplTest);
 };
 
 TEST_F(MainThreadSchedulerImplTest, TestPostDefaultTask) {

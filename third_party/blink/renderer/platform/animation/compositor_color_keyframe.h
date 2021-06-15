@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_COLOR_KEYFRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_COLOR_KEYFRAME_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
@@ -18,6 +17,8 @@ class PLATFORM_EXPORT CompositorColorKeyframe : public CompositorKeyframe {
  public:
   CompositorColorKeyframe(double time, SkColor value, const TimingFunction&);
   CompositorColorKeyframe(std::unique_ptr<gfx::ColorKeyframe>);
+  CompositorColorKeyframe(const CompositorColorKeyframe&) = delete;
+  CompositorColorKeyframe& operator=(const CompositorColorKeyframe&) = delete;
   ~CompositorColorKeyframe() override;
 
   // CompositorKeyframe implementation.
@@ -29,8 +30,6 @@ class PLATFORM_EXPORT CompositorColorKeyframe : public CompositorKeyframe {
 
  private:
   std::unique_ptr<gfx::ColorKeyframe> color_keyframe_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorColorKeyframe);
 };
 
 }  // namespace blink

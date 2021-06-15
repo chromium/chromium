@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POLYGON_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POLYGON_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -46,6 +45,8 @@ class PLATFORM_EXPORT FloatPolygon {
 
  public:
   explicit FloatPolygon(Vector<FloatPoint> vertices);
+  FloatPolygon(const FloatPolygon&) = delete;
+  FloatPolygon& operator=(const FloatPolygon&) = delete;
 
   const FloatPoint& VertexAt(unsigned index) const { return vertices_[index]; }
   unsigned NumberOfVertices() const { return vertices_.size(); }
@@ -72,8 +73,6 @@ class PLATFORM_EXPORT FloatPolygon {
   EdgeIntervalTree edge_tree_;  // Each EdgeIntervalTree node stores minY, maxY,
                                 // and a ("UserData") pointer to a
                                 // FloatPolygonEdge.
-
-  DISALLOW_COPY_AND_ASSIGN(FloatPolygon);
 };
 
 class PLATFORM_EXPORT VertexPair {

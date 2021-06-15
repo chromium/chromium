@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -55,6 +54,8 @@ class PLATFORM_EXPORT ScriptWrappable
     : public GarbageCollected<ScriptWrappable>,
       public NameClient {
  public:
+  ScriptWrappable(const ScriptWrappable&) = delete;
+  ScriptWrappable& operator=(const ScriptWrappable&) = delete;
   ~ScriptWrappable() override = default;
 
   // The following methods may override lifetime of ScriptWrappable objects when
@@ -164,8 +165,6 @@ class PLATFORM_EXPORT ScriptWrappable
   friend class HeapSnaphotWrapperVisitor;
   friend class V8HiddenValue;
   friend class V8PrivateProperty;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptWrappable);
 };
 
 inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(

@@ -21,6 +21,8 @@ class FallbackFamilyStyleCache {
 
  public:
   FallbackFamilyStyleCache();
+  FallbackFamilyStyleCache(const FallbackFamilyStyleCache&) = delete;
+  FallbackFamilyStyleCache& operator=(const FallbackFamilyStyleCache&) = delete;
 
   // Places a SkTypeface object in the cache for specified language tag and
   // fallback priority, taking a reference on SkTypeface. Adds the |SkTypeface|
@@ -49,8 +51,6 @@ class FallbackFamilyStyleCache {
   void Clear();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FallbackFamilyStyleCache);
-
   FallbackLruCache recent_fallback_fonts_;
 };
 

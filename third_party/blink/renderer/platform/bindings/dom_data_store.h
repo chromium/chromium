@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -110,6 +109,8 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   }
 
   DOMDataStore(v8::Isolate* isolate, bool is_main_world);
+  DOMDataStore(const DOMDataStore&) = delete;
+  DOMDataStore& operator=(const DOMDataStore&) = delete;
 
   // Clears all references.
   void Dispose();
@@ -203,8 +204,6 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   HeapHashMap<WeakMember<const ScriptWrappable>,
               TraceWrapperV8Reference<v8::Object>>
       wrapper_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMDataStore);
 };
 
 }  // namespace blink

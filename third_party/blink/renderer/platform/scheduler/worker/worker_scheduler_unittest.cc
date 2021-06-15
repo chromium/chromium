@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -103,6 +102,8 @@ class WorkerSchedulerTest : public testing::Test {
         base::TimeDelta::FromMicroseconds(5000));
   }
 
+  WorkerSchedulerTest(const WorkerSchedulerTest&) = delete;
+  WorkerSchedulerTest& operator=(const WorkerSchedulerTest&) = delete;
   ~WorkerSchedulerTest() override = default;
 
   void SetUp() override {
@@ -140,8 +141,6 @@ class WorkerSchedulerTest : public testing::Test {
       sequence_manager_;
   std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
   std::unique_ptr<WorkerSchedulerForTest> worker_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerSchedulerTest);
 };
 
 TEST_F(WorkerSchedulerTest, TestPostTasks) {

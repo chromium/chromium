@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATTERN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATTERN_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -58,6 +57,8 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
       sk_sp<PaintRecord>,
       const FloatRect& record_bounds,
       RepeatMode = kRepeatModeXY);
+  Pattern(const Pattern&) = delete;
+  Pattern& operator=(const Pattern&) = delete;
   virtual ~Pattern();
 
   void ApplyToFlags(cc::PaintFlags&, const SkMatrix&) const;
@@ -76,9 +77,6 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
   RepeatMode repeat_mode_;
 
   mutable sk_sp<PaintShader> cached_shader_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Pattern);
 };
 
 }  // namespace blink

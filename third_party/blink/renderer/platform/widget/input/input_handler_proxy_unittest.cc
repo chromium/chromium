@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -84,10 +83,10 @@ std::unique_ptr<WebInputEvent> CreateGestureScrollPinch(
 class MockInputHandler : public cc::InputHandler {
  public:
   MockInputHandler() = default;
-  ~MockInputHandler() override = default;
-
   MockInputHandler(const MockInputHandler&) = delete;
   MockInputHandler& operator=(const MockInputHandler&) = delete;
+
+  ~MockInputHandler() override = default;
 
   base::WeakPtr<InputHandler> AsWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -200,6 +199,10 @@ class MockSynchronousInputHandler : public SynchronousInputHandler {
 class MockInputHandlerProxyClient : public InputHandlerProxyClient {
  public:
   MockInputHandlerProxyClient() {}
+  MockInputHandlerProxyClient(const MockInputHandlerProxyClient&) = delete;
+  MockInputHandlerProxyClient& operator=(const MockInputHandlerProxyClient&) =
+      delete;
+
   ~MockInputHandlerProxyClient() override {}
 
   void WillShutdown() override {}
@@ -226,21 +229,20 @@ class MockInputHandlerProxyClient : public InputHandlerProxyClient {
                void(cc::TouchAction touch_action,
                     uint32_t unique_touch_event_id,
                     InputHandlerProxy::EventDisposition event_disposition));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInputHandlerProxyClient);
 };
 
 class MockInputHandlerProxyClientWithDidAnimateForInput
     : public MockInputHandlerProxyClient {
  public:
   MockInputHandlerProxyClientWithDidAnimateForInput() {}
+  MockInputHandlerProxyClientWithDidAnimateForInput(
+      const MockInputHandlerProxyClientWithDidAnimateForInput&) = delete;
+  MockInputHandlerProxyClientWithDidAnimateForInput& operator=(
+      const MockInputHandlerProxyClientWithDidAnimateForInput&) = delete;
+
   ~MockInputHandlerProxyClientWithDidAnimateForInput() override {}
 
   MOCK_METHOD0(DidAnimateForInput, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInputHandlerProxyClientWithDidAnimateForInput);
 };
 
 WebTouchPoint CreateWebTouchPoint(WebTouchPoint::State state,

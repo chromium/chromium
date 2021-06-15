@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -40,6 +39,9 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
       base::WeakPtr<PaintWorkletPaintDispatcher>* paintee);
 
   PaintWorkletPaintDispatcher();
+  PaintWorkletPaintDispatcher(const PaintWorkletPaintDispatcher&) = delete;
+  PaintWorkletPaintDispatcher& operator=(const PaintWorkletPaintDispatcher&) =
+      delete;
 
   // Dispatches a set of paint class instances - each represented by a
   // PaintWorkletInput - to the appropriate PaintWorklet threads, asynchronously
@@ -104,8 +106,6 @@ class PLATFORM_EXPORT PaintWorkletPaintDispatcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PaintWorkletPaintDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletPaintDispatcher);
 };
 
 }  // namespace blink

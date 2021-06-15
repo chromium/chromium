@@ -28,7 +28,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -124,14 +123,13 @@ struct DeferredFrameData {
  public:
   DeferredFrameData()
       : orientation_(ImageOrientationEnum::kDefault), is_received_(false) {}
+  DeferredFrameData(const DeferredFrameData&) = delete;
+  DeferredFrameData& operator=(const DeferredFrameData&) = delete;
 
   ImageOrientation orientation_;
   IntSize density_corrected_size_;
   base::TimeDelta duration_;
   bool is_received_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeferredFrameData);
 };
 
 std::unique_ptr<DeferredImageDecoder> DeferredImageDecoder::Create(

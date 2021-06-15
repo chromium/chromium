@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_IMAGE_LAYER_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_IMAGE_LAYER_BRIDGE_H_
 
-#include "base/macros.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -32,6 +31,8 @@ class PLATFORM_EXPORT ImageLayerBridge
       public cc::TextureLayerClient {
  public:
   ImageLayerBridge(OpacityMode);
+  ImageLayerBridge(const ImageLayerBridge&) = delete;
+  ImageLayerBridge& operator=(const ImageLayerBridge&) = delete;
   ~ImageLayerBridge() override;
 
   void SetImage(scoped_refptr<StaticBitmapImage>);
@@ -94,8 +95,6 @@ class PLATFORM_EXPORT ImageLayerBridge
   bool disposed_ = false;
   bool has_presented_since_last_set_image_ = false;
   OpacityMode opacity_mode_ = kNonOpaque;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageLayerBridge);
 };
 
 }  // namespace blink

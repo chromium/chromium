@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -68,6 +67,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
                                           public MemoryPressureListener {
  public:
   explicit MemoryCache(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  MemoryCache(const MemoryCache&) = delete;
+  MemoryCache& operator=(const MemoryCache&) = delete;
   ~MemoryCache() override;
 
   void Trace(Visitor*) const override;
@@ -194,8 +195,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   friend class MemoryCacheTest;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryCache);
 };
 
 // Returns the global cache.

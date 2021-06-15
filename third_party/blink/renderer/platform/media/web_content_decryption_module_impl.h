@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/cdm_config.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
@@ -42,6 +41,10 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
                      const CdmConfig& cdm_config,
                      WebCdmCreatedCB web_cdm_created_cb);
 
+  WebContentDecryptionModuleImpl(const WebContentDecryptionModuleImpl&) =
+      delete;
+  WebContentDecryptionModuleImpl& operator=(
+      const WebContentDecryptionModuleImpl&) = delete;
   ~WebContentDecryptionModuleImpl() override;
 
   // blink::WebContentDecryptionModule implementation.
@@ -68,8 +71,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
   WebContentDecryptionModuleImpl(scoped_refptr<CdmSessionAdapter> adapter);
 
   scoped_refptr<CdmSessionAdapter> adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentDecryptionModuleImpl);
 };
 
 // Allow typecasting from blink type as this is the only implementation.

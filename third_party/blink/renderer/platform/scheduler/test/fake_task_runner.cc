@@ -18,6 +18,8 @@ namespace scheduler {
 class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
  public:
   Data() = default;
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
 
   void PostDelayedTask(base::OnceClosure task, base::TimeDelta delay) {
     task_queue_.emplace_back(std::move(task), time_ + delay);
@@ -39,7 +41,6 @@ class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
   ~Data() = default;
 
   friend ThreadSafeRefCounted<Data>;
-  DISALLOW_COPY_AND_ASSIGN(Data);
 };
 
 FakeTaskRunner::FakeTaskRunner() : data_(base::AdoptRef(new Data)) {}

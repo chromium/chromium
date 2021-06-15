@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -31,6 +30,8 @@ const uint32_t kRedirectResponseOverheadBytes = 300;
 class WebURLLoaderMock : public WebURLLoader {
  public:
   explicit WebURLLoaderMock(WebURLLoaderMockFactoryImpl* factory);
+  WebURLLoaderMock(const WebURLLoaderMock&) = delete;
+  WebURLLoaderMock& operator=(const WebURLLoaderMock&) = delete;
   ~WebURLLoaderMock() override;
 
   // Simulates the asynchronous request being served.
@@ -85,8 +86,6 @@ class WebURLLoaderMock : public WebURLLoader {
   bool is_deferred_ = false;
 
   base::WeakPtrFactory<WebURLLoaderMock> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebURLLoaderMock);
 };
 
 }  // namespace blink

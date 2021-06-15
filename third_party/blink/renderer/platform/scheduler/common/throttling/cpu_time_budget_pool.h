@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
@@ -23,6 +22,8 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
                     BudgetPoolController* budget_pool_controller,
                     TraceableVariableController* tracing_controller,
                     base::TimeTicks now);
+  CPUTimeBudgetPool(const CPUTimeBudgetPool&) = delete;
+  CPUTimeBudgetPool& operator=(const CPUTimeBudgetPool&) = delete;
 
   ~CPUTimeBudgetPool() override;
 
@@ -120,8 +121,6 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
   double cpu_percentage_;
 
   base::RepeatingCallback<void(base::TimeDelta)> reporting_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CPUTimeBudgetPool);
 };
 
 }  // namespace scheduler

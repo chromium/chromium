@@ -5,7 +5,6 @@
 #include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +17,10 @@ class BufferedDataSourceHostImplTest : public testing::Test {
                   &BufferedDataSourceHostImplTest::ProgressCallback,
                   base::Unretained(this)),
               &clock_) {}
+  BufferedDataSourceHostImplTest(const BufferedDataSourceHostImplTest&) =
+      delete;
+  BufferedDataSourceHostImplTest& operator=(
+      const BufferedDataSourceHostImplTest&) = delete;
 
   void Add() {
     host_.AddBufferedTimeRanges(&ranges_, base::TimeDelta::FromSeconds(10));
@@ -30,8 +33,6 @@ class BufferedDataSourceHostImplTest : public testing::Test {
   BufferedDataSourceHostImpl host_;
   Ranges<base::TimeDelta> ranges_;
   base::SimpleTestTickClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedDataSourceHostImplTest);
 };
 
 TEST_F(BufferedDataSourceHostImplTest, Empty) {

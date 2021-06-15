@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_MEMORY_CACHE_DUMP_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_MEMORY_CACHE_DUMP_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -34,6 +33,8 @@ class PLATFORM_EXPORT MemoryCacheDumpProvider final
  public:
   // This class is singleton since there is a global MemoryCache object.
   static MemoryCacheDumpProvider* Instance();
+  MemoryCacheDumpProvider(const MemoryCacheDumpProvider&) = delete;
+  MemoryCacheDumpProvider& operator=(const MemoryCacheDumpProvider&) = delete;
   ~MemoryCacheDumpProvider() override;
 
   // base::trace_event::MemoryDumpProvider implementation.
@@ -49,8 +50,6 @@ class PLATFORM_EXPORT MemoryCacheDumpProvider final
   MemoryCacheDumpProvider();
 
   WeakPersistent<MemoryCacheDumpClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryCacheDumpProvider);
 };
 
 }  // namespace blink

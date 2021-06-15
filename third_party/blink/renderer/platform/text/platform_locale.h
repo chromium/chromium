@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -181,6 +180,8 @@ class PLATFORM_EXPORT Locale {
   String FormatDateTime(const DateComponents&,
                         FormatType = kFormatTypeUnspecified);
 
+  Locale(const Locale&) = delete;
+  Locale& operator=(const Locale&) = delete;
   virtual ~Locale();
 
  protected:
@@ -216,8 +217,6 @@ class PLATFORM_EXPORT Locale {
   // Does the locale use single character filtering to do additional number
   // input validation?
   bool uses_single_char_number_filtering_;
-
-  DISALLOW_COPY_AND_ASSIGN(Locale);
 };
 
 }  // namespace blink

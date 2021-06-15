@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
@@ -31,6 +30,9 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
     : public CompositorAnimationCurve {
  public:
   CompositorFloatAnimationCurve();
+  CompositorFloatAnimationCurve(const CompositorFloatAnimationCurve&) = delete;
+  CompositorFloatAnimationCurve& operator=(
+      const CompositorFloatAnimationCurve&) = delete;
   ~CompositorFloatAnimationCurve() override;
 
   void AddKeyframe(const CompositorFloatKeyframe&);
@@ -54,8 +56,6 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
       std::unique_ptr<gfx::KeyframedFloatAnimationCurve>);
 
   std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorFloatAnimationCurve);
 };
 
 }  // namespace blink

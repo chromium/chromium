@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -45,6 +44,8 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock =
           base::DefaultTickClock::GetInstance());
+  VideoDecodeStatsReporter(const VideoDecodeStatsReporter&) = delete;
+  VideoDecodeStatsReporter& operator=(const VideoDecodeStatsReporter&) = delete;
   ~VideoDecodeStatsReporter();
 
   void OnPlaying();
@@ -235,8 +236,6 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
   // Set false by UpdateStats() if an IPC error is encountered. Assumed true
   // until an error is found.
   bool is_ipc_connected_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodeStatsReporter);
 };
 
 }  // namespace media

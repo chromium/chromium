@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
@@ -29,6 +28,9 @@ class P2PAsyncAddressResolver
   using DoneCallback = base::OnceCallback<void(const Vector<net::IPAddress>&)>;
 
   P2PAsyncAddressResolver(P2PSocketDispatcher* dispatcher);
+  P2PAsyncAddressResolver(const P2PAsyncAddressResolver&) = delete;
+  P2PAsyncAddressResolver& operator=(const P2PAsyncAddressResolver&) = delete;
+
   // Start address resolve process.
   void Start(const rtc::SocketAddress& addr, DoneCallback done_callback);
   // Clients must unregister before exiting for cleanup.
@@ -58,8 +60,6 @@ class P2PAsyncAddressResolver
   // State must be accessed from delegate thread only.
   State state_;
   DoneCallback done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PAsyncAddressResolver);
 };
 
 }  // namespace blink

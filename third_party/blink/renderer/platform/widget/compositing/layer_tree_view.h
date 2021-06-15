@@ -48,6 +48,8 @@ class PLATFORM_EXPORT LayerTreeView
  public:
   LayerTreeView(LayerTreeViewDelegate* delegate,
                 scheduler::WebThreadScheduler* scheduler);
+  LayerTreeView(const LayerTreeView&) = delete;
+  LayerTreeView& operator=(const LayerTreeView&) = delete;
   ~LayerTreeView() override;
 
   // The |main_thread| is the task runner that the compositor will use for the
@@ -161,8 +163,6 @@ class PLATFORM_EXPORT LayerTreeView
       presentation_callbacks_;
 
   base::WeakPtrFactory<LayerTreeView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeView);
 };
 
 }  // namespace blink

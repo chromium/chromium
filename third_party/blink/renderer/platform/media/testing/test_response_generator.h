@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "url/gurl.h"
@@ -28,6 +27,8 @@ class TestResponseGenerator {
   // Build an HTTP response generator for the given URL. |content_length| is
   // used to generate Content-Length and Content-Range headers.
   TestResponseGenerator(const GURL& gurl, int64_t content_length);
+  TestResponseGenerator(const TestResponseGenerator&) = delete;
+  TestResponseGenerator& operator=(const TestResponseGenerator&) = delete;
 
   // Generates a WebURLError object.
   blink::WebURLError GenerateError();
@@ -74,8 +75,6 @@ class TestResponseGenerator {
  private:
   GURL gurl_;
   int64_t content_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResponseGenerator);
 };
 
 }  // namespace media

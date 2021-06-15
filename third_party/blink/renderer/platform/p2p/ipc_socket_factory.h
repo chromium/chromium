@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -29,6 +28,8 @@ class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
   PLATFORM_EXPORT explicit IpcPacketSocketFactory(
       P2PSocketDispatcher* socket_dispatcher,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+  IpcPacketSocketFactory(const IpcPacketSocketFactory&) = delete;
+  IpcPacketSocketFactory& operator=(const IpcPacketSocketFactory&) = delete;
   ~IpcPacketSocketFactory() override;
 
   rtc::AsyncPacketSocket* CreateUdpSocket(
@@ -56,8 +57,6 @@ class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
   // the dtor).
   CrossThreadWeakPersistent<P2PSocketDispatcher> socket_dispatcher_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcPacketSocketFactory);
 };
 
 }  // namespace blink

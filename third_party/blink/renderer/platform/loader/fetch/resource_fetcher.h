@@ -113,6 +113,8 @@ class PLATFORM_EXPORT ResourceFetcher
   // ResourceFetcher creators are responsible for setting consistent objects
   // in ResourceFetcherInit to ensure correctness of this ResourceFetcher.
   explicit ResourceFetcher(const ResourceFetcherInit&);
+  ResourceFetcher(const ResourceFetcher&) = delete;
+  ResourceFetcher& operator=(const ResourceFetcher&) = delete;
   virtual ~ResourceFetcher();
   virtual void Trace(Visitor*) const;
 
@@ -493,8 +495,6 @@ class PLATFORM_EXPORT ResourceFetcher
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<ResourceFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceFetcher);
 };
 
 class ResourceCacheValidationSuppressor {
@@ -508,6 +508,10 @@ class ResourceCacheValidationSuppressor {
       loader_->allow_stale_resources_ = true;
     }
   }
+  ResourceCacheValidationSuppressor(const ResourceCacheValidationSuppressor&) =
+      delete;
+  ResourceCacheValidationSuppressor& operator=(
+      const ResourceCacheValidationSuppressor&) = delete;
   ~ResourceCacheValidationSuppressor() {
     if (loader_)
       loader_->allow_stale_resources_ = previous_state_;
@@ -516,8 +520,6 @@ class ResourceCacheValidationSuppressor {
  private:
   ResourceFetcher* loader_;
   bool previous_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCacheValidationSuppressor);
 };
 
 // Used for ResourceFetcher construction.
@@ -542,6 +544,8 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
       ResourceFetcher::LoaderFactory* loader_factory,
       ContextLifecycleNotifier* context_lifecycle_notifier,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper = nullptr);
+  ResourceFetcherInit(const ResourceFetcherInit&) = delete;
+  ResourceFetcherInit& operator=(const ResourceFetcherInit&) = delete;
 
   DetachableResourceFetcherProperties* const properties;
   FetchContext* const context;
@@ -559,8 +563,6 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
       ResourceLoadScheduler::ThrottleOptionOverride::kNone;
   LoadingBehaviorObserver* loading_behavior_observer = nullptr;
   BackForwardCacheLoaderHelper* back_forward_cache_loader_helper = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceFetcherInit);
 };
 
 }  // namespace blink

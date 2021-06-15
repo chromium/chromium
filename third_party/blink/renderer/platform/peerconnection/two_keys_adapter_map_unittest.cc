@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/two_keys_adapter_map.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -22,8 +21,6 @@ class TwoKeysAdapterMapTest : public ::testing::Test {
     }
 
     String str;
-
-    DISALLOW_COPY_AND_ASSIGN(MoveOnlyValue);
   };
 
   TwoKeysAdapterMap<String, String, MoveOnlyValue> map_;

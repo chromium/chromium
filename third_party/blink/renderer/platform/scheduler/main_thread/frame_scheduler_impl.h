@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -78,6 +77,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
                      FrameScheduler::Delegate* delegate,
                      base::trace_event::BlameContext* blame_context,
                      FrameScheduler::FrameType frame_type);
+  FrameSchedulerImpl(const FrameSchedulerImpl&) = delete;
+  FrameSchedulerImpl& operator=(const FrameSchedulerImpl&) = delete;
   ~FrameSchedulerImpl() override;
 
   // FrameOrWorkerScheduler implementation:
@@ -243,12 +244,14 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
     // loading in the frame until the reference is released during destruction.
     explicit PauseSubresourceLoadingHandleImpl(
         base::WeakPtr<FrameSchedulerImpl> frame_scheduler);
+    PauseSubresourceLoadingHandleImpl(
+        const PauseSubresourceLoadingHandleImpl&) = delete;
+    PauseSubresourceLoadingHandleImpl& operator=(
+        const PauseSubresourceLoadingHandleImpl&) = delete;
     ~PauseSubresourceLoadingHandleImpl() override;
 
    private:
     base::WeakPtr<FrameSchedulerImpl> frame_scheduler_;
-
-    DISALLOW_COPY_AND_ASSIGN(PauseSubresourceLoadingHandleImpl);
   };
 
   void DetachFromPageScheduler();
@@ -394,8 +397,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       invalidating_on_bfcache_restore_weak_factory_{this};
 
   mutable base::WeakPtrFactory<FrameSchedulerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSchedulerImpl);
 };
 
 }  // namespace scheduler

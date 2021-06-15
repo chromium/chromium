@@ -31,7 +31,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
@@ -73,6 +72,8 @@ class PLATFORM_EXPORT GraphicsContext {
 
  public:
   explicit GraphicsContext(PaintController&);
+  GraphicsContext(const GraphicsContext&) = delete;
+  GraphicsContext& operator=(const GraphicsContext&) = delete;
   ~GraphicsContext();
 
   // Copy configs such as printing, dark mode, device scale factor etc. from
@@ -551,8 +552,6 @@ class PLATFORM_EXPORT GraphicsContext {
 
   // The current node ID, which is used for marked content in a tagged PDF.
   DOMNodeId dom_node_id_ = kInvalidDOMNodeId;
-
-  DISALLOW_COPY_AND_ASSIGN(GraphicsContext);
 };
 
 }  // namespace blink

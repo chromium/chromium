@@ -44,6 +44,8 @@ class PNGImageDecoder;
 class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
  public:
   ICOImageDecoder(AlphaOption, const ColorBehavior&, size_t max_decoded_bytes);
+  ICOImageDecoder(const ICOImageDecoder&) = delete;
+  ICOImageDecoder& operator=(const ICOImageDecoder&) = delete;
   ~ICOImageDecoder() override;
 
   // ImageDecoder:
@@ -175,8 +177,6 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   // Valid only while a BMPImageReader is decoding, this holds the size
   // for the particular entry being decoded.
   IntSize frame_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ICOImageDecoder);
 };
 
 }  // namespace blink

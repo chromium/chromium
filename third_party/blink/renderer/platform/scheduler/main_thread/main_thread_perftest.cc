@@ -28,6 +28,8 @@ constexpr char kTimePerTaskRun[] = "time_per_task_run";
 class MainThreadPerfTest : public testing::Test {
  public:
   MainThreadPerfTest() = default;
+  MainThreadPerfTest(const MainThreadPerfTest&) = delete;
+  MainThreadPerfTest& operator=(const MainThreadPerfTest&) = delete;
   ~MainThreadPerfTest() override = default;
 
   void SetUp() override {
@@ -46,8 +48,6 @@ class MainThreadPerfTest : public testing::Test {
  protected:
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   std::unique_ptr<ScopedSchedulerOverrider> scheduler_overrider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadPerfTest);
 };
 
 TEST_F(MainThreadPerfTest, PostTaskPerformance) {

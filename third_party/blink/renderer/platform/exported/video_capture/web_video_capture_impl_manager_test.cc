@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -58,6 +57,8 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
         pause_callback_(pause_callback),
         destruct_callback_(std::move(destruct_callback)) {}
 
+  MockVideoCaptureImpl(const MockVideoCaptureImpl&) = delete;
+  MockVideoCaptureImpl& operator=(const MockVideoCaptureImpl&) = delete;
   ~MockVideoCaptureImpl() override { std::move(destruct_callback_).Run(); }
 
  private:
@@ -109,8 +110,6 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
 
   PauseResumeCallback* const pause_callback_;
   base::OnceClosure destruct_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockVideoCaptureImpl);
 };
 
 class MockVideoCaptureImplManager : public WebVideoCaptureImplManager {
@@ -119,6 +118,10 @@ class MockVideoCaptureImplManager : public WebVideoCaptureImplManager {
                               base::RepeatingClosure stop_capture_callback)
       : pause_callback_(pause_callback),
         stop_capture_callback_(stop_capture_callback) {}
+
+  MockVideoCaptureImplManager(const MockVideoCaptureImplManager&) = delete;
+  MockVideoCaptureImplManager& operator=(const MockVideoCaptureImplManager&) =
+      delete;
   ~MockVideoCaptureImplManager() override {}
 
  private:
@@ -132,8 +135,6 @@ class MockVideoCaptureImplManager : public WebVideoCaptureImplManager {
 
   PauseResumeCallback* const pause_callback_;
   const base::RepeatingClosure stop_capture_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockVideoCaptureImplManager);
 };
 
 }  // namespace
@@ -150,6 +151,10 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
       session_ids_[i] = base::UnguessableToken::Create();
     }
   }
+
+  VideoCaptureImplManagerTest(const VideoCaptureImplManagerTest&) = delete;
+  VideoCaptureImplManagerTest& operator=(const VideoCaptureImplManagerTest&) =
+      delete;
 
  protected:
   static constexpr size_t kNumClients = 3;
@@ -237,9 +242,6 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
   base::RunLoop cleanup_run_loop_;
   std::unique_ptr<MockVideoCaptureImplManager> manager_;
   BrowserInterfaceBrokerProxy* browser_interface_broker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureImplManagerTest);
 };
 
 // Multiple clients with the same session id. There is only one

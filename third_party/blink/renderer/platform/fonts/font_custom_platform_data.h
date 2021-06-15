@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CUSTOM_PLATFORM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CUSTOM_PLATFORM_DATA_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
@@ -58,6 +57,8 @@ class PLATFORM_EXPORT FontCustomPlatformData
  public:
   static scoped_refptr<FontCustomPlatformData> Create(SharedBuffer*,
                                                String& ots_parse_message);
+  FontCustomPlatformData(const FontCustomPlatformData&) = delete;
+  FontCustomPlatformData& operator=(const FontCustomPlatformData&) = delete;
   ~FontCustomPlatformData();
 
   FontPlatformData GetFontPlatformData(
@@ -86,8 +87,6 @@ class PLATFORM_EXPORT FontCustomPlatformData
 
   mutable bool may_be_icon_font_computed_ = false;
   mutable bool may_be_icon_font_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FontCustomPlatformData);
 };
 
 }  // namespace blink

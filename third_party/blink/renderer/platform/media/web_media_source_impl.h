@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -19,6 +18,8 @@ class VideoDecoderConfig;
 class PLATFORM_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
  public:
   WebMediaSourceImpl(ChunkDemuxer* demuxer);
+  WebMediaSourceImpl(const WebMediaSourceImpl&) = delete;
+  WebMediaSourceImpl& operator=(const WebMediaSourceImpl&) = delete;
   ~WebMediaSourceImpl() override;
 
   // blink::WebMediaSource implementation.
@@ -39,8 +40,6 @@ class PLATFORM_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
 
  private:
   ChunkDemuxer* demuxer_;  // Owned by WebMediaPlayerImpl.
-
-  DISALLOW_COPY_AND_ASSIGN(WebMediaSourceImpl);
 };
 
 }  // namespace media

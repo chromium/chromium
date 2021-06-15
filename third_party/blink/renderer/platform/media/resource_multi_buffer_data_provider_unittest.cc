@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -87,6 +86,11 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
         .WillByDefault(Invoke(
             this, &ResourceMultiBufferDataProviderTest::CreateUrlLoader));
   }
+
+  ResourceMultiBufferDataProviderTest(
+      const ResourceMultiBufferDataProviderTest&) = delete;
+  ResourceMultiBufferDataProviderTest& operator=(
+      const ResourceMultiBufferDataProviderTest&) = delete;
 
   void Initialize(const char* url, int first_position) {
     want_frfr = false;
@@ -234,9 +238,6 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   ResourceMultiBufferDataProvider* loader_;
 
   uint8_t data_[kDataSize];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceMultiBufferDataProviderTest);
 };
 
 TEST_F(ResourceMultiBufferDataProviderTest, StartStop) {

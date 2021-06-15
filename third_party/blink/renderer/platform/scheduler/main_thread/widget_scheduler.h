@@ -19,6 +19,8 @@ class MainThreadTaskQueue;
 class WidgetScheduler : public WebWidgetScheduler {
  public:
   WidgetScheduler(MainThreadSchedulerImpl*);
+  WidgetScheduler(const WidgetScheduler&) = delete;
+  WidgetScheduler& operator=(const WidgetScheduler&) = delete;
   ~WidgetScheduler() override;
   scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override;
 
@@ -27,8 +29,6 @@ class WidgetScheduler : public WebWidgetScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
   std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>
       input_task_queue_enabled_voter_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetScheduler);
 };
 
 }  // namespace scheduler

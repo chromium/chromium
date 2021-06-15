@@ -29,6 +29,8 @@ struct HarfBuzzFontData {
         space_in_gsub_(SpaceGlyphInOpenTypeTables::Unknown),
         vertical_data_(nullptr),
         range_set_(nullptr) {}
+  HarfBuzzFontData(const HarfBuzzFontData&) = delete;
+  HarfBuzzFontData& operator=(const HarfBuzzFontData&) = delete;
 
   // The vertical origin and vertical advance functions in HarfBuzzFace require
   // the ascent and height metrics as fallback in case no specific vertical
@@ -104,9 +106,6 @@ struct HarfBuzzFontData {
 
   scoped_refptr<OpenTypeVerticalData> vertical_data_;
   scoped_refptr<UnicodeRangeSet> range_set_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HarfBuzzFontData);
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AUTO_ADVANCING_VIRTUAL_TIME_DOMAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AUTO_ADVANCING_VIRTUAL_TIME_DOMAIN_H_
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/task_observer.h"
 #include "base/time/time_override.h"
@@ -34,6 +33,10 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
                                  base::TimeTicks initial_time_ticks,
                                  SchedulerHelper* helper,
                                  BaseTimeOverridePolicy policy);
+  AutoAdvancingVirtualTimeDomain(const AutoAdvancingVirtualTimeDomain&) =
+      delete;
+  AutoAdvancingVirtualTimeDomain& operator=(
+      const AutoAdvancingVirtualTimeDomain&) = delete;
   ~AutoAdvancingVirtualTimeDomain() override;
 
   // Controls whether or not virtual time is allowed to advance, when the
@@ -108,8 +111,6 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
   base::Time previous_time_;
 
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoAdvancingVirtualTimeDomain);
 };
 
 }  // namespace scheduler

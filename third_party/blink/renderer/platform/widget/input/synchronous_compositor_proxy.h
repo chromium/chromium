@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -39,6 +38,9 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
  public:
   SynchronousCompositorProxy(
       blink::SynchronousInputHandlerProxy* input_handler_proxy);
+  SynchronousCompositorProxy(const SynchronousCompositorProxy&) = delete;
+  SynchronousCompositorProxy& operator=(const SynchronousCompositorProxy&) =
+      delete;
   ~SynchronousCompositorProxy() override;
 
   void Init();
@@ -150,8 +152,6 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   bool invalidate_needs_draw_;
   uint32_t did_activate_pending_tree_count_;
   uint32_t metadata_version_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousCompositorProxy);
 };
 
 }  // namespace blink

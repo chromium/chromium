@@ -35,7 +35,6 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -67,6 +66,8 @@ class WTF_EXPORT Threading {
 
  public:
   Threading();
+  Threading(const Threading&) = delete;
+  Threading& operator=(const Threading&) = delete;
   ~Threading();
 
   AtomicStringTable& GetAtomicStringTable() { return *atomic_string_table_; }
@@ -94,8 +95,6 @@ class WTF_EXPORT Threading {
 
   static ThreadSpecific<Threading>* static_data_;
   friend Threading& WtfThreading();
-
-  DISALLOW_COPY_AND_ASSIGN(Threading);
 };
 
 inline Threading& WtfThreading() {

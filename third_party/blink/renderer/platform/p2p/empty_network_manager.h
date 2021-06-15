@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_EMPTY_NETWORK_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_EMPTY_NETWORK_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -31,6 +30,8 @@ class EmptyNetworkManager : public rtc::NetworkManagerBase,
   // |task_runner|.
   PLATFORM_EXPORT explicit EmptyNetworkManager(
       IpcNetworkManager* network_manager);
+  EmptyNetworkManager(const EmptyNetworkManager&) = delete;
+  EmptyNetworkManager& operator=(const EmptyNetworkManager&) = delete;
   PLATFORM_EXPORT ~EmptyNetworkManager() override;
 
   // rtc::NetworkManager:
@@ -77,8 +78,6 @@ class EmptyNetworkManager : public rtc::NetworkManagerBase,
   base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread_;
 
   base::WeakPtrFactory<EmptyNetworkManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyNetworkManager);
 };
 
 }  // namespace blink

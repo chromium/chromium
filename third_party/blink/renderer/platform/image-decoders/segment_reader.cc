@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
@@ -63,14 +62,15 @@ sk_sp<SkData> BufferCopyAsSkData(Iter iter, size_t available) {
 class SharedBufferSegmentReader final : public SegmentReader {
  public:
   explicit SharedBufferSegmentReader(scoped_refptr<SharedBuffer>);
+  SharedBufferSegmentReader(const SharedBufferSegmentReader&) = delete;
+  SharedBufferSegmentReader& operator=(const SharedBufferSegmentReader&) =
+      delete;
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
 
  private:
   scoped_refptr<SharedBuffer> shared_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedBufferSegmentReader);
 };
 
 SharedBufferSegmentReader::SharedBufferSegmentReader(
@@ -109,14 +109,14 @@ sk_sp<SkData> SharedBufferSegmentReader::GetAsSkData() const {
 class DataSegmentReader final : public SegmentReader {
  public:
   explicit DataSegmentReader(sk_sp<SkData>);
+  DataSegmentReader(const DataSegmentReader&) = delete;
+  DataSegmentReader& operator=(const DataSegmentReader&) = delete;
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
 
  private:
   sk_sp<SkData> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataSegmentReader);
 };
 
 DataSegmentReader::DataSegmentReader(sk_sp<SkData> data)
@@ -144,6 +144,8 @@ sk_sp<SkData> DataSegmentReader::GetAsSkData() const {
 class ROBufferSegmentReader final : public SegmentReader {
  public:
   explicit ROBufferSegmentReader(scoped_refptr<ROBuffer>);
+  ROBufferSegmentReader(const ROBufferSegmentReader&) = delete;
+  ROBufferSegmentReader& operator=(const ROBufferSegmentReader&) = delete;
 
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
@@ -155,8 +157,6 @@ class ROBufferSegmentReader final : public SegmentReader {
   // Position of the first char in the current block of iter_.
   mutable size_t position_of_block_ GUARDED_BY(read_mutex_);
   mutable ROBuffer::Iter iter_ GUARDED_BY(read_mutex_);
-
-  DISALLOW_COPY_AND_ASSIGN(ROBufferSegmentReader);
 };
 
 ROBufferSegmentReader::ROBufferSegmentReader(scoped_refptr<ROBuffer> buffer)

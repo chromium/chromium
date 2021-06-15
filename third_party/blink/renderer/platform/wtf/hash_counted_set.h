@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_COUNTED_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_COUNTED_SET_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -61,6 +60,9 @@ class HashCountedSet {
                   "an off-heap HashCountedSet. Use "
                   "HeapHashCountedSet<Member<T>> instead.");
   }
+
+  HashCountedSet(const HashCountedSet&) = delete;
+  HashCountedSet& operator=(const HashCountedSet&) = delete;
 
   void swap(HashCountedSet& other) { impl_.swap(other.impl_); }
 
@@ -117,8 +119,6 @@ class HashCountedSet {
 
  private:
   ImplType impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(HashCountedSet);
 };
 
 template <typename T, typename U, typename V, typename W>

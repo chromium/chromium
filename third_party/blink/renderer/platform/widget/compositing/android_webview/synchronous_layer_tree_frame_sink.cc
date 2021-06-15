@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -56,6 +55,8 @@ const size_t kNumResourcesLimit = 10 * 1000 * 1000;
 class SoftwareDevice : public viz::SoftwareOutputDevice {
  public:
   SoftwareDevice(SkCanvas** canvas) : canvas_(canvas) {}
+  SoftwareDevice(const SoftwareDevice&) = delete;
+  SoftwareDevice& operator=(const SoftwareDevice&) = delete;
 
   void Resize(const gfx::Size& pixel_size, float device_scale_factor) override {
     // Intentional no-op: canvas size is controlled by the embedder.
@@ -68,8 +69,6 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
 
  private:
   SkCanvas** canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareDevice);
 };
 
 // This is used with resourceless software draws.
@@ -77,6 +76,10 @@ class SoftwareCompositorFrameSinkClient
     : public viz::mojom::CompositorFrameSinkClient {
  public:
   SoftwareCompositorFrameSinkClient() = default;
+  SoftwareCompositorFrameSinkClient(const SoftwareCompositorFrameSinkClient&) =
+      delete;
+  SoftwareCompositorFrameSinkClient& operator=(
+      const SoftwareCompositorFrameSinkClient&) = delete;
   ~SoftwareCompositorFrameSinkClient() override = default;
 
   void DidReceiveCompositorFrameAck(
@@ -92,9 +95,6 @@ class SoftwareCompositorFrameSinkClient
   void OnBeginFramePausedChanged(bool paused) override {}
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SoftwareCompositorFrameSinkClient);
 };
 
 }  // namespace

@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
@@ -49,6 +48,8 @@ class DateTimeStringBuilder : private DateTimeFormat::TokenHandler {
  public:
   // The argument objects must be alive until this object dies.
   DateTimeStringBuilder(Locale&, const DateComponents&);
+  DateTimeStringBuilder(const DateTimeStringBuilder&) = delete;
+  DateTimeStringBuilder& operator=(const DateTimeStringBuilder&) = delete;
 
   bool Build(const String&);
   String ToString();
@@ -64,8 +65,6 @@ class DateTimeStringBuilder : private DateTimeFormat::TokenHandler {
   StringBuilder builder_;
   Locale& localizer_;
   const DateComponents& date_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeStringBuilder);
 };
 
 DateTimeStringBuilder::DateTimeStringBuilder(Locale& localizer,

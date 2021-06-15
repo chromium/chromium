@@ -60,6 +60,8 @@ class PLATFORM_EXPORT ReverbConvolver {
                   size_t convolver_render_phase,
                   bool use_background_threads,
                   float scale);
+  ReverbConvolver(const ReverbConvolver&) = delete;
+  ReverbConvolver& operator=(const ReverbConvolver&) = delete;
   ~ReverbConvolver();
 
   void Process(const AudioChannel* source_channel,
@@ -95,8 +97,6 @@ class PLATFORM_EXPORT ReverbConvolver {
 
   // Background thread and synchronization
   std::unique_ptr<Thread> background_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReverbConvolver);
 };
 
 }  // namespace blink

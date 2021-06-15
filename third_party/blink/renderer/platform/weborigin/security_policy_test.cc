@@ -417,6 +417,8 @@ TEST(SecurityPolicyTest, TrustworthySafelist) {
 class SecurityPolicyAccessTest : public testing::Test {
  public:
   SecurityPolicyAccessTest() = default;
+  SecurityPolicyAccessTest(const SecurityPolicyAccessTest&) = delete;
+  SecurityPolicyAccessTest& operator=(const SecurityPolicyAccessTest&) = delete;
   ~SecurityPolicyAccessTest() override = default;
 
   void SetUp() override {
@@ -456,8 +458,6 @@ class SecurityPolicyAccessTest : public testing::Test {
   scoped_refptr<const SecurityOrigin> http_example_origin_;
   scoped_refptr<const SecurityOrigin> https_chromium_origin_;
   scoped_refptr<const SecurityOrigin> https_google_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityPolicyAccessTest);
 };
 
 // TODO(toyoshim): Simplify origin access related tests since all we need here

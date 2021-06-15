@@ -29,6 +29,8 @@ constexpr double kEpsilon = 0.001;
 class ScrollPredictorTest : public testing::Test {
  public:
   ScrollPredictorTest() {}
+  ScrollPredictorTest(const ScrollPredictorTest&) = delete;
+  ScrollPredictorTest& operator=(const ScrollPredictorTest&) = delete;
 
   void SetUp() override {
     original_events_.clear();
@@ -203,8 +205,6 @@ class ScrollPredictorTest : public testing::Test {
   std::unique_ptr<ScrollPredictor> scroll_predictor_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollPredictorTest);
 };
 
 TEST_F(ScrollPredictorTest, ScrollResamplingStates) {

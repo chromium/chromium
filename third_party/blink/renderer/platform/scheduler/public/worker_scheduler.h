@@ -35,12 +35,12 @@ class PLATFORM_EXPORT WorkerScheduler : public FrameOrWorkerScheduler {
 
    public:
     PauseHandle(base::WeakPtr<WorkerScheduler>);
+    PauseHandle(const PauseHandle&) = delete;
+    PauseHandle& operator=(const PauseHandle&) = delete;
     ~PauseHandle();
 
    private:
     base::WeakPtr<WorkerScheduler> scheduler_;
-
-    DISALLOW_COPY_AND_ASSIGN(PauseHandle);
   };
 
   std::unique_ptr<PauseHandle> Pause() WARN_UNUSED_RESULT;

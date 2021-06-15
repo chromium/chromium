@@ -17,11 +17,12 @@ namespace blink {
 // rope.
 class GC_PLUGIN_IGNORE("crbug.com/841830")
     PLATFORM_EXPORT TraceWrapperV8String final : public NameClient {
-  DISALLOW_COPY_AND_ASSIGN(TraceWrapperV8String);
   DISALLOW_NEW();
 
  public:
   TraceWrapperV8String() = default;
+  TraceWrapperV8String(const TraceWrapperV8String&) = delete;
+  TraceWrapperV8String& operator=(const TraceWrapperV8String&) = delete;
   ~TraceWrapperV8String() final = default;
 
   bool IsEmpty() const { return string_.IsEmpty(); }

@@ -87,6 +87,8 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
                       const gfx::ColorSpace& target_color_space,
                       SkColorType target_color_type,
                       cc::PlaybackImageProvider::RasterMode raster_mode);
+  CanvasImageProvider(const CanvasImageProvider&) = delete;
+  CanvasImageProvider& operator=(const CanvasImageProvider&) = delete;
   ~CanvasImageProvider() override = default;
 
   // cc::ImageProvider implementation.
@@ -107,8 +109,6 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   absl::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
   base::WeakPtrFactory<CanvasImageProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasImageProvider);
 };
 
 // * Renders to a Skia RAM-backed bitmap.

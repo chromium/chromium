@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_TRAVERSAL_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_TRAVERSAL_STATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -35,7 +34,6 @@ namespace blink {
 
 class PLATFORM_EXPORT PathTraversalState final {
   STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(PathTraversalState);
 
  public:
   enum PathTraversalAction {
@@ -45,6 +43,8 @@ class PLATFORM_EXPORT PathTraversalState final {
   };
 
   PathTraversalState(PathTraversalAction);
+  PathTraversalState(const PathTraversalState&) = delete;
+  PathTraversalState& operator=(const PathTraversalState&) = delete;
 
   float CloseSubpath();
   float MoveTo(const FloatPoint&);

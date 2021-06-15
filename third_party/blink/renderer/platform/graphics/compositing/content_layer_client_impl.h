@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_CONTENT_LAYER_CLIENT_IMPL_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
@@ -28,6 +27,8 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
 
  public:
   ContentLayerClientImpl();
+  ContentLayerClientImpl(const ContentLayerClientImpl&) = delete;
+  ContentLayerClientImpl& operator=(const ContentLayerClientImpl&) = delete;
   ~ContentLayerClientImpl() override;
 
   // cc::ContentLayerClient
@@ -76,8 +77,6 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
 #if DCHECK_IS_ON()
   std::unique_ptr<JSONArray> paint_chunk_debug_data_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ContentLayerClientImpl);
 };
 
 }  // namespace blink

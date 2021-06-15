@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
@@ -85,6 +84,8 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
   DecodedImageCallback(
       base::RepeatingCallback<void(const webrtc::VideoFrame&)> callback)
       : callback_(callback) {}
+  DecodedImageCallback(const DecodedImageCallback&) = delete;
+  DecodedImageCallback& operator=(const DecodedImageCallback&) = delete;
 
   int32_t Decoded(webrtc::VideoFrame& decodedImage) override {
     callback_.Run(decodedImage);
@@ -95,14 +96,15 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
 
  private:
   base::RepeatingCallback<void(const webrtc::VideoFrame&)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecodedImageCallback);
 };
 
 }  // namespace
 
 class RTCVideoDecoderAdapterTest : public ::testing::Test {
  public:
+  RTCVideoDecoderAdapterTest(const RTCVideoDecoderAdapterTest&) = delete;
+  RTCVideoDecoderAdapterTest& operator=(const RTCVideoDecoderAdapterTest&) =
+      delete;
   RTCVideoDecoderAdapterTest()
       : media_thread_("Media Thread"),
         gpu_factories_(nullptr),
@@ -257,8 +259,6 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   std::unique_ptr<StrictMock<MockVideoDecoder>> owned_video_decoder_;
   DecodedImageCallback decoded_image_callback_;
   media::VideoDecoder::OutputCB output_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderAdapterTest);
 };
 
 TEST_F(RTCVideoDecoderAdapterTest, Create_UnknownFormat) {

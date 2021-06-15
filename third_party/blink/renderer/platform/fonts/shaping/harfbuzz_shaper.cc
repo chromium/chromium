@@ -207,6 +207,8 @@ class HarfBuzzScopedPtr {
       : ptr_(ptr), destroy_(destroy) {
     DCHECK(destroy_);
   }
+  HarfBuzzScopedPtr(const HarfBuzzScopedPtr&) = delete;
+  HarfBuzzScopedPtr& operator=(const HarfBuzzScopedPtr&) = delete;
   ~HarfBuzzScopedPtr() {
     if (ptr_)
       (*destroy_)(ptr_);
@@ -218,8 +220,6 @@ class HarfBuzzScopedPtr {
  private:
   T* ptr_;
   DestroyFunction destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(HarfBuzzScopedPtr);
 };
 
 struct RangeData {

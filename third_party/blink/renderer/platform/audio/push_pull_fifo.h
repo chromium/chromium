@@ -50,6 +50,8 @@ class PLATFORM_EXPORT PushPullFIFO {
   explicit PushPullFIFO(unsigned number_of_channels,
                         size_t fifo_length,
                         unsigned render_quantum_frames = 128);
+  PushPullFIFO(const PushPullFIFO&) = delete;
+  PushPullFIFO& operator=(const PushPullFIFO&) = delete;
   ~PushPullFIFO();
 
   // Pushes the rendered frames by WebAudio engine.
@@ -126,8 +128,6 @@ class PLATFORM_EXPORT PushPullFIFO {
   size_t index_read_ GUARDED_BY(lock_) = 0;
   size_t index_write_ GUARDED_BY(lock_) = 0;
   scoped_refptr<AudioBus> fifo_bus_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(PushPullFIFO);
 };
 
 }  // namespace blink

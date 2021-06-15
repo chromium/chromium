@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCOPED_PAINT_CHUNK_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCOPED_PAINT_CHUNK_PROPERTIES_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -62,6 +61,10 @@ class ScopedPaintChunkProperties {
             client,
             type) {}
 
+  ScopedPaintChunkProperties(const ScopedPaintChunkProperties&) = delete;
+  ScopedPaintChunkProperties& operator=(const ScopedPaintChunkProperties&) =
+      delete;
+
   ~ScopedPaintChunkProperties() {
     // We should not return to the previous id, because that may cause a new
     // chunk to use the same id as that of the previous chunk before this
@@ -102,8 +105,6 @@ class ScopedPaintChunkProperties {
 
   PaintController& paint_controller_;
   PropertyTreeStateOrAlias previous_properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPaintChunkProperties);
 };
 
 }  // namespace blink

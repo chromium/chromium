@@ -49,6 +49,8 @@ class GlyphMetricsMap {
 
  public:
   GlyphMetricsMap() : filled_primary_page_(false) {}
+  GlyphMetricsMap(const GlyphMetricsMap&) = delete;
+  GlyphMetricsMap& operator=(const GlyphMetricsMap&) = delete;
   T MetricsForGlyph(Glyph glyph) {
     return LocatePage(glyph / GlyphMetricsPage::kSize)->MetricsForGlyph(glyph);
   }
@@ -61,9 +63,10 @@ class GlyphMetricsMap {
  private:
   class GlyphMetricsPage {
     USING_FAST_MALLOC(GlyphMetricsPage);
-    DISALLOW_COPY_AND_ASSIGN(GlyphMetricsPage);
 
    public:
+    GlyphMetricsPage(const GlyphMetricsPage&) = delete;
+    GlyphMetricsPage& operator=(const GlyphMetricsPage&) = delete;
     static const size_t kSize =
         256;  // Usually covers Latin-1 in a single page.
     GlyphMetricsPage() {}
@@ -95,8 +98,6 @@ class GlyphMetricsMap {
   // We optimize for the page that contains glyph indices 0-255.
   GlyphMetricsPage primary_page_;
   std::unique_ptr<HashMap<int, std::unique_ptr<GlyphMetricsPage>>> pages_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlyphMetricsMap);
 };
 
 template <>

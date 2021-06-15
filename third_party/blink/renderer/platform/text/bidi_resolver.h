@@ -223,6 +223,8 @@ class BidiResolver final {
         empty_run_(true),
         trailing_space_run_(nullptr),
         needs_trailing_space_(false) {}
+  BidiResolver(const BidiResolver&) = delete;
+  BidiResolver& operator=(const BidiResolver&) = delete;
 
 #if DCHECK_IS_ON()
   ~BidiResolver();
@@ -380,8 +382,6 @@ class BidiResolver final {
 
   Vector<BidiEmbedding, 8> current_explicit_embedding_sequence_;
   HashMap<Run*, MidpointState<Iterator>> midpoint_state_for_isolated_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidiResolver);
 };
 
 #if DCHECK_IS_ON()

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "media/base/audio_point.h"

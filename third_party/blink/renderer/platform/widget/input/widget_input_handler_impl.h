@@ -32,6 +32,8 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
       base::WeakPtr<WidgetBase> widget,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler);
+  WidgetInputHandlerImpl(const WidgetInputHandlerImpl&) = delete;
+  WidgetInputHandlerImpl& operator=(const WidgetInputHandlerImpl&) = delete;
   ~WidgetInputHandlerImpl() override;
 
   void SetReceiver(mojo::PendingReceiver<mojom::blink::WidgetInputHandler>
@@ -95,8 +97,6 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
   mojo::Receiver<mojom::blink::WidgetInputHandler> receiver_{this};
 
   base::WeakPtrFactory<WidgetInputHandlerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetInputHandlerImpl);
 };
 
 }  // namespace blink

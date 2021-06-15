@@ -75,6 +75,8 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
       : WebURLLoaderFactory(std::move(loader_factory),
                             cors_exempt_header_list,
                             terminate_sync_load_event) {}
+  Factory(const Factory&) = delete;
+  Factory& operator=(const Factory&) = delete;
   ~Factory() override = default;
 
   std::unique_ptr<WebURLLoader> CreateURLLoader(
@@ -154,7 +156,6 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
 
   scoped_refptr<network::SharedURLLoaderFactory> service_worker_loader_factory_;
   base::WeakPtrFactory<Factory> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Factory);
 };
 
 DedicatedOrSharedWorkerFetchContextImpl::

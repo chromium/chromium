@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
@@ -77,6 +76,8 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
                         public blink::P2PSocketClientDelegate {
  public:
   IpcPacketSocket();
+  IpcPacketSocket(const IpcPacketSocket&) = delete;
+  IpcPacketSocket& operator=(const IpcPacketSocket&) = delete;
   ~IpcPacketSocket() override;
 
   // Struct to track information when a packet is received by this socket for
@@ -202,8 +203,6 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   // Track the total number of packets and the number of packets discarded.
   size_t packets_discarded_;
   size_t total_packets_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcPacketSocket);
 };
 
 // Simple wrapper around P2PAsyncAddressResolver. The main purpose of this

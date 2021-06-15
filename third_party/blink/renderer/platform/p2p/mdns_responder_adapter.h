@@ -28,6 +28,8 @@ class PLATFORM_EXPORT MdnsResponderAdapter
   // The adapter should be created on the main thread to have access to the
   // connector to the service manager.
   explicit MdnsResponderAdapter(MojoBindingContext& context);
+  MdnsResponderAdapter(const MdnsResponderAdapter&) = delete;
+  MdnsResponderAdapter& operator=(const MdnsResponderAdapter&) = delete;
   ~MdnsResponderAdapter() override;
 
   // webrtc::MdnsResponderInterface implementation.
@@ -39,8 +41,6 @@ class PLATFORM_EXPORT MdnsResponderAdapter
  private:
   mojo::SharedRemote<network::mojom::blink::MdnsResponder>
       shared_remote_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MdnsResponderAdapter);
 };
 
 }  // namespace blink

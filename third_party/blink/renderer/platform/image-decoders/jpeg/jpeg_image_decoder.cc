@@ -505,6 +505,9 @@ class JPEGImageReader final {
     jpeg_save_markers(&info_, exifMarker, 0xFFFF);
   }
 
+  JPEGImageReader(const JPEGImageReader&) = delete;
+  JPEGImageReader& operator=(const JPEGImageReader&) = delete;
+
   ~JPEGImageReader() { jpeg_destroy_decompress(&info_); }
 
   void SkipBytes(long num_bytes) {
@@ -975,8 +978,6 @@ class JPEGImageReader final {
 
   JSAMPARRAY samples_;
   IntSize uv_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(JPEGImageReader);
 };
 
 void error_exit(

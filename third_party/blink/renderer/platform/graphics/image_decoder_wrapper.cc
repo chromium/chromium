@@ -40,6 +40,8 @@ class ExternalMemoryAllocator final : public SkBitmap::Allocator {
                           void* pixels,
                           size_t row_bytes)
       : info_(info), pixels_(pixels), row_bytes_(row_bytes) {}
+  ExternalMemoryAllocator(const ExternalMemoryAllocator&) = delete;
+  ExternalMemoryAllocator& operator=(const ExternalMemoryAllocator&) = delete;
 
   bool allocPixelRef(SkBitmap* dst) override {
     const SkImageInfo& info = dst->info();
@@ -56,8 +58,6 @@ class ExternalMemoryAllocator final : public SkBitmap::Allocator {
   SkImageInfo info_;
   void* pixels_;
   size_t row_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMemoryAllocator);
 };
 
 }  // namespace

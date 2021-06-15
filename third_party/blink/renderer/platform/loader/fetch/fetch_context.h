@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -71,6 +70,8 @@ class WebScopedVirtualTimePauser;
 class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
  public:
   FetchContext() = default;
+  FetchContext(const FetchContext&) = delete;
+  FetchContext& operator=(const FetchContext&) = delete;
 
   static FetchContext& NullInstance() {
     return *MakeGarbageCollected<FetchContext>();
@@ -193,9 +194,6 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   // Returns if the request context is for prerendering or not.
   virtual bool IsPrerendering() const { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FetchContext);
 };
 
 }  // namespace blink

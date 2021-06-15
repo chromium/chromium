@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_H_
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -27,6 +26,9 @@ class PLATFORM_EXPORT CompositorThreadScheduler
  public:
   explicit CompositorThreadScheduler(
       base::sequence_manager::SequenceManager* sequence_manager);
+  CompositorThreadScheduler(const CompositorThreadScheduler&) = delete;
+  CompositorThreadScheduler& operator=(const CompositorThreadScheduler&) =
+      delete;
 
   ~CompositorThreadScheduler() override;
 
@@ -63,8 +65,6 @@ class PLATFORM_EXPORT CompositorThreadScheduler
 
  private:
   CompositorMetricsHelper compositor_metrics_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorThreadScheduler);
 };
 
 }  // namespace scheduler

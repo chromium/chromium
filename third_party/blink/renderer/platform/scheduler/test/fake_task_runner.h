@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_TASK_RUNNER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -19,6 +18,8 @@ namespace scheduler {
 class FakeTaskRunner : public base::SingleThreadTaskRunner {
  public:
   FakeTaskRunner();
+  FakeTaskRunner(const FakeTaskRunner&) = delete;
+  FakeTaskRunner& operator=(const FakeTaskRunner&) = delete;
 
   void SetTime(base::TimeTicks new_time);
   void SetTime(double new_time) {
@@ -53,8 +54,6 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
   scoped_refptr<Data> data_;
 
   explicit FakeTaskRunner(scoped_refptr<Data> data);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTaskRunner);
 };
 
 }  // namespace scheduler

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
@@ -158,6 +157,9 @@ class WorkerThreadSchedulerTest : public testing::Test {
     idle_task_runner_ = scheduler_->IdleTaskRunner();
   }
 
+  WorkerThreadSchedulerTest(const WorkerThreadSchedulerTest&) = delete;
+  WorkerThreadSchedulerTest& operator=(const WorkerThreadSchedulerTest&) =
+      delete;
   ~WorkerThreadSchedulerTest() override = default;
 
   void TearDown() override {
@@ -219,8 +221,6 @@ class WorkerThreadSchedulerTest : public testing::Test {
   scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadSchedulerTest);
 };
 
 }  // namespace
@@ -509,6 +509,10 @@ class WorkerThreadSchedulerWithProxyTest : public testing::Test {
     scheduler_->AttachToCurrentThread();
   }
 
+  WorkerThreadSchedulerWithProxyTest(
+      const WorkerThreadSchedulerWithProxyTest&) = delete;
+  WorkerThreadSchedulerWithProxyTest& operator=(
+      const WorkerThreadSchedulerWithProxyTest&) = delete;
   ~WorkerThreadSchedulerWithProxyTest() override = default;
 
   void TearDown() override {
@@ -526,8 +530,6 @@ class WorkerThreadSchedulerWithProxyTest : public testing::Test {
   std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadSchedulerWithProxyTest);
 };
 
 TEST_F(WorkerThreadSchedulerWithProxyTest, UkmTaskRecording) {

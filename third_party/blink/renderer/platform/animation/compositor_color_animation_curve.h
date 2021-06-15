@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
@@ -30,6 +29,9 @@ class PLATFORM_EXPORT CompositorColorAnimationCurve
     : public CompositorAnimationCurve {
  public:
   CompositorColorAnimationCurve();
+  CompositorColorAnimationCurve(const CompositorColorAnimationCurve&) = delete;
+  CompositorColorAnimationCurve& operator=(
+      const CompositorColorAnimationCurve&) = delete;
   ~CompositorColorAnimationCurve() override;
 
   void AddKeyframe(const CompositorColorKeyframe&);
@@ -51,8 +53,6 @@ class PLATFORM_EXPORT CompositorColorAnimationCurve
       std::unique_ptr<gfx::KeyframedColorAnimationCurve>);
 
   std::unique_ptr<gfx::KeyframedColorAnimationCurve> curve_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorColorAnimationCurve);
 };
 
 }  // namespace blink

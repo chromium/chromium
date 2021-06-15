@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation_timeline.h"
@@ -27,6 +26,9 @@ class PLATFORM_EXPORT CompositorAnimationTimeline {
  public:
   CompositorAnimationTimeline();
   explicit CompositorAnimationTimeline(scoped_refptr<cc::AnimationTimeline>);
+  CompositorAnimationTimeline(const CompositorAnimationTimeline&) = delete;
+  CompositorAnimationTimeline& operator=(const CompositorAnimationTimeline&) =
+      delete;
   ~CompositorAnimationTimeline();
 
   cc::AnimationTimeline* GetAnimationTimeline() const;
@@ -38,8 +40,6 @@ class PLATFORM_EXPORT CompositorAnimationTimeline {
 
  private:
   scoped_refptr<cc::AnimationTimeline> animation_timeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorAnimationTimeline);
 };
 
 }  // namespace blink

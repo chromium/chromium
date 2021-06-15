@@ -59,6 +59,9 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   USING_FAST_MALLOC(EventLoop);
 
  public:
+  EventLoop(const EventLoop&) = delete;
+  EventLoop& operator=(const EventLoop&) = delete;
+
   // Queues |cb| to the backing v8::MicrotaskQueue.
   void EnqueueMicrotask(base::OnceClosure cb);
 
@@ -97,8 +100,6 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   Deque<base::OnceClosure> pending_microtasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
   HashSet<FrameOrWorkerScheduler*> schedulers_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLoop);
 };
 
 }  // namespace scheduler

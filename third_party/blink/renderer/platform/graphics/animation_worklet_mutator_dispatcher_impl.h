@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -48,6 +47,10 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcherImpl final
 
   explicit AnimationWorkletMutatorDispatcherImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  AnimationWorkletMutatorDispatcherImpl(
+      const AnimationWorkletMutatorDispatcherImpl&) = delete;
+  AnimationWorkletMutatorDispatcherImpl& operator=(
+      const AnimationWorkletMutatorDispatcherImpl&) = delete;
   ~AnimationWorkletMutatorDispatcherImpl() override;
 
   // AnimationWorkletMutatorDispatcher implementation.
@@ -170,8 +173,6 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcherImpl final
 
   base::WeakPtrFactory<AnimationWorkletMutatorDispatcherImpl> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationWorkletMutatorDispatcherImpl);
 };
 
 }  // namespace blink

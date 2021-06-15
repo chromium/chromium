@@ -176,6 +176,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
                         FrameOrWorkerScheduler*,
                         DetachableConsoleLogger& console_logger,
                         LoadingBehaviorObserver* loading_behavior_observer);
+  ResourceLoadScheduler(const ResourceLoadScheduler&) = delete;
+  ResourceLoadScheduler& operator=(const ResourceLoadScheduler&) = delete;
   ~ResourceLoadScheduler() override;
 
   void Trace(Visitor*) const;
@@ -399,8 +401,6 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   // Hints for the DelayCompetingLowPriorityRequests optimization. See
   // https://crbug.com/1112515 for details.
   mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr optimization_hints_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoadScheduler);
 };
 
 }  // namespace blink

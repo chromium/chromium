@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/simple_task_executor.h"
 #include "base/threading/thread_checker.h"
@@ -33,6 +32,8 @@ class PLATFORM_EXPORT SchedulerHelper
   // object is destroyed.
   explicit SchedulerHelper(
       base::sequence_manager::SequenceManager* sequence_manager);
+  SchedulerHelper(const SchedulerHelper&) = delete;
+  SchedulerHelper& operator=(const SchedulerHelper&) = delete;
   ~SchedulerHelper() override;
 
   // Must be invoked before running any task from the scheduler, on the thread
@@ -142,8 +143,6 @@ class PLATFORM_EXPORT SchedulerHelper
 
   UkmTaskSampler ukm_task_sampler_;
   absl::optional<base::SimpleTaskExecutor> simple_task_executor_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerHelper);
 };
 
 }  // namespace scheduler

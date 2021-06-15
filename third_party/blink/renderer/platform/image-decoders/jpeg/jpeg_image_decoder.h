@@ -40,6 +40,8 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
                    const ColorBehavior&,
                    size_t max_decoded_bytes,
                    size_t offset = 0);
+  JPEGImageDecoder(const JPEGImageDecoder&) = delete;
+  JPEGImageDecoder& operator=(const JPEGImageDecoder&) = delete;
   ~JPEGImageDecoder() override;
 
   // ImageDecoder:
@@ -104,8 +106,6 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   const size_t offset_;
   IntSize decoded_size_;
   Vector<SkISize> supported_decode_sizes_;
-
-  DISALLOW_COPY_AND_ASSIGN(JPEGImageDecoder);
 };
 
 }  // namespace blink

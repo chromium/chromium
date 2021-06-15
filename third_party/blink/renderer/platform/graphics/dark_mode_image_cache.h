@@ -18,6 +18,8 @@ namespace blink {
 class PLATFORM_EXPORT DarkModeImageCache {
  public:
   DarkModeImageCache() = default;
+  DarkModeImageCache(const DarkModeImageCache&) = delete;
+  DarkModeImageCache& operator=(const DarkModeImageCache&) = delete;
   ~DarkModeImageCache() = default;
 
   bool Exists(const SkIRect& src) {
@@ -64,8 +66,6 @@ class PLATFORM_EXPORT DarkModeImageCache {
   };
 
   std::unordered_map<DarkModeKey, sk_sp<SkColorFilter>, DarkModeKeyHash> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(DarkModeImageCache);
 };
 
 }  // namespace blink

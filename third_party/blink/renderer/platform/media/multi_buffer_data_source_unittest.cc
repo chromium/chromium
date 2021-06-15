@@ -193,13 +193,13 @@ class TestUrlIndex : public UrlIndex {
 class MockBufferedDataSourceHost : public BufferedDataSourceHost {
  public:
   MockBufferedDataSourceHost() = default;
+  MockBufferedDataSourceHost(const MockBufferedDataSourceHost&) = delete;
+  MockBufferedDataSourceHost& operator=(const MockBufferedDataSourceHost&) =
+      delete;
   ~MockBufferedDataSourceHost() override = default;
 
   MOCK_METHOD1(SetTotalBytes, void(int64_t total_bytes));
   MOCK_METHOD2(AddBufferedByteRange, void(int64_t start, int64_t end));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBufferedDataSourceHost);
 };
 
 class MockMultiBufferDataSource : public MultiBufferDataSource {
@@ -217,6 +217,10 @@ class MockMultiBufferDataSource : public MultiBufferDataSource {
                                 base::Unretained(this))),
         downloading_(false) {}
 
+  MockMultiBufferDataSource(const MockMultiBufferDataSource&) = delete;
+  MockMultiBufferDataSource& operator=(const MockMultiBufferDataSource&) =
+      delete;
+
   bool downloading() { return downloading_; }
   void set_downloading(bool downloading) { downloading_ = downloading; }
   bool range_supported() { return url_data_->range_supported(); }
@@ -226,8 +230,6 @@ class MockMultiBufferDataSource : public MultiBufferDataSource {
   // Whether the resource is downloading or deferred.
   bool downloading_;
   NullMediaLog media_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMultiBufferDataSource);
 };
 
 static const int64_t kFileSize = 5000000;
@@ -247,6 +249,10 @@ class MultiBufferDataSourceTest : public testing::Test {
           return std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
         }));
   }
+
+  MultiBufferDataSourceTest(const MultiBufferDataSourceTest&) = delete;
+  MultiBufferDataSourceTest& operator=(const MultiBufferDataSourceTest&) =
+      delete;
 
   MOCK_METHOD1(OnInitialize, void(bool));
 
@@ -495,8 +501,6 @@ class MultiBufferDataSourceTest : public testing::Test {
 
   // Used for calling MultiBufferDataSource::Read().
   uint8_t buffer_[kDataSize * 2];
-
-  DISALLOW_COPY_AND_ASSIGN(MultiBufferDataSourceTest);
 };
 
 TEST_F(MultiBufferDataSourceTest, Range_Supported) {

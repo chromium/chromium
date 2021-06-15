@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
@@ -28,6 +27,8 @@ class PLATFORM_EXPORT OrientationIterator {
   OrientationIterator(const UChar* buffer,
                       unsigned buffer_size,
                       FontOrientation run_orientation);
+  OrientationIterator(const OrientationIterator&) = delete;
+  OrientationIterator& operator=(const OrientationIterator&) = delete;
 
   bool Consume(unsigned* orientation_limit, RenderOrientation*);
 
@@ -35,8 +36,6 @@ class PLATFORM_EXPORT OrientationIterator {
   std::unique_ptr<UTF16TextIterator> utf16_iterator_;
   unsigned buffer_size_;
   bool at_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(OrientationIterator);
 };
 
 }  // namespace blink

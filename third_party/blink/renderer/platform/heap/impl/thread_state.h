@@ -35,7 +35,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_job.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc.h"
@@ -216,6 +215,9 @@ class PLATFORM_EXPORT ThreadState final {
   }
 
   static ThreadState* FromObject(const void*);
+
+  ThreadState(const ThreadState&) = delete;
+  ThreadState& operator=(const ThreadState&) = delete;
 
   bool IsMainThread() const { return this == MainThreadState(); }
   bool CheckThread() const { return thread_ == CurrentThread(); }
@@ -658,8 +660,6 @@ class PLATFORM_EXPORT ThreadState final {
   friend class TestSupportingGC;
   friend class ThreadStateSchedulingTest;
   friend class UnifiedHeapController;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadState);
 };
 
 template <>

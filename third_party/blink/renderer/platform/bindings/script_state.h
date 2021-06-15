@@ -128,6 +128,8 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
   ScriptState(v8::Local<v8::Context>,
               scoped_refptr<DOMWrapperWorld>,
               ExecutionContext* execution_context);
+  ScriptState(const ScriptState&) = delete;
+  ScriptState& operator=(const ScriptState&) = delete;
   ~ScriptState();
 
   void Trace(Visitor*) const;
@@ -233,8 +235,6 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
   static constexpr int kV8ContextPerContextDataIndex =
       static_cast<int>(gin::kPerContextDataStartIndex) +
       static_cast<int>(gin::kEmbedderBlink);
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptState);
 };
 
 // ScriptStateProtectingContext keeps the context associated with the
@@ -251,6 +251,9 @@ class ScriptStateProtectingContext final
           "blink::ScriptStateProtectingContext::context_");
     }
   }
+  ScriptStateProtectingContext(const ScriptStateProtectingContext&) = delete;
+  ScriptStateProtectingContext& operator=(const ScriptStateProtectingContext&) =
+      delete;
 
   void Trace(Visitor* visitor) const { visitor->Trace(script_state_); }
 
@@ -270,8 +273,6 @@ class ScriptStateProtectingContext final
  private:
   Member<ScriptState> script_state_;
   ScopedPersistent<v8::Context> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptStateProtectingContext);
 };
 
 }  // namespace blink

@@ -27,6 +27,10 @@ class PLATFORM_EXPORT PeerConnectionRemoteAudioTrack final
  public:
   explicit PeerConnectionRemoteAudioTrack(
       scoped_refptr<webrtc::AudioTrackInterface> track_interface);
+  PeerConnectionRemoteAudioTrack(const PeerConnectionRemoteAudioTrack&) =
+      delete;
+  PeerConnectionRemoteAudioTrack& operator=(
+      const PeerConnectionRemoteAudioTrack&) = delete;
   ~PeerConnectionRemoteAudioTrack() final;
 
   // If |track| is an instance of PeerConnectionRemoteAudioTrack, return a
@@ -49,8 +53,6 @@ class PLATFORM_EXPORT PeerConnectionRemoteAudioTrack final
   // In debug builds, check that all methods that could cause object graph
   // or data flow changes are being called on the main thread.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionRemoteAudioTrack);
 };
 
 // Represents the audio provided by the receiving end of a PeerConnection.
@@ -61,6 +63,10 @@ class PLATFORM_EXPORT PeerConnectionRemoteAudioSource final
   PeerConnectionRemoteAudioSource(
       scoped_refptr<webrtc::AudioTrackInterface> track_interface,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  PeerConnectionRemoteAudioSource(const PeerConnectionRemoteAudioSource&) =
+      delete;
+  PeerConnectionRemoteAudioSource& operator=(
+      const PeerConnectionRemoteAudioSource&) = delete;
   ~PeerConnectionRemoteAudioSource() final;
 
  protected:
@@ -98,8 +104,6 @@ class PLATFORM_EXPORT PeerConnectionRemoteAudioSource final
 #ifndef NDEBUG
   base::Lock single_audio_thread_guard_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionRemoteAudioSource);
 };
 
 }  // namespace blink

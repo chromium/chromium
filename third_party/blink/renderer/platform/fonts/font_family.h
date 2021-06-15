@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FAMILY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FAMILY_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -66,14 +65,15 @@ class PLATFORM_EXPORT SharedFontFamily : public FontFamily,
                                          public RefCounted<SharedFontFamily> {
   USING_FAST_MALLOC(SharedFontFamily);
  public:
+  SharedFontFamily(const SharedFontFamily&) = delete;
+  SharedFontFamily& operator=(const SharedFontFamily&) = delete;
+
   static scoped_refptr<SharedFontFamily> Create() {
     return base::AdoptRef(new SharedFontFamily);
   }
 
  private:
   SharedFontFamily() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedFontFamily);
 };
 
 PLATFORM_EXPORT bool operator==(const FontFamily&, const FontFamily&);

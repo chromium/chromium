@@ -29,7 +29,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_image_generator.h"
@@ -89,6 +88,8 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
         use_count_(use_count),
         prev_(nullptr),
         next_(nullptr) {}
+  CacheEntry(const CacheEntry&) = delete;
+  CacheEntry& operator=(const CacheEntry&) = delete;
 
   virtual ~CacheEntry() { DCHECK(!use_count_); }
 
@@ -112,8 +113,6 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
  private:
   CacheEntry* prev_;
   CacheEntry* next_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheEntry);
 };
 
 class DecoderCacheEntry final : public CacheEntry {
@@ -245,6 +244,8 @@ class PLATFORM_EXPORT ImageDecodingStore final {
 
  public:
   ImageDecodingStore();
+  ImageDecodingStore(const ImageDecodingStore&) = delete;
+  ImageDecodingStore& operator=(const ImageDecodingStore&) = delete;
   ~ImageDecodingStore();
 
   static ImageDecodingStore& Instance();
@@ -348,8 +349,6 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   // - calls to underlying skBitmap's LockPixels()/UnlockPixels() as they are
   //   not threadsafe.
   Mutex mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodingStore);
 };
 
 }  // namespace blink

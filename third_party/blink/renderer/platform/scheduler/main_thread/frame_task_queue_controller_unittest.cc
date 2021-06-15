@@ -39,6 +39,9 @@ class FrameTaskQueueControllerTest : public testing::Test,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
         task_queue_created_count_(0) {}
+  FrameTaskQueueControllerTest(const FrameTaskQueueControllerTest&) = delete;
+  FrameTaskQueueControllerTest& operator=(const FrameTaskQueueControllerTest&) =
+      delete;
 
   ~FrameTaskQueueControllerTest() override = default;
 
@@ -124,8 +127,6 @@ class FrameTaskQueueControllerTest : public testing::Test,
 
  private:
   size_t task_queue_created_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTaskQueueControllerTest);
 };
 
 TEST_F(FrameTaskQueueControllerTest, CreateAllTaskQueues) {

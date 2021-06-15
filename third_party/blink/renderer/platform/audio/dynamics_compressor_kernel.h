@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DYNAMICS_COMPRESSOR_KERNEL_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -43,6 +42,8 @@ class PLATFORM_EXPORT DynamicsCompressorKernel {
 
  public:
   DynamicsCompressorKernel(float sample_rate, unsigned number_of_channels);
+  DynamicsCompressorKernel(const DynamicsCompressorKernel&) = delete;
+  DynamicsCompressorKernel& operator=(const DynamicsCompressorKernel&) = delete;
 
   void SetNumberOfChannels(unsigned);
 
@@ -134,9 +135,6 @@ class PLATFORM_EXPORT DynamicsCompressorKernel {
 
   // Internal parameter for the knee portion of the curve.
   float knee_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DynamicsCompressorKernel);
 };
 
 }  // namespace blink

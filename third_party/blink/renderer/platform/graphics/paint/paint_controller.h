@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,6 +79,8 @@ class PLATFORM_EXPORT PaintController {
   };
 
   explicit PaintController(Usage = kMultiplePaints);
+  PaintController(const PaintController&) = delete;
+  PaintController& operator=(const PaintController&) = delete;
   ~PaintController();
 
 #if DCHECK_IS_ON()
@@ -473,8 +474,6 @@ class PLATFORM_EXPORT PaintController {
   static bool disable_uma_reporting_;
 
   class PaintArtifactAsJSON;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintController);
 };
 
 }  // namespace blink

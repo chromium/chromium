@@ -25,6 +25,9 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
       base::sequence_manager::SequenceManager* manager,
       NonMainThreadSchedulerImpl* non_main_thread_scheduler,
       TaskType default_task_type);
+  NonMainThreadSchedulerHelper(const NonMainThreadSchedulerHelper&) = delete;
+  NonMainThreadSchedulerHelper& operator=(const NonMainThreadSchedulerHelper&) =
+      delete;
   ~NonMainThreadSchedulerHelper() override;
 
   scoped_refptr<NonMainThreadTaskQueue> NewTaskQueue(
@@ -45,8 +48,6 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
   NonMainThreadSchedulerImpl* non_main_thread_scheduler_;  // NOT OWNED
   const scoped_refptr<NonMainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<NonMainThreadTaskQueue> control_task_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonMainThreadSchedulerHelper);
 };
 
 }  // namespace scheduler
