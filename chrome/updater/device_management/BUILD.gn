@@ -10,6 +10,8 @@ import("//testing/test.gni")
 
 source_set("device_management") {
   sources = [
+    "cloud_policy_util.cc",
+    "cloud_policy_util.h",
     "dm_cached_policy_info.cc",
     "dm_cached_policy_info.h",
     "dm_client.cc",
@@ -29,20 +31,22 @@ source_set("device_management") {
     "//chrome/updater:version_header",
     "//chrome/updater/protos:omaha_proto",
     "//components/update_client",
+    "//components/version_info",
     "//crypto",
     "//third_party/boringssl",
     "//url",
   ]
-  public_deps = [
-    "//components/policy/core/common:common",
-    "//components/policy/proto",
-  ]
+  public_deps = [ "//components/policy/proto" ]
 
   if (is_mac) {
     sources += [ "dm_storage_mac.mm" ]
   }
   if (is_win) {
     sources += [ "dm_storage_win.cc" ]
+  }
+
+  if (is_mac) {
+    frameworks = [ "SystemConfiguration.framework" ]
   }
 }
 
