@@ -6,6 +6,7 @@
 import argparse
 import collections
 import fnmatch
+import io
 import os
 import sys
 
@@ -147,7 +148,7 @@ def ValidateFormat(src, dsc_format):
 
     # if we are expecting a dict, verify the keys are allowed
     if exp_type is dict:
-      print "Expecting dict\n"
+      print('Expecting dict\n')
       for sub in value:
         if sub not in exp_value:
           raise ValidationError('Sub key %s not expected in %s.' %
@@ -160,7 +161,7 @@ def ValidateFormat(src, dsc_format):
 
 
 def LoadProject(filename):
-  with open(filename, 'r') as descfile:
+  with io.open(filename, encoding='utf-8') as descfile:
     try:
       desc = eval(descfile.read(), {}, {})
     except Exception as e:
@@ -223,7 +224,7 @@ def MakeDefaultFilterFn(include, exclude):
 
 
 def DescMatchesFilter(desc, filters):
-  for key, expected in filters.iteritems():
+  for key, expected in iter(filters.items()):
     # For any filtered key which is unspecified, assumed False
     value = desc.get(key, False)
 
@@ -242,9 +243,9 @@ def DescMatchesFilter(desc, filters):
 
 def PrintProjectTree(tree):
   for key in tree:
-    print key + ':'
+    print(key + ':')
     for val in tree[key]:
-      print '\t' + val['NAME']
+      print('\t' + val['NAME'])
 
 
 def main(args):

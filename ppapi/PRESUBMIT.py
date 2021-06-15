@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import os
 import re
-import sys
 import subprocess
+
+
+USE_PYTHON3 = True
 
 
 def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False):
@@ -13,15 +16,15 @@ def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False):
   p = subprocess.Popen(cmd, cwd=cwd,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
-  (p_stdout, p_stderr) = p.communicate()
+  (_, p_stderr) = p.communicate()
   if p.returncode:
     if warning:
       results.append(output_api.PresubmitPromptWarning(
-        '%s\n\n%s' % (err_string, p_stderr)))
+        '%s\n\n%s' % (err_string, p_stderr.decode('utf-8'))))
     else:
       results.append(
           output_api.PresubmitError(err_string,
-                                    long_text=p_stderr))
+                                    long_text=p_stderr.decode('utf-8')))
   return results
 
 
@@ -35,7 +38,7 @@ def RunUnittests(input_api, output_api):
     if name_parts[0:2] == ['ppapi', 'generators']:
       generator_files.append(filename)
   if generator_files != []:
-    cmd = [ sys.executable, 'idl_tests.py']
+    cmd = [input_api.python_executable, 'idl_tests.py']
     ppapi_dir = input_api.PresubmitLocalPath()
     results.extend(RunCmdAndCheck(cmd,
                                   'PPAPI IDL unittests failed.',
@@ -72,8 +75,9 @@ def CheckTODO(input_api, output_api):
       continue
 
     filepath = os.path.join('..', filename)
-    if RE_TODO.search(open(filepath, 'rb').read()):
-      todo.append(filename)
+    with io.open(filepath, encoding='utf-8') as f:
+      if RE_TODO.search(f.read()):
+        todo.append(filename)
 
   if todo:
     return [output_api.PresubmitError(
@@ -105,8 +109,9 @@ def CheckUnversionedPPB(input_api, output_api):
       continue
 
     filepath = os.path.join('..', filename)
-    if RE_UNVERSIONED_PPB.search(open(filepath, 'rb').read()):
-      todo.append(filename)
+    with io.open(filepath, encoding='utf-8') as f:
+      if RE_UNVERSIONED_PPB.search(f.read()):
+        todo.append(filename)
 
   if todo:
     return [output_api.PresubmitError(
@@ -143,7 +148,7 @@ def CheckUpdatedNaClSDK(input_api, output_api):
   verify_ppapi_py = os.path.join(input_api.change.RepositoryRoot(),
                                  'native_client_sdk', 'src', 'build_tools',
                                  'verify_ppapi.py')
-  cmd = [sys.executable, verify_ppapi_py] + nacl_sdk_files
+  cmd = [input_api.python_executable, verify_ppapi_py] + nacl_sdk_files
   return RunCmdAndCheck(cmd,
                         'PPAPI Interface modified without updating NaCl SDK.\n'
                         '(note that some dev interfaces should not be added '
@@ -323,7 +328,7 @@ def CheckChange(input_api, output_api):
   #   --diff to generate a unified diff
   #   --out to pick which files to examine (only the ones in the CL)
   ppapi_dir = input_api.PresubmitLocalPath()
-  cmd = [sys.executable, 'generator.py',
+  cmd = [input_api.python_executable, 'generator.py',
          '--wnone', '--diff', '--test','--cgen', '--range=start,end']
 
   # Only generate output for IDL files references (as *.h or *.idl) in this CL
