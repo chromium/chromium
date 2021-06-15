@@ -71,8 +71,7 @@ bool SmsRemoteFetcherUiController::ShouldShowLoadingIcon() const {
 
 std::u16string
 SmsRemoteFetcherUiController::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringFUTF16(IDS_OMNIBOX_TOOLTIP_SMS_REMOTE_FETCHER,
-                                    base::UTF8ToUTF16(last_device_name_));
+  return std::u16string();
 }
 
 SharingFeatureName SmsRemoteFetcherUiController::GetFeatureMetricsPrefix()
@@ -90,7 +89,6 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
     std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
     return;
   }
-  ShowSuccessIcon();
 
   DCHECK(response);
   DCHECK(response->has_sms_fetch_response());

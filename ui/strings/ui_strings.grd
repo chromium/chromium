@@ -1156,9 +1156,6 @@ need to be translated for each locale.-->
       <message name="IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL" desc="The label to be shown next to the omnibox icon when the message is being sent to the other device.">
         Sending...
       </message>
-      <message name="IDS_BROWSER_SHARING_OMNIBOX_SENT_LABEL" translateable="false" desc="The label to be shown next to the omnibox icon when the message is returned from the other device.">
-        Sent
-      </message>
       <message name="IDS_BROWSER_SHARING_DIALOG_DEVICE_SUBTITLE_LAST_ACTIVE_DAYS" desc="The label to be shown below the name of a valid device indicating the last active time of device,">
         {DAYS, plural, =0 {Active today} =1 {Active 1 day ago} other {Active # days ago}}
       </message>

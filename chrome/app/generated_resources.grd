@@ -7671,9 +7671,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SHARING_REMOTE_COPY_NOTIFICATION_DESCRIPTION" desc="Second line of text displayed in a Remote Copy notification.">
         Press <ph name="MODIFIER_KEY_DESCRIPTION">$1<ex>Ctrl+V</ex></ph> to paste
       </message>
-      <message name="IDS_OMNIBOX_TOOLTIP_SMS_REMOTE_FETCHER" translateable="false" desc="The label of item for sms remote fetcher in the omnibox for showing confirmation of an interaction on the remote device.">
-        Chrome has sent the verification code to the website upon your approval on <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph>
-      </message>
       <if expr="not use_titlecase">
         <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES" desc="The label of item for click to call in context menu when multiple devices are available.">
           Call from your device

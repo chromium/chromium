@@ -56,7 +56,6 @@ class SharingUiController {
   virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
   // If true, shows a loading icon on omnibox when sending out the message.
   virtual bool ShouldShowLoadingIcon() const;
-  int GetIconLabelId() const;
   virtual std::u16string GetTextForTooltipAndAccessibleName() const = 0;
   // Get the name of the feature to be used as a prefix for the metric name.
   virtual SharingFeatureName GetFeatureMetricsPrefix() const = 0;
@@ -103,8 +102,6 @@ class SharingUiController {
   virtual void DoUpdateApps(UpdateAppsCallback callback) = 0;
   // Prepares a new dialog data.
   virtual SharingDialogData CreateDialogData(SharingDialogType dialog_type);
-  // Shows a successful icon upon |AckReceived|.
-  void ShowSuccessIcon();
 
   // Shows an icon in the omnibox which will be removed when receiving a
   // response or when cancelling the request by calling the returned callback.
@@ -136,8 +133,6 @@ class SharingUiController {
   void OnAppsReceived(int dialog_id,
                       const absl::optional<url::Origin>& initiating_origin,
                       std::vector<SharingApp> apps);
-
-  void HideSuccessIcon(int dialog_id);
 
   SharingDialog* dialog_ = nullptr;
   content::WebContents* web_contents_ = nullptr;
