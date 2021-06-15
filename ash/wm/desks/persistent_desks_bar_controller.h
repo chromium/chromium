@@ -31,6 +31,16 @@ class ASH_EXPORT PersistentDesksBarController
       delete;
   ~PersistentDesksBarController() override;
 
+  const views::Widget* persistent_desks_bar_widget() const {
+    return persistent_desks_bar_widget_.get();
+  }
+
+  const PersistentDesksBarView* persistent_desks_bar_view() const {
+    return persistent_desks_bar_view_;
+  }
+
+  bool is_enabled() const { return is_enabled_; }
+
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
@@ -51,15 +61,14 @@ class ASH_EXPORT PersistentDesksBarController
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
-  const views::Widget* persistent_desks_bar_widget() const {
-    return persistent_desks_bar_widget_.get();
-  }
-
-  const PersistentDesksBarView* persistent_desks_bar_view() const {
-    return persistent_desks_bar_view_;
-  }
+  // Toggles the value of `is_enabled_` and destroys the bar if it is togggled
+  // to false.
+  void ToggleEnabledState();
 
  private:
+  // Returns true if the persistent desks bar should be created and shown.
+  bool ShouldPersistentDesksBarBeCreated() const;
+
   // Initializes and shows the widget that contains the PersistentDesksBarView
   // contents. Creates the widget only if ShouldPersistentDesksBarBeCreated()
   // returns true and it hasn't been created already. Only refreshes the
@@ -72,6 +81,10 @@ class ASH_EXPORT PersistentDesksBarController
   views::UniqueWidgetPtr persistent_desks_bar_widget_;
   // The contents view of the above |persistent_desks_bar_widget_| if created.
   PersistentDesksBarView* persistent_desks_bar_view_ = nullptr;
+
+  // Showing the bar if it is enabled and hiding the bar if it is disabled. This
+  // can be set through the context menu of the bar.
+  bool is_enabled_ = true;
 };
 
 }  // namespace ash

@@ -48,13 +48,6 @@ std::unique_ptr<views::Widget> CreatePersistentDesksBarWidget() {
   return widget;
 }
 
-// Returns true if the persistent desks bar should be created and shown.
-bool ShouldPersistentDesksBarBeCreated() {
-  return !TabletMode::Get()->InTabletMode() &&
-         !Shell::Get()->overview_controller()->InOverviewSession() &&
-         DesksController::Get()->desks().size() > 1;
-}
-
 }  // namespace
 
 PersistentDesksBarController::PersistentDesksBarController() {
@@ -133,6 +126,18 @@ void PersistentDesksBarController::OnTabletModeStarted() {
 
 void PersistentDesksBarController::OnTabletModeEnded() {
   MaybeInitBarWidget();
+}
+
+void PersistentDesksBarController::ToggleEnabledState() {
+  is_enabled_ = !is_enabled_;
+  if (!is_enabled_)
+    DestroyBarWidget();
+}
+
+bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
+  return is_enabled_ && !TabletMode::Get()->InTabletMode() &&
+         !Shell::Get()->overview_controller()->InOverviewSession() &&
+         DesksController::Get()->desks().size() > 1;
 }
 
 void PersistentDesksBarController::MaybeInitBarWidget() {

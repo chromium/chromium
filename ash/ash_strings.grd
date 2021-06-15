@@ -3741,6 +3741,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR" desc="Description explaining that there was an error with the speech recognition library download.">
         Can't download speech files. Try again later.
       </message>
+
+      <!-- Strings for persistent desks bar-->
+      <message name="IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK" desc="Title of the menu item in the context menu to send feedback.">
+        Feedback
+      </message>
+      <message name="IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_SHOW_DESKS_BAR" desc="Title of the menu item in the context menu to show the desks bar.">
+        Show deskbar
+      </message>
+      <message name="IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_HIDE_DESKS_BAR" desc="Title of the menu item in the context menu to hide the desks bar.">
+        Hide deskbar
+      </message>
+
     </messages>
   </release>
 </grit>

@@ -40,6 +40,8 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/persistent_desks_bar_circular_button.h"
+#include "ash/wm/desks/persistent_desks_bar_context_menu.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/persistent_desks_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
@@ -5857,7 +5859,7 @@ TEST_F(PersistentDesksBarTest, LeavingOrEnteringTabletModeWithOverviewModeOn) {
   EXPECT_EQ(2u, DesksController::Get()->desks().size());
   EXPECT_TRUE(GetBarWidget());
 
-  // The bar should not be created while entering or leaving tablet mode with
+  // The bar should not be created after entering or leaving tablet mode with
   // overview mode on.
   auto* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview();
@@ -5867,6 +5869,49 @@ TEST_F(PersistentDesksBarTest, LeavingOrEnteringTabletModeWithOverviewModeOn) {
   TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(GetBarWidget());
+}
+
+// Tests that the bar can be shown or hidden correctly through the context menu
+// of the bar.
+TEST_F(PersistentDesksBarTest, ShowOrHideBarThroughContextMenu) {
+  NewDesk();
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+
+  auto* shell = Shell::Get();
+  // The bar should be destroyed after it is set to hide.
+  PersistentDesksBarContextMenu* context_menu =
+      shell->persistent_desks_bar_controller()
+          ->persistent_desks_bar_view()
+          ->GetVerticalDotsButtonForTesting()
+          ->GetContextMenuForTesting();
+  context_menu->ExecuteCommand(
+      static_cast<int>(
+          PersistentDesksBarContextMenu::CommandId::kShowOrHideBar),
+      /*event_flags=*/0);
+  EXPECT_FALSE(GetBarWidget());
+
+  // With the bar being set to hide, it should not be created after exiting
+  // overview mode with more than one desk.
+  auto* overview_controller = shell->overview_controller();
+  overview_controller->StartOverview();
+  overview_controller->EndOverview();
+  EXPECT_FALSE(GetBarWidget());
+
+  // With the bar being set to show, it should be created after exiting overview
+  // mode with more than one desk.
+  overview_controller->StartOverview();
+  context_menu = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                     ->desks_bar_view()
+                     ->GetVerticalDotsButtonForTesting()
+                     ->GetContextMenuForTesting();
+  context_menu->ExecuteCommand(
+      static_cast<int>(
+          PersistentDesksBarContextMenu::CommandId::kShowOrHideBar),
+      /*event_flags=*/0);
+  overview_controller->EndOverview();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
 }
 
 // TODO(afakhry): Add more tests:

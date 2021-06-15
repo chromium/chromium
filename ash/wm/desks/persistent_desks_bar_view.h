@@ -12,8 +12,9 @@
 
 namespace ash {
 
-class CollapseButton;
 class PersistentDesksBarDeskButton;
+class PersistentDesksBarOverviewButton;
+class PersistentDesksBarVerticalDotsButton;
 
 // A bar that resides at the top of the screen in clamshell mode when there are
 // more than one desk. It includes the desk buttons that show the corresponding
@@ -31,22 +32,26 @@ class ASH_EXPORT PersistentDesksBarView : public views::View {
   void RefreshDeskButtons();
 
   const std::vector<std::u16string> GetDeskButtonsTextForTesting() const;
+  const PersistentDesksBarVerticalDotsButton* GetVerticalDotsButtonForTesting()
+      const {
+    return vertical_dots_button_;
+  }
 
  private:
   // views::View:
   void Layout() override;
   void OnThemeChanged() override;
 
-  // Called when `toggle_button_` is pressed.
-  void OnToggleButtonPressed();
-
   // A list of buttons with the desks' name. The buttons here should have the
   // same number as the current desks, same order as well.
   std::vector<PersistentDesksBarDeskButton*> desk_buttons_;
 
-  // A toggle button at the right side of the bar which when clicked will hide
-  // the bar and enter overview mode.
-  CollapseButton* toggle_button_ = nullptr;
+  // A circular button which when clicked will open the context menu of the bar.
+  PersistentDesksBarVerticalDotsButton* vertical_dots_button_;
+
+  // A button at the right side of the bar which when clicked will hide the bar
+  // and enter overview mode.
+  PersistentDesksBarOverviewButton* overview_button_;
 };
 
 }  // namespace ash

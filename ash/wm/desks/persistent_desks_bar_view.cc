@@ -4,14 +4,12 @@
 
 #include "ash/wm/desks/persistent_desks_bar_view.h"
 
-#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/unified/collapse_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
+#include "ash/wm/desks/persistent_desks_bar_circular_button.h"
 #include "ash/wm/desks/zero_state_button.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "base/containers/flat_set.h"
 #include "base/stl_util.h"
 #include "ui/views/background.h"
@@ -25,7 +23,8 @@ constexpr int kDeskButtonHeight = 28;
 constexpr int kDeskButtonSpacing = 8;
 constexpr int kDeskButtonsY = 6;
 
-const int kToggleButtonRightPadding = 6;
+constexpr int kOverviewButtonRightPadding = 6;
+constexpr int kVerticalDotsButtonAndOverviewButtonSpacing = 8;
 
 }  // namespace
 
@@ -74,11 +73,11 @@ class PersistentDesksBarDeskButton : public DeskButtonBase {
 // -----------------------------------------------------------------------------
 // PersistentDesksBarView:
 
-PersistentDesksBarView::PersistentDesksBarView() {
-  toggle_button_ = AddChildView(std::make_unique<CollapseButton>(
-      base::BindRepeating(&PersistentDesksBarView::OnToggleButtonPressed,
-                          base::Unretained(this))));
-}
+PersistentDesksBarView::PersistentDesksBarView()
+    : vertical_dots_button_(AddChildView(
+          std::make_unique<PersistentDesksBarVerticalDotsButton>())),
+      overview_button_(
+          AddChildView(std::make_unique<PersistentDesksBarOverviewButton>())) {}
 
 PersistentDesksBarView::~PersistentDesksBarView() = default;
 
@@ -136,12 +135,22 @@ void PersistentDesksBarView::Layout() {
     x += (kDeskButtonWidth + kDeskButtonSpacing);
   }
 
-  const gfx::Size toggle_button_size = toggle_button_->GetPreferredSize();
-  toggle_button_->SetBoundsRect(gfx::Rect(
-      gfx::Point(bounds().right() - toggle_button_size.width() -
-                     kToggleButtonRightPadding,
-                 (bounds().height() - toggle_button_size.height()) / 2),
-      toggle_button_size));
+  const gfx::Size overview_button_size = overview_button_->GetPreferredSize();
+  const int overview_button_x = bounds().right() -
+                                overview_button_size.width() -
+                                kOverviewButtonRightPadding;
+  const int overview_button_y =
+      (bounds().height() - overview_button_size.height()) / 2;
+  overview_button_->SetBoundsRect(gfx::Rect(
+      gfx::Point(overview_button_x, overview_button_y), overview_button_size));
+
+  // `vertical_dots_button_` has the same size and y-axis position as
+  // `overview_button_`.
+  vertical_dots_button_->SetBoundsRect(
+      gfx::Rect(gfx::Point(overview_button_x - overview_button_size.width() -
+                               kVerticalDotsButtonAndOverviewButtonSpacing,
+                           overview_button_y),
+                overview_button_size));
 }
 
 void PersistentDesksBarView::OnThemeChanged() {
@@ -149,10 +158,6 @@ void PersistentDesksBarView::OnThemeChanged() {
   SetBackground(
       views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kOpaque)));
-}
-
-void PersistentDesksBarView::OnToggleButtonPressed() {
-  Shell::Get()->overview_controller()->StartOverview();
 }
 
 }  // namespace ash

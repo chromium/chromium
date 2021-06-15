@@ -24,6 +24,7 @@ class ExpandedStateNewDeskButton;
 class GradientLayerDelegate;
 class NewDeskButton;
 class OverviewGrid;
+class PersistentDesksBarVerticalDotsButton;
 class ScrollArrowButton;
 class ZeroStateDefaultDeskButton;
 class ZeroStateNewDeskButton;
@@ -174,10 +175,12 @@ class ASH_EXPORT DesksBarView : public views::View,
     return right_scroll_button_;
   }
   views::ScrollView* GetScrollViewForTesting() const { return scroll_view_; }
-
-  // Get drag view for test.
   const DeskMiniView* GetDragDeskMiniViewForTesting() const {
     return drag_view_;
+  }
+  const PersistentDesksBarVerticalDotsButton* GetVerticalDotsButtonForTesting()
+      const {
+    return vertical_dots_button_;
   }
 
   bool IsLeftGradientVisibleForTesting() const;
@@ -278,6 +281,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // The layer delegate used for |scroll_view_|'s mask layer, with left and
   // right gradient asides the scroll buttons.
   std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
+
+  // A circular button which when clicked will open the context menu of the
+  // persistent desks bar. Note that this button will only be created when
+  // BentoBar is enabled.
+  PersistentDesksBarVerticalDotsButton* vertical_dots_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DesksBarView);
 };

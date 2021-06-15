@@ -22,6 +22,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/persistent_desks_bar_circular_button.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -70,6 +71,9 @@ constexpr int kScrollViewMinimumHorizontalPadding = 32;
 constexpr int kScrollButtonWidth = 36;
 
 constexpr int kGradientZoneLength = 40;
+
+constexpr int kVerticalDotsButtonVerticalPadding = 8;
+constexpr int kVerticalDotsButtonRightPadding = 8;
 
 // The duration of scrolling one page.
 constexpr base::TimeDelta kBarScrollDuration =
@@ -295,6 +299,13 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
       base::BindRepeating(&DesksBarView::ScrollToNextPage,
                           base::Unretained(this)),
       /*is_left_arrow=*/false, this));
+
+  if (features::IsBentoBarEnabled()) {
+    vertical_dots_button_ =
+        AddChildView(std::make_unique<PersistentDesksBarVerticalDotsButton>());
+    vertical_dots_button_->SetPaintToLayer();
+    vertical_dots_button_->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   scroll_view_contents_ =
       scroll_view_->SetContents(std::make_unique<views::View>());
@@ -601,6 +612,16 @@ void DesksBarView::Layout() {
       bounds().right() - horizontal_padding -
           (kScrollButtonWidth - kScrollViewMinimumHorizontalPadding),
       bounds().y(), kScrollButtonWidth, bounds().height());
+
+  if (vertical_dots_button_) {
+    const gfx::Size vertical_dots_button_size =
+        vertical_dots_button_->GetPreferredSize();
+    vertical_dots_button_->SetBoundsRect(gfx::Rect(
+        gfx::Point(bounds().right() - vertical_dots_button_size.width() -
+                       kVerticalDotsButtonRightPadding,
+                   bounds().y() + kVerticalDotsButtonVerticalPadding),
+        vertical_dots_button_size));
+  }
 
   gfx::Rect scroll_bounds = bounds();
   // Align with the overview grid in horizontal, so only horizontal insets are
