@@ -87,7 +87,14 @@ void MojoBinderPolicyApplier::PrepareToGrantAll() {
 
 void MojoBinderPolicyApplier::GrantAll() {
   DCHECK_NE(mode_, Mode::kGrantAll);
+
+  // GrantAll() should be called inside a Mojo message call stack, because it
+  // binds deferred receivers by invoking
+  // BrowserInterfaceBroker::BindInterface(), which assumes it is called within
+  // a Mojo messaging call. See https://crbug.com/1217977 for more information.
+  DCHECK(mojo::GetBadMessageCallback());
   mode_ = Mode::kGrantAll;
+
   // It's safe to iterate over `deferred_binders_` because no more callbacks
   // will be added to it once `grant_all_` is true."
   for (auto& deferred_binder : deferred_binders_)

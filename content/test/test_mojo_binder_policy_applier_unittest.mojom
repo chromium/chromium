@@ -20,3 +20,7 @@ interface TestInterfaceForCancel {};
 
 // An interface whose MojoBinderPolicy is kUnexpected.
 interface TestInterfaceForUnexpected {};
+
+interface MojoContextProvider{
+  GrantAll();
+};

@@ -95,13 +95,26 @@ class TestReceiverCollector : public mojom::TestInterfaceForDefer,
   std::string cancelled_interface_;
 };
 
-class MojoBinderPolicyApplierTest : public testing::Test {
+class MojoBinderPolicyApplierTest : public testing::Test,
+                                    mojom::MojoContextProvider {
  public:
   MojoBinderPolicyApplierTest() = default;
+
+  // mojom::MojoContextProvider
+  void GrantAll() override { policy_applier_.GrantAll(); }
 
  protected:
   std::vector<base::OnceClosure>& deferred_binders() {
     return policy_applier_.deferred_binders_;
+  }
+
+  // Calls MojoBinderPolicyApplier::GrantAll() inside a Mojo message dispatch
+  // stack.
+  void RunGrantAll() {
+    DCHECK(!receiver_.is_bound());
+    receiver_.Bind(remote_.BindNewPipeAndPassReceiver());
+    remote_->GrantAll();
+    remote_.FlushForTesting();
   }
 
   const MojoBinderPolicyMapImpl policy_map_{
@@ -117,6 +130,8 @@ class MojoBinderPolicyApplierTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::MojoContextProvider> remote_;
+  mojo::Receiver<mojom::MojoContextProvider> receiver_{this};
 };
 
 // Verifies that interfaces whose policies are kGrant can be bound immediately.
@@ -158,7 +173,7 @@ TEST_F(MojoBinderPolicyApplierTest, DeferInEnforce) {
   EXPECT_FALSE(collector_.IsDeferReceiverBound());
   EXPECT_EQ(1U, deferred_binders().size());
 
-  policy_applier_.GrantAll();
+  RunGrantAll();
   EXPECT_EQ(0U, deferred_binders().size());
   EXPECT_TRUE(collector_.IsDeferReceiverBound());
   EXPECT_FALSE(collector_.IsCancelled());
@@ -224,7 +239,7 @@ TEST_F(MojoBinderPolicyApplierTest, DeferInPrepareToGrantAll) {
   EXPECT_FALSE(collector_.IsDeferReceiverBound());
   EXPECT_EQ(1U, deferred_binders().size());
 
-  policy_applier_.GrantAll();
+  RunGrantAll();
   EXPECT_TRUE(collector_.IsDeferReceiverBound());
   EXPECT_EQ(0U, deferred_binders().size());
 }
@@ -286,7 +301,8 @@ TEST_F(MojoBinderPolicyApplierTest, BindInterfacesAfterResolving) {
   mojo::GenericPendingReceiver unexpected_receiver(
       unexpected_remote.BindNewPipeAndPassReceiver());
 
-  policy_applier_.GrantAll();
+  RunGrantAll();
+
   // All interfaces should be bound immediately.
   const std::string defer_interface_name =
       defer_receiver.interface_name().value();
@@ -348,7 +364,7 @@ TEST_F(MojoBinderPolicyApplierTest, DropDeferredBinders) {
   EXPECT_EQ(1U, deferred_binders().size());
   policy_applier_.DropDeferredBinders();
   EXPECT_EQ(0U, deferred_binders().size());
-  policy_applier_.GrantAll();
+  RunGrantAll();
   EXPECT_FALSE(collector_.IsDeferReceiverBound());
 }
 
