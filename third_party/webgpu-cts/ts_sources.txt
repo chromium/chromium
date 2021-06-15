@@ -66,7 +66,7 @@ src/webgpu/util/navigator_gpu.ts
 src/webgpu/util/device_pool.ts
 src/webgpu/util/math.ts
 src/webgpu/util/unions.ts
-src/webgpu/util/texture/image_copy.ts
+src/webgpu/util/texture/base.ts
 src/webgpu/util/texture/layout.ts
 src/webgpu/util/conversion.ts
 src/webgpu/util/texture/texel_data.ts
@@ -84,7 +84,6 @@ src/webgpu/api/operation/buffers/map_oom.spec.ts
 src/webgpu/api/operation/buffers/threading.spec.ts
 src/webgpu/api/operation/command_buffer/basic.spec.ts
 src/webgpu/api/operation/command_buffer/copyBufferToBuffer.spec.ts
-src/webgpu/util/texture/subresource.ts
 src/webgpu/api/operation/command_buffer/copyTextureToTexture.spec.ts
 src/webgpu/api/operation/command_buffer/image_copy.spec.ts
 src/webgpu/api/operation/command_buffer/programmable/state_tracking.spec.ts
@@ -113,6 +112,7 @@ src/webgpu/api/operation/rendering/depth.spec.ts
 src/webgpu/api/operation/rendering/draw.spec.ts
 src/webgpu/api/operation/rendering/indirect_draw.spec.ts
 src/webgpu/api/operation/resource_init/buffer.spec.ts
+src/webgpu/util/texture/subresource.ts
 src/webgpu/api/operation/resource_init/check_texture/by_copy.ts
 src/webgpu/api/operation/resource_init/check_texture/by_ds_test.ts
 src/webgpu/api/operation/resource_init/check_texture/by_sampling.ts
@@ -134,7 +134,6 @@ src/webgpu/api/validation/createComputePipeline.spec.ts
 src/webgpu/api/validation/createPipelineLayout.spec.ts
 src/webgpu/api/validation/createRenderPipeline.spec.ts
 src/webgpu/api/validation/createSampler.spec.ts
-src/webgpu/util/texture/base.ts
 src/webgpu/api/validation/createTexture.spec.ts
 src/webgpu/api/validation/createView.spec.ts
 src/webgpu/api/validation/create_pipeline.spec.ts
@@ -205,5 +204,5 @@ src/webgpu/web_platform/copyToTexture/video.spec.ts
 src/webgpu/web_platform/external_texture/canvas.spec.ts
 src/webgpu/web_platform/external_texture/video.spec.ts
 src/webgpu/web_platform/reftests/gpu_ref_test.ts
-src/webgpu/web_platform/reftests/canvas_clear.ts
-src/webgpu/web_platform/reftests/canvas_complex.ts
+src/webgpu/web_platform/reftests/canvas_clear.html.ts
+src/webgpu/web_platform/reftests/canvas_complex.html.ts
