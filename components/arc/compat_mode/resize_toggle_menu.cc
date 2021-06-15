@@ -230,7 +230,10 @@ ResizeToggleMenu::MakeBubbleDelegateView(
 }
 
 void ResizeToggleMenu::UpdateSelectedButton() {
-  DCHECK(widget_);
+  // No need to update the button states if the widget is (being) closed.
+  if (!widget_)
+    return;
+
   const auto selected_mode = PredictCurrentMode(widget_, pref_delegate_);
   phone_button_->SetSelected(selected_mode &&
                              *selected_mode == ResizeCompatMode::kPhone);
