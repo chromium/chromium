@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
-#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_platform_specific.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -132,9 +131,6 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
         browser_view->IsWindowControlsOverlayEnabled(), this);
   }
   SetLayoutManager(std::unique_ptr<views::LayoutManager>(layout_));
-
-  platform_observer_ =
-      OpaqueBrowserFrameViewPlatformSpecific::Create(this, layout_);
 }
 
 OpaqueBrowserFrameView::~OpaqueBrowserFrameView() {}

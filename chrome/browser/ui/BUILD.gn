@@ -4504,8 +4504,6 @@ static_library("ui") {
         "views/frame/browser_frame_view_linux.h",
         "views/frame/browser_frame_view_linux_native.cc",
         "views/frame/browser_frame_view_linux_native.h",
-        "views/frame/opaque_browser_frame_view_linux.cc",
-        "views/frame/opaque_browser_frame_view_linux.h",
       ]
     }
 
@@ -4600,8 +4598,6 @@ static_library("ui") {
         "views/frame/opaque_browser_frame_view_layout.h",
         "views/frame/opaque_browser_frame_view_layout_delegate.cc",
         "views/frame/opaque_browser_frame_view_layout_delegate.h",
-        "views/frame/opaque_browser_frame_view_platform_specific.cc",
-        "views/frame/opaque_browser_frame_view_platform_specific.h",
         "views/outdated_upgrade_bubble_view.cc",
         "views/outdated_upgrade_bubble_view.h",
         "views/policy/enterprise_startup_dialog_view.cc",

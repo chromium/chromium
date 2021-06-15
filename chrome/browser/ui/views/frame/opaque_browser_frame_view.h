@@ -22,7 +22,6 @@
 class BrowserView;
 class CaptionButtonPlaceholderContainer;
 class OpaqueBrowserFrameViewLayout;
-class OpaqueBrowserFrameViewPlatformSpecific;
 class TabIconView;
 
 namespace chrome {
@@ -207,9 +206,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   // Background painter for the window frame.
   std::unique_ptr<views::FrameBackground> frame_background_;
-
-  // Observer that handles platform dependent configuration.
-  std::unique_ptr<OpaqueBrowserFrameViewPlatformSpecific> platform_observer_;
 
   // PlaceholderContainer beneath the controls button for PWAs with window
   // controls overlay display override.
