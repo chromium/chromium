@@ -16,13 +16,29 @@
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "net/base/mime_util.h"
 
 namespace safe_browsing {
 
 namespace {
 
+std::string GetFileMimeType(const base::FilePath& path) {
+  // TODO(crbug.com/1013252): Obtain a more accurate MimeType by parsing the
+  // file content.
+  base::FilePath::StringType ext = path.FinalExtension();
+  if (ext.empty())
+    return "";
+
+  if (ext[0] == FILE_PATH_LITERAL('.'))
+    ext = ext.substr(1);
+
+  std::string mime_type;
+  net::GetMimeTypeFromExtension(ext, &mime_type);
+  return mime_type;
+}
+
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
-GetFileDataBlocking(const base::FilePath& path) {
+GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   if (!file.IsValid()) {
@@ -45,6 +61,8 @@ GetFileDataBlocking(const base::FilePath& path) {
   BinaryUploadService::Request::Data file_data;
   file_data.size = file_size;
   file_data.path = path;
+  if (detect_mime_type)
+    file_data.mime_type = GetFileMimeType(path);
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
@@ -66,6 +84,7 @@ FileAnalysisRequest::FileAnalysisRequest(
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     base::FilePath path,
     base::FilePath file_name,
+    std::string mime_type,
     BinaryUploadService::ContentAnalysisCallback callback)
     : Request(std::move(callback), analysis_settings.analysis_url),
       has_cached_result_(false),
@@ -73,6 +92,7 @@ FileAnalysisRequest::FileAnalysisRequest(
       path_(std::move(path)),
       file_name_(std::move(file_name)) {
   set_filename(file_name_.AsUTF8Unsafe());
+  cached_data_.mime_type = std::move(mime_type);
 }
 
 FileAnalysisRequest::~FileAnalysisRequest() = default;
@@ -85,7 +105,8 @@ void FileAnalysisRequest::GetRequestData(DataCallback callback) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&GetFileDataBlocking, path_),
+      base::BindOnce(&GetFileDataBlocking, path_,
+                     cached_data_.mime_type.empty()),
       base::BindOnce(&FileAnalysisRequest::OnGotFileData,
                      weakptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -178,6 +199,11 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
                                              Data data) {
   has_cached_result_ = true;
   cached_result_ = result;
+
+  // If the mime type is already set, it shouldn't be overwritten.
+  if (!cached_data_.mime_type.empty())
+    data.mime_type = std::move(cached_data_.mime_type);
+
   cached_data_ = std::move(data);
 }
 

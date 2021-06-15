@@ -215,7 +215,7 @@ void DeepScanningRequest::Start() {
   IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS);
   auto request = std::make_unique<FileAnalysisRequest>(
       analysis_settings_, item_->GetFullPath(),
-      item_->GetTargetFilePath().BaseName(),
+      item_->GetTargetFilePath().BaseName(), item_->GetMimeType(),
       base::BindOnce(&DeepScanningRequest::OnScanComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   request->set_filename(item_->GetTargetFilePath().BaseName().AsUTF8Unsafe());

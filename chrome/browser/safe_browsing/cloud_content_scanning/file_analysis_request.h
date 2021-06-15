@@ -20,6 +20,7 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
       const enterprise_connectors::AnalysisSettings& analysis_settings,
       base::FilePath path,
       base::FilePath file_name,
+      std::string mime_type,
       BinaryUploadService::ContentAnalysisCallback callback);
   FileAnalysisRequest(const FileAnalysisRequest&) = delete;
   FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;

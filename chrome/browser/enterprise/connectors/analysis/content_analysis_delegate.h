@@ -284,15 +284,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
       safe_browsing::BinaryUploadService::Result result,
       const safe_browsing::BinaryUploadService::Request::Data& data);
 
-  // Completion of |FileRequestCallback| once the mime type is obtained
-  // asynchronously.
-  void CompleteFileRequestCallback(
-      size_t index,
-      base::FilePath path,
-      safe_browsing::BinaryUploadService::Result result,
-      enterprise_connectors::ContentAnalysisResponse response,
-      std::string mime_type);
-
   // Updates |final_result_| following the precedence established by the
   // FinalResult enum.
   void UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult message);

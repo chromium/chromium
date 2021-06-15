@@ -124,21 +124,6 @@ bool ContentAnalysisActionAllowsDataUse(
   }
 }
 
-std::string GetFileMimeType(base::FilePath path) {
-  // TODO(crbug.com/1013252): Obtain a more accurate MimeType by parsing the
-  // file content.
-  base::FilePath::StringType ext = path.FinalExtension();
-  if (ext.empty())
-    return "";
-
-  if (ext[0] == FILE_PATH_LITERAL('.'))
-    ext = ext.substr(1);
-
-  std::string mime_type;
-  net::GetMimeTypeFromExtension(ext, &mime_type);
-  return mime_type;
-}
-
 bool* UIEnabledStorage() {
   static bool enabled = true;
   return &enabled;
@@ -432,13 +417,21 @@ void ContentAnalysisDelegate::StringRequestCallback(
   MaybeCompleteScanRequest();
 }
 
-void ContentAnalysisDelegate::CompleteFileRequestCallback(
-    size_t index,
+void ContentAnalysisDelegate::FileRequestCallback(
     base::FilePath path,
     BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response,
-    std::string mime_type) {
-  file_info_[index].mime_type = mime_type;
+    enterprise_connectors::ContentAnalysisResponse response) {
+  if (result == BinaryUploadService::Result::TOO_MANY_REQUESTS)
+    throttled_ = true;
+
+  // Find the path in the set of files that are being scanned.
+  auto it = std::find(data_.paths.begin(), data_.paths.end(), path);
+  DCHECK(it != data_.paths.end());
+  size_t index = std::distance(data_.paths.begin(), it);
+
+  RecordDeepScanMetrics(access_point_,
+                        base::TimeTicks::Now() - upload_start_time_,
+                        file_info_[index].size, result, response);
 
   auto action = GetHighestPrecedenceAction(response);
   bool file_complies = ResultShouldAllowDataUse(result, data_.settings) &&
@@ -447,7 +440,8 @@ void ContentAnalysisDelegate::CompleteFileRequestCallback(
   result_.paths_results[index] = file_complies;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, path.AsUTF8Unsafe(), file_info_[index].sha256, mime_type,
+      profile_, url_, path.AsUTF8Unsafe(), file_info_[index].sha256,
+      file_info_[index].mime_type,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
       access_point_, file_info_[index].size, result, response,
       CalculateEventResult(data_.settings, file_complies, should_warn));
@@ -471,30 +465,6 @@ void ContentAnalysisDelegate::CompleteFileRequestCallback(
   safe_browsing::DecrementCrashKey(
       safe_browsing::ScanningCrashKey::PENDING_FILE_UPLOADS);
   MaybeCompleteScanRequest();
-}
-
-void ContentAnalysisDelegate::FileRequestCallback(
-    base::FilePath path,
-    BinaryUploadService::Result result,
-    enterprise_connectors::ContentAnalysisResponse response) {
-  if (result == BinaryUploadService::Result::TOO_MANY_REQUESTS)
-    throttled_ = true;
-
-  // Find the path in the set of files that are being scanned.
-  auto it = std::find(data_.paths.begin(), data_.paths.end(), path);
-  DCHECK(it != data_.paths.end());
-  size_t index = std::distance(data_.paths.begin(), it);
-
-  RecordDeepScanMetrics(access_point_,
-                        base::TimeTicks::Now() - upload_start_time_,
-                        file_info_[index].size, result, response);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&GetFileMimeType, path),
-      base::BindOnce(&ContentAnalysisDelegate::CompleteFileRequestCallback,
-                     weak_ptr_factory_.GetWeakPtr(), index, path, result,
-                     response));
 }
 
 bool ContentAnalysisDelegate::UploadData() {
@@ -550,7 +520,7 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
 
 void ContentAnalysisDelegate::PrepareFileRequest(const base::FilePath& path) {
   auto request = std::make_unique<safe_browsing::FileAnalysisRequest>(
-      data_.settings, path, path.BaseName(),
+      data_.settings, path, path.BaseName(), /*mime_type*/ "",
       base::BindOnce(&ContentAnalysisDelegate::FileRequestCallback,
                      weak_ptr_factory_.GetWeakPtr(), path));
   safe_browsing::FileAnalysisRequest* request_raw = request.get();
@@ -640,6 +610,7 @@ void ContentAnalysisDelegate::OnGotFileInfo(
   size_t index = std::distance(data_.paths.begin(), it);
   file_info_[index].sha256 = data.hash;
   file_info_[index].size = data.size;
+  file_info_[index].mime_type = data.mime_type;
 
   // If a non-SUCCESS result was previously obtained, it means the file has some
   // property (too large, unsupported file type, encrypted, ...) that make its
