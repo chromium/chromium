@@ -133,11 +133,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
-  auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
-  DCHECK(frame_view);
-  frame_view->GetHeaderView()
-      ->caption_button_container()
-      ->ClearOnSizeButtonPressedCallback();
+  UpdateCompatModeButton(window);
 }
 
 void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
@@ -146,15 +142,16 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
   const std::string* app_id = window->GetProperty(ash::kAppIDKey);
   if (!app_id)
     return;
-  const auto resize_lock_state = pref_delegate_->GetResizeLockState(*app_id);
-  if (resize_lock_state == mojom::ArcResizeLockState::UNDEFINED ||
-      resize_lock_state == mojom::ArcResizeLockState::READY) {
-    return;
-  }
   auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
   if (!frame_view)
     return;
   auto* frame_header = frame_view->GetHeaderView()->GetFrameHeader();
+  const auto resize_lock_state = pref_delegate_->GetResizeLockState(*app_id);
+  if (resize_lock_state == mojom::ArcResizeLockState::UNDEFINED ||
+      resize_lock_state == mojom::ArcResizeLockState::READY) {
+    frame_header->SetCenterButton(nullptr);
+    return;
+  }
   auto* compat_mode_button = frame_header->GetCenterButton();
   if (!compat_mode_button) {
     // The ownership is transferred implicitly with AddChildView in HeaderView,
@@ -215,12 +212,9 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
 }
 
 void ArcResizeLockManager::ToggleResizeToggleMenu(views::Widget* widget) {
-  if (resize_toggle_menu_) {
-    resize_toggle_menu_.reset();
-  } else {
-    resize_toggle_menu_ =
-        std::make_unique<ResizeToggleMenu>(widget, pref_delegate_);
-  }
+  resize_toggle_menu_.reset();
+  resize_toggle_menu_ =
+      std::make_unique<ResizeToggleMenu>(widget, pref_delegate_);
 }
 
 void ArcResizeLockManager::MayShowSplashScreen(aura::Window* window) {
