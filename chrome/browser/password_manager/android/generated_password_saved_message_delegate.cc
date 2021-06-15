@@ -37,6 +37,7 @@ void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form) {
   web_contents_ = web_contents;
   message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::GENERATED_PASSWORD_SAVED,
       base::OnceCallback<void()>(),
       base::BindOnce(
           &GeneratedPasswordSavedMessageDelegate::HandleDismissCallback,

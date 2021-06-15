@@ -32,6 +32,7 @@ bool PopupBlockedMessageDelegate::ShowMessage(
   // Unretained is safe because |this| will always outlive |message_| which owns
   // the callback.
   message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::POPUP_BLOCKED,
       base::BindOnce(&PopupBlockedMessageDelegate::HandleClick,
                      base::Unretained(this)),
       base::BindOnce(&PopupBlockedMessageDelegate::HandleDismissCallback,

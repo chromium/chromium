@@ -37,6 +37,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".UnknownIntent"/>
 </variants>
 
+<variants name="MessageIdentifiers">
+  <variant name=".AddToHomescreenIPH"/>
+  <variant name=".GeneratedPasswordSaved"/>
+  <variant name=".MerchantTrust"/>
+  <variant name=".PopupBlocked"/>
+  <variant name=".SafetyTip"/>
+  <variant name=".SaveAddressProfile"/>
+  <variant name=".SavePassword"/>
+  <variant name=".UpdatePassword"/>
+</variants>
+
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
     enum="AdaptiveToolbarButtonVariant" expires_after="2022-02-15">
   <owner>bttk@chromium.org</owner>
@@ -1618,6 +1629,49 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     MemoryAndroid.NotificationBackground and
     MemoryAndroid.NotificationForeground.
   </summary>
+</histogram>
+
+<histogram base="true" name="Android.Messages.Dismissed{MessageIdentifier}"
+    enum="MessageDismissReason" expires_after="2022-06-01">
+  <owner>pavely@chromium.org</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Recorded once per message when the message is dismissed to capture the
+    dismissal reason (e.g. primary button tap, timeout). The histogram can be
+    used for measuring user engagement with messages of different types.
+  </summary>
+  <token key="MessageIdentifier" variants="MessageIdentifiers"/>
+</histogram>
+
+<histogram name="Android.Messages.Enqueued" enum="MessageIdentifier"
+    expires_after="2022-06-01">
+  <owner>pavely@chromium.org</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the message identifier each time a message is enqueued through
+    MessageDispatcher (the entry point to Chrome for Android's messages system).
+    This histogram can be used for getting a count of messages broken down by
+    message identifier.
+  </summary>
+</histogram>
+
+<histogram name="Android.Messages.TimeToAction{MessageIdentifier}" units="ms"
+    expires_after="2022-06-01">
+  <owner>pavely@chromium.org</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the time interval the message was displayed on the screen before the
+    user explicitly dismissed it. The metric is recorded when the user presses
+    primary or secondary button, or dismisses the message with a gesture. It is
+    not recorded when the message is auto-dismissed based on timer. The interval
+    includes both enter and exit animation. The metric can be used to analyze
+    the amount of time it takes for the user to understand the message and take
+    an action (e.g. click a button, dismiss the message, etc.).
+  </summary>
+  <token key="MessageIdentifier" variants="MessageIdentifiers"/>
 </histogram>
 
 <histogram name="Android.ModalDialog.SecurityFilteredTouchResult"

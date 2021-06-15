@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.text.NumberFormat;
@@ -31,6 +32,7 @@ class MerchantTrustMessageViewModel {
     public static PropertyModel create(Context context, MerchantTrustSignals trustSignals,
             Callback<Integer> onDismissed, Callback<MerchantTrustSignals> onPrimaryAction) {
         return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                .with(MessageBannerProperties.MESSAGE_IDENTIFIER, MessageIdentifier.MERCHANT_TRUST)
                 .with(MessageBannerProperties.ICON,
                         ResourcesCompat.getDrawable(context.getResources(),
                                 R.drawable.ic_logo_googleg_24dp, context.getTheme()))

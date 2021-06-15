@@ -39,6 +39,9 @@ public class SingleActionMessage implements MessageStateHandler {
     private final Supplier<Integer> mMaxTranslationSupplier;
     private final Callback<Animator> mAnimatorStartCallback;
 
+    // The timestamp when the message was shown. Used for reproting visible duration.
+    private long mMessageShownTime;
+
     /**
      * @param container The container holding messages.
      * @param model The PropertyModel with {@link MessageBannerProperties#ALL_KEYS}.
@@ -95,6 +98,7 @@ public class SingleActionMessage implements MessageStateHandler {
         // is required in case the animation set-up requires the height of the container, e.g.
         // showing messages without the top controls visible.
         mContainer.runAfterInitialMessageLayout(mMessageBanner::show);
+        mMessageShownTime = MessagesMetrics.now();
     }
 
     /**
@@ -118,6 +122,13 @@ public class SingleActionMessage implements MessageStateHandler {
         if (mMessageBanner != null) mMessageBanner.dismiss();
         Callback<Integer> onDismissed = mModel.get(MessageBannerProperties.ON_DISMISSED);
         if (onDismissed != null) onDismissed.onResult(dismissReason);
+        if (dismissReason == DismissReason.PRIMARY_ACTION
+                || dismissReason == DismissReason.SECONDARY_ACTION
+                || dismissReason == DismissReason.GESTURE) {
+            // Only record time to dismiss when the user explicitly dismissed the message.
+            MessagesMetrics.recordTimeToAction(
+                    getMessageIdentifier(), MessagesMetrics.now() - mMessageShownTime);
+        }
     }
 
     private void handlePrimaryAction(View v) {
@@ -138,5 +149,13 @@ public class SingleActionMessage implements MessageStateHandler {
     @VisibleForTesting
     void setViewForTesting(MessageBannerView view) {
         mView = view;
+    }
+
+    @Override
+    @MessageIdentifier
+    public int getMessageIdentifier() {
+        Integer messageIdentifier = mModel.get(MessageBannerProperties.MESSAGE_IDENTIFIER);
+        assert messageIdentifier != null;
+        return messageIdentifier;
     }
 }

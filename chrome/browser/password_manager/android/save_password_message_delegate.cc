@@ -104,7 +104,11 @@ void SavePasswordMessageDelegate::CreateMessage(bool update_password) {
   // Binding with base::Unretained(this) is safe here because
   // SavePasswordMessageDelegate owns message_. Callbacks won't be called after
   // the current object is destroyed.
+  messages::MessageIdentifier message_id =
+      update_password ? messages::MessageIdentifier::UPDATE_PASSWORD
+                      : messages::MessageIdentifier::SAVE_PASSWORD;
   message_ = std::make_unique<messages::MessageWrapper>(
+      message_id,
       base::BindOnce(&SavePasswordMessageDelegate::HandleSaveButtonClicked,
                      base::Unretained(this)),
       base::BindOnce(&SavePasswordMessageDelegate::HandleMessageDismissed,

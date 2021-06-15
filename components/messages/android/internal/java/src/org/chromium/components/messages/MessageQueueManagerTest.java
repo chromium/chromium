@@ -21,11 +21,14 @@ import android.os.Build;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
@@ -37,6 +40,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Unit tests for MessageQueueManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class MessageQueueManagerTest {
     private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
         @Override
@@ -59,6 +63,11 @@ public class MessageQueueManagerTest {
 
         @Override
         public void dismiss(@DismissReason int dismissReason) {}
+
+        @Override
+        public int getMessageIdentifier() {
+            return MessageIdentifier.TEST_MESSAGE;
+        }
     }
 
     private static class InactiveMockWebContents extends MockWebContents {
@@ -87,6 +96,11 @@ public class MessageQueueManagerTest {
     private static final ScopeKey SCOPE_INSTANCE_ID_A =
             new ScopeKey(SCOPE_TYPE, new MockWebContents());
 
+    @Before
+    public void setUp() {
+        ShadowRecordHistogram.reset();
+    }
+
     /**
      * Tests lifecycle of a single message:
      *   - enqueueMessage() calls show()
@@ -101,14 +115,24 @@ public class MessageQueueManagerTest {
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        Assert.assertEquals(1,
+                MessagesMetrics.getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
         verify(m1).show();
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(anyBoolean(), any());
         verify(m1).dismiss(DismissReason.TIMER);
+        Assert.assertEquals(1,
+                MessagesMetrics.getDismissReasonForTesting(
+                        MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
 
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        Assert.assertEquals(2,
+                MessagesMetrics.getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
         verify(m2).show();
         queueManager.dismissMessage(m2, DismissReason.TIMER);
+        Assert.assertEquals(2,
+                MessagesMetrics.getDismissReasonForTesting(
+                        MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
         verify(m2).hide(anyBoolean(), any());
         verify(m2).dismiss(DismissReason.TIMER);
     }
@@ -130,6 +154,9 @@ public class MessageQueueManagerTest {
         queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
 
         queueManager.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
+        Assert.assertEquals(3,
+                MessagesMetrics.getDismissReasonForTesting(
+                        MessageIdentifier.TEST_MESSAGE, DismissReason.ACTIVITY_DESTROYED));
         verify(m1).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m2).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m3).dismiss(DismissReason.ACTIVITY_DESTROYED);

@@ -30,6 +30,7 @@ void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
   suggested_url_ = suggested_url;
   close_callback_ = std::move(close_callback);
   message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::SAFETY_TIP,
       base::BindOnce(&SafetyTipMessageDelegate::HandleLeaveSiteClick,
                      base::Unretained(this)),
       base::BindOnce(&SafetyTipMessageDelegate::HandleDismissCallback,

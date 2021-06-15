@@ -22,17 +22,19 @@ public final class MessageWrapper {
     /**
      * Creates an instance of MessageWrapper and links it with native MessageWrapper object.
      * @param nativeMessageWrapper Pointer to native MessageWrapper.
+     * @param messageIdentifier Message identifier of the new message.
      * @return reference to created MessageWrapper.
      */
     @CalledByNative
-    static MessageWrapper create(long nativeMessageWrapper) {
-        return new MessageWrapper(nativeMessageWrapper);
+    static MessageWrapper create(long nativeMessageWrapper, int messageIdentifier) {
+        return new MessageWrapper(nativeMessageWrapper, messageIdentifier);
     }
 
-    private MessageWrapper(long nativeMessageWrapper) {
+    private MessageWrapper(long nativeMessageWrapper, int messageIdentifier) {
         mNativeMessageWrapper = nativeMessageWrapper;
         mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER, messageIdentifier)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::handleActionClick)
                         .with(MessageBannerProperties.ON_SECONDARY_ACTION,
                                 this::handleSecondaryActionClick)

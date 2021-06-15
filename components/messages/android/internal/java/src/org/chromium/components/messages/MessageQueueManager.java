@@ -80,6 +80,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         mMessages.put(messageKey, messageState);
 
         updateCurrentDisplayedMessage();
+        MessagesMetrics.recordMessageEnqueued(message.getMessageIdentifier());
     }
 
     /**
@@ -119,6 +120,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         } else {
             message.dismiss(dismissReason);
         }
+        MessagesMetrics.recordDismissReason(message.getMessageIdentifier(), dismissReason);
     }
 
     public int suspend() {

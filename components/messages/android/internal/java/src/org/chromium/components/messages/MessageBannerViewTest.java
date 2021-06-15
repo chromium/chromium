@@ -92,6 +92,8 @@ public class MessageBannerViewTest {
     public void testSecondaryActionDirectCallback() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
                         .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
                                 android.R.drawable.ic_menu_add)
                         .with(MessageBannerProperties.ON_SECONDARY_ACTION, mSecondaryActionCallback)
@@ -114,6 +116,8 @@ public class MessageBannerViewTest {
     public void testSecondaryActionMenu() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
                         .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
                                 android.R.drawable.ic_menu_add)
                         .with(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
