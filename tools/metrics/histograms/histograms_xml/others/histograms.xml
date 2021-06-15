@@ -15077,6 +15077,18 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.SavedOAuthSites.Size" units="origins"
+    expires_after="2021-11-30">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The number of currently saved sites that had been isolated due to OAuth.
+    This is only used by Site Isolation on Android. Recorded once on browser
+    startup.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
     units="origins" expires_after="2021-11-30">
   <owner>alexmos@chromium.org</owner>

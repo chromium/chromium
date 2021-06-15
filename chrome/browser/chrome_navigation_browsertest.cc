@@ -2273,6 +2273,8 @@ class SiteIsolationForOAuthSitesBrowserTest
   // Login detection only works for HTTPS sites.
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
+  base::HistogramTester histograms_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
@@ -2413,6 +2415,10 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest, RedirectFlow) {
   EXPECT_TRUE(policy->IsIsolatedSiteFromSource(
       url::Origin::Create(GURL("https://oauthclient.com")),
       IsolatedOriginSource::USER_TRIGGERED));
+
+  // By the time this test starts running, there should be one sample recorded
+  // for one saved OAuth site.
+  histograms_.ExpectBucketCount("SiteIsolation.SavedOAuthSites.Size", 1, 1);
 
   ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("oauthclient.com", "/title1.html"));

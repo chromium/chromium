@@ -298,6 +298,11 @@ void SiteIsolationPolicy::IsolateStoredOAuthSites(
       logged_in_sites,
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::USER_TRIGGERED,
       browser_context);
+
+  // Note that the max count matches
+  // login_detection::GetOauthLoggedInSitesMaxSize().
+  base::UmaHistogramCounts100("SiteIsolation.SavedOAuthSites.Size",
+                              logged_in_sites.size());
 }
 
 // static
