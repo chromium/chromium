@@ -2993,13 +2993,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
   ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Simulate a second start when the browser is already running.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath user_data_dir = profile_manager->user_data_dir();
   base::FilePath current_dir = base::FilePath();
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_dir,
-      GetStartupProfilePath(user_data_dir, current_dir, command_line,
+      GetStartupProfilePath(current_dir, command_line,
                             /*ignore_profile_picker=*/false));
   base::RunLoop().RunUntilIdle();
 

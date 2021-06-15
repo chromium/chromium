@@ -357,7 +357,6 @@ void AddFirstRunNewTabs(StartupBrowserCreator* browser_creator,
 // a fallback profile. Returns the newly created profile, or NULL if startup
 // should not continue.
 Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
-                              const base::FilePath& user_data_dir,
                               const base::FilePath& cur_dir,
                               const base::CommandLine& parsed_command_line) {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile");
@@ -399,11 +398,6 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
 
   Profile* profile = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
-  // On ChromeOS and Android the ProfileManager will use the same path as the
-  // one we got passed. CreateInitialProfile will therefore use the correct path
-  // automatically.
-  DCHECK_EQ(user_data_dir.value(),
-            g_browser_process->profile_manager()->user_data_dir().value());
   profile = ProfileManager::CreateInitialProfile();
 
   // TODO(port): fix this. See comments near the definition of |user_data_dir|.
@@ -412,7 +406,7 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
   CHECK(profile) << "Cannot get default profile.";
 
 #else
-  profile = GetStartupProfile(user_data_dir, cur_dir, parsed_command_line);
+  profile = GetStartupProfile(cur_dir, parsed_command_line);
 
   if (!profile && !last_used_profile_set)
     profile = GetFallbackStartupProfile();
@@ -455,10 +449,8 @@ void ProcessSingletonNotificationCallbackImpl(
   g_browser_process->platform_part()->PlatformSpecificCommandLineProcessing(
       command_line);
 
-  base::FilePath user_data_dir =
-      g_browser_process->profile_manager()->user_data_dir();
   base::FilePath startup_profile_dir =
-      GetStartupProfilePath(user_data_dir, current_directory, command_line,
+      GetStartupProfilePath(current_directory, command_line,
                             /*ignore_profile_picker=*/false);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
@@ -1412,8 +1404,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
-  profile_ = CreatePrimaryProfile(parameters(), user_data_dir_,
-                                  base::FilePath(), parsed_command_line());
+  profile_ = CreatePrimaryProfile(parameters(), /*cur_dir=*/base::FilePath(),
+                                  parsed_command_line());
   if (!profile_)
     return content::RESULT_CODE_NORMAL_EXIT;
 

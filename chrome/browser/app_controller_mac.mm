@@ -299,13 +299,12 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
 }
 
 // Returns the profile path to be used at startup.
-base::FilePath GetStartupProfilePathMac(const base::FilePath& user_data_dir) {
+base::FilePath GetStartupProfilePathMac() {
   // This profile path is used to open URLs passed in application:openFiles: and
   // should not default to Guest when the profile picker is shown.
   // TODO(https://crbug.com/1155158): Remove the ignore_profile_picker parameter
   // once the picker supports opening URLs.
-  return GetStartupProfilePath(user_data_dir,
-                               /*current_directory=*/base::FilePath(),
+  return GetStartupProfilePath(/*current_directory=*/base::FilePath(),
                                *base::CommandLine::ForCurrentProcess(),
                                /*ignore_profile_picker=*/true);
 }
@@ -360,8 +359,7 @@ Profile* GetLastProfileMac() {
   if (!profile_manager)
     return nullptr;
 
-  base::FilePath profile_path =
-      GetStartupProfilePathMac(profile_manager->user_data_dir());
+  base::FilePath profile_path = GetStartupProfilePathMac();
   // ProfileManager::GetProfile() is blocking if the profile was not loaded yet.
   // TODO(https://crbug.com/1176734): Change this code to return nullptr when
   // the profile is not loaded, and update all callers to handle this case.
@@ -1562,8 +1560,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return nullptr;
 
   // GetProfileByPath() returns nullptr if the profile is not loaded.
-  return profile_manager->GetProfileByPath(
-      GetStartupProfilePathMac(profile_manager->user_data_dir()));
+  return profile_manager->GetProfileByPath(GetStartupProfilePathMac());
 }
 
 // Returns null if Chrome is not ready or there is no ProfileManager.

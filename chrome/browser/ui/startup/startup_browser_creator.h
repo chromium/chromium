@@ -246,8 +246,7 @@ bool HasPendingUncleanExit(Profile* profile);
 // bypassing the profile picker, because the profile picker does not support it.
 // TODO(https://crbug.com/1155158): Remove this parameter once the picker
 // supports opening URLs.
-base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
-                                     const base::FilePath& cur_dir,
+base::FilePath GetStartupProfilePath(const base::FilePath& cur_dir,
                                      const base::CommandLine& command_line,
                                      bool ignore_profile_picker);
 
@@ -258,8 +257,7 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
 // user manager. Returns null if the above profile cannot be opened. In case of
 // opening the user manager, returns null if either the guest profile or the
 // system profile cannot be opened.
-Profile* GetStartupProfile(const base::FilePath& user_data_dir,
-                           const base::FilePath& cur_dir,
+Profile* GetStartupProfile(const base::FilePath& cur_dir,
                            const base::CommandLine& command_line);
 
 // Returns the profile that should be loaded on process startup when
