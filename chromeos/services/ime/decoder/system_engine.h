@@ -19,10 +19,6 @@
 namespace chromeos {
 namespace ime {
 
-// Only used in tests to set a fake `ImeDecoder::EntryPoints`.
-void FakeDecoderEntryPointsForTesting(
-    const ImeDecoder::EntryPoints& decoder_entry_points);
-
 // An enhanced implementation of the basic InputEngine that uses a built-in
 // shared library for handling key events.
 class SystemEngine : public InputEngine, public mojom::InputChannel {
