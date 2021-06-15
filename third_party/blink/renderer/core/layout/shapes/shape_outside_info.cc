@@ -245,6 +245,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
       break;
     case ShapeValue::kImage:
       DCHECK(shape_value.GetImage());
+      DCHECK(shape_value.GetImage()->IsLoaded());
       DCHECK(shape_value.GetImage()->CanRender());
       shape_ = CreateShapeForImage(shape_value.GetImage(),
                                    shape_image_threshold, writing_mode, margin);
@@ -384,7 +385,7 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
     case ShapeValue::kImage: {
       StyleImage* image = shape_value->GetImage();
       DCHECK(image);
-      return image->CanRender() &&
+      return image->IsLoaded() && image->CanRender() &&
              CheckShapeImageOrigin(box.GetDocument(), *image);
     }
     case ShapeValue::kBox:
