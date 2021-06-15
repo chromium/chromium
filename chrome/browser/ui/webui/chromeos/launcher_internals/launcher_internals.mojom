@@ -4,9 +4,47 @@
 
 module launcher_internals.mojom;
 
+struct Score {
+  // A debug string describing the method used to calculate the score.
+  string ranking_method;
+
+  // The score corresponding to this method.
+  double score;
+};
+
+// A single search result. More fields can be added when needed.
+struct Result {
+  // Unique ID string for the result.
+  string id;
+
+  // Title text for the result.
+  string title;
+
+  // Description text that is displayed below the title. This can be empty.
+  string description;
+
+  // Which provider this result came from.
+  string result_type;
+
+  // Which UI surface the result is displayed in.
+  string display_type;
+
+  // The score associated with this result, in the range [0,1].
+  double score;
+
+  // Scores corresponding to different ranking methods.
+  array<Score> ranker_scores;
+};
+
 // Interface for creating internals page handlers. Implemented by the WebUI
 // controller and used by chrome://launcher-internals.
 interface PageHandlerFactory {
   // TODO(crbug.com/1211232): Add a CreatePageHandler method.
 };
 
+// Interface for the launcher internals page. Implemented in Javascript and
+// used by the page handler.
+interface Page {
+  // Updates the page with the new results.
+  UpdateResults(string query, array<Result> results);
+};

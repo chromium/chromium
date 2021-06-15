@@ -2,31 +2,57 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Launcher internals is Chrome OS only.")
 
-mojo_grdp_file = "$target_gen_dir/mojo_resources.grdp"
 resources_grd_file = "$target_gen_dir/resources.grd"
 
-generate_grd("build_mojo_grdp") {
-  input_files = [ "launcher_internals.mojom-webui.js" ]
-  input_files_base_dir = rebase_path(
-          "${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/chromeos/launcher_internals",
-          "$root_build_dir")
-  deps = [ "//chrome/browser/ui/webui/chromeos/launcher_internals:mojo_bindings_webui_js" ]
+html_to_js("web_components") {
+  js_files = [
+    "launcher_internals.ts",
+    "results_table.ts",
+  ]
+}
 
-  grd_prefix = "launcher_internals"
-  out_grd = mojo_grdp_file
+copy("copy_browser_proxy") {
+  sources = [ "browser_proxy.ts" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/ui/webui/chromeos/launcher_internals:mojo_bindings_webui_js" ]
+  mojom_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/launcher_internals/"
+  sources = [ "$mojom_folder/launcher_internals.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  deps = [ "//third_party/polymer/v3_0:library" ]
+  extra_deps = [
+    ":copy_browser_proxy",
+    ":copy_mojo",
+    ":web_components",
+  ]
+  root_dir = "$target_gen_dir"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "browser_proxy.ts",
+    "launcher_internals.mojom-webui.js",
+    "launcher_internals.ts",
+    "results_table.ts",
+  ]
 }
 
 generate_grd("build_grd") {
+  deps = [ ":build_ts" ]
   input_files = [ "index.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_mojo_grdp" ]
-  grdp_files = [ mojo_grdp_file ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 
   grd_prefix = "launcher_internals"
   out_grd = resources_grd_file
