@@ -115,6 +115,11 @@ TEST_P(GetStreamParametersForSystem, BehaviorWithCrOSEnforceSystemAecNsAgc) {
   }
 }
 
+// TODO(crbug.com/1216273): DCHECKs are disabled during automated testing on
+// CrOS and this test failed when tested on an experimental builder with
+// DCHECKs. Revert https://crrev.com/c/2959990 to re-enable it.
+// See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
+#if !DCHECK_IS_ON()
 TEST_P(GetStreamParametersForSystem,
        BehaviorWithCrOSEnforceSystemAecNsAndAecAgc) {
   base::test::ScopedFeatureList feature_list;
@@ -135,7 +140,13 @@ TEST_P(GetStreamParametersForSystem,
     EXPECT_TRUE(AgcActive(params));
   }
 }
+#endif
 
+// TODO(crbug.com/1216273): DCHECKs are disabled during automated testing on
+// CrOS and this test failed when tested on an experimental builder with
+// DCHECKs. Revert https://crrev.com/c/2959990 to re-enable it.
+// See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
+#if !DCHECK_IS_ON()
 TEST_P(GetStreamParametersForSystem,
        BehaviorWithCrOSEnforceSystemAecNsAgcAndDisallowedSystemAec) {
   base::test::ScopedFeatureList feature_list;
@@ -156,6 +167,7 @@ TEST_P(GetStreamParametersForSystem,
     EXPECT_TRUE(AgcActive(params));
   }
 }
+#endif
 
 TEST_P(GetStreamParametersForSystem, BehaviorWithCrOSEnforceSystemAecNs) {
   base::test::ScopedFeatureList feature_list;
