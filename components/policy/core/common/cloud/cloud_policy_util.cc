@@ -261,6 +261,8 @@ bool IsMachineLevelUserCloudPolicyType(const std::string& type) {
 std::string GetMachineLevelUserCloudPolicyTypeForCurrentOS() {
 #if defined(OS_IOS)
   return dm_protocol::kChromeMachineLevelUserCloudPolicyIOSType;
+#elif defined(OS_ANDROID)
+  return dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType;
 #else
   return dm_protocol::kChromeMachineLevelUserCloudPolicyType;
 #endif

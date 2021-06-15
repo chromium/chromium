@@ -84,6 +84,8 @@ const char kChromeSigninExtensionPolicyType[] =
     "google/chromeos/signinextension";
 const char kChromeMachineLevelUserCloudPolicyType[] =
     "google/chrome/machine-level-user";
+const char kChromeMachineLevelUserCloudPolicyAndroidType[] =
+    "google/chrome/machine-level-user-android";
 const char kChromeMachineLevelUserCloudPolicyIOSType[] =
     "google/chrome/machine-level-user-ios";
 const char kChromeMachineLevelExtensionCloudPolicyType[] =
