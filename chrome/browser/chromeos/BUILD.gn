@@ -4269,6 +4269,7 @@ source_set("unit_tests") {
     "../ui/webui/chromeos/login/signin_userlist_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
     "../ui/webui/settings/chromeos/ambient_mode_handler_unittest.cc",
+    "../ui/webui/settings/chromeos/bluetooth_handler_unittest.cc",
     "../ui/webui/settings/chromeos/calculator/size_calculator_test_api.h",
     "../ui/webui/settings/chromeos/change_picture_handler_unittest.cc",
     "../ui/webui/settings/chromeos/device_keyboard_handler_unittest.cc",

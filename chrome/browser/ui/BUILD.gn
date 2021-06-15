@@ -2546,6 +2546,8 @@ static_library("ui") {
       "webui/settings/chromeos/app_management/app_management_page_handler_factory.h",
       "webui/settings/chromeos/apps_section.cc",
       "webui/settings/chromeos/apps_section.h",
+      "webui/settings/chromeos/bluetooth_handler.cc",
+      "webui/settings/chromeos/bluetooth_handler.h",
       "webui/settings/chromeos/bluetooth_section.cc",
       "webui/settings/chromeos/bluetooth_section.h",
       "webui/settings/chromeos/calculator/size_calculator.cc",

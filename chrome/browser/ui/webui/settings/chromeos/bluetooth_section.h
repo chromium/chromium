@@ -32,6 +32,7 @@ class BluetoothSection : public OsSettingsSection,
  private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
+  void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   mojom::Section GetSection() const override;
   mojom::SearchResultIcon GetSectionIcon() const override;

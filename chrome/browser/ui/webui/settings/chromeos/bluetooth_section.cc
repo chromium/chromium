@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_dialog_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/settings/chromeos/bluetooth_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
@@ -192,6 +193,10 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   chromeos::bluetooth_dialog::AddLocalizedStrings(html_source);
+}
+
+void BluetoothSection::AddHandlers(content::WebUI* web_ui) {
+  web_ui->AddMessageHandler(std::make_unique<BluetoothHandler>());
 }
 
 int BluetoothSection::GetSectionNameMessageId() const {
