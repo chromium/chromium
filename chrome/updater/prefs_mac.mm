@@ -13,6 +13,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace {
 
@@ -105,6 +106,7 @@ ScopedPrefsLock::ScopedPrefsLock(std::unique_ptr<ScopedPrefsLockImpl> impl)
 ScopedPrefsLock::~ScopedPrefsLock() = default;
 
 std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
+    UpdaterScope scope,
     base::TimeDelta timeout) {
   // First, try to acquire the lock. If the timeout is zero or negative,
   // this is the only attempt we will make.

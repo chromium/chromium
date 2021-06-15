@@ -295,9 +295,8 @@ void ExpectNotActive(UpdaterScope scope, const std::string& id) {
 }
 
 void WaitForServerExit(UpdaterScope scope) {
-  // TODO(crbug.com/1096654): Need to pass `scope` here.
   // CreateGlobalPrefs will block until it can acquire the prefs lock.
-  CreateGlobalPrefs();
+  CreateGlobalPrefs(scope);
 }
 
 // Tests if the typelibs and some of the public, internal, and

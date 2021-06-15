@@ -36,13 +36,12 @@ ScopedPrefsLock::ScopedPrefsLock(std::unique_ptr<ScopedPrefsLockImpl> impl)
 ScopedPrefsLock::~ScopedPrefsLock() = default;
 
 std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
+    UpdaterScope scope,
     base::TimeDelta timeout) {
   auto lock = std::make_unique<ScopedPrefsLockImpl>();
 
-  // TODO(crbug.com/1096654): need to pass 'scope' instead of
-  // 'UpdaterScope::kUser' here.
   DVLOG(2) << "Trying to acquire the lock.";
-  if (!lock->Initialize(UpdaterScope::kUser, timeout))
+  if (!lock->Initialize(scope, timeout))
     return nullptr;
   DVLOG(2) << "Lock acquired.";
 

@@ -51,7 +51,8 @@ void AppServer::Initialize() {
 }
 
 base::OnceClosure AppServer::ModeCheck() {
-  std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+  std::unique_ptr<GlobalPrefs> global_prefs =
+      CreateGlobalPrefs(updater_scope());
   if (!global_prefs) {
     return base::BindOnce(&AppServer::Shutdown, this,
                           kErrorFailedToLockPrefsMutex);
@@ -75,7 +76,7 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   if (active_version != base::Version("0") && active_version != this_version) {
-    std::unique_ptr<LocalPrefs> local_prefs = CreateLocalPrefs();
+    std::unique_ptr<LocalPrefs> local_prefs = CreateLocalPrefs(updater_scope());
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
       return base::BindOnce(&AppServer::Qualify, this, std::move(local_prefs));

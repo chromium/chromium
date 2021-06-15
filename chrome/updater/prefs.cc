@@ -76,14 +76,14 @@ int UpdaterPrefsImpl::CountServerStarts() {
   return starts;
 }
 
-std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
+std::unique_ptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   std::unique_ptr<ScopedPrefsLock> lock =
-      AcquireGlobalPrefsLock(base::TimeDelta::FromMinutes(2));
+      AcquireGlobalPrefsLock(scope, base::TimeDelta::FromMinutes(2));
   if (!lock)
     return nullptr;
 
   const absl::optional<base::FilePath> global_prefs_dir =
-      GetBaseDirectory(GetUpdaterScope());
+      GetBaseDirectory(scope);
   if (!global_prefs_dir)
     return nullptr;
   VLOG(1) << "global_prefs_dir: " << global_prefs_dir;
@@ -103,9 +103,9 @@ std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
       std::move(lock), pref_service_factory.Create(pref_registry));
 }
 
-std::unique_ptr<LocalPrefs> CreateLocalPrefs() {
+std::unique_ptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   const absl::optional<base::FilePath> local_prefs_dir =
-      GetVersionedDirectory(GetUpdaterScope());
+      GetVersionedDirectory(scope);
   if (!local_prefs_dir)
     return nullptr;
 

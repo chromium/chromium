@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "prefs.h"
+#include "chrome/updater/prefs.h"
 
 namespace base {
 class TimeDelta;
@@ -15,6 +15,7 @@ class TimeDelta;
 
 namespace updater {
 
+enum class UpdaterScope;
 class ScopedPrefsLockImpl;
 
 // ScopedPrefsLock represents a held lock. Destroying the ScopedPrefsLock
@@ -60,6 +61,7 @@ class UpdaterPrefsImpl : public LocalPrefs, public GlobalPrefs {
 // within the timeout. While the ScopedPrefsLock exists, no other process on
 // the machine may access global prefs.
 std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
+    UpdaterScope scope,
     base::TimeDelta timeout);
 
 }  // namespace updater

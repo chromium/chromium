@@ -51,7 +51,7 @@ void AppUninstall::Initialize() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch))
-    global_prefs_ = CreateGlobalPrefs();
+    global_prefs_ = CreateGlobalPrefs(updater_scope());
 }
 
 void AppUninstall::FirstTaskRun() {

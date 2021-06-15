@@ -33,7 +33,8 @@ class AppUpdate : public App {
 };
 
 void AppUpdate::Initialize() {
-  config_ = base::MakeRefCounted<Configurator>(CreateGlobalPrefs());
+  config_ =
+      base::MakeRefCounted<Configurator>(CreateGlobalPrefs(updater_scope()));
 }
 
 void AppUpdate::Uninitialize() {

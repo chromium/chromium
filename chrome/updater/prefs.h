@@ -11,6 +11,8 @@ class PrefService;
 
 namespace updater {
 
+enum class UpdaterScope;
+
 extern const char kPrefUpdateTime[];
 
 class UpdaterPrefs {
@@ -53,11 +55,11 @@ class GlobalPrefs : public UpdaterPrefs {
 
 // Open the global prefs. These prefs are protected by a mutex, and shared by
 // all updaters on the system. Returns nullptr if the mutex cannot be acquired.
-std::unique_ptr<GlobalPrefs> CreateGlobalPrefs();
+std::unique_ptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope);
 
 // Open the version-specific prefs. These prefs are not protected by any mutex
 // and not shared with other versions of the updater.
-std::unique_ptr<LocalPrefs> CreateLocalPrefs();
+std::unique_ptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope);
 
 // Commits prefs changes to storage. This function should only be called
 // when the changes must be written immediately, for instance, during program
