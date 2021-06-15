@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/animation/animation_change_type.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"

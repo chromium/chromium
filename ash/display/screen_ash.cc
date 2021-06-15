@@ -4,8 +4,8 @@
 
 #include "ash/display/screen_ash.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"

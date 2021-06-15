@@ -16,7 +16,6 @@
 #include "ash/highlighter/highlighter_controller_test_api.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"

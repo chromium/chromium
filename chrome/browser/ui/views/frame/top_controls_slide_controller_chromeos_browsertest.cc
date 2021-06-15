@@ -8,8 +8,8 @@
 #include <numeric>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/mojom/cros_display_config.mojom-test-utils.h"

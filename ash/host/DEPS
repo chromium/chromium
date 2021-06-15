@@ -2,7 +2,7 @@ include_rules = [
   "-ash",
   "+ash/host",
   "+ash/ash_export.h",
-  "+ash/public/cpp/ash_switches.h",
+  "+ash/constants",
   "+ash/public/cpp/ash_features.h",
 ]
 

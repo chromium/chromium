@@ -17,7 +17,6 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/devicetype.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"

@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/hud_display/hud_display.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/shell.h"

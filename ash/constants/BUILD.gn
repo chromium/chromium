@@ -27,6 +27,7 @@ component("constants") {
   public_deps = [
     "//base",
     "//skia",
+    "//third_party/abseil-cpp:absl",
   ]
   deps = [ "//build:branding_buildflags" ]
 }

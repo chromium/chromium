@@ -14,7 +14,6 @@ namespace switches {
 // -----------------------------------------------------------------------------
 // Can't find the switch you are looking for? Try looking in:
 // ash/constants/ash_switches.cc
-// ash/public/cpp/ash_switches.cc
 // base/base_switches.cc
 // etc.
 //

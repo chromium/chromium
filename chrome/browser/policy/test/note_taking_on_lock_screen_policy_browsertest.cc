@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"

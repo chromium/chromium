@@ -7,7 +7,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/login_status.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/system_tray_test_api.h"

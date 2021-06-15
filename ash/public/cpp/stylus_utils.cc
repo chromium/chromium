@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/stylus_utils.h"
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "ui/display/display.h"
 #include "ui/events/devices/device_data_manager.h"

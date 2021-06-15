@@ -6,6 +6,11 @@
 #define ASH_CONSTANTS_ASH_SWITCHES_H_
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace chromeos {
 namespace switches {
@@ -50,6 +55,36 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcStartMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcTosHostForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUreadaheadMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUseHugePages[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshClearFastInkBuffer[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshConstrainPointerToRoot[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshContextualNudgesInterval[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshContextualNudgesResetShownCount[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshDebugShortcuts[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshDeveloperShortcuts[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshDisableTouchExplorationMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshEnableCursorMotionBlur[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshEnableMagnifierKeyScroller[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshEnablePaletteOnAllDisplays[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshEnableTabletMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshEnableWaylandServer[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshForceEnableStylusTools[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshForceStatusAreaCollapsible[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshHideNotificationsForFactory[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshPowerButtonPosition[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshSideVolumeButtonPosition[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshTouchHud[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeClamshell[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeTablet[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAuraLegacyPowerButton[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCellularFirst[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];
@@ -90,6 +125,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVm[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVmRtVcpu[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableCastReceiver[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableConsumerKiosk[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableDimShelf[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableExtensionAssetsSharing[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableHoudini[];
@@ -138,11 +174,14 @@ extern const char kForceHappinessTrackingSystem[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceLaunchBrowser[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceLoginManagerInTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceSystemCompositorMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceTabletPowerButton[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFormFactor[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFrameThrottleFps[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGuestSession[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGuestWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGuestWallpaperSmall[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kHasChromeOSKeyboard[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kHasInternalStylus[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kHomedir[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kIgnoreArcVmDevConf[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -184,8 +223,13 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHoverPreviews[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowLoginDevOverlay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowOobeDevOverlay[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowTaps[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipForceOnlineSignInForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSupportsClamshellAutoRotation[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSuppressMessageCenterPopups[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTelemetryExtensionDirectory[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTestEncryptionMigrationUI[];
@@ -195,6 +239,8 @@ extern const char kTetherHostScansIgnoreWiredConnections[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTetherStub[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTimeBeforeOnboardingSurveyInSecondsForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kTouchscreenUsableWhileScreenOff[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUnfilteredBluetoothDevices[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUpdateRequiredAueForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -273,6 +319,12 @@ bool IsDeviceRequisitionConfigurable();
 
 // Returns true if the OS installation UI flow can be entered.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsInstallAllowed();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+absl::optional<base::TimeDelta> ContextualNudgesInterval();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ContextualNudgesResetShownCount();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUsingShelfAutoDim();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldClearFastInkBuffer();
 
 }  // namespace switches
 }  // namespace chromeos

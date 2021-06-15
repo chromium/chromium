@@ -6,7 +6,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"

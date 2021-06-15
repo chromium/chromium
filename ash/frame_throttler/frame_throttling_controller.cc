@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/command_line.h"

@@ -21,7 +21,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"

@@ -4,10 +4,10 @@
 
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/fast_ink/laser/laser_pointer_controller_test_api.h"
 #include "ash/fast_ink/laser/laser_pointer_view.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

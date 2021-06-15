@@ -5,7 +5,6 @@
 #include "ash/display/display_configuration_controller.h"
 
 #include "ash/display/display_configuration_controller_test_api.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

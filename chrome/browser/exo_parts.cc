@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager_impl.h"
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"

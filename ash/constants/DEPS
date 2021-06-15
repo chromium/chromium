@@ -5,6 +5,7 @@ include_rules = [
   "+ash/constants",
   "+base",
   "+build",
+  "+third_party/abseil-cpp/absl/types/optional.h",
 ]
 
 specific_include_rules = {

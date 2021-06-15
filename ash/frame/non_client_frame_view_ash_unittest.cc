@@ -9,7 +9,6 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/frame/header_view.h"
 #include "ash/frame/wide_frame_view.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

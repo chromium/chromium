@@ -24,7 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {

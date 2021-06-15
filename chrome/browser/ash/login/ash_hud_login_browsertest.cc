@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_switches.h"
 #include "ash/hud_display/ash_tracing_handler.h"
 #include "ash/hud_display/ash_tracing_request.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/hud_display/hud_settings_view.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"

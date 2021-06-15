@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_delegate.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"

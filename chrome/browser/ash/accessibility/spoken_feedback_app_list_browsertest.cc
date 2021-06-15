@@ -8,7 +8,6 @@
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"

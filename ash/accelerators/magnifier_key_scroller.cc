@@ -8,8 +8,8 @@
 
 #include "ash/accelerators/key_hold_detector.h"
 #include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/keyboard/keyboard_util.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "ui/events/event.h"

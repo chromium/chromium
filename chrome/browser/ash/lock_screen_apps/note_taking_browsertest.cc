@@ -4,7 +4,6 @@
 
 #include "apps/launcher.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"

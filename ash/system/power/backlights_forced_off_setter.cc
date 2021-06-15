@@ -4,7 +4,7 @@
 
 #include "ash/system/power/backlights_forced_off_setter.h"
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/power/scoped_backlights_forced_off.h"
 #include "ash/touch/touch_devices_controller.h"

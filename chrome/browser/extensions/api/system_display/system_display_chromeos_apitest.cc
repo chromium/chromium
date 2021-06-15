@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/system_display/display_info_provider_chromeos.h"

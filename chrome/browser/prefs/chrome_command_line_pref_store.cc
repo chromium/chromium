@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"

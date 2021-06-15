@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/components/audio/sounds.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
