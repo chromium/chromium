@@ -593,6 +593,10 @@ bool Shell::IsBackForwardCacheSupported() {
   return true;
 }
 
+bool Shell::IsPrerender2Supported() {
+  return true;
+}
+
 std::unique_ptr<WebContents> Shell::ActivatePortalWebContents(
     WebContents* predecessor_contents,
     std::unique_ptr<WebContents> portal_contents) {

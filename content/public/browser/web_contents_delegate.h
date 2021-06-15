@@ -689,6 +689,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // indication that the cache will be used.
   virtual bool IsBackForwardCacheSupported();
 
+  // Returns true is prerender2 is supported.
+  virtual bool IsPrerender2Supported();
+
   // Requests the delegate to replace |predecessor_contents| with
   // |portal_contents| in the container that holds |predecessor_contents|. If
   // the delegate successfully replaces |predecessor_contents|, the return

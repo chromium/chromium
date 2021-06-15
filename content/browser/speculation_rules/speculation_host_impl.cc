@@ -7,6 +7,7 @@
 #include "content/browser/prerender/prerender_processor.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,6 +83,13 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
   if (!blink::features::IsPrerender2Enabled() || candidates.empty())
     return;
+  WebContentsDelegate* web_contents_delegate =
+      content::WebContents::FromRenderFrameHost(render_frame_host())
+          ->GetDelegate();
+  if (!web_contents_delegate ||
+      !web_contents_delegate->IsPrerender2Supported()) {
+    return;
+  }
 
   // Limit the number of started prerenders to one. If
   // `prerender_processor_` is not null, it means `this` has started a

@@ -20,6 +20,13 @@
 namespace content {
 namespace {
 
+class PrerenderWebContentsDelegate : public WebContentsDelegate {
+ public:
+  PrerenderWebContentsDelegate() = default;
+
+  bool IsPrerender2Supported() override { return true; }
+};
+
 class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
  public:
   SpeculationHostImplTest() {
@@ -33,6 +40,7 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
     web_contents_ = TestWebContents::Create(
         browser_context_.get(),
         SiteInstanceImpl::Create(browser_context_.get()));
+    web_contents_->SetDelegate(&web_contents_delegate_);
     web_contents_->NavigateAndCommit(GURL("https://example.com"));
   }
 
@@ -71,6 +79,7 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
+  PrerenderWebContentsDelegate web_contents_delegate_;
 };
 
 // Tests that SpeculationHostImpl starts prerendering when it receives prerender

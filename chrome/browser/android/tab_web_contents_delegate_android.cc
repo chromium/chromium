@@ -469,6 +469,10 @@ bool TabWebContentsDelegateAndroid::IsBackForwardCacheSupported() {
   return true;
 }
 
+bool TabWebContentsDelegateAndroid::IsPrerender2Supported() {
+  return true;
+}
+
 std::unique_ptr<content::WebContents>
 TabWebContentsDelegateAndroid::ActivatePortalWebContents(
     content::WebContents* predecessor_contents,

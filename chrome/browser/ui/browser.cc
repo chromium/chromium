@@ -1451,6 +1451,10 @@ bool Browser::IsBackForwardCacheSupported() {
   return true;
 }
 
+bool Browser::IsPrerender2Supported() {
+  return true;
+}
+
 std::unique_ptr<content::WebContents> Browser::ActivatePortalWebContents(
     content::WebContents* predecessor_contents,
     std::unique_ptr<content::WebContents> portal_contents) {
