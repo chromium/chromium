@@ -4,28 +4,12 @@
 
 assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are CrOS only")
 
-source_set("common") {
-  sources = [
-    "log_buffer.cc",
-    "log_buffer.h",
-    "logging.cc",
-    "logging.h",
-    "quick_pair_features.cc",
-    "quick_pair_features.h",
-  ]
-
-  public_deps = [ "//base" ]
-
-  deps = []
-}
-
 source_set("unit_tests") {
   testonly = true
-  sources = [ "logging_unittest.cc" ]
 
   deps = [
-    ":common",
     "//base/test:test_support",
+    "//chromeos/components/quick_pair/common:unit_tests",
     "//testing/gtest",
   ]
 }
