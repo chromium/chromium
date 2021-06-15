@@ -14,6 +14,7 @@ group("signin") {
 source_set("signin_headers") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "signin_completion_info.h",
     "signin_coordinator.h",
     "signin_utils.h",
   ]
@@ -36,6 +37,7 @@ source_set("signin_protected") {
 source_set("signin_impl") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "signin_completion_info.mm",
     "signin_coordinator.mm",
     "signin_utils.mm",
   ]
