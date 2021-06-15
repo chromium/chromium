@@ -736,7 +736,7 @@ void TabStripModel::CloseAllTabs() {
   closing_tabs.reserve(count());
   for (int i = count() - 1; i >= 0; --i)
     closing_tabs.push_back(GetWebContentsAt(i));
-  InternalCloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
+  CloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
@@ -752,14 +752,13 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   closing_tabs.reserve(tabs_in_group.length());
   for (uint32_t i = tabs_in_group.end(); i > tabs_in_group.start(); --i)
     closing_tabs.push_back(GetWebContentsAt(i - 1));
-  InternalCloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
+  CloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 bool TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
   DCHECK(ContainsIndex(index));
   WebContents* contents = GetWebContentsAt(index);
-  return InternalCloseTabs(base::span<WebContents* const>(&contents, 1),
-                           close_types);
+  return CloseTabs(base::span<WebContents* const>(&contents, 1), close_types);
 }
 
 bool TabStripModel::TabsAreLoading() const {
@@ -1052,9 +1051,8 @@ void TabStripModel::CloseSelectedTabs() {
 
   const ui::ListSelectionModel::SelectedIndices& sel =
       selection_model_.selected_indices();
-  InternalCloseTabs(
-      GetWebContentsesByIndices(std::vector<int>(sel.begin(), sel.end())),
-      CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
+  CloseTabs(GetWebContentsesByIndices(std::vector<int>(sel.begin(), sel.end())),
+            CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
 }
 
 void TabStripModel::SelectNextTab(UserGestureDetails detail) {
@@ -1376,9 +1374,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTab"));
-      InternalCloseTabs(
-          GetWebContentsesByIndices(GetIndicesForCommand(context_index)),
-          CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
+      CloseTabs(GetWebContentsesByIndices(GetIndicesForCommand(context_index)),
+                CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
       break;
     }
 
@@ -1386,9 +1383,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseOtherTabs"));
-      InternalCloseTabs(GetWebContentsesByIndices(GetIndicesClosedByCommand(
-                            context_index, command_id)),
-                        CLOSE_CREATE_HISTORICAL_TAB);
+      CloseTabs(GetWebContentsesByIndices(
+                    GetIndicesClosedByCommand(context_index, command_id)),
+                CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
 
@@ -1396,9 +1393,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTabsToRight"));
-      InternalCloseTabs(GetWebContentsesByIndices(GetIndicesClosedByCommand(
-                            context_index, command_id)),
-                        CLOSE_CREATE_HISTORICAL_TAB);
+      CloseTabs(GetWebContentsesByIndices(
+                    GetIndicesClosedByCommand(context_index, command_id)),
+                CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
 
@@ -1779,9 +1776,8 @@ int TabStripModel::InsertWebContentsAtImpl(
   return index;
 }
 
-bool TabStripModel::InternalCloseTabs(
-    base::span<content::WebContents* const> items,
-    uint32_t close_types) {
+bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
+                              uint32_t close_types) {
   if (items.empty())
     return true;
 

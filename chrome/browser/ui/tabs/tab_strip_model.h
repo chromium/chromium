@@ -677,8 +677,8 @@ class TabStripModel : public TabGroupController {
   //
   // Returns true if the WebContentses were closed immediately, false if we
   // are waiting for the result of an onunload handler.
-  bool InternalCloseTabs(base::span<content::WebContents* const> items,
-                         uint32_t close_types);
+  bool CloseTabs(base::span<content::WebContents* const> items,
+                 uint32_t close_types);
 
   // |close_types| is a bitmask of the types in CloseTypes.
   // Returns true if all the tabs have been deleted. A return value of false
