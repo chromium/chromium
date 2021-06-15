@@ -553,92 +553,100 @@ class PLATFORM_EXPORT ResourceResponse final {
   network::mojom::IPAddressSpace address_space_ =
       network::mojom::IPAddressSpace::kUnknown;
 
-  bool was_cached_ = false;
-  bool connection_reused_ = false;
-  bool is_null_ = false;
-  mutable bool have_parsed_age_header_ = false;
-  mutable bool have_parsed_date_header_ = false;
-  mutable bool have_parsed_expires_header_ = false;
-  mutable bool have_parsed_last_modified_header_ = false;
-
-  // True if the resource was retrieved by the embedder in spite of
-  // certificate errors.
-  bool has_major_certificate_errors_ = false;
-
   // The Certificate Transparency policy compliance status of the resource.
   CTPolicyCompliance ct_policy_compliance_ =
       kCTPolicyComplianceDetailsNotAvailable;
 
+  bool was_cached_ : 1;
+  bool connection_reused_ : 1;
+  bool is_null_ : 1;
+  mutable bool have_parsed_age_header_ : 1;
+  mutable bool have_parsed_date_header_ : 1;
+  mutable bool have_parsed_expires_header_ : 1;
+  mutable bool have_parsed_last_modified_header_ : 1;
+
+  // True if the resource was retrieved by the embedder in spite of
+  // certificate errors.
+  bool has_major_certificate_errors_ : 1;
+
   // True if the response was sent over TLS 1.0 or 1.1, which are deprecated and
   // will be removed in the future.
-  bool is_legacy_tls_version_ = false;
+  bool is_legacy_tls_version_ : 1;
 
   // This corresponds to the range-requested flag in the Fetch spec:
   // https://fetch.spec.whatwg.org/#concept-response-range-requested-flag
-  bool has_range_requested_ = false;
+  bool has_range_requested_ : 1;
 
   // True if the Timing-Allow-Origin check passes.
   // https://fetch.spec.whatwg.org/#concept-response-timing-allow-passed
-  bool timing_allow_passed_ = false;
+  bool timing_allow_passed_ : 1;
+
+  // Was the resource fetched over SPDY.  See http://dev.chromium.org/spdy
+  bool was_fetched_via_spdy_ : 1;
+
+  // Was the resource fetched over a ServiceWorker.
+  bool was_fetched_via_service_worker_ : 1;
+
+  // True if service worker navigation preload was performed due to
+  // the request for this resource.
+  bool did_service_worker_navigation_preload_ : 1;
+
+  // True if this resource is stale and needs async revalidation. Will only
+  // possibly be set if the load_flags indicated SUPPORT_ASYNC_REVALIDATION.
+  bool async_revalidation_requested_ : 1;
+
+  // True if this resource is from an inner response of a signed exchange.
+  // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html
+  bool is_signed_exchange_inner_response_ : 1;
+
+  // True if this resource is served from the prefetch cache.
+  bool was_in_prefetch_cache_ : 1;
+
+  // True if a cookie was sent in the request for this resource.
+  bool was_cookie_in_request_ : 1;
+
+  // True if this resource was loaded from the network.
+  bool network_accessed_ : 1;
+
+  // True if this resource was loaded from a MHTML archive.
+  bool from_archive_ : 1;
+
+  // True if response could use alternate protocol.
+  bool was_alternate_protocol_available_ : 1;
+
+  // True if the response was delivered after ALPN is negotiated.
+  bool was_alpn_negotiated_ : 1;
+
+  // True when there is an "authorization" header on the request and it is
+  // covered by the wildcard in the preflight response.
+  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  bool has_authorization_covered_by_wildcard_on_preflight_ : 1;
+
+  // Whether the resource came from the cache and validated over the network.
+  bool is_validated_ : 1;
+
+  // The request's |includeCredentials| value from the "HTTP-network fetch"
+  // algorithm.
+  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
+  bool request_include_credentials_ : 1;
+
+  // Pre-computed padding.  This should only be non-zero if |response_type| is
+  // set to kOpaque.  In addition, it is only set if the response was provided
+  // by a service worker FetchEvent handler.
+  int64_t padding_ = 0;
 
   // The time at which the resource's certificate expires. Null if there was no
   // certificate.
   base::Time cert_validity_start_;
-
-  // Was the resource fetched over SPDY.  See http://dev.chromium.org/spdy
-  bool was_fetched_via_spdy_ = false;
-
-  // Was the resource fetched over a ServiceWorker.
-  bool was_fetched_via_service_worker_ = false;
 
   // The source of the resource, if it was fetched via ServiceWorker. This is
   // kUnspecified if |was_fetched_via_service_worker| is false.
   network::mojom::FetchResponseSource service_worker_response_source_ =
       network::mojom::FetchResponseSource::kUnspecified;
 
-  // True if service worker navigation preload was performed due to
-  // the request for this resource.
-  bool did_service_worker_navigation_preload_ = false;
-
-  // True if this resource is stale and needs async revalidation. Will only
-  // possibly be set if the load_flags indicated SUPPORT_ASYNC_REVALIDATION.
-  bool async_revalidation_requested_ = false;
-
-  // True if this resource is from an inner response of a signed exchange.
-  // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html
-  bool is_signed_exchange_inner_response_ = false;
-
-  // True if this resource is served from the prefetch cache.
-  bool was_in_prefetch_cache_ = false;
-
-  // True if a cookie was sent in the request for this resource.
-  bool was_cookie_in_request_ = false;
-
-  // True if this resource was loaded from the network.
-  bool network_accessed_ = false;
-
-  // True if this resource was loaded from a MHTML archive.
-  bool from_archive_ = false;
-
-  // True if response could use alternate protocol.
-  bool was_alternate_protocol_available_ = false;
-
-  // True if the response was delivered after ALPN is negotiated.
-  bool was_alpn_negotiated_ = false;
-
-  // True when there is an "authorization" header on the request and it is
-  // covered by the wildcard in the preflight response.
-  // TODO(crbug.com/1176753): Remove this once the investigation is done.
-  bool has_authorization_covered_by_wildcard_on_preflight_ = false;
-
   // https://fetch.spec.whatwg.org/#concept-response-type
   network::mojom::FetchResponseType response_type_ =
       network::mojom::FetchResponseType::kDefault;
-
-  // Pre-computed padding.  This should only be non-zero if |response_type| is
-  // set to kOpaque.  In addition, it is only set if the response was provided
-  // by a service worker FetchEvent handler.
-  int64_t padding_ = 0;
 
   // HTTP version used in the response, if known.
   HTTPVersion http_version_ = kHTTPVersionUnknown;
@@ -695,9 +703,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   net::HttpResponseInfo::ConnectionInfo connection_info_ =
       net::HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_UNKNOWN;
 
-  // Whether the resource came from the cache and validated over the network.
-  bool is_validated_ = false;
-
   // Size of the response in bytes prior to decompression.
   int64_t encoded_data_length_ = 0;
 
@@ -723,11 +728,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   KURL web_bundle_url_;
 
   absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
-
-  // The request's |includeCredentials| value from the "HTTP-network fetch"
-  // algorithm.
-  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
-  bool request_include_credentials_ = true;
 };
 
 }  // namespace blink

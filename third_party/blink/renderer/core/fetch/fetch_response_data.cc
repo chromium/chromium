@@ -391,7 +391,8 @@ FetchResponseData::FetchResponseData(Type type,
       connection_info_(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN),
       alpn_negotiated_protocol_("unknown"),
       was_fetched_via_spdy_(false),
-      has_range_requested_(false) {}
+      has_range_requested_(false),
+      request_include_credentials_(true) {}
 
 void FetchResponseData::SetAuthChallengeInfo(
     const absl::optional<net::AuthChallengeInfo>& auth_challenge_info) {

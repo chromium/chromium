@@ -82,10 +82,37 @@ ResourceResponse::SignedCertificateTimestamp::IsolatedCopy() const {
       signature_data_.IsolatedCopy());
 }
 
-ResourceResponse::ResourceResponse() : is_null_(true) {}
+ResourceResponse::ResourceResponse()
+    : was_cached_(false),
+      connection_reused_(false),
+      is_null_(true),
+      have_parsed_age_header_(false),
+      have_parsed_date_header_(false),
+      have_parsed_expires_header_(false),
+      have_parsed_last_modified_header_(false),
+      has_major_certificate_errors_(false),
+      is_legacy_tls_version_(false),
+      has_range_requested_(false),
+      timing_allow_passed_(false),
+      was_fetched_via_spdy_(false),
+      was_fetched_via_service_worker_(false),
+      did_service_worker_navigation_preload_(false),
+      async_revalidation_requested_(false),
+      is_signed_exchange_inner_response_(false),
+      was_in_prefetch_cache_(false),
+      was_cookie_in_request_(false),
+      network_accessed_(false),
+      from_archive_(false),
+      was_alternate_protocol_available_(false),
+      was_alpn_negotiated_(false),
+      has_authorization_covered_by_wildcard_on_preflight_(false),
+      is_validated_(false),
+      request_include_credentials_(true) {}
 
 ResourceResponse::ResourceResponse(const KURL& current_request_url)
-    : current_request_url_(current_request_url), is_null_(false) {}
+    : ResourceResponse() {
+  SetCurrentRequestUrl(current_request_url);
+}
 
 ResourceResponse::ResourceResponse(const ResourceResponse&) = default;
 ResourceResponse& ResourceResponse::operator=(const ResourceResponse&) =

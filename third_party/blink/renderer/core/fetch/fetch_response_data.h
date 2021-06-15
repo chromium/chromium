@@ -169,16 +169,16 @@ class CORE_EXPORT FetchResponseData final
   HTTPHeaderSet cors_exposed_header_names_;
   net::HttpResponseInfo::ConnectionInfo connection_info_;
   AtomicString alpn_negotiated_protocol_;
-  bool was_fetched_via_spdy_;
-  bool has_range_requested_;
   // |auth_challenge_info_| is a std::unique_ptr instead of absl::optional
   // |because this member is empty in most cases.
   std::unique_ptr<net::AuthChallengeInfo> auth_challenge_info_;
 
+  bool was_fetched_via_spdy_ : 1;
+  bool has_range_requested_ : 1;
   // The request's |includeCredentials| value from the "HTTP-network fetch"
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
-  bool request_include_credentials_ = true;
+  bool request_include_credentials_ : 1;
 };
 
 }  // namespace blink
