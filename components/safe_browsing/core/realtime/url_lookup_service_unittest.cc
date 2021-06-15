@@ -9,13 +9,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -86,8 +86,6 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   void SetUp() override {
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     safe_browsing::RegisterProfilePrefs(test_pref_service_.registry());
-    task_environment_ = CreateTestTaskEnvironment(
-        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     PlatformTest::SetUp();
 
     test_shared_loader_factory_ =
@@ -264,7 +262,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   bool token_fetches_configured_in_client_ = false;
   TestSafeBrowsingTokenFetcher* raw_token_fetcher_ = nullptr;
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
@@ -315,15 +314,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffAndTimerReset) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 }
 
@@ -389,15 +388,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   /////////////////////////////////////
@@ -412,15 +411,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 599 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(598));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(598));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 600 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   //////////////////////////////////////
@@ -435,15 +434,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1199 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1198));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1198));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 1200 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   ///////////////////////////////////////////////////
@@ -458,15 +457,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1799 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 1800 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   ///////////////////////////////////////////////////
@@ -481,15 +480,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1799 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1798));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1798));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 1800 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 }
 
@@ -514,15 +513,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   /////////////////////////////////////
@@ -537,15 +536,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 599 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(598));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(598));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 600 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 
   // The next lookup is a success. This should reset the backoff duration to
@@ -565,15 +564,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 1 second.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff not reset after 299 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(298));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(298));
   EXPECT_TRUE(IsInBackoffMode());
 
   // Backoff should have been reset after 300 seconds.
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FALSE(IsInBackoffMode());
 }
 
@@ -625,7 +624,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCacheInCacheManager) {
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
                                60, "a.example.test/path1/path2",
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   std::unique_ptr<RTLookupResponse> cache_response =
       GetCachedRealTimeUrlVerdict(url);
@@ -645,19 +644,20 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
                                60, "example.test/",
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   base::MockCallback<RTLookupRequestCallback> request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
-                            response_callback.Get());
+                            response_callback.Get(),
+                            base::ThreadTaskRunnerHandle::Get());
 
   // |request_callback| should not be called.
   EXPECT_CALL(request_callback, Run(_, _)).Times(0);
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ true, _));
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // This metric is not recorded because the response is obtained from the
   // cache.
@@ -687,14 +687,14 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // Check token is attached.
             EXPECT_EQ("access_token_string", token);
           }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
   FulfillAccessTokenRequest("access_token_string");
   EXPECT_CALL(*raw_token_fetcher(), OnInvalidAccessToken(_)).Times(0);
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Check the response is cached.
   std::unique_ptr<RTLookupResponse> cache_response =
@@ -725,12 +725,12 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // indicates that token fetches are not configured in the client.
             EXPECT_EQ("", token);
           }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Check the response is cached.
   std::unique_ptr<RTLookupResponse> cache_response =
@@ -757,12 +757,12 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // Check the token field is empty.
             EXPECT_EQ("", token);
           }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Check the response is cached.
   std::unique_ptr<RTLookupResponse> cache_response =
@@ -781,7 +781,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
   base::MockCallback<RTLookupRequestCallback> request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
-                            response_callback.Get());
+                            response_callback.Get(),
+                            base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(request_callback, Run(_, _)).Times(1);
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
@@ -791,7 +792,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
   EXPECT_CALL(*raw_token_fetcher(),
               OnInvalidAccessToken("invalid_token_string"))
       .Times(1);
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
@@ -805,14 +806,15 @@ TEST_F(RealTimeUrlLookupServiceTest,
   base::MockCallback<RTLookupRequestCallback> request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
-                            response_callback.Get());
+                            response_callback.Get(),
+                            base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
                                      /* is_cached_response */ false, _));
 
   FulfillAccessTokenRequest("invalid_token_string");
   EXPECT_CALL(*raw_token_fetcher(), OnInvalidAccessToken(_)).Times(0);
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
@@ -852,9 +854,9 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
             EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
             EXPECT_EQ(kTestReferrerUrl, request->referrer_chain().Get(1).url());
           }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
@@ -884,12 +886,12 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // Check referrer chain is attached.
             EXPECT_EQ(0, request->referrer_chain().size());
           }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
@@ -945,12 +947,12 @@ TEST_F(RealTimeUrlLookupServiceTest,
                              .Get(1)
                              .is_subframe_referrer_url_removed());
           }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
@@ -1003,12 +1005,12 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_FALSE(
             request->referrer_chain().Get(1).is_subframe_url_removed());
       }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
@@ -1045,12 +1047,12 @@ TEST_F(RealTimeUrlLookupServiceTest,
             EXPECT_EQ(1, request->referrer_chain().size());
             EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
           }),
-      response_callback.Get());
+      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
@@ -1061,13 +1063,14 @@ TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
   base::MockCallback<RTLookupRequestCallback> request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
-                            response_callback.Get());
+                            response_callback.Get(),
+                            base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(request_callback, Run(_, _)).Times(1);
   EXPECT_CALL(response_callback, Run(_, _, _)).Times(0);
   rt_service()->Shutdown();
 
-  task_environment_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace safe_browsing

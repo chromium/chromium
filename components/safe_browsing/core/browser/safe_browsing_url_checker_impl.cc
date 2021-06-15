@@ -603,7 +603,8 @@ void SafeBrowsingUrlCheckerImpl::StartLookupOnUIThread(
       &SafeBrowsingUrlCheckerImpl::OnRTLookupResponse, weak_checker_on_io);
 
   url_lookup_service_on_ui->StartLookup(url, std::move(request_callback),
-                                        std::move(response_callback));
+                                        std::move(response_callback),
+                                        GetTaskRunner(ThreadID::IO));
 }
 
 void SafeBrowsingUrlCheckerImpl::PerformHashBasedCheck(const GURL& url) {

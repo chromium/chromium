@@ -17,7 +17,6 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/realtime/policy_engine.h"
@@ -63,18 +62,19 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
 void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     RTLookupRequestCallback request_callback,
-    RTLookupResponseCallback response_callback) {
-  token_fetcher_->Start(
-      base::BindOnce(&RealTimeUrlLookupService::OnGetAccessToken,
-                     weak_factory_.GetWeakPtr(), url,
-                     std::move(request_callback), std::move(response_callback),
-                     base::TimeTicks::Now()));
+    RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  token_fetcher_->Start(base::BindOnce(
+      &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
+      url, std::move(request_callback), std::move(response_callback),
+      std::move(callback_task_runner), base::TimeTicks::Now()));
 }
 
 void RealTimeUrlLookupService::OnGetAccessToken(
     const GURL& url,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::TimeTicks get_token_start_time,
     const std::string& access_token) {
   base::UmaHistogramTimes("SafeBrowsing.RT.GetToken.Time",
@@ -82,7 +82,7 @@ void RealTimeUrlLookupService::OnGetAccessToken(
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
                             !access_token.empty());
   SendRequest(url, access_token, std::move(request_callback),
-              std::move(response_callback));
+              std::move(response_callback), std::move(callback_task_runner));
 }
 
 void RealTimeUrlLookupService::OnResponseUnauthorized(

@@ -186,9 +186,11 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
             /*referrer_chain_provider=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
-  void StartLookup(const GURL& gurl,
-                   RTLookupRequestCallback request_callback,
-                   RTLookupResponseCallback response_callback) override {
+  void StartLookup(
+      const GURL& gurl,
+      RTLookupRequestCallback request_callback,
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     auto response = std::make_unique<RTLookupResponse>();
@@ -214,9 +216,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
     threat_info.set_threat_type(threat_type);
     threat_info.set_verdict_type(verdict_type);
     *new_threat_info = threat_info;
-    GetTaskRunner(ThreadID::IO)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(std::move(response_callback),
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_callback),
                                   /* is_rt_lookup_successful */ true,
                                   /* is_cached_response */ is_cached_response_,
                                   std::move(response)));

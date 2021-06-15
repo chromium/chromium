@@ -55,9 +55,11 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanPerformFullURLLookupWithToken() const override;
   bool CanAttachReferrerChain() const override;
   int GetReferrerUserGestureLimit() const override;
-  void GetAccessToken(const GURL& url,
-                      RTLookupRequestCallback request_callback,
-                      RTLookupResponseCallback response_callback) override;
+  void GetAccessToken(
+      const GURL& url,
+      RTLookupRequestCallback request_callback,
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
   absl::optional<std::string> GetDMTokenString() const override;
   std::string GetMetricSuffix() const override;
   bool ShouldIncludeCredentials() const override;

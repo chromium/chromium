@@ -80,7 +80,8 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
 void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     RTLookupRequestCallback request_callback,
-    RTLookupResponseCallback response_callback) {
+    RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   NOTREACHED() << "URL lookup with token is disabled for enterprise users.";
 }
 

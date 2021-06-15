@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -69,15 +70,17 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // local hash-based method.
   bool IsInBackoffMode() const;
 
-  // Start the full URL lookup for |url|, call |request_callback| on the IO
-  // thread when request is sent, call |response_callback| on the IO thread
-  // when response is received.
+  // Start the full URL lookup for |url|, call |request_callback| on
+  // |callback_task_runner| when request is sent, call |response_callback| on
+  // |callback_task_runner| when response is received.
   // Note that |request_callback| is not called if there's a valid entry in the
   // cache for |url|.
   // This function is overridden in unit tests.
-  virtual void StartLookup(const GURL& url,
-                           RTLookupRequestCallback request_callback,
-                           RTLookupResponseCallback response_callback);
+  virtual void StartLookup(
+      const GURL& url,
+      RTLookupRequestCallback request_callback,
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
   // Helper function to return a weak pointer.
   base::WeakPtr<RealTimeUrlLookupServiceBase> GetWeakPtr();
@@ -106,10 +109,12 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Called to send the request to the Safe Browsing backend over the network.
   // It also attached an auth header if |access_token_string| has a value.
-  void SendRequest(const GURL& url,
-                   absl::optional<std::string> access_token_string,
-                   RTLookupRequestCallback request_callback,
-                   RTLookupResponseCallback response_callback);
+  void SendRequest(
+      const GURL& url,
+      absl::optional<std::string> access_token_string,
+      RTLookupRequestCallback request_callback,
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
  private:
   using PendingRTLookupRequests =
@@ -136,9 +141,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Gets access token, called if |CanPerformFullURLLookupWithToken| returns
   // true.
-  virtual void GetAccessToken(const GURL& url,
-                              RTLookupRequestCallback request_callback,
-                              RTLookupResponseCallback response_callback) = 0;
+  virtual void GetAccessToken(
+      const GURL& url,
+      RTLookupRequestCallback request_callback,
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
 
   // Called when the response from the server is unauthorized, so child classes
   // can add extra handling when this happens.
@@ -187,7 +194,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const std::string& req_data,
       const GURL& url,
       absl::optional<std::string> access_token_string,
-      RTLookupResponseCallback response_callback);
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
   // Called when the response from the real-time lookup remote endpoint is
   // received. |url_loader| is the unowned loader that was used to send the
@@ -195,14 +203,18 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // |response_body| is the response received. |url| is used for calling
   // |MayBeCacheRealTimeUrlVerdict|. |access_token_string| is used for calling
   // |OnResponseUnauthorized| in case the response code is HTTP_UNAUTHORIZED.
-  void OnURLLoaderComplete(const GURL& url,
-                           absl::optional<std::string> access_token_string,
-                           network::SimpleURLLoader* url_loader,
-                           base::TimeTicks request_start_time,
-                           std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(
+      const GURL& url,
+      absl::optional<std::string> access_token_string,
+      network::SimpleURLLoader* url_loader,
+      base::TimeTicks request_start_time,
+      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+      std::unique_ptr<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.
   std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url);
+
+  THREAD_CHECKER(thread_checker_);
 
   // Count of consecutive failures to complete URL lookup requests. When it
   // reaches |kMaxFailuresToEnforceBackoff|, we enter the backoff mode. It gets

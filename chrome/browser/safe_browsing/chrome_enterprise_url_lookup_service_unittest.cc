@@ -21,6 +21,8 @@
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -185,7 +187,8 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   base::MockCallback<RTLookupRequestCallback> request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
   enterprise_rt_service()->StartLookup(url, request_callback.Get(),
-                                       response_callback.Get());
+                                       response_callback.Get(),
+                                       content::GetIOThreadTaskRunner({}));
 
   // |request_callback| should not be called if the verdict is already cached.
   EXPECT_CALL(request_callback, Run(_, _)).Times(0);
@@ -223,7 +226,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
             EXPECT_TRUE(request->population().is_under_advanced_protection());
             EXPECT_EQ("", token);
           }),
-      response_callback.Get());
+      response_callback.Get(), content::GetIOThreadTaskRunner({}));
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));

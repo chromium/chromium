@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -16,7 +17,6 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "net/base/ip_address.h"
@@ -203,7 +203,7 @@ size_t RealTimeUrlLookupServiceBase::GetBackoffDurationInSeconds() const {
 }
 
 void RealTimeUrlLookupServiceBase::HandleLookupError() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   consecutive_failures_++;
 
   // Any successful lookup clears both |consecutive_failures_| as well as
@@ -237,7 +237,7 @@ void RealTimeUrlLookupServiceBase::HandleLookupError() {
 }
 
 void RealTimeUrlLookupServiceBase::HandleLookupSuccess() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ResetFailures();
 
   // |did_successful_lookup_since_last_backoff_| is set to true only when we
@@ -246,7 +246,7 @@ void RealTimeUrlLookupServiceBase::HandleLookupSuccess() {
 }
 
 bool RealTimeUrlLookupServiceBase::IsInBackoffMode() const {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bool in_backoff = backoff_timer_.IsRunning();
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.Backoff.State",
                                     GetMetricSuffix(), in_backoff);
@@ -254,14 +254,14 @@ bool RealTimeUrlLookupServiceBase::IsInBackoffMode() const {
 }
 
 void RealTimeUrlLookupServiceBase::ResetFailures() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   consecutive_failures_ = 0;
   backoff_timer_.Stop();
 }
 
 std::unique_ptr<RTLookupResponse>
 RealTimeUrlLookupServiceBase::GetCachedRealTimeUrlVerdict(const GURL& url) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::unique_ptr<RTLookupResponse::ThreatInfo> cached_threat_info =
       std::make_unique<RTLookupResponse::ThreatInfo>();
 
@@ -296,9 +296,8 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
     const GURL& url,
     RTLookupResponse response) {
   if (response.threat_info_size() > 0) {
-    GetTaskRunner(ThreadID::UI)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
                                   base::Unretained(cache_manager_), url,
                                   response, base::Time::Now(),
                                   /* store_old_cache */ false));
@@ -308,28 +307,31 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
 void RealTimeUrlLookupServiceBase::StartLookup(
     const GURL& url,
     RTLookupRequestCallback request_callback,
-    RTLookupResponseCallback response_callback) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+    RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(url.is_valid());
 
   // Check cache.
   std::unique_ptr<RTLookupResponse> cache_response =
       GetCachedRealTimeUrlVerdict(url);
   if (cache_response) {
-    GetTaskRunner(ThreadID::IO)
-        ->PostTask(FROM_HERE, base::BindOnce(std::move(response_callback),
-                                             /* is_rt_lookup_successful */ true,
-                                             /* is_cached_response */ true,
-                                             std::move(cache_response)));
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_callback),
+                                  /* is_rt_lookup_successful */ true,
+                                  /* is_cached_response */ true,
+                                  std::move(cache_response)));
     return;
   }
 
   if (CanPerformFullURLLookupWithToken()) {
     GetAccessToken(url, std::move(request_callback),
-                   std::move(response_callback));
+                   std::move(response_callback),
+                   std::move(callback_task_runner));
   } else {
     SendRequest(url, /* access_token_string */ absl::nullopt,
-                std::move(request_callback), std::move(response_callback));
+                std::move(request_callback), std::move(response_callback),
+                std::move(callback_task_runner));
   }
 }
 
@@ -337,8 +339,9 @@ void RealTimeUrlLookupServiceBase::SendRequest(
     const GURL& url,
     absl::optional<std::string> access_token_string,
     RTLookupRequestCallback request_callback,
-    RTLookupResponseCallback response_callback) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+    RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::unique_ptr<RTLookupRequest> request = FillRequestProto(url);
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
@@ -359,15 +362,17 @@ void RealTimeUrlLookupServiceBase::SendRequest(
                                     GetMetricSuffix(),
                                     access_token_string.has_value());
 
+  // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
+  // just below.
   SendRequestInternal(std::move(resource_request), req_data, url,
-                      access_token_string, std::move(response_callback));
+                      access_token_string, std::move(response_callback),
+                      callback_task_runner);
 
-  GetTaskRunner(ThreadID::IO)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(std::move(request_callback), std::move(request),
-                                access_token_string.has_value()
-                                    ? access_token_string.value()
-                                    : ""));
+  callback_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(request_callback), std::move(request),
+          access_token_string.has_value() ? access_token_string.value() : ""));
 }
 
 void RealTimeUrlLookupServiceBase::SendRequestInternal(
@@ -375,7 +380,8 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
     const std::string& req_data,
     const GURL& url,
     absl::optional<std::string> access_token_string,
-    RTLookupResponseCallback response_callback) {
+    RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        GetTrafficAnnotationTag());
@@ -389,7 +395,7 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
       url_loader_factory_.get(),
       base::BindOnce(&RealTimeUrlLookupServiceBase::OnURLLoaderComplete,
                      GetWeakPtr(), url, access_token_string, loader,
-                     base::TimeTicks::Now()));
+                     base::TimeTicks::Now(), std::move(callback_task_runner)));
 
   pending_requests_[owned_loader.release()] = std::move(response_callback);
 }
@@ -399,8 +405,9 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
     absl::optional<std::string> access_token_string,
     network::SimpleURLLoader* url_loader,
     base::TimeTicks request_start_time,
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     std::unique_ptr<std::string> response_body) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = pending_requests_.find(url_loader);
   DCHECK(it != pending_requests_.end()) << "Request not found";
@@ -436,11 +443,10 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
                                      GetMetricSuffix(),
                                      response->threat_info_size());
 
-  GetTaskRunner(ThreadID::IO)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(it->second), is_rt_lookup_successful,
-                         /* is_cached_response */ false, std::move(response)));
+  response_callback_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(it->second), is_rt_lookup_successful,
+                     /* is_cached_response */ false, std::move(response)));
 
   delete it->first;
   pending_requests_.erase(it);
