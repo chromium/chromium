@@ -288,6 +288,13 @@ void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout) {
       new Permission(Permission::Capability::kActivate, timeout));
 }
 
+void GrantPermissionToActivateIndefinitely(aura::Window* window) {
+  // Activation is the only permission, so just set the property. The window
+  // owns the Permission object.
+  window->SetProperty(kPermissionKey,
+                      new Permission(Permission::Capability::kActivate));
+}
+
 void RevokePermissionToActivate(aura::Window* window) {
   // Activation is the only permission, so just clear the property.
   window->ClearProperty(kPermissionKey);
