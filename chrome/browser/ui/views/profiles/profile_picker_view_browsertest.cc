@@ -941,7 +941,7 @@ class ProfilePickerSeparateEnterpriseCreationFlowBrowserTest
 };
 
 // Flaky on Win: https://crbug.com/1215038
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_CreateSignedInProfile DISABLED_CreateSignedInProfile
 #else
 #define MAYBE_CreateSignedInProfile CreateSignedInProfile
