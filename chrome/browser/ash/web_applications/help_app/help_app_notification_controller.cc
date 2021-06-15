@@ -69,7 +69,7 @@ bool ShouldShowDiscoverTabNotification(Profile* profile) {
         ChromeVersionService::GetVersion(profile->GetPrefs()));
     last_shown_milestone = profile_version.components()[0];
   }
-  return last_shown_milestone < CurrentMilestone();
+  return last_shown_milestone < 92;
 }
 
 }  // namespace
