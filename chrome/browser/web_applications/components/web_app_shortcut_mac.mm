@@ -257,9 +257,11 @@ std::set<std::string> GetFileHandlerExtensionsWithoutDot(
 }
 
 bool AppShimCreationDisabledForTest() {
-  // Disable app shims in tests because shims created in ~/Applications will not
-  // be cleaned up.
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType);
+  // Disable app shims in tests if the shortcut folder is not set.
+  // Because shims created in ~/Applications will not be cleaned up.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kTestType) &&
+         !web_app::GetShortcutOverrideForTesting();
 }
 
 base::FilePath GetWritableApplicationsDirectory() {
@@ -487,11 +489,6 @@ base::FilePath GetLocalizableAppShortcutsSubdirName() {
     default:
       return base::FilePath(kChromeAppDirName);
   }
-}
-
-base::FilePath* GetOverriddenApplicationsFolder() {
-  static base::NoDestructor<base::FilePath> overridden_path;
-  return overridden_path.get();
 }
 
 // Creates a canvas the same size as |overlay|, copies the appropriate
@@ -756,18 +753,14 @@ bool AppShimLaunchDisabled() {
 }
 
 base::FilePath GetChromeAppsFolder() {
-  if (!GetOverriddenApplicationsFolder()->empty())
-    return *GetOverriddenApplicationsFolder();
+  if (web_app::GetShortcutOverrideForTesting())
+    return web_app::GetShortcutOverrideForTesting()->chrome_apps_folder;
 
   base::FilePath path = GetWritableApplicationsDirectory();
   if (path.empty())
     return path;
 
   return path.Append(GetLocalizableAppShortcutsSubdirName());
-}
-
-void SetChromeAppsFolderForTesting(const base::FilePath& path) {
-  *GetOverriddenApplicationsFolder() = path;
 }
 
 // static

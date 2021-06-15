@@ -28,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
@@ -147,7 +148,9 @@ class WebAppShortcutCreatorTest : public testing::Test {
     user_data_dir_ = base::MakeAbsoluteFilePath(user_data_dir_);
     app_data_dir_ = base::MakeAbsoluteFilePath(app_data_dir_);
 
-    SetChromeAppsFolderForTesting(destination_dir_);
+    ShortcutOverrideForTesting shortcut_override;
+    shortcut_override.chrome_apps_folder = destination_dir_;
+    web_app::SetShortcutOverrideForTesting(shortcut_override);
 
     info_ = GetShortcutInfo();
     fallback_shim_base_name_ =
@@ -163,7 +166,7 @@ class WebAppShortcutCreatorTest : public testing::Test {
 
   void TearDown() override {
     WebAppAutoLoginUtil::SetInstanceForTesting(nullptr);
-    SetChromeAppsFolderForTesting(base::FilePath());
+    web_app::SetShortcutOverrideForTesting(absl::nullopt);
     testing::Test::TearDown();
   }
 
@@ -637,7 +640,9 @@ TEST_F(WebAppShortcutCreatorTest, RunShortcut) {
 TEST_F(WebAppShortcutCreatorTest, CreateFailure) {
   base::FilePath non_existent_path =
       destination_dir_.Append("not-existent").Append("name.app");
-  SetChromeAppsFolderForTesting(non_existent_path);
+  ShortcutOverrideForTesting shortcut_override;
+  shortcut_override.chrome_apps_folder = non_existent_path;
+  web_app::SetShortcutOverrideForTesting(shortcut_override);
 
   NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
                                                        info_.get());

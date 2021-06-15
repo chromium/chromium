@@ -598,28 +598,39 @@ std::vector<base::FilePath> GetShortcutPaths(
     const ShortcutLocations& creation_locations) {
   // Shortcut paths under which to create shortcuts.
   std::vector<base::FilePath> shortcut_paths;
+  // if there is no ShortcutOverrirdeForTesting, set it to empty.
+  ShortcutOverrideForTesting testing_shortcuts =
+      web_app::GetShortcutOverrideForTesting().value_or(
+          ShortcutOverrideForTesting({}));
   // Locations to add to shortcut_paths.
   struct {
     bool use_this_location;
     ShellUtil::ShortcutLocation location_id;
+    base::FilePath test_path;
   } locations[] = {
-      {creation_locations.on_desktop, ShellUtil::SHORTCUT_LOCATION_DESKTOP},
+      {creation_locations.on_desktop, ShellUtil::SHORTCUT_LOCATION_DESKTOP,
+       testing_shortcuts.desktop},
       {creation_locations.applications_menu_location ==
            APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
-       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR},
+       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
+       testing_shortcuts.application_menu},
       {// For Windows 7 and 8, |in_quick_launch_bar| indicates that we are
        // pinning to taskbar. This needs to be handled by callers.
        creation_locations.in_quick_launch_bar &&
            base::win::CanPinShortcutToTaskbar(),
-       ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH},
-      {creation_locations.in_startup, ShellUtil::SHORTCUT_LOCATION_STARTUP}};
+       ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH,
+       testing_shortcuts.quick_launch},
+      {creation_locations.in_startup, ShellUtil::SHORTCUT_LOCATION_STARTUP,
+       testing_shortcuts.startup}};
 
   // Populate shortcut_paths.
   for (auto location : locations) {
     if (location.use_this_location) {
       base::FilePath path;
-      if (!ShellUtil::GetShortcutPath(location.location_id,
-                                      ShellUtil::CURRENT_USER, &path)) {
+      if (!location.test_path.empty()) {
+        path = location.test_path;
+      } else if (!ShellUtil::GetShortcutPath(location.location_id,
+                                             ShellUtil::CURRENT_USER, &path)) {
         NOTREACHED();
         continue;
       }
