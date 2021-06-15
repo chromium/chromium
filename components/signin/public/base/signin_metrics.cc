@@ -1040,4 +1040,12 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
   }
 }
 
+#if defined(OS_IOS)
+void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Signin.AccountConsistencyPromoAction", static_cast<int>(action),
+      static_cast<int>(AccountConsistencyPromoAction::MAX));
+}
+#endif  // defined(OS_IOS)
+
 }  // namespace signin_metrics

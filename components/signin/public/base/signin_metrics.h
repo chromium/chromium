@@ -213,7 +213,7 @@ enum class PromoAction : int {
   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT
 };
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS)
 // This class is used to record user action that was taken after
 // receiving the header from Gaia in the web sign-in flow.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
@@ -284,7 +284,7 @@ enum class AccountConsistencyPromoAfterDismissal {
 
   kMaxValue = kSignedInOnWebWithOtherAccount,
 };
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
 // Enum values which enumerates all reasons to start sign in process.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -547,6 +547,11 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);
 void RecordSigninImpressionWithAccountUserActionForAccessPoint(
     AccessPoint access_point,
     bool with_account);
+
+#if defined(OS_IOS)
+// Records |Signin.AccountConsistencyPromoAction| histogram.
+void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action);
+#endif  // defined(OS_IOS)
 
 }  // namespace signin_metrics
 
