@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -219,10 +220,9 @@ ResizeToggleMenu::MakeBubbleDelegateView(
   tablet_button_ =
       add_menu_button(ResizeCompatMode::kTablet, ash::kSystemMenuTabletIcon,
                       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
-  // TODO(b/185720091): Replace resizable icon.
-  resizable_button_ = add_menu_button(
-      ResizeCompatMode::kResizable, ash::kSystemMenuComputerIcon,
-      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
+  resizable_button_ =
+      add_menu_button(ResizeCompatMode::kResizable, kResizableIcon,
+                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
 
   UpdateSelectedButton();
 

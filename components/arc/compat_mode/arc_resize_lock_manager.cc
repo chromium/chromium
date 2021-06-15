@@ -17,6 +17,7 @@
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 #include "components/arc/compat_mode/resize_util.h"
+#include "components/arc/vector_icons/vector_icons.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -192,7 +193,7 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
     case ResizeCompatMode::kResizable:
       compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
                                    views::FrameCaptionButton::Animate::kNo,
-                                   ash::kSystemMenuComputerIcon);
+                                   kResizableIcon);
       compat_mode_button->SetText(l10n_util::GetStringUTF16(
           IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE));
       break;
