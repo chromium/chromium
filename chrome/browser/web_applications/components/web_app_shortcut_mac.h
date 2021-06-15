@@ -57,6 +57,9 @@ bool AppShimLaunchDisabled();
 // Returns a path to the Chrome Apps folder in ~/Applications.
 base::FilePath GetChromeAppsFolder();
 
+// Testing method to override calls to GetChromeAppsFolder.
+void SetChromeAppsFolderForTesting(const base::FilePath& path);
+
 // Remove the specified app from the OS login item list.
 void RemoveAppShimFromLoginItems(const std::string& app_id);
 
