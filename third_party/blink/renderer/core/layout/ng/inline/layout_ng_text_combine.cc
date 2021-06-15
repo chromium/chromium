@@ -37,6 +37,11 @@ LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
   return layout_object;
 }
 
+String LayoutNGTextCombine::GetTextContent() const {
+  DCHECK(!NeedsCollectInlines() && HasNGInlineNodeData()) << this;
+  return GetNGInlineNodeData()->ItemsData(false).text_content;
+}
+
 // static
 void LayoutNGTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
   // See also |StyleAdjuster::AdjustStyleForTextCombine()|.

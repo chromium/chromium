@@ -21,6 +21,8 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   LayoutNGTextCombine();
   ~LayoutNGTextCombine() override;
 
+  String GetTextContent() const;
+
   static void AssertStyleIsValid(const ComputedStyle& style);
 
   // Create anonymous wrapper having |text_child|.

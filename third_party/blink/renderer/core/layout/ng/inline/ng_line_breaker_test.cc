@@ -165,6 +165,91 @@ TEST_F(NGLineBreakerTest, SingleNode) {
   EXPECT_EQ("789", lines[2].first);
 }
 
+// For "text-combine-upright-break-inside-001a.html"
+TEST_F(NGLineBreakerTest, TextCombineCloseTag) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node = CreateInlineNode(
+      "<div id=container>"
+      "abc<tcy style='white-space:pre'>XYZ</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(1u, lines.size());
+  // |NGLineBreaker::auto_wrap_| doesn't care about CSS "white-space" property
+  // in the element with "text-combine-upright:all".
+  //  NGInlineItemResult
+  //    [0] kText 0-3 can_break_after_=false
+  //    [1] kOpenTag 3-3 can_break_after_=false
+  //    [2] kStartTag 3-3 can_break_after _= fasle
+  //    [3] kAtomicInline 3-4 can_break_after _= false
+  //    [4] kCloseTag 4-4 can_break_after _= false
+  EXPECT_EQ(String(u"abc\uFFFCdef"), lines[0].first);
+}
+
+TEST_F(NGLineBreakerTest, TextCombineBreak) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node = CreateInlineNode("<div id=container>abc<tcy>-</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(2u, lines.size());
+  // NGLineBreaker attempts to break line for "abc-def".
+  EXPECT_EQ(String(u"abc\uFFFC"), lines[0].first);
+  EXPECT_EQ(String(u"def"), lines[1].first);
+}
+
+TEST_F(NGLineBreakerTest, TextCombineNoBreak) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node =
+      CreateInlineNode("<div id=container>abc<tcy>XYZ</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(1u, lines.size());
+  // NGLineBreaker attempts to break line for "abcXYZdef".
+  EXPECT_EQ(String(u"abc\uFFFCdef"), lines[0].first);
+}
+
+TEST_F(NGLineBreakerTest, TextCombineNoBreakWithSpace) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "#container {"
+      "  font: 10px/2 Ahem;"
+      "  writing-mode: vertical-lr;"
+      "}"
+      "tcy { text-combine-upright: all }");
+  NGInlineNode node =
+      CreateInlineNode("<div id=container>abc<tcy>X Z</tcy>def");
+
+  Vector<std::pair<String, unsigned>> lines;
+  lines = BreakLines(node, LayoutUnit(30));
+  EXPECT_EQ(1u, lines.size());
+  // NGLineBreaker checks whether can break after "Z" in "abcX Zdef".
+  EXPECT_EQ(String(u"abc\uFFFCdef"), lines[0].first);
+}
+
 TEST_F(NGLineBreakerTest, OverflowWord) {
   LoadAhem();
   NGInlineNode node = CreateInlineNode(R"HTML(

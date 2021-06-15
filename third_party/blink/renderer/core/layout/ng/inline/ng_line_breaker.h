@@ -253,6 +253,9 @@ class CORE_EXPORT NGLineBreaker {
   // True if node_ is an SVG <text>.
   const bool is_svg_text_;
 
+  // True if node_ is LayoutNGTextCombine.
+  const bool is_text_combine_;
+
   // True if this line is the "first formatted line".
   // https://www.w3.org/TR/CSS22/selector.html#first-formatted-line
   bool is_first_formatted_line_ = false;

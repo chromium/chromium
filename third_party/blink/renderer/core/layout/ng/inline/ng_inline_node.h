@@ -137,14 +137,15 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
 
   static bool NeedsShapingForTesting(const NGInlineItem& item);
 
+  // Prepare inline and text content for layout. Must be called before
+  // calling the Layout method.
+  void PrepareLayoutIfNeeded() const;
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(NGInlineNodeTest, SegmentBidiChangeSetsNeedsLayout);
 
   bool IsPrepareLayoutFinished() const;
 
-  // Prepare inline and text content for layout. Must be called before
-  // calling the Layout method.
-  void PrepareLayoutIfNeeded() const;
   void PrepareLayout(std::unique_ptr<NGInlineNodeData> previous_data) const;
 
   void CollectInlines(NGInlineNodeData*,

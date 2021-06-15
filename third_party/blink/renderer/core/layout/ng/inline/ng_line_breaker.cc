@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -169,6 +170,12 @@ float ComputeWordWidth(const ShapeResult& shape_result,
                                          : start_position - end_position;
 }
 
+inline LayoutNGTextCombine* MayBeTextCombine(const NGInlineItem* item) {
+  if (!item)
+    return nullptr;
+  return DynamicTo<LayoutNGTextCombine>(item->GetLayoutObject());
+}
+
 }  // namespace
 
 inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
@@ -181,7 +188,12 @@ inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
 
 inline bool NGLineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
   //  TODO(crbug.com/366553): SVG <text> should not be auto_wrap_ for now.
-  return !is_svg_text_ && style.AutoWrap();
+  if (UNLIKELY(is_svg_text_))
+    return false;
+  // Combine text should not cause line break.
+  if (UNLIKELY(is_text_combine_))
+    return false;
+  return style.AutoWrap();
 }
 
 LayoutUnit NGLineBreaker::ComputeAvailableWidth() const {
@@ -208,6 +220,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       node_(node),
       mode_(mode),
       is_svg_text_(node.IsSvgText()),
+      is_text_combine_(node.IsTextCombine()),
       is_first_formatted_line_((!break_token || (!break_token->ItemIndex() &&
                                                  !break_token->TextOffset())) &&
                                node.CanContainFirstFormattedLine()),
@@ -648,6 +661,8 @@ void NGLineBreaker::ComputeLineLocation(NGLineInfo* line_info) const {
 // Atomic inlines have break opportunities before and after, even when the
 // adjacent character is U+00A0 NO-BREAK SPACE character, except when sticky
 // images quirk is applied.
+// Note: We treat text combine as text content instead of atomic inline box[1].
+// [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
 bool NGLineBreaker::CanBreakAfterAtomicInline(const NGInlineItem& item) const {
   DCHECK_EQ(item.Type(), NGInlineItem::kAtomicInline);
   if (!auto_wrap_ || item.EndOffset() == Text().length())
@@ -659,8 +674,34 @@ bool NGLineBreaker::CanBreakAfterAtomicInline(const NGInlineItem& item) const {
   if (item.IsRubyRun())
     return break_iterator_.IsBreakable(item.EndOffset());
 
-  // TODO(yosin): Handle LayoutNGTextCombine
-  return true;
+  // Handles text combine
+  // See "fast/writing-mode/text-combine-line-break.html".
+  auto* const text_combine = MayBeTextCombine(&item);
+  if (LIKELY(!text_combine))
+    return true;
+
+  // Populate |text_content| with |item| and text content after |item|.
+  StringBuilder text_content;
+  NGInlineNode(text_combine).PrepareLayoutIfNeeded();
+  text_content.Append(text_combine->GetTextContent());
+  const auto text_combine_end_offset = text_content.length();
+  auto* const atomic_inline_item = TryGetAtomicInlineItemAfter(item);
+  if (auto* next_text_combine = MayBeTextCombine(atomic_inline_item)) {
+    // Note: In |NGLineBreakerMode::k{Min,Max}Content|, we've not laid
+    // out atomic line box yet.
+    NGInlineNode(next_text_combine).PrepareLayoutIfNeeded();
+    text_content.Append(next_text_combine->GetTextContent());
+  } else {
+    text_content.Append(StringView(Text(), item.EndOffset(),
+                                   Text().length() - item.EndOffset()));
+  }
+
+  DCHECK_EQ(Text(), break_iterator_.GetString());
+  LazyLineBreakIterator break_iterator(text_content.ToString(),
+                                       break_iterator_.Locale(),
+                                       break_iterator_.BreakType());
+  break_iterator.SetBreakSpace(break_iterator_.BreakSpace());
+  return break_iterator.IsBreakable(text_combine_end_offset);
 }
 
 bool NGLineBreaker::CanBreakAfter(const NGInlineItem& item) const {
@@ -693,9 +734,31 @@ bool NGLineBreaker::CanBreakAfter(const NGInlineItem& item) const {
     return can_break_after;
   }
 
-  // TODO(yosin): Handle LayoutNGTextCombine
+  // Handles text combine as its text contents followed by |item|.
   // See "fast/writing-mode/text-combine-line-break.html".
-  return true;
+  auto* const text_combine = MayBeTextCombine(atomic_inline_item);
+  if (LIKELY(!text_combine))
+    return true;
+
+  // Populate |text_content| with |item| and |text_combine|.
+  // Following test reach here:
+  //  * fast/writing-mode/text-combine-compress.html
+  //  * virtual/text-antialias/international/text-combine-image-test.html
+  //  * virtual/text-antialias/international/text-combine-text-transform.html
+  StringBuilder text_content;
+  text_content.Append(StringView(Text(), item.StartOffset(), item.Length()));
+  const auto item_end_offset = text_content.length();
+  // Note: In |NGLineBreakerMode::k{Min,Max}Content|, we've not laid out
+  // atomic line box yet.
+  NGInlineNode(text_combine).PrepareLayoutIfNeeded();
+  text_content.Append(text_combine->GetTextContent());
+
+  DCHECK_EQ(Text(), break_iterator_.GetString());
+  LazyLineBreakIterator break_iterator(text_content.ToString(),
+                                       break_iterator_.Locale(),
+                                       break_iterator_.BreakType());
+  break_iterator.SetBreakSpace(break_iterator_.BreakSpace());
+  return break_iterator.IsBreakable(item_end_offset);
 }
 
 bool NGLineBreaker::MayBeAtomicInline(wtf_size_t offset) const {
@@ -1096,6 +1159,7 @@ bool NGLineBreaker::BreakTextAtPreviousBreakOpportunity(
   const NGInlineItem& item = *item_result->item;
   DCHECK_EQ(item.Type(), NGInlineItem::kText);
   DCHECK(item.Style() && item.Style()->AutoWrap());
+  DCHECK(!is_text_combine_);
 
   // TODO(jfernandez): Should we use the non-hangable-run-end instead ?
   unsigned break_opportunity = break_iterator_.PreviousBreakOpportunity(
@@ -1377,6 +1441,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     state_ = LineBreakState::kDone;
     return;
   }
+  DCHECK(!is_text_combine_);
 
   if (style.CollapseWhiteSpace() &&
       !Character::IsOtherSpaceSeparator(text[offset_])) {
@@ -2082,6 +2147,13 @@ void NGLineBreaker::HandleCloseTag(const NGInlineItem& item,
   const NGInlineItemResults& item_results = line_info->Results();
   if (item_results.size() >= 2) {
     NGInlineItemResult* last = std::prev(item_result);
+    if (UNLIKELY(IsA<LayoutNGTextCombine>(last->item->GetLayoutObject()))) {
+      // |can_break_after| for close tag should be as same as text-combine box.
+      // See "text-combine-upright-break-inside-001a.html"
+      // e.g. A<tcy style="white-space: pre">x y</tcy>B
+      item_result->can_break_after = last->can_break_after;
+      return;
+    }
     if (was_auto_wrap || last->can_break_after) {
       item_result->can_break_after =
           last->can_break_after ||
@@ -2503,6 +2575,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   auto_wrap_ = ShouldAutoWrap(style);
 
   if (auto_wrap_) {
+    DCHECK(!is_text_combine_);
     LineBreakType line_break_type;
     EWordBreak word_break = style.WordBreak();
     switch (word_break) {
