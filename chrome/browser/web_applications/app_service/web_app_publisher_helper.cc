@@ -24,6 +24,8 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -42,6 +44,7 @@
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/sessions/core/session_id.h"
@@ -228,6 +231,15 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   // Get the intent filters for PWAs.
   apps_util::PopulateWebAppIntentFilters(*web_app, app->intent_filters);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (web_app->chromeos_data().has_value()) {
+    bool is_disabled = web_app->chromeos_data()->is_disabled;
+    if (is_disabled) {
+      UpdateAppDisabledMode(app);
+    }
+  }
+#endif
 
   return app;
 }
@@ -665,6 +677,57 @@ void WebAppPublisherHelper::OnWebAppExperimentalTabbedWindowModeChanged(
   PublishWindowModeUpdate(app_id, display_mode, enabled);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// If is_disabled is set, the app backed by |app_id| is published with readiness
+// kDisabledByPolicy, otherwise it's published with readiness kReady.
+void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
+                                                         bool is_disabled) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return;
+  }
+  // Sometimes OnWebAppDisabledStateChanged is called but
+  // WebApp::chromos_data().is_disabled isn't updated yet, that's why here we
+  // depend only on |is_disabled|.
+  apps::mojom::Readiness readiness =
+      is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
+                  : apps::mojom::Readiness::kReady;
+  apps::mojom::AppPtr app = ConvertWebApp(web_app, readiness);
+  app->icon_key = MakeIconKey(web_app, is_disabled);
+
+  // If the disable mode is hidden, update the visibility of the new disabled
+  // app.
+  if (is_disabled && provider_->policy_manager().IsDisabledAppsModeHidden()) {
+    UpdateAppDisabledMode(app);
+  }
+
+  delegate_->PublishWebApp(std::move(app));
+}
+
+void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
+  std::vector<apps::mojom::AppPtr> apps;
+  std::vector<AppId> app_ids = registrar().GetAppIds();
+  for (const auto& id : app_ids) {
+    // We only update visibility of disabled apps in this method. When enabling
+    // previously disabled app, OnWebAppDisabledStateChanged() method will be
+    // called and this method will update visibility and readiness of the newly
+    // enabled app.
+    if (IsWebAppInDisabledList(id)) {
+      const WebApp* web_app = GetWebApp(id);
+      if (!web_app || !Accepts(id)) {
+        continue;
+      }
+      apps::mojom::AppPtr app = apps::mojom::App::New();
+      app->app_type = app_type();
+      app->app_id = web_app->app_id();
+      UpdateAppDisabledMode(app);
+      apps.push_back(std::move(app));
+    }
+  }
+  delegate_->PublishWebApps(std::move(apps));
+}
+#endif
+
 void WebAppPublisherHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -689,7 +752,8 @@ void WebAppPublisherHelper::OnContentSettingChanged(
 
 void WebAppPublisherHelper::Init() {
   // Allow for web app migration tests.
-  if (!provider_ || !provider_->registrar().AsWebAppRegistrar()) {
+  if (!AreWebAppsEnabled(profile_) ||
+      !provider_->registrar().AsWebAppRegistrar()) {
     return;
   }
 
@@ -774,5 +838,42 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
       std::move(intent));
   return LaunchAppWithParams(std::move(params));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
+  if (provider_->policy_manager().IsDisabledAppsModeHidden()) {
+    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+    app->show_in_search = apps::mojom::OptionalBool::kFalse;
+    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
+    return;
+  }
+  app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
+  app->show_in_search = apps::mojom::OptionalBool::kTrue;
+  app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto system_app_type =
+      provider_->system_web_app_manager().GetSystemAppTypeForAppId(app->app_id);
+  if (system_app_type.has_value()) {
+    app->show_in_launcher =
+        provider_->system_web_app_manager().ShouldShowInLauncher(
+            system_app_type.value())
+            ? apps::mojom::OptionalBool::kTrue
+            : apps::mojom::OptionalBool::kFalse;
+    app->show_in_search =
+        provider_->system_web_app_manager().ShouldShowInSearch(
+            system_app_type.value())
+            ? apps::mojom::OptionalBool::kTrue
+            : apps::mojom::OptionalBool::kFalse;
+  }
+#endif
+}
+
+bool WebAppPublisherHelper::IsWebAppInDisabledList(
+    const std::string& app_id) const {
+  return base::Contains(provider_->policy_manager().GetDisabledWebAppsIds(),
+                        app_id);
+}
+#endif
 
 }  // namespace web_app

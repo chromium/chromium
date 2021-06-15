@@ -98,12 +98,6 @@ class WebAppsChromeOs : public WebAppsBase,
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
-  void OnWebAppDisabledStateChanged(const AppId& app_id,
-                                    bool is_disabled) override;
-  void OnWebAppsDisabledModeChanged() override;
-
-  // Updates app visibility.
-  void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
 
   // ArcAppListPrefs::Observer overrides.
   void OnPackageInstalled(
@@ -160,9 +154,6 @@ class WebAppsChromeOs : public WebAppsBase,
   apps::mojom::OptionalBool ShouldShowBadge(
       const std::string& app_id,
       apps::mojom::OptionalBool has_notification_indicator);
-
-  // Checks whether the |app_id| is in the disabled list.
-  bool IsWebAppInDisabledList(const std::string& app_id) const;
 
   apps::InstanceRegistry* instance_registry_;
 

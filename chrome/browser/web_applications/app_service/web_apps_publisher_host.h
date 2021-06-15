@@ -108,6 +108,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void UnpauseApp(const std::string& app_id) override;
 
   // WebAppPublisherHelper::Delegate:
+  void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;
   void PublishWebApp(apps::mojom::AppPtr app) override;
 
   // AppRegistrarObserver:

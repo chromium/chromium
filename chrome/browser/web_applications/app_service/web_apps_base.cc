@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/app_service/web_apps_base.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -179,6 +178,22 @@ void WebAppsBase::SetPermission(const std::string& app_id,
 
 void WebAppsBase::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
+}
+
+void WebAppsBase::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
+  const bool should_notify_initialized = false;
+  if (subscribers_.size() == 1) {
+    auto& subscriber = *subscribers_.begin();
+    subscriber->OnApps(std::move(apps), app_type(), should_notify_initialized);
+    return;
+  }
+  for (auto& subscriber : subscribers_) {
+    std::vector<apps::mojom::AppPtr> cloned_apps;
+    for (const auto& app : apps)
+      cloned_apps.push_back(app.Clone());
+    subscriber->OnApps(std::move(cloned_apps), app_type(),
+                       should_notify_initialized);
+  }
 }
 
 void WebAppsBase::PublishWebApp(apps::mojom::AppPtr app) {
