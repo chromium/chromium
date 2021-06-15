@@ -16,3 +16,5 @@ Ping guterman@google.com if you would like to be added to the pilot/beta. Then
 one can trigger a quick run by running either `git cl try -q` or
 `git cl upload -q`. This sets both the Quick-Run and Commit-Queue labels to 1,
 which starts a Quick Run.
+
+Unlike Dry Runs, Quick Runs can't be reused for CQ+2.
