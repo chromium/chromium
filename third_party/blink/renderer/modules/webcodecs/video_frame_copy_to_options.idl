@@ -4,10 +4,10 @@
 
 // https://github.com/WICG/web-codecs
 
-dictionary VideoFrameReadIntoOptions {
-  // The region to read. If unspecified, the visible region will be used. The
-  // coded region can be easily specified by passing frame.codedRegion.
-  VideoFrameRegion region;
+dictionary VideoFrameCopyToOptions {
+  // The area to copy. If unspecified, the visible rect will be used. The coded
+  // rect can be specified by passing frame.codedRect.
+  VideoFrameRect rect;
 
   // The layout of each plane in the buffer. This allows the offset and stride
   // of each plane to be specified. If unspecified, the planes will be tightly

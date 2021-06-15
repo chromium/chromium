@@ -15,11 +15,7 @@
   constructor(sequence<PlaneInit> planes,
               VideoFramePlaneInit init);
 
-  // TODO(sandersd): It's not clear whether it's better to use undefined, or a
-  // special enum value to mean 'opaque format'. Undefined does result in
-  // shorter branch conditions.
   readonly attribute VideoPixelFormat? format;
-  readonly attribute FrozenArray<Plane>? planes;
 
   // Presentation timestamp, in microseconds.
   readonly attribute long long? timestamp;
@@ -32,35 +28,42 @@
   readonly attribute unsigned long codedHeight;
 
   // Convenience accessor, origin is always (0, 0).
-  readonly attribute VideoFrameRegion codedRegion;
+  readonly attribute VideoFrameRect codedRect;
 
-  // Region of this frame's pixel data that is not padding.
-  readonly attribute VideoFrameRegion visibleRegion;
+  // Area of this frame's pixel data that is not padding.
+  readonly attribute VideoFrameRect visibleRect;
 
-  // Display aspect ratio of visible region.
+  // Display aspect ratio of visible rect.
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
 
-  // Returns the minimum size (in bytes) of a buffer that readInto() could
-  // read this frame into with the given options.
+  // Returns the minimum size (in bytes) of a buffer that copyTo() could
+  // copy this frame into with the given options.
   [RaisesException] unsigned long allocationSize(
-      optional VideoFrameReadIntoOptions options = {});
+      optional VideoFrameCopyToOptions options = {});
 
-  // Read the planes of this frame into |destination| according to |options|.
+  // Copy the planes of this frame into |destination| according to |options|.
   // The format of the data is the same as this frame's |format|.
   [CallWith=ScriptState, RaisesException]
-  Promise<sequence<PlaneLayout>> readInto(
-      BufferSource destination,
-      optional VideoFrameReadIntoOptions options = {});
+  Promise<sequence<PlaneLayout>> copyTo(
+      [AllowShared] BufferSource destination,
+      optional VideoFrameCopyToOptions options = {});
 
   // Creates a copy of this VideoFrame, which needs to be independently closed.
   [RaisesException] VideoFrame clone();
 
   void close();
 
-  // DEPRECATED: Use visibleRegion.
+  // DEPRECATED: Use copyTo().
+  [CallWith=ExecutionContext] readonly attribute FrozenArray<Plane>? planes;
+
+  // DEPRECATED: Use visibleRect.
   [CallWith=ExecutionContext] readonly attribute unsigned long cropLeft;
   [CallWith=ExecutionContext] readonly attribute unsigned long cropTop;
   [CallWith=ExecutionContext] readonly attribute unsigned long cropWidth;
   [CallWith=ExecutionContext] readonly attribute unsigned long cropHeight;
+
+  // DEPRECATED: Use codedRect/visibleRect.
+  [CallWith=ExecutionContext] readonly attribute VideoFrameRect codedRegion;
+  [CallWith=ExecutionContext] readonly attribute VideoFrameRect visibleRegion;
 };

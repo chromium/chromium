@@ -12,8 +12,8 @@ async function encode_decode_test(codec, acc, avc_format) {
 
   let decoder = new VideoDecoder({
     output(frame) {
-      assert_equals(frame.visibleRegion.width, w, "visibleRegion.width");
-      assert_equals(frame.visibleRegion.height, h, "visibleRegion.height");
+      assert_equals(frame.visibleRect.width, w, "visibleRect.width");
+      assert_equals(frame.visibleRect.height, h, "visibleRect.height");
       assert_equals(frame.timestamp, next_ts++, "timestamp");
       frames_decoded++;
       frame.close();

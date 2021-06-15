@@ -4,10 +4,9 @@
 
 // https://github.com/WICG/web-codecs
 
-// Specifies a rectangular region of a VideoFrame. Valid regions have nonzero
-// size and are contained in the frame's coded region.
-dictionary VideoFrameRegion {
-  // TODO(sandersd): Should we make the origin optional and assume (0, 0)?
+// Specifies a rectangular region of a VideoFrame. Valid rects have positive
+// area and are contained within the frame's coded size.
+dictionary VideoFrameRect {
   required [EnforceRange] unsigned long left;
   required [EnforceRange] unsigned long top;
   required [EnforceRange] unsigned long width;

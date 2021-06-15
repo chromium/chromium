@@ -20,10 +20,10 @@ test(t => {
 
   assert_equals(frame.timestamp, clone.timestamp);
   assert_equals(frame.duration, clone.duration);
-  assert_equals(frame.visibleRegion.left, clone.visibleRegion.left);
-  assert_equals(frame.visibleRegion.top, clone.visibleRegion.top);
-  assert_equals(frame.visibleRegion.width, clone.visibleRegion.width);
-  assert_equals(frame.visibleRegion.height, clone.visibleRegion.height);
+  assert_equals(frame.visibleRect.left, clone.visibleRect.left);
+  assert_equals(frame.visibleRect.top, clone.visibleRect.top);
+  assert_equals(frame.visibleRect.width, clone.visibleRect.width);
+  assert_equals(frame.visibleRect.height, clone.visibleRect.height);
 
   frame.close();
   clone.close();

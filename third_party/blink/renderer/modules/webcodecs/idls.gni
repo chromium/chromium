@@ -51,10 +51,10 @@ modules_dictionary_idl_files = [
   "video_encoder_config.idl",
   "video_encoder_encode_options.idl",
   "video_encoder_init.idl",
+  "video_frame_copy_to_options.idl",
   "video_frame_init.idl",
   "video_frame_plane_init.idl",
-  "video_frame_read_into_options.idl",
-  "video_frame_region.idl",
+  "video_frame_rect.idl",
 ]
 
 modules_typedefs_enums_only_idl_files = [

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_plane_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -29,7 +30,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
-#include "third_party/blink/renderer/modules/webcodecs/parsed_read_into_options.h"
+#include "third_party/blink/renderer/modules/webcodecs/parsed_copy_to_options.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -451,7 +452,13 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   uint32_t visible_top = 0;
   uint32_t visible_width = coded_width;
   uint32_t visible_height = coded_height;
-  if (init->hasVisibleRegion()) {
+  if (init->hasVisibleRect()) {
+    visible_left = init->visibleRect()->left();
+    visible_top = init->visibleRect()->top();
+    visible_width = init->visibleRect()->width();
+    visible_height = init->visibleRect()->height();
+  } else if (init->hasVisibleRegion()) {
+    WebCodecsLogger::From(*execution_context).LogVisibleRegionDeprecation();
     visible_left = init->visibleRegion()->left();
     visible_top = init->visibleRegion()->top();
     visible_width = init->visibleRegion()->width();
@@ -497,7 +504,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       visible_top + visible_height > coded_height) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kConstraintError,
-        String::Format("Invalid visible region {left: %u, top: %u, width: %u, "
+        String::Format("Invalid visible rect {left: %u, top: %u, width: %u, "
                        "height: %u} for coded size (%u, %u).",
                        visible_left, visible_top, visible_width, visible_height,
                        coded_width, coded_height));
@@ -680,7 +687,9 @@ String VideoFrame::format() const {
   }
 }
 
-absl::optional<HeapVector<Member<Plane>>> VideoFrame::planes() {
+absl::optional<HeapVector<Member<Plane>>> VideoFrame::planes(
+    ExecutionContext* execution_context) {
+  WebCodecsLogger::From(*execution_context).LogPlanesDeprecation();
   // Verify that |this| has not been invalidated, and that the format is
   // supported.
   auto local_frame = handle_->frame();
@@ -712,36 +721,48 @@ uint32_t VideoFrame::codedHeight() const {
   return local_frame->coded_size().height();
 }
 
-VideoFrameRegion* VideoFrame::codedRegion() const {
-  auto local_frame = handle_->frame();
-  auto* region = MakeGarbageCollected<VideoFrameRegion>();
-  region->setLeft(0);
-  region->setTop(0);
-  if (local_frame) {
-    region->setWidth(local_frame->coded_size().width());
-    region->setHeight(local_frame->coded_size().height());
-  } else {
-    region->setWidth(0);
-    region->setHeight(0);
-  }
-  return region;
+VideoFrameRect* VideoFrame::codedRegion(
+    ExecutionContext* execution_context) const {
+  WebCodecsLogger::From(*execution_context).LogCodedRegionDeprecation();
+  return codedRect();
 }
 
-VideoFrameRegion* VideoFrame::visibleRegion() const {
+VideoFrameRect* VideoFrame::codedRect() const {
   auto local_frame = handle_->frame();
-  auto* region = MakeGarbageCollected<VideoFrameRegion>();
+  auto* rect = MakeGarbageCollected<VideoFrameRect>();
+  rect->setLeft(0);
+  rect->setTop(0);
   if (local_frame) {
-    region->setLeft(local_frame->visible_rect().x());
-    region->setTop(local_frame->visible_rect().y());
-    region->setWidth(local_frame->visible_rect().width());
-    region->setHeight(local_frame->visible_rect().height());
+    rect->setWidth(local_frame->coded_size().width());
+    rect->setHeight(local_frame->coded_size().height());
   } else {
-    region->setLeft(0);
-    region->setTop(0);
-    region->setWidth(0);
-    region->setHeight(0);
+    rect->setWidth(0);
+    rect->setHeight(0);
   }
-  return region;
+  return rect;
+}
+
+VideoFrameRect* VideoFrame::visibleRegion(
+    ExecutionContext* execution_context) const {
+  WebCodecsLogger::From(*execution_context).LogVisibleRegionDeprecation();
+  return visibleRect();
+}
+
+VideoFrameRect* VideoFrame::visibleRect() const {
+  auto local_frame = handle_->frame();
+  auto* rect = MakeGarbageCollected<VideoFrameRect>();
+  if (local_frame) {
+    rect->setLeft(local_frame->visible_rect().x());
+    rect->setTop(local_frame->visible_rect().y());
+    rect->setWidth(local_frame->visible_rect().width());
+    rect->setHeight(local_frame->visible_rect().height());
+  } else {
+    rect->setLeft(0);
+    rect->setTop(0);
+    rect->setWidth(0);
+    rect->setHeight(0);
+  }
+  return rect;
 }
 
 uint32_t VideoFrame::cropLeft(ExecutionContext* execution_context) const {
@@ -820,7 +841,7 @@ absl::optional<uint64_t> VideoFrame::duration() const {
   return local_frame->metadata().frame_duration->InMicroseconds();
 }
 
-uint32_t VideoFrame::allocationSize(VideoFrameReadIntoOptions* options,
+uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
                                     ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
   if (!local_frame)
@@ -835,19 +856,19 @@ uint32_t VideoFrame::allocationSize(VideoFrameReadIntoOptions* options,
     return 0;
   }
 
-  ParsedReadIntoOptions layout(options, local_frame->format(),
-                               local_frame->coded_size(),
-                               local_frame->visible_rect(), exception_state);
+  ParsedCopyToOptions layout(options, local_frame->format(),
+                             local_frame->coded_size(),
+                             local_frame->visible_rect(), exception_state);
   if (exception_state.HadException())
     return 0;
 
   return layout.min_buffer_size;
 }
 
-ScriptPromise VideoFrame::readInto(ScriptState* script_state,
-                                   const V8BufferSource* destination,
-                                   VideoFrameReadIntoOptions* options,
-                                   ExceptionState& exception_state) {
+ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
+                                 const V8BufferSource* destination,
+                                 VideoFrameCopyToOptions* options,
+                                 ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -859,14 +880,14 @@ ScriptPromise VideoFrame::readInto(ScriptState* script_state,
   if (!IsSupportedPlanarFormat(*local_frame)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "readInto() is not yet implemented when format is null.");
+        "copyTo() is not yet implemented when format is null.");
     return ScriptPromise();
   }
 
   // Compute layout.
-  ParsedReadIntoOptions layout(options, local_frame->format(),
-                               local_frame->coded_size(),
-                               local_frame->visible_rect(), exception_state);
+  ParsedCopyToOptions layout(options, local_frame->format(),
+                             local_frame->coded_size(),
+                             local_frame->visible_rect(), exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
 

@@ -60,12 +60,29 @@ void WebCodecsLogger::LogCropDeprecation() {
   LogDeprecation(
       Deprecation::kCrop,
       "cropTop, cropLeft, cropWidth, and cropHeight are deprecated; please "
-      "use visibleRegion.");
+      "use visibleRect.");
 }
 
 void WebCodecsLogger::LogPlaneInitSrcDeprecation() {
   LogDeprecation(Deprecation::kPlaneInitSrc,
                  "PlaneInit.src is deprecated, please use PlaneInit.data.");
+}
+
+void WebCodecsLogger::LogPlanesDeprecation() {
+  LogDeprecation(Deprecation::kPlaneInitSrc,
+                 "VideoFrame.planes is deprecated, please use "
+                 "VideoFrame.copyTo().");
+}
+
+void WebCodecsLogger::LogCodedRegionDeprecation() {
+  LogDeprecation(
+      Deprecation::kCodedRegion,
+      "VideoFrame.codedRegion is deprecated; please use VideoFrame.codedRect.");
+}
+
+void WebCodecsLogger::LogVisibleRegionDeprecation() {
+  LogDeprecation(Deprecation::kVisibleRegion,
+                 "visibleRegion is deprecated; please use visibleRect.");
 }
 
 void WebCodecsLogger::LogCloseErrors(TimerBase*) {

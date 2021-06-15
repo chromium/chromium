@@ -7,8 +7,8 @@ test(t => {
 
   assert_equals(frame.timestamp, 10, 'timestamp');
   assert_equals(frame.duration, null, 'duration');
-  assert_equals(frame.visibleRegion.width, 32, 'visibleRegion.width');
-  assert_equals(frame.visibleRegion.height, 16, 'visibleRegion.height');
+  assert_equals(frame.visibleRect.width, 32, 'visibleRect.width');
+  assert_equals(frame.visibleRect.height, 16, 'visibleRect.height');
   assert_equals(frame.displayWidth, 32, 'displayWidth');
   assert_equals(frame.displayHeight, 16, 'displayHeight');
 
@@ -26,8 +26,8 @@ test(t => {
   let image = makeImageBitmap(1, 1);
   let frame = new VideoFrame(image, {timestamp: 10});
 
-  assert_equals(frame.visibleRegion.width, 1, 'visibleRegion.width');
-  assert_equals(frame.visibleRegion.height, 1, 'visibleRegion.height');
+  assert_equals(frame.visibleRect.width, 1, 'visibleRect.width');
+  assert_equals(frame.visibleRect.height, 1, 'visibleRect.height');
   assert_equals(frame.displayWidth, 1, 'displayWidth');
   assert_equals(frame.displayHeight, 1, 'displayHeight');
 
@@ -145,31 +145,31 @@ test(t => {
                            timestamp: 1234,
                            codedWidth: 4,
                            codedHeight: 2,
-                           visibleRegion: {left: 100, top: 100, width: 1,
-                                           height: 1}
+                           visibleRect: {left: 100, top: 100, width: 1,
+                                         height: 1}
                          })},
       'invalid visible left/right');
   assert_throws_dom(
       'ConstraintError',
       () => {constructFrame(
           {timestamp: 1234, codedWidth: 4, codedHeight: 2,
-           visibleRegion: {left: 0, top: 0, width: 0, height: 2}})},
+           visibleRect: {left: 0, top: 0, width: 0, height: 2}})},
       'invalid visible width');
   assert_throws_dom(
       'ConstraintError',
       () => {constructFrame(
           {timestamp: 1234, codedWidth: 4, codedHeight: 2,
-           visibleRegion: {left: 0, top: 0, width: 2, height: 0}})},
+           visibleRect: {left: 0, top: 0, width: 2, height: 0}})},
       'invalid visible height');
   assert_throws_js(
       TypeError,
       () => constructFrame({timestamp: 1234,
                             codedWidth: 4,
                             codedHeight: 2,
-                            visibleRegion: {left: 0,
-                                            top: 0,
-                                            width: -100,
-                                            height: -100}}),
+                            visibleRect: {left: 0,
+                                          top: 0,
+                                          width: -100,
+                                          height: -100}}),
       'invalid negative visible size');
   assert_throws_js(
       TypeError, () => {constructFrame({

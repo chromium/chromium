@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_PARSED_READ_INTO_OPTIONS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_PARSED_READ_INTO_OPTIONS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_PARSED_COPY_TO_OPTIONS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_PARSED_COPY_TO_OPTIONS_H_
 
 #include <stdint.h>
 
@@ -13,14 +13,14 @@
 namespace blink {
 
 class ExceptionState;
-class VideoFrameReadIntoOptions;
+class VideoFrameCopyToOptions;
 
-struct ParsedReadIntoOptions {
-  ParsedReadIntoOptions(VideoFrameReadIntoOptions* options,
-                        media::VideoPixelFormat format,
-                        const gfx::Size& coded_size,
-                        const gfx::Rect& visible_rect,
-                        ExceptionState&);
+struct ParsedCopyToOptions {
+  ParsedCopyToOptions(VideoFrameCopyToOptions* options,
+                      media::VideoPixelFormat format,
+                      const gfx::Size& coded_size,
+                      const gfx::Rect& visible_rect,
+                      ExceptionState&);
 
   struct Plane {
     // Offset in destination buffer.
@@ -47,4 +47,4 @@ struct ParsedReadIntoOptions {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_PARSED_READ_INTO_OPTIONS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_PARSED_COPY_TO_OPTIONS_H_

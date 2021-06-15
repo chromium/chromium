@@ -13,14 +13,17 @@ dictionary VideoFramePlaneInit {
   required [EnforceRange] unsigned long codedWidth;
   required [EnforceRange] unsigned long codedHeight;
 
-  VideoFrameRegion visibleRegion;
+  VideoFrameRect visibleRect;
 
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
 
-  // DEPRECATED: Use visibleRegion.
+  // DEPRECATED: Use visibleRect.
   [EnforceRange] unsigned long cropLeft;
   [EnforceRange] unsigned long cropTop;
   [EnforceRange] unsigned long cropWidth;
   [EnforceRange] unsigned long cropHeight;
+
+  // DEPRECATED: Use visibleRect.
+  VideoFrameRect visibleRegion;
 };

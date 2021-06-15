@@ -10,7 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_region.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
@@ -39,7 +39,7 @@ class ScriptPromise;
 class ScriptState;
 class VideoFrameInit;
 class VideoFramePlaneInit;
-class VideoFrameReadIntoOptions;
+class VideoFrameCopyToOptions;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -66,14 +66,21 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             ExceptionState&);
 
   String format() const;
-  absl::optional<HeapVector<Member<Plane>>> planes();
+
+  // DEPRECATED.
+  absl::optional<HeapVector<Member<Plane>>> planes(ExecutionContext*);
 
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
 
-  VideoFrameRegion* codedRegion() const;
-  VideoFrameRegion* visibleRegion() const;
+  VideoFrameRect* codedRect() const;
+  VideoFrameRect* visibleRect() const;
 
+  // DEPRECATED.
+  VideoFrameRect* codedRegion(ExecutionContext*) const;
+  VideoFrameRect* visibleRegion(ExecutionContext*) const;
+
+  // DEPRECATED.
   uint32_t cropLeft(ExecutionContext*) const;
   uint32_t cropTop(ExecutionContext*) const;
   uint32_t cropWidth(ExecutionContext*) const;
@@ -85,12 +92,12 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   absl::optional<int64_t> timestamp() const;
   absl::optional<uint64_t> duration() const;
 
-  uint32_t allocationSize(VideoFrameReadIntoOptions* options, ExceptionState&);
+  uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  ScriptPromise readInto(ScriptState* script_state,
-                         const V8BufferSource* destination,
-                         VideoFrameReadIntoOptions* options,
-                         ExceptionState& exception_state);
+  ScriptPromise copyTo(ScriptState* script_state,
+                       const V8BufferSource* destination,
+                       VideoFrameCopyToOptions* options,
+                       ExceptionState& exception_state);
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.

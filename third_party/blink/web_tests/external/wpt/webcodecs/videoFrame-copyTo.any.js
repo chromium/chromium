@@ -76,7 +76,7 @@ promise_test(async t => {
   ]);
   assert_equals(frame.allocationSize(), expectedData.length, 'allocationSize()');
   const data = new Uint8Array(expectedData.length);
-  const layout = await frame.readInto(data);
+  const layout = await frame.copyTo(data);
   assert_layout_equals(layout, expectedLayout);
   assert_buffer_equals(data, expectedData);
 }, 'Test I420 frame.');
@@ -92,7 +92,7 @@ promise_test(async t => {
   ]);
   assert_equals(frame.allocationSize(), expectedData.length, 'allocationSize()');
   const data = new Uint8Array(expectedData.length);
-  const layout = await frame.readInto(data);
+  const layout = await frame.copyTo(data);
   assert_layout_equals(layout, expectedLayout);
   assert_buffer_equals(data, expectedData);
 }, 'Test RGBA frame.');
@@ -100,40 +100,17 @@ promise_test(async t => {
 promise_test(async t => {
   const frame = makeI420_4x2();
   const data = new Uint8Array(11);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data));
+  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data));
 }, 'Test undersized buffer.');
 
 promise_test(async t => {
   const frame = makeI420_4x2();
   const options = {
-      layout: [{}, {}, {}],
-  };
-  const expectedLayout = [
-      {offset: 0, stride: 4},
-      {offset: 8, stride: 2},
-      {offset: 10, stride: 2},
-  ];
-  const expectedData = new Uint8Array([
-      1, 2, 3, 4,  // y
-      5, 6, 7, 8,
-      9, 10,       // u
-      11, 12       // v
-  ]);
-  assert_equals(frame.allocationSize(options), expectedData.length, 'allocationSize()');
-  const data = new Uint8Array(expectedData.length);
-  const layout = await frame.readInto(data, options);
-  assert_layout_equals(layout, expectedLayout);
-  assert_buffer_equals(data, expectedData);
-}, 'Test layout can be empty.');
-
-promise_test(async t => {
-  const frame = makeI420_4x2();
-  const options = {
-      layout: [{}],
+    layout: [{offset: 0, stride: 4}],
   };
   assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
+  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
 }, 'Test incorrect plane count.');
 
 promise_test(async t => {
@@ -153,7 +130,7 @@ promise_test(async t => {
   ]);
   assert_equals(frame.allocationSize(options), expectedData.length, 'allocationSize()');
   const data = new Uint8Array(expectedData.length);
-  const layout = await frame.readInto(data, options);
+  const layout = await frame.copyTo(data, options);
   assert_layout_equals(layout, options.layout);
   assert_buffer_equals(data, expectedData);
 }, 'Test stride and offset work.');
@@ -178,7 +155,7 @@ promise_test(async t => {
   ]);
   assert_equals(frame.allocationSize(options), expectedData.length, 'allocationSize()');
   const data = new Uint8Array(expectedData.length);
-  const layout = await frame.readInto(data, options);
+  const layout = await frame.copyTo(data, options);
   assert_layout_equals(layout, options.layout);
   assert_buffer_equals(data, expectedData);
 }, 'Test stride and offset with padding.');
@@ -194,37 +171,8 @@ promise_test(async t => {
   };
   assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
+  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
 }, 'Test invalid stride.');
-
-promise_test(async t => {
-  const frame = makeI420_4x2();
-  const options = {
-      layout: [
-          {offset: 0, stride: 4},
-          {offset: 8, stride: 2},
-          {offset: 10},
-      ],
-  };
-  assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
-  const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
-}, 'Test missing stride.');
-
-
-promise_test(async t => {
-  const frame = makeI420_4x2();
-  const options = {
-      layout: [
-          {offset: 0, stride: 4},
-          {offset: 8, stride: 2},
-          {stride: 2},
-      ],
-  };
-  assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
-  const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
-}, 'Test missing offset.');
 
 promise_test(async t => {
   const frame = makeI420_4x2();
@@ -237,13 +185,13 @@ promise_test(async t => {
   };
   assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
+  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
 }, 'Test address overflow.');
 
 promise_test(async t => {
   const frame = makeI420_4x2();
   const options = {
-      region: frame.codedRegion,
+      rect: frame.codedRect,
   };
   const expectedLayout = [
       {offset: 0, stride: 4},
@@ -257,35 +205,35 @@ promise_test(async t => {
   ]);
   assert_equals(frame.allocationSize(options), expectedData.length, 'allocationSize()');
   const data = new Uint8Array(expectedData.length);
-  const layout = await frame.readInto(data, options);
+  const layout = await frame.copyTo(data, options);
   assert_layout_equals(layout, expectedLayout);
   assert_buffer_equals(data, expectedData);
-}, 'Test codedRegion.');
+}, 'Test codedRect.');
 
 promise_test(async t => {
   const frame = makeI420_4x2();
   const options = {
-      region: {left: 0, top: 0, width: 4, height: 0},
+      rect: {left: 0, top: 0, width: 4, height: 0},
   };
   assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
-}, 'Test empty region.');
+  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
+}, 'Test empty rect.');
 
 promise_test(async t => {
   const frame = makeI420_4x2();
   const options = {
-      region: {left: 0, top: 0, width: 4, height: 1},
+      rect: {left: 0, top: 0, width: 4, height: 1},
   };
   assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
-}, 'Test unaligned region.');
+  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
+}, 'Test unaligned rect.');
 
 promise_test(async t => {
   const frame = makeI420_4x2();
   const options = {
-      region: {left: 2, top: 0, width: 2, height: 2},
+      rect: {left: 2, top: 0, width: 2, height: 2},
   };
   const expectedLayout = [
       {offset: 0, stride: 2},
@@ -300,7 +248,7 @@ promise_test(async t => {
   ]);
   assert_equals(frame.allocationSize(options), expectedData.length, 'allocationSize()');
   const data = new Uint8Array(expectedData.length);
-  const layout = await frame.readInto(data, options);
+  const layout = await frame.copyTo(data, options);
   assert_layout_equals(layout, expectedLayout);
   assert_buffer_equals(data, expectedData);
 }, 'Test left crop.');
@@ -308,9 +256,9 @@ promise_test(async t => {
 promise_test(async t => {
   const frame = makeI420_4x2();
   const options = {
-      region: {left: 0, top: 0, width: 4, height: 4},
+      rect: {left: 0, top: 0, width: 4, height: 4},
   };
   assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.readInto(data, options));
-}, 'Test invalid region.');
+  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
+}, 'Test invalid rect.');

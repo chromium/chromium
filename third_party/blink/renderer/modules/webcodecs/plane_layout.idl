@@ -6,12 +6,9 @@
 
 dictionary PlaneLayout {
   // Offset into the buffer where this plane's first row begins.
-  [EnforceRange] unsigned long offset;
+  required [EnforceRange] unsigned long offset;
 
   // Distance (in bytes) between the start of each row of pixel data. Can be
   // larger than size of the pixel data, eg. for alignment reasons.
-  [EnforceRange] unsigned long stride;
-
-  // TODO(sandersd): Add a 'discard' member to indicate that a plane should be
-  // skipped.
+  required [EnforceRange] unsigned long stride;
 };
