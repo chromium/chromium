@@ -124,7 +124,7 @@ def try_builder(
     experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
 
     # Migrate executable to bbagent incrementally.
-    experiments.setdefault("luci.buildbucket.use_bbagent", 20)
+    experiments.setdefault("luci.buildbucket.use_bbagent", 50)
 
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
