@@ -27,18 +27,9 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/background_sync/background_sync_permission_context.h"
+#include "components/embedder_support/permission_context_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/permissions/contexts/accessibility_permission_context.h"
-#include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
-#include "components/permissions/contexts/clipboard_read_write_permission_context.h"
-#include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
-#include "components/permissions/contexts/geolocation_permission_context.h"
-#include "components/permissions/contexts/midi_permission_context.h"
-#include "components/permissions/contexts/midi_sysex_permission_context.h"
-#include "components/permissions/contexts/payment_handler_permission_context.h"
-#include "components/permissions/contexts/sensor_permission_context.h"
-#include "components/permissions/contexts/wake_lock_permission_context.h"
 #include "components/permissions/contexts/webxr_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -49,82 +40,41 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
-#include "components/permissions/contexts/geolocation_permission_context_android.h"
-#include "components/permissions/contexts/nfc_permission_context_android.h"
 #else
 #include "chrome/browser/web_applications/components/file_handling_permission_context.h"
-#include "components/permissions/contexts/nfc_permission_context.h"
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "components/permissions/contexts/geolocation_permission_context_mac.h"
 #endif  // defined(OS_MAC)
 
 namespace {
 
 permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     Profile* profile) {
-  permissions::PermissionManager::PermissionContextMap permission_contexts;
+  embedder_support::PermissionContextDelegates delegates;
 
-  // TODO(crbug.com/1218451): Move common permission contexts into
-  // //components/embedder_support and share this code with //weblayer.
-  permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
-      std::make_unique<permissions::AccessibilityPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
-      std::make_unique<BackgroundSyncPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
-      std::make_unique<permissions::CameraPanTiltZoomPermissionContext>(
-          profile, MediaCaptureDevicesDispatcher::GetInstance());
-  permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
-      std::make_unique<permissions::ClipboardReadWritePermissionContext>(
-          profile);
-  permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
-      std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
-          profile);
 #if defined(OS_ANDROID)
-  permission_contexts[ContentSettingsType::GEOLOCATION] =
-      std::make_unique<permissions::GeolocationPermissionContextAndroid>(
-          profile,
-          std::make_unique<GeolocationPermissionContextDelegateAndroid>(
-              profile));
-#elif defined(OS_MAC)
-  permission_contexts[ContentSettingsType::GEOLOCATION] =
-      std::make_unique<permissions::GeolocationPermissionContextMac>(
-          profile,
-          std::make_unique<GeolocationPermissionContextDelegate>(profile),
-          g_browser_process->platform_part()->geolocation_manager());
+  delegates.geolocation_permission_context_delegate =
+      std::make_unique<GeolocationPermissionContextDelegateAndroid>(profile);
 #else
-  permission_contexts[ContentSettingsType::GEOLOCATION] =
-      std::make_unique<permissions::GeolocationPermissionContext>(
-          profile,
-          std::make_unique<GeolocationPermissionContextDelegate>(profile));
-#endif
-  permission_contexts[ContentSettingsType::MIDI] =
-      std::make_unique<permissions::MidiPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::MIDI_SYSEX] =
-      std::make_unique<permissions::MidiSysexPermissionContext>(profile);
-  auto nfc_delegate = std::make_unique<ChromeNfcPermissionContextDelegate>();
-#if defined(OS_ANDROID)
-  permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<permissions::NfcPermissionContextAndroid>(
-          profile, std::move(nfc_delegate));
-#else
-  permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<permissions::NfcPermissionContext>(
-          profile, std::move(nfc_delegate));
+  delegates.geolocation_permission_context_delegate =
+      std::make_unique<GeolocationPermissionContextDelegate>(profile);
 #endif  // defined(OS_ANDROID)
-  permission_contexts[ContentSettingsType::PAYMENT_HANDLER] =
-      std::make_unique<payments::PaymentHandlerPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::SENSORS] =
-      std::make_unique<permissions::SensorPermissionContext>(profile);
-  permission_contexts[ContentSettingsType::WAKE_LOCK_SCREEN] =
-      std::make_unique<permissions::WakeLockPermissionContext>(
-          profile, ContentSettingsType::WAKE_LOCK_SCREEN);
-  permission_contexts[ContentSettingsType::WAKE_LOCK_SYSTEM] =
-      std::make_unique<permissions::WakeLockPermissionContext>(
-          profile, ContentSettingsType::WAKE_LOCK_SYSTEM);
+#if defined(OS_MAC)
+  delegates.geolocation_manager =
+      g_browser_process->platform_part()->geolocation_manager();
+#endif  // defined(OS_MAC)
+  delegates.media_stream_device_enumerator =
+      MediaCaptureDevicesDispatcher::GetInstance();
+  delegates.nfc_permission_context_delegate =
+      std::make_unique<ChromeNfcPermissionContextDelegate>();
+
+  // Create default permission contexts initially.
+  permissions::PermissionManager::PermissionContextMap permission_contexts =
+      embedder_support::CreateDefaultPermissionContexts(profile,
+                                                        std::move(delegates));
 
   // Add additional Chrome specific permission contexts. Please add a comment
   // when adding new contexts here explaining why it can't be shared with other

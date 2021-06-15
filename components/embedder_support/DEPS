@@ -1,7 +1,9 @@
 include_rules = [
+  "+components/background_sync",
   "+components/content_settings/browser",
   "+components/content_settings/core/browser",
   "+components/content_settings/core/common",
+  "+components/permissions",
   "+components/version_info",
   "+content/public/browser",
   "+content/public/common",

@@ -16,6 +16,8 @@ static_library("browser_util") {
   sources = [
     "content_settings_utils.cc",
     "content_settings_utils.h",
+    "permission_context_utils.cc",
+    "permission_context_utils.h",
     "user_agent_utils.cc",
     "user_agent_utils.h",
   ]
@@ -23,8 +25,10 @@ static_library("browser_util") {
   deps = [
     ":embedder_support",
     "//build:branding_buildflags",
+    "//components/background_sync",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
+    "//components/permissions",
     "//components/version_info",
     "//content/public/browser",
   ]
