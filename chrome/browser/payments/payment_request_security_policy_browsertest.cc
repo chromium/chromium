@@ -15,14 +15,31 @@ namespace {
 
 class PaymentRequestSecurityPolicyBrowsertest
     : public PaymentRequestPlatformBrowserTestBase {
- public:
+ protected:
   void ExpectPaymentRequestCSPViolationRecorded(bool expected) {
     // Navigate away in order to flush use counters.
-    NavigateTo("b.com", "/payment_request_csp_violation.html");
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                       GURL(url::kAboutBlankURL)));
     histogram_tester_.ExpectBucketCount(
         "Blink.UseCounter.Features",
         blink::mojom::WebFeature::kPaymentRequestCSPViolation,
         expected ? 1 : 0);
+  }
+
+  void BuildPaymentRequest() {
+    ResetEventWaiterForEventSequence(
+        {TestEvent::kCanMakePaymentCalled, TestEvent::kCanMakePaymentReturned});
+
+    // The CSP check happens in buildPaymentRequest. We only call canMakePayment
+    // to ensure the promise resolves before metrics are checked.
+    EXPECT_EQ(false,
+              content::EvalJs(
+                  GetActiveWebContents(),
+                  content::JsReplace(
+                      "buildPaymentRequest($1).canMakePayment()",
+                      https_server()->GetURL("bobpay.com", "/csp-test"))));
+
+    WaitForObservedEvent();
   }
 
  private:
@@ -33,13 +50,7 @@ class PaymentRequestSecurityPolicyBrowsertest
 IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPViolation) {
   NavigateTo("a.com", "/payment_request_csp_violation.html");
 
-  // The CSP check happens in buildPaymentRequest. We only call canMakePayment
-  // to ensure the promise resolves before metrics are checked.
-  EXPECT_EQ(false, content::EvalJs(
-                       GetActiveWebContents(),
-                       content::JsReplace(
-                           "buildPaymentRequest($1).canMakePayment()",
-                           https_server()->GetURL("bobpay.com", "/csp-test"))));
+  BuildPaymentRequest();
 
   ExpectPaymentRequestCSPViolationRecorded(true);
 }
@@ -48,13 +59,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPViolation) {
 IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest, CSPAllowAll) {
   NavigateTo("a.com", "/payment_request_csp_allow_all.html");
 
-  // The CSP check happens in buildPaymentRequest. We only call canMakePayment
-  // to ensure the promise resolves before metrics are checked.
-  EXPECT_EQ(false, content::EvalJs(
-                       GetActiveWebContents(),
-                       content::JsReplace(
-                           "buildPaymentRequest($1).canMakePayment()",
-                           https_server()->GetURL("bobpay.com", "/csp-test"))));
+  BuildPaymentRequest();
 
   ExpectPaymentRequestCSPViolationRecorded(false);
 }
@@ -64,13 +69,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSecurityPolicyBrowsertest,
                        CSPAllowSpecific) {
   NavigateTo("a.com", "/payment_request_csp_allow_specific.html");
 
-  // The CSP check happens in buildPaymentRequest. We only call canMakePayment
-  // to ensure the promise resolves before metrics are checked.
-  EXPECT_EQ(false, content::EvalJs(
-                       GetActiveWebContents(),
-                       content::JsReplace(
-                           "buildPaymentRequest($1).canMakePayment()",
-                           https_server()->GetURL("bobpay.com", "/csp-test"))));
+  BuildPaymentRequest();
 
   ExpectPaymentRequestCSPViolationRecorded(false);
 }
