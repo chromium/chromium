@@ -69,7 +69,7 @@ class MockUdpSocket final : public network::mojom::UDPSocket {
   DISALLOW_COPY_AND_ASSIGN(MockUdpSocket);
 };
 
-class MockNetworkContext final : public network::TestNetworkContext {
+class MockNetworkContext : public network::TestNetworkContext {
  public:
   explicit MockNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver);

@@ -16,7 +16,7 @@
 
 namespace mirroring {
 
-class FakeVideoCaptureHost final : public media::mojom::VideoCaptureHost {
+class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
  public:
   explicit FakeVideoCaptureHost(
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);

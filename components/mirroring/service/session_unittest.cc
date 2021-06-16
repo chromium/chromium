@@ -4,6 +4,11 @@
 
 #include "components/mirroring/service/session.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
@@ -29,18 +34,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/ssrc.h"
 
-using ::testing::InvokeWithoutArgs;
-using ::testing::_;
-using ::testing::AtLeast;
-using ::testing::Mock;
 using media::cast::FrameSenderConfig;
 using media::cast::Packet;
-using media::mojom::RemotingStopReason;
-using media::mojom::RemotingStartFailReason;
 using media::mojom::RemotingSinkMetadata;
 using media::mojom::RemotingSinkMetadataPtr;
-using mirroring::mojom::SessionType;
+using media::mojom::RemotingStartFailReason;
+using media::mojom::RemotingStopReason;
 using mirroring::mojom::SessionError;
+using mirroring::mojom::SessionType;
+using ::testing::_;
+using ::testing::AtLeast;
+using ::testing::InvokeWithoutArgs;
+using ::testing::Mock;
+using ::testing::NiceMock;
 
 namespace mirroring {
 
@@ -67,7 +73,7 @@ const openscreen::cast::Answer kAnswerWithConstraints{
     },
 };
 
-class MockRemotingSource final : public media::mojom::RemotingSource {
+class MockRemotingSource : public media::mojom::RemotingSource {
  public:
   MockRemotingSource() {}
   ~MockRemotingSource() override {}
@@ -97,7 +103,10 @@ class SessionTest : public mojom::ResourceProvider,
                     public mojom::CastMessageChannel,
                     public ::testing::Test {
  public:
-  SessionTest() : receiver_endpoint_(media::cast::test::GetFreeLocalPort()) {}
+  SessionTest() = default;
+
+  SessionTest(const SessionTest&) = delete;
+  SessionTest& operator=(const SessionTest&) = delete;
 
   ~SessionTest() override { task_environment_.RunUntilIdle(); }
 
@@ -148,14 +157,15 @@ class SessionTest : public mojom::ResourceProvider,
   void BindGpu(mojo::PendingReceiver<viz::mojom::Gpu> receiver) override {}
   void GetVideoCaptureHost(
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) override {
-    video_host_ = std::make_unique<FakeVideoCaptureHost>(std::move(receiver));
+    video_host_ =
+        std::make_unique<NiceMock<FakeVideoCaptureHost>>(std::move(receiver));
     OnGetVideoCaptureHost();
   }
 
   void GetNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override {
     network_context_ =
-        std::make_unique<MockNetworkContext>(std::move(receiver));
+        std::make_unique<NiceMock<MockNetworkContext>>(std::move(receiver));
     OnGetNetworkContext();
   }
 
@@ -260,7 +270,7 @@ class SessionTest : public mojom::ResourceProvider,
 
   // Starts the mirroring session.
   void StartSession() {
-    ASSERT_TRUE(cast_mode_ == "mirroring");
+    ASSERT_EQ(cast_mode_, "mirroring");
     // Except mirroing session starts after receiving ANSWER message.
     const int num_to_get_video_host =
         session_type_ == SessionType::AUDIO_ONLY ? 0 : 1;
@@ -286,7 +296,7 @@ class SessionTest : public mojom::ResourceProvider,
   }
 
   void CaptureOneVideoFrame() {
-    ASSERT_TRUE(cast_mode_ == "mirroring");
+    ASSERT_EQ(cast_mode_, "mirroring");
     ASSERT_TRUE(video_host_);
     // Expect to send out some UDP packets.
     EXPECT_CALL(*network_context_->udp_socket(), OnSend()).Times(AtLeast(1));
@@ -352,7 +362,7 @@ class SessionTest : public mojom::ResourceProvider,
   }
 
   void RemotingStarted() {
-    ASSERT_TRUE(cast_mode_ == "remoting");
+    ASSERT_EQ(cast_mode_, "remoting");
     EXPECT_CALL(remoting_source_, OnStarted()).Times(1);
     SendAnswer();
     task_environment_.RunUntilIdle();
@@ -361,7 +371,7 @@ class SessionTest : public mojom::ResourceProvider,
   }
 
   void StopRemoting() {
-    ASSERT_TRUE(cast_mode_ == "remoting");
+    ASSERT_EQ(cast_mode_, "remoting");
     const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
     // Expect to send OFFER message to fallback on mirroring.
     EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
@@ -383,14 +393,15 @@ class SessionTest : public mojom::ResourceProvider,
 
  private:
   base::test::TaskEnvironment task_environment_;
-  const net::IPEndPoint receiver_endpoint_;
+  const net::IPEndPoint receiver_endpoint_ =
+      media::cast::test::GetFreeLocalPort();
   mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver_{this};
   mojo::Receiver<mojom::SessionObserver> session_observer_receiver_{this};
   mojo::Receiver<mojom::CastMessageChannel> outbound_channel_receiver_{this};
   mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
   SessionType session_type_ = SessionType::AUDIO_AND_VIDEO;
   mojo::Remote<media::mojom::Remoter> remoter_;
-  MockRemotingSource remoting_source_;
+  NiceMock<MockRemotingSource> remoting_source_;
   std::string cast_mode_;
   int32_t offer_sequence_number_ = -1;
   int32_t capability_sequence_number_ = -1;
@@ -400,7 +411,6 @@ class SessionTest : public mojom::ResourceProvider,
   std::unique_ptr<FakeVideoCaptureHost> video_host_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
-  DISALLOW_COPY_AND_ASSIGN(SessionTest);
 };
 
 TEST_F(SessionTest, AudioOnlyMirroring) {
