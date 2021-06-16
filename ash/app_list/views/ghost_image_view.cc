@@ -11,13 +11,11 @@
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "third_party/skia/include/core/SkPaint.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/image/image_skia_operations.h"
 
 namespace ash {
 
@@ -30,16 +28,6 @@ constexpr int kInFolderGhostColor = gfx::kGoogleGrey700;
 constexpr base::TimeDelta kGhostFadeInOutLength =
     base::TimeDelta::FromMilliseconds(180);
 constexpr gfx::Tween::Type kGhostTween = gfx::Tween::FAST_OUT_SLOW_IN;
-constexpr int kAlphaGradient = 2;
-constexpr int kAlphaChannelFilter = 180;
-
-// These values determine the thickness and appearance of the icon outlines.
-constexpr float kBlurSizeOutline = 2.5;
-constexpr float kBlurSizeThinOutline = 1;
-
-// Amount of padding added on each side of the icon to avoid clipping when the
-// ghost outline is generated.
-constexpr int kGhostImagePadding = 5;
 
 }  // namespace
 
@@ -62,6 +50,10 @@ void GhostImageView::Init(AppListItemView* drag_view,
   icon_bounds_ = drag_view->GetIconBounds();
 
   if (is_folder_) {
+    inner_icon_radius_ =
+        drag_view->GetAppListConfig().item_icon_in_folder_icon_size().width() /
+        2;
+
     AppListFolderItem* folder_item =
         static_cast<AppListFolderItem*>(drag_view->item());
     num_items_ = std::min(FolderImage::kNumFolderTopItems,
@@ -70,23 +62,10 @@ void GhostImageView::Init(AppListItemView* drag_view,
     std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
         drag_view->GetAppListConfig(), icon_bounds_, num_items_.value());
 
-    // Create an outline, and calculate position for each item within the folder
-    // icon.
+    // Push back the position for each app to be shown within the folder icon.
     for (size_t i = 0; i < num_items_.value(); i++) {
-      gfx::ImageSkia inner_icon_outline =
-          gfx::ImageSkiaOperations::CreateResizedImage(
-              folder_item->item_list()->item_at(i)->GetIcon(
-                  drag_view->GetAppListConfig().type()),
-              skia::ImageOperations::RESIZE_BEST,
-              drag_view->GetAppListConfig().item_icon_in_folder_icon_size());
-      inner_folder_icon_outlines_.push_back(GetIconOutline(inner_icon_outline));
-      inner_folder_icon_origins_.push_back(
-          gfx::Point(top_icon_bounds[i].x() - kGhostImagePadding,
-                     top_icon_bounds[i].y() - kGhostImagePadding));
+      inner_folder_icon_origins_.push_back(top_icon_bounds[i].CenterPoint());
     }
-  } else {
-    // Create outline of app icon and set |outline_| to it.
-    outline_ = GetIconOutline(drag_view->GetIconImage());
   }
 }
 
@@ -137,12 +116,12 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
   circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
   circle_flags.setStrokeWidth(kGhostCircleStrokeWidth);
 
+  const float ghost_radius = icon_bounds_.width() / 2;
+
+  // Draw a circle to represent an app or folder outline.
+  canvas->DrawCircle(circle_center, ghost_radius, circle_flags);
+
   if (is_folder_) {
-    const float ghost_radius = icon_bounds_.width() / 2;
-
-    // Draw circle to represent outline of folder.
-    canvas->DrawCircle(circle_center, ghost_radius, circle_flags);
-
     // Draw a mask so inner folder icons do not overlap the outer circle.
     SkPath outer_circle_mask;
     outer_circle_mask.addCircle(circle_center.x(), circle_center.y(),
@@ -151,13 +130,9 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
 
     // Draw ghost items within the ghost folder circle.
     for (size_t i = 0; i < num_items_.value(); i++) {
-      canvas->DrawImageInt(inner_folder_icon_outlines_[i],
-                           inner_folder_icon_origins_[i].x(),
-                           inner_folder_icon_origins_[i].y());
+      canvas->DrawCircle(inner_folder_icon_origins_[i], inner_icon_radius_,
+                         circle_flags);
     }
-  } else {
-    canvas->DrawImageInt(outline_, icon_bounds_.x() - kGhostImagePadding,
-                         icon_bounds_.y() - kGhostImagePadding);
   }
   ImageView::OnPaint(canvas);
 }
@@ -165,154 +140,6 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
 void GhostImageView::OnImplicitAnimationsCompleted() {
   // Delete this GhostImageView when the fade out animation is done.
   delete this;
-}
-
-// The implementation for GetIconOutline is copied and adapted from the Android
-// Launcher. See com.android.launcher3.graphics.DragPreviewProvider.java in the
-// Android source.
-
-gfx::ImageSkia GhostImageView::GetIconOutline(
-    const gfx::ImageSkia& original_icon) {
-  gfx::ImageSkia icon_outline;
-
-  original_icon.EnsureRepsForSupportedScales();
-  for (gfx::ImageSkiaRep rep : original_icon.image_reps()) {
-    // Only generate the outline for the ImageSkiaRep with the highest supported
-    // scale.
-    if (rep.scale() != original_icon.GetMaxSupportedScale())
-      continue;
-
-    SkBitmap bitmap(rep.GetBitmap());
-
-    // Add padding to each side of the bitmap so the outline does not get cut
-    // off by the edges from the original bitmap.
-    gfx::Canvas padded_canvas(
-        gfx::Size(bitmap.pixmap().width() + kGhostImagePadding * 2,
-                  bitmap.pixmap().height() + kGhostImagePadding * 2),
-        rep.scale(), false /* is_opaque */);
-    padded_canvas.DrawImageInt(
-        gfx::ImageSkia::CreateFromBitmap(bitmap, rep.scale()),
-        kGhostImagePadding, kGhostImagePadding);
-    bitmap = padded_canvas.GetBitmap();
-
-    const SkPixmap pixmap = bitmap.pixmap();
-    const int width = pixmap.width();
-    const int height = pixmap.height();
-
-    SkBitmap preview;
-    preview.allocN32Pixels(width, height);
-    preview.eraseColor(SK_ColorTRANSPARENT);
-
-    SkBitmap thick_outer_blur;
-    SkBitmap bright_outline;
-    SkBitmap thick_inner_blur;
-
-    preview.setAlphaType(SkAlphaType::kUnpremul_SkAlphaType);
-    thick_outer_blur.setAlphaType(SkAlphaType::kUnpremul_SkAlphaType);
-    bright_outline.setAlphaType(SkAlphaType::kUnpremul_SkAlphaType);
-    thick_inner_blur.setAlphaType(SkAlphaType::kUnpremul_SkAlphaType);
-
-    // Remove most of the alpha channel so as to ignore shadows and other types
-    // of partial transparency when defining the shape of the object.
-    for (int x = 1; x < width; x++) {
-      for (int y = 1; y < height; y++) {
-        const SkColor* src_color =
-            reinterpret_cast<SkColor*>(bitmap.getAddr32(0, y));
-        SkColor* preview_color =
-            reinterpret_cast<SkColor*>(preview.getAddr32(0, y));
-
-        if (SkColorGetA(src_color[x]) < kAlphaChannelFilter) {
-          preview_color[x] = SK_ColorTRANSPARENT;
-        } else {
-          preview_color[x] = SK_ColorWHITE;
-        }
-      }
-    }
-
-    SkPaint paint;
-    paint.setAntiAlias(true);
-
-    // Calculate the outer blur first.
-    paint.setMaskFilter(SkMaskFilter::MakeBlur(SkBlurStyle::kOuter_SkBlurStyle,
-                                               kBlurSizeOutline));
-    SkIPoint outer_blur_offset;
-    preview.extractAlpha(&thick_outer_blur, &paint, &outer_blur_offset);
-    paint.setMaskFilter(SkMaskFilter::MakeBlur(SkBlurStyle::kOuter_SkBlurStyle,
-                                               kBlurSizeThinOutline));
-    SkIPoint bright_outline_offset;
-    preview.extractAlpha(&bright_outline, &paint, &bright_outline_offset);
-
-    // Calculate the inner blur.
-    std::unique_ptr<SkCanvas> canvas = std::make_unique<SkCanvas>(preview);
-    canvas->drawColor(SK_ColorBLACK, SkBlendMode::kSrcOut);
-    paint.setMaskFilter(SkMaskFilter::MakeBlur(SkBlurStyle::kOuter_SkBlurStyle,
-                                               kBlurSizeOutline));
-    SkIPoint thick_inner_blur_offset;
-    preview.extractAlpha(&thick_inner_blur, &paint, &thick_inner_blur_offset);
-
-    SkSamplingOptions sampling;
-    // Mask out the inner blur.
-    paint.setMaskFilter(nullptr);
-    paint.setBlendMode(SkBlendMode::kDstOut);
-    canvas = std::make_unique<SkCanvas>(thick_inner_blur);
-    canvas->drawImage(preview.asImage(), -thick_inner_blur_offset.fX,
-                      -thick_inner_blur_offset.fY, sampling, &paint);
-    canvas->drawRect(
-        SkRect{0, 0, -thick_inner_blur_offset.fX, thick_inner_blur.height()},
-        paint);
-    canvas->drawRect(
-        SkRect{0, 0, -thick_inner_blur.width(), thick_inner_blur_offset.fY},
-        paint);
-
-    // Draw the inner and outer blur.
-    paint.setBlendMode(SkBlendMode::kPlus);
-    canvas = std::make_unique<SkCanvas>(preview);
-    canvas->drawColor(0, SkBlendMode::kClear);
-    canvas->drawImage(thick_inner_blur.asImage(), thick_inner_blur_offset.fX,
-                      thick_inner_blur_offset.fY, sampling, &paint);
-    canvas->drawImage(thick_outer_blur.asImage(), outer_blur_offset.fX,
-                      outer_blur_offset.fY, sampling, &paint);
-
-    // Draw the bright outline.
-    canvas->drawImage(bright_outline.asImage(), bright_outline_offset.fX,
-                      bright_outline_offset.fY, sampling, &paint);
-
-    // Cleanup bitmaps.
-    canvas.reset();
-    bright_outline.reset();
-    thick_outer_blur.reset();
-    thick_inner_blur.reset();
-
-    // Set the color and maximum allowed alpha for each pixel in |preview|.
-    for (int x = 1; x < preview.width(); x++) {
-      for (int y = 1; y < preview.height(); y++) {
-        SkColor* current_color =
-            reinterpret_cast<SkColor*>(preview.getAddr32(0, y));
-
-        int current_alpha = SkColorGetA(current_color[x]);
-        const int maximum_allowed_alpha = kGhostColorOpacity;
-
-        if (current_alpha > maximum_allowed_alpha) {
-          // Cap the current alpha at the maximum allowed alpha.
-          current_alpha = maximum_allowed_alpha;
-        } else if (current_alpha > 0 && current_alpha < maximum_allowed_alpha) {
-          // To reduce blur on the edges of the outline, set the drop off of
-          // alpha values below the |maximum_allowed_alpha| according to the
-          // |kAlphaGradient|.
-          const int new_alpha = (kAlphaGradient * current_alpha) -
-                                (maximum_allowed_alpha * (kAlphaGradient - 1));
-          current_alpha = std::max(0, new_alpha);
-        }
-        current_color[x] = SkColorSetA(SK_ColorWHITE, current_alpha);
-      }
-    }
-
-    icon_outline.AddRepresentation(gfx::ImageSkiaRep(preview, rep.scale()));
-  }
-
-  const SkColor outline_color =
-      is_in_folder_ ? kInFolderGhostColor : kRootGridGhostColor;
-  return gfx::ImageSkiaOperations::CreateColorMask(icon_outline, outline_color);
 }
 
 }  // namespace ash
