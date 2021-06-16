@@ -2919,7 +2919,7 @@
         ],
         'mixins': [
           'enable_resultdb',
-          'mac_11_x64',
+          'mac_11_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_12e262',

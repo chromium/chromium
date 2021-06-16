@@ -667,6 +667,14 @@
       },
     },
   },
+  'mac_11_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-11',
+      },
+    },
+  },
   'mac_11_beta_x64': {
     'swarming': {
       'dimensions': {
