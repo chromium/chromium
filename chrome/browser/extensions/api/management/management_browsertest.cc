@@ -7,12 +7,14 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
-#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -125,6 +127,66 @@ class ExtensionManagementTest : public extensions::ExtensionBrowserTest {
   void UpdateProviderPolicy(const PolicyMap& policy) {
     policy_provider_.UpdateChromePolicy(policy);
     base::RunLoop().RunUntilIdle();
+  }
+
+  GURL GetUpdateUrl() {
+    return embedded_test_server()->GetURL("/autoupdate/manifest");
+  }
+
+  // Prepares a CRX file for serving by EmbeddedTestServer. This includes
+  // taking the unpacked extension files from |source_dir_name| in the test
+  // data tree, modifying them to use the EmbeddedTestServer's URLs for
+  // extension updates, packing the extension into a CRX file named |crx_name|
+  // and putting it in |temp_dir|. The full path to the CRX file created is
+  // returned in |crx_path|.
+  void SetUpExtensionUpdatePackage(const base::FilePath& temp_dir,
+                                   const std::string& source_dir_name,
+                                   const std::string& crx_name,
+                                   base::FilePath* crx_path) {
+    ASSERT_TRUE(base::CreateDirectory(temp_dir.AppendASCII("unpacked")));
+
+    const base::FilePath basedir = test_data_dir_.AppendASCII("autoupdate");
+    ASSERT_TRUE(base::CopyDirectory(basedir.AppendASCII(source_dir_name),
+                                    temp_dir.AppendASCII("unpacked"),
+                                    /*recursive=*/false));
+
+    std::string manifest_template;
+    ASSERT_TRUE(
+        base::ReadFileToString(basedir.AppendASCII(source_dir_name)
+                                   .AppendASCII("manifest.json.template"),
+                               &manifest_template));
+    const std::string manifest = base::ReplaceStringPlaceholders(
+        manifest_template, {GetUpdateUrl().spec()}, nullptr);
+    ASSERT_TRUE(base::WriteFile(
+        temp_dir.AppendASCII("unpacked").AppendASCII("manifest.json"),
+        manifest));
+
+    ASSERT_TRUE(base::CreateDirectory(temp_dir.AppendASCII("autoupdate")));
+    *crx_path = PackExtensionWithOptions(
+        temp_dir.AppendASCII("unpacked"),
+        temp_dir.AppendASCII("autoupdate").AppendASCII(crx_name),
+        basedir.AppendASCII("key.pem"), base::FilePath());
+  }
+
+  // Sets up a file to be served by EmbeddedTestServer in response to a
+  // "/autoupdate/manifest" request. The response template resides in a file
+  // named |manifest_template_name| in the test data tree. An
+  // EmbeddedTestServer's URL pointing to |crx_name| inside |temp_dir| is
+  // inserted into the template.
+  void SetUpExtensionUpdateResponse(const base::FilePath& temp_dir,
+                                    const std::string& crx_name,
+                                    const std::string& manifest_template_name) {
+    std::string manifest_template;
+    ASSERT_TRUE(base::ReadFileToString(test_data_dir_.AppendASCII("autoupdate")
+                                           .AppendASCII(manifest_template_name),
+                                       &manifest_template));
+    const GURL crx_url = embedded_test_server()->GetURL(
+        base::StrCat({"/autoupdate/", crx_name}));
+    const std::string manifest = base::ReplaceStringPlaceholders(
+        manifest_template, {crx_url.spec()}, nullptr);
+    ASSERT_TRUE(base::CreateDirectory(temp_dir.AppendASCII("autoupdate")));
+    ASSERT_TRUE(
+        base::WriteFile(temp_dir.AppendASCII("autoupdate/manifest"), manifest));
   }
 
   // Helper method that returns whether the extension is at the given version.
@@ -381,43 +443,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::FilePath basedir = test_data_dir_.AppendASCII("autoupdate");
-  NotificationListener notification_listener;
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  base::FilePath pem_path = basedir.AppendASCII("key.pem");
-  base::FilePath v1_path = PackExtensionWithOptions(
-      basedir.AppendASCII("v1"), temp_dir.GetPath().AppendASCII("v1.crx"),
-      pem_path, base::FilePath());
-  base::FilePath v2_path = PackExtensionWithOptions(
-      basedir.AppendASCII("v2"), temp_dir.GetPath().AppendASCII("v2.crx"),
-      pem_path, base::FilePath());
+  base::FilePath crx_v1_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v1",
+                                                      "v1.crx", &crx_v1_path));
 
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.path() == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(v2_path,
-                                                       params->client.get());
-          return true;
-        }
-        if (params->url_request.url.path() == "/autoupdate/v3.crx") {
-          content::URLLoaderInterceptor::WriteResponse(
-              basedir.AppendASCII("v3.crx"), params->client.get());
-          return true;
-        }
-        if (params->url_request.url.path() == "/autoupdate/manifest") {
-          static bool first = true;
-          if (first) {
-            content::URLLoaderInterceptor::WriteResponse(
-                basedir.AppendASCII("manifest_v2.xml"), params->client.get());
-            first = false;
-          } else {
-            content::URLLoaderInterceptor::WriteResponse(
-                basedir.AppendASCII("manifest_v3.xml"), params->client.get());
-          }
-          return true;
-        }
-        return false;
-      }));
+  base::FilePath crx_v2_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_v2_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
   // Install version 1 of the extension.
   ExtensionTestMessageListener listener1("v1 installed", false);
@@ -425,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
   ASSERT_TRUE(registry->disabled_extensions().is_empty());
-  const Extension* extension = InstallExtension(v1_path, 1);
+  const Extension* extension = InstallExtension(crx_v1_path, 1);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(listener1.WaitUntilSatisfied());
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
@@ -436,6 +473,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ExtensionTestMessageListener listener2("v2 installed", false);
 
   extensions::TestExtensionRegistryObserver install_observer(registry);
+  NotificationListener notification_listener;
   extensions::ExtensionUpdater::CheckParams params1;
   params1.callback = base::BindOnce(&NotificationListener::OnFinished,
                                     base::Unretained(&notification_listener));
@@ -455,6 +493,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
 
   // Now try doing an update to version 3, which has been incorrectly
   // signed. This should fail.
+
+  ASSERT_TRUE(base::CopyFile(
+      test_data_dir_.AppendASCII("autoupdate").AppendASCII("v3.crx"),
+      temp_dir.GetPath().AppendASCII("autoupdate").AppendASCII("v3.crx")));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v3.crx", "manifest_v3.xml.template"));
 
   extensions::ExtensionUpdater::CheckParams params2;
   params2.callback = base::BindOnce(&NotificationListener::OnFinished,
@@ -498,31 +542,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::FilePath basedir = test_data_dir_.AppendASCII("autoupdate");
-  NotificationListener notification_listener;
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  base::FilePath pem_path = basedir.AppendASCII("key.pem");
-  base::FilePath v1_path = PackExtensionWithOptions(
-      basedir.AppendASCII("v1"), temp_dir.GetPath().AppendASCII("v1.crx"),
-      pem_path, base::FilePath());
-  base::FilePath v2_path = PackExtensionWithOptions(
-      basedir.AppendASCII("v2"), temp_dir.GetPath().AppendASCII("v2.crx"),
-      pem_path, base::FilePath());
-
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.path() == "/autoupdate/manifest") {
-          content::URLLoaderInterceptor::WriteResponse(
-              basedir.AppendASCII("manifest_v2.xml"), params->client.get());
-          return true;
-        }
-        if (params->url_request.url.path() == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(v2_path,
-                                                       params->client.get());
-          return true;
-        }
-        return false;
-      }));
+  base::FilePath crx_v1_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v1",
+                                                      "v1.crx", &crx_v1_path));
+  base::FilePath crx_v2_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_v2_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
   // Install version 1 of the extension.
   ExtensionTestMessageListener listener1("v1 installed", false);
@@ -530,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ExtensionRegistry* registry = extension_registry();
   const size_t enabled_size_before = registry->enabled_extensions().size();
   const size_t disabled_size_before = registry->disabled_extensions().size();
-  const Extension* extension = InstallExtension(v1_path, 1);
+  const Extension* extension = InstallExtension(crx_v1_path, 1);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(listener1.WaitUntilSatisfied());
   DisableExtension(extension->id());
@@ -543,6 +573,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   extensions::TestExtensionRegistryObserver install_observer(registry);
   // Run autoupdate and make sure version 2 of the extension was installed but
   // is still disabled.
+  NotificationListener notification_listener;
   extensions::ExtensionUpdater::CheckParams params;
   params.callback = base::BindOnce(&NotificationListener::OnFinished,
                                    base::Unretained(&notification_listener));
@@ -577,26 +608,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::FilePath basedir = test_data_dir_.AppendASCII("autoupdate");
-  base::FilePath pem_path = basedir.AppendASCII("key.pem");
-  base::FilePath v2_path = PackExtensionWithOptions(
-      basedir.AppendASCII("v2"), temp_dir.GetPath().AppendASCII("v2.crx"),
-      pem_path, base::FilePath());
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.path() == "/autoupdate/manifest") {
-          content::URLLoaderInterceptor::WriteResponse(
-              basedir.AppendASCII("manifest_v2.xml"), params->client.get());
-          return true;
-        }
-        if (params->url_request.url.path() == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(v2_path,
-                                                       params->client.get());
-          return true;
-        }
-        return false;
-      }));
+  base::FilePath crx_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
   ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
@@ -612,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   // before this test function starts.
 
   EXPECT_TRUE(pending_extension_manager->AddFromExternalUpdateUrl(
-      kExtensionId, std::string(), GURL("http://localhost/autoupdate/manifest"),
+      kExtensionId, std::string(), GetUpdateUrl(),
       ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
 
   extensions::TestExtensionRegistryObserver install_observer(registry);
@@ -638,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   // Try to install the extension again from an external source. It should fail
   // because of the killbit.
   EXPECT_FALSE(pending_extension_manager->AddFromExternalUpdateUrl(
-      kExtensionId, std::string(), GURL("http://localhost/autoupdate/manifest"),
+      kExtensionId, std::string(), GetUpdateUrl(),
       ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
   EXPECT_FALSE(pending_extension_manager->IsIdPending(kExtensionId))
       << "External reinstall of a killed extension shouldn't work.";
@@ -646,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
       << "External reinstall of a killed extension should leave it killed.";
 
   // Installing from non-external source.
-  ASSERT_TRUE(InstallExtension(v2_path, 1));
+  ASSERT_TRUE(InstallExtension(crx_path, 1));
 
   EXPECT_FALSE(extension_prefs->IsExternalExtensionUninstalled(kExtensionId))
       << "Reinstalling should clear the kill bit.";
@@ -676,26 +695,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::FilePath basedir = test_data_dir_.AppendASCII("autoupdate");
-  base::FilePath pem_path = basedir.AppendASCII("key.pem");
-  base::FilePath v2_path = PackExtensionWithOptions(
-      basedir.AppendASCII("v2"), temp_dir.GetPath().AppendASCII("v2.crx"),
-      pem_path, base::FilePath());
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.path() == "/autoupdate/manifest") {
-          content::URLLoaderInterceptor::WriteResponse(
-              basedir.AppendASCII("manifest_v2.xml"), params->client.get());
-          return true;
-        }
-        if (params->url_request.url.path() == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(v2_path,
-                                                       params->client.get());
-          return true;
-        }
-        return false;
-      }));
+  base::FilePath crx_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const size_t size_before = registry->enabled_extensions().size();
@@ -709,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
 
   base::ListValue forcelist;
   forcelist.AppendString(BuildForceInstallPolicyValue(
-      kExtensionId, "http://localhost/autoupdate/manifest"));
+      kExtensionId, GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
   policies.Set(policy::key::kExtensionInstallForcelist,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -767,32 +774,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
   const size_t size_before = registry->enabled_extensions().size();
-  base::FilePath basedir = test_data_dir_.AppendASCII("autoupdate");
   ASSERT_TRUE(registry->disabled_extensions().is_empty());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::FilePath pem_path = basedir.AppendASCII("key.pem");
-  base::FilePath v2_path = PackExtensionWithOptions(
-      basedir.AppendASCII("v2"), temp_dir.GetPath().AppendASCII("v2.crx"),
-      pem_path, base::FilePath());
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.path() == "/autoupdate/manifest") {
-          content::URLLoaderInterceptor::WriteResponse(
-              basedir.AppendASCII("manifest_v2.xml"), params->client.get());
-          return true;
-        }
-        if (params->url_request.url.path() == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(v2_path,
-                                                       params->client.get());
-          return true;
-        }
-        return false;
-      }));
+  base::FilePath crx_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
   // Check that the policy is initially empty.
   ASSERT_TRUE(extensions::ExtensionManagementFactory::GetForBrowserContext(
@@ -802,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
       << kForceInstallNotEmptyHelp;
 
   // User install of the extension.
-  ASSERT_TRUE(InstallExtension(v2_path, 1));
+  ASSERT_TRUE(InstallExtension(crx_path, 1));
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
   const Extension* extension =
       registry->enabled_extensions().GetByID(kExtensionId);
@@ -813,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   // Setup the force install policy. It should override the location.
   base::ListValue forcelist;
   forcelist.AppendString(BuildForceInstallPolicyValue(
-      kExtensionId, "http://localhost/autoupdate/manifest"));
+      kExtensionId, GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
   policies.Set(policy::key::kExtensionInstallForcelist,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -839,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   EXPECT_FALSE(extension);
 
   // User install again, but have it disabled too before setting the policy.
-  ASSERT_TRUE(InstallExtension(v2_path, 1));
+  ASSERT_TRUE(InstallExtension(crx_path, 1));
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
   extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
