@@ -230,7 +230,7 @@ public class AndroidSyncSettings {
         }
 
         // Disable the syncability of Chrome for all other accounts.
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             for (Account account : accounts) {
                 if (account.equals(mAccount)) continue;
                 if (mSyncContentResolverDelegate.getIsSyncable(account, mContractAuthority) <= 0) {
