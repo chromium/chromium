@@ -19,6 +19,7 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForClearBrowsingDataTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -151,9 +152,10 @@ void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
     remove_data();
   }
 
-  base::test::ios::WaitUntilCondition(^bool {
-    return data_removed;
-  });
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForClearBrowsingDataTimeout, ^{
+        return data_removed;
+      }));
 }
 
 NSInteger WebIntTest::GetIndexOfNavigationItem(
