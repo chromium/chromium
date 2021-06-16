@@ -14,6 +14,7 @@
   },
   "Mojo ChromiumOS": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
@@ -26,6 +27,7 @@
   },
   "Mojo Linux": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -44,6 +46,7 @@
   },
   "mac-mojo-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,

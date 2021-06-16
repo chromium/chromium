@@ -1,6 +1,7 @@
 {
   "gpu-fyi-try-win10-amd-rel-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -16,6 +17,7 @@
   },
   "gpu-fyi-try-win10-intel-exp-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -31,6 +33,7 @@
   },
   "gpu-fyi-try-win10-intel-rel-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -75,6 +78,7 @@
   },
   "gpu-fyi-try-win10-nvidia-dx12vk-rel-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -91,6 +95,7 @@
   },
   "gpu-fyi-try-win10-nvidia-exp-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -106,6 +111,7 @@
   },
   "gpu-fyi-try-win10-nvidia-rel-32": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -122,6 +128,7 @@
   },
   "gpu-fyi-try-win10-nvidia-rel-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -137,6 +144,7 @@
   },
   "gpu-fyi-try-win10-nvidia-sk-dawn-rel-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_skia_dawn_gtests": true,
       "ffmpeg_branding": "Chrome",
@@ -150,6 +158,7 @@
   },
   "gpu-fyi-try-win7-amd-rel-32": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -166,6 +175,7 @@
   },
   "gpu-fyi-try-win7-nvidia-rel-32": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -182,6 +192,7 @@
   },
   "gpu-fyi-try-win7-nvidia-rel-64": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -197,6 +208,7 @@
   },
   "win-annotator-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -225,6 +237,7 @@
   },
   "win-libfuzzer-asan-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_mojom_fuzzer": true,
       "enable_nacl": false,
@@ -242,6 +255,7 @@
   },
   "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -265,6 +279,7 @@
   },
   "win10_chromium_x64_rel_ng": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": true,
@@ -279,6 +294,7 @@
   },
   "win10_chromium_x64_rel_ng_exp": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -288,6 +304,7 @@
   },
   "win10_chromium_x64_rel_ng_rts": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": true,
@@ -302,6 +319,7 @@
   },
   "win7-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -315,6 +333,7 @@
   },
   "win_archive": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -336,6 +355,7 @@
   },
   "win_chromium_compile_rel_ng": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -360,6 +380,7 @@
   },
   "win_chromium_x64_rel_ng": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -371,6 +392,7 @@
   },
   "win_mojo": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -381,6 +403,7 @@
   },
   "win_optional_gpu_tests_rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
@@ -403,6 +426,7 @@
   },
   "win_x64_archive": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,

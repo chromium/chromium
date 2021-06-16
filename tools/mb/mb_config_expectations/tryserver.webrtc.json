@@ -1,6 +1,7 @@
 {
   "android_chromium_compile": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -14,6 +15,7 @@
   },
   "linux_chromium_compile": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -31,6 +33,7 @@
   },
   "mac_chromium_compile": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -42,6 +45,7 @@
   },
   "win_chromium_compile": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",

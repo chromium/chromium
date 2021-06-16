@@ -1,6 +1,7 @@
 {
   "Linux ASan LSan Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_asan": true,
       "is_component_build": false,
@@ -25,6 +26,7 @@
   },
   "Linux Chromium OS ASan LSan Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_asan": true,
       "is_component_build": false,

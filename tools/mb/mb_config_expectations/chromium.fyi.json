@@ -220,6 +220,7 @@
   },
   "Linux Viz": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -368,6 +369,7 @@
   },
   "Win 10 Fast Ring": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -398,6 +400,7 @@
   },
   "android-backuprefptr-arm-fyi-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_backup_ref_ptr_slow_checks": true,
       "enable_brp_directmap_support": true,
@@ -418,6 +421,7 @@
   },
   "android-backuprefptr-arm64-fyi-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_backup_ref_ptr_slow_checks": true,
       "enable_brp_directmap_support": true,
@@ -746,6 +750,7 @@
   },
   "linux-backuprefptr-x64-fyi-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_backup_ref_ptr_slow_checks": true,
       "enable_brp_directmap_support": true,
@@ -772,6 +777,7 @@
   },
   "linux-blink-heap-concurrent-marking-tsan-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -984,6 +990,7 @@
   },
   "mac-paeverywhere-x64-fyi-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -1009,6 +1016,7 @@
   },
   "win-backuprefptr-x64-fyi-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_backup_ref_ptr_slow_checks": true,
       "enable_brp_directmap_support": true,
@@ -1026,6 +1034,7 @@
   },
   "win-backuprefptr-x86-fyi-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_backup_ref_ptr_slow_checks": true,
       "enable_brp_directmap_support": true,

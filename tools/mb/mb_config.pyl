@@ -2875,6 +2875,10 @@
       'args_file': '//build/args/chromeos/betty-pi-arc.gni',
     },
 
+    'blink_disable_generated_code_formatting': {
+      'gn_args': 'blink_enable_generated_code_formatting=false'
+    },
+
     'cast': {
       'gn_args': 'is_chromecast=true'
     },
@@ -3435,7 +3439,8 @@
     },
 
     'release_trybot': {
-      'mixins': ['release_bot', 'minimal_symbols', 'dcheck_always_on'],
+      'mixins': ['release_bot', 'minimal_symbols', 'dcheck_always_on',
+                 'blink_disable_generated_code_formatting'],
     },
 
     'release_trybot_blink': {
@@ -3443,11 +3448,13 @@
     },
 
     'release_trybot_dcheck_off': {
-      'mixins': ['release_trybot', 'dcheck_off',],
+      'mixins': ['release_trybot', 'dcheck_off',
+                 'blink_disable_generated_code_formatting'],
     },
 
     'release_trybot_reclient': {
-      'mixins': ['release_bot_reclient', 'minimal_symbols', 'dcheck_always_on'],
+      'mixins': ['release_bot_reclient', 'minimal_symbols', 'dcheck_always_on',
+                 'blink_disable_generated_code_formatting'],
     },
 
     'resource_allowlisting': {

@@ -84,6 +84,7 @@
   "gpu-fyi-try-chromeos-amd64-generic": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_chromeos_device": true,
@@ -98,6 +99,7 @@
   "gpu-fyi-try-chromeos-kevin": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_chromeos_device": true,
@@ -171,6 +173,7 @@
   },
   "linux-cfm-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_cfm": true,
       "is_component_build": false,
@@ -204,6 +207,7 @@
   },
   "linux-chromeos-inverse-fieldtrials-fyi-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "ChromeOS",
       "invert_fieldtrials": true,
@@ -217,6 +221,7 @@
   },
   "linux-chromeos-js-code-coverage": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "ffmpeg_branding": "ChromeOS",
@@ -233,6 +238,7 @@
   },
   "linux-chromeos-rel": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "ffmpeg_branding": "ChromeOS",
@@ -248,6 +254,7 @@
   "linux-lacros-rel": {
     "gn_args": {
       "also_build_ash_chrome": true,
+      "blink_enable_generated_code_formatting": false,
       "chromeos_is_browser_only": true,
       "dcheck_always_on": true,
       "is_component_build": false,

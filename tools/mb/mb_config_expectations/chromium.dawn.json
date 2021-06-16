@@ -1,6 +1,7 @@
 {
   "Dawn Linux x64 Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -11,6 +12,7 @@
   },
   "Dawn Linux x64 DEPS Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -21,6 +23,7 @@
   },
   "Dawn Mac x64 Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -31,6 +34,7 @@
   },
   "Dawn Mac x64 DEPS Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -41,6 +45,7 @@
   },
   "Dawn Win10 x64 ASAN Release": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_asan": true,
       "is_component_build": false,
@@ -52,6 +57,7 @@
   },
   "Dawn Win10 x64 Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -62,6 +68,7 @@
   },
   "Dawn Win10 x64 DEPS Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -72,6 +79,7 @@
   },
   "Dawn Win10 x86 Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -83,6 +91,7 @@
   },
   "Dawn Win10 x86 DEPS Builder": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
