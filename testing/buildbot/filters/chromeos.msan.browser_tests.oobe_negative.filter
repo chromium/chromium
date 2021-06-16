@@ -21,6 +21,7 @@
 -All/SshWarningTest.*
 -All/SyncConsentPolicyDisabledTest.*
 -All/SyncConsentTestWithParams.*
+-All/WebviewCloseViewLoginTest.*
 -All/WebviewLoginWithIframeTest.*
 -All/WizardControllerDeviceStateExplicitRequirementTest.*
 -All/WizardControllerUpdateAfterCompletedOobeTest.*
