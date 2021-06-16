@@ -61,9 +61,10 @@ float GetDprForSizeAdjustment(const Element& owner_element) {
   float dpr = 1.0f;
   // Android doesn't need these adjustments and it makes tests fail.
 #ifndef OS_ANDROID
-  if (Platform::Current()->IsUseZoomForDSFEnabled() &&
-      owner_element.GetDocument().GetFrame()) {
-    dpr = owner_element.GetDocument().GetFrame()->DevicePixelRatio();
+  LocalFrame* frame = owner_element.GetDocument().GetFrame();
+  const Page* page = frame ? frame->GetPage() : nullptr;
+  if (Platform::Current()->IsUseZoomForDSFEnabled() && page) {
+    dpr = page->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
   }
 #endif
   return dpr;
@@ -304,7 +305,7 @@ void ExternalPopupMenu::GetPopupMenuInfo(
   float dpr = GetDprForSizeAdjustment(owner_element);
   *item_height = font_data ? font_data->GetFontMetrics().Height() / dpr : 0;
   *font_size = static_cast<int>(
-      menu_style.GetFont().GetFontDescription().SpecifiedSize());
+      menu_style.GetFont().GetFontDescription().ComputedSize() / dpr);
   *selected_item = ToExternalPopupMenuItemIndex(
       owner_element.SelectedListIndex(), owner_element);
 

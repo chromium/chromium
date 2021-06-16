@@ -235,8 +235,8 @@ TEST_F(ExternalPopupMenuTest, MAYBE_PopupAccountsForDeviceScaleFactor) {
   RegisterMockedURLLoad("select_mid_screen.html");
   LoadFrame("select_mid_screen.html");
 
-  constexpr int kScaleFactor = 2;
-  WebView()->SetZoomFactorForDeviceScaleFactor(kScaleFactor);
+  constexpr float kScaleFactor = 2.0f;
+  WebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(kScaleFactor);
   WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
