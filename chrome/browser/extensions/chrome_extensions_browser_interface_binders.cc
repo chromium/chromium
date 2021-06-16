@@ -8,9 +8,6 @@
 #include "base/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/media/router/media_router_feature.h"       // nogncheck
-#include "chrome/browser/media/router/mojo/media_router_desktop.h"  // nogncheck
-#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -103,14 +100,6 @@ void PopulateChromeFrameBindersForExtension(
     content::RenderFrameHost* render_frame_host,
     const Extension* extension) {
   DCHECK(extension);
-  auto* context = render_frame_host->GetProcess()->GetBrowserContext();
-  if (media_router::MediaRouterEnabled(context) &&
-      extension->permissions_data()->HasAPIPermission(
-          mojom::APIPermissionID::kMediaRouterPrivate)) {
-    binder_map->Add<media_router::mojom::MediaRouter>(
-        base::BindRepeating(&media_router::MediaRouterDesktop::BindToReceiver,
-                            base::RetainedRef(extension), context));
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -20,7 +20,6 @@
 #include "components/media_router/common/media_source.h"
 #include "components/openscreen_platform/network_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #if defined(OS_WIN)
@@ -34,19 +33,6 @@ constexpr char kLoggerComponent[] = "MediaRouterDesktop";
 #endif
 
 MediaRouterDesktop::~MediaRouterDesktop() = default;
-
-// static
-void MediaRouterDesktop::BindToReceiver(
-    const extensions::Extension* extension,
-    content::BrowserContext* context,
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::MediaRouter> receiver) {
-  MediaRouterDesktop* impl = static_cast<MediaRouterDesktop*>(
-      MediaRouterFactory::GetApiForBrowserContext(context));
-  DCHECK(impl);
-
-  impl->BindToMojoReceiver(std::move(receiver), *extension);
-}
 
 void MediaRouterDesktop::OnUserGesture() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -166,17 +152,6 @@ void MediaRouterDesktop::GetMediaSinkServiceStatus(
   std::move(callback).Run(media_sink_service_status_.GetStatusAsJSONString());
 }
 
-void MediaRouterDesktop::BindToMojoReceiver(
-    mojo::PendingReceiver<mojom::MediaRouter> receiver,
-    const extensions::Extension& extension) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  MediaRouterMojoImpl::BindToMojoReceiver(std::move(receiver));
-  if (!provider_version_was_recorded_) {
-    MediaRouterMojoMetrics::RecordMediaRouteProviderVersion(extension);
-    provider_version_was_recorded_ = true;
-  }
-}
-
 void MediaRouterDesktop::InitializeMediaRouteProviders() {
   if (!openscreen_platform::HasNetworkContextGetter()) {
     openscreen_platform::SetNetworkContextGetter(base::BindRepeating([] {
@@ -256,9 +231,6 @@ void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
 #if defined(OS_WIN)
 void MediaRouterDesktop::EnsureMdnsDiscoveryEnabled() {
   media_sink_service_->StartMdnsDiscovery();
-  // Record that we enabled mDNS discovery, so that we will know to enable again
-  // when we reconnect to the component extension.
-  should_enable_mdns_discovery_ = true;
 }
 
 void MediaRouterDesktop::OnFirewallCheckComplete(

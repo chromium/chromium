@@ -10,5 +10,4 @@ per-file enterprise_platform_keys*=emaxx@chromium.org
 per-file file_manager_private_custom_bindings.js=file://ui/file_manager/OWNERS
 per-file image_util.js=dewittj@chromium.org
 per-file media_galleries*.js=file://chrome/browser/media_galleries/OWNERS
-per-file media_router_bindings.js=file://chrome/browser/media/router/OWNERS
 per-file notifications_*.js=dewittj@chromium.org

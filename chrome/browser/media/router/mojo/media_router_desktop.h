@@ -14,47 +14,18 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace content {
-class RenderFrameHost;
-}
-
-namespace extensions {
-class Extension;
-}
-
 namespace media_router {
 class CastMediaRouteProvider;
 class DualMediaSinkService;
 class WiredDisplayMediaRouteProvider;
 
-// MediaRouter implementation that uses the MediaRouteProvider implemented in
-// the component extension.
+// MediaRouter implementation that uses the desktop MediaRouteProviders.
 class MediaRouterDesktop : public MediaRouterMojoImpl {
  public:
   // This constructor performs a firewall check on Windows and is not suitable
   // for use in unit tests; instead use the constructor below.
   explicit MediaRouterDesktop(content::BrowserContext* context);
   ~MediaRouterDesktop() override;
-
-  // Max number of Mojo connection error counts on a MediaRouteProvider message
-  // pipe before MediaRouterDesktop treats it as a permanent error. Used for
-  // ExtensionMediaRouteProviderProxy only.
-  static constexpr int kMaxMediaRouteProviderErrorCount = 10;
-
-  // Sets up the MediaRouter instance owned by |context| to handle
-  // MediaRouterObserver requests from the component extension given by
-  // |extension|. Creates the MediaRouterMojoImpl instance if it does not
-  // exist.
-  // Called by the Mojo module registry.
-  // |extension|: The component extension, used for querying
-  //     suspension state.
-  // |context|: The BrowserContext which owns the extension process.
-  // |receiver|: The Mojo pending receiver used for binding.
-  static void BindToReceiver(
-      const extensions::Extension* extension,
-      content::BrowserContext* context,
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<mojom::MediaRouter> receiver);
 
   // MediaRouter implementation.
   void OnUserGesture() override;
@@ -70,8 +41,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
 
  private:
   friend class MediaRouterDesktopTest;
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
-                           ExtensionMrpRecoversFromConnectionError);
 
   // Used by tests only. This constructor skips the firewall check so unit tests
   // do not have to depend on the system's firewall configuration.
@@ -91,12 +60,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override;
 
-  // Binds |this| to a Mojo pending receiver, so that clients can acquire a
-  // handle to a MediaRouter instance via the Mojo service connector.
-  // Passes the extension's ID to the event page request manager.
-  void BindToMojoReceiver(mojo::PendingReceiver<mojom::MediaRouter> receiver,
-                          const extensions::Extension& extension);
-
   // Initializes MRPs and adds them to |media_route_providers_|.
   void InitializeMediaRouteProviders();
 
@@ -106,7 +69,7 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void InitializeDialMediaRouteProvider();
 
 #if defined(OS_WIN)
-  // Ensures that mDNS discovery is enabled in the MRPM extension. This can be
+  // Ensures that mDNS discovery is enabled in the Cast MRP. This can be
   // called many times but the MRPM will only be called once per registration
   // period.
   void EnsureMdnsDiscoveryEnabled();
@@ -141,14 +104,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   // A status object that keeps track of sinks discovered by media sink
   // services.
   MediaSinkServiceStatus media_sink_service_status_;
-
-#if defined(OS_WIN)
-  // A flag to ensure that mDNS discovery is only enabled on Windows when there
-  // will be appropriate context for the user to associate a firewall prompt
-  // with Media Router. |should_enable_mdns_discovery_| can only go from
-  // |false| to |true|.
-  bool should_enable_mdns_discovery_ = false;
-#endif
 
   base::WeakPtrFactory<MediaRouterDesktop> weak_factory_{this};
 
