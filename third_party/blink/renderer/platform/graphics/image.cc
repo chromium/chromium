@@ -344,23 +344,19 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
   if (!paint_image)
     return {};
 
-  auto* bitmap_image = DynamicTo<BitmapImage>(this);
-  IntSize density_corrected_size;
-  if (bitmap_image)
-    density_corrected_size = bitmap_image->DensityCorrectedSize();
+  if (auto* bitmap_image = DynamicTo<BitmapImage>(this)) {
+    const IntSize paint_image_size(paint_image.width(), paint_image.height());
+    const IntSize density_corrected_size = bitmap_image->DensityCorrectedSize();
 
-  if (bitmap_image && (respect_image_orientation == kRespectImageOrientation ||
-                       !density_corrected_size.IsEmpty())) {
-    ImageOrientation orientation =
-        respect_image_orientation == kRespectImageOrientation
-            ? bitmap_image->CurrentFrameOrientation()
-            : ImageOrientationEnum::kDefault;
+    ImageOrientation orientation = ImageOrientationEnum::kDefault;
+    if (respect_image_orientation == kRespectImageOrientation)
+      orientation = bitmap_image->CurrentFrameOrientation();
 
     FloatSize image_scale(1, 1);
-    if (density_corrected_size != bitmap_image->Size()) {
-      image_scale =
-          FloatSize(density_corrected_size.Width() / bitmap_image->width(),
-                    density_corrected_size.Height() / bitmap_image->height());
+    if (density_corrected_size != paint_image_size) {
+      image_scale = FloatSize(
+          density_corrected_size.Width() / paint_image_size.Width(),
+          density_corrected_size.Height() / paint_image_size.Height());
     }
 
     paint_image = ResizeAndOrientImage(paint_image, orientation, image_scale);
