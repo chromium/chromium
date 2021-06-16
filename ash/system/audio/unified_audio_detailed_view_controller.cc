@@ -4,6 +4,7 @@
 
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"

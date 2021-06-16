@@ -200,12 +200,23 @@ void FakeCrasAudioClient::SetInputMute(bool mute_on) {
     observer.InputMuteChanged(volume_state_.input_mute);
 }
 
+void FakeCrasAudioClient::SetNoiseCancellationSupported(
+    bool noise_cancellation_supported) {
+  noise_cancellation_supported_ = noise_cancellation_supported;
+}
+
 void FakeCrasAudioClient::SetNoiseCancellationEnabled(
-    bool noise_cancellation_on) {}
+    bool noise_cancellation_on) {
+  ++noise_cancellation_enabled_counter_;
+}
 
 void FakeCrasAudioClient::GetNoiseCancellationSupported(
     DBusMethodCallback<bool> callback) {
-  std::move(callback).Run(false);
+  std::move(callback).Run(noise_cancellation_supported_);
+}
+
+uint32_t FakeCrasAudioClient::GetNoiseCancellationEnabledCount() {
+  return noise_cancellation_enabled_counter_;
 }
 
 void FakeCrasAudioClient::SetActiveOutputNode(uint64_t node_id) {

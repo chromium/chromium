@@ -15,6 +15,7 @@
 #include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/components/audio/audio_pref_observer.h"
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -44,6 +45,10 @@ class AudioDevicesPrefHandler;
 // |result| is true if the method call is successfully completed, otherwise
 // false.
 using VoidCrasAudioHandlerCallback = base::OnceCallback<void(bool result)>;
+
+// Callback to handle the dbus message for whether noise cancellation is
+// supported by the board.
+using OnNoiseCancellationSupportedCallback = base::OnceCallback<void()>;
 
 // This class is not thread safe. The public functions should be called on
 // browser main thread.
@@ -240,6 +245,19 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Gets the default output buffer size in frames.
   void GetDefaultOutputBufferSize(int32_t* buffer_size) const;
 
+  // Gets the state of input noise cancellation.
+  bool GetNoiseCancellationState() const;
+
+  // Sends a DBus signal to set the state of input noise cancellation.
+  void SetNoiseCancellationState(bool state);
+
+  // Sets the state of input noise cancellation in preferences.
+  void SetNoiseCancellationPrefState(bool state);
+
+  // Get if noise cancellation is supported by the board.
+  void RequestNoiseCancellationSupported(
+      OnNoiseCancellationSupportedCallback callback);
+
   // Whether there is alternative input/output audio device.
   bool has_alternative_input() const;
   bool has_alternative_output() const;
@@ -351,6 +369,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Returns if system AEC is supported in CRAS or not.
   bool system_aec_supported() const;
+
+  // Returns if noise cancellation is supported in CRAS or not.
+  bool noise_cancellation_supported() const;
 
   // Returns the system AEC group ID. If no group ID is specified, -1 is
   // returned.
@@ -606,6 +627,10 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Calling dbus to get system AEC supported flag on main thread.
   void GetSystemAecSupportedOnMainThread();
 
+  // Handle dbus callback for GetSystemNoiseCancellationSupported.
+  void HandleGetNoiseCancellationSupported(
+      absl::optional<bool> system_noise_cancellation_supported);
+
   // Handle dbus callback for GetSystemAecSupported.
   void HandleGetSystemAecSupported(absl::optional<bool> system_aec_supported);
 
@@ -698,6 +723,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   base::flat_map<ClientType, uint32_t> number_of_input_streams_with_permission_;
 
   bool system_aec_supported_ = false;
+  bool noise_cancellation_supported_ = false;
   int32_t system_aec_group_id_ = kSystemAecGroupIdNotAvailable;
   bool system_ns_supported_ = false;
   bool system_agc_supported_ = false;

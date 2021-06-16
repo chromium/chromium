@@ -72,11 +72,13 @@ bool AudioDevicesPrefHandlerStub::GetDeviceActive(const AudioDevice& device,
   return true;
 }
 bool AudioDevicesPrefHandlerStub::GetNoiseCancellationState() {
-  return false;
+  return noise_cancellation_state_;
 }
 
 void AudioDevicesPrefHandlerStub::SetNoiseCancellationState(
-    bool noise_cancellation_state) {}
+    bool noise_cancellation_state) {
+  noise_cancellation_state_ = noise_cancellation_state;
+}
 
 bool AudioDevicesPrefHandlerStub::GetAudioOutputAllowedValue() {
   return true;

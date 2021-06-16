@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
 
   static FakeCrasAudioClient* Get();
 
+  void SetNoiseCancellationSupported(bool noise_cancellation_supported);
+  uint32_t GetNoiseCancellationEnabledCount();
+
   // CrasAudioClient overrides:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -121,7 +124,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // By default, immediately sends OutputNodeVolumeChange signal following the
   // SetOutputNodeVolume fake dbus call.
   bool notify_volume_change_with_delay_ = false;
+  bool noise_cancellation_supported_ = false;
   uint32_t battery_level_ = 0;
+  uint32_t noise_cancellation_enabled_counter_ = 0;
   // Maps audio client type to the number of active input streams for clients
   // with the type specified
   ClientTypeToInputStreamCount active_input_streams_;
