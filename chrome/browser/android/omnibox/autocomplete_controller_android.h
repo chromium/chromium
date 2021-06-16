@@ -7,23 +7,26 @@
 
 #include <memory>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
+#include "content/public/browser/browser_context.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class AutocompleteController;
-struct AutocompleteMatch;
 class AutocompleteResult;
 class ChromeAutocompleteProviderClient;
 class Profile;
+
+namespace base {
+template <typename Type>
+struct DefaultSingletonTraits;
+}  // namespace base
 
 // The native part of the Java AutocompleteController class.
 class AutocompleteControllerAndroid : public AutocompleteController::Observer,
