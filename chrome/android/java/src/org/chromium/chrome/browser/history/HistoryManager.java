@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -318,7 +319,13 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
                 R.layout.incognito_history_placeholder, null);
         ImageButton dismissButton =
                 placeholderView.findViewById(R.id.close_history_placeholder_button);
-        dismissButton.setOnClickListener(v -> mActivity.finish());
+        if (mIsSeparateActivity) {
+            dismissButton.setOnClickListener(v -> mActivity.finish());
+        } else {
+            dismissButton.setVisibility(View.GONE);
+        }
+        placeholderView.setFocusable(true);
+        placeholderView.setFocusableInTouchMode(true);
         return placeholderView;
     }
 
