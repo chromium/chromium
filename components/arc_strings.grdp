@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- ARC app compatibility mode -->
+  <message name="IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE" desc="Tooltip text that describes the compatibility mode button only supports the phone size">
+    This app only supports "Phone" size.
+  </message>
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_TITLE" desc="Dialog title that asks user if they want to enable resizing of the ARC application.">
     Enable Resizing?
   </message>

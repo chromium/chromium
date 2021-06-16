@@ -172,6 +172,8 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
   if (!currentMode)
     return;
 
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+
   switch (*currentMode) {
     case ResizeCompatMode::kPhone:
       compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
@@ -179,6 +181,10 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
                                    ash::kSystemMenuPhoneIcon);
       compat_mode_button->SetText(l10n_util::GetStringUTF16(
           IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE));
+      if (resize_lock_type == ash::ArcResizeLockType::FULLY_LOCKED) {
+        compat_mode_button->SetTooltipText(l10n_util::GetStringUTF16(
+            IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
+      }
       break;
     case ResizeCompatMode::kTablet:
       compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
@@ -195,8 +201,6 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
           IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE));
       break;
   }
-
-  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
 
   switch (resize_lock_type) {
     case ash::ArcResizeLockType::RESIZE_LIMITED:
