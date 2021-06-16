@@ -704,8 +704,7 @@ std::u16string ContentAnalysisDialog::GetSuccessMessage() const {
 std::u16string ContentAnalysisDialog::GetCustomMessage() const {
   DCHECK(is_warning() || is_failure());
   DCHECK(has_custom_message());
-  return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                                    *(delegate_->GetCustomMessage()));
+  return *(delegate_->GetCustomMessage());
 }
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {

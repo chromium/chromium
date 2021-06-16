@@ -193,6 +193,36 @@ bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
   return false;
 }
 
+absl::optional<std::u16string> ConnectorsManager::GetCustomMessage(
+    AnalysisConnector connector) {
+  if (IsConnectorEnabled(connector)) {
+    if (analysis_connector_settings_.count(connector) == 0)
+      CacheAnalysisConnectorPolicy(connector);
+
+    if (analysis_connector_settings_.count(connector) &&
+        !analysis_connector_settings_.at(connector).empty()) {
+      return analysis_connector_settings_.at(connector)
+          .at(0)
+          .GetCustomMessage();
+    }
+  }
+  return absl::nullopt;
+}
+
+absl::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
+    AnalysisConnector connector) {
+  if (IsConnectorEnabled(connector)) {
+    if (analysis_connector_settings_.count(connector) == 0)
+      CacheAnalysisConnectorPolicy(connector);
+
+    if (analysis_connector_settings_.count(connector) &&
+        !analysis_connector_settings_.at(connector).empty()) {
+      return analysis_connector_settings_.at(connector).at(0).GetLearnMoreUrl();
+    }
+  }
+  return absl::nullopt;
+}
+
 std::vector<std::string> ConnectorsManager::GetAnalysisServiceProviderNames(
     AnalysisConnector connector) {
   if (IsConnectorEnabled(connector)) {

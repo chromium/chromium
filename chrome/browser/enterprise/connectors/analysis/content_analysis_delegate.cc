@@ -220,7 +220,8 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
 absl::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
     const {
   if (!data_.settings.custom_message_text.empty()) {
-    return data_.settings.custom_message_text;
+    return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                                      data_.settings.custom_message_text);
   }
 
   return absl::nullopt;

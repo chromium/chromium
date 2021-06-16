@@ -32,6 +32,11 @@ class AnalysisServiceSettings {
   // Get the block_until_verdict setting if the settings are valid.
   bool ShouldBlockUntilVerdict() const;
 
+  // Get the custom message/learn more URL. Returns absl::nullopt if the
+  // settings are invalid or if the message/URL are empty.
+  absl::optional<std::u16string> GetCustomMessage();
+  absl::optional<GURL> GetLearnMoreUrl();
+
   std::string service_provider_name() const { return service_provider_name_; }
 
  private:

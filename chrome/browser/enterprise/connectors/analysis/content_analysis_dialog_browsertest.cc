@@ -824,8 +824,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
       std::move(delegate), ContentAnalysisDelegateBase::FinalResult::SUCCESS);
   dialog->ShowResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
 
-  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
-            u"Your administrator says \"Test\".");
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(), u"Test");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
@@ -883,6 +882,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateBypassWarning) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
+          u"", u"", GURL(),
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
@@ -901,6 +901,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateDiscardWarning) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
+          u"", u"", GURL(),
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
@@ -919,6 +920,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateDiscardBlock) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
+          u"", u"", GURL(),
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,

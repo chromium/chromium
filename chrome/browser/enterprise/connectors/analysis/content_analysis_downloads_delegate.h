@@ -16,6 +16,9 @@ namespace enterprise_connectors {
 class ContentAnalysisDownloadsDelegate : public ContentAnalysisDelegateBase {
  public:
   ContentAnalysisDownloadsDelegate(
+      const std::u16string& filename,
+      const std::u16string& custom_message,
+      GURL custom_learn_more_url,
       base::OnceCallback<void()> open_file_callback,
       base::OnceCallback<void()> discard_file_callback);
   ~ContentAnalysisDownloadsDelegate() override;
@@ -38,6 +41,9 @@ class ContentAnalysisDownloadsDelegate : public ContentAnalysisDelegateBase {
   // (which may be undefined).
   void ResetCallbacks();
 
+  std::u16string filename_;
+  std::u16string custom_message_;
+  GURL custom_learn_more_url_;
   base::OnceCallback<void()> open_file_callback_;
   base::OnceCallback<void()> discard_file_callback_;
 };

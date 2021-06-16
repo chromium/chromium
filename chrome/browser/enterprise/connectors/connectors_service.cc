@@ -332,6 +332,26 @@ bool ConnectorsService::DelayUntilVerdict(AnalysisConnector connector) {
   return connectors_manager_->DelayUntilVerdict(connector);
 }
 
+absl::optional<std::u16string> ConnectorsService::GetCustomMessage(
+    AnalysisConnector connector) {
+  if (!ConnectorsEnabled())
+    return absl::nullopt;
+
+  return connectors_manager_->GetCustomMessage(connector);
+}
+
+absl::optional<GURL> ConnectorsService::GetLearnMoreUrl(
+    AnalysisConnector connector) {
+  if (!ConnectorsEnabled())
+    return absl::nullopt;
+
+  return connectors_manager_->GetLearnMoreUrl(connector);
+}
+
+bool ConnectorsService::HasCustomInfoToDisplay(AnalysisConnector connector) {
+  return GetCustomMessage(connector) || GetLearnMoreUrl(connector);
+}
+
 std::vector<std::string> ConnectorsService::GetAnalysisServiceProviderNames(
     AnalysisConnector connector) {
   if (!ConnectorsEnabled())

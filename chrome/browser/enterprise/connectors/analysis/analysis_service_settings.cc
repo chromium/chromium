@@ -143,6 +143,18 @@ bool AnalysisServiceSettings::ShouldBlockUntilVerdict() const {
   return block_until_verdict_ == BlockUntilVerdict::BLOCK;
 }
 
+absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage() {
+  if (!IsValid() || custom_message_text_.empty())
+    return absl::nullopt;
+  return custom_message_text_;
+}
+
+absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl() {
+  if (!IsValid() || custom_message_learn_more_url_.is_empty())
+    return absl::nullopt;
+  return custom_message_learn_more_url_;
+}
+
 void AnalysisServiceSettings::AddUrlPatternSettings(
     const base::Value& url_settings_value,
     bool enabled,

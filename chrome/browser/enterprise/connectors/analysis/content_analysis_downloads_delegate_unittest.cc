@@ -20,6 +20,7 @@ class ContentAnalysisDownloadsDelegateTest : public testing::Test {
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestOpenFile) {
   ContentAnalysisDownloadsDelegate delegate(
+      u"", u"", GURL(),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
@@ -45,6 +46,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestOpenFile) {
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileWarning) {
   ContentAnalysisDownloadsDelegate delegate(
+      u"", u"", GURL(),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
@@ -70,6 +72,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileWarning) {
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileBlock) {
   ContentAnalysisDownloadsDelegate delegate(
+      u"", u"", GURL(),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
@@ -91,6 +94,37 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileBlock) {
   delegate.BypassWarnings();
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
+}
+
+TEST_F(ContentAnalysisDownloadsDelegateTest, TestNoMessageOrUrlReturnsNullOpt) {
+  ContentAnalysisDownloadsDelegate delegate(
+      u"", u"", GURL(),
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
+                     base::Unretained(this)),
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
+                     base::Unretained(this)));
+
+  EXPECT_FALSE(delegate.GetCustomMessage());
+  EXPECT_FALSE(delegate.GetCustomLearnMoreUrl());
+}
+
+TEST_F(ContentAnalysisDownloadsDelegateTest, TestGetMessageAndUrl) {
+  ContentAnalysisDownloadsDelegate delegate(
+      u"foo.txt", u"Message", GURL("http://www.example.com"),
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
+                     base::Unretained(this)),
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
+                     base::Unretained(this)));
+
+  EXPECT_TRUE(delegate.GetCustomMessage());
+  EXPECT_TRUE(delegate.GetCustomLearnMoreUrl());
+
+  EXPECT_EQ(
+      u"foo.txt has sensitive or dangerous data. Your administrator says "
+      u"\"Message\".",
+      *(delegate.GetCustomMessage()));
+  EXPECT_EQ(GURL("http://www.example.com"),
+            *(delegate.GetCustomLearnMoreUrl()));
 }
 
 }  // namespace enterprise_connectors

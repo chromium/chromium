@@ -61,6 +61,8 @@ class ConnectorsManager {
   bool IsConnectorEnabled(FileSystemConnector connector) const;
 
   bool DelayUntilVerdict(AnalysisConnector connector);
+  absl::optional<std::u16string> GetCustomMessage(AnalysisConnector connector);
+  absl::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector);
 
   std::vector<std::string> GetAnalysisServiceProviderNames(
       AnalysisConnector connector);
