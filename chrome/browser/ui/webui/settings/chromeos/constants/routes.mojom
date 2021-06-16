@@ -95,6 +95,7 @@ enum Subpage {
   kPluginVmSharedPaths = 703,
   kPluginVmUsbPreferences = 704,
   kOnStartup = 705,
+  kAppNotifications = 706,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -205,6 +206,7 @@ const string kSearchSubpagePath = "osSearch/search";
 // Apps section.
 const string kAppsSectionPath = "apps";
 const string kAppManagementSubpagePath = "app-management";
+const string kAppNotificationsSubpagePath = "app-notifications";
 const string kAppDetailsSubpagePath = "app-management/detail";
 const string kGooglePlayStoreSubpagePath = "androidAppsDetails";
 const string kPluginVmSharedPathsSubpagePath =

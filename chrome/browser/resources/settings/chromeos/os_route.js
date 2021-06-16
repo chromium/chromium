@@ -179,6 +179,12 @@ cr.define('settings', function() {
 
     // Apps section.
     r.APPS = createSection(r.BASIC, mojom.APPS_SECTION_PATH, Section.kApps);
+    r.APP_NOTIFICATIONS = createSubpage(
+        r.APPS, mojom.APP_NOTIFICATIONS_SUBPAGE_PATH,
+        Subpage.kAppNotifications);
+    r.APP_NOTIFICATIONS_DETAIL = createSubpage(
+        r.APP_NOTIFICATIONS, mojom.APP_DETAILS_SUBPAGE_PATH,
+        Subpage.kAppDetails);
     r.APP_MANAGEMENT = createSubpage(
         r.APPS, mojom.APP_MANAGEMENT_SUBPAGE_PATH, Subpage.kAppManagement);
     r.APP_MANAGEMENT_DETAIL = createSubpage(

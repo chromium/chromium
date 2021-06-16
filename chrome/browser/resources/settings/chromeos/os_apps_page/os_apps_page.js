@@ -49,6 +49,17 @@ Polymer({
     showAndroidApps: Boolean,
 
     /**
+     * Whether the App Notifications page should be shown.
+     * @type {boolean}
+     */
+    showAppNotificationsRow_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('showOsSettingsAppNotificationsRow');
+      },
+    },
+
+    /**
      * Show Plugin VM shared folders sub-page.
      * @type {boolean}
      */
@@ -135,6 +146,11 @@ Polymer({
         AppManagementEntryPoint.OsSettingsMainPage,
         Object.keys(AppManagementEntryPoint).length);
     settings.Router.getInstance().navigateTo(settings.routes.APP_MANAGEMENT);
+  },
+
+  /** @private */
+  onClickAppNotifications_() {
+    settings.Router.getInstance().navigateTo(settings.routes.APP_NOTIFICATIONS);
   },
 
   /**

@@ -15,6 +15,7 @@
  *   ADVANCED: !settings.Route,
  *   AMBIENT_MODE: !settings.Route,
  *   AMBIENT_MODE_PHOTOS: !settings.Route,
+ *   APP_NOTIFICATIONS: !settings.Route,
  *   APP_MANAGEMENT: !settings.Route,
  *   APP_MANAGEMENT_DETAIL: !settings.Route,
  *   APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS: !settings.Route,

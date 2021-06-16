@@ -251,6 +251,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appsPageTitle", IDS_SETTINGS_APPS_TITLE},
       {"appManagementTitle", IDS_SETTINGS_APPS_LINK_TEXT},
+      {"appNotificationsTitle", IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -264,6 +265,11 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("androidAppsVisible",
                           arc::IsArcAllowedForProfile(profile()));
   html_source->AddBoolean("havePlayStoreApp", arc::IsPlayStoreAvailable());
+
+  html_source->AddBoolean(
+      "showOsSettingsAppNotificationsRow",
+      base::FeatureList::IsEnabled(
+          chromeos::features::kOsSettingsAppNotificationsPage));
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);
@@ -313,6 +319,12 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultIcon::kAppsGrid,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kAppManagementSubpagePath);
+  // App Notifications
+  generator->RegisterTopLevelSubpage(IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT,
+                                     mojom::Subpage::kAppNotifications,
+                                     mojom::SearchResultIcon::kAppsGrid,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::kAppNotificationsSubpagePath);
   // Note: The subpage name in the UI is updated dynamically based on the app
   // being shown, but we use a generic "App details" string here.
   generator->RegisterNestedSubpage(
