@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/prefs.h"
@@ -90,6 +91,21 @@ void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
 }
 
 }  // namespace
+
+MetricsReporter::SurfaceWaiting::SurfaceWaiting() = default;
+MetricsReporter::SurfaceWaiting::SurfaceWaiting(
+    const feed::StreamType& stream_type,
+    base::TimeTicks wait_start)
+    : stream_type(stream_type), wait_start(wait_start) {}
+
+MetricsReporter::SurfaceWaiting::~SurfaceWaiting() = default;
+MetricsReporter::SurfaceWaiting::SurfaceWaiting(const SurfaceWaiting&) =
+    default;
+MetricsReporter::SurfaceWaiting::SurfaceWaiting(SurfaceWaiting&&) = default;
+MetricsReporter::SurfaceWaiting& MetricsReporter::SurfaceWaiting::operator=(
+    const SurfaceWaiting&) = default;
+MetricsReporter::SurfaceWaiting& MetricsReporter::SurfaceWaiting::operator=(
+    SurfaceWaiting&&) = default;
 
 MetricsReporter::MetricsReporter(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
@@ -238,7 +254,7 @@ void MetricsReporter::FeedViewed(SurfaceId surface_id) {
 
 void MetricsReporter::OpenAction(const StreamType& stream_type,
                                  int index_in_stream) {
-  CardOpenBegin();
+  CardOpenBegin(stream_type);
   ReportUserActionHistogram(FeedUserActionType::kTappedOnCard);
   base::RecordAction(
       base::UserMetricsAction("ContentSuggestions.Feed.CardAction.Open"));
@@ -253,7 +269,7 @@ void MetricsReporter::OpenVisitComplete(base::TimeDelta visit_time) {
 
 void MetricsReporter::OpenInNewTabAction(const StreamType& stream_type,
                                          int index_in_stream) {
-  CardOpenBegin();
+  CardOpenBegin(stream_type);
   ReportUserActionHistogram(FeedUserActionType::kTappedOpenInNewTab);
   base::RecordAction(base::UserMetricsAction(
       "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
@@ -362,9 +378,11 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
   }
 }
 
-void MetricsReporter::SurfaceOpened(SurfaceId surface_id) {
+void MetricsReporter::SurfaceOpened(const StreamType& stream_type,
+                                    SurfaceId surface_id) {
   ReportPersistentDataIfDayIsDone();
-  surfaces_waiting_for_content_.emplace(surface_id, base::TimeTicks::Now());
+  surfaces_waiting_for_content_.emplace(
+      surface_id, SurfaceWaiting{stream_type, base::TimeTicks::Now()});
   ReportUserActionHistogram(FeedUserActionType::kOpenedFeedSurface);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -397,18 +415,15 @@ void MetricsReporter::ReportOpenFeedIfNeeded(SurfaceId surface_id,
   auto iter = surfaces_waiting_for_content_.find(surface_id);
   if (iter == surfaces_waiting_for_content_.end())
     return;
-  base::TimeDelta latency = base::TimeTicks::Now() - iter->second;
+  SurfaceWaiting surface_waiting = std::move(iter->second);
   surfaces_waiting_for_content_.erase(iter);
 
-  if (success) {
-    base::UmaHistogramCustomTimes(
-        "ContentSuggestions.Feed.UserJourney.OpenFeed.SuccessDuration", latency,
-        base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
-  } else {
-    base::UmaHistogramCustomTimes(
-        "ContentSuggestions.Feed.UserJourney.OpenFeed.FailureDuration", latency,
-        base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
-  }
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"ContentSuggestions.Feed.UserJourney.OpenFeed",
+                    surface_waiting.stream_type.IsWebFeed() ? ".WebFeed" : "",
+                    success ? ".SuccessDuration" : ".FailureDuration"}),
+      base::TimeTicks::Now() - surface_waiting.wait_start,
+      base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
 }
 
 void MetricsReporter::ReportGetMoreIfNeeded(SurfaceId surface_id,
@@ -416,47 +431,50 @@ void MetricsReporter::ReportGetMoreIfNeeded(SurfaceId surface_id,
   auto iter = surfaces_waiting_for_more_content_.find(surface_id);
   if (iter == surfaces_waiting_for_more_content_.end())
     return;
-  base::TimeDelta latency = base::TimeTicks::Now() - iter->second;
+  SurfaceWaiting surface_waiting = std::move(iter->second);
   surfaces_waiting_for_more_content_.erase(iter);
-  if (success) {
-    base::UmaHistogramCustomTimes(
-        "ContentSuggestions.Feed.UserJourney.GetMore.SuccessDuration", latency,
-        base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
-  } else {
-    base::UmaHistogramCustomTimes(
-        "ContentSuggestions.Feed.UserJourney.GetMore.FailureDuration", latency,
-        base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
-  }
+
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"ContentSuggestions.Feed.UserJourney.GetMore.",
+                    success ? "SuccessDuration" : "FailureDuration"}),
+      base::TimeTicks::Now() - surface_waiting.wait_start,
+      base::TimeDelta::FromMilliseconds(50), kLoadTimeout, 50);
 }
 
-void MetricsReporter::CardOpenBegin() {
+void MetricsReporter::CardOpenBegin(const StreamType& stream_type) {
   ReportCardOpenEndIfNeeded(false);
-  pending_open_ = base::TimeTicks::Now();
+  pending_open_ = {stream_type, base::TimeTicks::Now()};
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsReporter::CardOpenTimeout, GetWeakPtr(),
-                     *pending_open_),
+                     pending_open_.wait_start),
       kOpenTimeout);
 }
 
 void MetricsReporter::CardOpenTimeout(base::TimeTicks start_ticks) {
-  if (pending_open_ && start_ticks == *pending_open_)
+  if (pending_open_ && start_ticks == pending_open_.wait_start)
     ReportCardOpenEndIfNeeded(false);
 }
 
 void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
   if (!pending_open_)
     return;
-  base::TimeDelta latency = base::TimeTicks::Now() - *pending_open_;
-  pending_open_.reset();
+  base::TimeDelta latency = base::TimeTicks::Now() - pending_open_.wait_start;
+
+  std::string histogram_name =
+      base::StrCat({"ContentSuggestions.Feed.UserJourney.OpenCard",
+                    pending_open_.stream_type.IsWebFeed() ? ".WebFeed" : "",
+                    success ? ".SuccessDuration" : ".Failure"});
+
   if (success) {
-    base::UmaHistogramCustomTimes(
-        "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration", latency,
-        base::TimeDelta::FromMilliseconds(100), kOpenTimeout, 50);
+    base::UmaHistogramCustomTimes(histogram_name, latency,
+                                  base::TimeDelta::FromMilliseconds(100),
+                                  kOpenTimeout, 50);
   } else {
-    base::UmaHistogramBoolean(
-        "ContentSuggestions.Feed.UserJourney.OpenCard.Failure", true);
+    base::UmaHistogramBoolean(histogram_name, true);
   }
+
+  pending_open_ = {};
 }
 
 void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
@@ -565,10 +583,11 @@ void MetricsReporter::OnBackgroundRefresh(LoadStreamStatus final_status) {
       final_status);
 }
 
-void MetricsReporter::OnLoadMoreBegin(SurfaceId surface_id) {
+void MetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
+                                      SurfaceId surface_id) {
   ReportGetMoreIfNeeded(surface_id, false);
-  surfaces_waiting_for_more_content_.emplace(surface_id,
-                                             base::TimeTicks::Now());
+  surfaces_waiting_for_more_content_.emplace(
+      surface_id, SurfaceWaiting{stream_type, base::TimeTicks::Now()});
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

@@ -328,7 +328,8 @@ class TestMetricsReporter : public MetricsReporter {
                     bool loaded_new_content_from_network,
                     base::TimeDelta stored_content_age,
                     std::unique_ptr<LoadLatencyTimes> latencies) override;
-  void OnLoadMoreBegin(SurfaceId surface_id) override;
+  void OnLoadMoreBegin(const StreamType& stream_type,
+                       SurfaceId surface_id) override;
   void OnLoadMore(LoadStreamStatus final_status) override;
   void OnBackgroundRefresh(LoadStreamStatus final_status) override;
   void OnClearAll(base::TimeDelta time_since_last_clear) override;

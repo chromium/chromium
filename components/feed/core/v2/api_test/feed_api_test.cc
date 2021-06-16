@@ -587,9 +587,10 @@ void TestMetricsReporter::OnLoadStream(
                                 loaded_new_content_from_network,
                                 stored_content_age, std::move(latencies));
 }
-void TestMetricsReporter::OnLoadMoreBegin(SurfaceId surface_id) {
+void TestMetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
+                                          SurfaceId surface_id) {
   load_more_surface_id = surface_id;
-  MetricsReporter::OnLoadMoreBegin(surface_id);
+  MetricsReporter::OnLoadMoreBegin(stream_type, surface_id);
 }
 void TestMetricsReporter::OnLoadMore(LoadStreamStatus final_status) {
   load_more_status = final_status;

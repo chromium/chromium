@@ -52,7 +52,7 @@ class MetricsReporter {
   void StreamScrollStart();
 
   // Called when the Feed surface is opened and closed.
-  void SurfaceOpened(SurfaceId surface_id);
+  void SurfaceOpened(const StreamType& stream_type, SurfaceId surface_id);
   void SurfaceClosed(SurfaceId surface_id);
 
   // Network metrics.
@@ -68,7 +68,8 @@ class MetricsReporter {
                             base::TimeDelta stored_content_age,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(LoadStreamStatus final_status);
-  virtual void OnLoadMoreBegin(SurfaceId surface_id);
+  virtual void OnLoadMoreBegin(const StreamType& stream_type,
+                               SurfaceId surface_id);
   virtual void OnLoadMore(LoadStreamStatus final_status);
   virtual void OnClearAll(base::TimeDelta time_since_last_clear);
   // Called each time the surface receives new content.
@@ -102,12 +103,27 @@ class MetricsReporter {
     bool engaged_reported_ = false;
     bool scrolled_reported_ = false;
   };
+  struct SurfaceWaiting {
+    explicit operator bool() const { return !wait_start.is_null(); }
+    SurfaceWaiting();
+    SurfaceWaiting(const feed::StreamType& stream_type,
+                   base::TimeTicks wait_start);
+    ~SurfaceWaiting();
+    SurfaceWaiting(const SurfaceWaiting&);
+    SurfaceWaiting(SurfaceWaiting&&);
+    SurfaceWaiting& operator=(const SurfaceWaiting&);
+    SurfaceWaiting& operator=(SurfaceWaiting&&);
+
+    feed::StreamType stream_type;
+    base::TimeTicks wait_start;
+  };
+
   base::WeakPtr<MetricsReporter> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   void ReportPersistentDataIfDayIsDone();
-  void CardOpenBegin();
+  void CardOpenBegin(const StreamType& stream_type);
   void CardOpenTimeout(base::TimeTicks start_ticks);
   void ReportCardOpenEndIfNeeded(bool success);
   void RecordEngagement(const StreamType& stream_type,
@@ -135,17 +151,17 @@ class MetricsReporter {
   base::TimeTicks visit_start_time_;
 
   // The time a surface was opened, for surfaces still waiting for content.
-  std::map<SurfaceId, base::TimeTicks> surfaces_waiting_for_content_;
+  std::map<SurfaceId, SurfaceWaiting> surfaces_waiting_for_content_;
   // The time a surface requested more content, for surfaces still waiting for
   // more content.
-  std::map<SurfaceId, base::TimeTicks> surfaces_waiting_for_more_content_;
+  std::map<SurfaceId, SurfaceWaiting> surfaces_waiting_for_more_content_;
 
   // Tracking ContentSuggestions.Feed.UserJourney.OpenCard.*:
   // We assume at most one card is opened at a time. The time the card was
   // tapped is stored here. Upon timeout, another open attempt, or
   // |ChromeStopping()|, the open is considered failed. Otherwise, if the
   // loading the page succeeds, the open is considered successful.
-  absl::optional<base::TimeTicks> pending_open_;
+  SurfaceWaiting pending_open_;
 
   // For tracking time spent in the Feed.
   absl::optional<base::TimeTicks> time_in_feed_start_;

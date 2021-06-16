@@ -1350,55 +1350,62 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>feed@chromium.org</owner>
   <summary>
     Time between the UI requesting additional stream content and the content
-    being provided within 15 seconds.
+    being provided within 15 seconds. Providing content entails showing either a
+    cached or newly fetched Feed card.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.UserJourney.OpenCard.Failure"
+<histogram name="ContentSuggestions.Feed.UserJourney.{Surface}.Failure"
     enum="Boolean" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Reported when a user taps on a Feed card unless the page is not loaded
+    Reported when a user taps on a {Surface} card and the page is not loaded
     successfully within 20 seconds.
   </summary>
+  <token key="Surface">
+    <variant name="OpenCard" summary="For-You Feed"/>
+    <variant name="OpenCard.WebFeed" summary="Web Feed"/>
+  </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration"
+<histogram name="ContentSuggestions.Feed.UserJourney.{Surface}.SuccessDuration"
     units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    The time between a user tapping on a Feed card and the page finishes loading
-    successfully. Only reported when loading takes less than 20 seconds.
+    The time between a user tapping on a {Surface} card and the page finishes
+    loading successfully. Only reported when loading takes less than 20 seconds.
   </summary>
+  <token key="Surface">
+    <variant name="OpenCard" summary="For-You Feed"/>
+    <variant name="OpenCard.WebFeed" summary="Web Feed"/>
+  </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.UserJourney.OpenFeed.FailureDuration"
+<histogram
+    name="ContentSuggestions.Feed.UserJourney.{Surface}.{Status}Duration"
     units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    The time between a Feed surface opening and failing to provide the user
-    content. This is reported when either the surface is closed or a timeout of
-    15 seconds expires.
+    The time between a {Surface} opening and either providing user content, or
+    failing to provide content. Providing content entails showing either a
+    cached or newly fetched Feed card within 15 seconds. Success is reported
+    upon view of the card. Failure is reported when either the surface is closed
+    or a timeout of 15 seconds expires.
   </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.UserJourney.OpenFeed.SuccessDuration"
-    units="ms" expires_after="2022-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The time between a Feed surface opening and the user viewing the first
-    content. If this takes more than 15 seconds,
-    ContentSuggestions.Feed.UserJourney.OpenFeed.FailureDuration is reported
-    instead.
-  </summary>
+  <token key="Surface">
+    <variant name="OpenFeed" summary="For-You Feed"/>
+    <variant name="OpenFeed.WebFeed" summary="Web Feed"/>
+  </token>
+  <token key="Status">
+    <variant name="Failure" summary="Failure"/>
+    <variant name="Success" summary="Success"/>
+  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.VisitDuration" units="ms"

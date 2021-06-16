@@ -328,7 +328,8 @@ void FeedStream::UpdateExperiments(Experiments experiments) {
 }
 
 void FeedStream::AttachSurface(FeedStreamSurface* surface) {
-  metrics_reporter_->SurfaceOpened(surface->GetSurfaceId());
+  metrics_reporter_->SurfaceOpened(surface->GetStreamType(),
+                                   surface->GetSurfaceId());
   Stream& stream = GetStream(surface->GetStreamType());
   // Skip normal processing when overriding stream data from the internals page.
   if (forced_stream_update_for_debugging_.updated_slices_size() > 0) {
@@ -442,7 +443,8 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
     return std::move(callback).Run(false);
   }
 
-  metrics_reporter_->OnLoadMoreBegin(surface.GetSurfaceId());
+  metrics_reporter_->OnLoadMoreBegin(surface.GetStreamType(),
+                                     surface.GetSurfaceId());
   stream.surface_updater->SetLoadingMore(true);
 
   // Have at most one in-flight LoadMore() request per stream. Send the result

@@ -14,6 +14,7 @@
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -455,7 +456,7 @@ TEST_F(MetricsReporterTest, ContextMenuOpened) {
 }
 
 TEST_F(MetricsReporterTest, SurfaceOpened) {
-  reporter_->SurfaceOpened(kSurfaceId);
+  reporter_->SurfaceOpened(kForYouStream, kSurfaceId);
 
   std::map<FeedEngagementType, int> want_empty;
   EXPECT_EQ(want_empty, ReportedEngagementType(kForYouStream));
@@ -464,7 +465,7 @@ TEST_F(MetricsReporterTest, SurfaceOpened) {
 }
 
 TEST_F(MetricsReporterTest, OpenFeedSuccessDuration) {
-  reporter_->SurfaceOpened(kSurfaceId);
+  reporter_->SurfaceOpened(kForYouStream, kSurfaceId);
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(9));
   reporter_->FeedViewed(kSurfaceId);
 
@@ -473,8 +474,18 @@ TEST_F(MetricsReporterTest, OpenFeedSuccessDuration) {
       base::TimeDelta::FromSeconds(9), 1);
 }
 
+TEST_F(MetricsReporterTest, WebFeed_OpenFeedSuccessDuration) {
+  reporter_->SurfaceOpened(kWebFeedStream, kSurfaceId);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(9));
+  reporter_->FeedViewed(kSurfaceId);
+
+  histogram_.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.UserJourney.OpenFeed.WebFeed.SuccessDuration",
+      base::TimeDelta::FromSeconds(9), 1);
+}
+
 TEST_F(MetricsReporterTest, OpenFeedLoadTimeout) {
-  reporter_->SurfaceOpened(kSurfaceId);
+  reporter_->SurfaceOpened(kForYouStream, kSurfaceId);
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(16));
 
   histogram_.ExpectUniqueTimeSample(
@@ -484,8 +495,20 @@ TEST_F(MetricsReporterTest, OpenFeedLoadTimeout) {
       "ContentSuggestions.Feed.UserJourney.OpenFeed.SuccessDuration", 0);
 }
 
+TEST_F(MetricsReporterTest, WebFeed_OpenFeedLoadTimeout) {
+  reporter_->SurfaceOpened(kWebFeedStream, kSurfaceId);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(16));
+
+  histogram_.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.UserJourney.OpenFeed.WebFeed.FailureDuration",
+      base::TimeDelta::FromSeconds(15), 1);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.UserJourney.OpenFeed.WebFeed.SuccessDuration",
+      0);
+}
+
 TEST_F(MetricsReporterTest, OpenFeedCloseBeforeLoad) {
-  reporter_->SurfaceOpened(kSurfaceId);
+  reporter_->SurfaceOpened(kForYouStream, kSurfaceId);
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(14));
   reporter_->SurfaceClosed(kSurfaceId);
 
@@ -496,6 +519,19 @@ TEST_F(MetricsReporterTest, OpenFeedCloseBeforeLoad) {
       "ContentSuggestions.Feed.UserJourney.OpenFeed.SuccessDuration", 0);
 }
 
+TEST_F(MetricsReporterTest, WebFeed_OpenFeedCloseBeforeLoad) {
+  reporter_->SurfaceOpened(kWebFeedStream, kSurfaceId);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(14));
+  reporter_->SurfaceClosed(kSurfaceId);
+
+  histogram_.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.UserJourney.OpenFeed.WebFeed.FailureDuration",
+      base::TimeDelta::FromSeconds(14), 1);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.UserJourney.OpenFeed.WebFeed.SuccessDuration",
+      0);
+}
+
 TEST_F(MetricsReporterTest, OpenCardSuccessDuration) {
   reporter_->OpenAction(kForYouStream, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(19));
@@ -503,6 +539,16 @@ TEST_F(MetricsReporterTest, OpenCardSuccessDuration) {
 
   histogram_.ExpectUniqueTimeSample(
       "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration",
+      base::TimeDelta::FromSeconds(19), 1);
+}
+
+TEST_F(MetricsReporterTest, WebFeed_OpenCardSuccessDuration) {
+  reporter_->OpenAction(kWebFeedStream, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(19));
+  reporter_->PageLoaded();
+
+  histogram_.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.UserJourney.OpenCard.WebFeed.SuccessDuration",
       base::TimeDelta::FromSeconds(19), 1);
 }
 
@@ -517,6 +563,18 @@ TEST_F(MetricsReporterTest, OpenCardTimeout) {
       "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration", 0);
 }
 
+TEST_F(MetricsReporterTest, WebFeed_OpenCardTimeout) {
+  reporter_->OpenAction(kWebFeedStream, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(21));
+  reporter_->PageLoaded();
+
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.UserJourney.OpenCard.WebFeed.Failure", 1, 1);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.UserJourney.OpenCard.WebFeed.SuccessDuration",
+      0);
+}
+
 TEST_F(MetricsReporterTest, OpenCardFailureTwiceAndThenSucceed) {
   reporter_->OpenAction(kForYouStream, 0);
   reporter_->OpenAction(kForYouStream, 1);
@@ -527,6 +585,19 @@ TEST_F(MetricsReporterTest, OpenCardFailureTwiceAndThenSucceed) {
       "ContentSuggestions.Feed.UserJourney.OpenCard.Failure", 1, 2);
   histogram_.ExpectTotalCount(
       "ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration", 1);
+}
+
+TEST_F(MetricsReporterTest, WebFeed_OpenCardFailureTwiceAndThenSucceed) {
+  reporter_->OpenAction(kWebFeedStream, 0);
+  reporter_->OpenAction(kWebFeedStream, 1);
+  reporter_->OpenAction(kWebFeedStream, 2);
+  reporter_->PageLoaded();
+
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.UserJourney.OpenCard.WebFeed.Failure", 1, 2);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.UserJourney.OpenCard.WebFeed.SuccessDuration",
+      1);
 }
 
 TEST_F(MetricsReporterTest, OpenCardCloseChromeFailure) {
