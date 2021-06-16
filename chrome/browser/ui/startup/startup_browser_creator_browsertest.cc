@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -41,8 +42,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -155,6 +158,10 @@ using testing::Return;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif
+
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #endif
 
 using testing::_;
@@ -1273,6 +1280,153 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile2));
 }
 
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH)
+web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url.GetWithoutFilename();
+  web_app_info->open_as_window = true;
+  web_app_info->title = u"A Web App";
+  return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+}
+
+class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
+                                         public BrowserListObserver {
+ protected:
+  StartupBrowserCreatorRestartTest() { BrowserList::AddObserver(this); }
+  ~StartupBrowserCreatorRestartTest() override {
+    // We might have already been removed but it's safe to call again.
+    BrowserList::RemoveObserver(this);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    base::StringPiece test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    if (base::StartsWith(test_name, "PRE_")) {
+      // The PRE_ test will call chrome::AttemptRestart().
+      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
+          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
+      EXPECT_CALL(*mock_relaunch_callback_, Run);
+      relaunch_chrome_override_ =
+          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
+              mock_relaunch_callback_->Get());
+    }
+  }
+
+  void OnBrowserAdded(Browser* browser) override {
+    base::StringPiece test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    // The non PRE_ test will start up as if it was restarted.
+    // Check that, then remove the observer.
+    if (!base::StartsWith(test_name, "PRE_")) {
+      EXPECT_TRUE(StartupBrowserCreator::WasRestarted());
+      EXPECT_FALSE(browser_added_check_passed_);
+      browser_added_check_passed_ = true;
+      BrowserList::RemoveObserver(this);
+    }
+  }
+
+  bool browser_added_check_passed_ = false;
+
+ private:
+  std::unique_ptr<
+      base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>
+      mock_relaunch_callback_;
+  std::unique_ptr<upgrade_util::ScopedRelaunchChromeBrowserOverride>
+      relaunch_chrome_override_;
+};
+
+#if defined(OS_MAC)
+// This test triggers a restart and expects apps to be restored. This is not
+// yet enabled on Mac pending crbug.com/1194201.
+#define MAYBE_PRE_ProfileRestartedAppRestore \
+  DISABLED_PRE_ProfileRestartedAppRestore
+#else
+#define MAYBE_PRE_ProfileRestartedAppRestore \
+  PRE_ProfileRestartedAppRestore
+#endif
+// Open an App and restart in preparation for the real test.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
+                       MAYBE_PRE_ProfileRestartedAppRestore) {
+  // Ensure services are started.
+  Profile* test_profile = browser()->profile();
+
+  AppSessionServiceFactory::GetForProfileForSessionRestore(test_profile);
+  SessionStartupPref pref_last(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(test_profile, pref_last);
+
+  // Install web app
+  auto example_url = GURL("http://www.example.com");
+  web_app::AppId app_id = InstallPWA(test_profile, example_url);
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(test_profile, app_id);
+
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  chrome::AttemptRestart();
+
+  PrefService* pref_service = g_browser_process->local_state();
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kWasRestarted));
+}
+
+#if defined(OS_MAC)
+// This test triggers a restart and expects apps to be restored. This is not
+// yet enabled on Mac pending crbug.com/1194201.
+#define MAYBE_ProfileRestartedAppRestore DISABLED_ProfileRestartedAppRestore
+#else
+#define MAYBE_ProfileRestartedAppRestore ProfileRestartedAppRestore
+#endif
+// This test tests a specific scenario where the browser is marked as restarted
+// and a SessionBrowserCreatorImpl::MaybeAsyncRestore is triggered.
+// ShouldRestoreApps will return true because the profile is marked as
+// restarted which will trigger apps to restore. If apps are open at this point
+// and an app restore occurs, apps will be duplicated. This test ensures that
+// does not occur. This test doesn't build on non app_session_service
+// platforms, hence the buildflag disablement.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
+                       MAYBE_ProfileRestartedAppRestore) {
+  Profile* test_profile = browser()->profile();
+
+  // StartupBrowserCreator() has already run in SetUp(), so it would already be
+  // reset by this point.
+  EXPECT_FALSE(StartupBrowserCreator::WasRestarted());
+  EXPECT_TRUE(browser_added_check_passed_);
+  // Now close the original (and last alive) tabbed browser window
+  // note: there is still an app open
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(1U, BrowserList::GetInstance()->size());
+
+  // Now hit the codepath that would get hit if someone opened chrome
+  // from a desktop shortcut or similar.
+  SessionRestoreTestHelper restore_waiter;
+  base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreatorImpl creator(base::FilePath(), dummy,
+                                    chrome::startup::IS_NOT_FIRST_RUN);
+  creator.Launch(test_profile, std::vector<GURL>(), false, nullptr);
+  restore_waiter.Wait();
+
+  // We expect a browser to open, but we should NOT get a duplicate app.
+  // Note at this point, the profile IsRestarted() is still true.
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  bool app_found = false;
+  bool browser_found = false;
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_APP) {
+      ASSERT_FALSE(app_found);
+      app_found = true;
+    } else if (browser->type() == Browser::Type::TYPE_NORMAL) {
+      ASSERT_FALSE(browser_found);
+      browser_found = true;
+    }
+  }
+}
+#endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
 // An observer that returns back to test code after a new browser is added to
 // the BrowserList.
 class BrowserAddedObserver : public BrowserListObserver {
@@ -1501,15 +1655,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile1));
   ASSERT_EQ(2u, BrowserList::GetInstance()->size());
-}
-
-web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->start_url = start_url;
-  web_app_info->scope = start_url.GetWithoutFilename();
-  web_app_info->open_as_window = true;
-  web_app_info->title = u"A Web App";
-  return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
@@ -2581,10 +2726,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
 
 // Validates that prefs::kWasRestarted is automatically reset after next browser
 // start.
-class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest {
+class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
+                                              public BrowserListObserver {
  public:
-  StartupBrowserCreatorWasRestartedFlag() = default;
-  ~StartupBrowserCreatorWasRestartedFlag() override = default;
+  StartupBrowserCreatorWasRestartedFlag() { BrowserList::AddObserver(this); }
+  ~StartupBrowserCreatorWasRestartedFlag() override {
+    BrowserList::RemoveObserver(this);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -2598,12 +2746,30 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest {
         temp_dir_.GetPath().Append(chrome::kLocalStateFilename), json));
   }
 
+ protected:
+  // SetUpCommandLine is setting kWasRestarted, so these tests all start up
+  // with WasRestarted() true.
+  void OnBrowserAdded(Browser* browser) override {
+    EXPECT_TRUE(StartupBrowserCreator::WasRestarted());
+    EXPECT_FALSE(
+        g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted));
+    on_browser_added_hit_ = true;
+  }
+
+  bool on_browser_added_hit_ = false;
+
  private:
   base::ScopedTempDir temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWasRestartedFlag, Test) {
-  EXPECT_TRUE(StartupBrowserCreator::WasRestarted());
+  // OnBrowserAdded() should have been hit before the test body began.
+  EXPECT_TRUE(on_browser_added_hit_);
+  // This is a bit strange but what occurs is that StartupBrowserCreator runs
+  // before this test body is hit and ~StartupBrowserCreator() will reset the
+  // restarted state, so here when we read WasRestarted() it should already be
+  // reset to false.
+  EXPECT_FALSE(StartupBrowserCreator::WasRestarted());
   EXPECT_FALSE(
       g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted));
 }

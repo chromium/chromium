@@ -501,7 +501,14 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
 
 StartupBrowserCreator::StartupBrowserCreator() = default;
 
-StartupBrowserCreator::~StartupBrowserCreator() = default;
+StartupBrowserCreator::~StartupBrowserCreator() {
+  // When StartupBrowserCreator finishes doing its job, we should reset
+  // was_restarted_read_ so that this browser no longer reads as restarted.
+  // In the case where the browser is still running due to PWA or
+  // background-extension subsequent startups should not execute restarted
+  // behaviors.
+  was_restarted_read_ = false;
+}
 
 // static
 bool StartupBrowserCreator::was_restarted_read_ = false;

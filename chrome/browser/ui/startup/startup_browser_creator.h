@@ -110,9 +110,12 @@ class StartupBrowserCreator {
   Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
                                         Profile* profile);
 
-  // When called the first time, reads the value of the preference
-  // kWasRestarted and resets it to false. Subsequent calls return the value
-  // which was read the first time.
+  // Returns true during browser process startup if the previous browser was
+  // restarted. This only returns true before the first StartupBrowserCreator
+  // destructs. WasRestarted() will update prefs::kWasRestarted to false, but
+  // caches the value of kWasRestarted until StartupBrowserCreator's
+  // dtor is called. After the dtor is called, this function returns the value
+  // of the preference which is expected to be false as per above.
   static bool WasRestarted();
 
   static SessionStartupPref GetSessionStartupPref(
