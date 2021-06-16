@@ -115,10 +115,10 @@ void TestHDR(const char* jxl_file,
     a = FromFloat16(first_pixel >> 48);
   } else {
     uint32_t first_pixel = *frame->GetAddr(0, 0);
-    a = ((first_pixel >> 24) & 255) / 255.0;
-    r = ((first_pixel >> 16) & 255) / 255.0;
-    g = ((first_pixel >> 8) & 255) / 255.0;
-    b = ((first_pixel >> 0) & 255) / 255.0;
+    a = ((first_pixel >> SK_A32_SHIFT) & 255) / 255.0;
+    r = ((first_pixel >> SK_R32_SHIFT) & 255) / 255.0;
+    g = ((first_pixel >> SK_G32_SHIFT) & 255) / 255.0;
+    b = ((first_pixel >> SK_B32_SHIFT) & 255) / 255.0;
   }
   constexpr float eps = 0.01;
   EXPECT_NEAR(expected_r, r, eps);

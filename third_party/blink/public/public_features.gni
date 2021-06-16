@@ -26,7 +26,7 @@ declare_args() {
 
 declare_args() {
   # If true, adds support for JPEG XL image decoding.
-  enable_jxl_decoder = !is_android && !is_ios
+  enable_jxl_decoder = !is_ios
 }
 
 # Unhandled Tap enable means Contextual Search aka Touch to Search.
