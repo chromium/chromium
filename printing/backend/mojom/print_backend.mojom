@@ -63,7 +63,7 @@ struct PrinterSemanticCapsAndDefaults {
   bool color_default = false;
   ColorModel color_model = kUnknownColorModel;
   ColorModel bw_model = kUnknownColorModel;
-  array<Paper> papers;
+  array<Paper> papers;  // Duplicates allowed.
   array<Paper> user_defined_papers;
   Paper default_paper;
   array<gfx.mojom.Size> dpis;  // Duplicates allowed.

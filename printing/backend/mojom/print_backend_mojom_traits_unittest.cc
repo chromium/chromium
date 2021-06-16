@@ -297,15 +297,6 @@ TEST(
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
                mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
-  // Use a paper with same name but different size.
-  PrinterSemanticCapsAndDefaults::Paper paper_a4_prime = kPaperA4;
-  paper_a4_prime.size_um = kPaperLetter.size_um;
-  input = GenerateSamplePrinterSemanticCapsAndDefaults();
-  input.papers = {kPaperA4, kPaperLetter, kPaperLedger, paper_a4_prime};
-
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-               mojom::PrinterSemanticCapsAndDefaults>(input, output));
-
   input = GenerateSamplePrinterSemanticCapsAndDefaults();
   input.user_defined_papers = {kPaperLetter, kPaperLetter};
 
@@ -342,6 +333,21 @@ TEST(
               mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
   EXPECT_EQ(kDuplicateDpis, output.dpis);
+
+  // Duplicate papers are known to be possible, seen with the Konica Minolta
+  // 4750 Series PS driver.
+  // Use a paper with same name but different size.
+  PrinterSemanticCapsAndDefaults::Paper paper_a4_prime = kPaperA4;
+  paper_a4_prime.size_um = kPaperLetter.size_um;
+  input = GenerateSamplePrinterSemanticCapsAndDefaults();
+  const PrinterSemanticCapsAndDefaults::Papers kDuplicatePapers{
+      kPaperA4, kPaperLetter, kPaperLedger, paper_a4_prime};
+  input.papers = kDuplicatePapers;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+
+  EXPECT_EQ(kDuplicatePapers, output.papers);
 }
 
 }  // namespace printing

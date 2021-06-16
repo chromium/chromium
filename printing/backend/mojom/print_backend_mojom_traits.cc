@@ -221,17 +221,10 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-  // There should not be duplicates in any of the arrays.
+  // There should not be duplicates in certain arrays.
   DuplicateChecker<printing::mojom::DuplexMode> duplex_modes_dup_checker;
   if (duplex_modes_dup_checker.HasDuplicates(out->duplex_modes)) {
     DLOG(ERROR) << "Duplicate duplex_modes detected.";
-    return false;
-  }
-
-  DuplicateChecker<printing::PrinterSemanticCapsAndDefaults::Paper>
-      papers_dup_checker;
-  if (papers_dup_checker.HasDuplicates(out->papers)) {
-    DLOG(ERROR) << "Duplicate papers detected.";
     return false;
   }
 
