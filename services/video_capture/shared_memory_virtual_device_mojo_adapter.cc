@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
-#include "services/video_capture/scoped_access_permission_media_to_mojo_adapter.h"
 
 namespace {
 
@@ -134,18 +133,18 @@ void SharedMemoryVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
 
   // Notify receiver if there is one.
   if (video_frame_handler_.is_bound()) {
+    if (!scoped_access_permission_map_) {
+      scoped_access_permission_map_ = ScopedAccessPermissionMap::
+          CreateMapAndSendVideoFrameAccessHandlerReady(video_frame_handler_);
+    }
     buffer_pool_->HoldForConsumers(buffer_id, 1 /* num_clients */);
     auto access_permission = std::make_unique<
         media::ScopedBufferPoolReservation<media::ConsumerReleaseTraits>>(
         buffer_pool_, buffer_id);
-    mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission_proxy;
-    mojo::MakeSelfOwnedReceiver<mojom::ScopedAccessPermission>(
-        std::make_unique<ScopedAccessPermissionMediaToMojoAdapter>(
-            std::move(access_permission)),
-        access_permission_proxy.InitWithNewPipeAndPassReceiver());
+    scoped_access_permission_map_->InsertAccessPermission(
+        buffer_id, std::move(access_permission));
     video_frame_handler_->OnFrameReadyInBuffer(
         mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
-                                       std::move(access_permission_proxy),
                                        std::move(frame_info)),
         {});
   }

@@ -139,6 +139,7 @@ source_set("crosapi") {
     "//printing:printing_base",
     "//remoting/host/chromeos:remoting_service",
     "//services/device/wake_lock/power_save_blocker",
+    "//services/video_capture/public/cpp:cpp",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/shell_dialogs",

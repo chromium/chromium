@@ -19,15 +19,17 @@ namespace crosapi {
 namespace {
 
 crosapi::mojom::ReadyFrameInBufferPtr ToCrosapiBuffer(
-    video_capture::mojom::ReadyFrameInBufferPtr buffer) {
+    video_capture::mojom::ReadyFrameInBufferPtr buffer,
+    scoped_refptr<video_capture::VideoFrameAccessHandlerRemote>
+        frame_access_handler_remote) {
   auto crosapi_buffer = crosapi::mojom::ReadyFrameInBuffer::New();
   crosapi_buffer->buffer_id = buffer->buffer_id;
   crosapi_buffer->frame_feedback_id = buffer->frame_feedback_id;
 
   mojo::PendingRemote<crosapi::mojom::ScopedAccessPermission> access_permission;
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<VideoFrameHandlerAsh::AccessPermissionProxy>(
-          std::move(buffer->access_permission)),
+      std::make_unique<VideoFrameHandlerAsh::ScopedFrameAccessHandlerNotifier>(
+          frame_access_handler_remote, buffer->buffer_id),
       access_permission.InitWithNewPipeAndPassReceiver());
   crosapi_buffer->access_permission = std::move(access_permission);
 
@@ -107,11 +109,18 @@ VideoFrameHandlerAsh::VideoFrameHandlerAsh(
 
 VideoFrameHandlerAsh::~VideoFrameHandlerAsh() = default;
 
-VideoFrameHandlerAsh::AccessPermissionProxy::AccessPermissionProxy(
-    mojo::PendingRemote<video_capture::mojom::ScopedAccessPermission> remote)
-    : remote_(std::move(remote)) {}
+VideoFrameHandlerAsh::ScopedFrameAccessHandlerNotifier::
+    ScopedFrameAccessHandlerNotifier(
+        scoped_refptr<video_capture::VideoFrameAccessHandlerRemote>
+            frame_access_handler_remote,
+        int32_t buffer_id)
+    : frame_access_handler_remote_(std::move(frame_access_handler_remote)),
+      buffer_id_(buffer_id) {}
 
-VideoFrameHandlerAsh::AccessPermissionProxy::~AccessPermissionProxy() = default;
+VideoFrameHandlerAsh::ScopedFrameAccessHandlerNotifier::
+    ~ScopedFrameAccessHandlerNotifier() {
+  (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id_);
+}
 
 void VideoFrameHandlerAsh::OnNewBuffer(
     int buffer_id,
@@ -132,14 +141,27 @@ void VideoFrameHandlerAsh::OnNewBuffer(
   proxy_->OnNewBuffer(buffer_id, std::move(crosapi_handle));
 }
 
+void VideoFrameHandlerAsh::OnFrameAccessHandlerReady(
+    mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+        pending_frame_access_handler) {
+  DCHECK(!frame_access_handler_remote_);
+  frame_access_handler_remote_ =
+      base::MakeRefCounted<video_capture::VideoFrameAccessHandlerRemote>(
+          mojo::Remote<video_capture::mojom::VideoFrameAccessHandler>(
+              std::move(pending_frame_access_handler)));
+}
+
 void VideoFrameHandlerAsh::OnFrameReadyInBuffer(
     video_capture::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<video_capture::mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+  DCHECK(frame_access_handler_remote_);
   crosapi::mojom::ReadyFrameInBufferPtr crosapi_buffer =
-      ToCrosapiBuffer(std::move(buffer));
+      ToCrosapiBuffer(std::move(buffer), frame_access_handler_remote_);
   std::vector<crosapi::mojom::ReadyFrameInBufferPtr> crosapi_scaled_buffers;
-  for (auto& b : scaled_buffers)
-    crosapi_scaled_buffers.push_back(ToCrosapiBuffer(std::move(b)));
+  for (auto& b : scaled_buffers) {
+    crosapi_scaled_buffers.push_back(
+        ToCrosapiBuffer(std::move(b), frame_access_handler_remote_));
+  }
 
   proxy_->OnFrameReadyInBuffer(std::move(crosapi_buffer),
                                std::move(crosapi_scaled_buffers));

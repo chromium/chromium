@@ -8,6 +8,7 @@
 #include "base/single_thread_task_runner.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/public/cpp/video_frame_access_handler.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 
 namespace video_capture {
@@ -37,6 +38,7 @@ class ReceiverMojoToMediaAdapter : public media::VideoFrameReceiver {
 
  private:
   mojo::Remote<mojom::VideoFrameHandler> video_frame_handler_;
+  scoped_refptr<ScopedAccessPermissionMap> scoped_access_permission_map_;
   base::WeakPtrFactory<ReceiverMojoToMediaAdapter> weak_factory_{this};
 };
 

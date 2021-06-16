@@ -7,7 +7,7 @@ module video_capture.mojom;
 import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "services/video_capture/public/mojom/producer.mojom";
-import "services/video_capture/public/mojom/scoped_access_permission.mojom";
+import "services/video_capture/public/mojom/video_frame_handler.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 
@@ -55,13 +55,19 @@ interface TextureVirtualDevice {
   // frames.
   OnNewMailboxHolderBufferHandle(
       int32 buffer_id, media.mojom.MailboxBufferHandleSet mailbox_handles);
+  // Frames delivered by subsequent OnFrameReadyInBuffer() calls have their
+  // access permissions managed by |frame_access_handler|. The producer
+  // guarantees that the buffer stays alive until
+  // VideoFrameAccessHandler.OnFinishedConsumingBuffer() is called and the
+  // consumer guarantees to call this method when finished consuming the buffer.
+  OnFrameAccessHandlerReady(
+      pending_remote<VideoFrameAccessHandler> frame_access_handler);
   // The invoker must guarantee that the textures with |buffer_id| stay valid
-  // until |access_permission| is released by the invocation target.
+  // until VideoFrameAccessHandler.OnFinishedConsumingBuffer() is called.
   // In |frame_info|, |visible_rect| must be equivalent to the full |coded_size|
   // of the frame, i.e. using |visible_rect| to crop to subregions of the frame
   // is not supported.
   OnFrameReadyInBuffer(int32 buffer_id,
-                       pending_remote<ScopedAccessPermission> access_permission,
                        media.mojom.VideoFrameInfo frame_info);
   // Unregisters a set of mailbox holders previously registered via
   // OnNewMailboxHolderBufferHandle(). Note, that this should not be called
@@ -75,13 +81,20 @@ interface GpuMemoryBufferVirtualDevice {
   OnNewGpuMemoryBufferHandle(
       int32 buffer_id, gfx.mojom.GpuMemoryBufferHandle gmb_handle);
 
+  // Frames delivered by subsequent OnFrameReadyInBuffer() calls have their
+  // access permissions managed by |frame_access_handler|. The producer
+  // guarantees that the buffer stays alive until
+  // VideoFrameAccessHandler.OnFinishedConsumingBuffer() is called and the
+  // consumer guarantees to call this method when finished consuming the buffer.
+  OnFrameAccessHandlerReady(
+      pending_remote<VideoFrameAccessHandler> frame_access_handler);
+
   // The invoker must guarantee that the GpuMemoryBufferHandle with |buffer_id|
-  // stay valid until |access_permission| is released by the invocation target.
-  // In |frame_info|, |visible_rect| must be equivalent to the full |coded_size|
-  // of the frame, i.e. using |visible_rect| to crop to subregions of the frame
-  // is not supported.
+  // stay valid until VideoFrameAccessHandler.OnFinishedConsumingBuffer() is
+  // called. In |frame_info|, |visible_rect| must be equivalent to the full
+  // |coded_size| of the frame, i.e. using |visible_rect| to crop to subregions
+  // of the frame is not supported.
   OnFrameReadyInBuffer(int32 buffer_id,
-                       pending_remote<ScopedAccessPermission> access_permission,
                        media.mojom.VideoFrameInfo frame_info);
 
   // Unregisters a GpuMemoryBufferHandle previously registered via

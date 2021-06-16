@@ -19,8 +19,6 @@ source_set("lib") {
     "push_video_stream_subscription_impl.h",
     "receiver_mojo_to_media_adapter.cc",
     "receiver_mojo_to_media_adapter.h",
-    "scoped_access_permission_media_to_mojo_adapter.cc",
-    "scoped_access_permission_media_to_mojo_adapter.h",
     "shared_memory_virtual_device_mojo_adapter.cc",
     "shared_memory_virtual_device_mojo_adapter.h",
     "testing_controls_impl.cc",

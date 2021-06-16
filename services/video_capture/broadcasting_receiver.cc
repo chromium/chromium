@@ -7,21 +7,10 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
 
 namespace video_capture {
 
 namespace {
-
-class ConsumerAccessPermission : public mojom::ScopedAccessPermission {
- public:
-  ConsumerAccessPermission(base::OnceClosure destruction_cb)
-      : destruction_cb_(std::move(destruction_cb)) {}
-  ~ConsumerAccessPermission() override { std::move(destruction_cb_).Run(); }
-
- private:
-  base::OnceClosure destruction_cb_;
-};
 
 void CloneSharedBufferHandle(const mojo::ScopedSharedBufferHandle& source,
                              media::mojom::VideoBufferHandlePtr* target) {
@@ -58,6 +47,27 @@ void CloneSharedBufferToRawFileDescriptorHandle(
 
 }  // anonymous namespace
 
+// A mojom::VideoFrameAccessHandler implementation that forwards buffer release
+// calls to the BroadcastingReceiver.
+class BroadcastingReceiver::ClientVideoFrameAccessHandler
+    : public mojom::VideoFrameAccessHandler {
+ public:
+  explicit ClientVideoFrameAccessHandler(
+      base::WeakPtr<BroadcastingReceiver> broadcasting_receiver)
+      : broadcasting_receiver_(std::move(broadcasting_receiver)) {}
+
+  // mojom::VideoFrameAccessHandler implementation.
+  void OnFinishedConsumingBuffer(int32_t buffer_id) override {
+    if (!broadcasting_receiver_) {
+      return;
+    }
+    broadcasting_receiver_->OnClientFinishedConsumingFrame(buffer_id);
+  }
+
+ private:
+  base::WeakPtr<BroadcastingReceiver> broadcasting_receiver_;
+};
+
 BroadcastingReceiver::ClientContext::ClientContext(
     mojo::PendingRemote<mojom::VideoFrameHandler> client,
     media::VideoCaptureBufferType target_buffer_type)
@@ -65,7 +75,8 @@ BroadcastingReceiver::ClientContext::ClientContext(
       target_buffer_type_(target_buffer_type),
       is_suspended_(false),
       on_started_has_been_called_(false),
-      on_started_using_gpu_decode_has_been_called_(false) {}
+      on_started_using_gpu_decode_has_been_called_(false),
+      has_client_frame_access_handler_remote_(false) {}
 
 BroadcastingReceiver::ClientContext::~ClientContext() = default;
 
@@ -100,22 +111,59 @@ BroadcastingReceiver::BufferContext::BufferContext(
   buffer_context_id_ = next_buffer_context_id++;
 }
 
-BroadcastingReceiver::BufferContext::~BufferContext() = default;
+BroadcastingReceiver::BufferContext::~BufferContext() {
+  // Signal that the buffer is no longer in use, if we haven't already.
+  if (consumer_hold_count_ != 0) {
+    DCHECK(frame_access_handler_remote_);
+    (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id_);
+  }
+}
 
 BroadcastingReceiver::BufferContext::BufferContext(
-    BroadcastingReceiver::BufferContext&& other) = default;
+    BroadcastingReceiver::BufferContext&& other)
+    : buffer_context_id_(other.buffer_context_id_),
+      buffer_id_(other.buffer_id_),
+      frame_access_handler_remote_(other.frame_access_handler_remote_),
+      buffer_handle_(std::move(other.buffer_handle_)),
+      consumer_hold_count_(other.consumer_hold_count_),
+      is_retired_(other.is_retired_) {
+  // The consumer hold was moved from |other|.
+  other.consumer_hold_count_ = 0;
+  other.frame_access_handler_remote_ = nullptr;
+}
 
-BroadcastingReceiver::BufferContext& BroadcastingReceiver::BufferContext::
-operator=(BroadcastingReceiver::BufferContext&& other) = default;
+BroadcastingReceiver::BufferContext&
+BroadcastingReceiver::BufferContext::operator=(
+    BroadcastingReceiver::BufferContext&& other) {
+  buffer_context_id_ = other.buffer_context_id_;
+  buffer_id_ = other.buffer_id_;
+  frame_access_handler_remote_ = other.frame_access_handler_remote_;
+  buffer_handle_ = std::move(other.buffer_handle_);
+  consumer_hold_count_ = other.consumer_hold_count_;
+  is_retired_ = other.is_retired_;
+  // The consumer hold was moved from |other|.
+  other.consumer_hold_count_ = 0;
+  other.frame_access_handler_remote_ = nullptr;
+  return *this;
+}
+
+void BroadcastingReceiver::BufferContext::SetFrameAccessHandlerRemote(
+    scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote) {
+  frame_access_handler_remote_ = frame_access_handler_remote;
+}
 
 void BroadcastingReceiver::BufferContext::IncreaseConsumerCount() {
+  // The access handler should be ready if we have a consumer since it is needed
+  // when the consumer decreases the consumer count.
+  DCHECK(frame_access_handler_remote_);
   consumer_hold_count_++;
 }
 
 void BroadcastingReceiver::BufferContext::DecreaseConsumerCount() {
+  DCHECK(frame_access_handler_remote_);
   consumer_hold_count_--;
   if (consumer_hold_count_ == 0) {
-    access_permission_.reset();
+    (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id_);
   }
 }
 
@@ -301,12 +349,42 @@ void BroadcastingReceiver::OnNewBuffer(
   }
 }
 
+void BroadcastingReceiver::OnFrameAccessHandlerReady(
+    mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+        pending_frame_access_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!frame_access_handler_remote_);
+  frame_access_handler_remote_ =
+      base::MakeRefCounted<VideoFrameAccessHandlerRemote>(
+          mojo::Remote<video_capture::mojom::VideoFrameAccessHandler>(
+              std::move(pending_frame_access_handler)));
+}
+
 void BroadcastingReceiver::OnFrameReadyInBuffer(
     mojom::ReadyFrameInBufferPtr buffer,
     std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (clients_.empty())
+  bool has_consumers = false;
+  for (auto& client : clients_) {
+    if (!client.second.is_suspended()) {
+      has_consumers = true;
+      break;
+    }
+  }
+  // If we don't have any consumers to forward the frame to, signal to finish
+  // consuming the buffers immediately.
+  if (!has_consumers) {
+    if (frame_access_handler_remote_) {
+      (*frame_access_handler_remote_)
+          ->OnFinishedConsumingBuffer(buffer->buffer_id);
+      for (const auto& scaled_buffer : scaled_buffers) {
+        (*frame_access_handler_remote_)
+            ->OnFinishedConsumingBuffer(scaled_buffer->buffer_id);
+      }
+    }
     return;
+  }
+
   // Obtain buffer contexts for all frame representations.
   auto it = FindUnretiredBufferContextFromBufferId(buffer->buffer_id);
   CHECK(it != buffer_contexts_.end());
@@ -322,35 +400,41 @@ void BroadcastingReceiver::OnFrameReadyInBuffer(
   for (auto& client : clients_) {
     if (client.second.is_suspended())
       continue;
-    mojom::ReadyFrameInBufferPtr ready_buffer =
-        CreateReadyFrameInBufferForClient(buffer, buffer_context);
+    // Set up a frame access handler for this client, if we haven't already. The
+    // frame access handler mojo pipe is open for the lifetime of the
+    // ClientContext.
+    if (!client.second.has_client_frame_access_handler_remote()) {
+      mojo::PendingRemote<mojom::VideoFrameAccessHandler>
+          pending_frame_access_handler;
+      mojo::MakeSelfOwnedReceiver<mojom::VideoFrameAccessHandler>(
+          std::make_unique<ClientVideoFrameAccessHandler>(
+              weak_factory_.GetWeakPtr()),
+          pending_frame_access_handler.InitWithNewPipeAndPassReceiver());
+      client.second.client()->OnFrameAccessHandlerReady(
+          std::move(pending_frame_access_handler));
+      client.second.set_has_client_frame_access_handler_remote();
+    }
+
+    buffer_context->SetFrameAccessHandlerRemote(frame_access_handler_remote_);
+    buffer_context->IncreaseConsumerCount();
+    mojom::ReadyFrameInBufferPtr ready_buffer = mojom::ReadyFrameInBuffer::New(
+        buffer_context->buffer_context_id(), buffer->frame_feedback_id,
+        buffer->frame_info.Clone());
+
     std::vector<mojom::ReadyFrameInBufferPtr> scaled_ready_buffers;
     scaled_ready_buffers.reserve(scaled_buffers.size());
     for (size_t i = 0; i < scaled_buffers.size(); ++i) {
-      scaled_ready_buffers.push_back(CreateReadyFrameInBufferForClient(
-          scaled_buffers[i], scaled_buffer_contexts[i]));
+      scaled_buffer_contexts[i]->SetFrameAccessHandlerRemote(
+          frame_access_handler_remote_);
+      scaled_buffer_contexts[i]->IncreaseConsumerCount();
+      scaled_ready_buffers.push_back(mojom::ReadyFrameInBuffer::New(
+          scaled_buffer_contexts[i]->buffer_context_id(),
+          scaled_buffers[i]->frame_feedback_id,
+          scaled_buffers[i]->frame_info.Clone()));
     }
     client.second.client()->OnFrameReadyInBuffer(
         std::move(ready_buffer), std::move(scaled_ready_buffers));
   }
-}
-
-mojom::ReadyFrameInBufferPtr
-BroadcastingReceiver::CreateReadyFrameInBufferForClient(
-    mojom::ReadyFrameInBufferPtr& buffer,
-    BufferContext* buffer_context) {
-  if (buffer->access_permission)
-    buffer_context->set_access_permission(std::move(buffer->access_permission));
-  mojo::PendingRemote<mojom::ScopedAccessPermission> consumer_access_permission;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ConsumerAccessPermission>(base::BindOnce(
-          &BroadcastingReceiver::OnClientFinishedConsumingFrame,
-          weak_factory_.GetWeakPtr(), buffer_context->buffer_context_id())),
-      consumer_access_permission.InitWithNewPipeAndPassReceiver());
-  buffer_context->IncreaseConsumerCount();
-  return mojom::ReadyFrameInBuffer::New(
-      buffer_context->buffer_context_id(), buffer->frame_feedback_id,
-      std::move(consumer_access_permission), buffer->frame_info.Clone());
 }
 
 void BroadcastingReceiver::OnBufferRetired(int32_t buffer_id) {
@@ -425,6 +509,9 @@ void BroadcastingReceiver::OnStopped() {
     if (on_stopped_handler_)
       std::move(on_stopped_handler_).Run();
   }
+  // Reset the frame access handler so that it is possible to bind a new one if
+  // BroadcastingReceiver is started again in the future.
+  frame_access_handler_remote_.reset();
 }
 
 void BroadcastingReceiver::OnClientFinishedConsumingFrame(

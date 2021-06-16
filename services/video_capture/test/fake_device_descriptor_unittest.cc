@@ -125,7 +125,7 @@ TEST_F(FakeVideoCaptureDeviceDescriptorTest, CanUseSecondRequestedProxy) {
   MockVideoFrameHandler video_frame_handler(
       subscriber.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _)).Times(AtLeast(1));
-  EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _, _))
+  EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
       .WillRepeatedly(
           InvokeWithoutArgs([&wait_loop_2]() { wait_loop_2.Quit(); }));
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/ref_counted.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -32,19 +33,10 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
       delete;
   ~VideoFrameHandlerProxyLacros() override;
 
-  class AccessPermissionProxy : public mojom::ScopedAccessPermission {
-   public:
-    AccessPermissionProxy(
-        mojo::PendingRemote<crosapi::mojom::ScopedAccessPermission> remote);
-    AccessPermissionProxy(const AccessPermissionProxy&) = delete;
-    AccessPermissionProxy& operator=(const AccessPermissionProxy&) = delete;
-    ~AccessPermissionProxy() override;
-
-   private:
-    mojo::Remote<crosapi::mojom::ScopedAccessPermission> remote_;
-  };
-
  private:
+  class AccessPermissionProxyMap;
+  class VideoFrameAccessHandlerProxy;
+
   // crosapi::mojom::VideoFrameHandler implementation.
   void OnNewBuffer(int buffer_id,
                    crosapi::mojom::VideoBufferHandlePtr buffer_handle) override;
@@ -60,8 +52,8 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
   void OnStopped() override;
 
   mojo::Receiver<crosapi::mojom::VideoFrameHandler> receiver_{this};
-
   mojo::Remote<mojom::VideoFrameHandler> handler_;
+  scoped_refptr<AccessPermissionProxyMap> access_permission_proxy_map_;
 };
 
 }  // namespace video_capture

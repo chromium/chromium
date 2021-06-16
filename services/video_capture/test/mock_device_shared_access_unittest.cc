@@ -205,11 +205,11 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
     const int32_t kArbitraryRotation = 0;
     base::RunLoop wait_loop_1;
     EXPECT_CALL(mock_video_frame_handler_1_,
-                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _, _))
+                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
         .WillOnce(InvokeWithoutArgs([&wait_loop_1]() { wait_loop_1.Quit(); }));
     base::RunLoop wait_loop_2;
     EXPECT_CALL(mock_video_frame_handler_2_,
-                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _, _))
+                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
         .WillOnce(InvokeWithoutArgs([&wait_loop_2]() { wait_loop_2.Quit(); }));
     mock_device_.SendStubFrame(requestable_settings_.requested_format,
                                kArbitraryRotation, kArbitraryFrameFeedbackId);
@@ -226,9 +226,9 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
 
     base::RunLoop wait_loop;
     EXPECT_CALL(mock_video_frame_handler_1_,
-                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _, _))
+                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
         .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
-    EXPECT_CALL(mock_video_frame_handler_2_, DoOnFrameReadyInBuffer(_, _, _, _))
+    EXPECT_CALL(mock_video_frame_handler_2_, DoOnFrameReadyInBuffer(_, _, _))
         .Times(0);
     mock_device_.SendStubFrame(requestable_settings_.requested_format,
                                kArbitraryRotation, kArbitraryFrameFeedbackId);
@@ -243,10 +243,10 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
     const int32_t kArbitraryRotation = 0;
 
     base::RunLoop wait_loop;
-    EXPECT_CALL(mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _, _))
+    EXPECT_CALL(mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _))
         .Times(0);
     EXPECT_CALL(mock_video_frame_handler_2_,
-                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _, _))
+                DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
         .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
     mock_device_.SendStubFrame(requestable_settings_.requested_format,
                                kArbitraryRotation, kArbitraryFrameFeedbackId);
@@ -462,7 +462,7 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest, SuspendAndResumeSingleClient) {
         [](base::RunLoop* wait_loop) { wait_loop->Quit(); }, &wait_loop));
     wait_loop.Run();
   }
-  EXPECT_CALL(mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _, _))
+  EXPECT_CALL(mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _))
       .Times(0);
 
   // Send a couple of frames. We want to send at least as many frames as

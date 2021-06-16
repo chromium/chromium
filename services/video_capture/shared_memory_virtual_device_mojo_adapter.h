@@ -10,6 +10,7 @@
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/public/cpp/video_frame_access_handler.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
@@ -60,6 +61,7 @@ class SharedMemoryVirtualDeviceMojoAdapter
   const bool send_buffer_handles_to_producer_as_raw_file_descriptors_;
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool_;
   std::vector<int> known_buffer_ids_;
+  scoped_refptr<ScopedAccessPermissionMap> scoped_access_permission_map_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(SharedMemoryVirtualDeviceMojoAdapter);

@@ -6,17 +6,24 @@ module video_capture.mojom;
 
 import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
-import "services/video_capture/public/mojom/scoped_access_permission.mojom";
 
 // Describes a new frame that is ready for consumption in the buffer with id
 // |buffer_id| and allows it to read the data from the buffer. The producer
 // guarantees that the buffer and its contents stay alive and unchanged until
-// |access_permission| is released.
+// VideoFrameAccessHandler.OnFinishedConsumingBuffer() is called.
 struct ReadyFrameInBuffer {
   int32 buffer_id;
   int32 frame_feedback_id;
-  pending_remote<ScopedAccessPermission> access_permission;
   media.mojom.VideoFrameInfo frame_info;
+};
+
+// Callback interface to be used when a buffer (ReadyFrameInBuffer) is no longer
+// being consumed on the receiver side. The VideoFrameAccessHandler may outlive
+// the VideoFrameHandler.
+interface VideoFrameAccessHandler {
+  // Informs the producer that the buffer associated with |buffer_id| is no
+  // longer being accessed by any consumer, allowing the buffer to be reused.
+  OnFinishedConsumingBuffer(int32 buffer_id);
 };
 
 // Callback interface for receiving data and messages from a
@@ -31,18 +38,27 @@ interface VideoFrameHandler {
   // OnFrameReadyInBuffer().
   OnNewBuffer(int32 buffer_id, media.mojom.VideoBufferHandle buffer_handle);
 
+  // Frames delivered by subsequent OnFrameReadyInBuffer() calls have their
+  // access permissions managed by this |frame_access_handler|. The producer
+  // guarantees that the buffer stays alive until
+  // VideoFrameAccessHandler.OnFinishedConsumingBuffer() is called and the
+  // consumer guarantees to call this method when finished consuming the buffer.
+  OnFrameAccessHandlerReady(
+      pending_remote<VideoFrameAccessHandler> frame_access_handler);
+
   // Indicates that a new frame is ready for consumption and optionally a set of
   // scaled down versions of that frame. The producer guarantees that the
   // buffer(s) and their contents stay alive and unchanged until
-  // VideoFrameHandler releases the |access_permission|s.
+  // VideoFrameHandler releases the buffers using |frame_access_handler|'s
+  // OnFinishedConsumingBuffer().
   OnFrameReadyInBuffer(ReadyFrameInBuffer buffer,
                        array<ReadyFrameInBuffer> scaled_buffers);
 
   // Indicates that the producer is no longer going to use the buffer with id
   // |buffer_id| for frame delivery. This may be called even while the handler
-  // is still holding |access_permission| from a call to OnFrameReadInBuffer()
-  // for the same buffer. In that case, it means that the caller is asking the
-  // VideoFrameHaVideoFrameReceiverndler to release the read permission and
+  // still holds access to the buffer (not having called
+  // OnFinishedConsumingBuffer() for this buffer yet). In that case, it means
+  // that the caller is asking the VideoFrameHandler to release the access and
   // buffer handle at its earliest convenience. After this call, a producer may
   // immediately reuse the retired |buffer_id| with a new buffer via a call to
   // OnNewBuffer().

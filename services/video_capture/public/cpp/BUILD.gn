@@ -6,6 +6,8 @@ source_set("cpp") {
   sources = [
     "receiver_media_to_mojo_adapter.cc",
     "receiver_media_to_mojo_adapter.h",
+    "video_frame_access_handler.cc",
+    "video_frame_access_handler.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
