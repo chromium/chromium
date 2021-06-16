@@ -251,12 +251,12 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Enumerate printers start via service";
-    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+    PrintBackendServiceManager& service_mgr =
+        PrintBackendServiceManager::GetInstance();
+    service_mgr.EnumeratePrinters(
         g_browser_process->GetApplicationLocale(),
-        /*printer_name=*/std::string());
-    service->EnumeratePrinters(base::BindOnce(&OnDidEnumeratePrinters,
-                                              std::move(callback),
-                                              std::move(done_callback)));
+        base::BindOnce(&OnDidEnumeratePrinters, std::move(callback),
+                       std::move(done_callback)));
   } else {
     VLOG(1) << "Enumerate printers start in-process";
     base::PostTaskAndReplyWithResult(

@@ -129,6 +129,31 @@ PrintBackendServiceManager::GetService(const std::string& locale,
   return service;
 }
 
+void PrintBackendServiceManager::EnumeratePrinters(
+    const std::string& locale,
+    mojom::PrintBackendService::EnumeratePrintersCallback callback) {
+  // Need to be able to run the callback either after a successful return from
+  // the service or after the remote was disconnected, so save it here for
+  // either eventuality.
+  // Get a callback ID to represent this command.
+  auto saved_callback_id = base::UnguessableToken::Create();
+
+  // Note that `GetService()` will set state internally if this is sandboxed.
+  const std::string kEmptyPrinterName;
+  std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
+  auto& service = GetService(locale, kEmptyPrinterName);
+
+  SaveCallback(GetRemoteSavedEnumeratePrintersCallbacks(is_sandboxed_service_),
+               remote_id, saved_callback_id, std::move(callback));
+
+  DVLOG(1) << "Sending EnumeratePrinters on remote `" << remote_id
+           << "`, saved callback ID of " << saved_callback_id;
+  service->EnumeratePrinters(
+      base::BindOnce(&PrintBackendServiceManager::EnumeratePrintersDone,
+                     base::Unretained(this), is_sandboxed_service_, remote_id,
+                     saved_callback_id));
+}
+
 void PrintBackendServiceManager::FetchCapabilities(
     const std::string& locale,
     const std::string& printer_name,
@@ -247,10 +272,20 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
   } else {
     unsandboxed_remotes_.erase(remote_id);
   }
+  RunSavedCallbacks(
+      GetRemoteSavedEnumeratePrintersCallbacks(sandboxed), remote_id,
+      mojom::PrinterListResult::NewResultCode(mojom::ResultCode::kFailed));
   RunSavedCallbacks(GetRemoteSavedFetchCapabilitiesCallbacks(sandboxed),
                     remote_id,
                     mojom::PrinterCapsAndInfoResult::NewResultCode(
                         mojom::ResultCode::kFailed));
+}
+
+PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
+PrintBackendServiceManager::GetRemoteSavedEnumeratePrintersCallbacks(
+    bool sandboxed) {
+  return sandboxed ? sandboxed_saved_enumerate_printers_callbacks_
+                   : unsandboxed_saved_enumerate_printers_callbacks_;
 }
 
 PrintBackendServiceManager::RemoteSavedFetchCapabilitiesCallbacks&
@@ -288,6 +323,18 @@ void PrintBackendServiceManager::ServiceCallbackDone(
 
   // Done disconnect wrapper management, propagate the callback.
   std::move(callback).Run(std::move(data));
+}
+
+void PrintBackendServiceManager::EnumeratePrintersDone(
+    bool sandboxed,
+    const std::string& remote_id,
+    const base::UnguessableToken& saved_callback_id,
+    mojom::PrinterListResultPtr printer_list) {
+  DVLOG(1) << "EnumeratePrinters completed for remote `" << remote_id
+           << "` saved callback ID " << saved_callback_id;
+
+  ServiceCallbackDone(GetRemoteSavedEnumeratePrintersCallbacks(sandboxed),
+                      remote_id, saved_callback_id, std::move(printer_list));
 }
 
 void PrintBackendServiceManager::FetchCapabilitiesDone(

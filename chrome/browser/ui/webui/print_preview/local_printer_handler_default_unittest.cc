@@ -350,14 +350,9 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
   RunUntilIdle();
 
   // Invalid data in even one printer causes entire list to be dropped.
-  // TODO(crbug.com/1214139) Invalid data causes the Mojom message to fail
-  // validation and thus be dropped, resulting in no callback for
-  // `EnumeratePrinters()` being made.  Testing infrastructure automatically
-  // recovers so control returns here, with `printers` unchanged.
-  // This test should be updated to show that there were no printers
-  // provided once service disconnects are better handled and a proper callback
-  // occurs.
-  EXPECT_FALSE(is_done);
+  EXPECT_EQ(call_count, 0u);
+  EXPECT_TRUE(is_done);
+  EXPECT_FALSE(printers);
 }
 
 // Tests that fetching capabilities for an existing installed printer is
