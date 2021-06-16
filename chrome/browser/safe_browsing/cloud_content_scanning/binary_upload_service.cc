@@ -35,6 +35,7 @@
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
+
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
@@ -43,6 +44,12 @@
 
 namespace safe_browsing {
 namespace {
+
+// The command line flag to control the max amount of concurrent active
+// requests.
+// TODO(crbug.com/1191061): Tweak this number to an "optimal" value.
+constexpr char kMaxParallelActiveRequests[] = "wp-max-parallel-active-requests";
+constexpr int kDefaultMaxParallelActiveRequests = 50;
 
 const int kScanningTimeoutSeconds = 5 * 60;  // 5 minutes
 
@@ -182,6 +189,24 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
 
 }  // namespace
 
+// static
+size_t BinaryUploadService::GetParallelActiveRequestsMax() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kMaxParallelActiveRequests)) {
+    int parsed_max;
+    if (base::StringToInt(
+            command_line->GetSwitchValueASCII(kMaxParallelActiveRequests),
+            &parsed_max) &&
+        parsed_max > 0) {
+      return parsed_max;
+    } else {
+      LOG(ERROR) << "wp-max-parallel-active-requests had invalid value";
+    }
+  }
+
+  return kDefaultMaxParallelActiveRequests;
+}
+
 BinaryUploadService::BinaryUploadService(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
       binary_fcm_service_(BinaryFCMService::Create(profile)),
@@ -272,7 +297,7 @@ void BinaryUploadService::MaybeUploadForDeepScanningCallback(
 
 void BinaryUploadService::QueueForDeepScanning(
     std::unique_ptr<BinaryUploadService::Request> request) {
-  if (active_requests_.size() >= kParallelActiveRequestsMax)
+  if (active_requests_.size() >= GetParallelActiveRequestsMax())
     request_queue_.push(std::move(request));
   else
     UploadForDeepScanning(std::move(request));
@@ -837,7 +862,7 @@ GURL BinaryUploadService::GetUploadUrl(bool is_consumer_scan_eligible) {
 }
 
 void BinaryUploadService::PopRequestQueue() {
-  while (active_requests_.size() < kParallelActiveRequestsMax &&
+  while (active_requests_.size() < GetParallelActiveRequestsMax() &&
          !request_queue_.empty()) {
     std::unique_ptr<Request> request = std::move(request_queue_.front());
     request_queue_.pop();

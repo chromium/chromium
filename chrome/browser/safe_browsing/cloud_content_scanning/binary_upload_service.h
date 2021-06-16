@@ -39,8 +39,7 @@ class BinaryUploadService : public KeyedService {
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
 
   // The maximum number of uploads that can happen in parallel.
-  // TODO(crbug.com/1191061): Tweak this number to an "optimal" value.
-  constexpr static size_t kParallelActiveRequestsMax = 50;
+  static size_t GetParallelActiveRequestsMax();
 
   explicit BinaryUploadService(Profile* profile);
 

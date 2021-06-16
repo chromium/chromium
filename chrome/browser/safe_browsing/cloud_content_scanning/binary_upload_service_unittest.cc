@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
@@ -789,13 +790,13 @@ TEST_F(BinaryUploadServiceTest, RequestQueue) {
   std::vector<MockRequest*> requests;
 
   ExpectInstanceID("valid id",
-                   2 * BinaryUploadService::kParallelActiveRequestsMax);
+                   2 * BinaryUploadService::GetParallelActiveRequestsMax());
   ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
 
   // Uploading 2*max requests before any response is received ensures that the
   // queue is populated and processed correctly.
-  for (size_t i = 0; i < 2 * BinaryUploadService::kParallelActiveRequestsMax;
-       ++i) {
+  for (size_t i = 0;
+       i < 2 * BinaryUploadService::GetParallelActiveRequestsMax(); ++i) {
     std::unique_ptr<MockRequest> request =
         MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
     request->add_tag("dlp");
@@ -821,6 +822,45 @@ TEST_F(BinaryUploadServiceTest, RequestQueue) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
+}
+
+TEST_F(BinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
+  EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "wp-max-parallel-active-requests", "10");
+    EXPECT_EQ(10UL, BinaryUploadService::GetParallelActiveRequestsMax());
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "wp-max-parallel-active-requests", "100");
+    EXPECT_EQ(100UL, BinaryUploadService::GetParallelActiveRequestsMax());
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "wp-max-parallel-active-requests", "0");
+    EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "wp-max-parallel-active-requests", "foo");
+    EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "wp-max-parallel-active-requests", "-1");
+    EXPECT_EQ(50UL, BinaryUploadService::GetParallelActiveRequestsMax());
+  }
 }
 
 }  // namespace safe_browsing
