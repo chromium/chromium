@@ -34,11 +34,14 @@
 
       These requests may allow clients to do very bad things.
     </description>
-      Note from Chromium developers: Moves the surface to a specified location
-      on screen. The move_surface API must not be used as it may result in
-      unexpected results as it violates layering and positioning of surface
-      inside the Wayland compositor.
     <request name="move_surface">
+      <description summary="do not use">
+        Moves the surface to a specified location on screen.
+
+        Note from Chromium developers: the move_surface API must not be used as
+        it may result in unexpected results as it violates layering and
+        positioning of surface inside the Wayland compositor.
+      </description>
       <arg name="surface" type="object" interface="wl_surface"/>
       <arg name="x" type="int"/>
       <arg name="y" type="int"/>
