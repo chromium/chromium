@@ -236,8 +236,16 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
+  // TODO(crbug.com/1220724): iOS 15 phones seem to act more like iPads now,
+  // dismissing the keyboard when tapping on the option above. Confirm that this
+  // is expected and either fix, or remove this comment.
+  BOOL isIOS15 = NO;
+  if (@available(iOS 15, *)) {
+    isIOS15 = YES;
+  }
+
   // Verify the status of the icons.
-  if ([ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom] || isIOS15) {
     // Hidden on iPad.
     [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
         assertWithMatcher:grey_notVisible()];
