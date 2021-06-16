@@ -109,5 +109,13 @@
                       android:targetActivity="org.chromium.android_webview.shell.AwShellActivity"
                       android:enabled="false" />
     <!-- End of Developer UI related components -->
+    <!-- Components for SafeMode, make sure that any changes in these components reflect
+         the corresponding original components in nonembedded/java/AndroidManifest.xml -->
+    <service android:name="org.chromium.android_webview.services.SafeModeService"
+                         android:exported="true" />
+    <activity-alias android:name="org.chromium.android_webview.SafeModeState"
+                      android:targetActivity="org.chromium.android_webview.shell.AwShellActivity"
+                      android:enabled="false" />
+    <!-- End of SafeMode related components -->
   </application>
 </manifest>
