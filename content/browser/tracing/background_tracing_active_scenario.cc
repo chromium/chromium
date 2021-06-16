@@ -68,9 +68,11 @@ class BackgroundTracingActiveScenario::TracingSession {
   TracingSession(BackgroundTracingActiveScenario* parent_scenario,
                  const TraceConfig& chrome_config,
                  const BackgroundTracingConfigImpl* config,
-                 bool convert_to_legacy_json)
+                 bool convert_to_legacy_json,
+                 bool use_local_output)
       : parent_scenario_(parent_scenario),
-        convert_to_legacy_json_(convert_to_legacy_json) {
+        convert_to_legacy_json_(convert_to_legacy_json),
+        use_local_output_(use_local_output) {
 #if !defined(OS_ANDROID)
     // TODO(crbug.com/941318): Re-enable startup tracing for Android once all
     // Perfetto-related deadlocks are resolved and we also handle concurrent
@@ -182,14 +184,20 @@ class BackgroundTracingActiveScenario::TracingSession {
         TracingControllerImpl::CreateCompressedStringEndpoint(
             TracingControllerImpl::CreateCallbackEndpoint(base::BindOnce(
                 [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this,
-                   base::OnceClosure on_success,
+                   base::OnceClosure on_success, bool use_local_output,
                    std::unique_ptr<std::string> file_contents) {
                   std::move(on_success).Run();
-                  if (weak_this) {
+                  if (!weak_this)
+                    return;
+                  if (use_local_output) {
+                    weak_this->OnDataForLocalOutputComplete(
+                        std::move(file_contents));
+                  } else {
                     weak_this->OnJSONDataComplete(std::move(file_contents));
                   }
                 },
-                parent_scenario_->GetWeakPtr(), std::move(on_success))),
+                parent_scenario_->GetWeakPtr(), std::move(on_success),
+                use_local_output_)),
             true /* compress_with_background_priority */);
     auto tokenizer = base::MakeRefCounted<
         base::RefCountedData<std::unique_ptr<tracing::TracePacketTokenizer>>>(
@@ -231,38 +239,47 @@ class BackgroundTracingActiveScenario::TracingSession {
         base::RefCountedData<std::unique_ptr<std::string>>>(
         std::make_unique<std::string>());
     auto parent_scenario = parent_scenario_->GetWeakPtr();
-    tracing_session->data->SetOnStopCallback(
-        [parent_scenario, tracing_session, raw_data] {
-          tracing_session->data->ReadTrace(
-              [parent_scenario, tracing_session,
-               raw_data](perfetto::TracingSession::ReadTraceCallbackArgs args) {
-                if (args.size) {
-                  raw_data->data->append(args.data, args.size);
-                }
-                if (!args.has_more) {
-                  GetUIThreadTaskRunner({})->PostTask(
-                      FROM_HERE,
-                      base::BindOnce(
-                          &BackgroundTracingActiveScenario::OnProtoDataComplete,
-                          parent_scenario, std::move(raw_data->data)));
-                }
-              });
-        });
+    const bool use_local_output = use_local_output_;
+    tracing_session->data->SetOnStopCallback([parent_scenario, tracing_session,
+                                              raw_data, use_local_output] {
+      tracing_session->data->ReadTrace(
+          [parent_scenario, tracing_session, raw_data, use_local_output](
+              perfetto::TracingSession::ReadTraceCallbackArgs args) {
+            if (args.size) {
+              raw_data->data->append(args.data, args.size);
+            }
+            if (!args.has_more) {
+              GetUIThreadTaskRunner({})->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(use_local_output
+                                     ? &BackgroundTracingActiveScenario::
+                                           OnDataForLocalOutputComplete
+                                     : &BackgroundTracingActiveScenario::
+                                           OnProtoDataComplete,
+                                 parent_scenario, std::move(raw_data->data)));
+            }
+          });
+    });
     tracing_session->data->Stop();
   }
 
   BackgroundTracingActiveScenario* const parent_scenario_;
   const bool convert_to_legacy_json_;
+  // True if the trace should be output to a local location using a
+  // ReceiveCallback instead of uploading through UMA.
+  const bool use_local_output_;
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
 };
 
 BackgroundTracingActiveScenario::BackgroundTracingActiveScenario(
     std::unique_ptr<BackgroundTracingConfigImpl> config,
     BackgroundTracingManager::ReceiveCallback receive_callback,
-    base::OnceClosure on_aborted_callback)
+    base::OnceClosure on_aborted_callback,
+    bool use_local_output)
     : config_(std::move(config)),
       receive_callback_(std::move(receive_callback)),
-      on_aborted_callback_(std::move(on_aborted_callback)) {
+      on_aborted_callback_(std::move(on_aborted_callback)),
+      use_local_output_(use_local_output) {
   DCHECK(config_ && !config_->rules().empty());
   for (const auto& rule : config_->rules()) {
     rule->Install();
@@ -349,7 +366,8 @@ bool BackgroundTracingActiveScenario::StartTracing() {
   bool convert_to_legacy_json =
       !base::FeatureList::IsEnabled(features::kBackgroundTracingProtoOutput);
   tracing_session_ = std::make_unique<TracingSession>(
-      this, chrome_config, config_.get(), convert_to_legacy_json);
+      this, chrome_config, config_.get(), convert_to_legacy_json,
+      use_local_output_);
 
   SetState(State::kTracing);
   BackgroundTracingManagerImpl::RecordMetric(Metrics::RECORDING_ENABLED);
@@ -413,12 +431,11 @@ void BackgroundTracingActiveScenario::OnJSONDataComplete(
 
   // Send the finalized and compressed tracing data to the destination
   // callback.
-  if (!receive_callback_.is_null()) {
-    receive_callback_.Run(
-        std::move(file_contents),
-        base::BindOnce(&BackgroundTracingActiveScenario::OnFinalizeComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  DCHECK(!receive_callback_.is_null());
+  receive_callback_.Run(
+      std::move(file_contents),
+      base::BindOnce(&BackgroundTracingActiveScenario::OnFinalizeComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   if (started_finalizing_closure_) {
     std::move(started_finalizing_closure_).Run();
@@ -431,8 +448,30 @@ void BackgroundTracingActiveScenario::OnProtoDataComplete(
   UMA_HISTOGRAM_MEMORY_KB("Tracing.Background.FinalizingTraceSizeInKB",
                           proto_trace->size() / 1024);
 
+  // Store the trace to be uploaded through UMA.
+  // BackgroundTracingMetricsProvider::ProvideIndependentMetrics will call
+  // OnFinalizeComplete once the upload is done.
+  DCHECK(receive_callback_.is_null());
   BackgroundTracingManagerImpl::GetInstance()->SetTraceToUpload(
       std::move(proto_trace));
+
+  if (started_finalizing_closure_) {
+    std::move(started_finalizing_closure_).Run();
+  }
+}
+
+void BackgroundTracingActiveScenario::OnDataForLocalOutputComplete(
+    std::unique_ptr<std::string> file_contents) {
+  BackgroundTracingManagerImpl::RecordMetric(
+      Metrics::FINALIZATION_STARTED_WITH_LOCAL_OUTPUT);
+
+  // Send the finalized and compressed tracing data to the destination
+  // callback.
+  DCHECK(!receive_callback_.is_null());
+  receive_callback_.Run(
+      std::move(file_contents),
+      base::BindOnce(&BackgroundTracingActiveScenario::OnFinalizeComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   if (started_finalizing_closure_) {
     std::move(started_finalizing_closure_).Run();

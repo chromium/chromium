@@ -19,13 +19,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/tracing/background_tracing_field_trial.h"
 #include "chrome/browser/tracing/crash_service_uploader.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/background_tracing_config.h"
@@ -138,9 +138,8 @@ bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,
                            bool is_crash_scenario) {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
-      command_line->HasSwitch(switches::kTraceUploadURL)) {
+  if (tracing::GetBackgroundTracingSetupMode() ==
+      tracing::BackgroundTracingSetupMode::kFromConfigFile) {
     return true;
   }
 

@@ -27,7 +27,8 @@ class BackgroundTracingActiveScenario {
   BackgroundTracingActiveScenario(
       std::unique_ptr<BackgroundTracingConfigImpl> config,
       BackgroundTracingManager::ReceiveCallback receive_callback,
-      base::OnceClosure on_aborted_callback);
+      base::OnceClosure on_aborted_callback,
+      bool use_local_output);
   virtual ~BackgroundTracingActiveScenario();
 
   void StartTracingIfConfigNeedsIt();
@@ -48,10 +49,15 @@ class BackgroundTracingActiveScenario {
       const BackgroundTracingRule* triggered_rule,
       BackgroundTracingManager::StartedFinalizingCallback callback);
 
-  // Called by TracingSession when the final trace data is ready.
+  // Called by TracingSession when the final trace data is ready for legacy JSON
+  // traces.
   void OnJSONDataComplete(std::unique_ptr<std::string>);
-  // Called by TracingSession when the proto trace is ready.
-  void OnProtoDataComplete(std::unique_ptr<std::string> proto_trace);
+  // Called by TracingSession when the final trace data is ready for proto
+  // traces.
+  void OnProtoDataComplete(std::unique_ptr<std::string>);
+  // Called by TracingSession when the final trace data is ready for any trace
+  // when using BackgroundTracingSetupMode::kFromConfigFile.
+  void OnDataForLocalOutputComplete(std::unique_ptr<std::string>);
 
   // Called when the finalized trace data has been uploaded/transferred away
   // from the background tracing system.
@@ -87,6 +93,10 @@ class BackgroundTracingActiveScenario {
 
   class TracingTimer;
   std::unique_ptr<TracingTimer> tracing_timer_;
+
+  // True if the trace should be output to a local location using a
+  // ReceiveCallback instead of uploading through UMA.
+  bool use_local_output_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<BackgroundTracingActiveScenario> weak_ptr_factory_{this};

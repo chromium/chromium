@@ -291,10 +291,17 @@ class LenientFakeBackgroundTracingManager
   // Functions we don't care about.
   bool SetActiveScenario(
       std::unique_ptr<content::BackgroundTracingConfig> config,
-      ReceiveCallback receive_callback,
       DataFiltering data_filtering) override {
     return true;
   }
+  bool SetActiveScenarioWithReceiveCallback(
+      std::unique_ptr<content::BackgroundTracingConfig> config,
+      ReceiveCallback receive_callback,
+      DataFiltering data_filtering,
+      bool local_output = false) override {
+    return true;
+  }
+
   void WhenIdle(IdleCallback idle_callback) override {}
   const std::string& GetTriggerNameFromHandle(
       TriggerHandle trigger_handle) override {

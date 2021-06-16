@@ -7103,6 +7103,8 @@ others/histograms.xml -->
   <int value="13" label="Large upload waiting to retry"/>
   <int value="14" label="System scenario triggered"/>
   <int value="15" label="Reached code scenario triggered"/>
+  <int value="16"
+      label="Trace finalization started with a local output location"/>
 </enum>
 
 <enum name="BackingStoreResults">
