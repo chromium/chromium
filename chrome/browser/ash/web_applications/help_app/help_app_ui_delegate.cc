@@ -101,6 +101,9 @@ void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "HelpAppDiscoverTab",
       base::FeatureList::IsEnabled(chromeos::features::kHelpAppDiscoverTab));
+  source->AddBoolean(
+      "HelpAppBackgroundPage",
+      base::FeatureList::IsEnabled(chromeos::features::kHelpAppBackgroundPage));
 
   Profile* profile = Profile::FromWebUI(web_ui_);
   PrefService* pref_service = profile->GetPrefs();
