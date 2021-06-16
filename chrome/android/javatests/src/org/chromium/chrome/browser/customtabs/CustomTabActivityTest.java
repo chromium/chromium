@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
@@ -192,6 +194,20 @@ public class CustomTabActivityTest {
     private EmbeddedTestServer mTestServer;
     private TestWebServer mWebServer;
     private CustomTabsConnection mConnectionToCleanup;
+
+    private class CustomTabsExtraCallbackHelper<T> extends CallbackHelper {
+        private T mValue;
+
+        public T getValue() {
+            assert getCallCount() > 0;
+            return mValue;
+        }
+
+        public void notifyCalled(T value) {
+            mValue = value;
+            notifyCalled();
+        }
+    }
 
     @Rule
     public final ScreenShooter mScreenShooter = new ScreenShooter();
@@ -468,8 +484,7 @@ public class CustomTabActivityTest {
         // The context menu for images should not be built when the first run is not completed.
         ContextMenuCoordinator imageMenu = ContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "logo");
-        Assert.assertNull(
-                "Context menu for images should not be built when first run is not finished.",
+        assertNull("Context menu for images should not be built when first run is not finished.",
                 imageMenu);
 
         // Options on the context menu for links should be limited when the first run is not
@@ -696,7 +711,7 @@ public class CustomTabActivityTest {
 
         onFinished1.waitForCallback("Pending Intent was not sent.");
         Assert.assertThat(onFinished1.getCallbackIntent().getDataString(), equalTo(mTestPage));
-        Assert.assertNull(onFinished2.getCallbackIntent());
+        assertNull(onFinished2.getCallbackIntent());
 
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         int id = toolbarItems.get(0).getInt(CustomTabsIntent.KEY_ID);
@@ -731,7 +746,7 @@ public class CustomTabActivityTest {
         CustomTabToolbar toolbar = (CustomTabToolbar) toolbarView;
         final ImageButton actionButton = toolbar.getCustomActionButtonForTest(0);
 
-        Assert.assertNull("Action button should not be shown", actionButton);
+        assertNull("Action button should not be shown", actionButton);
 
         BrowserServicesIntentDataProvider dataProvider = getActivity().getIntentDataProvider();
         Assert.assertThat(dataProvider.getCustomButtonsOnToolbar(), is(empty()));
@@ -991,7 +1006,7 @@ public class CustomTabActivityTest {
      * Tests that page load metrics are sent.
      */
     @Test
-    @SmallTest
+    @MediumTest
     public void testPageLoadMetricsAreSent() throws Exception {
         checkPageLoadMetrics(true);
     }
@@ -1000,7 +1015,7 @@ public class CustomTabActivityTest {
      * Tests that page load metrics are not sent when the client is not allowlisted.
      */
     @Test
-    @SmallTest
+    @MediumTest
     public void testPageLoadMetricsAreNotSentByDefault() throws Exception {
         checkPageLoadMetrics(false);
     }
@@ -1197,7 +1212,7 @@ public class CustomTabActivityTest {
     public void testWarmupAndLaunchRightToolbarLayout() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         mCustomTabActivityTestRule.startActivityCompletely(createMinimalCustomTabIntent());
-        Assert.assertNull("Should not have a tab switcher button.",
+        assertNull("Should not have a tab switcher button.",
                 getActivity().findViewById(R.id.tab_switcher_button));
     }
 
@@ -1863,7 +1878,7 @@ public class CustomTabActivityTest {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             getActivity().getComponent().resolveNavigationController()
                     .openCurrentUrlInBrowser(true);
-            Assert.assertNull(getActivity().getActivityTab());
+            assertNull(getActivity().getActivityTab());
         });
         // Use the extended CriteriaHelper timeout to make sure we get an activity
         final Activity lastActivity =
@@ -1895,12 +1910,18 @@ public class CustomTabActivityTest {
     }
 
     private void checkPageLoadMetrics(boolean allowMetrics) throws TimeoutException {
-        final AtomicReference<Long> firstContentfulPaintMs = new AtomicReference<>(-1L);
-        final AtomicReference<Long> largestContentfulPaintMs = new AtomicReference<>(-1L);
+        CustomTabsExtraCallbackHelper<Long> firstContentfulPaintCallback =
+                new CustomTabsExtraCallbackHelper<>();
+        CustomTabsExtraCallbackHelper<Long> largestContentfulPaintCallback =
+                new CustomTabsExtraCallbackHelper<>();
+        CustomTabsExtraCallbackHelper<Long> loadEventStartCallback =
+                new CustomTabsExtraCallbackHelper<>();
+        CustomTabsExtraCallbackHelper<Float> layoutShiftScoreCallback =
+                new CustomTabsExtraCallbackHelper<>();
+        CustomTabsExtraCallbackHelper<Boolean> sawNetworkQualityEstimatesCallback =
+                new CustomTabsExtraCallbackHelper<>();
+
         final AtomicReference<Long> activityStartTimeMs = new AtomicReference<>(-1L);
-        final AtomicReference<Long> loadEventStartMs = new AtomicReference<>(-1L);
-        final AtomicReference<Float> layoutShiftScore = new AtomicReference<>(-1f);
-        final AtomicReference<Boolean> sawNetworkQualityEstimates = new AtomicReference<>(false);
 
         CustomTabsCallback cb = new CustomTabsCallback() {
             @Override
@@ -1913,13 +1934,13 @@ public class CustomTabActivityTest {
                     assertEquals(CustomTabsConnection.PAGE_LOAD_METRICS_CALLBACK, callbackName);
                 }
                 if (-1 != args.getLong(PageLoadMetrics.EFFECTIVE_CONNECTION_TYPE, -1)) {
-                    sawNetworkQualityEstimates.set(true);
+                    sawNetworkQualityEstimatesCallback.notifyCalled(true);
                 }
 
                 float layoutShiftScoreValue =
                         args.getFloat(PageLoadMetrics.LAYOUT_SHIFT_SCORE, -1f);
                 if (layoutShiftScoreValue >= 0f) {
-                    layoutShiftScore.set(layoutShiftScoreValue);
+                    layoutShiftScoreCallback.notifyCalled(layoutShiftScoreValue);
                 }
 
                 long navigationStart = args.getLong(PageLoadMetrics.NAVIGATION_START, -1);
@@ -1935,20 +1956,20 @@ public class CustomTabActivityTest {
                         args.getLong(PageLoadMetrics.FIRST_CONTENTFUL_PAINT, -1);
                 if (firstContentfulPaint > 0) {
                     Assert.assertTrue(firstContentfulPaint <= (current - navigationStart));
-                    firstContentfulPaintMs.set(firstContentfulPaint);
+                    firstContentfulPaintCallback.notifyCalled(firstContentfulPaint);
                 }
 
                 long largestContentfulPaint =
                         args.getLong(PageLoadMetrics.LARGEST_CONTENTFUL_PAINT, -1);
                 if (largestContentfulPaint > 0) {
                     Assert.assertTrue(largestContentfulPaint <= (current - navigationStart));
-                    largestContentfulPaintMs.set(largestContentfulPaint);
+                    largestContentfulPaintCallback.notifyCalled(largestContentfulPaint);
                 }
 
                 long loadEventStart = args.getLong(PageLoadMetrics.LOAD_EVENT_START, -1);
                 if (loadEventStart > 0) {
                     Assert.assertTrue(loadEventStart <= (current - navigationStart));
-                    loadEventStartMs.set(loadEventStart);
+                    loadEventStartCallback.notifyCalled(loadEventStart);
                 }
             }
         };
@@ -1970,23 +1991,30 @@ public class CustomTabActivityTest {
         activityStartTimeMs.set(SystemClock.uptimeMillis());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         if (allowMetrics) {
-            CriteriaHelper.pollInstrumentationThread(() -> firstContentfulPaintMs.get() > 0);
-            CriteriaHelper.pollInstrumentationThread(() -> loadEventStartMs.get() > 0);
-            CriteriaHelper.pollInstrumentationThread(() -> sawNetworkQualityEstimates.get());
+            firstContentfulPaintCallback.waitForCallback(0);
+            loadEventStartCallback.waitForCallback(0);
+            sawNetworkQualityEstimatesCallback.waitForCallback(0);
+
+            assertTrue(firstContentfulPaintCallback.getValue() > 0);
+            assertTrue(firstContentfulPaintCallback.getValue() > 0);
+            assertTrue(sawNetworkQualityEstimatesCallback.getValue());
         } else {
             try {
-                CriteriaHelper.pollInstrumentationThread(() -> firstContentfulPaintMs.get() > 0);
-            } catch (AssertionError e) {
+                firstContentfulPaintCallback.waitForCallback(0);
+                assertTrue(firstContentfulPaintCallback.getValue() > 0);
+            } catch (TimeoutException e) {
                 // Expected.
             }
-            assertEquals(-1L, (long) firstContentfulPaintMs.get());
+            assertEquals(0, firstContentfulPaintCallback.getCallCount());
 
             try {
-                CriteriaHelper.pollInstrumentationThread(() -> largestContentfulPaintMs.get() > 0);
-            } catch (AssertionError e) {
+                largestContentfulPaintCallback.waitForCallback(0);
+                assertTrue(largestContentfulPaintCallback.getValue() > 0);
+            } catch (TimeoutException e) {
                 // Expected.
             }
-            assertEquals(-1L, (long) largestContentfulPaintMs.get());
+
+            assertEquals(0, largestContentfulPaintCallback.getCallCount());
         }
 
         // Navigate to a new page, as metrics like LCP are only reported at the end of the page load
@@ -1997,8 +2025,11 @@ public class CustomTabActivityTest {
         });
 
         if (allowMetrics) {
-            CriteriaHelper.pollInstrumentationThread(() -> largestContentfulPaintMs.get() > 0);
-            CriteriaHelper.pollInstrumentationThread(() -> layoutShiftScore.get() != -1f);
+            largestContentfulPaintCallback.waitForCallback(0);
+            assertTrue((long) largestContentfulPaintCallback.getValue() > 0);
+
+            layoutShiftScoreCallback.waitForCallback(0);
+            assertNotNull(layoutShiftScoreCallback.getValue());
         }
     }
 
