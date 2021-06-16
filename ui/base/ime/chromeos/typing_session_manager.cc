@@ -72,7 +72,7 @@ void TypingSessionManager::EndAndRecordSession() {
   base::TimeDelta time_taken = last_user_action_time_ - session_start_time_;
   if (characters_committed_this_session_count_ >= MIN_CHARACTERS_COMMITTED &&
       time_taken >= MIN_SESSION_DURATION_IN_MS) {
-    base::UmaHistogramTimes("InputMethod.SessionDuration", time_taken);
+    base::UmaHistogramMediumTimes("InputMethod.SessionDuration", time_taken);
     base::UmaHistogramCounts100000("InputMethod.CharactersPerSession",
                                    characters_committed_this_session_count_);
   }
