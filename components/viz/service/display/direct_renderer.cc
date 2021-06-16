@@ -701,7 +701,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
       auto new_polygon = std::make_unique<DrawPolygon>(
           *it, gfx::RectF(quad.visible_rect),
           quad.shared_quad_state->quad_to_target_transform, next_polygon_id++);
-      if (new_polygon->points().size() > 2u) {
+      if (new_polygon->normal().LengthSquared() > 0.0) {
         poly_list.push_back(std::move(new_polygon));
       }
       continue;
