@@ -229,6 +229,10 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   void SetCcLayerForTesting(scoped_refptr<cc::Layer>, bool is_surface_layer);
 
+  // Whether a navigation should replace the current history entry or not.
+  bool NavigationShouldReplaceCurrentHistoryEntry(
+      WebFrameLoadType frame_load_type) const;
+
  private:
   // Frame protected overrides:
   bool DetachImpl(FrameDetachType) override;

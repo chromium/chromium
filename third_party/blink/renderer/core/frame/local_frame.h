@@ -825,6 +825,11 @@ class CORE_EXPORT LocalFrame final
 
   void SetEvictCachedSessionStorageOnFreezeOrUnload();
 
+  // Whether a current browsing context should always replace a current history
+  // entry in navigation. In such a browing context, the number of
+  // history entry is limited to 1.
+  bool IsSingleNavigationEntryBrowsingContext() const;
+
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
@@ -942,6 +947,13 @@ class CORE_EXPORT LocalFrame final
           mojom::blink::FullscreenVideoElementHandler> receiver);
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
+
+  // Whether a navigation should replace the current history entry or not.
+  // Note this isn't exhaustive; there are other cases where a navigation does a
+  // replacement which this function doesn't cover.
+  bool NavigationShouldReplaceCurrentHistoryEntry(
+      const FrameLoadRequest& request,
+      WebFrameLoadType frame_load_type);
 
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 

@@ -222,11 +222,8 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       window->GetFrame() ? window->GetFrame()->GetContentSettingsClient()
                          : nullptr);
 
-  // Navigations in portal contexts do not create back/forward entries.
-  if (GetPage()->InsidePortal() &&
-      frame_load_type == WebFrameLoadType::kStandard) {
+  if (NavigationShouldReplaceCurrentHistoryEntry(frame_load_type))
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
-  }
 
   bool is_opener_navigation = false;
   bool initiator_frame_has_download_sandbox_flag = false;
@@ -318,6 +315,15 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       initiator_frame_is_ad);
 
   GetRemoteFrameHostRemote().OpenURL(std::move(params));
+}
+
+bool RemoteFrame::NavigationShouldReplaceCurrentHistoryEntry(
+    WebFrameLoadType frame_load_type) const {
+  // Portal contexts do not create back/forward entries.
+  // TODO(https:/crbug.com/1197384, https://crbug.com/1190644): We may want to
+  // support a prerender in RemoteFrame.
+  return frame_load_type == WebFrameLoadType::kStandard &&
+         GetPage()->InsidePortal();
 }
 
 bool RemoteFrame::DetachImpl(FrameDetachType type) {

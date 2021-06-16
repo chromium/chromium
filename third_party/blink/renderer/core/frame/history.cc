@@ -211,13 +211,13 @@ void History::pushState(v8::Isolate* isolate,
                         const String& url,
                         ExceptionState& exception_state) {
   WebFrameLoadType load_type = WebFrameLoadType::kStandard;
-  // Navigations in portal contexts do not create back/forward entries.
-  if (DomWindow() && DomWindow()->GetFrame()->GetPage()->InsidePortal()) {
+  if (DomWindow() &&
+      DomWindow()->GetFrame()->IsSingleNavigationEntryBrowsingContext()) {
     DomWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kJavaScript,
-            mojom::ConsoleMessageLevel::kWarning,
-            "Use of history.pushState in a portal context "
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Use of history.pushState in a prerender context "
             "is treated as history.replaceState."),
         /* discard_duplicates */ true);
     load_type = WebFrameLoadType::kReplaceCurrentItem;

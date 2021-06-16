@@ -666,27 +666,13 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
                request.GetResourceRequest().Url().GetString().Utf8(),
                "load_type", static_cast<int>(frame_load_type));
 
-  if (request.ClientRedirectReason() != ClientNavigationReason::kNone) {
+  if (request.ClientRedirectReason() != ClientNavigationReason::kNone)
     probe::FrameScheduledNavigation(this, request.GetResourceRequest().Url(),
                                     base::TimeDelta(),
                                     request.ClientRedirectReason());
-    // Non-user navigation before the page has finished firing onload should not
-    // create a new back/forward item. The spec only explicitly mentions this in
-    // the context of navigating an iframe.
-    if (!GetDocument()->LoadEventFinished() &&
-        !HasTransientUserActivation(this) &&
-        request.ClientRedirectReason() !=
-            ClientNavigationReason::kAnchorClick) {
-      frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
-    }
-  }
 
-  // Navigations in portal contexts do not create back/forward entries.
-  // TODO(mcnee): Similarly, we need to restrict orphaned contexts.
-  if (GetPage()->InsidePortal() &&
-      frame_load_type == WebFrameLoadType::kStandard) {
+  if (NavigationShouldReplaceCurrentHistoryEntry(request, frame_load_type))
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
-  }
 
   const ClientNavigationReason client_redirect_reason =
       request.ClientRedirectReason();
@@ -694,6 +680,34 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
 
   if (client_redirect_reason != ClientNavigationReason::kNone)
     probe::FrameClearedScheduledNavigation(this);
+}
+
+bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
+    const FrameLoadRequest& request,
+    WebFrameLoadType frame_load_type) {
+  // Non-user navigation before the page has finished firing onload should not
+  // create a new back/forward item. The spec only explicitly mentions this in
+  // the context of navigating an iframe.
+  if (request.ClientRedirectReason() != ClientNavigationReason::kNone &&
+      !GetDocument()->LoadEventFinished() &&
+      !HasTransientUserActivation(this) &&
+      request.ClientRedirectReason() != ClientNavigationReason::kAnchorClick)
+    return true;
+  return frame_load_type == WebFrameLoadType::kStandard &&
+         IsSingleNavigationEntryBrowsingContext();
+
+  // TODO(http://crbug.com/1197384): We may want to assert that
+  // WebFrameLoadType is never kStandard in prerendered pages/portals before
+  // commit. DCHECK can be in FrameLoader::CommitNavigation or somewhere
+  // similar.
+}
+
+bool LocalFrame::IsSingleNavigationEntryBrowsingContext() const {
+  // Portal or prerender should always replace a current history entry.
+  // The spec for prerender is:
+  // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history.
+  // TODO(mcnee): Similarly, we need to restrict orphaned contexts.
+  return GetPage()->InsidePortal() || GetDocument()->IsPrerendering();
 }
 
 LocalFrame::JavaScriptIsolatedWorldRequest::JavaScriptIsolatedWorldRequest(
