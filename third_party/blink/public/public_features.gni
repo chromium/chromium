@@ -12,7 +12,7 @@ declare_args() {
   enable_blink_heap_young_generation = false
 
   # Enables Blink's heap to use V8's version of Oilpan.
-  enable_blink_heap_use_v8_oilpan = false
+  enable_blink_heap_use_v8_oilpan = true
 }
 
 declare_args() {
@@ -36,3 +36,7 @@ enable_unhandled_tap = is_android
 
 # Use Minikin hyphenation engine.
 use_minikin_hyphenation = !is_mac
+
+if (enable_additional_blink_object_names) {
+  cppgc_enable_object_names = true
+}
