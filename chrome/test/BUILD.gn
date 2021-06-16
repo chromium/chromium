@@ -1877,6 +1877,7 @@ if (!is_android) {
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
+      "../browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/webauthn/authenticator_dialog_view_browsertest.cc",
       "../browser/ui/views/webauthn/webauthn_icon_interactive_uitest.cc",
@@ -3791,10 +3792,6 @@ if (!is_android) {
     if (enable_spellcheck) {
       sources +=
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
-    }
-
-    if (is_win || is_mac || is_linux) {
-      sources += [ "../browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_browsertest.cc" ]
     }
 
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {

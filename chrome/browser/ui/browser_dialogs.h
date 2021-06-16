@@ -133,7 +133,7 @@ void ShowWebAppInstallDialog(content::WebContents* web_contents,
                              std::unique_ptr<WebApplicationInfo> web_app_info,
                              AppInstallationAcceptanceCallback callback);
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if !defined(OS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
 // web app. The boolean parameter is true when the user accepts the dialog.
 using WebAppProtocolHandlerAcceptanceCallback =
@@ -147,7 +147,7 @@ void ShowWebAppProtocolHandlerIntentPicker(
     Profile* profile,
     const web_app::AppId& app_id,
     WebAppProtocolHandlerAcceptanceCallback close_callback);
-#endif
+#endif  // !defined(OS_ANDROID)
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))

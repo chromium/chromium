@@ -126,9 +126,7 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 #include "chrome/browser/ui/startup/web_app_protocol_handling_startup_utils.h"
-#endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -1083,7 +1081,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
   }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   // Web app Protocol handling.
   auto startup_callback = base::BindOnce(
       [](bool process_startup, const base::CommandLine& command_line,
@@ -1109,7 +1106,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
           std::move(startup_callback))) {
     return true;
   }
-#endif
 
   return StartupLaunchAfterProtocolHandler(
       command_line, cur_dir, privacy_safe_profile, process_startup,

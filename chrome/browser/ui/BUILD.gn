@@ -2931,6 +2931,8 @@ static_library("ui") {
       "signin_view_controller.h",
       "signin_view_controller_delegate.cc",
       "signin_view_controller_delegate.h",
+      "startup/web_app_protocol_handling_startup_utils.cc",
+      "startup/web_app_protocol_handling_startup_utils.h",
       "tab_contents/chrome_web_contents_menu_helper.cc",
       "tab_contents/chrome_web_contents_menu_helper.h",
       "tab_contents/chrome_web_contents_view_handle_drop.cc",
@@ -3516,13 +3518,6 @@ static_library("ui") {
       # This is the only component that can interact with gtk.
       deps += [ "//ui/gtk" ]
     }
-  }
-
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "startup/web_app_protocol_handling_startup_utils.cc",
-      "startup/web_app_protocol_handling_startup_utils.h",
-    ]
   }
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
@@ -4413,8 +4408,12 @@ static_library("ui") {
       "views/web_apps/pwa_confirmation_bubble_view.h",
       "views/web_apps/web_app_confirmation_view.cc",
       "views/web_apps/web_app_confirmation_view.h",
+      "views/web_apps/web_app_hover_button.cc",
+      "views/web_apps/web_app_hover_button.h",
       "views/web_apps/web_app_info_image_source.cc",
       "views/web_apps/web_app_info_image_source.h",
+      "views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.cc",
+      "views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h",
       "views/web_apps/web_app_uninstall_dialog_view.cc",
       "views/web_apps/web_app_uninstall_dialog_view.h",
       "views/webauthn/authenticator_bio_enrollment_sheet_view.cc",
@@ -4553,15 +4552,6 @@ static_library("ui") {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",
-      ]
-    }
-
-    if (is_win || is_mac || is_linux) {
-      sources += [
-        "views/web_apps/web_app_hover_button.cc",
-        "views/web_apps/web_app_hover_button.h",
-        "views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.cc",
-        "views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h",
       ]
     }
 
