@@ -8936,6 +8936,26 @@
             ]
         }
     ],
+    "WebRTC-Aec3DelayEstimateSmoothingDelayFoundOverride": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "0.1"
+                },
+                {
+                    "name": "0.3"
+                },
+                {
+                    "name": "0.7"
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3TransparentModeHmm": [
         {
             "platforms": [
