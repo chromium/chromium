@@ -5331,6 +5331,7 @@ test("unit_tests") {
       "../browser/sharing/sms/sms_fetch_request_handler_unittest.cc",
       "../browser/touch_to_fill/touch_to_fill_controller_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_android_unittest.cc",
+      "../browser/ui/autofill/payments/autofill_snackbar_controller_impl_unittest.cc",
     ]
 
     deps += [

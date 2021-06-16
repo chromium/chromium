@@ -69,6 +69,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="Request failed in retrieving the virtual card information."/>
 </variants>
 
+<variants name="Autofill.Snackbar.Type">
+  <variant name="VirtualCard"
+      summary="Snackbar shown after virtual card is autofilled."/>
+</variants>
+
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
     units="ms" expires_after="M100">
@@ -1819,6 +1824,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks whether Autofill server had at least some prediction data for a given
     form at query response time.
   </summary>
+</histogram>
+
+<histogram name="Autofill.Snackbar.{SnackbarType}.ActionClicked"
+    enum="BooleanShown" expires_after="2022-02-01">
+  <owner>siashah@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <summary>
+    Emits true when the action button on the autofill snackbar is clicked and
+    does not emit any value otherwise.
+  </summary>
+  <token key="SnackbarType" variants="Autofill.Snackbar.Type"/>
+</histogram>
+
+<histogram name="Autofill.Snackbar.{SnackbarType}.Shown" enum="BooleanShown"
+    expires_after="2022-02-01">
+  <owner>siashah@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <summary>
+    Emits true when the autofill snackbar is displayed and does not emit any
+    value otherwise.
+  </summary>
+  <token key="SnackbarType" variants="Autofill.Snackbar.Type"/>
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount" units="cards"

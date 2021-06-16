@@ -5,6 +5,7 @@
 
 #include <string>
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
@@ -28,6 +29,7 @@ void AutofillSnackbarControllerImpl::Show() {
     autofill_snackbar_view_ = AutofillSnackbarView::Create(this);
   }
   autofill_snackbar_view_->Show();
+  base::UmaHistogramBoolean("Autofill.Snackbar.VirtualCard.Shown", true);
 }
 
 void AutofillSnackbarControllerImpl::Dismiss() {
@@ -44,12 +46,12 @@ void AutofillSnackbarControllerImpl::SetViewForTesting(
 void AutofillSnackbarControllerImpl::OnActionClicked() {
   ManualFillingControllerImpl::GetOrCreate(web_contents_)
       ->ShowAccessorySheetTab(autofill::AccessoryTabType::CREDIT_CARDS);
-  // TODO(crbug.com/1196021):  Log the action.
+  base::UmaHistogramBoolean("Autofill.Snackbar.VirtualCard.ActionClicked",
+                            true);
 }
 
 void AutofillSnackbarControllerImpl::OnDismissed() {
   autofill_snackbar_view_ = nullptr;
-  // TODO(crbug.com/1196021): Log that no user action was taken.
 }
 
 std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
