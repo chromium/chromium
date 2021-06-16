@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
+#include "chrome/browser/ash/borealis/testing/dbus.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
@@ -37,8 +38,6 @@ constexpr int64_t kGiB = 1024 * 1024 * 1024;
 class FreeSpaceProviderMock
     : public BorealisDiskManagerImpl::FreeSpaceProvider {
  public:
-  FreeSpaceProviderMock() = default;
-  ~FreeSpaceProviderMock() override = default;
   MOCK_METHOD(void, Get, (base::OnceCallback<void(int64_t)>), ());
 };
 
@@ -52,9 +51,6 @@ using SyncDiskCallbackFactory = NiceCallbackFactory<void(std::string)>;
 
 class BorealisDiskDispatcherMock : public BorealisDiskManagerDispatcher {
  public:
-  BorealisDiskDispatcherMock() = default;
-  ~BorealisDiskDispatcherMock() = default;
-
   MOCK_METHOD(
       void,
       GetDiskInfo,
@@ -87,7 +83,8 @@ class BorealisDiskDispatcherMock : public BorealisDiskManagerDispatcher {
               ());
 };
 
-class BorealisDiskManagerTest : public testing::Test {
+class BorealisDiskManagerTest : public testing::Test,
+                                protected FakeVmServicesHelper {
  public:
   BorealisDiskManagerTest() = default;
   ~BorealisDiskManagerTest() override = default;
@@ -96,11 +93,6 @@ class BorealisDiskManagerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
     CreateProfile();
     mock_dispatcher_ =
         std::make_unique<testing::NiceMock<BorealisDiskDispatcherMock>>();
@@ -128,10 +120,6 @@ class BorealisDiskManagerTest : public testing::Test {
     context_.reset();
     profile_.reset();
     run_loop_.reset();
-    chromeos::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void CreateProfile() {
@@ -169,8 +157,6 @@ class BorealisDiskManagerTest : public testing::Test {
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   std::unique_ptr<base::RunLoop> run_loop_;
   content::BrowserTaskEnvironment task_environment_;
-  // Owned by chromeos::DBusThreadManager
-  chromeos::FakeConciergeClient* fake_concierge_client_;
 };
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnFreeSpaceProviderError) {
@@ -193,7 +179,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
             // Concierge will return an empty ListVmDisksResponse.
-            fake_concierge_client_->set_list_vm_disks_response(
+            FakeConciergeClient()->set_list_vm_disks_response(
                 absl::optional<vm_tools::concierge::ListVmDisksResponse>());
             std::move(callback).Run(1 * kGiB);
           }));
@@ -216,7 +202,7 @@ TEST_F(BorealisDiskManagerTest,
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/1 * kGiB);
             response.set_success(false);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(1 * kGiB);
           }));
 
@@ -237,7 +223,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnVmMismatch) {
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/1 * kGiB);
             response.mutable_images()->at(0).set_name("UNMATCHED_VM");
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(1 * kGiB);
           }));
 
@@ -257,7 +243,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }));
 
@@ -284,7 +270,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnConcurrentAttempt) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }));
 
@@ -316,7 +302,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
       .WillOnce(
           testing::Invoke([this, response = response](
                               base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }));
 
@@ -332,7 +318,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
       .WillOnce(
           testing::Invoke([this, response = response](
                               base::OnceCallback<void(int64_t)> callback) {
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }));
 
@@ -365,7 +351,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfBuildDiskInfoFails) {
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
             response.mutable_images()->at(0).set_name("UNMATCHED_VM");
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -388,7 +374,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskTypeNotRaw) {
                 /*available_space=*/3 * kGiB);
             response.mutable_images()->at(0).set_image_type(
                 vm_tools::concierge::DiskImageType::DISK_IMAGE_AUTO);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -409,7 +395,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestTooHigh) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -432,7 +418,7 @@ TEST_F(BorealisDiskManagerTest,
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -455,7 +441,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestIsBelowMinimum) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/10 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -477,7 +463,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -498,14 +484,14 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_FAILED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
@@ -524,7 +510,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnDelayedConciergeFailure) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -538,8 +524,8 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnDelayedConciergeFailure) {
   failed.set_status(vm_tools::concierge::DiskImageStatus::DISK_STATUS_FAILED);
   std::vector<vm_tools::concierge::DiskImageStatusResponse> signals{in_progress,
                                                                     failed};
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
-  fake_concierge_client_->set_disk_image_status_signals(signals);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_disk_image_status_signals(signals);
 
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
@@ -562,14 +548,14 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailureToGetUpdate) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(testing::Invoke([](base::OnceCallback<void(int64_t)> callback) {
@@ -597,14 +583,14 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -612,7 +598,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
                 /*available_space=*/4 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(4 * kGiB);
           }));
 
@@ -637,14 +623,14 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/4 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -652,7 +638,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
                 /*available_space=*/5 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(4 * kGiB);
           }));
 
@@ -677,14 +663,14 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -692,7 +678,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/5 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
@@ -718,14 +704,14 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/4 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -733,7 +719,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/19 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(6 * kGiB);
           }));
 
@@ -759,7 +745,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/5 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
@@ -769,7 +755,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }))
       .RetiresOnSaturation();
@@ -777,7 +763,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
@@ -807,14 +793,14 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -822,7 +808,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/5 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
@@ -841,14 +827,14 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
                 /*available_space=*/5 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse second_disk_response;
   second_disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(second_disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(second_disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -856,7 +842,7 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
                 /*available_space=*/4 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(4 * kGiB);
           }));
 
@@ -879,7 +865,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfGetDiskInfoFails) {
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
             response.mutable_images()->at(0).set_name("UNMATCHED_VM");
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -897,7 +883,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskNotFixedSize) {
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/3 * kGiB);
             response.mutable_images()->at(0).set_user_chosen_size(false);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -914,7 +900,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskCantExpand) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/1 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(0 * kGiB);
           }));
 
@@ -931,7 +917,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeSucceedsIfDiskDoesntNeedToExpand) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
                 /*available_space=*/2 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(10 * kGiB);
           }));
 
@@ -953,7 +939,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfResizeAttemptFails) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/6 * kGiB,
                 /*available_space=*/3 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
 
@@ -979,14 +965,14 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizePartialResizeSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/1 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(1.5 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -994,7 +980,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizePartialResizeSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7.5 * kGiB,
                 /*available_space=*/1.5 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(1 * kGiB);
           }));
 
@@ -1018,14 +1004,14 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeCompleteResizeSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/1 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }));
 
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
@@ -1033,7 +1019,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeCompleteResizeSucceeds) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/2 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(1 * kGiB);
           }));
 
@@ -1054,7 +1040,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/8 * kGiB,
                 /*available_space=*/2 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(1 * kGiB);
           }));
 
@@ -1065,7 +1051,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
                 /*available_space=*/1 * kGiB);
-            fake_concierge_client_->set_list_vm_disks_response(response);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(2 * kGiB);
           }))
       .RetiresOnSaturation();
@@ -1073,7 +1059,7 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
   vm_tools::concierge::ResizeDiskImageResponse disk_response;
   disk_response.set_status(
       vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
-  fake_concierge_client_->set_resize_disk_image_response(disk_response);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
 
   SyncDiskCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(""));

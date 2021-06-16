@@ -15,13 +15,11 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
+#include "chrome/browser/ash/borealis/testing/dbus.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
@@ -88,7 +86,8 @@ class BorealisContextManagerImplForTesting : public BorealisContextManagerImpl {
 using StartupCallbackFactory =
     StrictCallbackFactory<void(BorealisContextManager::ContextOrFailure)>;
 
-class BorealisContextManagerTest : public testing::Test {
+class BorealisContextManagerTest : public testing::Test,
+                                   protected FakeVmServicesHelper {
  public:
   BorealisContextManagerTest() = default;
   BorealisContextManagerTest(const BorealisContextManagerTest&) = delete;
@@ -99,18 +98,10 @@ class BorealisContextManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     CreateProfile();
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
-    chromeos::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     profile_.reset();
     histogram_tester_.reset();
   }

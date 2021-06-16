@@ -15,28 +15,22 @@
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/borealis/testing/dbus.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_chunneld_client.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace borealis {
 
-class BorealisContextTest : public testing::Test {
+class BorealisContextTest : public testing::Test,
+                            protected FakeVmServicesHelper {
  public:
   BorealisContextTest() {
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
-    chromeos::ConciergeClient::InitializeFake();
-    chromeos::SeneschalClient::InitializeFake();
-
     profile_ = std::make_unique<TestingProfile>();
     borealis_disk_manager_dispatcher_ =
         std::make_unique<BorealisDiskManagerDispatcher>();
@@ -66,10 +60,6 @@ class BorealisContextTest : public testing::Test {
 
   ~BorealisContextTest() override {
     borealis_context_.reset();  // must destroy before DBusThreadManager
-    chromeos::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   // Run all tasks queued prior to this method being called, but not any tasks
