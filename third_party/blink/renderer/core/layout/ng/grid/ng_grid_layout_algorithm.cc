@@ -699,29 +699,46 @@ void NGGridLayoutAlgorithm::GridItemData::ComputeOutOfFlowItemPlacement(
   // We only calculate the range placement if the line was not defined as 'auto'
   // and it is within the bounds of the grid, since an out of flow item cannot
   // create grid lines.
+  const wtf_size_t range_count = track_collection.RangeCount();
   auto& start_range_index = track_collection.IsForColumns()
                                 ? column_placement.start_range_index
                                 : row_placement.start_range_index;
   if (start_offset != kNotFound) {
-    // If a start line of an out of flow item is the last line of the grid, we
-    // can just subtract one unit to the range count.
-    start_range_index =
-        (start_offset < track_collection.EndLineOfImplicitGrid())
-            ? track_collection.RangeIndexFromTrackNumber(start_offset)
-            : track_collection.RangeCount() - 1;
-    start_offset -= track_collection.RangeTrackNumber(start_range_index);
+    if (!range_count) {
+      // An undefined and empty grid has a single start/end grid line and no
+      // ranges. Therefore, if the start offset isn't 'auto', the only valid
+      // offset is zero.
+      DCHECK_EQ(start_offset, 0u);
+      start_range_index = 0;
+    } else {
+      // If the start line of an out of flow item is the last line of the grid,
+      // we can just subtract one unit to the range count.
+      start_range_index =
+          (start_offset < track_collection.EndLineOfImplicitGrid())
+              ? track_collection.RangeIndexFromTrackNumber(start_offset)
+              : range_count - 1;
+      start_offset -= track_collection.RangeTrackNumber(start_range_index);
+    }
   }
 
   auto& end_range_index = track_collection.IsForColumns()
                               ? column_placement.end_range_index
                               : row_placement.end_range_index;
   if (end_offset != kNotFound) {
-    // If an end line of an out of flow item is the first line of the grid, then
-    // |last_spanned_range| is set to zero.
-    end_range_index =
-        end_offset ? track_collection.RangeIndexFromTrackNumber(end_offset - 1)
-                   : 0;
-    end_offset -= track_collection.RangeTrackNumber(end_range_index);
+    if (!range_count) {
+      // Similarly to the start offset, if we have an undefined, empty grid and
+      // the end offset isn't 'auto', the only valid offset is zero.
+      DCHECK_EQ(end_offset, 0u);
+      end_range_index = 0;
+    } else {
+      // If the end line of an out of flow item is the first line of the grid,
+      // then |last_spanned_range| is set to zero.
+      end_range_index =
+          end_offset
+              ? track_collection.RangeIndexFromTrackNumber(end_offset - 1)
+              : 0;
+      end_offset -= track_collection.RangeTrackNumber(end_range_index);
+    }
   }
 }
 
@@ -3529,8 +3546,6 @@ LayoutUnit TrackOffset(
     const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
     const wtf_size_t range_index,
     const wtf_size_t offset_in_range) {
-  LayoutUnit track_offset;
-
   const wtf_size_t range_starting_set_index =
       track_collection.RangeStartingSetIndex(range_index);
   const wtf_size_t range_track_count =
@@ -3538,6 +3553,7 @@ LayoutUnit TrackOffset(
   const wtf_size_t range_set_count =
       track_collection.RangeSetCount(range_index);
 
+  LayoutUnit track_offset;
   if (offset_in_range == range_track_count) {
     DCHECK(snap_to_end_of_track);
     track_offset =
@@ -3567,6 +3583,14 @@ LayoutUnit TrackStartOffset(
     const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
     const wtf_size_t range_index,
     const wtf_size_t offset_in_range) {
+  if (!track_collection.RangeCount()) {
+    // If the start line of an out of flow item is not 'auto' in an empty and
+    // undefined grid, start offset is the start border scrollbar padding.
+    DCHECK_EQ(range_index, 0u);
+    DCHECK_EQ(offset_in_range, 0u);
+    return set_geometry.sets[0].offset;
+  }
+
   const wtf_size_t range_track_count =
       track_collection.RangeTrackCount(range_index);
 
@@ -3589,6 +3613,14 @@ LayoutUnit TrackEndOffset(
     const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
     const wtf_size_t range_index,
     const wtf_size_t offset_in_range) {
+  if (!track_collection.RangeCount()) {
+    // If the end line of an out of flow item is not 'auto' in an empty and
+    // undefined grid, end offset is the start border scrollbar padding.
+    DCHECK_EQ(range_index, 0u);
+    DCHECK_EQ(offset_in_range, 0u);
+    return set_geometry.sets[0].offset;
+  }
+
   if (!offset_in_range && !range_index) {
     // Only allow the offset to be 0 for the first range in the collection,
     // which is the start line of the implicit grid; don't snap to the end.
