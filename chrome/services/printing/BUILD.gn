@@ -78,7 +78,10 @@ source_set("lib") {
       "//mojo/public/cpp/bindings",
     ]
 
-    deps += [ "//chrome/common/printing" ]
+    deps += [
+      "//chrome/common/printing",
+      "//components/crash/core/common",
+    ]
   }
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_PRINTING_PRINT_BACKEND_SERVICE_IMPL_H_
 #define CHROME_SERVICES_PRINTING_PRINT_BACKEND_SERVICE_IMPL_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -14,6 +15,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/backend/print_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace crash_keys {
+class ScopedPrinterInfo;
+}
 
 namespace printing {
 
@@ -42,6 +47,11 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   void FetchCapabilities(
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
+
+  // Crash key is kept at class level so that we can obtain printer driver
+  // information for a prior call should the process be terminated by the
+  // remote.  This can happen in the case of Mojo message validation.
+  std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_keys_;
 
   scoped_refptr<PrintBackend> print_backend_;
 

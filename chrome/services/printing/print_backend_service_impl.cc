@@ -4,6 +4,7 @@
 
 #include "chrome/services/printing/print_backend_service_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -11,6 +12,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "components/crash/core/common/crash_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
@@ -86,6 +88,9 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
     return;
   }
 
+  crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+      print_backend_->GetPrinterDriverInfo(printer_name));
+
   PrinterSemanticCapsAndDefaults printer_caps;
   const mojom::ResultCode result =
       print_backend_->GetPrinterSemanticCapsAndDefaults(printer_name,
@@ -110,6 +115,9 @@ void PrintBackendServiceImpl::FetchCapabilities(
         mojom::ResultCode::kFailed));
     return;
   }
+
+  crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+      print_backend_->GetPrinterDriverInfo(printer_name));
 
   PrinterSemanticCapsAndDefaults::Papers user_defined_papers;
 #if defined(OS_MAC)
