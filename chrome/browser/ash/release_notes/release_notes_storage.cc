@@ -25,6 +25,10 @@
 
 namespace {
 
+// This stores the latest milestone with new Release Notes content. If the last
+// milestone the user has seen the notification is before this, a new
+// notification will be shown.
+constexpr int kLastChromeVersionWithReleaseNotes = 93;
 constexpr int kTimesToShowSuggestionChip = 3;
 
 int GetMilestone() {
@@ -84,10 +88,7 @@ bool ReleaseNotesStorage::ShouldNotify() {
         ChromeVersionService::GetVersion(profile_->GetPrefs()));
     last_milestone = profile_version.components()[0];
   }
-  // Hardcoding this to M91 as that should be the last release notes update that
-  // the current chrome version should see. There is not an update every
-  // milestone.
-  return last_milestone < 91;
+  return last_milestone < kLastChromeVersionWithReleaseNotes;
 }
 
 void ReleaseNotesStorage::MarkNotificationShown() {

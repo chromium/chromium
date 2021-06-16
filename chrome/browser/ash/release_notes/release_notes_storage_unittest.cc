@@ -21,6 +21,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+int CurrentMilestone() {
+  return version_info::GetVersion().components()[0];
+}
+
+}  // namespace
+
 namespace ash {
 
 class ReleaseNotesStorageTest : public testing::Test,
@@ -100,15 +108,15 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotes) {
   EXPECT_EQ(true, release_notes_storage->ShouldNotify());
 }
 
-// We have previously seen another notification on M91, there have been no
-// new release notes since then so notification should not be shown.
-TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIf91Seen) {
+// We have already seen the notification on the current chrome version.
+TEST_F(ReleaseNotesStorageTest,
+       ShouldNotShowReleaseNotesIfShownInCurrentChromeVersion) {
   std::unique_ptr<Profile> profile =
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
   profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        91);
+                                        CurrentMilestone());
 
   EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }
