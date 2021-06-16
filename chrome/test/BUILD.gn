@@ -6571,7 +6571,6 @@ test("unit_tests") {
       "../common/extensions/permissions/permissions_data_unittest.cc",
       "../common/extensions/permissions/settings_override_permission_unittest.cc",
       "../common/extensions/sync_type_unittest.cc",
-      "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
       "../renderer/extensions/chrome_native_extension_bindings_system_unittest.cc",
       "../renderer/extensions/custom_types_unittest.cc",
       "../renderer/extensions/extension_hooks_delegate_unittest.cc",
@@ -6597,6 +6596,7 @@ test("unit_tests") {
         "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
         "../browser/extensions/system_display/system_display_serialization_unittest.cc",
+        "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
       ]
     }
 

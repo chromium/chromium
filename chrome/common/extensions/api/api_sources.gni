@@ -10,7 +10,6 @@ assert(enable_extensions)
 
 schema_sources_ = [
   "accessibility_features.json",
-  "accessibility_private.json",
   "activity_log_private.json",
   "autofill_private.idl",
   "autotest_private.idl",
@@ -87,6 +86,7 @@ if (is_chromeos_ash || is_chromeos_lacros) {
 
 if (is_chromeos_ash) {
   schema_sources_ += [
+    "accessibility_private.json",
     "certificate_provider.idl",
     "certificate_provider_internal.idl",
     "document_scan.idl",

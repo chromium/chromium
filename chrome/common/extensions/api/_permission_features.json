@@ -30,6 +30,7 @@
   "accessibilityPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "0D209B5E4401BB8E7873B5AB5B1346A1CB067015",  // http://crbug.com/1039158
       "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E"

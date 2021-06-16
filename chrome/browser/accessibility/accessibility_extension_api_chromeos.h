@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_
-#define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_
+#define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_
 
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_function.h"
@@ -60,7 +60,6 @@ class AccessibilityPrivateOpenSettingsSubpageFunction
                              ACCESSIBILITY_PRIVATE_OPENSETTINGSSUBPAGE)
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // API function that sets native ChromeVox ARC support.
 class AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction
     : public ExtensionFunction {
@@ -224,6 +223,5 @@ class AccessibilityPrivateShowConfirmationDialogFunction
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.showConfirmationDialog",
                              ACCESSIBILITY_PRIVATE_SHOWCONFIRMATIONDIALOG)
 };
-#endif  // defined (OS_CHROMEOS)
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_

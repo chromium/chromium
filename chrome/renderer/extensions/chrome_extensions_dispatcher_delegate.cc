@@ -13,7 +13,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/grit/renderer_resources.h"
-#include "chrome/renderer/extensions/accessibility_private_hooks_delegate.h"
 #include "chrome/renderer/extensions/app_hooks_delegate.h"
 #include "chrome/renderer/extensions/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/media_galleries_custom_bindings.h"
@@ -48,6 +47,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/renderer/extensions/accessibility_private_hooks_delegate.h"
 #include "chrome/renderer/extensions/file_browser_handler_custom_bindings.h"
 #include "chrome/renderer/extensions/file_manager_private_custom_bindings.h"
 #if defined(USE_CUPS)
@@ -240,9 +240,11 @@ void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
   bindings->GetHooksForAPI("tabs")->SetDelegate(
       std::make_unique<extensions::TabsHooksDelegate>(
           bindings_system->messaging_service()));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bindings->GetHooksForAPI("accessibilityPrivate")
       ->SetDelegate(
           std::make_unique<extensions::AccessibilityPrivateHooksDelegate>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_CUPS)
   bindings->GetHooksForAPI("printing")
       ->SetDelegate(std::make_unique<extensions::PrintingHooksDelegate>());

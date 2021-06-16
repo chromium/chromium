@@ -6,9 +6,10 @@
   {
     "namespace": "accessibilityPrivate",
     "compiler_options": {
-      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api.h"
+      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
     },
     "description": "none",
+    "platforms": ["chromeos"],
     "types": [
       {
         "id": "AlertInfo",
@@ -260,8 +261,7 @@
         "returns": {
           "type": "string",
           "description": "The human-readable locale string in the provided locale."
-        },
-        "platforms": ["chromeos"]
+        }
       },
       {
         "name": "getBatteryDescription",
@@ -279,8 +279,7 @@
               }
             ]
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setNativeAccessibilityEnabled",
@@ -364,8 +363,7 @@
             "name": "shouldForward",
             "type": "boolean"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "updateSwitchAccessBubble",
@@ -395,8 +393,7 @@
             "description": "The actions to be shown in the menu.",
             "optional": true
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setPointScanState",
@@ -408,8 +405,7 @@
             "$ref": "PointScanState",
             "description": "The point scanning state to set."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setNativeChromeVoxArcSupportForCurrentApp",
@@ -421,8 +417,7 @@
             "type": "boolean",
             "description": "True for ChromeVox (native), false for TalkBack."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "sendSyntheticKeyEvent",
@@ -434,8 +429,7 @@
             "$ref": "SyntheticKeyboardEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "enableMouseEvents",
@@ -447,8 +441,7 @@
             "type": "boolean",
             "description": "True if accessibility component extensions should receive mouse events."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "sendSyntheticMouseEvent",
@@ -460,8 +453,7 @@
             "$ref": "SyntheticMouseEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setSelectToSpeakState",
@@ -472,8 +464,7 @@
             "name": "state",
             "$ref": "SelectToSpeakState"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "handleScrollableBoundsForPointFound",
@@ -484,8 +475,7 @@
             "name": "rect",
             "$ref": "ScreenRect"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "moveMagnifierToRect",
@@ -497,15 +487,13 @@
             "$ref": "ScreenRect",
             "description": "Rect to ensure visible in the magnified viewport."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "toggleDictation",
         "type": "function",
         "description": "Toggles dictation between active and inactive states.",
-        "parameters": [],
-        "platforms": ["chromeos"]
+        "parameters": []
       },
       {
         "name": "setVirtualKeyboardVisible",
@@ -516,8 +504,7 @@
             "name": "isVisible",
             "type": "boolean"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "openSettingsSubpage",
@@ -528,8 +515,7 @@
             "name": "subpage",
             "type": "string"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "performAcceleratorAction",
@@ -540,8 +526,7 @@
             "name": "acceleratorAction",
             "$ref": "AcceleratorAction"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "isFeatureEnabled",
@@ -563,8 +548,7 @@
               }
             ]
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "updateSelectToSpeakPanel",
@@ -594,8 +578,7 @@
             "description": "Current reading speed (TTS speech rate).",
             "optional": true
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "showConfirmationDialog",
@@ -624,8 +607,7 @@
               }
             ]
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       }
     ],
     "events": [
@@ -669,8 +651,7 @@
         "name": "onSelectToSpeakStateChangeRequested",
         "type": "function",
         "description": "Fired when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
-        "parameters": [],
-        "platforms": ["chromeos"]
+        "parameters": []
       },
       {
         "name": "onSelectToSpeakPanelAction",
@@ -686,8 +667,7 @@
             "type": "number",
             "optional": true
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onSwitchAccessCommand",
@@ -698,8 +678,7 @@
             "name": "command",
             "$ref": "SwitchAccessCommand"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onPointScanSet",
@@ -710,8 +689,7 @@
             "name": "point",
             "$ref": "PointScanPoint"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onMagnifierCommand",
@@ -722,8 +700,7 @@
             "name": "command",
             "$ref": "MagnifierCommand"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onAnnounceForAccessibility",
@@ -736,8 +713,7 @@
             "items": { "type": "string" },
             "description": "Text to be announced."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onScrollableBoundsForPointRequested",
@@ -754,8 +730,7 @@
             "type": "number",
             "description": "Y screen coordinate of the point."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onMagnifierBoundsChanged",
@@ -767,8 +742,7 @@
             "$ref": "ScreenRect",
             "description": "Updated bounds of magnifier viewport."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onCustomSpokenFeedbackToggled",
@@ -780,15 +754,13 @@
             "type": "boolean",
             "description": "True if the active window implements custom spoken feedback features."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onShowChromeVoxTutorial",
         "type": "function",
         "description": "Fired when ChromeVox should show its tutorial.",
-        "parameters": [],
-        "platforms": ["chromeos"]
+        "parameters": []
       },
       {
         "name": "onToggleDictation",
@@ -800,8 +772,7 @@
             "type": "boolean",
             "description": "True if Dictation was activated, false if it was deactivated."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       }
     ]
   }
