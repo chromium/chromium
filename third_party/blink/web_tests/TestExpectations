@@ -551,9 +551,6 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-006.xht 
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-001.xht [ Failure ]
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-002.xht [ Failure ]
 
-#### external/wpt/css/css-position
-crbug.com/752022 external/wpt/css/css-position/sticky/position-sticky-offset-overflow.html [ Failure ]
-
 #### external/wpt/css/css-sizing
 crbug.com/1204827 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002.html [ Failure ]
 crbug.com/1204827 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
