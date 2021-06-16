@@ -12,34 +12,11 @@ assert(enable_extensions,
 
 source_set("api") {
   sources = [
-    "api_resource.cc",
-    "api_resource.h",
-    "api_resource_manager.h",
     "async_api_function.cc",
     "async_api_function.h",
-    "device_permissions_manager.cc",
-    "device_permissions_manager.h",
-    "device_permissions_prompt.cc",
-    "device_permissions_prompt.h",
-    "execute_code_function.cc",
-    "execute_code_function.h",
-    "extensions_api_client.cc",
-    "extensions_api_client.h",
-    "guest_view/app_view/app_view_guest_internal_api.cc",
-    "guest_view/app_view/app_view_guest_internal_api.h",
-    "guest_view/guest_view_internal_api.cc",
-    "guest_view/guest_view_internal_api.h",
-    "guest_view/web_view/web_view_internal_api.cc",
-    "guest_view/web_view/web_view_internal_api.h",
 
-    # TODO(crbug.com/1206265): anything under hid/, storage/, system_display/
-    # and usb/ should be moved out of this target.
-    "hid/hid_api.cc",
-    "hid/hid_api.h",
-    "hid/hid_connection_resource.cc",
-    "hid/hid_connection_resource.h",
-    "hid/hid_device_manager.cc",
-    "hid/hid_device_manager.h",
+    # TODO(crbug.com/1206265): anything under storage/ should be moved out of
+    # this target.
     "storage/backend_task_runner.cc",
     "storage/backend_task_runner.h",
     "storage/local_value_store_cache.cc",
@@ -59,55 +36,27 @@ source_set("api") {
     "storage/value_store_cache.h",
     "storage/weak_unlimited_settings_storage.cc",
     "storage/weak_unlimited_settings_storage.h",
-    "system_display/display_info_provider.cc",
-    "system_display/display_info_provider.h",
-    "system_display/system_display_api.cc",
-    "system_display/system_display_api.h",
-    "usb/usb_api.cc",
-    "usb/usb_api.h",
-    "usb/usb_device_manager.cc",
-    "usb/usb_device_manager.h",
-    "usb/usb_device_resource.cc",
-    "usb/usb_device_resource.h",
-    "web_contents_capture_client.cc",
-    "web_contents_capture_client.h",
-  ]
-
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   public_deps = [
     "//base",
     "//content/public/browser",
     "//content/public/common",
-    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
     "//ipc",
-    "//services/device/public/cpp/usb:usb",
   ]
 
   deps = [
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//components/guest_view/browser:browser",
-    "//components/guest_view/common:common",
     "//components/keyed_service/content:content",
-    "//content/public/browser",
-    "//content/public/common",
     "//extensions/browser:browser_sources",
-    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
-    "//extensions/browser/guest_view/web_view/web_ui:web_ui",
-    "//extensions/common",
     "//extensions/common:mojom",
     "//extensions/common/api",
     "//extensions/strings",
     "//services/device/public/cpp/hid",
-    "//services/device/public/cpp/usb",
     "//services/device/public/mojom",
-    "//services/device/public/mojom:usb",
   ]
 
   # TODO(michaelpg): Move these deps to the individual APIs that require them.
