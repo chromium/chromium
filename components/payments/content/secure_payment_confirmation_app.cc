@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
@@ -35,6 +36,19 @@ namespace payments {
 namespace {
 
 static constexpr int kDefaultTimeoutMinutes = 3;
+
+std::string EncodeSecurePaymentConfirmationString(
+    const std::vector<uint8_t>& vector_to_encode) {
+  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
+    std::string encoded_string;
+    base::Base64UrlEncode(
+        std::string(vector_to_encode.begin(), vector_to_encode.end()),
+        base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_string);
+    return encoded_string;
+  } else {
+    return base::Base64Encode(vector_to_encode);
+  }
+}
 
 // Creates a SHA-256 hash over the Secure Payment Confirmation bundle, which is
 // a JSON string (without whitespace) with the following structure:
@@ -66,14 +80,17 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
   merchant_data.SetKey("total", std::move(total));
 
   base::Value transaction_data(base::Value::Type::DICTIONARY);
+
   // `challenge` is a renaming of `networkData` used if the
   // SecurePaymentConfirmationAPIV2 flag is enabled.
   if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    transaction_data.SetKey("challenge",
-                            base::Value(base::Base64Encode(network_data)));
+    transaction_data.SetKey(
+        "challenge",
+        base::Value(EncodeSecurePaymentConfirmationString(network_data)));
   } else {
-    transaction_data.SetKey("networkData",
-                            base::Value(base::Base64Encode(network_data)));
+    transaction_data.SetKey(
+        "networkData",
+        base::Value(EncodeSecurePaymentConfirmationString(network_data)));
   }
   transaction_data.SetKey("merchantData", std::move(merchant_data));
 
@@ -113,7 +130,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       icon_(std::move(icon)),
       label_(label),
       credential_id_(std::move(credential_id)),
-      encoded_credential_id_(base::Base64Encode(credential_id_)),
+      encoded_credential_id_(
+          EncodeSecurePaymentConfirmationString(credential_id_)),
       merchant_origin_(merchant_origin),
       spec_(spec),
       request_(std::move(request)),
@@ -307,30 +325,33 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
   if (response->info) {
     info_json->SetString("id", response->info->id);
     info_json->SetString("client_data_json",
-                         base::Base64Encode(response->info->client_data_json));
-    info_json->SetString(
-        "authenticator_data",
-        base::Base64Encode(response->info->authenticator_data));
+                         EncodeSecurePaymentConfirmationString(
+                             response->info->client_data_json));
+    info_json->SetString("authenticator_data",
+                         EncodeSecurePaymentConfirmationString(
+                             response->info->authenticator_data));
   }
 
   auto prf_results_json = std::make_unique<base::DictionaryValue>();
   if (response->prf_results) {
     DCHECK(!response->prf_results->id.has_value());
-    prf_results_json->SetString(
-        "first", base::Base64Encode(response->prf_results->first));
+    prf_results_json->SetString("first", EncodeSecurePaymentConfirmationString(
+                                             response->prf_results->first));
     if (response->prf_results->second) {
-      prf_results_json->SetString(
-          "second", base::Base64Encode(*response->prf_results->second));
+      prf_results_json->SetString("second",
+                                  EncodeSecurePaymentConfirmationString(
+                                      *response->prf_results->second));
     }
   }
 
   base::DictionaryValue json;
   json.Set("info", std::move(info_json));
   json.SetString("challenge", challenge_);
-  json.SetString("signature", base::Base64Encode(response->signature));
+  json.SetString("signature",
+                 EncodeSecurePaymentConfirmationString(response->signature));
   if (response->user_handle.has_value()) {
-    json.SetString("user_handle",
-                   base::Base64Encode(response->user_handle.value()));
+    json.SetString("user_handle", EncodeSecurePaymentConfirmationString(
+                                      response->user_handle.value()));
   }
   json.SetBoolean("echo_appid_extension", response->echo_appid_extension);
   json.SetBoolean("appid_extension", response->appid_extension);
