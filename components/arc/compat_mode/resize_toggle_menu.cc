@@ -142,7 +142,7 @@ ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
   bubble_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(MakeBubbleDelegateView(
           widget_, GetAnchorRect(),
-          base::BindRepeating(&ResizeToggleMenu::ExecuteCommand,
+          base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
                               base::Unretained(this))));
   widget_observations_.AddObservation(widget_);
   widget_observations_.AddObservation(bubble_widget_);
@@ -245,13 +245,13 @@ void ResizeToggleMenu::UpdateSelectedButton() {
       selected_mode && *selected_mode == ResizeCompatMode::kResizable);
 }
 
-void ResizeToggleMenu::ExecuteCommand(ResizeCompatMode command_id) {
-  switch (command_id) {
+void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
+  switch (mode) {
     case ResizeCompatMode::kPhone:
-      ResizeLockToPhoneWithConfirmationIfNeeded(widget_, pref_delegate_);
+      ResizeLockToPhone(widget_, pref_delegate_);
       break;
     case ResizeCompatMode::kTablet:
-      ResizeLockToTabletWithConfirmationIfNeeded(widget_, pref_delegate_);
+      ResizeLockToTablet(widget_, pref_delegate_);
       break;
     case ResizeCompatMode::kResizable:
       EnableResizingWithConfirmationIfNeeded(widget_, pref_delegate_);

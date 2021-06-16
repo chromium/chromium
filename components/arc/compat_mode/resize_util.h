@@ -21,13 +21,11 @@ enum class ResizeCompatMode {
   kResizable,
 };
 
-void ResizeLockToPhoneWithConfirmationIfNeeded(
-    views::Widget* widget,
-    ArcResizeLockPrefDelegate* pref_delegate);
+void ResizeLockToPhone(views::Widget* widget,
+                       ArcResizeLockPrefDelegate* pref_delegate);
 
-void ResizeLockToTabletWithConfirmationIfNeeded(
-    views::Widget* widget,
-    ArcResizeLockPrefDelegate* pref_delegate);
+void ResizeLockToTablet(views::Widget* widget,
+                        ArcResizeLockPrefDelegate* pref_delegate);
 
 void EnableResizingWithConfirmationIfNeeded(
     views::Widget* widget,

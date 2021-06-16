@@ -93,16 +93,10 @@ class ResizeUtilTest : public exo::test::ExoTestBaseViews {
 TEST_F(ResizeUtilTest, TestResizeLockToPhone) {
   widget()->Maximize();
 
-  // Test the widget is NOT resized immediately if the confirmation dialog is
-  // needed.
-  pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeLockToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
-  EXPECT_TRUE(widget()->IsMaximized());
-
-  // Test the widget is resized without confirmation.
+  // Test the widget is resized.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());
-  ResizeLockToPhoneWithConfirmationIfNeeded(widget(), pref_delegate());
+  ResizeLockToPhone(widget(), pref_delegate());
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_LT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());
@@ -115,16 +109,10 @@ TEST_F(ResizeUtilTest, TestResizeLockToPhone) {
 TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
   widget()->Maximize();
 
-  // Test the widget is NOT resized immediately if the confirmation dialog is
-  // needed.
-  pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
-  ResizeLockToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
-  EXPECT_TRUE(widget()->IsMaximized());
-
-  // Test the widget is resized without confirmation.
+  // Test the widget is resized.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());
-  ResizeLockToTabletWithConfirmationIfNeeded(widget(), pref_delegate());
+  ResizeLockToTablet(widget(), pref_delegate());
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_GT(widget()->GetWindowBoundsInScreen().width(),
             widget()->GetWindowBoundsInScreen().height());

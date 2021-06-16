@@ -9,6 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/stl_util.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "ui/aura/window.h"
@@ -35,25 +36,27 @@ void ResizeToTablet(views::Widget* widget) {
   widget->CenterWindow(kLandscapeTabletDp);
 }
 
-void SetResizeLockState(views::Widget* widget,
-                        ArcResizeLockPrefDelegate* pref_delegate,
-                        mojom::ArcResizeLockState state) {
+absl::optional<std::string> GetAppId(views::Widget* widget) {
   const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
-  if (app_id && pref_delegate->GetResizeLockState(*app_id) != state)
-    pref_delegate->SetResizeLockState(*app_id, state);
+  return base::OptionalFromPtr(app_id);
 }
 
-void ProceedResizeWithConfirmationIfNeeded(
+void TurnOnResizeLock(views::Widget* widget,
+                      ArcResizeLockPrefDelegate* pref_delegate) {
+  const auto app_id = GetAppId(widget);
+  if (app_id && pref_delegate->GetResizeLockState(*app_id) !=
+                    mojom::ArcResizeLockState::ON) {
+    pref_delegate->SetResizeLockState(*app_id, mojom::ArcResizeLockState::ON);
+  }
+}
+
+void TurnOffResizeLockWithConfirmationIfNeeded(
     views::Widget* target_widget,
-    ArcResizeLockPrefDelegate* pref_delegate,
-    ResizeCallback resize_callback,
-    mojom::ArcResizeLockState state) {
-  const auto* app_id =
-      target_widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
+    ArcResizeLockPrefDelegate* pref_delegate) {
+  const auto app_id = GetAppId(target_widget);
   if (app_id && !pref_delegate->GetResizeLockNeedsConfirmation(*app_id)) {
     // The user has already agreed not to show the dialog again.
-    SetResizeLockState(target_widget, pref_delegate, state);
-    std::move(resize_callback).Run(target_widget);
+    pref_delegate->SetResizeLockState(*app_id, mojom::ArcResizeLockState::OFF);
     return;
   }
 
@@ -63,45 +66,37 @@ void ProceedResizeWithConfirmationIfNeeded(
       /*parent=*/target_widget->GetNativeWindow(),
       base::BindOnce(
           [](views::Widget* widget, ArcResizeLockPrefDelegate* delegate,
-             ResizeCallback callback, mojom::ArcResizeLockState state,
              bool accepted, bool do_not_ask_again) {
             if (accepted) {
-              const auto* app_id =
-                  widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
+              const auto app_id = GetAppId(widget);
               if (do_not_ask_again && app_id)
                 delegate->SetResizeLockNeedsConfirmation(*app_id, false);
 
-              SetResizeLockState(widget, delegate, state);
-              std::move(callback).Run(widget);
+              delegate->SetResizeLockState(*app_id,
+                                           mojom::ArcResizeLockState::OFF);
             }
           },
-          base::Unretained(target_widget), base::Unretained(pref_delegate),
-          std::move(resize_callback), state));
+          base::Unretained(target_widget), base::Unretained(pref_delegate)));
 }
 
 }  // namespace
 
-void ResizeLockToPhoneWithConfirmationIfNeeded(
-    views::Widget* widget,
-    ArcResizeLockPrefDelegate* pref_delegate) {
-  ProceedResizeWithConfirmationIfNeeded(widget, pref_delegate,
-                                        base::BindOnce(&ResizeToPhone),
-                                        mojom::ArcResizeLockState::ON);
+void ResizeLockToPhone(views::Widget* widget,
+                       ArcResizeLockPrefDelegate* pref_delegate) {
+  ResizeToPhone(widget);
+  TurnOnResizeLock(widget, pref_delegate);
 }
 
-void ResizeLockToTabletWithConfirmationIfNeeded(
-    views::Widget* widget,
-    ArcResizeLockPrefDelegate* pref_delegate) {
-  ProceedResizeWithConfirmationIfNeeded(widget, pref_delegate,
-                                        base::BindOnce(&ResizeToTablet),
-                                        mojom::ArcResizeLockState::ON);
+void ResizeLockToTablet(views::Widget* widget,
+                        ArcResizeLockPrefDelegate* pref_delegate) {
+  ResizeToTablet(widget);
+  TurnOnResizeLock(widget, pref_delegate);
 }
 
 void EnableResizingWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate) {
-  ProceedResizeWithConfirmationIfNeeded(
-      widget, pref_delegate, base::DoNothing(), mojom::ArcResizeLockState::OFF);
+  TurnOffResizeLockWithConfirmationIfNeeded(widget, pref_delegate);
 }
 
 absl::optional<ResizeCompatMode> PredictCurrentMode(
@@ -109,7 +104,7 @@ absl::optional<ResizeCompatMode> PredictCurrentMode(
     ArcResizeLockPrefDelegate* pref_delegate) {
   const int width = widget->GetWindowBoundsInScreen().width();
   const int height = widget->GetWindowBoundsInScreen().height();
-  const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
+  const auto app_id = GetAppId(widget);
   // We don't use the exact size here to predict tablet or phone size because
   // the window size might be bigger than it due to the ARC app-side minimum
   // size constraints.

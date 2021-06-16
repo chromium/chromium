@@ -74,7 +74,7 @@ class ResizeToggleMenu : public views::WidgetObserver {
 
   void UpdateSelectedButton();
 
-  void ExecuteCommand(ResizeCompatMode mode);
+  void ApplyResizeCompatMode(ResizeCompatMode mode);
 
   gfx::Rect GetAnchorRect() const;
 
