@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -251,11 +250,11 @@ public class PseudoTabUnitTest {
 
     @Test
     public void getUrl_real() {
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-        doReturn(url).when(mTab1).getUrl();
+        String url = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(JUnitTestGURLs.getGURL(url)).when(mTab1).getUrl();
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(GURL.emptyGURL(), tab.getUrl());
+        Assert.assertEquals("", tab.getUrl());
 
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);
@@ -264,11 +263,11 @@ public class PseudoTabUnitTest {
 
     @Test
     public void getUrl_cache() {
-        String url = JUnitTestGURLs.URL_1;
-        TabAttributeCache.setUrlForTesting(TAB1_ID, JUnitTestGURLs.getGURL(url));
+        String url = "url 1";
+        TabAttributeCache.setUrlForTesting(TAB1_ID, url);
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(url, tab.getUrl().getSpec());
+        Assert.assertEquals(url, tab.getUrl());
 
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);
@@ -467,7 +466,7 @@ public class PseudoTabUnitTest {
         // Url was not set. Without the isInitialized() check,
         // pseudoTab.getUrl() would crash here with
         // UnsupportedOperationException
-        Assert.assertEquals("", pseudoTab.getUrl().getSpec());
+        Assert.assertEquals("", pseudoTab.getUrl());
     }
 
     @Test

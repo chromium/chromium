@@ -1092,8 +1092,7 @@ public class InstantStartTest {
     }
 
     private void startAndWaitNativeInitialization() {
-        Assert.assertFalse(
-                NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
+        Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
 
         CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
         TestThreadUtils.runOnUiThreadBlocking(

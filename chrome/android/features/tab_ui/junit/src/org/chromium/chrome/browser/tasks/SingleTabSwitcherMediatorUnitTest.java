@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link SingleTabSwitcherMediator}. */
@@ -53,10 +52,10 @@ import org.chromium.url.JUnitTestGURLs;
 public class SingleTabSwitcherMediatorUnitTest {
     private final int mTabId = 1;
     private final String mTitle = "test";
-    private final GURL mUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private final String mUrlString = JUnitTestGURLs.URL_1;
     private final int mTabId2 = 2;
     private final String mTitle2 = "test2";
-    private final GURL mUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private final String mUrlString2 = JUnitTestGURLs.URL_2;
     private SingleTabSwitcherMediator mMediator;
     private PropertyModel mPropertyModel;
 
@@ -100,10 +99,10 @@ public class SingleTabSwitcherMediatorUnitTest {
         doReturn(0).when(mNormalTabModel).index();
         doReturn(1).when(mNormalTabModel).getCount();
         doReturn(false).when(mNormalTabModel).isIncognito();
-        doReturn(mUrl).when(mTab).getUrl();
+        doReturn(JUnitTestGURLs.getGURL(mUrlString)).when(mTab).getUrl();
         doReturn(mTabId).when(mTab).getId();
         doReturn(mTitle).when(mTab).getTitle();
-        doReturn(mUrl2).when(mTab2).getUrl();
+        doReturn(JUnitTestGURLs.getGURL(mUrlString2)).when(mTab2).getUrl();
         doReturn(mTabId2).when(mTab2).getId();
         doReturn(mTitle2).when(mTab2).getTitle();
         doReturn(true).when(mIncognitoTabModel).isIncognito();
@@ -131,7 +130,7 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
         assertTrue(mMediator.overviewVisible());
         verify(mOverviewModeObserver).startedShowing();
         verify(mOverviewModeObserver).finishedShowing();
@@ -161,7 +160,7 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
         assertTrue(mMediator.overviewVisible());
         verify(mOverviewModeObserver).startedShowing();
         verify(mOverviewModeObserver).finishedShowing();
@@ -200,7 +199,7 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
         assertTrue(mMediator.overviewVisible());
         verify(mOverviewModeObserver).startedShowing();
         verify(mOverviewModeObserver).finishedShowing();
@@ -229,7 +228,7 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
         assertEquals(mPropertyModel.get(TITLE), mTitle);
 
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
