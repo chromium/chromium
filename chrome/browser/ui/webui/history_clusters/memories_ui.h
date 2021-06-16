@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_MEMORIES_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_MEMORIES_UI_H_
 
-#include "chrome/browser/ui/webui/memories/history_clusters.mojom-forward.h"
+#include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class Profile;
-class MemoriesHandler;
+class HistoryClustersHandler;
 
 namespace content {
 class WebContents;
@@ -35,9 +35,9 @@ class MemoriesUI : public ui::MojoWebUIController {
  private:
   Profile* profile_;
   content::WebContents* web_contents_;
-  std::unique_ptr<MemoriesHandler> memories_handler_;
+  std::unique_ptr<HistoryClustersHandler> history_clusters_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_MEMORIES_UI_H_

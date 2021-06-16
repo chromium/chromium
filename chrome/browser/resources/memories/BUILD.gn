@@ -20,7 +20,7 @@ js_library("app") {
     ":browser_proxy",
     ":cluster",
     ":router",
-    "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/iron-scroll-threshold",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -36,7 +36,7 @@ js_library("app") {
 
 js_library("browser_proxy") {
   deps = [
-    "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -161,10 +161,11 @@ generate_grd("build_history_clusters_api_mojo_grdp") {
   grd_prefix = "$grd_prefix" + "_API"
   out_grd = "$target_gen_dir/clusters_api_mojo_resources.grdp"
   input_files = [ "history_clusters.mojom-webui.js" ]
-  resource_path_rewrites = [ "history_clusters.mojom-webui.js|chrome/browser/ui/webui/memories/history_clusters.mojom-webui.js" ]
+  resource_path_rewrites = [ "history_clusters.mojom-webui.js|chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
   input_files_base_dir =
-      rebase_path("$root_gen_dir/mojom-webui/chrome/browser/ui/webui/memories",
-                  root_build_dir)
+      rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/history_clusters",
+          root_build_dir)
 }
 
 generate_grd("build_history_clusters_definition_mojo_grdp") {
@@ -204,7 +205,7 @@ grit("resources") {
   source = "$target_gen_dir/resources.grd"
   deps = [
     ":build_grd",
-    "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js",
     "//components/history_clusters/core:mojo_bindings_webui_js",
   ]
   outputs = [

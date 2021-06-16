@@ -53,9 +53,10 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
   return matching_clusters;
 }
 
-// TODO(manukh): Move mojom translation to `MemoriesHandler` once we've created
+// TODO(manukh): Move mojom translation to `HistoryClustersHandler` once we've
+// created
 //  a mirror cpp struct the `MemoryService` can return instead. There's no need
-//  to do this yet, since the `MemoriesHandler` is the only consumer of
+//  to do this yet, since the `HistoryClustersHandler` is the only consumer of
 //  `HistoryClustersService`, but once the omnibox comes into play, we'll need a
 //  common non-mojom response.
 // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.

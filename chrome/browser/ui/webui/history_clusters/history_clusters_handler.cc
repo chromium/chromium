@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/memories/memories_handler.h"
+#include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 
 #include <algorithm>
 #include <utility>
@@ -39,7 +39,7 @@
 #include "ui/base/l10n/time_format.h"
 #endif
 
-MemoriesHandler::MemoriesHandler(
+HistoryClustersHandler::HistoryClustersHandler(
     mojo::PendingReceiver<history_clusters::mojom::PageHandler>
         pending_page_handler,
     Profile* profile,
@@ -56,14 +56,14 @@ MemoriesHandler::MemoriesHandler(
   service_observation_.Observe(history_clusters_service);
 }
 
-MemoriesHandler::~MemoriesHandler() = default;
+HistoryClustersHandler::~HistoryClustersHandler() = default;
 
-void MemoriesHandler::SetPage(
+void HistoryClustersHandler::SetPage(
     mojo::PendingRemote<history_clusters::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
 }
 
-void MemoriesHandler::QueryClusters(
+void HistoryClustersHandler::QueryClusters(
     history_clusters::mojom::QueryParamsPtr query_params) {
   auto result_mojom = history_clusters::mojom::QueryResult::New();
   result_mojom->title = query_params->query;
@@ -76,7 +76,7 @@ void MemoriesHandler::QueryClusters(
     result_mojom->is_continuation = true;
   }
   auto result_callback =
-      base::BindOnce(&MemoriesHandler::OnClustersQueryResult,
+      base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result_mojom));
   if (history_clusters::RemoteModelEndpoint().is_valid()) {
     // Cancel pending queries, if any.
@@ -108,7 +108,7 @@ void MemoriesHandler::QueryClusters(
   }
 }
 
-void MemoriesHandler::RemoveVisits(
+void HistoryClustersHandler::RemoveVisits(
     std::vector<history_clusters::mojom::URLVisitPtr> visits,
     RemoveVisitsCallback callback) {
   // Reject the request if a pending task exists or the set of visits is empty.
@@ -131,44 +131,45 @@ void MemoriesHandler::RemoveVisits(
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   history_clusters_service->RemoveVisits(
       expire_list,
-      base::BindOnce(&MemoriesHandler::OnVisitsRemoved,
+      base::BindOnce(&HistoryClustersHandler::OnVisitsRemoved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(visits)),
       &remove_task_tracker_);
   std::move(callback).Run(true);
 }
 
-void MemoriesHandler::OnMemoriesDebugMessage(const std::string& message) {
+void HistoryClustersHandler::OnMemoriesDebugMessage(
+    const std::string& message) {
   if (content::RenderFrameHost* rfh = web_contents_->GetMainFrame()) {
     rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
   }
 }
 
-void MemoriesHandler::OnClustersQueryResult(
+void HistoryClustersHandler::OnClustersQueryResult(
     history_clusters::mojom::QueryResultPtr result_mojom,
     history_clusters::mojom::QueryParamsPtr continuation_query_params,
-    std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms) {
+    std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms) {
   result_mojom->continuation_query_params =
       std::move(continuation_query_params);
-  result_mojom->clusters = std::move(memory_mojoms);
+  result_mojom->clusters = std::move(cluster_mojoms);
   page_->OnClustersQueryResult(std::move(result_mojom));
 }
 
-void MemoriesHandler::OnVisitsRemoved(
+void HistoryClustersHandler::OnVisitsRemoved(
     std::vector<history_clusters::mojom::URLVisitPtr> visits) {
   page_->OnVisitsRemoved(std::move(visits));
 }
 
 #if !defined(CHROME_BRANDED)
-void MemoriesHandler::QueryHistoryService(
+void HistoryClustersHandler::QueryHistoryService(
     history_clusters::mojom::QueryParamsPtr query_params,
-    std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
-    MemoriesQueryResultsCallback callback) {
+    std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
+    QueryResultsCallback callback) {
   const size_t max_count =
       query_params->max_count ? query_params->max_count : -1;
-  if (memory_mojoms.size() == max_count) {
-    // Enough Memories have been created. Run the callback with those Memories
+  if (cluster_mojoms.size() == max_count) {
+    // Enough clusters have been created. Run the callback with those Clusters
     // along with the continuation query params.
-    std::move(callback).Run(std::move(query_params), std::move(memory_mojoms));
+    std::move(callback).Run(std::move(query_params), std::move(cluster_mojoms));
     return;
   }
 
@@ -185,26 +186,26 @@ void MemoriesHandler::QueryHistoryService(
   std::u16string query = base::UTF8ToUTF16(query_params->query);
   history_service->QueryHistory(
       query, query_options,
-      base::BindOnce(&MemoriesHandler::OnHistoryQueryResults,
+      base::BindOnce(&HistoryClustersHandler::OnHistoryQueryResults,
                      weak_ptr_factory_.GetWeakPtr(), std::move(query_params),
-                     std::move(memory_mojoms), std::move(callback)),
+                     std::move(cluster_mojoms), std::move(callback)),
       &query_task_tracker_);
 }
 
-void MemoriesHandler::OnHistoryQueryResults(
+void HistoryClustersHandler::OnHistoryQueryResults(
     history_clusters::mojom::QueryParamsPtr query_params,
-    std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
-    MemoriesQueryResultsCallback callback,
+    std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
+    QueryResultsCallback callback,
     history::QueryResults results) {
   if (results.empty()) {
-    // No more results to create Memories from. Run the callback with the
-    // Memories created so far along with the continuation query params.
-    std::move(callback).Run(std::move(query_params), std::move(memory_mojoms));
+    // No more results to create Clusters from. Run the callback with the
+    // Clusters created so far along with the continuation query params.
+    std::move(callback).Run(std::move(query_params), std::move(cluster_mojoms));
     return;
   }
 
-  auto memory_mojom = history_clusters::mojom::Cluster::New();
-  memory_mojom->id = rand();
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  cluster_mojom->id = rand();
 
   const TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -225,11 +226,11 @@ void MemoriesHandler::OnHistoryQueryResults(
   std::vector<history_clusters::mojom::URLVisitPtr> visits;
 
   for (const auto& result : results) {
-    // Last visit time of the Memory is the visit time of most recently visited
-    // URL in the Memory. Collect all the visits in that day into the Memory.
-    if (memory_mojom->last_visit_time.is_null()) {
-      memory_mojom->last_visit_time = result.visit_time();
-    } else if (memory_mojom->last_visit_time.LocalMidnight() >
+    // Last visit time of the Cluster is the visit time of most recently visited
+    // URL in the Cluster. Collect all the visits in that day into the Cluster.
+    if (cluster_mojom->last_visit_time.is_null()) {
+      cluster_mojom->last_visit_time = result.visit_time();
+    } else if (cluster_mojom->last_visit_time.LocalMidnight() >
                result.visit_time()) {
       break;
     }
@@ -310,9 +311,9 @@ void MemoriesHandler::OnHistoryQueryResults(
 
   // Add the visits and the related searches to the cluster.
   for (auto& visit : visits) {
-    if (memory_mojom->visits.empty()) {
+    if (cluster_mojom->visits.empty()) {
       // The first visit will be featured prominently and have related searches.
-      memory_mojom->visits.push_back(std::move(visit));
+      cluster_mojom->visits.push_back(std::move(visit));
 
       for (auto& search_query : related_searches) {
         const std::string search_query_utf8 = base::UTF16ToUTF8(search_query);
@@ -324,22 +325,22 @@ void MemoriesHandler::OnHistoryQueryResults(
         auto search_query_mojom = history_clusters::mojom::SearchQuery::New();
         search_query_mojom->query = search_query_utf8;
         search_query_mojom->url = GURL(search_url);
-        memory_mojom->visits[0]->related_searches.push_back(
+        cluster_mojom->visits[0]->related_searches.push_back(
             std::move(search_query_mojom));
       }
     } else {
       // The rest of the visits will related visits of the first one.
-      memory_mojom->visits[0]->related_visits.push_back(std::move(visit));
+      cluster_mojom->visits[0]->related_visits.push_back(std::move(visit));
     }
   }
 
-  // Continue to extract Memories. Set the recency threshold to 11:59:59pm of
+  // Continue to extract Clusters. Set the recency threshold to 11:59:59pm of
   // the day before the Memory's `last_visit_time`.
   query_params->recency_threshold =
-      memory_mojom->last_visit_time.LocalMidnight() -
+      cluster_mojom->last_visit_time.LocalMidnight() -
       base::TimeDelta::FromSeconds(1);
-  memory_mojoms.push_back(std::move(memory_mojom));
-  QueryHistoryService(std::move(query_params), std::move(memory_mojoms),
+  cluster_mojoms.push_back(std::move(cluster_mojom));
+  QueryHistoryService(std::move(query_params), std::move(cluster_mojoms),
                       std::move(callback));
 }
 #endif

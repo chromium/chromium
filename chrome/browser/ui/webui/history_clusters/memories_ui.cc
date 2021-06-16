@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/memories/memories_ui.h"
+#include "chrome/browser/ui/webui/history_clusters/memories_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/memories/memories_handler.h"
+#include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -78,6 +78,6 @@ MemoriesUI::~MemoriesUI() = default;
 void MemoriesUI::BindInterface(
     mojo::PendingReceiver<history_clusters::mojom::PageHandler>
         pending_page_handler) {
-  memories_handler_ = std::make_unique<MemoriesHandler>(
+  history_clusters_handler_ = std::make_unique<HistoryClustersHandler>(
       std::move(pending_page_handler), profile_, web_contents_);
 }

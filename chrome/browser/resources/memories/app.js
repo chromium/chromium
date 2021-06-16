@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
-import {PageCallbackRouter, PageHandlerRemote, QueryResult} from '/chrome/browser/ui/webui/memories/history_clusters.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, QueryResult} from '/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
 import {URLVisit} from '/components/history_clusters/core/history_clusters.mojom-webui.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';

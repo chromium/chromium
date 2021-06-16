@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HANDLER_H_
 
 #include <string>
 
@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/ui/webui/memories/history_clusters.mojom.h"
+#include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
 #include "components/history_clusters/core/history_clusters.mojom.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,18 +31,20 @@ class QueryResults;
 }  // namespace history
 #endif
 
-// Handles bidirectional communication between memories page and the browser.
-class MemoriesHandler
+// Handles bidirectional communication between the history clusters page and the
+// browser.
+class HistoryClustersHandler
     : public history_clusters::mojom::PageHandler,
       public history_clusters::HistoryClustersService::Observer {
  public:
-  MemoriesHandler(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
-                      pending_page_handler,
-                  Profile* profile,
-                  content::WebContents* web_contents);
-  MemoriesHandler(const MemoriesHandler&) = delete;
-  MemoriesHandler& operator=(const MemoriesHandler&) = delete;
-  ~MemoriesHandler() override;
+  HistoryClustersHandler(
+      mojo::PendingReceiver<history_clusters::mojom::PageHandler>
+          pending_page_handler,
+      Profile* profile,
+      content::WebContents* web_contents);
+  HistoryClustersHandler(const HistoryClustersHandler&) = delete;
+  HistoryClustersHandler& operator=(const HistoryClustersHandler&) = delete;
+  ~HistoryClustersHandler() override;
 
   // history_clusters::mojom::PageHandler:
   void SetPage(
@@ -56,32 +58,32 @@ class MemoriesHandler
   void OnMemoriesDebugMessage(const std::string& message) override;
 
  private:
-  // Called with `memory_mojoms` and `continuation_query_params` when the
+  // Called with `cluster_mojoms` and `continuation_query_params` when the
   // results of querying the HistoryClustersService are available. The latter is
   // created in anticipation of a continuation query. Subsequently, the bound
   // partially constructed `result_mojom` parameter is supplied with
-  // `memory_mojoms` and `continuation_query_params` and sent to the JS.
+  // `cluster_mojoms` and `continuation_query_params` and sent to the JS.
   void OnClustersQueryResult(
       history_clusters::mojom::QueryResultPtr result_mojom,
       history_clusters::mojom::QueryParamsPtr continuation_query_params,
-      std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms);
+      std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
   void OnVisitsRemoved(
       std::vector<history_clusters::mojom::URLVisitPtr> visits);
 
 #if !defined(CHROME_BRANDED)
-  using MemoriesQueryResultsCallback = base::OnceCallback<void(
+  using QueryResultsCallback = base::OnceCallback<void(
       history_clusters::mojom::QueryParamsPtr,
       std::vector<history_clusters::mojom::ClusterPtr>)>;
   void QueryHistoryService(
       history_clusters::mojom::QueryParamsPtr query_params,
-      std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
-      MemoriesQueryResultsCallback callback);
+      std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
+      QueryResultsCallback callback);
   void OnHistoryQueryResults(
       history_clusters::mojom::QueryParamsPtr query_params,
-      std::vector<history_clusters::mojom::ClusterPtr> memory_mojoms,
-      MemoriesQueryResultsCallback callback,
+      std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
+      QueryResultsCallback callback,
       history::QueryResults results);
 #endif
 
@@ -100,7 +102,7 @@ class MemoriesHandler
   mojo::Remote<history_clusters::mojom::Page> page_;
   mojo::Receiver<history_clusters::mojom::PageHandler> page_handler_;
 
-  base::WeakPtrFactory<MemoriesHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<HistoryClustersHandler> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HANDLER_H_
