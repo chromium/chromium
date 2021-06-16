@@ -96,7 +96,7 @@ class TestingPlatformSupport : public Platform {
 
  private:
   bool is_threaded_animation_enabled_ = false;
-  bool is_zoom_for_dsf_enabled_ = false;
+  bool is_zoom_for_dsf_enabled_ = true;
 };
 
 // ScopedTestingPlatformSupport<MyTestingPlatformSupport> can be used to

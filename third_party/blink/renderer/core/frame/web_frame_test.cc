@@ -1497,9 +1497,19 @@ TEST_F(WebFrameTest, DeviceScaleFactorUsesDefaultWithoutViewportTag) {
       ->SetDeviceScaleFactorForTesting(2.f);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
-  EXPECT_EQ(
-      2,
-      web_view_helper.GetWebView()->GetPage()->DeviceScaleFactorDeprecated());
+  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+    EXPECT_EQ(
+        1,
+        web_view_helper.GetWebView()->GetPage()->DeviceScaleFactorDeprecated());
+    auto* frame =
+        To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+    DCHECK(frame);
+    EXPECT_EQ(2, frame->DevicePixelRatio());
+  } else {
+    EXPECT_EQ(
+        2,
+        web_view_helper.GetWebView()->GetPage()->DeviceScaleFactorDeprecated());
+  }
 
   // Device scale factor should be independent of page scale.
   web_view_helper.GetWebView()->SetDefaultPageScaleLimits(1, 2);
@@ -2627,6 +2637,7 @@ TEST_F(WebFrameTest, targetDensityDpiDevice) {
     web_view_helper.InitializeAndLoad(
         base_url_ + "viewport-target-densitydpi-device.html", nullptr, nullptr,
         ConfigureAndroid);
+    web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
     web_view_helper.GetWebView()
         ->MainFrameWidget()
         ->SetDeviceScaleFactorForTesting(device_scale_factors[i]);
@@ -2635,7 +2646,6 @@ TEST_F(WebFrameTest, targetDensityDpiDevice) {
     web_view_helper.GetWebView()
         ->GetSettings()
         ->SetSupportDeprecatedTargetDensityDPI(true);
-    web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
     EXPECT_NEAR(viewport_width * device_scale_factors[i],
                 web_view_helper.GetWebView()
@@ -2651,8 +2661,16 @@ TEST_F(WebFrameTest, targetDensityDpiDevice) {
                     ->GetLayoutSize()
                     .Height(),
                 1.0f);
-    EXPECT_NEAR(1.0f / device_scale_factors[i],
-                web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+    if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+      EXPECT_NEAR(1.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+      auto* frame =
+          To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+      DCHECK(frame);
+      EXPECT_EQ(device_scale_factors[i], frame->DevicePixelRatio());
+    } else {
+      EXPECT_NEAR(1.0f / device_scale_factors[i],
+                  web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+    }
   }
 }
 
@@ -2710,6 +2728,7 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOne) {
   web_view_helper.InitializeAndLoad(
       base_url_ + "viewport-initial-scale-less-than-1.html", nullptr, nullptr,
       ConfigureAndroid);
+  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
   web_view_helper.GetWebView()
       ->MainFrameWidget()
       ->SetDeviceScaleFactorForTesting(device_scale_factor);
@@ -2719,7 +2738,6 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOne) {
   web_view_helper.GetWebView()->GetSettings()->SetWideViewportQuirkEnabled(
       true);
   web_view_helper.GetWebView()->GetSettings()->SetUseWideViewport(false);
-  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
   EXPECT_NEAR(viewport_width * device_scale_factor,
               web_view_helper.GetWebView()
@@ -2735,8 +2753,16 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOne) {
                   ->GetLayoutSize()
                   .Height(),
               1.0f);
-  EXPECT_NEAR(1.0f / device_scale_factor,
-              web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+    EXPECT_NEAR(0.25f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+    auto* frame =
+        To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+    DCHECK(frame);
+    EXPECT_EQ(device_scale_factor, frame->DevicePixelRatio());
+  } else {
+    EXPECT_NEAR(1.0f / device_scale_factor,
+                web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+  }
 }
 
 TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOneWithDeviceWidth) {
@@ -2751,6 +2777,7 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOneWithDeviceWidth) {
   web_view_helper.InitializeAndLoad(
       base_url_ + "viewport-initial-scale-less-than-1-device-width.html",
       nullptr, nullptr, ConfigureAndroid);
+  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
   web_view_helper.GetWebView()
       ->MainFrameWidget()
       ->SetDeviceScaleFactorForTesting(device_scale_factor);
@@ -2760,8 +2787,8 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOneWithDeviceWidth) {
   web_view_helper.GetWebView()->GetSettings()->SetWideViewportQuirkEnabled(
       true);
   web_view_helper.GetWebView()->GetSettings()->SetUseWideViewport(false);
-  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
+  // We use 4.0f in EXPECT_NEAR to account for a rounding error.
   const float kPageZoom = 0.25f;
   EXPECT_NEAR(viewport_width * device_scale_factor / kPageZoom,
               web_view_helper.GetWebView()
@@ -2769,16 +2796,25 @@ TEST_F(WebFrameTest, NoWideViewportAndScaleLessThanOneWithDeviceWidth) {
                   ->GetFrameView()
                   ->GetLayoutSize()
                   .Width(),
-              1.0f);
+              4.0f);
   EXPECT_NEAR(viewport_height * device_scale_factor / kPageZoom,
               web_view_helper.GetWebView()
                   ->MainFrameImpl()
                   ->GetFrameView()
                   ->GetLayoutSize()
                   .Height(),
-              1.0f);
-  EXPECT_NEAR(1.0f / device_scale_factor,
-              web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+              4.0f);
+  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+    EXPECT_NEAR(kPageZoom, web_view_helper.GetWebView()->PageScaleFactor(),
+                0.01f);
+    auto* frame =
+        To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+    DCHECK(frame);
+    EXPECT_EQ(device_scale_factor, frame->DevicePixelRatio());
+  } else {
+    EXPECT_NEAR(1.0f / device_scale_factor,
+                web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+  }
 }
 
 TEST_F(WebFrameTest, NoWideViewportAndNoViewportWithInitialPageScaleOverride) {
@@ -2861,6 +2897,7 @@ TEST_F(WebFrameTest,
   web_view_helper.InitializeAndLoad(
       base_url_ + "viewport-initial-scale-and-user-scalable-no.html", nullptr,
       nullptr, ConfigureAndroid);
+  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
   web_view_helper.GetWebView()
       ->MainFrameWidget()
       ->SetDeviceScaleFactorForTesting(device_scale_factor);
@@ -2873,7 +2910,6 @@ TEST_F(WebFrameTest,
   web_view_helper.GetWebView()->GetSettings()->SetWideViewportQuirkEnabled(
       true);
   web_view_helper.GetWebView()->GetSettings()->SetUseWideViewport(false);
-  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
   EXPECT_NEAR(viewport_width * device_scale_factor,
               web_view_helper.GetWebView()
@@ -2889,8 +2925,16 @@ TEST_F(WebFrameTest,
                   ->GetLayoutSize()
                   .Height(),
               1.0f);
-  EXPECT_NEAR(1.0f / device_scale_factor,
-              web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+  if (Platform::Current()->IsUseZoomForDSFEnabled()) {
+    EXPECT_NEAR(2.0f, web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+    auto* frame =
+        To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+    DCHECK(frame);
+    EXPECT_EQ(device_scale_factor, frame->DevicePixelRatio());
+  } else {
+    EXPECT_NEAR(1.0f / device_scale_factor,
+                web_view_helper.GetWebView()->PageScaleFactor(), 0.01f);
+  }
 }
 
 TEST_F(WebFrameTest, NoUserScalableQuirkIgnoresViewportScaleForWideViewport) {

@@ -71,7 +71,7 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
 
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
   bool threaded_animation_ = true;
-  bool use_zoom_for_dsf_ = false;
+  bool use_zoom_for_dsf_ = true;
   cc::TestTaskGraphRunner test_task_graph_runner_;
 
   base::WeakPtrFactory<TestBlinkWebUnitTestSupport> weak_factory_{this};
