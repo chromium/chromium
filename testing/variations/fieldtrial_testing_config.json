@@ -3337,6 +3337,29 @@
             ]
         }
     ],
+    "EnterpriseRealtimeExtensionRequest": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "with_erp": "true"
+                    },
+                    "enable_features": [
+                        "EnterpriseRealtimeExtensionRequest"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseReportingInChromeOS": [
         {
             "platforms": [
