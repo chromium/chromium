@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -576,9 +577,12 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, 0);
 
-  test_views_delegate()->set_release_ref_callback(base::BindRepeating(
-      [](internal::MenuRunnerImpl* menu_runner) { menu_runner->Release(); },
-      base::Unretained(menu_runner)));
+  base::RunLoop run_loop;
+  test_views_delegate()->set_release_ref_callback(
+      base::BindLambdaForTesting([&]() {
+        run_loop.Quit();
+        menu_runner->Release();
+      }));
 
   base::WeakPtr<internal::MenuRunnerImpl> ref(MenuRunnerAsWeakPtr(menu_runner));
   MenuControllerTestApi menu_controller;
@@ -586,8 +590,9 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
   // |menu_runner| simulating device shutdown.
   menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
   // Both the |menu_runner| and |menu_controller| should have been deleted.
-  EXPECT_EQ(nullptr, ref);
   EXPECT_EQ(nullptr, menu_controller.controller());
+  run_loop.Run();
+  EXPECT_EQ(nullptr, ref);
 }
 
 TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
