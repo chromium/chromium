@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 
+#include <sstream>
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
@@ -20,7 +21,18 @@
 namespace blink {
 namespace {
 
-class NGInlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {};
+class NGInlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
+ protected:
+  static std::string AsFragmentItemsString(const LayoutBlockFlow& root) {
+    std::ostringstream ostream;
+    ostream << std::endl;
+    for (NGInlineCursor cursor(root); cursor; cursor.MoveToNext()) {
+      const auto& item = *cursor.CurrentItem();
+      ostream << item << " " << item.RectInContainerFragment() << std::endl;
+    }
+    return ostream.str();
+  }
+};
 
 TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   LoadAhem();
@@ -455,6 +467,65 @@ TEST_F(NGInlineLayoutAlgorithmTest, InkOverflow) {
   PhysicalRect ink_overflow = cursor.Current().InkOverflow();
   EXPECT_EQ(LayoutUnit(-5), ink_overflow.offset.top);
   EXPECT_EQ(LayoutUnit(20), ink_overflow.size.height);
+}
+
+// See also NGInlineLayoutAlgorithmTest.TextCombineFake
+TEST_F(NGInlineLayoutAlgorithmTest, TextCombineBasic) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>a<c id=target>01234</c>b</div>");
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=5 LTR Standard} "0,0 110x300"
+{Text 0-1 LTR Standard} "5,0 100x100"
+{Box #descendants=2 Standard} "5,100 100x100"
+{Box #descendants=1 AtomicInlineLTR Standard} "5,100 100x100"
+{Text 2-3 LTR Standard} "5,200 100x100"
+)DUMP",
+            AsFragmentItemsString(
+                *To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"))));
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=2 LTR Standard} "0,0 100x100"
+{Text 0-5 LTR Standard} "0,0 500x100"
+)DUMP",
+            AsFragmentItemsString(*To<LayoutBlockFlow>(
+                GetLayoutObjectByElementId("target")->SlowFirstChild())));
+}
+
+// See also NGInlineLayoutAlgorithmTest.TextCombineBasic
+TEST_F(NGInlineLayoutAlgorithmTest, TextCombineFake) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 100px/110px Ahem; }"
+      "c {"
+      "  display: inline-block;"
+      "  width: 1em; height: 1em;"
+      "  writing-mode: horizontal-tb;"
+      "}"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>a<c id=target>0</c>b</div>");
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=4 LTR Standard} "0,0 110x300"
+{Text 0-1 LTR Standard} "5,0 100x100"
+{Box #descendants=1 AtomicInlineLTR Standard} "5,100 100x100"
+{Text 2-3 LTR Standard} "5,200 100x100"
+)DUMP",
+            AsFragmentItemsString(
+                *To<LayoutBlockFlow>(GetLayoutObjectByElementId("root"))));
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=2 LTR Standard} "0,0 100x110"
+{Text 0-1 LTR Standard} "0,5 100x100"
+)DUMP",
+            AsFragmentItemsString(
+                *To<LayoutBlockFlow>(GetLayoutObjectByElementId("target"))));
 }
 
 #undef MAYBE_VerticalAlignBottomReplaced

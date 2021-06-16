@@ -7,6 +7,7 @@
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -843,6 +844,14 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
   EVerticalAlign vertical_align = style.VerticalAlign();
   if (!is_svg_text_ && vertical_align == EVerticalAlign::kBaseline)
     return kPositionNotPending;
+
+  if (UNLIKELY(box->item &&
+               IsA<LayoutNGTextCombine>(box->item->GetLayoutObject()))) {
+    // Text content in text-combine-upright:all is layout in horizontally, so
+    // we don't need to move text combine box.
+    // See "text-combine-shrink-to-fit.html".
+    return kPositionNotPending;
+  }
 
   // 'vertical-align' aligns boxes relative to themselves, to their parent
   // boxes, or to the line box, depends on the value.

@@ -132,6 +132,9 @@ class CORE_EXPORT NGInlineItem {
   bool IsRubyRun() const {
     return GetLayoutObject() && GetLayoutObject()->IsRubyRun();
   }
+  bool IsTextCombine() const {
+    return GetLayoutObject() && GetLayoutObject()->IsLayoutNGTextCombine();
+  }
 
   void SetOffset(unsigned start, unsigned end) {
     DCHECK_GE(end, start);
