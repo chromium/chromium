@@ -63,12 +63,10 @@ public class ThumbnailMediaParserTest {
 
         // The native MediaParser needs to be created on UI thread.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ThumbnailMediaParserBridge parser = new ThumbnailMediaParserBridge(
-                    mimeType, filePath, (ThumbnailMediaData mediaData) -> {
-                        result.mediaData = mediaData;
-                        result.done = true;
-                    });
-            parser.start();
+            ThumbnailMediaParserBridge.parse(mimeType, filePath, (ThumbnailMediaData mediaData) -> {
+                result.mediaData = mediaData;
+                result.done = true;
+            });
         });
 
         CriteriaHelper.pollUiThread(

@@ -175,9 +175,6 @@ if (is_android) {
       "//ui/gfx",
     ]
 
-    sources = [
-      "android/thumbnail_media_parser_bridge.cc",
-      "android/thumbnail_media_parser_bridge.h",
-    ]
+    sources = [ "android/thumbnail_media_parser_bridge.cc" ]
   }
 }
