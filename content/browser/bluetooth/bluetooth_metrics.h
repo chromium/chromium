@@ -163,6 +163,74 @@ void RecordGetDescriptorsOutcome(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
     CacheQueryOutcome outcome);
 
+// GATT Operations Metrics
+
+// These are the possible outcomes when performing GATT operations i.e.
+// characteristic.readValue/writeValue descriptor.readValue/writeValue.
+enum class UMAGATTOperationOutcome {
+  kSuccess = 0,
+  kNoDevice = 1,
+  kNoService = 2,
+  kNoCharacteristic = 3,
+  kNoDescriptor = 4,
+  kUnknown = 5,
+  kFailed = 6,
+  kInProgress = 7,
+  kInvalidLength = 8,
+  kNotPermitted = 9,
+  kNotAuthorized = 10,
+  kNotPaired = 11,
+  kNotSupported = 12,
+  kBlocklisted = 13,
+  // Note: Add new GATT Outcomes immediately above this line.
+  // Make sure to update the enum list in
+  // tools/metrics/histograms/histograms.xml accordingly.
+  kMaxValue = kBlocklisted
+};
+
+// Values below do NOT map to UMA metric values.
+enum class UMAGATTOperation {
+  kCharacteristicRead,
+  kCharacteristicWrite,
+  kStartNotifications,
+  kDescriptorReadObsolete,
+  kDescriptorWriteObsolete,
+};
+
+// Records the outcome of a GATT operation.
+// There should be a call to this function whenever the corresponding operation
+// doesn't have a call to Record[Operation]Outcome.
+void RecordGATTOperationOutcome(UMAGATTOperation operation,
+                                UMAGATTOperationOutcome outcome);
+
+// Characteristic.readValue() Metrics:
+// There should be a call to this function for every Mojo
+// bluetooth.mojom.Device.ReadValueForCharacteristic response.
+void RecordCharacteristicReadValueOutcome(UMAGATTOperationOutcome error);
+
+// Records the outcome of a cache query for readValue. Should only be called if
+// QueryCacheForCharacteristic fails.
+void RecordCharacteristicReadValueOutcome(CacheQueryOutcome outcome);
+
+// Characteristic.writeValue() Metrics
+// There should be a call to this function for every Mojo
+// bluetooth.mojom.Device.WriteValueForCharacteristic response.
+void RecordCharacteristicWriteValueOutcome(UMAGATTOperationOutcome error);
+
+// Records the outcome of a cache query for writeValue. Should only be called if
+// QueryCacheForCharacteristic fails.
+void RecordCharacteristicWriteValueOutcome(CacheQueryOutcome outcome);
+
+// Characteristic.startNotifications() Metrics
+// There should be a call to this function for every call to the
+// blink.mojom.WebBluetoothService.RemoteCharacteristicStartNotifications Mojo
+// call.
+void RecordStartNotificationsOutcome(UMAGATTOperationOutcome outcome);
+
+// Records the outcome of a cache query for startNotifications. Should only be
+// called if QueryCacheForCharacteristic fails.
+void RecordStartNotificationsOutcome(CacheQueryOutcome outcome);
+
 enum class UMARSSISignalStrengthLevel {
   LESS_THAN_OR_EQUAL_TO_MIN_RSSI,
   LEVEL_0,

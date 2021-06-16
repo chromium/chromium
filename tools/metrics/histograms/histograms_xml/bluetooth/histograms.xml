@@ -325,12 +325,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1052935
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
+    enum="WebBluetoothGATTOperationOutcome" expires_after="M97">
+  <owner>cmumford@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the outcome of a call to characteristic.readValue(). Used to know
     what types of errors users are seeing. The results will be used to determine
@@ -340,12 +337,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.StartNotifications.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1160798
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
+    enum="WebBluetoothGATTOperationOutcome" expires_after="M97">
+  <owner>cmumford@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the outcome of a call to characteristic.startNofications(). Used to
     know what types of errors users are seeing. The results will be used to
@@ -355,12 +349,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.WriteValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021/04/09. crbug.com/1052936
-  </obsolete>
-  <owner>ortuno@chromium.org</owner>
-  <owner>reillyg@chromium.org</owner>
+    enum="WebBluetoothGATTOperationOutcome" expires_after="M97">
+  <owner>cmumford@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the outcome of a call to characteristic.writeValue(). Used to know
     what types of errors users are seeing. The results will be used to determine

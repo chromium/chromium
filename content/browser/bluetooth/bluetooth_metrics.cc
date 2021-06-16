@@ -157,6 +157,80 @@ void RecordGetCharacteristicsCharacteristic(
   }
 }
 
+// GATT Operations
+
+void RecordGATTOperationOutcome(UMAGATTOperation operation,
+                                UMAGATTOperationOutcome outcome) {
+  switch (operation) {
+    case UMAGATTOperation::kCharacteristicRead:
+      RecordCharacteristicReadValueOutcome(outcome);
+      return;
+    case UMAGATTOperation::kCharacteristicWrite:
+      RecordCharacteristicWriteValueOutcome(outcome);
+      return;
+    case UMAGATTOperation::kStartNotifications:
+      RecordStartNotificationsOutcome(outcome);
+      return;
+    case UMAGATTOperation::kDescriptorReadObsolete:
+    case UMAGATTOperation::kDescriptorWriteObsolete:
+      return;
+  }
+}
+
+static UMAGATTOperationOutcome TranslateCacheQueryOutcomeToGATTOperationOutcome(
+    CacheQueryOutcome outcome) {
+  switch (outcome) {
+    case CacheQueryOutcome::SUCCESS:
+    case CacheQueryOutcome::BAD_RENDERER:
+      // No need to record a success or renderer crash.
+      NOTREACHED();
+      return UMAGATTOperationOutcome::kNotSupported;
+    case CacheQueryOutcome::NO_DEVICE:
+      return UMAGATTOperationOutcome::kNoDevice;
+    case CacheQueryOutcome::NO_SERVICE:
+      return UMAGATTOperationOutcome::kNoService;
+    case CacheQueryOutcome::NO_CHARACTERISTIC:
+      return UMAGATTOperationOutcome::kNoCharacteristic;
+    case CacheQueryOutcome::NO_DESCRIPTOR:
+      return UMAGATTOperationOutcome::kNoDescriptor;
+  }
+}
+
+// Characteristic.readValue
+
+void RecordCharacteristicReadValueOutcome(UMAGATTOperationOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Bluetooth.Web.Characteristic.ReadValue.Outcome", outcome);
+}
+
+void RecordCharacteristicReadValueOutcome(CacheQueryOutcome outcome) {
+  RecordCharacteristicReadValueOutcome(
+      TranslateCacheQueryOutcomeToGATTOperationOutcome(outcome));
+}
+
+// Characteristic.writeValue
+
+void RecordCharacteristicWriteValueOutcome(UMAGATTOperationOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Bluetooth.Web.Characteristic.WriteValue.Outcome", outcome);
+}
+
+void RecordCharacteristicWriteValueOutcome(CacheQueryOutcome outcome) {
+  RecordCharacteristicWriteValueOutcome(
+      TranslateCacheQueryOutcomeToGATTOperationOutcome(outcome));
+}
+
+// Characteristic.startNotifications
+void RecordStartNotificationsOutcome(UMAGATTOperationOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Bluetooth.Web.Characteristic.StartNotifications.Outcome", outcome);
+}
+
+void RecordStartNotificationsOutcome(CacheQueryOutcome outcome) {
+  RecordStartNotificationsOutcome(
+      TranslateCacheQueryOutcomeToGATTOperationOutcome(outcome));
+}
+
 void RecordRSSISignalStrength(int rssi) {
   base::UmaHistogramSparse("Bluetooth.Web.RequestDevice.RSSISignalStrength",
                            rssi);
