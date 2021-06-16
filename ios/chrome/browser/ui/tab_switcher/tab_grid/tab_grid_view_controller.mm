@@ -588,6 +588,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.regularTabsViewController.mode = self.tabGridMode;
   self.incognitoTabsViewController.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
+  self.scrollView.scrollEnabled = (self.tabGridMode != TabGridModeSelection);
 }
 
 #pragma mark - LayoutSwitcherProvider
