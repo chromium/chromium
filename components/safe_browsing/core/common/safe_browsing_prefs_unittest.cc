@@ -13,7 +13,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -23,7 +22,6 @@ namespace safe_browsing {
 class SafeBrowsingPrefsTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    task_environment_ = CreateTestTaskEnvironment();
     prefs_.registry()->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
     prefs_.registry()->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
     prefs_.registry()->RegisterBooleanPref(
@@ -55,9 +53,6 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
               prefs_.HasPrefPath(prefs::kSafeBrowsingScoutReportingEnabled));
   }
   TestingPrefServiceSimple prefs_;
-
- private:
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
 // TODO(crbug.com/881476) disabled for flaky crashes.
@@ -175,8 +170,6 @@ TEST_F(SafeBrowsingPrefsTest, IsExtendedReportingPolicyManaged) {
 
 TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
   GURL target_url("https://www.foo.com");
-  // When PrefMember is null, URL is not allowlisted.
-  EXPECT_FALSE(IsURLAllowlistedByPolicy(target_url, nullptr));
 
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
   base::ListValue allowlisted_domains;
@@ -185,11 +178,8 @@ TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
   StringListPrefMember string_list_pref;
   string_list_pref.Init(prefs::kSafeBrowsingAllowlistDomains, &prefs_);
   EXPECT_TRUE(IsURLAllowlistedByPolicy(target_url, prefs_));
-  EXPECT_TRUE(IsURLAllowlistedByPolicy(target_url, &string_list_pref));
 
   GURL not_allowlisted_url("https://www.bar.com");
   EXPECT_FALSE(IsURLAllowlistedByPolicy(not_allowlisted_url, prefs_));
-  EXPECT_FALSE(
-      IsURLAllowlistedByPolicy(not_allowlisted_url, &string_list_pref));
 }
 }  // namespace safe_browsing

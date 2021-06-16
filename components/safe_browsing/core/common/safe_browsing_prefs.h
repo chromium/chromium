@@ -275,13 +275,6 @@ void CanonicalizeDomainList(
 
 // Helper function to determine if |url| matches Safe Browsing allowlist domains
 // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
-// Called on IO thread.
-bool IsURLAllowlistedByPolicy(const GURL& url,
-                              StringListPrefMember* pref_member);
-
-// Helper function to determine if |url| matches Safe Browsing allowlist domains
-// (a.k. a prefs::kSafeBrowsingAllowlistDomains).
-// Called on UI thread.
 bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref);
 
 // Helper function to get a list of Safe Browsing allowlist domains
