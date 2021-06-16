@@ -22,20 +22,20 @@
 #include "extensions/common/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using base::test::RunOnceClosure;
-using device::BluetoothDiscoveryFilter;
-using device::BluetoothUUID;
-using device::MockBluetoothAdapter;
-using device::MockBluetoothDevice;
-using testing::_;
-using testing::Eq;
-using testing::InSequence;
-using testing::NiceMock;
-using testing::Return;
-using testing::ReturnPointee;
-using testing::SaveArg;
-using testing::WithArgs;
-using testing::WithoutArgs;
+using ::base::test::RunOnceClosure;
+using ::device::BluetoothDiscoveryFilter;
+using ::device::BluetoothUUID;
+using ::device::MockBluetoothAdapter;
+using ::device::MockBluetoothDevice;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::InSequence;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnPointee;
+using ::testing::SaveArg;
+using ::testing::WithArgs;
+using ::testing::WithoutArgs;
 
 namespace bt = extensions::api::bluetooth;
 namespace bt_private = extensions::api::bluetooth_private;
