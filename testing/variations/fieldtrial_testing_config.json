@@ -7342,9 +7342,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_preemptive",
                     "enable_features": [
+                        "CopyLinkToText",
                         "PreemptiveLinkToTextGeneration"
+                    ],
+                    "disable_features": [
+                        "SharedHighlightingV2"
                     ]
                 }
             ]
