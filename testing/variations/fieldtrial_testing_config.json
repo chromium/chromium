@@ -4136,6 +4136,21 @@
             ]
         }
     ],
+    "IOSRestoreSessionFromCache": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestoreSessionFromCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSScreenTimeIntegration": [
         {
             "platforms": [
