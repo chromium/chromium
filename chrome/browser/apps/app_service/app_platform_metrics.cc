@@ -615,7 +615,7 @@ void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
         base::UmaHistogramCounts1000(
             kAppsCountPerInstallSourceHistogramPrefix + histogram_name + "." +
                 GetInstallSource(install_source_it.first),
-            it.second);
+            install_source_it.second);
       }
     }
   }
