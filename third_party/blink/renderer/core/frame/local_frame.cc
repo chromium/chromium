@@ -1829,7 +1829,9 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
     String destination_domain = network_utils::GetDomainAndRegistry(
         destination_url.Host(), network_utils::kIncludePrivateRegistries);
     if (!target_domain.IsEmpty() && !destination_domain.IsEmpty() &&
-        target_domain == destination_domain) {
+        target_domain == destination_domain &&
+        target_frame.GetSecurityContext()->GetSecurityOrigin()->Protocol() ==
+            destination_url.Protocol()) {
       return true;
     }
 
