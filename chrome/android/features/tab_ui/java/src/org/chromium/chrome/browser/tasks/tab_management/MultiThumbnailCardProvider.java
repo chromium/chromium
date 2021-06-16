@@ -44,7 +44,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     private final TabModelSelectorObserver mTabModelSelectorObserver;
 
     private final float mRadius;
-    private final float mFaviconCirclePadding;
+    private final float mFaviconFrameCornerRadius;
     private final int mThumbnailWidth;
     private final int mThumbnailHeight;
     private final Paint mEmptyThumbnailPaint;
@@ -173,9 +173,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         }
 
         private void drawFaviconDrawableOnCanvasWithFrame(Drawable favicon, int index) {
-            RectF rectF = mFaviconBackgroundRects.get(index);
-            mCanvas.drawCircle((rectF.left + rectF.right) / 2, (rectF.bottom + rectF.top) / 2,
-                    rectF.width() / 2 - mFaviconCirclePadding, mFaviconBackgroundPaint);
+            mCanvas.drawRoundRect(mFaviconBackgroundRects.get(index), mFaviconFrameCornerRadius,
+                    mFaviconFrameCornerRadius, mFaviconBackgroundPaint);
             favicon.setBounds(mFaviconRects.get(index));
             favicon.draw(mCanvas);
         }
@@ -206,8 +205,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mTabContentManager = tabContentManager;
         mTabModelSelector = tabModelSelector;
         mRadius = resource.getDimension(R.dimen.tab_list_mini_card_radius);
-        mFaviconCirclePadding =
-                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_padding);
+        mFaviconFrameCornerRadius =
+                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
 
         mTabListFaviconProvider = new TabListFaviconProvider(context, false);
 
@@ -249,8 +248,6 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         // Initialize Rects for thumbnails.
         float thumbnailHorizontalPadding = resource.getDimension(R.dimen.tab_list_card_padding);
         float thumbnailVerticalPadding = thumbnailHorizontalPadding / expectedThumbnailAspectRatio;
-        float thumbnailFaviconBackgroundPadding =
-                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_padding);
         float thumbnailFaviconPaddingFromBackground =
                 resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_padding_from_frame);
         float centerX = mThumbnailWidth * 0.5f;
@@ -271,9 +268,9 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                 mThumbnailWidth - thumbnailHorizontalPadding,
                 mThumbnailHeight - thumbnailVerticalPadding));
 
-        // Initialize Rects for favicons and favicon backgrounds.
-        final float faviconBackgroundRadius =
-                mThumbnailRects.get(0).width() / 2f - thumbnailFaviconBackgroundPadding;
+        // Initialize Rects for favicons and favicon frame.
+        final float halfFaviconFrameSize =
+                resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_size) / 2f;
         for (int i = 0; i < 4; i++) {
             RectF thumbnailRect = mThumbnailRects.get(i);
 
@@ -281,7 +278,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
             float thumbnailRectCenterY = thumbnailRect.centerY();
             RectF faviconBackgroundRect = new RectF(thumbnailRectCenterX, thumbnailRectCenterY,
                     thumbnailRectCenterX, thumbnailRectCenterY);
-            faviconBackgroundRect.inset(-faviconBackgroundRadius, -faviconBackgroundRadius);
+            faviconBackgroundRect.inset(-halfFaviconFrameSize, -halfFaviconFrameSize);
             mFaviconBackgroundRects.add(faviconBackgroundRect);
 
             RectF faviconRectF = new RectF(faviconBackgroundRect);

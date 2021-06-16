@@ -24,10 +24,10 @@
     <dimen name="tab_grid_merge_threshold">45dp</dimen>
     <dimen name="tab_grid_large_message_side_padding_landscape">114dp</dimen>
     <dimen name="tab_grid_thumbnail_card_default_size">152dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_frame_padding">16dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_padding_from_frame">8dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_frame_corner_radius">7dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_frame_size">24dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_padding_from_frame">4dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_radius">3dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_background_padding">2dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_down_shift">2dp</dimen>
     <dimen name="tab_group_toolbar_height">56dp</dimen>
     <dimen name="tab_group_toolbar_topic_margin">8dp</dimen>
