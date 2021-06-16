@@ -94,7 +94,6 @@ OnboardingUserActivityTest.*
 OobeBaseTest.*
 OobeCompletedUnownedTest.*
 OobeConfigurationEnrollmentTest.*
-OobeConfigurationRollbackTest.*
 OobeConfigurationTest.*
 OobeConfigurationTestNoHID.*
 OobeDisplayChooserTest.*
@@ -167,5 +166,6 @@ WizardControllerKioskFlowTest.*
 WizardControllerOobeConfigurationTest.*
 WizardControllerOobeResumeTest.*
 WizardControllerProxyAuthOnSigninTest.*
+WizardControllerRollbackFlowTest.*
 WizardControllerScreenPriorityOOBETest.*
 WizardControllerTest.*

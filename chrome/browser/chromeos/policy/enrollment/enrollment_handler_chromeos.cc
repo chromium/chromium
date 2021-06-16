@@ -56,6 +56,7 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
   switch (mode) {
     case EnrollmentConfig::MODE_NONE:
     case EnrollmentConfig::MODE_OFFLINE_DEMO:
+    case EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
       break;
     case EnrollmentConfig::MODE_MANUAL:
       return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
@@ -82,8 +83,6 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
     case EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK:
       return em::DeviceRegisterRequest::
           FLAVOR_ENROLLMENT_ATTESTATION_MANUAL_FALLBACK;
-    case EnrollmentConfig::MODE_ENROLLED_ROLLBACK:
-      return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY;
     case EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
       return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_INITIAL_SERVER_FORCED;
     case EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED:

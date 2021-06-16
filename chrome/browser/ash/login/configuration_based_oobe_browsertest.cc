@@ -174,22 +174,6 @@ class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
   DISALLOW_COPY_AND_ASSIGN(OobeConfigurationEnrollmentTest);
 };
 
-class OobeConfigurationRollbackTest : public OobeConfigurationTest {
- public:
-  OobeConfigurationRollbackTest() = default;
-  ~OobeConfigurationRollbackTest() override = default;
-
- protected:
-  ScopedStubInstallAttributes test_install_attributes_{
-      StubInstallAttributes::CreateCloudManaged("example.com", "fake-id")};
-  content::MockNotificationObserver observer_;
-  content::NotificationRegistrar registrar_;
-  test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationRollbackTest);
-};
-
 // Check that configuration lets correctly pass Welcome screen.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestLeaveWelcomeScreen) {
   LoadConfiguration();
@@ -343,25 +327,6 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTestNoHID, TestShowHID) {
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTestNoHID, TestSkipHIDDetection) {
   LoadConfiguration();
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-}
-
-// Check that enrollment recovery is initiated and Chrome is restarted
-// afterwards.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationRollbackTest,
-                       TestEnterpriseRollbackRecover) {
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_ENROLLED_ROLLBACK);
-  enrollment_helper_.ExpectRestoreAfterRollback();
-  enrollment_helper_.SetupClearAuth();
-
-  registrar_.Add(&observer_, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer_, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _))
-      .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
-
-  LoadConfiguration();
-  run_loop.Run();
 }
 
 }  // namespace chromeos

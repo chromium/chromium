@@ -85,10 +85,6 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
 
-  // Sets expectation of a RestoreAfterRollback call and initiates the
-  // corresponding callback.
-  void ExpectRestoreAfterRollback();
-
  private:
   // Unowned reference to last created mock.
   EnterpriseEnrollmentHelperMock* mock_ = nullptr;

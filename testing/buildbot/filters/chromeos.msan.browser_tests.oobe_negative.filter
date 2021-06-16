@@ -94,7 +94,6 @@
 -OobeBaseTest.*
 -OobeCompletedUnownedTest.*
 -OobeConfigurationEnrollmentTest.*
--OobeConfigurationRollbackTest.*
 -OobeConfigurationTest.*
 -OobeConfigurationTestNoHID.*
 -OobeDisplayChooserTest.*
@@ -167,5 +166,6 @@
 -WizardControllerOobeConfigurationTest.*
 -WizardControllerOobeResumeTest.*
 -WizardControllerProxyAuthOnSigninTest.*
+-WizardControllerRollbackFlowTest.*
 -WizardControllerScreenPriorityOOBETest.*
 -WizardControllerTest.*

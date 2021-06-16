@@ -66,12 +66,12 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
           kMetricEnrollmentForcedInitialManualFallback, sample);
       break;
     case policy::EnrollmentConfig::MODE_RECOVERY:
-    case policy::EnrollmentConfig::MODE_ENROLLED_ROLLBACK:
       base::UmaHistogramSparse(kMetricEnrollmentRecovery, sample);
       break;
     case policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN:
       base::UmaHistogramSparse(kMetricEnrollmentConfiguration, sample);
       break;
+    case policy::EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
     case policy::EnrollmentConfig::MODE_NONE:
       NOTREACHED();
       break;

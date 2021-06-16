@@ -2208,14 +2208,6 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
             : policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
   }
 
-  // If chrome version is rolled back via policy, the device is actually
-  // enrolled but some enrollment-flow steps still need to be taken.
-  auto* restore_after_rollback_value =
-      wizard_context_->configuration.FindKeyOfType(
-          configuration::kRestoreAfterRollback, base::Value::Type::BOOLEAN);
-  if (restore_after_rollback_value && restore_after_rollback_value->GetBool())
-    effective_config.mode = policy::EnrollmentConfig::MODE_ENROLLED_ROLLBACK;
-
   // If enrollment token is specified via OOBE configuration use corresponding
   // configuration.
   auto* enrollment_token = wizard_context_->configuration.FindKeyOfType(

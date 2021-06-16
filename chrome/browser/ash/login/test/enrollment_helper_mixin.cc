@@ -180,12 +180,5 @@ void EnrollmentHelperMixin::ExpectTokenEnrollmentSuccess(
           [this]() { mock_->status_consumer()->OnDeviceEnrolled(); }));
 }
 
-void EnrollmentHelperMixin::ExpectRestoreAfterRollback() {
-  EXPECT_CALL(*mock_, RestoreAfterRollback)
-      .WillOnce(InvokeWithoutArgs([this]() {
-        mock_->status_consumer()->OnRestoreAfterRollbackCompleted();
-      }));
-}
-
 }  // namespace test
 }  // namespace chromeos

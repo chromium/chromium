@@ -82,7 +82,6 @@ class EnrollmentScreen
   void OnDeviceEnrolled() override;
   void OnDeviceAttributeUploadCompleted(bool success) override;
   void OnDeviceAttributeUpdatePermission(bool granted) override;
-  void OnRestoreAfterRollbackCompleted() override;
 
   // policy::ActiveDirectoryJoinDelegate implementation:
   void JoinDomain(const std::string& dm_token,
@@ -154,10 +153,6 @@ class EnrollmentScreen
 
   // Do attestation based enrollment.
   void AuthenticateUsingAttestation();
-
-  // Starts flow that would handle necessary steps to restore after version
-  // rollback.
-  void RestoreAfterRollback();
 
   // Shows the interactive screen. Resets auth then shows the signin screen.
   void ShowInteractiveScreen();

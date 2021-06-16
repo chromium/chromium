@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/chromeos/policy/core/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
-#include "chrome/browser/policy/device_account_initializer.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -26,10 +25,7 @@ class PolicyOAuth2TokenFetcher;
 
 namespace ash {
 
-class EnterpriseEnrollmentHelperImpl
-    : public EnterpriseEnrollmentHelper,
-      public policy::DeviceAccountInitializer::Delegate,
-      public policy::DeviceCloudPolicyManagerChromeOS::Observer {
+class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
  public:
   EnterpriseEnrollmentHelperImpl();
   ~EnterpriseEnrollmentHelperImpl() override;
@@ -40,7 +36,6 @@ class EnterpriseEnrollmentHelperImpl
   void EnrollUsingEnrollmentToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
   void EnrollForOfflineDemo() override;
-  void RestoreAfterRollback() override;
   void ClearAuth(base::OnceClosure callback) override;
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,
@@ -48,21 +43,6 @@ class EnterpriseEnrollmentHelperImpl
   void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
              const policy::EnrollmentConfig& enrollment_config,
              const std::string& enrolling_user_domain) override;
-
-  // DeviceCloudPolicyManagerChromeOS::Observer:
-  void OnDeviceCloudPolicyManagerConnected() override;
-  void OnDeviceCloudPolicyManagerDisconnected() override;
-
-  // policy::DeviceAccountInitializer::Delegate:
-  void OnDeviceAccountTokenFetched(bool empty_token) override;
-  void OnDeviceAccountTokenStored() override;
-  void OnDeviceAccountTokenError(policy::EnrollmentStatus status) override;
-  void OnDeviceAccountClientError(
-      policy::DeviceManagementStatus status) override;
-  enterprise_management::DeviceServiceApiAccessRequest::DeviceType
-  GetRobotAuthCodeDeviceType() override;
-  std::set<std::string> GetRobotOAuthScopes() override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EnterpriseEnrollmentTest,
@@ -97,8 +77,6 @@ class EnterpriseEnrollmentHelperImpl
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
 
-  // Called when CloudPolicyClient exists, so device account can be initialized.
-  void RestoreAfterRollbackInitialized();
 
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;
@@ -115,7 +93,6 @@ class EnterpriseEnrollmentHelperImpl
   policy::ActiveDirectoryJoinDelegate* ad_join_delegate_ = nullptr;
 
   std::unique_ptr<policy::PolicyOAuth2TokenFetcher> oauth_fetcher_;
-  std::unique_ptr<policy::DeviceAccountInitializer> device_account_initializer_;
 
   base::WeakPtrFactory<EnterpriseEnrollmentHelperImpl> weak_ptr_factory_{this};
 

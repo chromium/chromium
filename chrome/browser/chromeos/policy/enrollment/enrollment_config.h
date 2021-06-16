@@ -49,10 +49,10 @@ struct EnrollmentConfig {
     MODE_ATTESTATION_MANUAL_FALLBACK,
     // Enrollment for offline demo mode with locally stored policy data.
     MODE_OFFLINE_DEMO,
-    // Flow that happens when already enrolled device undergoes version
-    // rollback. Enrollment information is preserved during rollback, but
-    // some steps have to be repeated as stateful partition was wiped.
-    MODE_ENROLLED_ROLLBACK,
+    // Obsolete. Flow that happens when already enrolled device undergoes
+    // version rollback. Enrollment information is preserved during rollback,
+    // but some steps have to be repeated as stateful partition was wiped.
+    OBSOLETE_MODE_ENROLLED_ROLLBACK,
     // Server-backed-state-triggered forced initial enrollment, user can't
     // skip.
     MODE_INITIAL_SERVER_FORCED,

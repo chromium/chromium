@@ -216,11 +216,6 @@ bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
 void EnrollmentScreen::ShowImpl() {
   VLOG(1) << "Show enrollment screen";
   UMA(policy::kMetricEnrollmentTriggered);
-  if (enrollment_config_.mode ==
-      policy::EnrollmentConfig::MODE_ENROLLED_ROLLBACK) {
-    RestoreAfterRollback();
-    return;
-  }
   switch (current_auth_) {
     case AUTH_OAUTH:
       ShowInteractiveScreen();
@@ -242,15 +237,6 @@ void EnrollmentScreen::ShowInteractiveScreen() {
 void EnrollmentScreen::HideImpl() {
   view_->Hide();
   weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void EnrollmentScreen::RestoreAfterRollback() {
-  VLOG(1) << "Restoring after version rollback.";
-  elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
-  view_->Show();
-  view_->ShowEnrollmentSpinnerScreen();
-  CreateEnrollmentHelper();
-  enrollment_helper_->RestoreAfterRollback();
 }
 
 void EnrollmentScreen::AuthenticateUsingAttestation() {
@@ -427,16 +413,6 @@ void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {
   }
 }
 
-void EnrollmentScreen::OnRestoreAfterRollbackCompleted() {
-  // Pass the enterprise domain and the device type to be shown.
-  view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
-                                 ui::GetChromeOSDeviceName());
-  // Show the success screen
-  StartupUtils::MarkDeviceRegistered(
-      base::BindOnce(&EnrollmentScreen::ShowEnrollmentStatusOnSuccess,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
   if (success) {
     // If the device attributes have been successfully uploaded, fetch policy.
@@ -504,9 +480,7 @@ void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
   if (elapsed_timer_)
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeSuccess, elapsed_timer_);
   if (WizardController::UsingHandsOffEnrollment() ||
-      WizardController::skip_enrollment_prompts() ||
-      enrollment_config_.mode ==
-          policy::EnrollmentConfig::MODE_ENROLLED_ROLLBACK) {
+      WizardController::skip_enrollment_prompts()) {
     OnConfirmationClosed();
   } else {
     view_->ShowEnrollmentStatus(

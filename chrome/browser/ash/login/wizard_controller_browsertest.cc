@@ -98,9 +98,11 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "content/public/browser/notification_registrar.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_notification_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -2783,6 +2785,44 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
   base::Value* configuration = screen->GetConfigurationForTesting();
   ASSERT_NE(configuration, nullptr);
   EXPECT_FALSE(configuration->DictEmpty());
+}
+
+class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
+ protected:
+  WizardControllerRollbackFlowTest() {}
+
+  // WizardControllerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerFlowTest::SetUpCommandLine(command_line);
+
+    base::FilePath configuration_file;
+    ASSERT_TRUE(chromeos::test_utils::GetTestDataPath(
+        "oobe_configuration", "TestEnterpriseRollbackRecover.json",
+        &configuration_file));
+    command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
+                                   configuration_file);
+  }
+
+  content::MockNotificationObserver observer_;
+  content::NotificationRegistrar registrar_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(WizardControllerRollbackFlowTest);
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
+                       RestartChromeAfterRollback) {
+  registrar_.Add(&observer_, chrome::NOTIFICATION_APP_TERMINATING,
+                 content::NotificationService::AllSources());
+  EXPECT_CALL(observer_, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _));
+
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  WizardController::default_controller()->AdvanceToScreen(
+      EnrollmentScreenView::kScreenId);
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
+  mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
 }
 
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571
