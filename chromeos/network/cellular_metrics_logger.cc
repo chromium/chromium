@@ -261,7 +261,11 @@ CellularMetricsLogger::ShillErrorToConnectResult(
 class ESimFeatureUsageMetrics
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
-  explicit ESimFeatureUsageMetrics(const base::TickClock* tick_clock) {
+  ESimFeatureUsageMetrics(
+      CellularESimProfileHandler* cellular_esim_profile_handler,
+      const base::TickClock* tick_clock)
+      : cellular_esim_profile_handler_(cellular_esim_profile_handler) {
+    DCHECK(cellular_esim_profile_handler);
     DCHECK(tick_clock);
     feature_usage_metrics_ =
         std::make_unique<feature_usage::FeatureUsageMetrics>(
@@ -279,7 +283,8 @@ class ESimFeatureUsageMetrics
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEnabled() const final {
     // If there are installed ESim profiles.
-    for (const auto& profile : GenerateProfilesFromHermes()) {
+    for (const auto& profile :
+         cellular_esim_profile_handler_->GetESimProfiles()) {
       if (profile.state() == CellularESimProfile::State::kActive ||
           profile.state() == CellularESimProfile::State::kInactive) {
         return true;
@@ -297,6 +302,7 @@ class ESimFeatureUsageMetrics
   void StopUsage() { feature_usage_metrics_->StopUsage(); }
 
  private:
+  CellularESimProfileHandler* cellular_esim_profile_handler_;
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };
 
@@ -332,8 +338,7 @@ CellularMetricsLogger::ConnectionInfo::ConnectionInfo(
 
 CellularMetricsLogger::ConnectionInfo::~ConnectionInfo() = default;
 
-CellularMetricsLogger::CellularMetricsLogger()
-    : CellularMetricsLogger(base::DefaultTickClock::GetInstance()) {}
+CellularMetricsLogger::CellularMetricsLogger() = default;
 
 CellularMetricsLogger::~CellularMetricsLogger() {
   if (network_state_handler_)
@@ -359,6 +364,11 @@ void CellularMetricsLogger::Init(
   if (network_connection_handler) {
     network_connection_handler_ = network_connection_handler;
     network_connection_handler_->AddObserver(this);
+  }
+
+  if (cellular_esim_profile_handler_) {
+    esim_feature_usage_metrics_ = std::make_unique<ESimFeatureUsageMetrics>(
+        cellular_esim_profile_handler_, base::DefaultTickClock::GetInstance());
   }
 
   if (LoginState::IsInitialized())
@@ -541,10 +551,6 @@ void CellularMetricsLogger::DisconnectRequested(
   connection_info->last_disconnect_request_time = base::TimeTicks::Now();
   connection_info->disconnect_requested = true;
 }
-
-CellularMetricsLogger::CellularMetricsLogger(const base::TickClock* tick_clock)
-    : esim_feature_usage_metrics_(
-          std::make_unique<ESimFeatureUsageMetrics>(tick_clock)) {}
 
 const NetworkState* CellularMetricsLogger::GetCellularNetwork(
     const std::string& service_path) {
@@ -802,23 +808,44 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
 
         UMA_HISTOGRAM_LONG_TIMES("Network.Cellular.ESim.Usage.Duration",
                                  usage_duration);
-        esim_feature_usage_metrics_->StopUsage();
       }
-
-      bool was_disconnected =
-          !last_esim_cellular_usage_.has_value() ||
-          last_esim_cellular_usage_ == CellularUsage::kNotConnected;
-
-      if (was_disconnected && usage != CellularUsage::kNotConnected)
-        esim_feature_usage_metrics_->RecordUsage(/*success=*/true);
-
-      if (usage == CellularUsage::kConnectedAndOnlyNetwork)
-        esim_feature_usage_metrics_->StartUsage();
     }
+
+    HandleESimFeatureUsageChange(
+        last_esim_cellular_usage_.value_or(CellularUsage::kNotConnected),
+        usage);
 
     esim_usage_elapsed_timer_ = base::ElapsedTimer();
     last_esim_cellular_usage_ = usage;
   }
+}
+
+void CellularMetricsLogger::HandleESimFeatureUsageChange(
+    CellularUsage last_usage,
+    CellularUsage current_usage) {
+  if (!esim_feature_usage_metrics_ || last_usage == current_usage)
+    return;
+
+  // If the user first connects to an ESim cellular network, regardless if
+  // another network type is connected, record a successful usage. Note that the
+  // preference order is Ethernet > Wifi > Cellular. Also note that
+  // RecordUsage() should only be called when the usage state transitions from a
+  // not connected state (kNotConnected) to a connected state
+  // (kConnectedAndOnlyNetwork or kConnectedWithOtherNetwork). I.e RecordUsage()
+  // should not be called when the usage state transitions from
+  // kConnectedAndOnlyNetwork to kConnectedWithOtherNetwork, and vice versa.
+  if (last_usage == CellularUsage::kNotConnected)
+    esim_feature_usage_metrics_->RecordUsage(/*success=*/true);
+
+  // If the user is actively using the ESim cellular network, start recording
+  // usage time.
+  if (current_usage == CellularUsage::kConnectedAndOnlyNetwork)
+    esim_feature_usage_metrics_->StartUsage();
+
+  // If the user is no longer actively using the ESim cellular network, stop
+  // recording usage time.
+  if (last_usage == CellularUsage::kConnectedAndOnlyNetwork)
+    esim_feature_usage_metrics_->StopUsage();
 }
 
 CellularMetricsLogger::ConnectionInfo*
