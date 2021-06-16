@@ -179,39 +179,6 @@ absl::optional<GURL> GetProtocolHandlingTranslatedUrl(
   return translated_url;
 }
 
-GURL GetLaunchUrl(WebAppProvider& provider,
-                  const apps::AppLaunchParams& params,
-                  const apps::ShareTarget* share_target) {
-  if (!params.override_url.is_empty())
-    return params.override_url;
-
-  // Handle url_handlers launch
-  absl::optional<GURL> url_handler_launch_url =
-      GetUrlHandlingLaunchUrl(provider, params);
-  if (url_handler_launch_url.has_value())
-    return url_handler_launch_url.value();
-
-  // Handle file_handlers launch
-  absl::optional<GURL> file_handler_url =
-      provider.os_integration_manager().GetMatchingFileHandlerURL(
-          params.app_id, params.launch_files);
-  if (file_handler_url.has_value())
-    return file_handler_url.value();
-
-  // Handle protocol_handlers launch
-  absl::optional<GURL> protocol_handler_translated_url =
-      GetProtocolHandlingTranslatedUrl(provider, params);
-  if (protocol_handler_translated_url.has_value())
-    return protocol_handler_translated_url.value();
-
-  // Handle share_target launch
-  if (share_target)
-    return share_target->action;
-
-  // Default launch
-  return provider.registrar().GetAppLaunchUrl(params.app_id);
-}
-
 bool IsProtocolHandlerCommandLineArg(const base::CommandLine::StringType& arg) {
 #if defined(OS_WIN)
   GURL url(base::WideToUTF16(arg));
@@ -293,6 +260,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   if (GetOpenApplicationCallback())
     return GetOpenApplicationCallback().Run(std::move(params));
 
+  // Determine the launch URL.
   bool is_share_intent =
       params.intent &&
       (params.intent->action == apps_util::kIntentActionSend ||
@@ -300,8 +268,32 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   const apps::ShareTarget* const share_target =
       is_share_intent ? provider_->registrar().GetAppShareTarget(params.app_id)
                       : nullptr;
-  const GURL url = GetLaunchUrl(*provider_, params, share_target);
-  DCHECK(url.is_valid());
+  bool set_file_launch_paths = false;
+  GURL launch_url;
+  if (!params.override_url.is_empty()) {
+    launch_url = params.override_url;
+  } else if (absl::optional<GURL> url_handler_launch_url =
+                 GetUrlHandlingLaunchUrl(*provider_, params)) {
+    // Handle url_handlers launch.
+    launch_url = url_handler_launch_url.value();
+  } else if (absl::optional<GURL> file_handler_url =
+                 provider_->os_integration_manager().GetMatchingFileHandlerURL(
+                     params.app_id, params.launch_files)) {
+    // Handle file_handlers launch.
+    launch_url = file_handler_url.value();
+    set_file_launch_paths = true;
+  } else if (absl::optional<GURL> protocol_handler_translated_url =
+                 GetProtocolHandlingTranslatedUrl(*provider_, params)) {
+    // Handle protocol_handlers launch.
+    launch_url = protocol_handler_translated_url.value();
+  } else if (share_target) {
+    // Handle share_target launch.
+    launch_url = share_target->action;
+  } else {
+    // This is a default launch.
+    launch_url = provider_->registrar().GetAppLaunchUrl(params.app_id);
+  }
+  DCHECK(launch_url.is_valid());
 
   // Place new windows on the specified display.
   display::ScopedDisplayForNewWindows scoped_display(params.display_id);
@@ -311,7 +303,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       GetSystemWebAppTypeForAppId(profile_, params.app_id);
   if (system_app_type) {
     Browser* browser =
-        LaunchSystemWebAppImpl(profile_, *system_app_type, url, params);
+        LaunchSystemWebAppImpl(profile_, *system_app_type, launch_url, params);
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 
@@ -357,10 +349,11 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
     const int tab_index = model->GetIndexOfWebContents(existing_tab);
 
     existing_tab->OpenURL(content::OpenURLParams(
-        url,
+        launch_url,
         content::Referrer::SanitizeForRequest(
-            url, content::Referrer(existing_tab->GetURL(),
-                                   network::mojom::ReferrerPolicy::kDefault)),
+            launch_url,
+            content::Referrer(existing_tab->GetURL(),
+                              network::mojom::ReferrerPolicy::kDefault)),
         disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
         /*is_renderer_initiated=*/false));
 
@@ -370,18 +363,17 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
     web_contents = existing_tab;
     SetTabHelperAppId(web_contents, params.app_id);
   } else {
-    web_contents = NavigateWebApplicationWindow(
-        browser, params.app_id, url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    web_contents =
+        NavigateWebApplicationWindow(browser, params.app_id, launch_url,
+                                     WindowOpenDisposition::NEW_FOREGROUND_TAB);
   }
 
   // This can happen if Navigate() fails.
   if (!web_contents)
     return nullptr;
 
-  web_app::OsIntegrationManager& os_integration_manager =
-      provider_->os_integration_manager();
-  if (os_integration_manager.IsFileHandlingAPIAvailable(params.app_id)) {
-    web_launch::WebLaunchFilesHelper::SetLaunchPaths(web_contents, url,
+  if (set_file_launch_paths) {
+    web_launch::WebLaunchFilesHelper::SetLaunchPaths(web_contents, launch_url,
                                                      params.launch_files);
   }
 
@@ -400,13 +392,13 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   // Record the launch time in the site engagement service. A recent web
   // app launch will provide an engagement boost to the origin.
   site_engagement::SiteEngagementService::Get(profile_)
-      ->SetLastShortcutLaunchTime(web_contents, url);
+      ->SetLastShortcutLaunchTime(web_contents, launch_url);
   provider_->registry_controller().SetAppLastLaunchTime(params.app_id,
                                                         base::Time::Now());
   // Refresh the app banner added to homescreen event. The user may have
   // cleared their browsing data since installing the app, which removes the
   // event and will potentially permit a banner to be shown for the site.
-  RecordAppBanner(web_contents, url);
+  RecordAppBanner(web_contents, launch_url);
 
   return web_contents;
 }

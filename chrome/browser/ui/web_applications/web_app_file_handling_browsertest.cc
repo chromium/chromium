@@ -209,7 +209,7 @@ base::FilePath NewTestFilePath(const base::StringPiece extension) {
   return new_file_path;
 }
 
-// // Launches the |app_id| web app with |files| handles, awaits for
+// Launches the |app_id| web app with |files| handles, awaits for
 // |expected_launch_url| to load and stashes any launch params on
 // "window.launchParams" for further inspection.
 content::WebContents* LaunchApplication(
@@ -345,6 +345,19 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
                   {NewTestFilePath("csv")},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
+}
+
+// Regression test for crbug.com/1205528
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       LaunchParamsEmptyIfFileUnhandled) {
+  InstallFileHandlingPWA();
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+
+  // Test that file handler dispatches to the normal start URL when the file
+  // path is not a handled file type, and `launchParams` remains undefined.
+  content::WebContents* web_contents =
+      LaunchWithFiles(app_id(), GetSecureAppURL(), {NewTestFilePath("png")});
+  EXPECT_EQ(false, content::EvalJs(web_contents, "!!window.launchParams"));
 }
 
 // Disabled due to flakiness on Linux bots. http://crbug.com/1207370
