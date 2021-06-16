@@ -163,8 +163,6 @@ export class App {
    * @private
    */
   setupToggles_() {
-    const expert = localStorage.getBool('expert');
-    state.set(state.State.EXPERT, expert);
     dom.getAll('input', HTMLInputElement).forEach((element) => {
       element.addEventListener('keypress', (event) => {
         const e = assertInstanceof(event, KeyboardEvent);
@@ -196,6 +194,14 @@ export class App {
           }
         }
       });
+      if (element.dataset['state'] !== undefined) {
+        state.addObserver(
+            state.assertState(element.dataset['state']), (value) => {
+              if (value !== element.checked) {
+                util.toggleChecked(element, value);
+              }
+            });
+      }
       if (element.dataset['key'] !== undefined) {
         // Restore the previously saved state on startup.
         const value =

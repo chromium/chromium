@@ -311,6 +311,15 @@
       <message desc="Label for expert mode option: scan barcode." name="IDS_EXPERT_SCAN_BARCODE">
         Scan barcode
       </message>
+      <message desc="Label for expert mode option: custom video parameters." name="IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS">
+        Custom video parameters
+      </message>
+      <message desc="Label for expert mode option: enable expert mode." name="IDS_EXPERT_ENABLE_EXPERT_MODE">
+        Enable expert mode
+      </message>
+      <message desc="Error message when the device does not support expert mode but tries to enable it." name="IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED">
+        Expert mode is not supported on this device
+      </message>
       <message desc="Label for snackbar message when a link is copied" name="IDS_SNACKBAR_LINK_COPIED">
         Link copied
       </message>
@@ -337,12 +346,6 @@
       </message>
       <message desc="Label for button that resets all pan/tilt/zoom controls to the default value" name="IDS_PTZ_RESET_ALL_BUTTON">
         Reset all
-      </message>
-      <message desc="Label for expert mode option: custom video parameters." name="IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS">
-        Custom video parameters
-      </message>
-      <message desc="Error message when the device does not support expert mode but tries to enable it." name="IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED">
-        Expert mode is not supported on this device
       </message>
       <message desc="Label for the feedback button." name="IDS_FEEDBACK_BUTTON">
         Send feedback

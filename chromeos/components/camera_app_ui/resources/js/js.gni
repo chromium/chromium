@@ -15,6 +15,7 @@ compile_js_files = [
   "device/stream_manager.js",
   "dom.js",
   "error.js",
+  "expert.js",
   "face.js",
   "focus_ring.js",
   "gallerybutton.js",
