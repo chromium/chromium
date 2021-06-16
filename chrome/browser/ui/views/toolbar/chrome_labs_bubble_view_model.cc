@@ -35,6 +35,13 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
+    // Side Panel.
+    lab_info.emplace_back(LabInfo(
+        flag_descriptions::kSidePanelFlagId,
+        l10n_util::GetStringUTF16(IDS_SIDE_PANEL_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_SIDE_PANEL_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-side-panel", version_info::Channel::DEV));
+
     // Read Later.
     lab_info.emplace_back(LabInfo(
         flag_descriptions::kReadLaterFlagId,

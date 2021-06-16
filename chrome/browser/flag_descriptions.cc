@@ -2189,8 +2189,11 @@ extern const char kSendTabToSelfV2Description[] =
     "Enables new received tab "
     "UI shown next to the profile icon instead of using system notifications.";
 
+const char kSidePanelFlagId[] = "side-panel";
 const char kSidePanelName[] = "Side panel";
-const char kSidePanelDescription[] = "Host some content in a side panel.";
+const char kSidePanelDescription[] =
+    "Enables a browser-level side panel for a useful and persistent way to "
+    "access your Reading List and Bookmarks.";
 
 const char kServiceWorkerSubresourceFilterName[] =
     "ServiceWorker subresource filter";

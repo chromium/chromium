@@ -11427,6 +11427,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Enabled – <ph name="VARIATION_NAME">$1<ex>tabs shrink to pinned tab width</ex></ph>
     </message>
 
+    <!-- ChromeLabs Side Panel-->
+    <message name="IDS_SIDE_PANEL_EXPERIMENT_NAME" desc="Name for Side Panel experiment">
+      Side Panel
+    </message>
+    <message name="IDS_SIDE_PANEL_EXPERIMENT_DESCRIPTION" desc="Description for Side Panel experiment">
+      Enables a browser-level side panel for a useful and persistent way to access your Reading List and Bookmarks.
+    </message>
     <!-- ChromeLabs Read Later-->
     <message name="IDS_READ_LATER_EXPERIMENT_NAME" desc="Name for Read Later experiment">
       Reading List

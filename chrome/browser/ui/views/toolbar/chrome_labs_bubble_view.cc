@@ -51,7 +51,8 @@ enum class ChromeLabsSelectedLab {
   kUnspecifiedSelected = 0,
   kReadLaterSelected = 1,
   kTabScrollingSelected = 3,
-  kMaxValue = kTabScrollingSelected,
+  kSidePanelSelected = 4,
+  kMaxValue = kSidePanelSelected,
 };
 
 void EmitToHistogram(const std::u16string& selected_lab_state,
@@ -78,6 +79,8 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
       return ChromeLabsSelectedLab::kReadLaterSelected;
     } else if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
       return ChromeLabsSelectedLab::kTabScrollingSelected;
+    } else if (internal_name == flag_descriptions::kSidePanelFlagId) {
+      return ChromeLabsSelectedLab::kSidePanelSelected;
     } else {
       return ChromeLabsSelectedLab::kUnspecifiedSelected;
     }
