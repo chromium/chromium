@@ -283,6 +283,12 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
   UpdateAndObserveWindow(window);
 }
 
+void FullRestoreController::OnRestorePrefChanged(const AccountId& account_id,
+                                                 bool could_restore) {
+  if (could_restore)
+    SaveAllWindows();
+}
+
 void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
                                                     const void* key,
                                                     intptr_t old) {
@@ -421,7 +427,7 @@ void FullRestoreController::SaveWindowImpl(
   }
 
   // Do not save window data if the setting is turned off by active user.
-  if (!full_restore::FullRestoreInfo::GetInstance()->ShouldRestore(
+  if (!full_restore::FullRestoreInfo::GetInstance()->CanPerformRestore(
           Shell::Get()->session_controller()->GetActiveAccountId())) {
     return;
   }

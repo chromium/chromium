@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "components/account_id/account_id.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/window_info.h"
 #include "ui/aura/window_observer.h"
@@ -75,6 +76,8 @@ class ASH_EXPORT FullRestoreController
   // full_restore::FullRestoreInfo::Observer:
   void OnWidgetInitialized(views::Widget* widget) override;
   void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
+  void OnRestorePrefChanged(const AccountId& account_id,
+                            bool could_restore) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

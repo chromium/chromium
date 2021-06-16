@@ -257,9 +257,9 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
                             base::Unretained(this)));
     env_observation_.Observe(aura::Env::GetInstance());
 
-    // Turn on should restore flag by default, so do not need to set the flag
+    // Turn on the user preference by default, so do not need to set
     // for all test cases all the time.
-    full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
+    full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
         Shell::Get()->session_controller()->GetActiveAccountId(), true);
   }
 
@@ -354,23 +354,33 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
 // Tests window save with setting on or off.
 TEST_F(FullRestoreControllerTest, WindowSaveDisabled) {
-  auto window = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
+  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
+  auto window1 = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
+  auto window2 = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
   ResetSaveWindowsCount();
 
   // Disable full restore.
-  full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
-      Shell::Get()->session_controller()->GetActiveAccountId(), false);
+  full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
+                                                               false);
 
-  auto* window_state = WindowState::Get(window.get());
-  window_state->Minimize();
-  EXPECT_EQ(0, GetSaveWindowsCount(window.get()));
+  auto* window1_state = WindowState::Get(window1.get());
+  auto* window2_state = WindowState::Get(window2.get());
+
+  // Window minimization should not trigger window save with the
+  // user preference off.
+  window1_state->Minimize();
+  window2_state->Minimize();
+  EXPECT_EQ(0, GetSaveWindowsCount(window1.get()));
+  EXPECT_EQ(0, GetSaveWindowsCount(window2.get()));
 
   // Enable full restore.
-  full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
-      Shell::Get()->session_controller()->GetActiveAccountId(), true);
+  full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
+                                                               true);
 
-  window_state->Unminimize();
-  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+  // Setting the user preference to true should trigger window save
+  // immediately.
+  EXPECT_EQ(1, GetSaveWindowsCount(window1.get()));
+  EXPECT_EQ(1, GetSaveWindowsCount(window2.get()));
 }
 
 // Tests that data gets saved when changing a window's window state.
