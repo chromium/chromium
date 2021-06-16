@@ -208,6 +208,16 @@ const FeatureEntry::FeatureVariation
          base::size(kDefaultBrowserFullscreenPromoCTAExperimentOpenLinks),
          nullptr}};
 
+const FeatureEntry::FeatureParam
+    kDefaultBrowserFullscreenPromoExperimentRemindMeLater[] = {
+        {kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam, "true"}};
+const FeatureEntry::FeatureVariation
+    kDefaultBrowserFullscreenPromoExperimentVariations[] = {
+        {"Remind me later",
+         kDefaultBrowserFullscreenPromoExperimentRemindMeLater,
+         base::size(kDefaultBrowserFullscreenPromoExperimentRemindMeLater),
+         nullptr}};
+
 const FeatureEntry::FeatureParam kDefaultPromoTailoredIOS[] = {
     {kDefaultPromoTailoredVariantIOSParam, "true"}};
 const FeatureEntry::FeatureParam kDefaultPromoTailoredSafe[] = {
@@ -620,7 +630,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserFullscreenPromoExperimentName,
      flag_descriptions::kDefaultBrowserFullscreenPromoExperimentDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromoExperiment)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kDefaultBrowserFullscreenPromoExperiment,
+         kDefaultBrowserFullscreenPromoExperimentVariations,
+         "IOSDefaultBrowserFullscreenPromoExperiment")},
     {"ios-shared-highlighting-color-change",
      flag_descriptions::kIOSSharedHighlightingColorChangeName,
      flag_descriptions::kIOSSharedHighlightingColorChangeDescription,

@@ -65,9 +65,6 @@ NSString* const kUserInteractedWithNonModalPromoCount =
 NSString* const kRemindMeLaterPromoActionInteraction =
     @"remindMeLaterPromoActionInteraction";
 
-const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
-    "show_remind_me_later";
-
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
 
@@ -151,6 +148,9 @@ const char kDefaultPromoTailoredVariantIOSParam[] = "variant_ios_enabled";
 const char kDefaultPromoTailoredVariantSafeParam[] = "variant_safe_enabled";
 
 const char kDefaultPromoTailoredVariantTabsParam[] = "variant_tabs_enabled";
+
+const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
+    "show_remind_me_later";
 
 void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type) {
   NSString* key = NSUserDefaultKeyForType(type);

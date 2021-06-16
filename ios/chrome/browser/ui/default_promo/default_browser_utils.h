@@ -39,6 +39,9 @@ extern const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[];
 // The feature parameter to indicate the switch arm.
 extern const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[];
 
+// The feature parameter to activate the remind me later button.
+extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
+
 // Indicates if the tailored variant "Built for iOS" is enabled. It is not
 // mutually exclusive with other tailored promos.
 extern const char kDefaultPromoTailoredVariantIOSParam[];
