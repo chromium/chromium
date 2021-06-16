@@ -42,8 +42,8 @@ namespace {
 // Appearance.
 constexpr int kChildSpacing = 8;
 constexpr int kLabelMaskGradientWidth = 16;
-constexpr gfx::Insets kLabelMargins(0, 0, 0, /*right=*/2);
-constexpr gfx::Insets kPadding(8, 8, 8, /*right=*/10);
+constexpr gfx::Insets kLabelMargins(/*top=*/4, 0, /*bottom=*/4, /*right=*/2);
+constexpr gfx::Insets kPadding(0, /*left=*/8, 0, /*right=*/10);
 constexpr int kPreferredHeight = 40;
 constexpr int kPreferredWidth = 160;
 constexpr int kSecondaryActionIconSize = 16;
@@ -57,7 +57,7 @@ class PaintCallbackLabel : public views::Label {
   PaintCallbackLabel& operator=(const PaintCallbackLabel&) = delete;
   ~PaintCallbackLabel() override = default;
 
-  using Callback = base::RepeatingCallback<void(gfx::Canvas* canvas)>;
+  using Callback = base::RepeatingCallback<void(views::Label*, gfx::Canvas*)>;
   void SetCallback(Callback callback) { callback_ = std::move(callback); }
 
  private:
@@ -65,7 +65,7 @@ class PaintCallbackLabel : public views::Label {
   void OnPaint(gfx::Canvas* canvas) override {
     views::Label::OnPaint(canvas);
     if (!callback_.is_null())
-      callback_.Run(canvas);
+      callback_.Run(this, canvas);
   }
 
   Callback callback_;
@@ -85,18 +85,15 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns a label builder with desired `style`, `text` and paint `callback`.
+// Returns a label builder with desired `style` and paint `callback`.
 std::unique_ptr<HoldingSpaceViewBuilder<views::Label>> CreateLabelBuilder(
     bubble_utils::LabelStyle style,
-    const std::u16string& text,
     PaintCallbackLabel::Callback callback) {
   auto label = views::Builder<PaintCallbackLabel>()
-                   .SetBorder(views::CreateEmptyBorder(kLabelMargins))
                    .SetCallback(std::move(callback))
                    .SetElideBehavior(gfx::ELIDE_MIDDLE)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .SetPaintToLayer()
-                   .SetText(text)
                    .Build();
 
   // NOTE: A11y events are handled by `HoldingSpaceItemChipView`.
@@ -189,10 +186,21 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded)))
-              .AddChild(CreateLabelBuilder(bubble_utils::LabelStyle::kChip,
-                                           item->text(),
-                                           paint_label_mask_callback)
-                            ->CopyAddressTo(&label_))
+              .AddChild(
+                  HoldingSpaceViewBuilder<views::View>(
+                      views::Builder<views::BoxLayoutView>()
+                          .SetOrientation(Orientation::kVertical)
+                          .SetMainAxisAlignment(MainAxisAlignment::kCenter)
+                          .SetCrossAxisAlignment(CrossAxisAlignment::kStretch)
+                          .SetInsideBorderInsets(kLabelMargins))
+                      .AddChild(CreateLabelBuilder(
+                                    bubble_utils::LabelStyle::kChipTitle,
+                                    paint_label_mask_callback)
+                                    ->CopyAddressTo(&primary_label_))
+                      .AddChild(CreateLabelBuilder(
+                                    bubble_utils::LabelStyle::kChipBody,
+                                    paint_label_mask_callback)
+                                    ->CopyAddressTo(&secondary_label_)))
               .AddChild(
                   HoldingSpaceViewBuilder<views::BoxLayoutView>(
                       views::Builder<views::BoxLayoutView>()
@@ -208,35 +216,38 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
           &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
 
   UpdateImage();
+  UpdateLabels();
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 
 views::View* HoldingSpaceItemChipView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
-  // Tooltips for this view are handled by `label_`, which will only show
-  // tooltips if the underlying text has been elided due to insufficient space.
-  return HitTestPoint(point) ? label_ : nullptr;
+  // Tooltips for this view are handled by `primary_label_`, which will only
+  // show tooltips if the underlying text has been elided due to insufficient
+  // space.
+  return HitTestPoint(point) ? primary_label_ : nullptr;
 }
 
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);
   if (this->item() == item) {
-    label_->SetText(item->text());
+    UpdateLabels();
     UpdateSecondaryAction();
   }
 }
 
 void HoldingSpaceItemChipView::OnPrimaryActionVisibilityChanged(bool visible) {
-  // The `label_` must be repainted to update its mask for
+  // Labels must be repainted to update their masks for
   // `primary_action_container()`  visibility.
-  label_->SchedulePaint();
+  primary_label_->SchedulePaint();
+  secondary_label_->SchedulePaint();
 }
 
 void HoldingSpaceItemChipView::OnSelectionUiChanged() {
   HoldingSpaceItemView::OnSelectionUiChanged();
-  UpdateLabel();
+  UpdateLabels();
   UpdateSecondaryAction();
 }
 
@@ -255,7 +266,7 @@ void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
 void HoldingSpaceItemChipView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
   UpdateImage();
-  UpdateLabel();
+  UpdateLabels();
 
   // Pause.
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
@@ -270,19 +281,20 @@ void HoldingSpaceItemChipView::OnThemeChanged() {
       gfx::CreateVectorIcon(kResumeIcon, kSecondaryActionIconSize, icon_color));
 }
 
-void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
+void HoldingSpaceItemChipView::OnPaintLabelMask(views::Label* label,
+                                                gfx::Canvas* canvas) {
   // If the `primary_action_container()` isn't visible, masking is unnecessary.
   if (!primary_action_container()->GetVisible())
     return;
 
-  // If the `primary_action_container()` is visible, `label_` fades out its tail
+  // If the `primary_action_container()` is visible, `label` fades out its tail
   // to avoid overlap.
   gfx::Point gradient_start, gradient_end;
   if (base::i18n::IsRTL()) {
     gradient_end.set_x(primary_action_container()->width());
     gradient_start.set_x(gradient_end.x() + kLabelMaskGradientWidth);
   } else {
-    gradient_end.set_x(label_->width() - primary_action_container()->width());
+    gradient_end.set_x(label->width() - primary_action_container()->width());
     gradient_start.set_x(gradient_end.x() - kLabelMaskGradientWidth);
   }
 
@@ -292,7 +304,7 @@ void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
   flags.setShader(gfx::CreateGradientShader(
       gradient_start, gradient_end, SK_ColorBLACK, SK_ColorTRANSPARENT));
 
-  canvas->DrawRect(label_->GetLocalBounds(), flags);
+  canvas->DrawRect(label->GetLocalBounds(), flags);
 }
 
 void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
@@ -316,15 +328,32 @@ void HoldingSpaceItemChipView::UpdateImage() {
   SchedulePaint();
 }
 
-void HoldingSpaceItemChipView::UpdateLabel() {
+// TODO(dmblack): Implement secondary label text.
+void HoldingSpaceItemChipView::UpdateLabels() {
   const bool multiselect = delegate()->selection_ui() ==
                            HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
-  label_->SetEnabledColor(
+  // Primary.
+  primary_label_->SetText(item()->text());
+  primary_label_->SetEnabledColor(
       selected() && multiselect
           ? GetMultiSelectTextColor()
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  if (!item()->IsInProgress()) {
+    secondary_label_->SetVisible(false);
+    return;
+  }
+
+  // Secondary.
+  secondary_label_->SetText(item()->text());
+  secondary_label_->SetEnabledColor(
+      selected() && multiselect
+          ? GetMultiSelectTextColor()
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorSecondary));
+  secondary_label_->SetVisible(true);
 }
 
 void HoldingSpaceItemChipView::UpdateSecondaryAction() {

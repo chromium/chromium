@@ -42,22 +42,23 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnThemeChanged() override;
 
-  // Invoked during `label_`'s paint sequence to paint its optional mask. Note
-  // that `label_` is only masked when the `primary_action()` is visible to
-  // avoid overlapping.
-  void OnPaintLabelMask(gfx::Canvas* canvas);
+  // Invoked during `label`'s paint sequence to paint its optional mask. Note
+  // that `label` is only masked when the `primary_action_container()` is
+  // visible to avoid overlapping.
+  void OnPaintLabelMask(views::Label* label, gfx::Canvas* canvas);
 
   // Invoked when the secondary action is pressed. This will be one of either
   // `secondary_action_pause_` or `secondary_action_resume_`.
   void OnSecondaryActionPressed();
 
   void UpdateImage();
-  void UpdateLabel();
+  void UpdateLabels();
   void UpdateSecondaryAction();
 
   // Owned by view hierarchy.
   RoundedImageView* image_ = nullptr;
-  views::Label* label_ = nullptr;
+  views::Label* primary_label_ = nullptr;
+  views::Label* secondary_label_ = nullptr;
   views::View* secondary_action_container_ = nullptr;
   views::ImageButton* secondary_action_pause_ = nullptr;
   views::ImageButton* secondary_action_resume_ = nullptr;

@@ -108,7 +108,11 @@ void ApplyStyle(views::Label* label, LabelStyle style) {
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
                                        gfx::Font::Weight::NORMAL));
       break;
-    case LabelStyle::kChip:
+    case LabelStyle::kChipBody:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 10,
+                                       gfx::Font::Weight::MEDIUM));
+      break;
+    case LabelStyle::kChipTitle:
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
                                        gfx::Font::Weight::NORMAL));
       break;

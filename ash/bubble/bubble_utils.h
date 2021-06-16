@@ -31,7 +31,8 @@ ASH_EXPORT bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event);
 enum class LabelStyle {
   kBadge,
   kBody,
-  kChip,
+  kChipBody,
+  kChipTitle,
   kHeader,
 };
 
