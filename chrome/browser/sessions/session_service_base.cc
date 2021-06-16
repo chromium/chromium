@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -41,10 +39,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/session_storage_namespace.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crostini/crostini_util.h"
-#endif
 
 #if defined(OS_MAC)
 #include "chrome/browser/app_controller_mac.h"
@@ -658,26 +652,10 @@ bool SessionServiceBase::ShouldTrackChangesToWindow(
 bool SessionServiceBase::ShouldTrackBrowser(Browser* browser) const {
   if (browser->profile() != profile())
     return false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Do not track Crostini apps or terminal.  Apps will fail since VMs are not
-  // restarted on restore, and we don't want terminal to force the VM to start.
-  if (web_app::GetAppIdFromApplicationName(browser->app_name()) ==
-      crostini::kCrostiniTerminalSystemAppId) {
-    return false;
-  }
 
-  // System Web App windows can't be properly restored without storing the app
-  // type. Until that is implemented we skip them for session restore.
-  // TODO(crbug.com/1003170): Enable session restore for System Web Apps.
-  if (browser->app_controller() &&
-      browser->app_controller()->is_for_system_web_app()) {
+  if (browser->omit_from_session_restore())
     return false;
-  }
 
-  // Don't track custom_tab browser. It doesn't need to be restored.
-  if (browser->is_type_custom_tab())
-    return false;
-#endif
   // Never track app popup windows that do not have a trusted source (i.e.
   // popup windows spawned by an app). If this logic changes, be sure to also
   // change SessionRestoreImpl::CreateRestoredBrowser().

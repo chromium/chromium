@@ -203,9 +203,14 @@ Browser* AuthSessionRequest::CreateBrowser(
   //
   // Having a location indicator that is present but read-only is satisfied with
   // a popup window. That must not be changed.
+  //
+  // Omit it from session restore as well. This is a special window for use by
+  // this code; if it were restored it would not have the AuthSessionRequest and
+  // would not behave correctly.
 
-  Browser* browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
+  Browser::CreateParams params(Browser::TYPE_POPUP, profile, true);
+  params.omit_from_session_restore = true;
+  Browser* browser = Browser::Create(params);
   chrome::AddTabAt(browser, GURL("about:blank"), -1, true);
   browser->window()->Show();
 

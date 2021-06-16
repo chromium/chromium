@@ -233,8 +233,12 @@ class Browser : public TabStripModelObserver,
     // The associated profile.
     Profile* profile;
 
-    // Specifies the browser is_trusted_source_ value.
+    // Specifies the browser `is_trusted_source_` value.
     bool trusted_source = false;
+
+    // Specifies the browser `omit_from_session_restore_` value, whether the new
+    // Browser should be omitted from being saved/restored by session restore.
+    bool omit_from_session_restore = false;
 
     // The bounds of the window to open.
     gfx::Rect initial_bounds;
@@ -379,6 +383,7 @@ class Browser : public TabStripModelObserver,
     return command_controller_.get();
   }
   const SessionID& session_id() const { return session_id_; }
+  bool omit_from_session_restore() const { return omit_from_session_restore_; }
   BrowserContentSettingBubbleModelDelegate*
   content_setting_bubble_model_delegate() {
     return content_setting_bubble_model_delegate_.get();
@@ -1131,6 +1136,10 @@ class Browser : public TabStripModelObserver,
   // unique within the current session, and is not guaranteed to be unique
   // across sessions.
   const SessionID session_id_;
+
+  // Whether this Browser should be omitted from being saved/restored by session
+  // restore.
+  bool omit_from_session_restore_ = false;
 
   // The model for the toolbar view.
   std::unique_ptr<LocationBarModel> location_bar_model_;

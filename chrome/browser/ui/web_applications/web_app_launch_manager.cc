@@ -210,6 +210,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
                                     WindowOpenDisposition disposition,
                                     int32_t restore_id,
+                                    bool omit_from_session_restore,
                                     bool can_resize,
                                     bool can_maximize) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
@@ -226,6 +227,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   browser_params.restore_id = restore_id;
 #endif
+  browser_params.omit_from_session_restore = omit_from_session_restore;
   browser_params.can_resize = can_resize;
   browser_params.can_maximize = can_maximize;
   return Browser::Create(browser_params);

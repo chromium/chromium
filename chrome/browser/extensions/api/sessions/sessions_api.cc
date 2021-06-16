@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/session_id.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
@@ -316,6 +317,9 @@ SessionsGetDevicesFunction::CreateWindowModel(
       type = api::windows::WINDOW_TYPE_DEVTOOLS;
       break;
     case sessions::SessionWindow::TYPE_APP_POPUP:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case sessions::SessionWindow::TYPE_CUSTOM_TAB:
+#endif
       NOTREACHED();
   }
 

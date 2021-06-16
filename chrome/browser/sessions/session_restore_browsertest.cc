@@ -2899,6 +2899,63 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(back_observer.was_same_document());
 }
 
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
+  // Tests start with one browser window; navigate it to url 1.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl1(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(
+      GetUrl1(),
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+
+  // Make a second window; navigate it to url 2.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser2, GetUrl2(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser2->tab_strip_model()->count());
+  EXPECT_EQ(
+      GetUrl2(),
+      browser2->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+
+  // Make a third window that is omitted from session restore; navigate it to
+  // url 3.
+  Browser::CreateParams params(browser()->profile(), true);
+  params.omit_from_session_restore = true;
+  Browser* browser3 = Browser::Create(params);
+  content::WebContents* tab = chrome::AddSelectedTabWithURL(
+      browser3, GURL(GetUrl3()), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  content::TestNavigationObserver observer(tab);
+  observer.Wait();
+  ASSERT_EQ(1, browser3->tab_strip_model()->count());
+  EXPECT_EQ(
+      GetUrl3(),
+      browser3->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+
+  // Simulate an exit by shutting down the session service. If we don't do this
+  // the first two window closes are treated as though the user closed the
+  // windows and won't be restored.
+  SessionServiceFactory::ShutdownForProfile(browser()->profile());
+
+  // Then close all the browsers and "restart" Chromium.
+  CloseBrowserSynchronously(browser3);
+  CloseBrowserSynchronously(browser2);
+  QuitBrowserAndRestore(browser());
+
+  // The first two browsers with url1 and url2 should be back, but the browser
+  // with url3 shouldn't.
+  ASSERT_EQ(2u, active_browser_list_->size());
+  EXPECT_EQ(GetUrl1(), active_browser_list_->get(0)
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(0)
+                           ->GetLastCommittedURL());
+  EXPECT_EQ(GetUrl2(), active_browser_list_->get(1)
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(0)
+                           ->GetLastCommittedURL());
+}
+
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 class AppSessionRestoreTest : public SessionRestoreTest {
  public:

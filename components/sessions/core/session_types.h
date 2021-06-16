@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_id.h"
@@ -142,6 +143,9 @@ struct SESSIONS_EXPORT SessionWindow {
     TYPE_APP = 2,
     TYPE_DEVTOOLS = 3,
     TYPE_APP_POPUP = 4,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    TYPE_CUSTOM_TAB = 5,
+#endif
   };
 
   // Identifier of the window.

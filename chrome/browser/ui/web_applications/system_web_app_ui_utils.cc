@@ -240,10 +240,16 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   bool can_maximize =
       provider->system_web_app_manager().IsMaximizableWindow(app_type);
 
+  // System Web App windows can't be properly restored without storing the app
+  // type. Until that is implemented, skip them for session restore.
+  // TODO(crbug.com/1003170): Enable session restore for System Web Apps by
+  // passing through the underlying value of params.omit_from_session_restore.
+  const bool omit_from_session_restore = true;
+
   if (!browser) {
-    browser =
-        CreateWebApplicationWindow(profile, params.app_id, params.disposition,
-                                   params.restore_id, can_resize, can_maximize);
+    browser = CreateWebApplicationWindow(
+        profile, params.app_id, params.disposition, params.restore_id,
+        omit_from_session_restore, can_resize, can_maximize);
   }
 
   // Navigate application window to application's |url| if necessary.

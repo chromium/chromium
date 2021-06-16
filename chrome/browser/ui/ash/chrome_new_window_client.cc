@@ -650,8 +650,10 @@ void ChromeNewWindowClient::OpenArcCustomTab(
   // |custom_tab_browser| will be destroyed when its tab strip becomes empty,
   // either due to the user opening the custom tab page in a tabbed browser or
   // because of the CustomTabSessionImpl object getting destroyed.
-  auto* custom_tab_browser = Browser::Create(Browser::CreateParams(
-      Browser::TYPE_CUSTOM_TAB, profile, /* user_gesture= */ true));
+  Browser::CreateParams params(Browser::TYPE_CUSTOM_TAB, profile,
+                               /* user_gesture= */ true);
+  params.omit_from_session_restore = true;
+  auto* custom_tab_browser = Browser::Create(params);
 
   custom_tab_browser->tab_strip_model()->AppendWebContents(
       std::move(web_contents), /* foreground= */ true);

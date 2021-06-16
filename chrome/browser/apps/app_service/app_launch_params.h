@@ -102,6 +102,10 @@ struct AppLaunchParams {
   // should translate and then launch the PWA to. Null when it's not a protocol
   // handler launch.
   absl::optional<GURL> protocol_handler_launch_url;
+
+  // Whether or not to have the resulting Browser be omitted from session
+  // restore.
+  bool omit_from_session_restore = false;
 };
 
 }  // namespace apps
