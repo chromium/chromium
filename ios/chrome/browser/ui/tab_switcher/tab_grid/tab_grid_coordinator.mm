@@ -200,6 +200,19 @@
   self.incognitoTabsMediator.browser = incognitoBrowser;
   self.thumbStripCoordinator.incognitoBrowser = incognitoBrowser;
 
+  if (self.incognitoSnackbarCoordinator) {
+    [self.incognitoSnackbarCoordinator stop];
+    self.incognitoSnackbarCoordinator = nil;
+  }
+
+  if (incognitoBrowser) {
+    self.incognitoSnackbarCoordinator = [[SnackbarCoordinator alloc]
+        initWithBaseViewController:_baseViewController
+                           browser:incognitoBrowser
+                          delegate:self];
+    [self.incognitoSnackbarCoordinator start];
+  }
+
   if ([self isThumbStripEnabled]) {
     // Update the incognito popup menu handler. This is only used in Thumb
     // Strip mode.
