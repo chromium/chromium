@@ -1137,12 +1137,15 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
               create_loader_params_->request.site_for_cookies.scheme(),
               create_loader_params_->request.url.SchemeIsCryptographic());
   DCHECK_EQ(create_loader_params_->request.url, url_chain_.back());
+  bool is_main_frame_navigation =
+      create_loader_params_->request.trusted_params.has_value() &&
+      create_loader_params_->request.trusted_params->isolation_info
+              .request_type() == net::IsolationInfo::RequestType::kMainFrame;
   options.set_same_site_cookie_context(
       net::cookie_util::ComputeSameSiteContextForResponse(
           url_chain_, create_loader_params_->request.site_for_cookies,
           create_loader_params_->request.request_initiator,
-          create_loader_params_->request.is_main_frame,
-          should_treat_as_first_party));
+          is_main_frame_navigation, should_treat_as_first_party));
 
   // |this| might be deleted here if |cookies| is empty!
   auto on_cookie_set = base::BindRepeating(
@@ -1287,10 +1290,14 @@ void InterceptionJob::FetchCookies(
           ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
               request.site_for_cookies.scheme(),
               request.url.SchemeIsCryptographic());
+  bool is_main_frame_navigation =
+      request.trusted_params.has_value() &&
+      request.trusted_params->isolation_info.request_type() ==
+          net::IsolationInfo::RequestType::kMainFrame;
   options.set_same_site_cookie_context(
       net::cookie_util::ComputeSameSiteContextForRequest(
           request.method, url_chain_, request.site_for_cookies,
-          request.request_initiator, request.is_main_frame,
+          request.request_initiator, is_main_frame_navigation,
           should_treat_as_first_party));
 
   cookie_manager_->GetCookieList(request.url, options, std::move(callback));
