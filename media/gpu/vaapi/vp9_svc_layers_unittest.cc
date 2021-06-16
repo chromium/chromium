@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/vp9_temporal_layers.h"
+#include "media/gpu/vaapi/vp9_svc_layers.h"
 
 #include <algorithm>
 #include <array>
@@ -18,10 +18,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
-class VP9TemporalLayersTest : public ::testing::TestWithParam<size_t> {
+class VP9SVCLayersTest : public ::testing::TestWithParam<size_t> {
  public:
-  VP9TemporalLayersTest() = default;
-  ~VP9TemporalLayersTest() = default;
+  VP9SVCLayersTest() = default;
+  ~VP9SVCLayersTest() = default;
 
  protected:
   void VerifyRefFrames(
@@ -37,7 +37,7 @@ class VP9TemporalLayersTest : public ::testing::TestWithParam<size_t> {
   std::vector<uint8_t> temporal_indices_;
 };
 
-void VP9TemporalLayersTest::VerifyTemporalLayersStructure(
+void VP9SVCLayersTest::VerifyTemporalLayersStructure(
     bool keyframe,
     size_t num_layers,
     const Vp9Metadata& metadata) {
@@ -67,7 +67,7 @@ void VP9TemporalLayersTest::VerifyTemporalLayersStructure(
   }
 }
 
-void VP9TemporalLayersTest::VerifyRefFrames(
+void VP9SVCLayersTest::VerifyRefFrames(
     const Vp9FrameHeader& frame_hdr,
     const Vp9Metadata& metadata,
     const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
@@ -83,7 +83,7 @@ void VP9TemporalLayersTest::VerifyRefFrames(
   // Two slots at most in the reference pool are used in temporal layer
   // encoding. Additionally, non-keyframe must reference some frames.
   EXPECT_EQ(frame_hdr.refresh_frame_flags & ~(0b11u), 0u);
-  EXPECT_FALSE(ref_frames_used[VP9TemporalLayers::kMaxNumUsedReferenceFrames]);
+  EXPECT_FALSE(ref_frames_used[VP9SVCLayers::kMaxNumUsedReferenceFrames]);
   EXPECT_TRUE(base::Contains(ref_frames_used, true));
   EXPECT_TRUE(metadata.has_reference);
 
@@ -102,9 +102,9 @@ void VP9TemporalLayersTest::VerifyRefFrames(
   return;
 }
 
-TEST_P(VP9TemporalLayersTest, ) {
+TEST_P(VP9SVCLayersTest, ) {
   const size_t num_temporal_layers = GetParam();
-  VP9TemporalLayers temporal_layers(num_temporal_layers);
+  VP9SVCLayers temporal_layers(num_temporal_layers);
   EXPECT_EQ(temporal_layers.num_layers(), num_temporal_layers);
 
   constexpr size_t kNumFramesToEncode = 32;
@@ -129,12 +129,12 @@ TEST_P(VP9TemporalLayersTest, ) {
 }
 
 constexpr size_t kNumTemporalLayers[] = {
-    VP9TemporalLayers::kMinSupportedTemporalLayers,
-    VP9TemporalLayers::kMaxSupportedTemporalLayers,
+    VP9SVCLayers::kMinSupportedTemporalLayers,
+    VP9SVCLayers::kMaxSupportedTemporalLayers,
 };
 
 INSTANTIATE_TEST_SUITE_P(,
-                         VP9TemporalLayersTest,
+                         VP9SVCLayersTest,
                          ::testing::ValuesIn(kNumTemporalLayers));
 
 }  // namespace media

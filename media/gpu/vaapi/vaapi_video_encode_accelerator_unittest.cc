@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vaapi/vp9_temporal_layers.h"
+#include "media/gpu/vaapi/vp9_svc_layers.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
@@ -65,7 +65,7 @@ MATCHER_P(MatchesEncoderInfo, num_of_temporal_layers, "") {
     return false;
   if (fps_allocation.size() != 1 &&
       fps_allocation !=
-          VP9TemporalLayers::GetFpsAllocation(num_of_temporal_layers)) {
+          VP9SVCLayers::GetFpsAllocation(num_of_temporal_layers)) {
     return false;
   }
   return arg.implementation_name == "VaapiVideoEncodeAccelerator" &&

@@ -17,7 +17,7 @@
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_rate_control.h"
-#include "media/gpu/vaapi/vp9_temporal_layers.h"
+#include "media/gpu/vaapi/vp9_svc_layers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -118,10 +118,9 @@ VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
     return bitrate_allocation;
   }
 
-  LOG_ASSERT(num_temporal_layers <=
-             VP9TemporalLayers::kMaxSupportedTemporalLayers);
+  LOG_ASSERT(num_temporal_layers <= VP9SVCLayers::kMaxSupportedTemporalLayers);
   constexpr double kTemporalLayersBitrateScaleFactors
-      [][VP9TemporalLayers::kMaxSupportedTemporalLayers] = {
+      [][VP9SVCLayers::kMaxSupportedTemporalLayers] = {
           {0.50, 0.50, 0.00},  // For two temporal layers.
           {0.25, 0.25, 0.50},  // For three temporal layers.
       };
@@ -300,7 +299,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
       .WillOnce(Return());
 
   EXPECT_TRUE(encoder_->Initialize(config, ave_config));
-  EXPECT_EQ(num_temporal_layers > 1u, !!encoder_->temporal_layers_);
+  EXPECT_EQ(num_temporal_layers > 1u, !!encoder_->svc_layers_);
 }
 
 void VP9VaapiVideoEncoderDelegateTest::
@@ -369,8 +368,7 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesSequence(
 void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
     BitrateControl bitrate_control,
     size_t num_temporal_layers) {
-  ASSERT_TRUE(num_temporal_layers <=
-              VP9TemporalLayers::kMaxSupportedTemporalLayers);
+  ASSERT_TRUE(num_temporal_layers <= VP9SVCLayers::kMaxSupportedTemporalLayers);
   const auto update_rates_and_encode =
       [this, bitrate_control, num_temporal_layers](
           bool is_keyframe, const VideoBitrateAllocation& bitrate_allocation,
@@ -416,10 +414,10 @@ struct VP9VaapiVideoEncoderDelegateTestParam {
      1u},
     {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
          kConstantQuantizationParameter,
-     VP9TemporalLayers::kMinSupportedTemporalLayers},
+     VP9SVCLayers::kMinSupportedTemporalLayers},
     {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
          kConstantQuantizationParameter,
-     VP9TemporalLayers::kMaxSupportedTemporalLayers},
+     VP9SVCLayers::kMaxSupportedTemporalLayers},
 };
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, Initialize) {

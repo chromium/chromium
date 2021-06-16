@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VAAPI_VP9_TEMPORAL_LAYERS_H_
-#define MEDIA_GPU_VAAPI_VP9_TEMPORAL_LAYERS_H_
+#ifndef MEDIA_GPU_VAAPI_VP9_SVC_LAYERS_H_
+#define MEDIA_GPU_VAAPI_VP9_SVC_LAYERS_H_
 
 #include <stdint.h>
 
@@ -21,7 +21,7 @@ struct Vp9Metadata;
 // pattern. NOTE: this class doesn't support spatial layers yet.
 // Temporal layers and spatial layers are described in
 // https://tools.ietf.org/html/draft-ietf-payload-vp9-10#section-3.
-class VP9TemporalLayers {
+class VP9SVCLayers {
  public:
   struct FrameConfig;
 
@@ -36,10 +36,10 @@ class VP9TemporalLayers {
   constexpr static size_t kMaxNumUsedReferenceFrames =
       kVp9NumRefFrames / kMaxSpatialLayers;
   static_assert(kMaxNumUsedReferenceFrames == 2u,
-                "VP9TemporalLayers uses two reference frames");
+                "VP9SVCLayers uses two reference frames");
 
-  explicit VP9TemporalLayers(size_t num_temporal_layers);
-  ~VP9TemporalLayers();
+  explicit VP9SVCLayers(size_t num_temporal_layers);
+  ~VP9SVCLayers();
 
   static std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers);
 
@@ -78,4 +78,4 @@ class VP9TemporalLayers {
   uint8_t pattern_index_of_ref_frames_slots_[kMaxNumUsedReferenceFrames] = {};
 };
 }  // namespace media
-#endif  // MEDIA_GPU_VAAPI_VP9_TEMPORAL_LAYERS_H_
+#endif  // MEDIA_GPU_VAAPI_VP9_SVC_LAYERS_H_

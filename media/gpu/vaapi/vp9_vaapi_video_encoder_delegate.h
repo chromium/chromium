@@ -19,7 +19,7 @@
 
 namespace media {
 class VaapiWrapper;
-class VP9TemporalLayers;
+class VP9SVCLayers;
 class VP9RateControl;
 
 class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
@@ -103,7 +103,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   EncodeParams current_params_;
 
   Vp9ReferenceFrameVector reference_frames_;
-  std::unique_ptr<VP9TemporalLayers> temporal_layers_;
+  std::unique_ptr<VP9SVCLayers> svc_layers_;
 
   std::unique_ptr<VP9RateControl> rate_ctrl_;
 

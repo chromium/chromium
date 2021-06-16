@@ -16,7 +16,7 @@
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_rate_control.h"
-#include "media/gpu/vaapi/vp9_temporal_layers.h"
+#include "media/gpu/vaapi/vp9_svc_layers.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {
@@ -103,7 +103,7 @@ VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
   DCHECK_GT(num_temporal_layers, 1u);
   DCHECK_LE(num_temporal_layers, 3u);
   constexpr double kTemporalLayersBitrateScaleFactors
-      [][VP9TemporalLayers::kMaxSupportedTemporalLayers] = {
+      [][VP9SVCLayers::kMaxSupportedTemporalLayers] = {
           {0.50, 0.50, 0.00},  // For two temporal layers.
           {0.25, 0.25, 0.50},  // For three temporal layers.
       };
@@ -229,13 +229,13 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
   size_t num_temporal_layers = 1;
   if (config.HasTemporalLayer()) {
     num_temporal_layers = config.spatial_layers[0].num_of_temporal_layers;
-    if (num_temporal_layers < VP9TemporalLayers::kMinSupportedTemporalLayers ||
-        num_temporal_layers > VP9TemporalLayers::kMaxSupportedTemporalLayers) {
+    if (num_temporal_layers < VP9SVCLayers::kMinSupportedTemporalLayers ||
+        num_temporal_layers > VP9SVCLayers::kMaxSupportedTemporalLayers) {
       VLOGF(1) << "Unsupported amount of temporal layers: "
                << num_temporal_layers;
       return false;
     }
-    temporal_layers_ = std::make_unique<VP9TemporalLayers>(num_temporal_layers);
+    svc_layers_ = std::make_unique<VP9SVCLayers>(num_temporal_layers);
   }
   current_params_.max_qp = kMaxQPForSoftwareRateCtrl;
 
@@ -346,7 +346,7 @@ bool VP9VaapiVideoEncoderDelegate::UpdateRates(
     return true;
 
   const size_t num_temporal_layers =
-      temporal_layers_ ? temporal_layers_->num_layers() : 1u;
+      svc_layers_ ? svc_layers_->num_layers() : 1u;
   rate_ctrl_->UpdateRateControl(CreateRateControlConfig(
       visible_size_, current_params_, bitrate_allocation, num_temporal_layers));
   return true;
@@ -379,9 +379,9 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
   DCHECK(ref_frames_used);
 
   *picture->frame_hdr = GetDefaultFrameHeader(keyframe);
-  if (temporal_layers_) {
+  if (svc_layers_) {
     // Reference frame settings for temporal layer stream.
-    temporal_layers_->FillUsedRefFramesAndMetadata(picture, ref_frames_used);
+    svc_layers_->FillUsedRefFramesAndMetadata(picture, ref_frames_used);
     // Enable error resilient mode so that the syntax of a frame can be decoded
     // independently of previous frames.
     picture->frame_hdr->error_resilient_mode = true;

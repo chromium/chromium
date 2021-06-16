@@ -71,8 +71,8 @@ source_set("vaapi") {
     "vp8_vaapi_video_encoder_delegate.h",
     "vp9_rate_control.cc",
     "vp9_rate_control.h",
-    "vp9_temporal_layers.cc",
-    "vp9_temporal_layers.h",
+    "vp9_svc_layers.cc",
+    "vp9_svc_layers.h",
     "vp9_vaapi_video_decoder_delegate.cc",
     "vp9_vaapi_video_decoder_delegate.h",
     "vp9_vaapi_video_encoder_delegate.cc",
@@ -224,7 +224,7 @@ source_set("unit_test") {
     "vaapi_video_decode_accelerator_unittest.cc",
     "vaapi_video_encode_accelerator_unittest.cc",
     "vaapi_wrapper_unittest.cc",
-    "vp9_temporal_layers_unittest.cc",
+    "vp9_svc_layers_unittest.cc",
     "vp9_vaapi_video_encoder_delegate_unittest.cc",
   ]
   configs += [ "//third_party/libvpx:libvpx_config" ]

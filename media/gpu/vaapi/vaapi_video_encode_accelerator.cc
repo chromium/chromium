@@ -41,7 +41,7 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp8_vaapi_video_encoder_delegate.h"
-#include "media/gpu/vaapi/vp9_temporal_layers.h"
+#include "media/gpu/vaapi/vp9_svc_layers.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
@@ -387,7 +387,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
 
   if (config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
-    encoder_info_.fps_allocation[0] = VP9TemporalLayers::GetFpsAllocation(
+    encoder_info_.fps_allocation[0] = VP9SVCLayers::GetFpsAllocation(
         config.spatial_layers[0].num_of_temporal_layers);
   } else {
     constexpr uint8_t kFullFramerate = 255;

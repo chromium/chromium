@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/vp9_temporal_layers.h"
+#include "media/gpu/vaapi/vp9_svc_layers.h"
 
 #include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
@@ -10,12 +10,12 @@
 namespace media {
 namespace {
 static_assert(VideoBitrateAllocation::kMaxTemporalLayers >=
-                  VP9TemporalLayers::kMaxSupportedTemporalLayers,
-              "VP9TemporalLayers and VideoBitrateAllocation are dimensionally "
+                  VP9SVCLayers::kMaxSupportedTemporalLayers,
+              "VP9SVCLayers and VideoBitrateAllocation are dimensionally "
               "inconsistent.");
 static_assert(VideoBitrateAllocation::kMaxSpatialLayers >=
-                  VP9TemporalLayers::kMaxSpatialLayers,
-              "VP9TemporalLayers and VideoBitrateAllocation are dimensionally "
+                  VP9SVCLayers::kMaxSpatialLayers,
+              "VP9SVCLayers and VideoBitrateAllocation are dimensionally "
               "inconsistent.");
 
 enum FrameFlags : uint8_t {
@@ -26,9 +26,9 @@ enum FrameFlags : uint8_t {
 };
 }  // namespace
 
-struct VP9TemporalLayers::FrameConfig {
+struct VP9SVCLayers::FrameConfig {
   static constexpr size_t kNumFrameFlags =
-      VP9TemporalLayers::kMaxNumUsedReferenceFrames;
+      VP9SVCLayers::kMaxNumUsedReferenceFrames;
   static_assert(kNumFrameFlags == 2u,
                 "FrameConfig is only defined for carrying 2 FrameFlags");
 
@@ -66,9 +66,9 @@ namespace {
 // 2 temporal layers structure: https://imgur.com/vBvHtdp.
 // 3 temporal layers structure: https://imgur.com/pURAGvp.
 constexpr size_t kTemporalLayersReferencePatternSize = 8;
-std::vector<VP9TemporalLayers::FrameConfig> GetTemporalLayersReferencePattern(
+std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
     size_t num_layers) {
-  using FrameConfig = VP9TemporalLayers::FrameConfig;
+  using FrameConfig = VP9SVCLayers::FrameConfig;
   // In a vp9 software encoder used in libwebrtc, each frame has only one
   // reference to the TL0 frame. It improves the encoding speed without reducing
   // the frame quality noticeably. This class, at this moment, lets each frame
@@ -108,7 +108,7 @@ std::vector<VP9TemporalLayers::FrameConfig> GetTemporalLayersReferencePattern(
 }  // namespace
 
 // static
-std::vector<uint8_t> VP9TemporalLayers::GetFpsAllocation(
+std::vector<uint8_t> VP9SVCLayers::GetFpsAllocation(
     size_t num_temporal_layers) {
   DCHECK_GT(num_temporal_layers, 1u);
   DCHECK_LT(num_temporal_layers, 4u);
@@ -136,7 +136,7 @@ std::vector<uint8_t> VP9TemporalLayers::GetFpsAllocation(
   }
 }
 
-VP9TemporalLayers::VP9TemporalLayers(size_t number_of_temporal_layers)
+VP9SVCLayers::VP9SVCLayers(size_t number_of_temporal_layers)
     : num_layers_(number_of_temporal_layers),
       temporal_layers_reference_pattern_(
           GetTemporalLayersReferencePattern(num_layers_)),
@@ -148,9 +148,9 @@ VP9TemporalLayers::VP9TemporalLayers(size_t number_of_temporal_layers)
             kTemporalLayersReferencePatternSize);
 }
 
-VP9TemporalLayers::~VP9TemporalLayers() = default;
+VP9SVCLayers::~VP9SVCLayers() = default;
 
-void VP9TemporalLayers::FillUsedRefFramesAndMetadata(
+void VP9SVCLayers::FillUsedRefFramesAndMetadata(
     VP9Picture* picture,
     std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used) {
   DCHECK(picture->frame_hdr);
@@ -168,7 +168,7 @@ void VP9TemporalLayers::FillUsedRefFramesAndMetadata(
   }
 
   pattern_index_ = (pattern_index_ + 1) % kTemporalLayersReferencePatternSize;
-  const VP9TemporalLayers::FrameConfig& temporal_layers_config =
+  const VP9SVCLayers::FrameConfig& temporal_layers_config =
       temporal_layers_reference_pattern_[pattern_index_];
 
   // Set the slots in reference frame pool that will be updated.
@@ -189,9 +189,9 @@ void VP9TemporalLayers::FillUsedRefFramesAndMetadata(
   UpdateRefFramesPatternIndex(temporal_layers_config);
 }
 
-void VP9TemporalLayers::FillVp9MetadataForEncoding(
+void VP9SVCLayers::FillVp9MetadataForEncoding(
     Vp9Metadata* metadata,
-    const VP9TemporalLayers::FrameConfig& temporal_layers_config,
+    const VP9SVCLayers::FrameConfig& temporal_layers_config,
     bool has_reference) const {
   uint8_t temp_temporal_layers_id =
       temporal_layers_reference_pattern_[pattern_index_ %
@@ -217,16 +217,16 @@ void VP9TemporalLayers::FillVp9MetadataForEncoding(
   }
 }
 
-uint8_t VP9TemporalLayers::RefreshFrameFlag(
-    const VP9TemporalLayers::FrameConfig& temporal_layers_config) const {
+uint8_t VP9SVCLayers::RefreshFrameFlag(
+    const VP9SVCLayers::FrameConfig& temporal_layers_config) const {
   uint8_t flag = 0;
   for (const uint8_t i : temporal_layers_config.GetUpdateIndices())
     flag |= 1 << pool_slots_[i];
   return flag;
 }
 
-void VP9TemporalLayers::UpdateRefFramesPatternIndex(
-    const VP9TemporalLayers::FrameConfig& temporal_layers_config) {
+void VP9SVCLayers::UpdateRefFramesPatternIndex(
+    const VP9SVCLayers::FrameConfig& temporal_layers_config) {
   for (const uint8_t i : temporal_layers_config.GetUpdateIndices())
     pattern_index_of_ref_frames_slots_[i] = pattern_index_;
 }
