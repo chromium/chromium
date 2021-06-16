@@ -440,6 +440,8 @@ class NET_EXPORT TransportSecurityState {
     ct_emergency_disable_ = emergency_disable;
   }
 
+  void SetCTLogListUpdateTime(base::Time update_time);
+
   // Clears all dynamic data (e.g. HSTS and HPKP data).
   //
   // Does NOT persist changes using the Delegate, as this function is only
@@ -691,6 +693,9 @@ class NET_EXPORT TransportSecurityState {
   static bool ExpectCTPruningSorter(const ExpectCTStateMap::iterator& it1,
                                     const ExpectCTStateMap::iterator& it2);
 
+  // Returns true if the CT log list has been updated in the last 10 weeks.
+  bool IsCTLogListTimely() const;
+
   // The sets of hosts that have enabled TransportSecurity. |domain| will always
   // be empty for a STSState, PKPState, or ExpectCTState in these maps; the
   // domain comes from the map keys instead. In addition, |upgrade_mode| in the
@@ -735,6 +740,8 @@ class NET_EXPORT TransportSecurityState {
   std::set<std::string> hsts_host_bypass_list_;
 
   bool ct_emergency_disable_ = false;
+
+  base::Time ct_log_list_last_update_time_;
 
   THREAD_CHECKER(thread_checker_);
 

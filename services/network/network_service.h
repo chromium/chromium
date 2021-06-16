@@ -192,7 +192,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       const GURL& reporting_uri,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::URLLoaderFactory> factory) override;
-  void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list) override;
+  void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
+                       base::Time update_time) override;
   void SetCtEnforcementEnabled(bool enabled) override;
 #endif
 
@@ -268,6 +269,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   SCTAuditingCache* sct_auditing_cache() { return sct_auditing_cache_.get(); }
 
   const std::vector<mojom::CTLogInfoPtr>& log_list() const { return log_list_; }
+
+  base::Time ct_log_list_update_time() const {
+    return ct_log_list_update_time_;
+  }
 #endif
 
   mojom::URLLoaderNetworkServiceObserver*
@@ -374,6 +379,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::vector<mojom::CTLogInfoPtr> log_list_;
 
   std::unique_ptr<CtLogListDistributor> ct_log_list_distributor_;
+
+  base::Time ct_log_list_update_time_;
 #endif
 
   // Map from a renderer process id, to the set of plugin origins embedded by

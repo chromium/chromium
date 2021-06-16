@@ -1804,6 +1804,34 @@ TEST_F(TransportSecurityStateTest, CTEmergencyDisable) {
                 NetworkIsolationKey()));
 }
 
+// Tests that the if the CT log list last update time is set, it is used for
+// enforcement decisions.
+TEST_F(TransportSecurityStateTest, CTTimestampUpdate) {
+  TransportSecurityState state;
+  TransportSecurityStateTest::EnableStaticExpectCT(&state);
+  TransportSecurityState::ExpectCTState expect_ct_state;
+  // Initially the preloaded host should require CT.
+  EXPECT_TRUE(
+      GetExpectCTState(&state, kExpectCTStaticHostname, &expect_ct_state));
+
+  // Change the last updated time to a value greater than 10 weeks.
+  // We use a close value (70 days + 1 hour ago) to ensure rounding behavior is
+  // working properly.
+  state.SetCTLogListUpdateTime(
+      base::Time::Now() -
+      (base::TimeDelta::FromDays(70) + base::TimeDelta::FromHours(1)));
+  // CT should no longer be required.
+  EXPECT_FALSE(
+      GetExpectCTState(&state, kExpectCTStaticHostname, &expect_ct_state));
+
+  // CT should once again be required after the log list is newer than 70 days.
+  state.SetCTLogListUpdateTime(
+      base::Time::Now() -
+      (base::TimeDelta::FromDays(70) - base::TimeDelta::FromHours(1)));
+  EXPECT_TRUE(
+      GetExpectCTState(&state, kExpectCTStaticHostname, &expect_ct_state));
+}
+
 // Tests that Certificate Transparency is required for Symantec-issued
 // certificates, unless the certificate was issued prior to 1 June 2016
 // or the issuing CA is permitted as independently operated.

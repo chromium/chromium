@@ -730,15 +730,20 @@ void NetworkService::ConfigureSCTAuditing(
   sct_auditing_cache_->set_url_loader_factory(std::move(factory));
 }
 
-void NetworkService::UpdateCtLogList(
-    std::vector<mojom::CTLogInfoPtr> log_list) {
+void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
+                                     base::Time update_time) {
   log_list_ = std::move(log_list);
+  ct_log_list_update_time_ = update_time;
+
   if (base::FeatureList::IsEnabled(
           certificate_transparency::features::
               kCertificateTransparencyComponentUpdater)) {
     ct_log_list_distributor_->OnNewCtConfig(log_list_);
     for (auto* context : network_contexts_) {
-      context->OnCTLogListUpdated(log_list_);
+      context->OnCTLogListUpdated(log_list_, update_time);
+      context->url_request_context()
+          ->transport_security_state()
+          ->SetCTLogListUpdateTime(update_time);
     }
   }
 }

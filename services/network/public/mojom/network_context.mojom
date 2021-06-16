@@ -365,13 +365,6 @@ struct NetworkContextParams {
   [EnableIf=is_ct_supported]
   CTPolicy? ct_policy;
 
-  // When the built-in Certificate Transparency logs were last updated. If
-  // |enforce_chrome_ct_policy| is set, and |ct_log_update_time| is not
-  // sufficiently recent, enforcement of the "Certificate Transparency in
-  // Chrome" policy will be disabled.
-  [EnableIf=is_ct_supported]
-  mojo_base.mojom.Time ct_log_update_time;
-
   // Contains a pipe to a CertVerifierService.
   CertVerifierServiceRemoteParams cert_verifier_params;
 

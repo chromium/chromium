@@ -122,6 +122,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
   bool HasErrorPage(int http_status_code) override;
+  void OnNetworkServiceCreated(
+      network::mojom::NetworkService* network_service) override;
 
   void CreateFeatureListAndFieldTrials();
 

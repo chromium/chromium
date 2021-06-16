@@ -47,6 +47,7 @@ class ChromeCTPolicyEnforcer : public net::CTPolicyEnforcer {
   // a map of log ID to disqualification date.  |operated_by_google_logs| is a
   // list of log IDs operated by Google
   void UpdateCTLogList(
+      base::Time update_time,
       std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
       std::vector<std::string> operated_by_google_logs);
 
@@ -95,7 +96,7 @@ class ChromeCTPolicyEnforcer : public net::CTPolicyEnforcer {
 
   // The time at which |disqualified_logs_| and |operated_by_google_logs_| were
   // generated.
-  const base::Time log_list_date_;
+  base::Time log_list_date_;
 };
 
 }  // namespace certificate_transparency

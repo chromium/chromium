@@ -193,7 +193,11 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
     log_list_mojo.push_back(std::move(log_ptr));
   }
 
-  network_service->UpdateCtLogList(std::move(log_list_mojo));
+  base::Time update_time =
+      base::Time::UnixEpoch() +
+      base::TimeDelta::FromSeconds(proto->log_list().timestamp().seconds()) +
+      base::TimeDelta::FromNanoseconds(proto->log_list().timestamp().nanos());
+  network_service->UpdateCtLogList(std::move(log_list_mojo), update_time);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }
 

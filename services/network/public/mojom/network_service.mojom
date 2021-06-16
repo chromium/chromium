@@ -343,9 +343,12 @@ interface NetworkService {
                        pending_remote<network.mojom.URLLoaderFactory> factory);
 
 
-  // Updates the log list used for CT verification.
+  // Updates the log list used for CT verification. `update_time` should
+  // contain the timestamp that the log list was considered fresh/current, in
+  // order to ensure that CT is not enforced if the log list is too out of
+  // date.
   [EnableIf=is_ct_supported]
-  UpdateCtLogList(array<CTLogInfo> log_list);
+  UpdateCtLogList(array<CTLogInfo> log_list, mojo_base.mojom.Time update_time);
 
   // Disables or enables CT Enforcement.
   [EnableIf=is_ct_supported]

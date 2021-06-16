@@ -1274,17 +1274,18 @@ void NetworkContext::SetSCTAuditingEnabled(bool enabled) {
 }
 
 void NetworkContext::OnCTLogListUpdated(
-    const std::vector<network::mojom::CTLogInfoPtr>& log_list) {
+    const std::vector<network::mojom::CTLogInfoPtr>& log_list,
+    base::Time update_time) {
   if (!ct_policy_enforcer_)
     return;
   std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
   GetCTPolicyConfigForCTLogInfo(log_list, &disqualified_logs,
                                 &operated_by_google_logs);
-  ct_policy_enforcer_->UpdateCTLogList(std::move(disqualified_logs),
+  ct_policy_enforcer_->UpdateCTLogList(update_time,
+                                       std::move(disqualified_logs),
                                        std::move(operated_by_google_logs));
 }
-
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 void NetworkContext::CreateUDPSocket(
@@ -1995,10 +1996,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                                   &disqualified_logs, &operated_by_google_logs);
     auto ct_policy_enforcer =
         std::make_unique<certificate_transparency::ChromeCTPolicyEnforcer>(
-            params_->ct_log_update_time, std::move(disqualified_logs),
-            std::move(operated_by_google_logs));
+            network_service_->ct_log_list_update_time(),
+            std::move(disqualified_logs), std::move(operated_by_google_logs));
     ct_policy_enforcer_ = ct_policy_enforcer.get();
-
     builder.set_ct_policy_enforcer(std::move(ct_policy_enforcer));
   }
 

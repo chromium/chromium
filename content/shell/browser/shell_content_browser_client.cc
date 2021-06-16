@@ -61,6 +61,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/ssl/client_cert_identity.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/network/public/mojom/ct_log_info.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -563,7 +564,6 @@ void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
 
   if (g_enable_expect_ct_for_testing) {
     context_params->enforce_chrome_ct_policy = true;
-    context_params->ct_log_update_time = base::Time::Now();
     context_params->enable_expect_ct_reporting = true;
   }
 }
@@ -651,6 +651,21 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
       nullptr /* low_entropy_provider */, std::move(feature_list),
       nullptr /* metrics_state_manager unused*/, field_trials_.get(),
       &safe_seed_manager, absl::nullopt);
+}
+
+void ShellContentBrowserClient::OnNetworkServiceCreated(
+    network::mojom::NetworkService* network_service) {
+  // Explicitly configure Certificate Transparency with no logs, but with
+  // a fresh enough log update time that policy enforcement will still be
+  // run. This does not use base::GetBuildTime(), as that may cause certain
+  // checks to be disabled if too far in the past. Callers that set
+  // `g_enable_expect_ct_reporting` are expected to simulate CT verification
+  // using `MockCertVerifier` (otherwise CT validation would fail due to the
+  // empty log list).
+  if (g_enable_expect_ct_for_testing) {
+    network_service->UpdateCtLogList(
+        std::vector<network::mojom::CTLogInfoPtr>(), base::Time::Now());
+  }
 }
 
 }  // namespace content

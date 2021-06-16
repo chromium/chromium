@@ -480,7 +480,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
 
   std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
-  chrome_policy_enforcer->UpdateCTLogList(disqualified_logs,
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                           operated_by_google_logs);
 
   // The check should fail since the Google Aviator log is no longer in the
@@ -492,11 +492,42 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
   // Update the list again, this time including all the known operated by Google
   // logs.
   operated_by_google_logs = certificate_transparency::GetLogsOperatedByGoogle();
-  chrome_policy_enforcer->UpdateCTLogList(disqualified_logs,
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                           operated_by_google_logs);
 
   // The check should now succeed.
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
+}
+
+TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
+  ChromeCTPolicyEnforcer* chrome_policy_enforcer =
+      static_cast<ChromeCTPolicyEnforcer*>(policy_enforcer_.get());
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           2, &scts);
+
+  // Clear the log list and set the last updated time to more than 10 weeks ago.
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
+  std::vector<std::string> operated_by_google_logs;
+  chrome_policy_enforcer->UpdateCTLogList(
+      base::Time::Now() - base::TimeDelta::FromDays(71), disqualified_logs,
+      operated_by_google_logs);
+
+  // The check should return build not timely even though the Google Aviator log
+  // is no longer in the list, since the last update time is greater than 10
+  // weeks.
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
+            chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
+                                                    NetLogWithSource()));
+
+  // Update the last update time value again, this time with a recent time.
+  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
+                                          operated_by_google_logs);
+
+  // The check should now fail
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             chrome_policy_enforcer->CheckCompliance(chain_.get(), scts,
                                                     NetLogWithSource()));
 }

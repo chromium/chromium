@@ -393,7 +393,12 @@ void SetTransportSecurityStateSourceForTesting(
 }
 
 TransportSecurityState::TransportSecurityState()
-    : TransportSecurityState(std::vector<std::string>()) {}
+    : TransportSecurityState(std::vector<std::string>()) {
+  // By default the CT log list is treated as last updated at build time (since
+  // a compiled-in list is used), this is overridden if the list is dynamically
+  // updated.
+  ct_log_list_last_update_time_ = base::GetBuildTime();
+}
 
 TransportSecurityState::TransportSecurityState(
     std::vector<std::string> hsts_host_bypass_list)
@@ -607,6 +612,10 @@ void TransportSecurityState::SetRequireCTDelegate(RequireCTDelegate* delegate) {
   require_ct_delegate_ = delegate;
 }
 
+void TransportSecurityState::SetCTLogListUpdateTime(base::Time update_time) {
+  ct_log_list_last_update_time_ = update_time;
+}
+
 void TransportSecurityState::AddHSTSInternal(
     const std::string& host,
     TransportSecurityState::STSState::UpgradeMode upgrade_mode,
@@ -773,7 +782,7 @@ bool TransportSecurityState::GetStaticExpectCTState(
     ExpectCTState* expect_ct_state) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!IsBuildTimely())
+  if (!IsCTLogListTimely())
     return false;
 
   PreloadResult result;
@@ -1529,6 +1538,18 @@ bool TransportSecurityState::ExpectCTPruningSorter(
                   it1->second.last_observed) <
          std::tie(is_not_transient2, it2->second.enforce,
                   it2->second.last_observed);
+}
+
+bool TransportSecurityState::IsCTLogListTimely() const {
+  // Preloaded Expect-CT is enforced if the CT log list is timely. Note that
+  // unlike HSTS and HPKP, the date of the preloaded list itself (i.e.
+  // base::GetBuildTime()) is not directly consulted. Consulting the
+  // build time would allow sites that have subsequently disabled Expect-CT
+  // to opt-out. However, because as of June 2021, all unexpired certificates
+  // are already expected to comply with the policies expressed by Expect-CT,
+  // there's no need to offer an opt-out.
+  return (base::Time::Now() - ct_log_list_last_update_time_).InDays() <
+         70 /* 10 weeks */;
 }
 
 }  // namespace net

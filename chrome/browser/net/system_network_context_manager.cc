@@ -526,7 +526,8 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
       }
       log_list_mojo.push_back(std::move(log_info));
     }
-    network_service->UpdateCtLogList(std::move(log_list_mojo));
+    network_service->UpdateCtLogList(std::move(log_list_mojo),
+                                     base::GetBuildTime());
   }
 #endif
 
@@ -680,7 +681,6 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   if (g_enable_certificate_transparency) {
     network_context_params->enforce_chrome_ct_policy = true;
-    network_context_params->ct_log_update_time = base::GetBuildTime();
   }
 
 #endif

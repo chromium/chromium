@@ -6078,12 +6078,12 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
 
     log_list_mojo.push_back(std::move(log_info));
   }
-  network_service()->UpdateCtLogList(std::move(log_list_mojo));
+  network_service()->UpdateCtLogList(std::move(log_list_mojo),
+                                     base::Time::Now());
 
   // Configure CT params in network context.
   mojom::NetworkContextParamsPtr params = CreateContextParams();
   params->enforce_chrome_ct_policy = true;
-  params->ct_log_update_time = base::Time::Now();
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(params));

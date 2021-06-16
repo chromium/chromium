@@ -278,7 +278,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
           signed_certificate_timestamps);
   void SetSCTAuditingEnabled(bool enabled) override;
   void OnCTLogListUpdated(
-      const std::vector<network::mojom::CTLogInfoPtr>& log_list);
+      const std::vector<network::mojom::CTLogInfoPtr>& log_list,
+      base::Time update_time);
   bool is_sct_auditing_enabled() { return is_sct_auditing_enabled_; }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(
