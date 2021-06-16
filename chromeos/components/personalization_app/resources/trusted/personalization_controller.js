@@ -18,30 +18,31 @@ import {PersonalizationStore} from './personalization_store.js';
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
  *     provider
  * @param {!PersonalizationStore} store
- * @return {!Promise<Array<chromeos.personalizationApp.mojom.WallpaperCollection>>}
  */
-export async function fetchCollections(provider, store) {
+async function fetchCollections(provider, store) {
   let {collections} = await provider.fetchCollections();
   if (!isNonEmptyArray(collections)) {
     console.warn('Failed to fetch wallpaper collections');
     collections = null;
   }
   store.dispatch(setCollectionsAction(collections));
-  return collections;
 }
 
 /**
  * Fetch all of the wallpaper collections one at a time.
- * @param {!Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
- *     collections
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
  *     provider
  * @param {!PersonalizationStore} store
  */
-export async function fetchAllImagesForCollections(
-    collections, provider, store) {
+async function fetchAllImagesForCollections(provider, store) {
+  const collections = store.data.backdrop.collections;
+  if (!Array.isArray(collections)) {
+    console.warn(
+        'Cannot fetch data for collections when it is not initialized');
+    return;
+  }
   store.dispatch(beginLoadImagesForCollectionsAction(collections));
-  for (const {id} of collections) {
+  for (const {id} of /** @type {!Array<{id: string}>} */ (collections)) {
     let {images} = await provider.fetchImagesForCollection(id);
     if (!isNonEmptyArray(images)) {
       console.warn('Failed to fetch images for collection id', id);
@@ -52,12 +53,12 @@ export async function fetchAllImagesForCollections(
 }
 
 /**
- * Get list of local images from disk.
+ * Get list of local images from disk and save it to the store.
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
  *     provider
  * @param {!PersonalizationStore} store
  */
-export async function getLocalImages(provider, store) {
+async function getLocalImages(provider, store) {
   const {images} = await provider.getLocalImages();
   if (images == null) {
     console.warn('Failed to fetch local images');
@@ -66,15 +67,15 @@ export async function getLocalImages(provider, store) {
 }
 
 /**
- * Get an image thumbnail for each image one at a time.
+ * Get an image thumbnail for every local image one at a time.
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
  *     provider
  * @param {!PersonalizationStore} store
  */
-export async function getAllLocalImageThumbnails(provider, store) {
+async function getAllLocalImageThumbnails(provider, store) {
   const images = store.data.local.images;
   if (!Array.isArray(images)) {
-    console.warn('Cannot fetch thumbnails when local image list is null');
+    console.warn('Cannot fetch thumbnails of null image list');
     return;
   }
   for (const image of images) {
@@ -124,9 +125,18 @@ export async function selectWallpaper(image, provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function initializeBackdropData(provider, store) {
-  const collections = await fetchCollections(provider, store);
-  if (!Array.isArray(collections)) {
-    return;
-  }
-  await fetchAllImagesForCollections(collections, provider, store);
+  await fetchCollections(provider, store);
+  await fetchAllImagesForCollections(provider, store);
+}
+
+/**
+ * Gets list of local images, then fetches image thumbnails for each local
+ * image.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ * @param {!PersonalizationStore} store
+ */
+export async function initializeLocalData(provider, store) {
+  await getLocalImages(provider, store);
+  await getAllLocalImageThumbnails(provider, store);
 }

@@ -165,13 +165,24 @@ function loadingReducer(state, action) {
         ...state,
         images: {...state.images, [action.collectionId]: false},
       });
+    case ActionName.SET_LOCAL_IMAGES:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        local: {
+          ...state.local,
+          images: false,
+        },
+      });
     case ActionName.SET_LOCAL_IMAGE_DATA:
       return /** @type {!LoadingState} */ ({
         ...state,
         local: {
           ...state.local,
-          data: {...state.local.data, [action.id]: action.data}
-        }
+          data: {
+            ...state.local.data,
+            [action.id]: false,
+          },
+        },
       });
     case ActionName.SET_SELECTED_IMAGE:
       return /** @type {!LoadingState} */ ({...state, selected: false});

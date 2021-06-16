@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {unguessableTokenToString} from 'chrome://personalization/common/utils.js';
 import {assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 
@@ -56,6 +57,24 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       },
     ];
 
+    /** @type {?Array<!chromeos.personalizationApp.mojom.LocalImage>} */
+    this.localImages = [
+      {
+        id: {high: BigInt(100), low: BigInt(10)},
+        name: 'LocalImage0',
+      },
+      {
+        id: {high: BigInt(200), low: BigInt(20)},
+        name: 'LocalImage1',
+      }
+    ];
+
+    /** @type {!Object<string, string>} */
+    this.localImageData = {
+      '100,10': 'localimage0data',
+      '200,20': 'localimage1data',
+    };
+
     /**
      * @public
      * @type {!chromeos.personalizationApp.mojom.WallpaperImage}
@@ -99,13 +118,14 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   /** @override */
   getLocalImages() {
     this.methodCalled('getLocalImages');
-    return Promise.resolve({images: []});
+    return Promise.resolve({images: this.localImages});
   }
 
   /** @override */
   getLocalImageThumbnail(id) {
     this.methodCalled('getLocalImageThumbnail', id);
-    return Promise.resolve({data: ''});
+    return Promise.resolve(
+        {data: this.localImageData[unguessableTokenToString(id)]});
   }
 
   /** @override */

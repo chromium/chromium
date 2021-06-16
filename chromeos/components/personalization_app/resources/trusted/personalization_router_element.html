@@ -7,3 +7,5 @@
 </wallpaper-collections>
 <wallpaper-images collection-id="[[queryParams_.id]]"
     hidden$="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
+<!-- do not use hidden$ here - need to listen on property change in element. -->
+<local-images hidden="[[!shouldShowLocalCollection_(path_)]]"></local-images>

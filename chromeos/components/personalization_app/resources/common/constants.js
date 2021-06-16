@@ -14,13 +14,20 @@ export const trustedOrigin = 'chrome://personalization';
 export const EventType = {
   SEND_COLLECTIONS: 'send_collections',
   SELECT_COLLECTION: 'select_collection',
+  SELECT_LOCAL_COLLECTION: 'select_local_collection',
   SEND_IMAGES: 'send_images',
+  SEND_LOCAL_IMAGE_DATA: 'send_local_image_data',
+  SEND_LOCAL_IMAGES: 'send_local_images',
   SELECT_IMAGE: 'select_image',
+  SELECT_LOCAL_IMAGE: 'select_local_image',
 };
 
 /**
- * @typedef {{ type: EventType, collections:
- *     !Array<!chromeos.personalizationApp.mojom.WallpaperCollection> }}
+ * @typedef {{
+ *   type: EventType,
+ *   collections:
+ *     !Array<!chromeos.personalizationApp.mojom.WallpaperCollection>,
+ * }}
  */
 export let SendCollectionsEvent;
 
@@ -30,10 +37,35 @@ export let SendCollectionsEvent;
 export let SelectCollectionEvent;
 
 /**
- * @typedef {{ type: EventType, images:
- *     !Array<!chromeos.personalizationApp.mojom.WallpaperImage> }}
+ * @typedef {{ type: EventType }}
+ */
+export let SelectLocalCollectionEvent;
+
+/**
+ * @typedef {{
+ *   type: EventType,
+ *   images: !Array<!chromeos.personalizationApp.mojom.WallpaperImage>,
+ * }}
  */
 export let SendImagesEvent;
+
+/**
+ * @typedef {{
+ *   type: EventType,
+ *   images: !Array<!chromeos.personalizationApp.mojom.LocalImage>,
+ * }}
+ */
+export let SendLocalImagesEvent;
+
+/**
+ * @typedef {{
+ *   type: EventType,
+ *   id: !mojoBase.mojom.UnguessableToken,
+ *   data: string,
+ * }}
+ */
+export let SendLocalImageDataEvent;
+
 
 /**
  * @typedef {{ type: EventType, assetId: bigint }}

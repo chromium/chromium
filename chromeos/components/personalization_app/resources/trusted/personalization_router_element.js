@@ -15,6 +15,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 export const Paths = {
   CollectionImages: '/collection',
   Collections: '/',
+  LocalCollection: '/local',
 };
 
 export class PersonalizationRouter extends PolymerElement {
@@ -67,6 +68,13 @@ export class PersonalizationRouter extends PolymerElement {
   }
 
   /**
+   * Navigate to the local collection page.
+   */
+  selectLocalCollection() {
+    this.setProperties({path_: Paths.LocalCollection, query_: ''});
+  }
+
+  /**
    * @param {string} path
    * @return {boolean}
    * @private
@@ -82,6 +90,15 @@ export class PersonalizationRouter extends PolymerElement {
    */
   shouldShowCollectionImages_(path) {
     return path === Paths.CollectionImages;
+  }
+
+  /**
+   * @param {string} path
+   * @return  {boolean}
+   * @private
+   */
+  shouldShowLocalCollection_(path) {
+    return path === Paths.LocalCollection;
   }
 }
 

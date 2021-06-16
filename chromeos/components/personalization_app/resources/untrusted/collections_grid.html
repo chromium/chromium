@@ -1,16 +1,11 @@
-<style include="untrusted-style">
-  .collection-name {
-    bottom: 0;
-    position: absolute;
-    text-align: center;
-    width: 100%;
-  }
-</style>
-<iron-list items="[[collections_]]" grid>
+<style include="common-style"></style>
+<iron-list items="[[tiles_]]" grid>
   <template>
     <div class="photo-container" data-id$="[[item.id]]"
-        on-click="onCollectionClicked_">
-      <img src="[[item.preview.url]]">
+      on-click="onCollectionClicked_">
+      <template is="dom-if" if="[[item.preview]]">
+        <img src="[[item.preview.url]]">
+      </template>
       <p class="collection-name">[[item.name]]</p>
     </div>
   </template>

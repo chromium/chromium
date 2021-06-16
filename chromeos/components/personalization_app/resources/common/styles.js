@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 const styles = document.createElement('dom-module');
 
 styles.innerHTML = `<template>
@@ -17,7 +15,14 @@ styles.innerHTML = `<template>
             object-fit: contain;
             width: 100%;
         }
+        .photo-container > .collection-name,
+        .photo-container > .image-name {
+            bottom: 0;
+            position: absolute;
+            text-align: center;
+            width: 100%;
+        }
     </style>
   </template>`;
 
-styles.register('untrusted-style');
+styles.register('common-style');

@@ -1,0 +1,14 @@
+<style include="trusted-style common-style"></style>
+<paper-spinner-lite active="[[imagesLoading_]]">
+</paper-spinner-lite>
+<iron-list items="[[getImages_(hidden, images_)]]" grid>
+  <template>
+    <div class="photo-container">
+      <template is="dom-if"
+          if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
+        <img src="[[getImageData_(item, imageData_)]]">
+      </template>
+      <p class="image-name">[[item.name]]</p>
+    </div>
+  </template>
+</iron-list>

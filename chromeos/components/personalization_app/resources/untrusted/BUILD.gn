@@ -8,10 +8,10 @@ import("//tools/polymer/html_to_js.gni")
 
 js_library("collections_grid") {
   deps = [
-    ":styles",
     "../../mojom:mojom_js_library_for_compile",
     "../common:constants",
     "../common:iframe_api",
+    "../common:styles",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -19,17 +19,11 @@ js_library("collections_grid") {
 
 js_library("images_grid") {
   deps = [
-    ":styles",
     "../../mojom:mojom_js_library_for_compile",
     "../common:constants",
     "../common:iframe_api",
+    "../common:styles",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("styles") {
-  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -37,13 +31,13 @@ js_library("styles") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "browser_resolver_prefix_replacements=\"chrome-untrusted://personalization/polymer/v3_0/=../../third_party/polymer/v3_0/components-chromium/\"",
                     "browser_resolver_prefix_replacements=\"chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js=../../third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js\"",
                   ]
   deps = [
     ":collections_grid",
     ":images_grid",
-    ":styles",
   ]
 }
 
@@ -58,7 +52,6 @@ copy("copy_static") {
   sources = [
     "collections.html",
     "images.html",
-    "styles.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
@@ -76,6 +69,5 @@ preprocess_if_expr("preprocess") {
     "untrusted/collections_grid.js",
     "untrusted/images.html",
     "untrusted/images_grid.js",
-    "untrusted/styles.js",
   ]
 }

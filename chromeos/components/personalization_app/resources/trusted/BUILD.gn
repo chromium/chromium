@@ -7,6 +7,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 
 polymer_element_files = [
+  "local_images_element.js",
   "wallpaper_collections_element.js",
   "wallpaper_images_element.js",
   "wallpaper_selected_element.js",
@@ -25,6 +26,18 @@ static_files = [
   "styles.js",
 ]
 
+js_library("local_images_element") {
+  deps = [
+    ":personalization_controller",
+    ":styles",
+    "../common:constants",
+    "../common:styles",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("mojo_interface_provider") {
   deps = [
     "../../mojom:mojom_js_library_for_compile",
@@ -38,6 +51,7 @@ js_library("personalization_actions") {
 
 js_library("personalization_app") {
   deps = [
+    ":local_images_element",
     ":personalization_message_handler",
     ":personalization_reducers",
     ":personalization_router_element",
@@ -133,6 +147,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [ "language_in=ECMASCRIPT_2020" ]
   deps = [
+    ":local_images_element",
     ":mojo_interface_provider",
     ":personalization_actions",
     ":personalization_app",

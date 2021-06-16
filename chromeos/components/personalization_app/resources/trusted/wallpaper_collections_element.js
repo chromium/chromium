@@ -12,20 +12,41 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {sendCollections} from '../common/iframe_api.js';
+import {sendCollections, sendLocalImageData, sendLocalImages} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload, unguessableTokenToString} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {getAllLocalImageThumbnails, getLocalImages, initializeBackdropData} from './personalization_controller.js';
+import {initializeBackdropData, initializeLocalData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendCollectionsFunction = sendCollections;
+let sendLocalImagesFunction = sendLocalImages;
+let sendLocalImageDataFunction = sendLocalImageData;
 
-export function promisifySendCollectionsForTesting() {
-  let resolver;
-  const promise = new Promise((resolve) => resolver = resolve);
-  sendCollectionsFunction = (...args) => resolver(args);
-  return promise;
+/**
+ * Mock out the iframe api functions for testing. Return promises that are
+ * resolved when the function is called by |WallpaperCollectionsElement|.
+ * @return {{
+ *   sendCollections: Promise<?>,
+ *   sendLocalImages: Promise<?>,
+ *   sendLocalImageData: Promise<?>,
+ * }}
+ */
+export function promisifyIframeFunctionsForTesting() {
+  let resolvers = {};
+  const promises = [
+    sendCollections, sendLocalImages, sendLocalImageData
+  ].reduce((result, next) => {
+    result[next.name] = new Promise(resolve => resolvers[next.name] = resolve);
+    return result;
+  }, {});
+  sendCollectionsFunction = (...args) => resolvers[sendCollections.name](args);
+  sendLocalImagesFunction = (...args) => resolvers[sendLocalImages.name](args);
+  sendLocalImageDataFunction = (...args) =>
+      resolvers[sendLocalImageData.name](args);
+  return promises;
 }
+
+export const kMaximumImageThumbnailsCount = 3;
 
 /** @polymer */
 export class WallpaperCollections extends WithPersonalizationStore {
@@ -54,10 +75,21 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       /**
        * @private
-       * @type {!Array<string>}
+       * @type {Array<!chromeos.personalizationApp.mojom.LocalImage>}
        */
       localImages_: {
         type: Array,
+        observer: 'onLocalImagesChanged_',
+      },
+
+      /**
+       * Stores a mapping of local image id to thumbnail data.
+       * @private
+       * @type {Object<string, string>}
+       */
+      localImageData_: {
+        type: Object,
+        observer: 'onLocalImageDataChanged_',
       },
 
       /** @private */
@@ -77,12 +109,23 @@ export class WallpaperCollections extends WithPersonalizationStore {
     };
   }
 
+  static get observers() {
+    return ['onLocalImageDataChanged_(localImages_, localImageData_)'];
+  }
+
   constructor() {
     super();
     /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
     this.iframePromise_ = /** @type {!Promise<!HTMLIFrameElement>} */ (
         promisifyOnload(this, 'collections-iframe', afterNextRender));
+
+    /**
+     * Stores a set of local image ids that have already sent thumbnail data to
+     * untrusted.
+     * @type {!Set<string>}
+     */
+    this.sentLocalImages_ = new Set();
   }
 
   /** @override */
@@ -90,18 +133,12 @@ export class WallpaperCollections extends WithPersonalizationStore {
     super.connectedCallback();
     this.watch('collections_', state => state.backdrop.collections);
     this.watch('collectionsLoading_', state => state.loading.collections);
-    this.watch(
-        'localImages_',
-        state => Array.isArray(state.local.images) ?
-            state.local.images.map(image => unguessableTokenToString(image.id))
-                .filter(id => !!state.local.data[id])
-                .map(id => state.local.data[id]) :
-            null);
+    this.watch('localImages_', state => state.local.images);
+    this.watch('localImageData_', state => state.local.data);
     this.updateFromStore();
     const store = this.getStore();
     initializeBackdropData(this.wallpaperProvider_, store);
-    getLocalImages(this.wallpaperProvider_, store)
-        .then(() => getAllLocalImageThumbnails(this.wallpaperProvider_, store));
+    initializeLocalData(this.wallpaperProvider_, store);
   }
 
   /**
@@ -134,6 +171,46 @@ export class WallpaperCollections extends WithPersonalizationStore {
     if (value) {
       const iframe = await this.iframePromise_;
       sendCollectionsFunction(iframe.contentWindow, this.collections_);
+    }
+  }
+
+  /**
+   * Send updated local images list to the iframe.
+   * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} value
+   */
+  async onLocalImagesChanged_(value) {
+    if (Array.isArray(value)) {
+      const iframe = await this.iframePromise_;
+      sendLocalImagesFunction(
+          /** @type {!Window} */ (iframe.contentWindow), value);
+    }
+  }
+
+  /**
+   * Send up to |maximumImageThumbnailsCount| image thumbnails to untrusted.
+   * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+   * @param {?Object<string, string>} imageData
+   */
+  async onLocalImageDataChanged_(images, imageData) {
+    if (!Array.isArray(images) || !imageData) {
+      return;
+    }
+    const iframe = await this.iframePromise_;
+
+    for (const image of images) {
+      if (this.sentLocalImages_.size >= kMaximumImageThumbnailsCount) {
+        return;
+      }
+      const key = unguessableTokenToString(image.id);
+      if (this.sentLocalImages_.has(key)) {
+        continue;
+      }
+      const data = imageData[key];
+      if (data) {
+        sendLocalImageDataFunction(
+            /** @type {!Window} */ (iframe.contentWindow), image, data);
+        this.sentLocalImages_.add(key);
+      }
     }
   }
 }

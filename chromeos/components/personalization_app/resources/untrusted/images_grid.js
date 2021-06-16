@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome-untrusted://personalization/polymer/v3_0/iron-list/iron-list.js';
-import './styles.js';
+import '../common/styles.js';
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType} from '../common/constants.js';
 import {selectImage, validateReceivedData} from '../common/iframe_api.js';

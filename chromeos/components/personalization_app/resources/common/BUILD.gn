@@ -16,6 +16,9 @@ js_library("iframe_api") {
   ]
 }
 
+js_library("styles") {
+}
+
 js_library("utils") {
 }
 
@@ -35,6 +38,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "common/constants.js",
     "common/iframe_api.js",
+    "common/styles.js",
     "common/utils.js",
   ]
 }
