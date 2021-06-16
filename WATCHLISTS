@@ -750,7 +750,7 @@
     },
     'chromeos_media_app': {
       'filepath': 'chromeos/components/media_app_ui/|'\
-                  'chrome/browser/ash/web_applications/',
+                  'chrome/browser/ash/web_applications/media_app/',
     },
     'chromeos_net': {
       'filepath': 'ash/system/network/|'\
