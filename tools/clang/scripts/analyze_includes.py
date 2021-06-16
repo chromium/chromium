@@ -97,6 +97,8 @@ def parse_build(build_log):
   def n(fn):
     if not fn in normalized:
       x = os.path.relpath(os.path.realpath(os.path.join(build_dir, fn)))
+      # Make paths consistently use / separators.
+      x = x.replace(os.path.sep, '/')
       normalized[fn] = x
     return normalized[fn]
 
