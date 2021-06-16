@@ -27,6 +27,7 @@ namespace android_webview {
 constexpr char kAllowlistBloomFilterFileName[] = "allowlistbloomfilter";
 constexpr char kBloomFilterNumHashKey[] = "bloomfilter_num_hash";
 constexpr char kBloomFilterNumBitsKey[] = "bloomfilter_num_bits";
+constexpr char kExpiryDateKey[] = "expiry_date";
 
 // Defines a loader responsible for receiving the allowlist for apps package
 // names that can be included in UMA records and lookup the embedding app's name

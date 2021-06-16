@@ -24,9 +24,11 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/bloom_filter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -34,8 +36,8 @@ namespace {
 
 constexpr int kBitsPerByte = 8;
 
-// Creates a bloomfilter after loading its data from file in `allowlist_fd` and
-// lookup the given `package_name` in it.
+// Creates a bloomfilter after loading its data from file in `allowlist_fd`
+// and lookup the given `package_name` in it.
 bool IsLoggingPackageNameAllowed(int allowlist_fd,
                                  int numHash,
                                  int numBits,
@@ -88,26 +90,41 @@ AwAppsPackageNamesAllowlistComponentLoaderPolicy::
 //   "bloomfilter_num_hash": xx
 //   /* int32: number of bits in the bloomfilter binary array */
 //   "bloomfilter_num_bits": xx
+//
+//   /* The allowlist expiry date after which the allowlist shouldn't be used.
+//   Its format is an int64 number representing the number of milliseconds
+//   after UNIX Epoch. */
+//   "expiry_date": 12345678910
 // }
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     const base::flat_map<std::string, int>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
-  // TODO(https://crbug.com/1202703): check the allowlist expiry date in the
-  // manifest.
+  // Have to use double because base::DictionaryValue doesn't support int64
+  // values.
+  absl::optional<double> expiry_date_ms =
+      manifest->FindDoublePath(kExpiryDateKey);
   absl::optional<int> num_hash = manifest->FindIntPath(kBloomFilterNumHashKey);
   absl::optional<int> num_bits = manifest->FindIntPath(kBloomFilterNumBitsKey);
-  auto allowlist_iterator = fd_map.find(kAllowlistBloomFilterFileName);
-  if (allowlist_iterator == fd_map.end() || !num_hash.has_value() ||
-      !num_bits.has_value()) {
-    ComponentLoadFailed();
-  } else {
+  auto allowlist_iterator = fd_map.end();
+
+  // Being conservative and consider the allowlist expired when a valid expiry
+  // date is absent.
+  if (num_hash.has_value() && num_bits.has_value() &&
+      expiry_date_ms.has_value() &&
+      base::Time::UnixEpoch() +
+              base::TimeDelta::FromMillisecondsD(expiry_date_ms.value()) >
+          base::Time::Now() &&
+      (allowlist_iterator = fd_map.find(kAllowlistBloomFilterFileName)) !=
+          fd_map.end()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&IsLoggingPackageNameAllowed, allowlist_iterator->second,
                        num_hash.value(), num_bits.value(),
                        std::move(app_package_name_)),
         std::move(lookup_callback_));
+  } else {
+    ComponentLoadFailed();
   }
 
   // Close unused files.

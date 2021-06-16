@@ -18,6 +18,7 @@
 #include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/bloom_filter.h"
@@ -31,11 +32,23 @@ constexpr int kNumHash = 11;
 constexpr int kNumBitsPerEntry = 16;
 const std::string kTestAllowlist[] = {"com.example.test", "my.fake.app",
                                       "yet.another.app"};
+double OneDayFromNowMs() {
+  return (base::Time::Now() + base::TimeDelta::FromDays(1) -
+          base::Time::UnixEpoch())
+      .InMillisecondsF();
+}
+
+double OneDayAgoMs() {
+  return (base::Time::Now() - base::TimeDelta::FromDays(1) -
+          base::Time::UnixEpoch())
+      .InMillisecondsF();
+}
 
 std::unique_ptr<base::DictionaryValue> BuildTestManifest() {
   auto manifest = std::make_unique<base::DictionaryValue>();
   manifest->SetIntPath(kBloomFilterNumHashKey, kNumHash);
   manifest->SetIntPath(kBloomFilterNumBitsKey, 3 * kNumBitsPerEntry);
+  manifest->SetDoublePath(kExpiryDateKey, OneDayFromNowMs());
 
   return manifest;
 }
@@ -204,6 +217,28 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   base::flat_map<std::string, int> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
   auto manifest = BuildTestManifest();
+
+  auto policy =
+      std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
+          kTestAllowlist[1],
+          base::BindOnce(&AwAppsPackageNamesAllowlistComponentLoaderPolicyTest::
+                             LookupConfirmationCallback,
+                         base::Unretained(this)));
+
+  policy->ComponentLoaded(base::Version(), fd_map, std::move(manifest));
+
+  lookup_run_loop_.Run();
+  EXPECT_FALSE(lookup_result_);
+}
+
+TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
+       TestExpiredAllowlist) {
+  WritePackageNamesAllowListToFile(
+      {kTestAllowlist, kTestAllowlist + base::size(kTestAllowlist)});
+  base::flat_map<std::string, int> fd_map;
+  fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
+  auto manifest = BuildTestManifest();
+  manifest->SetDoublePath(kExpiryDateKey, OneDayAgoMs());
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
