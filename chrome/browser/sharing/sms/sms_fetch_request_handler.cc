@@ -47,10 +47,11 @@ void SmsFetchRequestHandler::OnMessage(
 
   std::unique_ptr<syncer::DeviceInfo> device =
       device_source_->GetDeviceByGuid(message.sender_guid());
-  const std::string remote_os = device ? device->GetOSString() : "";
+  const std::string& client_name =
+      device ? device->client_name() : message.sender_device_name();
 
   auto origin = url::Origin::Create(GURL(message.sms_fetch_request().origin()));
-  auto request = std::make_unique<Request>(this, fetcher_, origin, remote_os,
+  auto request = std::make_unique<Request>(this, fetcher_, origin, client_name,
                                            std::move(done_callback));
   requests_.insert(std::move(request));
 }
@@ -62,7 +63,7 @@ void SmsFetchRequestHandler::RemoveRequest(Request* request) {
 void SmsFetchRequestHandler::AskUserPermission(
     const content::OriginList& origin_list,
     const std::string& one_time_code,
-    const std::string& remote_os) {
+    const std::string& client_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
   const std::u16string origin = url_formatter::FormatOriginForSecurityDisplay(
@@ -77,7 +78,7 @@ void SmsFetchRequestHandler::AskUserPermission(
   Java_SmsFetcherMessageHandler_showNotification(
       env, base::android::ConvertUTF8ToJavaString(env, one_time_code),
       base::android::ConvertUTF16ToJavaString(env, origin),
-      base::android::ConvertUTF8ToJavaString(env, remote_os),
+      base::android::ConvertUTF8ToJavaString(env, client_name),
       reinterpret_cast<intptr_t>(this));
 }
 
@@ -123,12 +124,12 @@ SmsFetchRequestHandler::Request::Request(
     SmsFetchRequestHandler* handler,
     content::SmsFetcher* fetcher,
     const url::Origin& origin,
-    const std::string& remote_os,
+    const std::string& client_name,
     SharingMessageHandler::DoneCallback respond_callback)
     : handler_(handler),
       fetcher_(fetcher),
       origin_list_(content::OriginList{origin}),
-      remote_os_(remote_os),
+      client_name_(client_name),
       respond_callback_(std::move(respond_callback)) {
   // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
   fetcher_->Subscribe(origin_list_, this);
@@ -155,7 +156,7 @@ void SmsFetchRequestHandler::Request::OnReceive(
       FROM_HERE,
       base::BindOnce(&SmsFetchRequestHandler::AskUserPermission,
                      handler_->GetWeakPtr(), origin_list, one_time_code,
-                     remote_os_),
+                     client_name_),
       kNotificationDelay);
 }
 

@@ -4200,13 +4200,13 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <!-- Sms Fetcher -->
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE_UNKNOWN_DEVICE" translateable="false" desc="Title text shown when the browser has received an SMS on the user's behalf when the source device name is unknown.">
-        Allow Chrome to submit code on your remote device?
+        Verify your phone number on other device
       </message>
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE" translateable="false" desc="Title text shown when the browser has received an SMS on the user's behalf.">
-        Allow Chrome to submit code on your <ph name="OS">%1$s<ex>mac</ex></ph>?
+        Verify your phone number on <ph name="CLIENT_NAME">%1$s<ex>Zoe's Macbook</ex></ph>
       </message>
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT" translateable="false" desc="Content text shown when the browser has received an SMS on the user's behalf.">
-        Tap OK to submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="ORIGIN">%2$s<ex>example.com</ex></ph>
+        Let Chrome submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="ORIGIN">%2$s<ex>example.com</ex></ph>
       </message>
 
       <!-- Interventions -->

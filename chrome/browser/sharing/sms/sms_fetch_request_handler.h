@@ -37,7 +37,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
                  SharingMessageHandler::DoneCallback done_callback) override;
   virtual void AskUserPermission(const content::OriginList&,
                                  const std::string& one_time_code,
-                                 const std::string& remote_os);
+                                 const std::string& client_name);
   virtual void OnConfirm(JNIEnv*, jstring origin);
   virtual void OnDismiss(JNIEnv*, jstring origin);
 
@@ -58,7 +58,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     Request(SmsFetchRequestHandler* handler,
             content::SmsFetcher* fetcher,
             const url::Origin& origin,
-            const std::string& remote_os,
+            const std::string& client_name,
             SharingMessageHandler::DoneCallback respond_callback);
     ~Request() override;
 
@@ -77,7 +77,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     content::SmsFetcher* fetcher_;
     const content::OriginList origin_list_;
     std::string one_time_code_;
-    std::string remote_os_;
+    std::string client_name_;
     SharingMessageHandler::DoneCallback respond_callback_;
 
     DISALLOW_COPY_AND_ASSIGN(Request);

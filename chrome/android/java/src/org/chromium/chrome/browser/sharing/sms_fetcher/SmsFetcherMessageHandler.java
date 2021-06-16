@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -69,11 +70,11 @@ public class SmsFetcherMessageHandler {
      *
      * @param oneTimeCode The one time code from SMS
      * @param origin The origin from the SMS
-     * @param remoteOs The OS name where the remote request comes from
+     * @param clientName The client name where the remote request comes from
      * @param smsFetcherMessageHandlerAndroid The native handler
      */
     @CalledByNative
-    private static void showNotification(String oneTimeCode, String origin, String remoteOs,
+    private static void showNotification(String oneTimeCode, String origin, String clientName,
             long smsFetcherMessageHandlerAndroid) {
         sOrigin = origin;
         sSmsFetcherMessageHandlerAndroid = smsFetcherMessageHandlerAndroid;
@@ -89,9 +90,9 @@ public class SmsFetcherMessageHandler {
                         .setAction(NOTIFICATION_ACTION_CANCEL),
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
-        String notificationTitle = remoteOs.equals("")
+        String notificationTitle = TextUtils.isEmpty(clientName)
                 ? resources.getString(R.string.sms_fetcher_notification_title_unknown_device)
-                : resources.getString(R.string.sms_fetcher_notification_title, remoteOs);
+                : resources.getString(R.string.sms_fetcher_notification_title, clientName);
         String notificationText =
                 resources.getString(R.string.sms_fetcher_notification_text, oneTimeCode, origin);
         SharingNotificationUtil.showNotification(

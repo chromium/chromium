@@ -65,7 +65,7 @@ class MockSmsFetchRequestHandler : public SmsFetchRequestHandler {
   MOCK_METHOD3(AskUserPermission,
                void(const content::OriginList&,
                     const std::string& one_time_code,
-                    const std::string& remote_os));
+                    const std::string& client_name));
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
