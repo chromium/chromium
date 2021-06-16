@@ -169,7 +169,7 @@ void BrowserMainRunnerImpl::Shutdown() {
   main_loop_->PreShutdown();
 
   // Finalize the startup tracing session if it is still active.
-  StartupTracingController::GetInstance().WaitUntilStopped();
+  StartupTracingController::GetInstance().ShutdownAndWaitForStopIfNeeded();
 
   {
     // The trace event has to stay between profiler creation and destruction.

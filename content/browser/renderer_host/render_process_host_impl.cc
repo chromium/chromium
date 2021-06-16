@@ -68,6 +68,8 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
@@ -291,6 +293,8 @@
 namespace content {
 
 namespace {
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 // Stores the maximum number of renderer processes the content module can
 // create. Only applies if it is set to a non-zero value.
@@ -1712,11 +1716,12 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       instance_weak_factory_(absl::in_place, this),
       shutdown_exit_code_(-1) {
   CHECK(!browser_context->ShutdownStarted());
-  TRACE_EVENT2("shutdown", "RenderProcessHostImpl", "render_process_host", this,
-               "id", GetID());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("shutdown", "Browser.RenderProcessHostImpl",
-                                    this, "render_process_host", this,
-                                    "browser_context", browser_context_);
+  TRACE_EVENT("shutdown", "RenderProcessHostImpl",
+              ChromeTrackEvent::kRenderProcessHost, *this);
+  TRACE_EVENT_BEGIN("shutdown", "Browser.RenderProcessHostImpl",
+                    perfetto::Track::FromPointer(this),
+                    ChromeTrackEvent::kRenderProcessHost, *this);
+
   widget_helper_ = new RenderWidgetHelper();
 
   ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
@@ -1826,8 +1831,8 @@ void RenderProcessHostImpl::SetForGuestsOnlyForTesting() {
 }
 
 RenderProcessHostImpl::~RenderProcessHostImpl() {
-  TRACE_EVENT2("shutdown", "~RenderProcessHostImpl", "render_process_host",
-               this, "id", GetID());
+  TRACE_EVENT("shutdown", "~RenderProcessHostImpl",
+              ChromeTrackEvent::kRenderProcessHost, *this);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #ifndef NDEBUG
   DCHECK(is_self_deleted_)
@@ -1858,16 +1863,19 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   if (cleanup_network_service_plugin_exceptions_upon_destruction_)
     RemoveNetworkServicePluginExceptions(GetID());
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Cleanup in progress", this,
-                                  "render_process_host", this);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.RenderProcessHostImpl",
-                                  this, "render_process_host", this);
 
   // Manually delete here in order to avoid DeleteOnIOThread trait when
   // kProcessHostOnUI is enabled.
   if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) && gpu_client_) {
     delete gpu_client_.release();
   }
+
+  // "Cleanup in progress"
+  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+                  ChromeTrackEvent::kRenderProcessHost, *this);
+  // "Browser.RenderProcessHostImpl"
+  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+                  ChromeTrackEvent::kRenderProcessHost, *this);
 }
 
 bool RenderProcessHostImpl::Init() {
@@ -2381,6 +2389,22 @@ void RenderProcessHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
                                .ToString());
 }
 
+void RenderProcessHostImpl::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+  int id = GetID();
+  proto->set_id(id);
+  proto->set_process_lock(ChildProcessSecurityPolicyImpl::GetInstance()
+                              ->GetProcessLock(id)
+                              .ToString());
+  browser_context_->WriteIntoTrace(
+      proto.WriteNestedMessage<perfetto::protos::pbzero::RenderProcessHost::
+                                   FieldMetadata_BrowserContext>());
+
+  // TODO(ssid): Consider moving this to ChildProcessLauncher proto field.
+  if (child_process_launcher_)
+    proto->set_child_process_id(child_process_launcher_->GetProcess().Pid());
+}
+
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
   auto registry = std::make_unique<service_manager::BinderRegistry>();
 
@@ -2817,9 +2841,8 @@ void RenderProcessHostImpl::DecrementKeepAliveRefCount() {
 }
 
 void RenderProcessHostImpl::DisableKeepAliveRefCount() {
-  TRACE_EVENT2("shutdown", "RenderProcessHostImpl::DisableKeepAliveRefCount",
-               "browser_context", browser_context_, "render_process_host",
-               this);
+  TRACE_EVENT("shutdown", "RenderProcessHostImpl::DisableKeepAliveRefCount",
+              ChromeTrackEvent::kRenderProcessHost, *this);
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -2887,16 +2910,26 @@ void RenderProcessHostImpl::SetIsUsed() {
 
 void RenderProcessHostImpl::AddRoute(int32_t routing_id,
                                      IPC::Listener* listener) {
-  TRACE_EVENT2("shutdown", "RenderProcessHostImpl::AddRoute",
-               "render_process_host", this, "routing_id", routing_id);
+  TRACE_EVENT("shutdown", "RenderProcessHostImpl::AddRoute",
+              ChromeTrackEvent::kRenderProcessHost, *this,
+              [&](perfetto::EventContext ctx) {
+                auto* proto = ctx.event<ChromeTrackEvent>()
+                                  ->set_render_process_host_listener_changed();
+                proto->set_routing_id(routing_id);
+              });
   CHECK(!listeners_.Lookup(routing_id))
       << "Found Routing ID Conflict: " << routing_id;
   listeners_.AddWithID(listener, routing_id);
 }
 
 void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
-  TRACE_EVENT2("shutdown", "RenderProcessHostImpl::RemoveRoute",
-               "render_process_host", this, "routing_id", routing_id);
+  TRACE_EVENT("shutdown", "RenderProcessHostImpl::RemoveRoute",
+              ChromeTrackEvent::kRenderProcessHost, *this,
+              [&](perfetto::EventContext ctx) {
+                auto* proto = ctx.event<ChromeTrackEvent>()
+                                  ->set_render_process_host_listener_changed();
+                proto->set_routing_id(routing_id);
+              });
   DCHECK(listeners_.Lookup(routing_id) != nullptr);
   listeners_.Remove(routing_id);
   Cleanup();
@@ -3772,8 +3805,8 @@ RenderProcessHostImpl::RegisterBlockStateChangedCallback(
 }
 
 void RenderProcessHostImpl::Cleanup() {
-  TRACE_EVENT1("shutdown", "RenderProcessHostImpl::Cleanup",
-               "render_process_host", this);
+  TRACE_EVENT("shutdown", "RenderProcessHostImpl::Cleanup",
+              ChromeTrackEvent::kRenderProcessHost, *this);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Keep the one renderer thread around forever in single process mode.
   if (run_renderer_in_process())
@@ -3785,10 +3818,9 @@ void RenderProcessHostImpl::Cleanup() {
   // been made, and guarantee that the RenderProcessHostDestroyed observer
   // callback is always the last callback fired.
   if (within_process_died_observer_) {
-    TRACE_EVENT1(
-        "shutdown",
-        "RenderProcessHostImpl::Cleanup : within_process_died_observer",
-        "render_process_host", this);
+    TRACE_EVENT("shutdown",
+                "RenderProcessHostImpl::Cleanup : within_process_died_observer",
+                ChromeTrackEvent::kRenderProcessHost, *this);
     delayed_cleanup_needed_ = true;
     return;
   }
@@ -3804,23 +3836,32 @@ void RenderProcessHostImpl::Cleanup() {
   // Until there are no other owners of this object, we can't delete
   // ourselves.
   if (!listeners_.IsEmpty()) {
-    TRACE_EVENT2("shutdown", "RenderProcessHostImpl::Cleanup : Has listeners.",
-                 "render_process_host", this, "listener_count",
-                 listeners_.size());
+    TRACE_EVENT(
+        "shutdown", "RenderProcessHostImpl::Cleanup : Has listeners.",
+        ChromeTrackEvent::kRenderProcessHost, *this,
+        [&](perfetto::EventContext ctx) {
+          auto* proto =
+              ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
+          proto->set_listener_count(listeners_.size());
+        });
     return;
   } else if (keep_alive_ref_count_ != 0) {
-    TRACE_EVENT2("shutdown",
-                 "RenderProcessHostImpl::Cleanup : Have keep_alive_ref.",
-                 "render_process_host", this, "keep_alive_ref_count_",
-                 keep_alive_ref_count_);
+    TRACE_EVENT(
+        "shutdown", "RenderProcessHostImpl::Cleanup : Have keep_alive_ref.",
+        ChromeTrackEvent::kRenderProcessHost, *this,
+        [&](perfetto::EventContext ctx) {
+          auto* proto =
+              ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
+          proto->set_keep_alive_ref_count(keep_alive_ref_count_);
+        });
     return;
   }
 
-  TRACE_EVENT1("shutdown", "RenderProcessHostImpl::Cleanup : Starting cleanup.",
-               "render_process_host", this);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("shutdown", "Cleanup in progress", this,
-                                    "render_process_host", this,
-                                    "browser_context", browser_context_);
+  TRACE_EVENT("shutdown", "RenderProcessHostImpl::Cleanup : Starting cleanup.",
+              ChromeTrackEvent::kRenderProcessHost, *this);
+  TRACE_EVENT_BEGIN("shutdown", "Cleanup in progress",
+                    perfetto::Track::FromPointer(this),
+                    ChromeTrackEvent::kRenderProcessHost, *this);
 
   if (is_initialized_) {
     GetIOThreadTaskRunner({})->PostTask(
@@ -3995,19 +4036,26 @@ bool RenderProcessHostImpl::FastShutdownStarted() {
 
 // static
 void RenderProcessHostImpl::RegisterHost(int host_id, RenderProcessHost* host) {
-  TRACE_EVENT2("shutdown", "RenderProcessHostImpl::RegisterHost",
-               "render_process_host", host, "host_id", host_id);
+  TRACE_EVENT(
+      "shutdown", "RenderProcessHostImpl::RegisterHost",
+      [&](perfetto::EventContext ctx) {
+        ctx.event<ChromeTrackEvent>()->set_render_process_host()->set_id(
+            host_id);
+      });
   GetAllHosts().AddWithID(host, host_id);
 }
 
 // static
 void RenderProcessHostImpl::UnregisterHost(int host_id) {
   RenderProcessHost* host = GetAllHosts().Lookup(host_id);
-  TRACE_EVENT2("shutdown", "RenderProcessHostImpl::UnregisterHost",
-               "render_process_host", host, "host_id", host_id);
-
   if (!host)
     return;
+  TRACE_EVENT(
+      "shutdown", "RenderProcessHostImpl::UnregisterHost",
+      [&](perfetto::EventContext ctx) {
+        ctx.event<ChromeTrackEvent>()->set_render_process_host()->set_id(
+            host_id);
+      });
 
   GetAllHosts().Remove(host_id);
 
@@ -4896,9 +4944,9 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       priority_.is_background() != priority.is_background();
   const bool visibility_state_changed = priority_.visible != priority.visible;
 
-  TRACE_EVENT2("renderer_host", "RenderProcessHostImpl::UpdateProcessPriority",
-               "should_background", priority.is_background(),
-               "has_pending_views", priority.boost_for_pending_views);
+  TRACE_EVENT("renderer_host", "RenderProcessHostImpl::UpdateProcessPriority",
+              ChromeTrackEvent::kRenderProcessHost, *this,
+              ChromeTrackEvent::kChildProcessLauncherPriority, priority);
   priority_ = priority;
 
   // Control the background state from the browser process, otherwise the task
@@ -4909,13 +4957,6 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   if (!run_renderer_in_process()) {
     DCHECK(child_process_launcher_.get());
     DCHECK(!child_process_launcher_->IsStarting());
-    // Make sure to keep the pid in the trace so we can tell which process is
-    // being modified.
-    TRACE_EVENT2(
-        "renderer_host",
-        "RenderProcessHostImpl::UpdateProcessPriority.SetProcessPriority",
-        "pid", child_process_launcher_->GetProcess().Pid(),
-        "priority_is_background", priority.is_background());
     child_process_launcher_->SetProcessPriority(priority_);
   }
 

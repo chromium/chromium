@@ -16,6 +16,7 @@
 #include "base/process/launch.h"
 #include "base/process/process_metrics.h"
 #include "base/time/time.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_features.h"
@@ -28,6 +29,28 @@
 namespace content {
 
 using internal::ChildProcessLauncherHelper;
+
+void ChildProcessLauncherPriority::WriteIntoTrace(
+    perfetto::TracedProto<
+        perfetto::protos::pbzero::ChildProcessLauncherPriority> proto) {
+  proto->set_is_backgrounded(is_background());
+  proto->set_has_pending_views(boost_for_pending_views);
+
+#if defined(OS_ANDROID)
+  using PriorityProto = perfetto::protos::pbzero::ChildProcessLauncherPriority;
+  switch (importance) {
+    case ChildProcessImportance::IMPORTANT:
+      proto->set_importance(PriorityProto::IMPORTANCE_IMPORTANT);
+      break;
+    case ChildProcessImportance::NORMAL:
+      proto->set_importance(PriorityProto::IMPORTANCE_NORMAL);
+      break;
+    case ChildProcessImportance::MODERATE:
+      proto->set_importance(PriorityProto::IMPORTANCE_MODERATE);
+      break;
+  }
+#endif
+}
 
 #if defined(OS_ANDROID)
 bool ChildProcessLauncher::Client::CanUseWarmUpConnection() {

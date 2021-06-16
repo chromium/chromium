@@ -336,6 +336,14 @@ IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
+// TODO(ssid): Fix the flaky tests, probably the same reason as
+// crbug.com/1041392.
+IN_PROC_BROWSER_TEST_P(StartupTracingTest, DISABLED_ContinueAtShutdown) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
+  StartupTracingController::GetInstance()
+      .set_continue_on_shutdown_for_testing();
+}
+
 class EmergencyStopTracingTest : public StartupTracingTest {};
 
 INSTANTIATE_TEST_SUITE_P(
