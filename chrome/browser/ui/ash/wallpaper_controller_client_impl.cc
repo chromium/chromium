@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/hash/sha1.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/ash/customization/customization_wallpaper_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/wallpaper_private_api.h"
@@ -58,6 +61,9 @@ namespace {
 const char kWallpaperFilesId[] = "wallpaper-files-id";
 constexpr char kChromeAppDailyRefreshInfoPref[] = "daily-refresh-info-key";
 constexpr char kChromeAppCollectionId[] = "collectionId";
+constexpr char kDriveFsWallpaperDirName[] = "Chromebook Wallpaper";
+// Encoded in |WallpaperControllerImpl.ResizeAndEncodeImage|.
+constexpr char kDriveFsWallpaperFileName[] = "wallpaper.jpg";
 
 WallpaperControllerClientImpl* g_wallpaper_controller_client_instance = nullptr;
 
@@ -166,6 +172,19 @@ std::string GetDailyRefreshCollectionId(ValueStore* value_store) {
     return std::string();
 
   return *collection_id;
+}
+
+base::FilePath GetDriveFsWallpaperDir(Profile* profile) {
+  CHECK(profile);
+
+  drive::DriveIntegrationService* drive_integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile);
+  if (!drive_integration_service) {
+    return base::FilePath();
+  }
+  return drive_integration_service->GetMountPointPath()
+      .Append(drive::util::kDriveMyDriveRootDirName)
+      .Append(kDriveFsWallpaperDirName);
 }
 
 }  // namespace
@@ -497,6 +516,25 @@ ash::WallpaperInfo WallpaperControllerClientImpl::GetActiveUserWallpaperInfo() {
 
 bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
   return wallpaper_controller_->ShouldShowWallpaperSetting();
+}
+
+void WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
+    const AccountId& account_id,
+    const base::FilePath& origin) {
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  base::FilePath destination_directory = GetDriveFsWallpaperDir(profile);
+  if (destination_directory.empty())
+    return;
+
+  if (!base::DirectoryExists(destination_directory) &&
+      !base::CreateDirectory(destination_directory)) {
+    return;
+  }
+
+  base::FilePath destination =
+      destination_directory.Append(kDriveFsWallpaperFileName);
+  base::CopyFile(origin, destination);
 }
 
 void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStoreForTesting(

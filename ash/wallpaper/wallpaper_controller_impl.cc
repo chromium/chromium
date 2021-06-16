@@ -78,6 +78,8 @@ using color_utils::ColorProfile;
 using color_utils::LumaRange;
 using color_utils::SaturationRange;
 
+using FilePathCallback = base::OnceCallback<void(const base::FilePath&)>;
+
 namespace ash {
 
 namespace {
@@ -336,10 +338,10 @@ void EnsureCustomWallpaperDirectories(const std::string& wallpaper_files_id) {
 
 // Saves original custom wallpaper to |path| (absolute path) on filesystem
 // and starts resizing operation of the custom wallpaper if necessary.
-void SaveCustomWallpaper(const std::string& wallpaper_files_id,
-                         const base::FilePath& original_path,
-                         WallpaperLayout layout,
-                         gfx::ImageSkia image) {
+base::FilePath SaveCustomWallpaper(const std::string& wallpaper_files_id,
+                                   const base::FilePath& original_path,
+                                   WallpaperLayout layout,
+                                   gfx::ImageSkia image) {
   base::DeletePathRecursively(
       WallpaperControllerImpl::GetCustomWallpaperDir(
           WallpaperControllerImpl::kOriginalWallpaperSubDir)
@@ -366,12 +368,14 @@ void SaveCustomWallpaper(const std::string& wallpaper_files_id,
   // Re-encode orginal file to jpeg format and saves the result in case that
   // resized wallpaper is not generated (i.e. chrome shutdown before resized
   // wallpaper is saved).
-  ResizeAndSaveWallpaper(image, original_path, WALLPAPER_LAYOUT_STRETCH,
-                         image.width(), image.height());
+  bool original_size_saved =
+      ResizeAndSaveWallpaper(image, original_path, WALLPAPER_LAYOUT_STRETCH,
+                             image.width(), image.height());
   ResizeAndSaveWallpaper(image, small_wallpaper_path, layout,
                          kSmallWallpaperMaxWidth, kSmallWallpaperMaxHeight);
   ResizeAndSaveWallpaper(image, large_wallpaper_path, layout,
                          kLargeWallpaperMaxWidth, kLargeWallpaperMaxHeight);
+  return original_size_saved ? original_path : base::FilePath();
 }
 
 // Checks if kiosk app is running. Note: it returns false either when there's
@@ -1007,8 +1011,11 @@ void WallpaperControllerImpl::SetCustomWallpaper(
     // Show the preview wallpaper.
     reload_preview_wallpaper_callback_.Run();
   } else {
-    SaveAndSetWallpaper(account_id, wallpaper_files_id, file_name, CUSTOMIZED,
-                        layout, /*show_wallpaper=*/is_active_user, image);
+    SaveAndSetWallpaperWithCompletion(
+        account_id, wallpaper_files_id, file_name, CUSTOMIZED, layout,
+        /*show_wallpaper=*/is_active_user, image,
+        base::BindOnce(&WallpaperControllerImpl::SaveWallpaperToDriveFs,
+                       weak_factory_.GetWeakPtr(), account_id));
   }
 }
 
@@ -2010,6 +2017,20 @@ void WallpaperControllerImpl::SaveAndSetWallpaper(
     WallpaperLayout layout,
     bool show_wallpaper,
     const gfx::ImageSkia& image) {
+  SaveAndSetWallpaperWithCompletion(account_id, wallpaper_files_id, file_name,
+                                    type, layout, show_wallpaper, image,
+                                    base::DoNothing());
+}
+
+void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletion(
+    const AccountId& account_id,
+    const std::string& wallpaper_files_id,
+    const std::string& file_name,
+    WallpaperType type,
+    WallpaperLayout layout,
+    bool show_wallpaper,
+    const gfx::ImageSkia& image,
+    FilePathCallback image_saved_callback) {
   // If the image of the new wallpaper is empty, the current wallpaper is still
   // kept instead of reverting to the default.
   if (image.isNull()) {
@@ -2046,9 +2067,11 @@ void WallpaperControllerImpl::SaveAndSetWallpaper(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-    blocking_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&SaveCustomWallpaper, wallpaper_files_id,
-                                  wallpaper_path, layout, deep_copy));
+    blocking_task_runner->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&SaveCustomWallpaper, wallpaper_files_id, wallpaper_path,
+                       layout, deep_copy),
+        std::move(image_saved_callback));
   }
 
   if (show_wallpaper) {
@@ -2482,6 +2505,15 @@ base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
   return info.date.ToDeltaSinceWindowsEpoch() -
          base::Time::Now().ToDeltaSinceWindowsEpoch() +
          base::TimeDelta::FromDays(1);
+}
+
+void WallpaperControllerImpl::SaveWallpaperToDriveFs(
+    const AccountId& account_id,
+    const base::FilePath& origin_path) {
+  if (features::IsWallpaperWebUIEnabled() && wallpaper_controller_client_) {
+    wallpaper_controller_client_->SaveWallpaperToDriveFs(account_id,
+                                                         origin_path);
+  }
 }
 
 }  // namespace ash

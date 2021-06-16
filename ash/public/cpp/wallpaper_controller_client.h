@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 
 class AccountId;
 
@@ -39,6 +40,9 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   virtual void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) = 0;
+
+  virtual void SaveWallpaperToDriveFs(const AccountId& account_id,
+                                      const base::FilePath& origin) = 0;
 };
 
 }  // namespace ash

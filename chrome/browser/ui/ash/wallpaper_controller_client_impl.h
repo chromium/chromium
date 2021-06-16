@@ -53,6 +53,8 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
+  void SaveWallpaperToDriveFs(const AccountId& account_id,
+                              const base::FilePath& origin) override;
 
   // Wrappers around the ash::WallpaperController interface.
   void SetCustomWallpaper(const AccountId& account_id,

@@ -959,8 +959,14 @@ TEST_F(WallpaperControllerTest, EnableShelfColoringNotifiesObservers) {
 }
 
 TEST_F(WallpaperControllerTest, SetCustomWallpaper) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
 
   SimulateUserLogin(kUser1);
 
@@ -980,6 +986,7 @@ TEST_F(WallpaperControllerTest, SetCustomWallpaper) {
       base::FilePath(wallpaper_files_id_1).Append(file_name_1).value(), layout,
       CUSTOMIZED, base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
+  EXPECT_EQ(account_id_1, client.get_save_wallpaper_to_drive_fs_account_id());
 
   // Now set another custom wallpaper for |kUser1|. Verify that the on-screen
   // wallpaper doesn't change since |kUser1| is not active, but wallpaper info

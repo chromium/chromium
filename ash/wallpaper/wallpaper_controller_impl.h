@@ -482,6 +482,17 @@ class ASH_EXPORT WallpaperControllerImpl
                            bool show_wallpaper,
                            const gfx::ImageSkia& image);
 
+  // |image_saved| is only called on success.
+  void SaveAndSetWallpaperWithCompletion(
+      const AccountId& account_id,
+      const std::string& wallpaper_files_id,
+      const std::string& file_name,
+      WallpaperType type,
+      WallpaperLayout layout,
+      bool show_wallpaper,
+      const gfx::ImageSkia& image,
+      base::OnceCallback<void(const base::FilePath&)> image_saved_callback);
+
   // Used as the callback of wallpaper decoding. (Wallpapers of type ONLINE,
   // DEFAULT and DEVICE should use their corresponding |*Decoded|, and all other
   // types should use this.) Shows the wallpaper immediately if |show_wallpaper|
@@ -608,6 +619,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // Time to next wallpaper update for daily refresh; 24 hours since last
   // wallpaper set.
   base::TimeDelta GetTimeToNextDailyRefreshUpdate() const;
+
+  void SaveWallpaperToDriveFs(const AccountId& account_id,
+                              const base::FilePath& origin_path);
 
   bool locked_ = false;
 
