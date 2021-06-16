@@ -45,10 +45,8 @@ group("closure_compile") {
     "file_manager/foreground/js/metadata:closure_compile",
     "file_manager/foreground/js/ui:closure_compile",
     "image_loader:closure_compile",
-
-    # TODO(lucmult): Re-enable these when integration tests are JS modules.
-    #"integration_tests:closure_compile",
-    #"integration_tests/file_manager:closure_compile",
+    "integration_tests:closure_compile",
+    "integration_tests/file_manager:closure_compile",
     "video_player/js:closure_compile",
   ]
 }

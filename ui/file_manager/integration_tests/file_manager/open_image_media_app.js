@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, RootPath} from '../test_util.js';
+import {testcase} from '../testcase.js';
 
-(() => {
-  /**
-   * Tests opening an image opens MediaApp/Backlight.
-   * @param {string} path Directory path (Downloads or Drive).
-   */
-  async function opensImageInMediaApp(path) {
-    await opensInMediaApp(path, ENTRIES.image3);
-  }
+import {opensInMediaApp} from './open_media_app.js';
 
-  // Exports test functions.
-  testcase.imageOpenMediaAppDownloads = () => {
-    return opensImageInMediaApp(RootPath.DOWNLOADS);
-  };
+/**
+ * Tests opening an image opens MediaApp/Backlight.
+ * @param {string} path Directory path (Downloads or Drive).
+ */
+async function opensImageInMediaApp(path) {
+  await opensInMediaApp(path, ENTRIES.image3);
+}
 
-  testcase.imageOpenMediaAppDrive = () => {
-    return opensImageInMediaApp(RootPath.DRIVE);
-  };
-})();
+// Exports test functions.
+testcase.imageOpenMediaAppDownloads = () => {
+  return opensImageInMediaApp(RootPath.DOWNLOADS);
+};
+
+testcase.imageOpenMediaAppDrive = () => {
+  return opensImageInMediaApp(RootPath.DRIVE);
+};

@@ -88,6 +88,7 @@ js_type_check("test_support_modules_type_check") {
     ":mock_media_scanner.m",
     ":mock_progress_center.m",
     ":mock_volume_manager.m",
+    ":runtime_loaded_test_util",
     ":test_import_history.m",
   ]
   closure_flags =
@@ -914,6 +915,7 @@ js_library("runtime_loaded_test_util") {
     "//ui/file_manager/file_manager/common/js:metrics.m",
     "//ui/file_manager/file_manager/common/js:progress_center_common.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/externs/background:background_base.m",
     "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]

@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {launch, remoteCallAudioPlayer} from './background.js';
+
+/* eslint-disable no-var */
 
 /**
  * Test of Audio Palyer window and initial elements.

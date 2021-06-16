@@ -5,26 +5,27 @@
  * @fileoverview Tests that enum metrics are recorded correctly.
  */
 
-'use strict';
+import {getHistogramCount} from '../test_util.js';
+import {testcase} from '../testcase.js';
 
-(() => {
-  testcase.metricsRecordEnum = async () => {
-    const appId = null;
-    const histogramName = 'Foo';
-    const fullHistogramName = `FileBrowser.${histogramName}`;
-    const validValues = ['a', 'b', 'c'];
-    const reports = [];
+import {remoteCall} from './background.js';
 
-    // Record each enumerator once.
-    for (const value of validValues) {
-      reports.push(remoteCall.callRemoteTestUtil(
-          'recordEnumMetric', appId, [histogramName, value, validValues]));
-    }
-    await Promise.all(reports);
+testcase.metricsRecordEnum = async () => {
+  const appId = null;
+  const histogramName = 'Foo';
+  const fullHistogramName = `FileBrowser.${histogramName}`;
+  const validValues = ['a', 'b', 'c'];
+  const reports = [];
 
-    // Each bucket should contain exactly one sample.
-    for (let i = 0; i < validValues.length; ++i) {
-      chrome.test.assertEq(1, await getHistogramCount(fullHistogramName, i));
-    }
-  };
-})();
+  // Record each enumerator once.
+  for (const value of validValues) {
+    reports.push(remoteCall.callRemoteTestUtil(
+        'recordEnumMetric', appId, [histogramName, value, validValues]));
+  }
+  await Promise.all(reports);
+
+  // Each bucket should contain exactly one sample.
+  for (let i = 0; i < validValues.length; ++i) {
+    chrome.test.assertEq(1, await getHistogramCount(fullHistogramName, i));
+  }
+};

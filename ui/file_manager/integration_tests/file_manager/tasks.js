@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {getCaller, pending, repeatUntil, RootPath} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
 /**
  * Fake task.
@@ -32,7 +36,7 @@ class FakeTask {
  * @type {Array<FakeTask>}
  * @const
  */
-const DOWNLOADS_FAKE_TASKS = [
+export const DOWNLOADS_FAKE_TASKS = [
   new FakeTask(true, 'dummytaskid|open-with', 'DummyTask1'),
   new FakeTask(false, 'dummytaskid-2|open-with', 'DummyTask2')
 ];

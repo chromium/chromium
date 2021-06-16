@@ -7,14 +7,12 @@
   "description": "Video Player test extension",
   "web_accessible_resources": ["*"],
   "background": {
-    "scripts": [
-      "test_util.js",
-      "remote_call.js",
-      "video_player/background.js",
-      "video_player/open_video_files.js",
-      "video_player/check_elements.js",
-      "video_player/click_control_buttons.js"
-    ]},
+    "page": "video_player/background.html"
+  },
   "incognito" : "split",
-  "permissions": ["commandLinePrivate"]
+  "permissions": [
+    "commandLinePrivate",
+    "chrome://resources/"
+   ],
+  "content_security_policy": "script-src 'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj chrome://resources ;"
 }

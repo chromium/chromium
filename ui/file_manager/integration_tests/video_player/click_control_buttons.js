@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, getCaller, pending, repeatUntil, sendTestMessage} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {openVideos, remoteCallVideoPlayer} from './background.js';
+
+/* eslint-disable no-var */
 
 /**
  * Waits that calling callRemoteTestUtil for |funcName| function with |filename|
@@ -13,7 +18,7 @@
  * @return {Promise} Promise which will be fullfiled when the expected result is
  *     given.
  */
-function waitForFunctionResult(funcName, filename, expectedResult) {
+export function waitForFunctionResult(funcName, filename, expectedResult) {
   var caller = getCaller();
   return repeatUntil(function() {
     return remoteCallVideoPlayer.callRemoteTestUtil(funcName, null, [filename])

@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {openAndWaitForClosingDialog, remoteCall} from './background.js';
+import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
  * Sends a key event to an open file dialog, after selecting the file |name|
@@ -228,7 +232,7 @@ async function openFileDialogSendEscapeKey(volume, name) {
  * Waits for the dialog window and waits it to fully load.
  * @returns {!Promise<string>} dialog's id.
  */
-async function waitForDialog() {
+export async function waitForDialog() {
   const dialog = await remoteCall.waitForWindow('dialog#');
 
   // Wait for Files app to finish loading.
@@ -258,15 +262,17 @@ async function checkFeedbackDisplayHidden(type) {
 
 /**
  * Test file present in Downloads.
- * @const {!string}
+ * @return {!string}
  */
-const TEST_LOCAL_FILE = BASIC_LOCAL_ENTRY_SET[0].targetPath;
+function getTestFileName() {
+  return BASIC_LOCAL_ENTRY_SET[0].targetPath;
+}
 
 /**
  * Tests opening file dialog on Downloads and closing it with Ok button.
  */
 testcase.openFileDialogDownloads = () => {
-  return openFileDialogClickOkButton('downloads', TEST_LOCAL_FILE);
+  return openFileDialogClickOkButton('downloads', getTestFileName());
 };
 
 /**
@@ -314,7 +320,7 @@ testcase.saveFileDialogAriaSingleSelect = async () => {
  * with Ok button.
  */
 testcase.saveFileDialogDownloads = () => {
-  return saveFileDialogClickOkButton('downloads', TEST_LOCAL_FILE);
+  return saveFileDialogClickOkButton('downloads', getTestFileName());
 };
 
 /**
@@ -342,14 +348,14 @@ testcase.saveFileDialogDownloadsNewFolderButton = async () => {
  * Tests opening file dialog on Downloads and closing it with Cancel button.
  */
 testcase.openFileDialogCancelDownloads = () => {
-  return openFileDialogClickCancelButton('downloads', TEST_LOCAL_FILE);
+  return openFileDialogClickCancelButton('downloads', getTestFileName());
 };
 
 /**
  * Tests opening file dialog on Downloads and closing it with ESC key.
  */
 testcase.openFileDialogEscapeDownloads = () => {
-  return openFileDialogSendEscapeKey('downloads', TEST_LOCAL_FILE);
+  return openFileDialogSendEscapeKey('downloads', getTestFileName());
 };
 
 /**

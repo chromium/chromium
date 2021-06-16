@@ -1,7 +1,12 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {addEntries, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET, RECENT_ENTRY_SET} from './test_data.js';
 
 // Test entry for a recently-modified video file.
 const RECENTLY_MODIFIED_VIDEO = new TestEntryInfo({

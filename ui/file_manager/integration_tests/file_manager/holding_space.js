@@ -1,7 +1,12 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {waitForDialog} from './file_dialog.js';
 
 /**
  * Tests that the holding space welcome banner appears and that it can be

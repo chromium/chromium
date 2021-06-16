@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ElementObject, KeyModifiers} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/runtime_loaded_test_util.js';
+import {VolumeManagerCommon} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/volume_manager_types.m.js';
+
+import {getCaller, pending, repeatUntil, sendTestMessage} from './test_util.js';
 
 /**
  * When step by step tests are enabled, turns on automatic step() calls. Note
  * that if step() is defined at the time of this call, invoke it to start the
  * test auto-stepping ball rolling.
  */
-function autoStep() {
+export function autoStep() {
   window.autostep = window.autostep || false;
   if (!window.autostep) {
     window.autostep = true;
@@ -22,7 +25,7 @@ function autoStep() {
 /**
  * Class to manipulate the window in the remote extension.
  */
-class RemoteCall {
+export class RemoteCall {
   /**
    * @param {string} origin ID of the app to be manipulated.
    */
@@ -427,7 +430,7 @@ class RemoteCall {
 /**
  * Class to manipulate the window in the remote extension.
  */
-class RemoteCallFilesApp extends RemoteCall {
+export class RemoteCallFilesApp extends RemoteCall {
   /**
    * @return {boolean} Returns whether the code is running in SWA mode.
    */

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {openVideos, remoteCallVideoPlayer} from './background.js';
 
 /**
  * Checks the initial elements in the video player.

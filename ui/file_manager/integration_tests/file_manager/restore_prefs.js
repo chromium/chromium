@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, RootPath, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
  * Tests restoring the sorting order.

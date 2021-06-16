@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, sendTestMessage} from '../test_util.js';
+import {testcase} from '../testcase.js';
 
-(function() {
+import {launch, remoteCallAudioPlayer} from './background.js';
+
+/* eslint-disable no-var */
 
 /**
  * @param {string} query Query for an element inside <track-list> element.
@@ -374,4 +377,3 @@ testcase.changeTracksPlayListIcon = function() {
   });
 };
 
-})();

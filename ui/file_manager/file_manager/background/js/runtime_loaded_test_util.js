@@ -12,8 +12,11 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-
+import {BackgroundBase} from '../../externs/background/background_base.m.js';
 import {test} from './test_util_base.m.js';
+
+/** @type {!BackgroundBase} */
+window.background;
 
 /**
  * @typedef {{
@@ -34,7 +37,7 @@ import {test} from './test_util_base.m.js';
  *   scrollHeight: (number|undefined),
  *  }}
  */
-let ElementObject;
+export let ElementObject;
 
 /**
  * Object containing common key modifiers: shift, alt, and ctrl.
@@ -45,7 +48,7 @@ let ElementObject;
  *   ctrl: (boolean|undefined),
  * }}
  */
-let KeyModifiers;
+export let KeyModifiers;
 
 /**
  * @typedef {{

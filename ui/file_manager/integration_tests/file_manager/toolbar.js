@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
+import {BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
+
 /**
  * Tests that the Delete menu item is disabled if no entry is selected.
  */

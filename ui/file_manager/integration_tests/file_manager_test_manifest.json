@@ -7,63 +7,15 @@
   "manifest_version": 2,
   "description": "Files test extension",
   "background": {
-    "scripts": [
-      // List test_util.js and background.js first because the testcase
-      // namespace is defined here.
-      "test_util.js",
-      "remote_call.js",
-      "file_manager/background.js",
-      "file_manager/android_photos.js",
-      "file_manager/breadcrumbs.js",
-      "file_manager/context_menu.js",
-      "file_manager/copy_between_windows.js",
-      "file_manager/create_new_folder.js",
-      "file_manager/crostini.js",
-      "file_manager/directory_tree.js",
-      "file_manager/directory_tree_context_menu.js",
-      "file_manager/drive_specific.js",
-      "file_manager/file_dialog.js",
-      "file_manager/file_display.js",
-      "file_manager/file_list.js",
-      "file_manager/files_tooltip.js",
-      "file_manager/folder_shortcuts.js",
-      "file_manager/format_dialog.js",
-      "file_manager/gear_menu.js",
-      "file_manager/grid_view.js",
-      "file_manager/holding_space.js",
-      "file_manager/install_linux_package_dialog.js",
-      "file_manager/keyboard_operations.js",
-      "file_manager/launch_files_app_swa.js",
-      "file_manager/metadata.js",
-      "file_manager/metrics.js",
-      "file_manager/my_files.js",
-      "file_manager/open_audio_files.js",
-      "file_manager/open_image_media_app.js",
-      "file_manager/open_media_app.js",
-      "file_manager/open_sniffed_files.js",
-      "file_manager/open_video_media_app.js",
-      "file_manager/providers.js",
-      "file_manager/quick_view.js",
-      "file_manager/recents.js",
-      "file_manager/restore_geometry.js",
-      "file_manager/restore_prefs.js",
-      "file_manager/search.js",
-      "file_manager/share_and_manage_dialog.js",
-      "file_manager/sort_columns.js",
-      "file_manager/tab_index.js",
-      "file_manager/tasks.js",
-      "file_manager/toolbar.js",
-      "file_manager/transfer.js",
-      "file_manager/trash.js",
-      "file_manager/traverse.js",
-      "file_manager/zip_files.js"
-    ]
+    "page": "file_manager/background.html"
   },
   "permissions": [
     {"fileSystem": ["write"]},
+    "chrome://resources/",
     "tabs",
     "commandLinePrivate",
     "chrome-extension://oobinhbdbiehknkpbpejbbpdbkdjmoco/*",
     "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/*"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj chrome://resources ;"
 }

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+
+import {getCaller, pending, repeatUntil, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
 
 /**
  * Tests if the media app shows up for the selected file entry and that it has
@@ -10,7 +12,7 @@
  * @param {string} path Directory path (Downloads or Drive).
  * @param {TestEntryInfo} entry Selected file entry to open.
  */
-async function opensInMediaApp(path, entry) {
+export async function opensInMediaApp(path, entry) {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [entry.targetPath],

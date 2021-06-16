@@ -5,13 +5,19 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  uses_legacy_modules = true
   testonly = true
   deps = [
     ":remote_call",
     ":test_util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../file_manager/\"",
+
+                    "hide_warnings_for=third_party/",
+                  ]
 }
 
 js_library("remote_call") {
@@ -19,6 +25,7 @@ js_library("remote_call") {
   deps = [
     ":test_util",
     "//ui/file_manager/file_manager/background/js:runtime_loaded_test_util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
   ]
   externs_list = [ "$externs_path/command_line_private.js" ]
 }
@@ -29,4 +36,8 @@ js_library("test_util") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/test.js",
   ]
+}
+
+js_library("testcase") {
+  testonly = true
 }

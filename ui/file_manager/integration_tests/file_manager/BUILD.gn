@@ -5,7 +5,6 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  uses_legacy_modules = true
   testonly = true
   deps = [
     ":android_photos",
@@ -51,135 +50,147 @@ js_type_check("closure_compile") {
     ":traverse",
     ":zip_files",
   ]
+
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=../../ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "hide_warnings_for=third_party/",
+                  ]
 }
 
 js_library("background") {
   testonly = true
   deps = [
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/integration_tests:remote_call",
     "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
   ]
 }
 
 js_library("android_photos") {
   testonly = true
-  deps = [ ":background" ]
+  deps = [
+    ":background",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("breadcrumbs") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("context_menu") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("copy_between_windows") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("create_new_folder") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("crostini") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("directory_tree") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("directory_tree_context_menu") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("drive_specific") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("file_dialog") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("file_display") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("file_list") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("files_tooltip") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("folder_shortcuts") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("format_dialog") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("gear_menu") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("grid_view") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("install_linux_package_dialog") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("keyboard_operations") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("metadata") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("metrics") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("my_files") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("open_audio_files") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("open_media_app") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("open_image_media_app") {
@@ -189,85 +200,88 @@ js_library("open_image_media_app") {
 
 js_library("open_sniffed_files") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("open_video_media_app") {
   testonly = true
-  deps = [ ":open_media_app" ]
+  deps = [
+    ":open_media_app",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("providers") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("quick_view") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("recents") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("restore_geometry") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("restore_prefs") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("search") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("share_and_manage_dialog") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("sort_columns") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("tab_index") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("tasks") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("toolbar") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("transfer") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("trash") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("traverse") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }
 
 js_library("zip_files") {
   testonly = true
-  deps = []
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }

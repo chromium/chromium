@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {expandTreeItem, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {TREEITEM_DOWNLOADS, TREEITEM_DRIVE} from './create_new_folder.js';
 
 /**
  * Waits until a dialog with an OK button is shown, and accepts it by clicking
@@ -11,7 +15,7 @@
  * @param {string} appId The Files app windowId.
  * @return {Promise} Promise to be fulfilled after clicking the OK button.
  */
-async function waitAndAcceptDialog(appId) {
+export async function waitAndAcceptDialog(appId) {
   const okButton = '.cr-dialog-ok';
 
   // Wait until the dialog is shown.

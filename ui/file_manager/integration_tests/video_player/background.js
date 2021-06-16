@@ -2,16 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import './check_elements.js';
+import './click_control_buttons.js';
+import './open_video_files.js';
+
+import {RemoteCall} from '../remote_call.js';
+import {addEntries, RootPath, sendBrowserTestCommand, testPromiseAndApps} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+/* eslint-disable no-var */
 
 /**
  * Extension ID of the Files app.
  * @type {string}
  * @const
  */
-var VIDEO_PLAYER_APP_ID = 'jcgeabjmjgoblfofpppfkcoakmfobdko';
+export const VIDEO_PLAYER_APP_ID = 'jcgeabjmjgoblfofpppfkcoakmfobdko';
 
-var remoteCallVideoPlayer = new RemoteCall(VIDEO_PLAYER_APP_ID);
+export const remoteCallVideoPlayer = new RemoteCall(VIDEO_PLAYER_APP_ID);
 
 /**
  * Launches the video player with the given entries.
@@ -25,7 +33,7 @@ var remoteCallVideoPlayer = new RemoteCall(VIDEO_PLAYER_APP_ID);
  *     be a sub-set of the entries argument.
  * @return {Promise} Promise to be fulfilled with the video player element.
  */
-function launch(testVolumeName, volumeType, entries, opt_selected) {
+export function launch(testVolumeName, volumeType, entries, opt_selected) {
   var entriesPromise = addEntries([testVolumeName], entries).then(function() {
     var selectedEntries = opt_selected || entries;
     var selectedEntryNames = selectedEntries.map(function(entry) {
@@ -66,7 +74,7 @@ function launch(testVolumeName, volumeType, entries, opt_selected) {
  *     volume.
  * @return {Promise} Promise to be fulfilled with the video player element.
  */
-function openVideos(volumeName, volumeType, entries, subtitles = []) {
+export function openVideos(volumeName, volumeType, entries, subtitles = []) {
   const allEntries = entries.concat(subtitles);
   return launch(volumeName, volumeType, allEntries, entries).then((args) => {
     const videoPlayer = args[1];
@@ -75,11 +83,6 @@ function openVideos(volumeName, volumeType, entries, subtitles = []) {
     return args;
   });
 }
-
-/**
- * Namespace for test cases.
- */
-var testcase = {};
 
 /**
  * When the FileManagerBrowserTest harness loads this test extension, request

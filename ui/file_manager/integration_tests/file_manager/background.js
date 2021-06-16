@@ -2,272 +2,83 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import './android_photos.js';
+import './breadcrumbs.js';
+import './context_menu.js';
+import './copy_between_windows.js';
+import './create_new_folder.js';
+import './crostini.js';
+import './directory_tree.js';
+import './directory_tree_context_menu.js';
+import './drive_specific.js';
+import './file_dialog.js';
+import './file_display.js';
+import './file_list.js';
+import './files_tooltip.js';
+import './folder_shortcuts.js';
+import './format_dialog.js';
+import './gear_menu.js';
+import './grid_view.js';
+import './holding_space.js';
+import './install_linux_package_dialog.js';
+import './keyboard_operations.js';
+import './metadata.js';
+import './metrics.js';
+import './my_files.js';
+import './open_audio_files.js';
+import './open_image_media_app.js';
+import './open_sniffed_files.js';
+import './open_video_media_app.js';
+import './providers.js';
+import './quick_view.js';
+import './recents.js';
+import './restore_geometry.js';
+import './restore_prefs.js';
+import './search.js';
+import './share_and_manage_dialog.js';
+import './sort_columns.js';
+import './tab_index.js';
+import './tasks.js';
+import './toolbar.js';
+import './transfer.js';
+import './trash.js';
+import './traverse.js';
+import './zip_files.js';
 
-/**
- * Extension ID of the Files app.
- * @type {string}
- * @const
- */
-const FILE_MANAGER_EXTENSIONS_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
+import {RemoteCall, RemoteCallFilesApp} from '../remote_call.js';
+import {addEntries, checkIfNoErrorsOccuredOnApp, ENTRIES, getCaller, getRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo, testPromiseAndApps} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
 /**
  * Application ID (URL) for File Manager System Web App (SWA).
  * @type {string}
  * @const
  */
-const FILE_MANAGER_SWA_ID = 'chrome://file-manager';
+export const FILE_MANAGER_SWA_ID = 'chrome://file-manager';
 
-let remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
+export {FILE_MANAGER_EXTENSIONS_ID};
+
+export let remoteCall = new RemoteCallFilesApp(FILE_MANAGER_EXTENSIONS_ID);
 
 /**
  * Extension ID of Audio Player.
  * @type {string}
  * @const
  */
-const AUDIO_PLAYER_APP_ID = 'cjbfomnbifhcdnihkgipgfcihmgjfhbf';
+export const AUDIO_PLAYER_APP_ID = 'cjbfomnbifhcdnihkgipgfcihmgjfhbf';
 
-const audioPlayerApp = new RemoteCall(AUDIO_PLAYER_APP_ID);
+export const audioPlayerApp = new RemoteCall(AUDIO_PLAYER_APP_ID);
 
 /**
  * App ID of Video Player.
  * @type {string}
  * @const
  */
-const VIDEO_PLAYER_APP_ID = 'jcgeabjmjgoblfofpppfkcoakmfobdko';
+export const VIDEO_PLAYER_APP_ID = 'jcgeabjmjgoblfofpppfkcoakmfobdko';
 
-const videoPlayerApp = new RemoteCall(VIDEO_PLAYER_APP_ID);
-
-/**
- * Basic entry set for the local volume.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const BASIC_LOCAL_ENTRY_SET = [
-  ENTRIES.hello,
-  ENTRIES.world,
-  ENTRIES.desktop,
-  ENTRIES.beautiful,
-  ENTRIES.photos,
-];
-
-/**
- * Expected files shown in Downloads with hidden enabled
- *
- * @type {!Array<!TestEntryInfo>}
- * @const
- */
-const BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN = BASIC_LOCAL_ENTRY_SET.concat([
-  ENTRIES.hiddenFile,
-  ENTRIES.dotTrash,
-]);
-
-/**
- * Basic entry set for the drive volume that only includes read-write entries
- * (no read-only or similar entries).
- *
- * TODO(hirono): Add a case for an entry cached by FileCache. For testing
- *               Drive, create more entries with Drive specific attributes.
- * TODO(sashab): Merge items from COMPLEX_DRIVE_ENTRY_SET into here (so all
- *               tests run with read-only files) once crbug.com/850834 is fixed.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const BASIC_DRIVE_ENTRY_SET = [
-  ENTRIES.hello,
-  ENTRIES.world,
-  ENTRIES.desktop,
-  ENTRIES.beautiful,
-  ENTRIES.photos,
-  ENTRIES.unsupported,
-  ENTRIES.testDocument,
-  ENTRIES.testSharedDocument,
-  ENTRIES.testSharedFile,
-];
-
-/**
- * Expected files shown in Drive with hidden enabled
- *
- * @type {!Array<!TestEntryInfo>}
- * @const
- */
-const BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN = BASIC_DRIVE_ENTRY_SET.concat([
-  ENTRIES.hiddenFile,
-]);
-
-
-/**
- * Expected files shown in Drive with Google Docs disabled
- *
- * @type {!Array<!TestEntryInfo>}
- */
-const BASIC_DRIVE_ENTRY_SET_WITHOUT_GDOCS = [
-  ENTRIES.hello,
-  ENTRIES.world,
-  ENTRIES.desktop,
-  ENTRIES.beautiful,
-  ENTRIES.photos,
-  ENTRIES.unsupported,
-  ENTRIES.testSharedFile,
-];
-
-/**
- * Basic entry set for the local crostini volume.
- * @type {!Array<!TestEntryInfo>}
- * @const
- */
-const BASIC_CROSTINI_ENTRY_SET = [
-  ENTRIES.hello,
-  ENTRIES.world,
-  ENTRIES.desktop,
-];
-
-/**
- * More complex entry set for Drive that includes entries with varying
- * permissions (such as read-only entries).
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const COMPLEX_DRIVE_ENTRY_SET = [
-  ENTRIES.hello, ENTRIES.photos, ENTRIES.readOnlyFolder,
-  ENTRIES.readOnlyDocument, ENTRIES.readOnlyStrictDocument, ENTRIES.readOnlyFile
-];
-
-/**
- * More complex entry set for DocumentsProvider that includes entries with
- * arying permissions (such as read-only entries).
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET = [
-  ENTRIES.hello, ENTRIES.photos, ENTRIES.readOnlyFolder, ENTRIES.readOnlyFile,
-  ENTRIES.deletableFile, ENTRIES.renamableFile
-];
-
-/**
- * Nested entry set (directories inside each other).
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const NESTED_ENTRY_SET = [
-  ENTRIES.directoryA,
-  ENTRIES.directoryB,
-  ENTRIES.directoryC,
-];
-
-/**
- * Expected list of preset entries in fake test volumes. This should be in sync
- * with FakeTestVolume::PrepareTestEntries in the test harness.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const BASIC_FAKE_ENTRY_SET = [
-  ENTRIES.hello,
-  ENTRIES.directoryA,
-];
-
-/**
- * Expected files shown in "Recent". Directories (e.g. 'photos') are not in this
- * list as they are not expected in "Recent".
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const RECENT_ENTRY_SET = [
-  ENTRIES.desktop,
-  ENTRIES.beautiful,
-];
-
-/**
- * Expected files shown in "Offline", which should have the files
- * "available offline". Google Documents, Google Spreadsheets, and the files
- * cached locally are "available offline".
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const OFFLINE_ENTRY_SET = [
-  ENTRIES.testDocument,
-  ENTRIES.testSharedDocument,
-  ENTRIES.testSharedFile,
-];
-
-/**
- * Expected files shown in "Shared with me", which should be the entries labeled
- * with "shared-with-me".
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const SHARED_WITH_ME_ENTRY_SET = [
-  ENTRIES.testSharedDocument,
-  ENTRIES.testSharedFile,
-];
-
-/**
- * Entry set for Drive that includes team drives of various permissions and
- * nested files with various permissions.
- *
- * TODO(sashab): Add support for capabilities of Shared Drive roots.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const SHARED_DRIVE_ENTRY_SET = [
-  ENTRIES.hello,
-  ENTRIES.teamDriveA,
-  ENTRIES.teamDriveAFile,
-  ENTRIES.teamDriveADirectory,
-  ENTRIES.teamDriveAHostedFile,
-  ENTRIES.teamDriveB,
-  ENTRIES.teamDriveBFile,
-  ENTRIES.teamDriveBDirectory,
-];
-
-/**
- * Entry set for Drive that includes Computers, including nested computers with
- * files and nested "USB and External Devices" with nested devices.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const COMPUTERS_ENTRY_SET = [
-  ENTRIES.hello,
-  ENTRIES.computerA,
-  ENTRIES.computerAFile,
-  ENTRIES.computerAdirectoryA,
-];
-
-/**
- * Basic entry set for the android volume.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
- */
-const BASIC_ANDROID_ENTRY_SET = [
-  ENTRIES.directoryDocuments,
-  ENTRIES.directoryMovies,
-  ENTRIES.directoryMusic,
-  ENTRIES.directoryPictures,
-];
-
-/**
- * Expected files shown in Android with hidden enabled
- *
- * @type {!Array<!TestEntryInfo>}
- * @const
- */
-const BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN = BASIC_ANDROID_ENTRY_SET.concat([
-  ENTRIES.hello,
-  ENTRIES.world,
-  ENTRIES.directoryA,
-]);
+export const videoPlayerApp = new RemoteCall(VIDEO_PLAYER_APP_ID);
 
 /**
  * Opens a Files app's main window.
@@ -280,7 +91,7 @@ const BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN = BASIC_ANDROID_ENTRY_SET.concat([
  *     app.
  * @return {Promise} Promise to be fulfilled after window creating.
  */
-async function openNewWindow(initialRoot, appState = {}) {
+export async function openNewWindow(initialRoot, appState = {}) {
   // TODO(mtomasz): Migrate from full paths to a pair of a volumeId and a
   // relative path. To compose the URL communicate via messages with
   // file_manager_browser_test.cc.
@@ -319,7 +130,7 @@ async function openNewWindow(initialRoot, appState = {}) {
  * @return {Promise} Promise to be fulfilled with the result entry of the
  *     dialog.
  */
-async function openAndWaitForClosingDialog(
+export async function openAndWaitForClosingDialog(
     dialogParams, volumeName, expectedSet, closeDialog,
     useBrowserOpen = false) {
   const caller = getCaller();
@@ -369,7 +180,7 @@ async function openAndWaitForClosingDialog(
  *     app.
  * @return {Promise} Promise to be fulfilled with the window ID.
  */
-async function setupAndWaitUntilReady(
+export async function setupAndWaitUntilReady(
     initialRoot, initialLocalEntries = BASIC_LOCAL_ENTRY_SET,
     initialDriveEntries = BASIC_DRIVE_ENTRY_SET, appState = {}) {
   const localEntriesPromise = addEntries(['local'], initialLocalEntries);
@@ -393,7 +204,7 @@ async function setupAndWaitUntilReady(
  * @param {Array<string>} fileListEntry An entry in a file list.
  * @return {string} Name of the file.
  */
-function getFileName(fileListEntry) {
+export function getFileName(fileListEntry) {
   return fileListEntry[0];
 }
 
@@ -402,7 +213,7 @@ function getFileName(fileListEntry) {
  * @param {Array<string>} fileListEntry An entry in a file list.
  * @return {string} Size of the file.
  */
-function getFileSize(fileListEntry) {
+export function getFileSize(fileListEntry) {
   return fileListEntry[1];
 }
 
@@ -411,7 +222,7 @@ function getFileSize(fileListEntry) {
  * @param {Array<string>} fileListEntry An entry in a file list.
  * @return {string} Type of the file.
  */
-function getFileType(fileListEntry) {
+export function getFileType(fileListEntry) {
   return fileListEntry[2];
 }
 
@@ -419,7 +230,7 @@ function getFileType(fileListEntry) {
  * A value that when returned by an async test indicates that app errors should
  * not be checked following completion of the test.
  */
-const IGNORE_APP_ERRORS = Symbol('IGNORE_APP_ERRORS');
+export const IGNORE_APP_ERRORS = Symbol('IGNORE_APP_ERRORS');
 
 /**
  * For async function tests, wait for the test to complete, check for app errors
@@ -427,7 +238,7 @@ const IGNORE_APP_ERRORS = Symbol('IGNORE_APP_ERRORS');
  * @param {Promise} resultPromise A promise that resolves with the test result.
  * @private
  */
-async function awaitAsyncTestResult(resultPromise) {
+export async function awaitAsyncTestResult(resultPromise) {
   chrome.test.assertTrue(
       resultPromise instanceof Promise, 'test did not return a Promise');
 
@@ -457,11 +268,6 @@ async function awaitAsyncTestResult(resultPromise) {
 
   passCallback();
 }
-
-/**
- * Namespace for test cases.
- */
-const testcase = {};
 
 /**
  * When the FileManagerBrowserTest harness loads this test extension, request
@@ -529,7 +335,7 @@ window.addEventListener('load', () => {
  * @param {string} directoryName Directory of shortcut to be created.
  * @return {Promise} Promise fulfilled on success.
  */
-async function createShortcut(appId, directoryName) {
+export async function createShortcut(appId, directoryName) {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'selectFile', appId, [directoryName]));
 
@@ -555,7 +361,7 @@ async function createShortcut(appId, directoryName) {
  * @param {string} treeItem Query to the tree item that should be expanded.
  * @return {Promise} Promise fulfilled on success.
  */
-async function expandTreeItem(appId, treeItem) {
+export async function expandTreeItem(appId, treeItem) {
   const expandIcon = treeItem + '> .tree-row[has-children=true] .expand-icon';
   await remoteCall.waitAndClickElement(appId, expandIcon);
 
@@ -572,7 +378,7 @@ async function expandTreeItem(appId, treeItem) {
  * @return {Promise<string>} Promise fulfilled on success with the selector
  *    query of the last directory expanded.
  */
-async function recursiveExpand(appId, breadcrumbsPath) {
+export async function recursiveExpand(appId, breadcrumbsPath) {
   const paths = breadcrumbsPath.split('/').filter(path => path);
   const hasChildren = ' > .tree-row[has-children=true]';
 
@@ -606,9 +412,8 @@ async function recursiveExpand(appId, breadcrumbsPath) {
  *   @return {!Promise<string>} the final selector used to click on the desired
  * tree item.
  */
-async function navigateWithDirectoryTree(
+export async function navigateWithDirectoryTree(
     appId, breadcrumbsPath, shortcutToPath) {
-
   // Focus the directory tree.
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil(
@@ -641,7 +446,8 @@ async function navigateWithDirectoryTree(
  * @param {!Array<TestEntryInfo>} initialEntries List of initial entries to
  *     load in Crostini (defaults to a basic entry set).
  */
-async function mountCrostini(appId, initialEntries = BASIC_CROSTINI_ENTRY_SET) {
+export async function mountCrostini(
+    appId, initialEntries = BASIC_CROSTINI_ENTRY_SET) {
   const fakeLinuxFiles = '#directory-tree [root-type-icon="crostini"]';
   const realLinxuFiles = '#directory-tree [volume-type-icon="crostini"]';
 
@@ -662,7 +468,7 @@ async function mountCrostini(appId, initialEntries = BASIC_CROSTINI_ENTRY_SET) {
  * Returns true if the SinglePartitionFormat flag is on.
  * @param {string} appId Files app windowId.
  */
-async function isSinglePartitionFormat(appId) {
+export async function isSinglePartitionFormat(appId) {
   const dialog = await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog']);
   const flag = dialog.attributes['single-partition-format'] || '';
@@ -672,7 +478,7 @@ async function isSinglePartitionFormat(appId) {
 /**
  * Waits until the MediaApp/Backlight shows up.
  */
-async function waitForMediaApp() {
+export async function waitForMediaApp() {
   // The MediaApp window should open for the file.
   const caller = getCaller();
   const mediaAppAppId = 'jhdjimmaggjajfjphpljagpgkidjilnj';
