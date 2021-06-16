@@ -78,12 +78,15 @@ void OverlayPanelLayer::SetProperties(
     int icon_tint,
     int drag_handlebar_tint,
     float icon_opacity,
-    int separator_line_color) {
+    int separator_line_color,
+    float in_bar_related_searches_height) {
   // Round values to avoid pixel gap between layers.
   bar_height = floor(bar_height);
 
   // ---------------------------------------------------------------------------
   // Content setup, to center in space below drag handle (when present).
+  // When Related Searches are shown in the Bar they appear below the rest of
+  // this content.
   // ---------------------------------------------------------------------------
   float bar_top_y = bar_offset_y;
   float bar_bottom = bar_top_y + bar_height;
@@ -91,7 +94,7 @@ void OverlayPanelLayer::SetProperties(
   bool is_rtl = l10n_util::IsLayoutRtl();
 
   int content_top_y = bar_top_y;
-  int content_height = bar_height;
+  int content_height = bar_height - in_bar_related_searches_height;
   int rounded_top_height = 0;
   gfx::Size rounded_bar_top_size;
   gfx::PointF rounded_bar_top_position;

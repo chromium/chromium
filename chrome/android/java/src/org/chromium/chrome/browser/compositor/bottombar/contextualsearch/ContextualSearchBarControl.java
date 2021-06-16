@@ -113,6 +113,12 @@ public class ContextualSearchBarControl {
     /** The animator that controls touch highlighting. */
     private CompositorAnimator mTouchHighlightAnimation;
 
+    /** The animator that gradually exposes the Related Searches in the Bar. */
+    private CompositorAnimator mInBarRelatedSearchesAnimation;
+
+    /** The height of the Related Searches section of the Bar, as adjusted during animation. */
+    private float mInBarRelatedSearchesAnimatedHeight;
+
     /**
      * Constructs a new bottom bar control container by inflating views from XML.
      *
@@ -539,5 +545,39 @@ public class ContextualSearchBarControl {
 
         mSearchBarContextOpacity = fadingOutPercentage;
         mSearchBarTermOpacity = fadingInPercentage;
+    }
+
+    /** Animates showing Related Searches in the bottom part of the Bar. */
+    public void animateInBarRelatedSearches() {
+        if (mInBarRelatedSearchesAnimation == null) {
+            mInBarRelatedSearchesAnimation =
+                    CompositorAnimator.ofFloat(mContextualSearchPanel.getAnimationHandler(), 0.f,
+                            1.f, OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
+            mInBarRelatedSearchesAnimation.addUpdateListener(
+                    animator -> updateInBarRelatedSearchesSize(animator.getAnimatedValue()));
+            mInBarRelatedSearchesAnimation.start();
+        }
+    }
+
+    /**
+     * Updates the portion of the Related Searches UI that is shown.
+     * @param percentage The percentage (from 0 to 1) of the UI to expose.
+     */
+    private void updateInBarRelatedSearchesSize(float percentage) {
+        mInBarRelatedSearchesAnimatedHeight = getInBarRelatedSearchesMaximumHeight() * percentage;
+        mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeight);
+    }
+
+    /** Returns the maximum height of the Related Searches UI that we show right in the Bar. */
+    private float getInBarRelatedSearchesMaximumHeight() {
+        return mContextualSearchPanel.getRelatedSearchesMaximumHeight();
+    }
+
+    /**
+     * Returns the current height of the portion of the Related Searches UI that is visible
+     * due to animation.
+     */
+    float getInBarRelatedSearchesAnimatedHeight() {
+        return mInBarRelatedSearchesAnimatedHeight;
     }
 }

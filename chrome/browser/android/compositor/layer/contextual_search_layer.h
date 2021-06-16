@@ -65,6 +65,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      int related_searches_resource_id,
                      bool related_searches_visible,
                      float related_searches_height,
+                     float in_bar_related_searches_height,
                      // Banner etc
                      bool search_bar_banner_visible,
                      float search_bar_banner_height,

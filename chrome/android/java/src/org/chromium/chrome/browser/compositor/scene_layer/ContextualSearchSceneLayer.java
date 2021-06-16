@@ -174,6 +174,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 panelHelpContainerBackgroundColor,
                 // Related Searches
                 relatedSearchesViewId, relatedSearchesVisible, relatedSearchesHeightPx,
+                panel.getInBarRelatedSearchesAnimatedHeight() * mDpToPx,
                 // Banner etc.
                 searchBarBannerVisible, searchBarBannerHeightPx, searchBarBannerPaddingPx,
                 searchBarBannerRippleWidthPx, searchBarBannerRippleOpacity,
@@ -254,7 +255,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float panelHelpOpacity, int panelHelpBackgroundColor,
                 // Related Searches
                 int relatedSearchesResourceId, boolean relatedSearchesVisible,
-                float relatedSearchesHeight,
+                float relatedSearchesHeight, float inBarRelatedSearchesHeight,
                 // Banner etc
                 boolean searchBarBannerVisible, float searchBarBannerHeight,
                 float searchBarBannerPaddingPx, float searchBarBannerRippleWidth,

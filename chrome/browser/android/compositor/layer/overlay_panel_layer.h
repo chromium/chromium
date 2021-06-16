@@ -55,7 +55,8 @@ class OverlayPanelLayer : public Layer {
                      int icon_tint,
                      int drag_handlebar_tint,
                      float icon_opacity,
-                     int separator_line_color);
+                     int separator_line_color,
+                     float in_bar_related_searches_height);
 
   void SetProgressBar(int progress_bar_background_resource_id,
                       int progress_bar_resource_id,

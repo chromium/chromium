@@ -65,6 +65,7 @@ void ContextualSearchLayer::SetProperties(
     int related_searches_resource_id,
     bool related_searches_visible,
     float related_searches_height,
+    float in_bar_related_searches_height,
     // Banner etc
     bool search_bar_banner_visible,
     float search_bar_banner_height,
@@ -132,13 +133,14 @@ void ContextualSearchLayer::SetProperties(
       search_bar_margin_side, search_bar_margin_top, search_bar_height,
       search_bar_top, search_term_opacity, should_render_bar_border,
       search_bar_border_height, icon_color, drag_handlebar_color,
-      close_icon_opacity, separator_line_color);
+      close_icon_opacity, separator_line_color, in_bar_related_searches_height);
 
   // -----------------------------------------------------------------
   // Content setup, to center in space below drag handle (when present).
   // -----------------------------------------------------------------
   bool is_rtl = l10n_util::IsLayoutRtl();
-  int content_height = search_bar_height - search_bar_margin_top;
+  int content_height = search_bar_height - search_bar_margin_top -
+                       in_bar_related_searches_height;
   int content_top = search_bar_top + search_bar_margin_top;
 
   // -----------------------------------------------------------------

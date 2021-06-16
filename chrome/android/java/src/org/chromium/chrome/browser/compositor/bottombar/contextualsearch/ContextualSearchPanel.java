@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDe
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -443,7 +444,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @Override
     public float getContentY() {
         return getOffsetY() + getBarContainerHeight() + getPanelHelpHeight()
-                + getRelatedSearchesHeight() + getPromoHeightPx() * mPxToDp;
+                + getRelatedSearchesMaximumHeight() + getPromoHeightPx() * mPxToDp;
     }
 
     @Override
@@ -460,6 +461,17 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     protected float getMaximizedHeight() {
         // Max height does not cover the entire content screen.
         return getTabHeight() * MAXIMIZED_HEIGHT_FRACTION;
+    }
+
+    @Override
+    public float getBarHeight() {
+        return super.getBarHeight() + getInBarRelatedSearchesAnimatedHeight();
+    }
+
+    @Override
+    public void setClampedPanelHeight(float height) {
+        // TODO(donnd): better to just expose the super method to be public?
+        super.setClampedPanelHeight(height);
     }
 
     // ============================================================================================
@@ -707,6 +719,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getSearchBarControl().setQuickAction(
                 quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
         getImageControl().setThumbnailUrl(thumbnailUrl);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)
+                && relatedSearches.size() > 0) {
+            getSearchBarControl().animateInBarRelatedSearches();
+        }
     }
 
     /**
@@ -919,6 +936,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         }
     }
 
+    /** Returns whether we currently have a Search Bar created. */
+    private boolean haveSearchBarControl() {
+        return mSearchBarControl != null;
+    }
+
     // ============================================================================================
     // Image Control
     // ============================================================================================
@@ -1010,8 +1032,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 @Override
                 public float getYPositionPx() {
                     // Needs to enumerate anything that can appear above it in the panel.
-                    return Math.round((getOffsetY() + getBarContainerHeight()
-                                              + getRelatedSearchesHeight() + getPanelHelpHeight())
+                    return Math.round(
+                            (getOffsetY() + getBarContainerHeight()
+                                    + getRelatedSearchesMaximumHeight() + getPanelHelpHeight())
                             / mPxToDp);
                 }
 
@@ -1082,8 +1105,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 @Override
                 public float getYPositionPx() {
                     // Needs to enumerate anything that can appear above it in the panel.
-                    return Math.round(
-                            (getOffsetY() + getBarContainerHeight() + getRelatedSearchesHeight())
+                    return Math.round((getOffsetY() + getBarContainerHeight()
+                                              + getRelatedSearchesMaximumHeight())
                             / mPxToDp);
                 }
 
@@ -1129,10 +1152,19 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /**
-     * @return Height of this section of the panel in DPs.
+     * @return Total height of this section of the panel in DPs (once fully exposed by animation).
      */
-    private float getRelatedSearchesHeight() {
+    float getRelatedSearchesMaximumHeight() {
         return getRelatedSearchesControl().getHeightPx() * mPxToDp;
+    }
+
+    /**
+     * @return Height of the Related Searches UI as currently show right inside the Bar, in DPs.
+     */
+    public float getInBarRelatedSearchesAnimatedHeight() {
+        return haveSearchBarControl()
+                ? getSearchBarControl().getInBarRelatedSearchesAnimatedHeight()
+                : 0.f;
     }
 
     /**

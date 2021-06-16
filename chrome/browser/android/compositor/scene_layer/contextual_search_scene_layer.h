@@ -79,6 +79,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jint related_searches_resource_id,
       jboolean related_searches_visible,
       jfloat related_searches_height,
+      jfloat in_bar_related_searches_height,
       // Banner etc
       jboolean search_bar_banner_visible,
       jfloat search_bar_banner_height,
