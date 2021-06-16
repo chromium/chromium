@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>Test using large start offset.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+
+<input id="item" style=" display: grid; grid-gap: 0px 3px; border-left-width: 100000000px;" type="week"></input>
+
+<script>
+  test(function () {
+    testGridPositionDefinitionsValues(document.getElementById("item"), "auto", "auto", "auto", "auto");
+  }, "Test that setting and getting grid-column|row-start|end to huge values is properly clamped and does not make the renderer crash.");
+</script>
