@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1522 tests; 1495 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1507 tests; 1480 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS -apple-color-filter: _camel_cased_attribute v. CSS.supports
 PASS -apple-color-filter: _webkit_cased_attribute must only exist for -webkit-
 PASS -apple-color-filter: _dashed_attribute v. CSS.supports
@@ -195,21 +195,6 @@ PASS -moz-orient: _dashed_attribute v. CSS.supports
 PASS -moz-osx-font-smoothing: _camel_cased_attribute v. CSS.supports
 PASS -moz-osx-font-smoothing: _webkit_cased_attribute must only exist for -webkit-
 PASS -moz-osx-font-smoothing: _dashed_attribute v. CSS.supports
-PASS -moz-outline-radius: _camel_cased_attribute v. CSS.supports
-PASS -moz-outline-radius: _webkit_cased_attribute must only exist for -webkit-
-PASS -moz-outline-radius: _dashed_attribute v. CSS.supports
-PASS -moz-outline-radius-bottomleft: _camel_cased_attribute v. CSS.supports
-PASS -moz-outline-radius-bottomleft: _webkit_cased_attribute must only exist for -webkit-
-PASS -moz-outline-radius-bottomleft: _dashed_attribute v. CSS.supports
-PASS -moz-outline-radius-bottomright: _camel_cased_attribute v. CSS.supports
-PASS -moz-outline-radius-bottomright: _webkit_cased_attribute must only exist for -webkit-
-PASS -moz-outline-radius-bottomright: _dashed_attribute v. CSS.supports
-PASS -moz-outline-radius-topleft: _camel_cased_attribute v. CSS.supports
-PASS -moz-outline-radius-topleft: _webkit_cased_attribute must only exist for -webkit-
-PASS -moz-outline-radius-topleft: _dashed_attribute v. CSS.supports
-PASS -moz-outline-radius-topright: _camel_cased_attribute v. CSS.supports
-PASS -moz-outline-radius-topright: _webkit_cased_attribute must only exist for -webkit-
-PASS -moz-outline-radius-topright: _dashed_attribute v. CSS.supports
 PASS -moz-padding-end: _camel_cased_attribute v. CSS.supports
 PASS -moz-padding-end: _webkit_cased_attribute must only exist for -webkit-
 PASS -moz-padding-end: _dashed_attribute v. CSS.supports
