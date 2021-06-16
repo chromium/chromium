@@ -255,6 +255,16 @@ Surface::QueueFrameResult Surface::QueueFrame(
   } else {
     pending_frame_data_ = FrameData(std::move(frame), frame_index);
 
+    auto traced_value = std::make_unique<base::trace_event::TracedValue>();
+    traced_value->BeginArray("Pending");
+    for (auto& it : activation_dependencies_)
+      traced_value->AppendString(it.ToString());
+    traced_value->EndArray();
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+        "viz", "SurfaceQueuedPending", TRACE_ID_LOCAL(this), "LocalSurfaceId",
+        surface_info_.id().ToString(), "ActivationDependencies",
+        std::move(traced_value));
+
     deadline_->Set(ResolveFrameDeadline(pending_frame_data_->frame));
     if (deadline_->HasDeadlinePassed()) {
       ActivatePendingFrameForDeadline();
@@ -264,15 +274,6 @@ Surface::QueueFrameResult Surface::QueueFrame(
       // that client, leading to the group being unblocked.
       for (auto* it : blocking_allocation_groups_)
         it->AckLastestActiveUnAckedFrame();
-      auto traced_value = std::make_unique<base::trace_event::TracedValue>();
-      traced_value->BeginArray("Pending");
-      for (auto& it : activation_dependencies_)
-        traced_value->AppendString(it.ToString());
-      traced_value->EndArray();
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-          "viz", "SurfaceQueuedPending", TRACE_ID_LOCAL(this), "LocalSurfaceId",
-          surface_info_.id().ToString(), "ActivationDependencies",
-          std::move(traced_value));
       result = QueueFrameResult::ACCEPTED_PENDING;
     }
   }

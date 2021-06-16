@@ -6,6 +6,7 @@
 #define CC_LAYERS_DEADLINE_POLICY_H_
 
 #include <cstdint>
+#include <string>
 
 #include "base/check.h"
 #include "cc/cc_export.h"
@@ -57,6 +58,8 @@ class CC_EXPORT DeadlinePolicy {
   bool operator!=(const DeadlinePolicy& other) const {
     return !(*this == other);
   }
+
+  std::string ToString() const;
 
  private:
   explicit DeadlinePolicy(

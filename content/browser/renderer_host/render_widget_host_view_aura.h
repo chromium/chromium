@@ -485,6 +485,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
                            WebContentsViewReparent);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest, TakeFallbackContent);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
+                           TakeFallbackContentForPrerender);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
                            DiscardDelegatedFrames);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
                            ScrollOOPIFEditableElement);

@@ -219,6 +219,10 @@ void DelegatedFrameHost::EmbedSurface(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Size& new_dip_size,
     cc::DeadlinePolicy deadline_policy) {
+  TRACE_EVENT2("viz", "DelegatedFrameHost::EmbedSurface", "surface_id",
+               new_local_surface_id.ToString(), "deadline_policy",
+               deadline_policy.ToString());
+
   const viz::SurfaceId* primary_surface_id =
       client_->DelegatedFrameHostGetLayer()->GetSurfaceId();
 
@@ -242,7 +246,13 @@ void DelegatedFrameHost::EmbedSurface(
     // time user switches back to it the page is blank. This is preferred to
     // showing contents of old size. Don't call EvictDelegatedFrame to avoid
     // races when dragging tabs across displays. See https://crbug.com/813157.
-    if (surface_dip_size_ != current_frame_size_in_dip_) {
+    //
+    // An empty |current_frame_size_in_dip_| indicates this renderer has never
+    // been made visible. This is the case for pre-rendered contents. Don't use
+    // the primary id as fallback since it's guaranteed to have no content. See
+    // crbug.com/1218238.
+    if (!current_frame_size_in_dip_.IsEmpty() &&
+        surface_dip_size_ != current_frame_size_in_dip_) {
       client_->DelegatedFrameHostGetLayer()->SetOldestAcceptableFallback(
           new_primary_surface_id);
     }

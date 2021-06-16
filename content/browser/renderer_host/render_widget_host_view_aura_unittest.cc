@@ -159,8 +159,7 @@ using viz::FrameEvictionManager;
 namespace content {
 
 void InstallDelegatedFrameHostClient(
-    RenderWidgetHostViewAura* render_widget_host_view,
-    std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client);
+    RenderWidgetHostViewAura* render_widget_host_view);
 
 const viz::LocalSurfaceId kArbitraryLocalSurfaceId(
     1,
@@ -229,25 +228,11 @@ class FakeWindowEventDispatcher : public aura::WindowEventDispatcher {
   size_t processed_touch_event_count_;
 };
 
-class FakeDelegatedFrameHostClientAura : public DelegatedFrameHostClientAura {
- public:
-  explicit FakeDelegatedFrameHostClientAura(
-      RenderWidgetHostViewAura* render_widget_host_view)
-      : DelegatedFrameHostClientAura(render_widget_host_view) {}
-  ~FakeDelegatedFrameHostClientAura() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDelegatedFrameHostClientAura);
-};
-
 class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
  public:
   FakeRenderWidgetHostViewAura(RenderWidgetHost* widget)
-      : RenderWidgetHostViewAura(widget),
-        delegated_frame_host_client_(
-            new FakeDelegatedFrameHostClientAura(this)) {
-    InstallDelegatedFrameHostClient(
-        this, base::WrapUnique(delegated_frame_host_client_));
+      : RenderWidgetHostViewAura(widget) {
+    InstallDelegatedFrameHostClient(this);
   }
 
   ~FakeRenderWidgetHostViewAura() override = default;
@@ -294,7 +279,6 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
   FakeWindowEventDispatcher* dispatcher_;
 
  private:
-  FakeDelegatedFrameHostClientAura* delegated_frame_host_client_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeRenderWidgetHostViewAura);
 };
@@ -391,9 +375,10 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
-      int32_t routing_id) {
-    return new MockRenderWidgetHostImpl(frame_tree, delegate,
-                                        agent_scheduling_group, routing_id);
+      int32_t routing_id,
+      bool hidden) {
+    return new MockRenderWidgetHostImpl(
+        frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
   }
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
@@ -422,13 +407,14 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   MockRenderWidgetHostImpl(FrameTree* frame_tree,
                            RenderWidgetHostDelegate* delegate,
                            AgentSchedulingGroupHost& agent_scheduling_group,
-                           int32_t routing_id)
+                           int32_t routing_id,
+                           bool hidden)
       : RenderWidgetHostImpl(frame_tree,
                              /*self_owned=*/true,
                              delegate,
                              agent_scheduling_group,
                              routing_id,
-                             /*hidden=*/false,
+                             hidden,
                              /*renderer_initiated_creation=*/false,
                              std::make_unique<FrameTokenMessageQueue>()) {
     BindWidgetInterfaces(mojo::AssociatedRemote<blink::mojom::WidgetHost>()
@@ -493,9 +479,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
         0);
   }
 
-  static void InstallDelegatedFrameHostClient(
-      RenderWidgetHostViewAura* view,
-      std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client) {
+  static void InstallDelegatedFrameHostClient(RenderWidgetHostViewAura* view) {
     // Follow RWHVAura code that does not create DelegateFrameHost when there is
     // no valid frame sink id.
     if (!view->frame_sink_id_.is_valid())
@@ -506,12 +490,12 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
         false /* should_register_frame_sink_id */);
   }
 
-  FakeRenderWidgetHostViewAura* CreateView() {
+  FakeRenderWidgetHostViewAura* CreateView(bool hidden = false) {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     auto* widget_host = MockRenderWidgetHostImpl::Create(
         GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id);
+        routing_id, hidden);
     delegates_.back()->set_widget_host(widget_host);
 
     return new FakeRenderWidgetHostViewAura(widget_host);
@@ -553,7 +537,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     parent_host_ = MockRenderWidgetHostImpl::Create(
         GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id);
+        routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(parent_host_);
 
     parent_view_ = new RenderWidgetHostViewAura(parent_host_);
@@ -731,10 +715,9 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 };
 
 void InstallDelegatedFrameHostClient(
-    RenderWidgetHostViewAura* render_widget_host_view,
-    std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client) {
+    RenderWidgetHostViewAura* render_widget_host_view) {
   RenderWidgetHostViewAuraTest::InstallDelegatedFrameHostClient(
-      render_widget_host_view, std::move(delegated_frame_host_client));
+      render_widget_host_view);
 }
 
 // TODO(mohsen): Consider moving these tests to OverscrollControllerTest if
@@ -3233,7 +3216,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
         GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id);
+        routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(hosts[i]);
 
     views[i] = new FakeRenderWidgetHostViewAura(hosts[i]);
@@ -3355,7 +3338,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
         GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id);
+        routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(hosts[i]);
 
     hosts[i]->BindWidgetInterfaces(
@@ -5654,6 +5637,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DropFallbackIfResizedWhileHidden) {
   aura::client::ParentWindowWithContext(
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
+  view_->SetSize(gfx::Size(50, 30));
   view_->Show();
   view_->Hide();
   view_->SetSize(gfx::Size(54, 32));
@@ -5708,6 +5692,42 @@ TEST_F(RenderWidgetHostViewAuraTest, TakeFallbackContent) {
             *view2->window_->layer()->GetOldestAcceptableFallback());
 
   DestroyView(view2);
+}
+
+// Check that TakeFallbackContentFrom() copies the fallback SurfaceId and
+// background color from the previous view to the new view if the new view is
+// for a pre-rendered page which is loaded as hidden.
+TEST_F(RenderWidgetHostViewAuraTest, TakeFallbackContentForPrerender) {
+  FakeRenderWidgetHostViewAura* old_view = CreateView(/*hidden = */ false);
+  old_view->InitAsChild(nullptr);
+  aura::client::ParentWindowWithContext(
+      old_view->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
+      gfx::Rect());
+  old_view->Show();
+  ASSERT_TRUE(old_view->IsShowing());
+  ASSERT_TRUE(
+      old_view->delegated_frame_host_client_->DelegatedFrameHostIsVisible());
+  old_view->SetSize(gfx::Size(50, 50));
+
+  // Initialize the view as hidden.
+  FakeRenderWidgetHostViewAura* prerender_view = CreateView(/*hidden = */ true);
+  prerender_view->InitAsChild(nullptr);
+  aura::client::ParentWindowWithContext(
+      prerender_view->GetNativeView(),
+      parent_view_->GetNativeView()->GetRootWindow(), gfx::Rect());
+  ASSERT_FALSE(prerender_view->IsShowing());
+  ASSERT_FALSE(prerender_view->delegated_frame_host_client_
+                   ->DelegatedFrameHostIsVisible());
+  prerender_view->SetSize(gfx::Size(50, 50));
+  ASSERT_FALSE(prerender_view->window_->layer()->GetOldestAcceptableFallback());
+
+  prerender_view->TakeFallbackContentFrom(old_view);
+  ASSERT_TRUE(prerender_view->window_->layer()->GetOldestAcceptableFallback());
+  EXPECT_EQ(old_view->window_->layer()->GetSurfaceId()->ToSmallestId(),
+            *(prerender_view->window_->layer()->GetOldestAcceptableFallback()));
+
+  DestroyView(prerender_view);
+  DestroyView(old_view);
 }
 
 // This class provides functionality to test a RenderWidgetHostViewAura
@@ -5927,7 +5947,8 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     return MockRenderWidgetHostImpl::Create(
         GetFrameTree(), render_widget_host_delegate(),
         agent_scheduling_group_host,
-        agent_scheduling_group_host.GetProcess()->GetNextRoutingID());
+        agent_scheduling_group_host.GetProcess()->GetNextRoutingID(),
+        /*hidden = */ false);
   }
 
   TestRenderWidgetHostView* CreateViewForProcess(
