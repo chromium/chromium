@@ -196,23 +196,48 @@ class PageTitleChecker : public StatusChangeChecker,
   DISALLOW_COPY_AND_ASSIGN(PageTitleChecker);
 };
 
-// Used to wait until IsTrustedVaultRecoverabilityDegraded() returns false.
-class TrustedVaultRecoverabilityNotDegradedChecker
+// Used to wait until IsTrustedVaultKeyRequiredForPreferredDataTypes() returns
+// true.
+class TrustedVaultKeyRequiredForPreferredDataTypesChecker
     : public SingleClientStatusChangeChecker {
  public:
-  explicit TrustedVaultRecoverabilityNotDegradedChecker(
+  explicit TrustedVaultKeyRequiredForPreferredDataTypesChecker(
       syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
-  ~TrustedVaultRecoverabilityNotDegradedChecker() override = default;
+  ~TrustedVaultKeyRequiredForPreferredDataTypesChecker() override = default;
 
  protected:
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting until trusted vault recoverability is not degraded";
-    return !service()
-                ->GetUserSettings()
-                ->IsTrustedVaultRecoverabilityDegraded();
+    *os << "Waiting until trusted vault key is required for preferred "
+           "datatypes";
+    return service()
+        ->GetUserSettings()
+        ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
   }
+};
+
+// Used to wait until IsTrustedVaultRecoverabilityDegraded() returns false.
+class TrustedVaultRecoverabilityDegradedStateChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  TrustedVaultRecoverabilityDegradedStateChecker(
+      syncer::SyncServiceImpl* service,
+      bool degraded)
+      : SingleClientStatusChangeChecker(service), degraded_(degraded) {}
+  ~TrustedVaultRecoverabilityDegradedStateChecker() override = default;
+
+ protected:
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting until trusted vault recoverability degraded state is "
+        << degraded_;
+    return service()
+               ->GetUserSettings()
+               ->IsTrustedVaultRecoverabilityDegraded() == degraded_;
+  }
+
+  const bool degraded_;
 };
 
 class FakeSecurityDomainsServerMemberStatusChecker
@@ -1104,6 +1129,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
+
+  EXPECT_TRUE(ShouldShowTrustedVaultDegradedRecoverabilityError(
+      GetSyncService(0), GetProfile(0)->GetPrefs()));
+
   ASSERT_EQ(syncer::PassphraseType::kTrustedVaultPassphrase,
             GetSyncService(0)->GetUserSettings()->GetPassphraseType());
   ASSERT_FALSE(GetSyncService(0)
@@ -1111,12 +1143,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   ASSERT_FALSE(ShouldShowSyncKeysMissingError(GetSyncService(0),
                                               GetProfile(0)->GetPrefs()));
-
-  EXPECT_TRUE(GetSyncService(0)
-                  ->GetUserSettings()
-                  ->IsTrustedVaultRecoverabilityDegraded());
-  EXPECT_TRUE(ShouldShowTrustedVaultDegradedRecoverabilityError(
-      GetSyncService(0), GetProfile(0)->GetPrefs()));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string.
@@ -1141,8 +1167,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
-  EXPECT_TRUE(
-      TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/false)
+                  .Wait());
   EXPECT_FALSE(ShouldShowTrustedVaultDegradedRecoverabilityError(
       GetSyncService(0), GetProfile(0)->GetPrefs()));
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
@@ -1193,8 +1220,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   // Wait until AddTrustedVaultRecoveryMethodFromWeb() completes.
   run_loop.Run();
 
-  EXPECT_TRUE(
-      TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/false)
+                  .Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 }
 
@@ -1276,10 +1304,9 @@ class SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest
   base::test::ScopedFeatureList override_features_;
 };
 
-// TODO(crbug.com/1218713): Flaky on various platforms.
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
-    DISABLED_ShouldAcceptEncryptionKeysFromTheWeb) {
+    ShouldAcceptEncryptionKeysFromTheWeb) {
   // Mimic the account using a trusted vault passphrase.
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
@@ -1297,6 +1324,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The error is now shown, because PASSWORDS is trying to sync. The data
   // type isn't active yet though due to the missing encryption keys.
+  ASSERT_TRUE(
+      TrustedVaultKeyRequiredForPreferredDataTypesChecker(GetSyncService(0))
+          .Wait());
   ASSERT_EQ(AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError,
             GetAvatarSyncErrorType(GetProfile(0)));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
@@ -1322,10 +1352,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
 }
 
-// TODO(crbug.com/1218713): Flaky on various platforms.
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
-    DISABLED_ShouldReportDegradedTrustedVaultRecoverability) {
+    ShouldReportDegradedTrustedVaultRecoverability) {
   const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
       syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
 
@@ -1352,6 +1381,10 @@ IN_PROC_BROWSER_TEST_F(
   password_manager::features_util::OptInToAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
 
+  ASSERT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
+
   // The error is now shown, because PASSWORDS is trying to sync.
   ASSERT_EQ(
       AvatarSyncErrorType::kTrustedVaultRecoverabilityDegradedForPasswordsError,
@@ -1368,8 +1401,9 @@ IN_PROC_BROWSER_TEST_F(
       GetBrowser(0),
       GetTrustedVaultRecoverabilityURL(*embedded_test_server(),
                                        kTestRecoveryMethodPublicKey));
-  EXPECT_TRUE(
-      TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/false)
+                  .Wait());
 
   // The error should have disappeared.
   EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
