@@ -18,7 +18,6 @@ import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -34,7 +33,7 @@ public final class SafeModeService extends Service {
 
     private static final Object sLock = new Object();
 
-    private boolean isCallerTrusted(String callingPackageName) {
+    private boolean isCallerTrusted() {
         final Context context = ContextUtils.getApplicationContext();
         PackageManager pm = context.getPackageManager();
         String[] packagesInUid = pm.getPackagesForUid(Binder.getCallingUid());
@@ -43,11 +42,6 @@ public final class SafeModeService extends Service {
             Log.e(TAG,
                     "Unable to find any packages associated with calling UID ("
                             + Binder.getCallingUid() + ")");
-            return false;
-        }
-
-        if (!Arrays.asList(packagesInUid).contains(callingPackageName)) {
-            // If the caller lied about their package name, don't trust them.
             return false;
         }
 
@@ -64,8 +58,8 @@ public final class SafeModeService extends Service {
 
     private final ISafeModeService.Stub mBinder = new ISafeModeService.Stub() {
         @Override
-        public void setSafeMode(String callingPackageName, List<String> actions) {
-            if (!isCallerTrusted(callingPackageName)) {
+        public void setSafeMode(List<String> actions) {
+            if (!isCallerTrusted()) {
                 throw new SecurityException("setSafeMode() may only be called by a trusted app");
             }
 
