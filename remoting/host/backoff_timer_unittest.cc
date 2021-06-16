@@ -5,58 +5,77 @@
 #include "remoting/host/backoff_timer.h"
 
 #include "base/bind.h"
-#include "base/memory/ptr_util.h"
-#include "base/timer/mock_timer.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
-namespace {
+class BackoffTimerTest : public testing::Test {
+ public:
+  BackoffTimerTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~BackoffTimerTest() override = default;
 
-void IncrementCounter(int* counter) {
-  ++(*counter);
-}
+  void IncrementCounter() { ++counter_; }
 
-}  // namespace
+  void AssertNextDelayAndFastForwardBy(base::TimeDelta delay) {
+    ASSERT_EQ(task_environment_.NextMainThreadPendingTaskDelay(), delay);
+    task_environment_.FastForwardBy(delay);
+  }
 
-TEST(BackoffTimer, Basic) {
-  base::MockOneShotTimer* mock_timer = new base::MockOneShotTimer();
+  int counter() const { return counter_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+
+  int counter_ = 0;
+};
+
+TEST_F(BackoffTimerTest, Basic) {
   BackoffTimer backoff_timer;
-  backoff_timer.SetTimerForTest(base::WrapUnique(mock_timer));
   ASSERT_FALSE(backoff_timer.IsRunning());
 
-  int counter = 0;
-  backoff_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10),
-                      base::TimeDelta::FromMilliseconds(50),
-                      base::BindRepeating(&IncrementCounter, &counter));
-  ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(0, counter);
-  ASSERT_NEAR(0, mock_timer->GetCurrentDelay().InMillisecondsF(), 1);
+  constexpr base::TimeDelta initial_delay =
+      base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta max_delay = base::TimeDelta::FromMilliseconds(50);
 
-  mock_timer->Fire();
+  backoff_timer.Start(FROM_HERE, initial_delay, max_delay,
+                      base::BindRepeating(&BackoffTimerTest::IncrementCounter,
+                                          base::Unretained(this)));
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(1, counter);
-  EXPECT_NEAR(10, mock_timer->GetCurrentDelay().InMillisecondsF(), 1);
+  ASSERT_EQ(0, counter());
 
-  mock_timer->Fire();
+  // The backoff timer always immediately fires without delay.
+  AssertNextDelayAndFastForwardBy(base::TimeDelta());
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(2, counter);
-  EXPECT_NEAR(20, mock_timer->GetCurrentDelay().InMillisecondsF(), 1);
+  ASSERT_EQ(1, counter());
 
-  mock_timer->Fire();
+  // The next delay is equal to the initial delay.
+  AssertNextDelayAndFastForwardBy(initial_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(3, counter);
-  EXPECT_NEAR(40, mock_timer->GetCurrentDelay().InMillisecondsF(), 1);
+  ASSERT_EQ(2, counter());
 
-  mock_timer->Fire();
+  // The next delay is doubled.
+  AssertNextDelayAndFastForwardBy(2 * initial_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(4, counter);
-  EXPECT_NEAR(50, mock_timer->GetCurrentDelay().InMillisecondsF(), 1);
+  ASSERT_EQ(3, counter());
 
-  mock_timer->Fire();
+  // The next delay is doubled again.
+  AssertNextDelayAndFastForwardBy(4 * initial_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(5, counter);
-  EXPECT_NEAR(50, mock_timer->GetCurrentDelay().InMillisecondsF(), 1);
+  ASSERT_EQ(4, counter());
+
+  // The next delay is clamped to the max delay. Otherwise, it would exceed it.
+  ASSERT_GT(8 * initial_delay, max_delay);
+  AssertNextDelayAndFastForwardBy(max_delay);
+  ASSERT_TRUE(backoff_timer.IsRunning());
+  ASSERT_EQ(5, counter());
+
+  // The delay remains constant at the max delay.
+  AssertNextDelayAndFastForwardBy(max_delay);
+  ASSERT_TRUE(backoff_timer.IsRunning());
+  ASSERT_EQ(6, counter());
 
   backoff_timer.Stop();
   ASSERT_FALSE(backoff_timer.IsRunning());
