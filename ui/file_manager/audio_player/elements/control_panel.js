@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.m.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_icon_button.js';
 import './repeat_button.js';
 

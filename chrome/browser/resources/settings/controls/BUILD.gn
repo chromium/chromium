@@ -119,7 +119,7 @@ js_library("settings_radio_group") {
 js_library("settings_slider") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",

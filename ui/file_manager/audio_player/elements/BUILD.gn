@@ -29,7 +29,7 @@ js_library("control_panel") {
     ":repeat_button",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/file_manager/foreground/elements:files_icon_button",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:assert.m",
   ]
 }

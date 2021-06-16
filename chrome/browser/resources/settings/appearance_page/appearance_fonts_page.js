@@ -7,7 +7,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../controls/settings_slider.js';
 import '../settings_shared_css.js';
 
-import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.m.js';
+import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

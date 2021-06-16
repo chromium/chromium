@@ -114,7 +114,7 @@ js_library("switch_access_setup_guide_dialog.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -158,7 +158,7 @@ js_library("tts_subpage.m") {
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]

@@ -300,7 +300,7 @@ js_library("cr_slider_test") {
     "..:test_util.m",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -3,42 +3,21 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
+html_to_js("web_components") {
+  js_files = [ "cr_slider.js" ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
   deps = [ ":cr_slider" ]
 }
 
 js_library("cr_slider") {
   deps = [
-    "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:event_tracker",
-  ]
-}
-
-polymer_modulizer("cr_slider") {
-  js_file = "cr_slider.js"
-  html_file = "cr_slider.html"
-  html_type = "dom-module"
-  auto_imports = [ "ui/webui/resources/html/event_tracker.html|EventTracker" ]
-  namespace_rewrites = [ "cr_slider.SliderTick|SliderTick" ]
-}
-
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
-  deps = [ ":cr_slider.m" ]
-}
-
-js_library("cr_slider.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/cr_slider/cr_slider.m.js",
-  ]
-  deps = [
     "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:event_tracker.m",
   ]
-  extra_deps = [ ":cr_slider_module" ]
 }
