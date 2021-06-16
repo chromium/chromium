@@ -44,7 +44,7 @@ const base::Feature kEnableExactMatchForNonLatinLocale{
 const base::Feature kEnableAggregatedMlSearchRanking{
     "EnableAggregatedMlSearchRanking", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kNewDragSpecInLauncher{"NewDragSpecInLauncher",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableOmniboxRichEntities{
     "EnableOmniboxRichEntities", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableLauncherSearchNormalization{
