@@ -385,7 +385,7 @@ struct MemoryInfo {
   // Available memory, in KiB.
   uint32 available_memory_kib;
   // Number of page faults since the last boot.
-  uint32 page_faults_since_last_boot;
+  uint64 page_faults_since_last_boot;
 };
 
 // Backlight probe result. Can either be populated with the BacklightInfo or an
