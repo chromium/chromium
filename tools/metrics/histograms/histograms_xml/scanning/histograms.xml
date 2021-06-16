@@ -21,7 +21,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="Scanning.NumCompletedScanScansInSession" units="scans"
+<histogram name="Scanning.NumCompletedScansInSession" units="scans"
     expires_after="2021-11-17">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
