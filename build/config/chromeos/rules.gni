@@ -366,7 +366,7 @@ template("tast_test") {
     # The following expression filters out all non-critical tests. See the link
     # below for more details:
     # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
-    tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:lacros\""
+    tast_attr_expr = "\"group:mainline\" && \"dep:chrome\""
 
     if (defined(enable_tast_informational_tests) &&
         enable_tast_informational_tests) {
