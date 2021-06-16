@@ -23,6 +23,7 @@
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_stream.h"
+#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_stream.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -41,15 +42,17 @@ WebrtcConnectionToClient::WebrtcConnectionToClient(
     scoped_refptr<protocol::TransportContext> transport_context,
     scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner)
-    : transport_(
-          new WebrtcTransport(jingle_glue::JingleThreadWrapper::current(),
-                              transport_context,
-                              this)),
-      session_(std::move(session)),
+    : session_(std::move(session)),
       video_encode_task_runner_(video_encode_task_runner),
       audio_task_runner_(audio_task_runner),
       control_dispatcher_(new HostControlDispatcher()),
       event_dispatcher_(new HostEventDispatcher()) {
+  auto video_encoder_factory =
+      std::make_unique<WebrtcDummyVideoEncoderFactory>();
+  video_encoder_factory_ = video_encoder_factory.get();
+  transport_ = std::make_unique<WebrtcTransport>(
+      jingle_glue::JingleThreadWrapper::current(), transport_context,
+      std::move(video_encoder_factory), this);
   session_->SetEventHandler(this);
   session_->SetTransport(transport_.get());
 }
@@ -85,7 +88,7 @@ std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(
   std::unique_ptr<WebrtcVideoStream> stream(
       new WebrtcVideoStream(session_options_));
   stream->Start(std::move(desktop_capturer), transport_.get(),
-                video_encode_task_runner_);
+                video_encoder_factory_, video_encode_task_runner_);
   stream->SetEventTimestampsSource(
       event_dispatcher_->event_timestamps_source());
   return std::move(stream);

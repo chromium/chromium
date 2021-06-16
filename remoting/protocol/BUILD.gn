@@ -396,7 +396,6 @@ source_set("unit_tests") {
     "v2_authenticator_unittest.cc",
     "validating_authenticator_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
-    "webrtc_transport_unittest.cc",
   ]
 
   if (enable_remoting_host) {
@@ -407,6 +406,7 @@ source_set("unit_tests") {
       "video_frame_pump_unittest.cc",
       "webrtc_audio_source_adapter_unittest.cc",
       "webrtc_frame_scheduler_unittest.cc",
+      "webrtc_transport_unittest.cc",
       "webrtc_video_encoder_wrapper_unittest.cc",
       "webrtc_video_frame_adapter_unittest.cc",
       "webrtc_video_track_source_unittest.cc",

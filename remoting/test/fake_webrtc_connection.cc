@@ -14,8 +14,12 @@ namespace test {
 FakeWebrtcConnection::FakeWebrtcConnection(
     scoped_refptr<protocol::TransportContext> transport_context,
     base::OnceClosure on_closed) {
+  // TODO(lambroslambrou): Passing nullptr for the VideoEncoderFactory may
+  // break the ftl_signaling_playground executable. If needed, this should be
+  // replaced with a factory that supports at least one video codec.
   transport_ = std::make_unique<protocol::WebrtcTransport>(
-      jingle_glue::JingleThreadWrapper::current(), transport_context, this);
+      jingle_glue::JingleThreadWrapper::current(), transport_context, nullptr,
+      this);
   on_closed_ = std::move(on_closed);
 }
 

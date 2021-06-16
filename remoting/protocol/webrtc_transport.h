@@ -22,11 +22,11 @@
 #include "remoting/protocol/session_options_provider.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/webrtc_data_stream_adapter.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_event_log_data.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace base {
 
@@ -83,16 +83,17 @@ class WebrtcTransport : public Transport,
     virtual void OnWebrtcTransportRouteChanged(const TransportRoute& route) = 0;
   };
 
-  WebrtcTransport(rtc::Thread* worker_thread,
-                  scoped_refptr<TransportContext> transport_context,
-                  EventHandler* event_handler);
+  // |video_encoder_factory| can be nullptr if the connection is not used for
+  // sending video.
+  WebrtcTransport(
+      rtc::Thread* worker_thread,
+      scoped_refptr<TransportContext> transport_context,
+      std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
+      EventHandler* event_handler);
   ~WebrtcTransport() override;
 
   webrtc::PeerConnectionInterface* peer_connection();
   webrtc::PeerConnectionFactoryInterface* peer_connection_factory();
-  WebrtcDummyVideoEncoderFactory* video_encoder_factory() {
-    return video_encoder_factory_;
-  }
   WebrtcAudioModule* audio_module();
   WebrtcEventLogData* rtc_event_log() { return &rtc_event_log_; }
 
@@ -232,8 +233,6 @@ class WebrtcTransport : public Transport,
   crypto::HMAC handshake_hmac_;
 
   std::unique_ptr<PeerConnectionWrapper> peer_connection_wrapper_;
-
-  WebrtcDummyVideoEncoderFactory* video_encoder_factory_;
 
   bool negotiation_pending_ = false;
 

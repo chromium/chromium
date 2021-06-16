@@ -22,6 +22,7 @@
 namespace remoting {
 namespace protocol {
 
+class WebrtcDummyVideoEncoderFactory;
 class HostControlDispatcher;
 class HostEventDispatcher;
 
@@ -86,6 +87,8 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   std::unique_ptr<WebrtcTransport> transport_;
 
   std::unique_ptr<Session> session_;
+
+  WebrtcDummyVideoEncoderFactory* video_encoder_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;

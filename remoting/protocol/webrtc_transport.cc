@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -34,7 +33,6 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_module.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
@@ -517,18 +515,17 @@ class WebrtcTransport::PeerConnectionWrapper
 WebrtcTransport::WebrtcTransport(
     rtc::Thread* worker_thread,
     scoped_refptr<TransportContext> transport_context,
+    std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
     EventHandler* event_handler)
     : transport_context_(transport_context),
       event_handler_(event_handler),
       handshake_hmac_(crypto::HMAC::SHA256) {
-  video_encoder_factory_ = new WebrtcDummyVideoEncoderFactory();
   std::unique_ptr<cricket::PortAllocator> port_allocator =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
           transport_context_, weak_factory_.GetWeakPtr());
 
-  // Takes ownership of video_encoder_factory_.
   peer_connection_wrapper_ = std::make_unique<PeerConnectionWrapper>(
-      worker_thread, base::WrapUnique(video_encoder_factory_),
+      worker_thread, std::move(video_encoder_factory),
       std::move(port_allocator), weak_factory_.GetWeakPtr());
 
   StartRtcEventLogging();

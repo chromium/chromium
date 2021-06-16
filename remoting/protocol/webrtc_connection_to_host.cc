@@ -37,7 +37,8 @@ void WebrtcConnectionToHost::Connect(
   DCHECK(clipboard_stub_);
 
   transport_ = std::make_unique<WebrtcTransport>(
-      jingle_glue::JingleThreadWrapper::current(), transport_context, this);
+      jingle_glue::JingleThreadWrapper::current(), transport_context, nullptr,
+      this);
 
   if (audio_decode_task_runner_)
     transport_->audio_module()->SetAudioTaskRunner(audio_decode_task_runner_);

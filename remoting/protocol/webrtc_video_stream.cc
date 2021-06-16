@@ -15,6 +15,7 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
+#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_frame_scheduler_simple.h"
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_track_source.h"
@@ -103,10 +104,12 @@ WebrtcVideoStream::~WebrtcVideoStream() {
 void WebrtcVideoStream::Start(
     std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
     WebrtcTransport* webrtc_transport,
+    WebrtcDummyVideoEncoderFactory* video_encoder_factory,
     scoped_refptr<base::SequencedTaskRunner> encode_task_runner) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(webrtc_transport);
   DCHECK(desktop_capturer);
+  DCHECK(webrtc_transport);
+  DCHECK(video_encoder_factory);
   DCHECK(encode_task_runner);
 
   scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory(
@@ -117,11 +120,10 @@ void WebrtcVideoStream::Start(
 
   encode_task_runner_ = std::move(encode_task_runner);
   capturer_ = std::move(desktop_capturer);
-  webrtc_transport_ = webrtc_transport;
+  video_encoder_factory_ = video_encoder_factory;
 
-  webrtc_transport_->video_encoder_factory()->RegisterEncoderSelectedCallback(
-      base::BindRepeating(&WebrtcVideoStream::OnEncoderCreated,
-                          weak_factory_.GetWeakPtr()));
+  video_encoder_factory->RegisterEncoderSelectedCallback(base::BindRepeating(
+      &WebrtcVideoStream::OnEncoderCreated, weak_factory_.GetWeakPtr()));
 
   capturer_->Start(this);
 
@@ -139,15 +141,15 @@ void WebrtcVideoStream::Start(
   auto transceiver =
       peer_connection_->AddTransceiver(video_track, init).value();
 
-  webrtc_transport_->OnVideoTransceiverCreated(transceiver);
+  webrtc_transport->OnVideoTransceiverCreated(transceiver);
 
-  webrtc_transport_->video_encoder_factory()->SetVideoChannelStateObserver(
+  video_encoder_factory->SetVideoChannelStateObserver(
       weak_factory_.GetWeakPtr());
   scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(session_options_);
   scheduler_->Start(base::BindRepeating(&WebrtcVideoStream::CaptureNextFrame,
                                         base::Unretained(this)));
 
-  video_stats_dispatcher_.Init(webrtc_transport_->CreateOutgoingChannel(
+  video_stats_dispatcher_.Init(webrtc_transport->CreateOutgoingChannel(
                                    video_stats_dispatcher_.channel_name()),
                                this);
 }
@@ -321,8 +323,9 @@ void WebrtcVideoStream::OnFrameEncoded(
   frame->encode_finish = current_frame_stats_->encode_ended_time;
 
   frame->stats = std::move(current_frame_stats_);
+
   webrtc::EncodedImageCallback::Result result =
-      webrtc_transport_->video_encoder_factory()->SendEncodedFrame(*frame);
+      video_encoder_factory_->SendEncodedFrame(*frame);
 
   // Directly call the handler to send the FrameStats message.
   // TODO(crbug.com/1192865): Remove this when standard encoding pipeline is
