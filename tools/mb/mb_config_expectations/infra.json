@@ -1,0 +1,16 @@
+{
+  "linux-component-rel": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "linux-control-rel": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  }
+}

@@ -600,6 +600,18 @@ def gpu_windows_builder(*, name, **kwargs):
         **kwargs
     )
 
+def infra_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs):
+    return ci.builder(
+        name = name,
+        builder_group = "infra",
+        goma_backend = goma_backend,
+        **kwargs
+    )
+
 def linux_builder(
         *,
         name,
@@ -822,6 +834,7 @@ ci = struct(
     gpu_mac_builder = gpu_mac_builder,
     gpu_thin_tester = gpu_thin_tester,
     gpu_windows_builder = gpu_windows_builder,
+    infra_builder = infra_builder,
     linux_builder = linux_builder,
     mac_builder = mac_builder,
     mac_ios_builder = mac_ios_builder,

@@ -6256,6 +6256,22 @@
     },
   },
   {
+    'name': 'infra',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'linux-component-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
+      'linux-control-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
+    }
+  },
+  {
     'project': 'chrome',
     'bucket': 'ci',
     'name': 'internal.chromeos.fyi',

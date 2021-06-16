@@ -708,6 +708,11 @@
       'Windows deterministic': 'release_bot_x86_minimal_symbols',
     },
 
+    'infra': {
+      'linux-control-rel': 'release_bot',
+      'linux-component-rel': 'shared_release_bot',
+    },
+
     'internal.chrome.fyi': {
       'chromeos-amd64-generic-lacros-internal-rel': 'chromeos_amd64-generic_lacros_rel',
       'linux-autofill-captured-sites-rel': 'release_bot',
@@ -2693,6 +2698,10 @@
     'release_bot_x86_minimal_symbols_no_clang_cxx11': [
       'release_bot', 'x86', 'minimal_symbols', 'no_clang', 'use_cxx11',
       'no_goma',
+    ],
+
+    'shared_release_bot': [
+      'shared_release_bot',
     ],
 
     'tsan_disable_nacl_debug_bot': [

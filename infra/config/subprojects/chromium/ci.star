@@ -389,6 +389,10 @@ consoles.console_view(
 )
 
 consoles.console_view(
+    name = "infra",
+)
+
+consoles.console_view(
     name = "sheriff.ios",
     title = "iOS Sheriff Console",
     ordering = {
@@ -5525,6 +5529,28 @@ ci.linux_builder(
     service_account = "component-mapping-updater@chops-service-accounts.iam.gserviceaccount.com",
     notifies = ["metadata-mapping"],
     tree_closing = False,
+)
+
+ci.infra_builder(
+    name = "linux-component-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "component build",
+        short_name = "comp",
+    ),
+    schedule = "triggered",
+    triggered_by = [],
+    builderless = False,
+)
+
+ci.infra_builder(
+    name = "linux-control-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "control",
+        short_name = "cntrl",
+    ),
+    schedule = "triggered",
+    triggered_by = [],
+    builderless = False,
 )
 
 ci.mac_builder(
