@@ -7,11 +7,13 @@
 
 #include "chrome/browser/share/proto/share_target.pb.h"
 
+#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 
 namespace sharing {
 
 struct ShareTargetsSingletonTrait;
+class ShareTargetsObserver;
 
 class ShareTargets {
  public:
@@ -24,14 +26,11 @@ class ShareTargets {
   // protos.
   void PopulateFromDynamicUpdate(const std::string& binary_pb);
 
-  //
-  // Accessors
-  //
+  // Observers -----------------------------------------------------------------
 
-  // Return the ShareTarget for a given locale. If the locale is not found
-  // return a global locale.
-  const mojom::ShareTargets* GetShareTargetsForLocale(
-      const std::string& locale);
+  // Adds/Removes an Observer.
+  void AddObserver(ShareTargetsObserver* observer);
+  void RemoveObserver(ShareTargetsObserver* observer);
 
  protected:
   // Creator must call one of Populate* before calling other methods.
@@ -62,6 +61,14 @@ class ShareTargets {
   std::unique_ptr<mojom::MapLocaleTargets> targets_;
 
   mutable base::Lock lock_;
+
+  // Observers ----------------------------------------------------------------
+
+  // Notify all ShareTargetsObservers registered that the ShareTargets have been
+  // updated.
+  void NotifyShareTargetUpdated();
+
+  base::ObserverList<ShareTargetsObserver>::Unchecked observers_;
 
   friend struct ShareTargetsSingletonTrait;
 };

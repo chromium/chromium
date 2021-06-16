@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/share/core/share_targets_observer.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
@@ -85,7 +86,7 @@ ShareTargets::UpdateResult ShareTargets::PopulateFromBinaryPb(
 
   // Looks good. Update our internal list.
   SwapTargetsLocked(new_targets);
-
+  NotifyShareTargetUpdated();
   return UpdateResult::SUCCESS;
 }
 
@@ -95,26 +96,27 @@ void ShareTargets::SwapTargetsLocked(
   targets_.swap(new_targets);
 }
 
-// Return the ShareTarget for a given locale. If the locale is not found return
-// a global locale.
-const mojom::ShareTargets* ShareTargets::GetShareTargetsForLocale(
-    const std::string& locale) {
-  // TODO: ensure correct thread is used in order to call
-  // lock_.AssertAcquired();
-  if (!targets_ || targets_->map_target_locale_map().size() == 0) {
-    return nullptr;
-  }
-
-  auto it = targets_->map_target_locale_map().find(locale);
-
-  if (it == targets_->map_target_locale_map().end()) {
-    it = targets_->map_target_locale_map().find(GLOBAL);
-  }
-
-  if (it == targets_->map_target_locale_map().end()) {
-    return nullptr;
-  }
-
-  return &(it->second);
+void ShareTargets::AddObserver(ShareTargetsObserver* observer) {
+  observers_.AddObserver(observer);
 }
+
+void ShareTargets::RemoveObserver(ShareTargetsObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ShareTargets::NotifyShareTargetUpdated() {
+  for (ShareTargetsObserver& observer : observers_) {
+    // TODO get locale and register for locale change events.
+    std::string locale = GLOBAL;
+    auto it = targets_->map_target_locale_map().find(locale);
+
+    if (it == targets_->map_target_locale_map().end()) {
+      it = targets_->map_target_locale_map().find(GLOBAL);
+    }
+    std::unique_ptr<mojom::ShareTargets> to_return(new mojom::ShareTargets());
+    to_return->CopyFrom(it->second);
+    observer.OnShareTargetsUpdated(std::move(to_return));
+  }
+}
+
 }  // namespace sharing

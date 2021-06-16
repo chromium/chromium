@@ -10,9 +10,16 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "chrome/browser/share/core/share_targets_observer.h"
 
 class GURL;
 class Profile;
+
+namespace sharing {
+namespace mojom {
+class ShareTargets;
+}  // namespace mojom
+}  // namespace sharing
 
 namespace content {
 class BrowserContext;
@@ -35,10 +42,10 @@ struct SharingHubAction {
 // The Sharing Hub model contains a list of first and third party actions.
 // This object should only be accessed from one thread, which is usually the
 // main thread.
-class SharingHubModel {
+class SharingHubModel : public sharing::ShareTargetsObserver {
  public:
   explicit SharingHubModel(content::BrowserContext* context);
-  ~SharingHubModel();
+  ~SharingHubModel() override;
 
   // Populates the vector with first party Sharing Hub actions, ordered by
   // appearance in the dialog. Some actions (i.e. send tab to self) may not be
@@ -53,6 +60,10 @@ class SharingHubModel {
   // Executes the third party action indicated by |id|, i.e. opens a new tab to
   // the corresponding webpage.
   void ExecuteThirdPartyAction(Profile* profile, int id);
+
+  // sharing::ShareTargetsObserver implementation.
+  void OnShareTargetsUpdated(
+      std::unique_ptr<sharing::mojom::ShareTargets> ShareTarget) override;
 
  private:
   void PopulateFirstPartyActions();
@@ -69,6 +80,8 @@ class SharingHubModel {
   std::map<int, GURL> third_party_action_urls_;
 
   content::BrowserContext* context_;
+
+  std::unique_ptr<sharing::mojom::ShareTargets> third_party_targets_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingHubModel);
 };

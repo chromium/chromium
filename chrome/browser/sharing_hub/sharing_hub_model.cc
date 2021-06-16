@@ -28,14 +28,12 @@ namespace sharing_hub {
 SharingHubModel::SharingHubModel(content::BrowserContext* context)
     : context_(context) {
   PopulateFirstPartyActions();
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&SharingHubModel::PopulateThirdPartyActions,
-                     base::Unretained(this)));
+  sharing::ShareTargets::GetInstance()->AddObserver(this);
 }
 
-SharingHubModel::~SharingHubModel() = default;
+SharingHubModel::~SharingHubModel() {
+  sharing::ShareTargets::GetInstance()->RemoveObserver(this);
+}
 
 void SharingHubModel::GetFirstPartyActionList(
     content::WebContents* web_contents,
@@ -108,10 +106,9 @@ void SharingHubModel::PopulateThirdPartyActions() {
   // action will be disabled in the app menu.
   std::string locale = "GLOBAL";
   int id = 1;
-  const sharing::mojom::ShareTargets* targets =
-      sharing::ShareTargets::GetInstance()->GetShareTargetsForLocale(locale);
-  if (targets) {
-    for (const sharing::mojom::ShareTarget& target : targets->targets()) {
+  if (third_party_targets_) {
+    for (const sharing::mojom::ShareTarget& target :
+         third_party_targets_->targets()) {
       // get ICON from target.icon();
       third_party_action_list_.push_back({id,
                                           base::ASCIIToUTF16(target.nickname()),
@@ -124,6 +121,12 @@ void SharingHubModel::PopulateThirdPartyActions() {
 bool SharingHubModel::DoShowSendTabToSelfForWebContents(
     content::WebContents* web_contents) {
   return send_tab_to_self::ShouldOfferFeature(web_contents);
+}
+
+void SharingHubModel::OnShareTargetsUpdated(
+    std::unique_ptr<sharing::mojom::ShareTargets> share_target) {
+  third_party_targets_ = std::move(share_target);
+  PopulateThirdPartyActions();
 }
 
 }  // namespace sharing_hub

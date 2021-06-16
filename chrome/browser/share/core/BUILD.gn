@@ -8,6 +8,7 @@ source_set("core") {
   sources = [
     "share_targets.cc",
     "share_targets.h",
+    "share_targets_observer.h",
   ]
   deps = [
     "//base",
