@@ -10,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
@@ -192,6 +193,23 @@ TEST_F(CandidateViewTest, SetEntryNotifiesAccessibilityEvent) {
   entry.value = u"Candidate";
   view->SetEntry(entry);
   EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged));
+}
+
+TEST_F(CandidateViewTest, GetAccessibleNodeData) {
+  CandidateView* view = GetCandidateAt(1);
+
+  ui::CandidateWindow::Entry entry;
+  entry.value = u"Candidate";
+  view->SetEntry(entry);
+
+  ui::AXNodeData data;
+  static_cast<views::View*>(view)->GetAccessibleNodeData(&data);
+
+  EXPECT_EQ(ax::mojom::Role::kImeCandidate, data.role);
+  EXPECT_EQ("Candidate",
+            data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(static_cast<int>(ax::mojom::DefaultActionVerb::kPress),
+            data.GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
 }
 
 }  // namespace ime
