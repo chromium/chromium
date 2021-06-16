@@ -88,6 +88,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -532,6 +533,8 @@ class PrefetchProxyBrowserTest
         SetDataSaverEnabledForTesting(browser()->profile()->GetPrefs(),
                                       enabled);
   }
+
+  void ResetFeatureList() { scoped_feature_list_.Reset(); }
 
   content::WebContents* GetWebContents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -4403,4 +4406,86 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   // Verify that we de-dupe and only fetch one new URL.
   EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 2U);
   EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 2U);
+}
+
+class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
+ public:
+  PrefetchProxyPrerenderBrowserTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &PrefetchProxyPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~PrefetchProxyPrerenderBrowserTest() override = default;
+  PrefetchProxyPrerenderBrowserTest(const PrefetchProxyPrerenderBrowserTest&) =
+      delete;
+
+  PrefetchProxyPrerenderBrowserTest& operator=(
+      const PrefetchProxyPrerenderBrowserTest&) = delete;
+
+  void SetUp() override { PrefetchProxyBrowserTest::SetUp(); }
+
+  void TearDown() override { PrefetchProxyBrowserTest::ResetFeatureList(); }
+
+  void SetUpOnMainThread() override {
+    prerender_test_helper_.SetUpOnMainThread(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    PrefetchProxyBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrefetchProxyPrerenderBrowserTest,
+                       ShouldNotAffectPrefetchProxyTabHelperOnPrerendering) {
+  SetDataSaverEnabled(true);
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  WaitForUpdatedCustomProxyConfig();
+
+  ASSERT_TRUE(content::SetCookie(browser()->profile(), GURL("https://foo.com"),
+                                 "type=PeanutButter"));
+
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  // Start prerendering to check if it affects on the prefetch proxy.
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_render_frame_host =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_render_frame_host, nullptr);
+  GURL prerender_render_frame_url =
+      prerender_render_frame_host->GetLastCommittedURL();
+  ASSERT_FALSE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(0U, tab_helper->srp_metrics().predicted_urls_count_);
+
+  GURL prefetch_url("https://m.foo.com");
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {prefetch_url});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
+  EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_eligible_count_);
+
+  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+
+  ASSERT_TRUE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(
+      absl::make_optional(
+          PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies),
+      tab_helper->after_srp_metrics()->prefetch_status_);
+
+  // Check if the prefetched URL is different from the prerendered frame.
+  EXPECT_NE(tab_helper->after_srp_metrics()->url_, prerender_render_frame_url);
 }
