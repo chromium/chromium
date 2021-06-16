@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"

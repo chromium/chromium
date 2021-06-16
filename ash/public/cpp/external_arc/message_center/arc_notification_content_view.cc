@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "base/auto_reset.h"

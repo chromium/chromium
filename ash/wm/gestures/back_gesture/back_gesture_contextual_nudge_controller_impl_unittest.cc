@@ -4,7 +4,7 @@
 
 #include "ash/wm/gestures/back_gesture/back_gesture_contextual_nudge_controller_impl.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_tooltip.h"

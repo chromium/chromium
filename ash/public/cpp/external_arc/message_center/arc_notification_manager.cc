@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/arc_app_id_provider.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_delegate.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item_impl.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"

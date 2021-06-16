@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"

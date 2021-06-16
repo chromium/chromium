@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/bind.h"
 #include "base/check.h"

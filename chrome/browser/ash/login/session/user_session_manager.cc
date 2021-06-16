@@ -18,7 +18,6 @@
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"

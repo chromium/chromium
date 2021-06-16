@@ -8,7 +8,6 @@
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/drag_drop/drag_image_view.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/scrollable_shelf_constants.h"

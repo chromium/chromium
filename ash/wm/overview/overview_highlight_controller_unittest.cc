@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_highlight_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/close_desk_button.h"

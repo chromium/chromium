@@ -20,7 +20,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/drag_drop/drag_drop_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"

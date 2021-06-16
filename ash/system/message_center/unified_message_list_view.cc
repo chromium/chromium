@@ -4,7 +4,6 @@
 
 #include "ash/system/message_center/unified_message_list_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"

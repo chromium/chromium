@@ -19,7 +19,6 @@
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/host/root_window_transformer.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/session/session_controller_impl.h"

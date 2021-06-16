@@ -7,7 +7,7 @@
 #include <math.h>
 
 #include "ash/constants/ash_constants.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/session/session_controller_impl.h"

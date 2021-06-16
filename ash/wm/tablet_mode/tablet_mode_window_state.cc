@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"

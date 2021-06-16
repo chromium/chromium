@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"

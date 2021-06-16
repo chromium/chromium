@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
@@ -334,11 +334,11 @@ bool IsLiveCaptionEnabled() {
 }
 
 bool IsMagnifierPanningImprovementsEnabled() {
-  return features::IsMagnifierPanningImprovementsEnabled();
+  return ::features::IsMagnifierPanningImprovementsEnabled();
 }
 
 bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
-  return features::IsMagnifierContinuousMouseFollowingModeSettingEnabled();
+  return ::features::IsMagnifierContinuousMouseFollowingModeSettingEnabled();
 }
 
 bool IsSwitchAccessTextAllowed() {
@@ -347,7 +347,7 @@ bool IsSwitchAccessTextAllowed() {
 }
 
 bool IsSwitchAccessPointScanningEnabled() {
-  return features::IsSwitchAccessPointScanningEnabled();
+  return ::features::IsSwitchAccessPointScanningEnabled();
 }
 
 bool IsSwitchAccessSetupGuideAllowed() {

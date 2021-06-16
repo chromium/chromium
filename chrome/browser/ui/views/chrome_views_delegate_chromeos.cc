@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/task/current_thread.h"

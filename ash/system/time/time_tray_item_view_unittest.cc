@@ -4,7 +4,7 @@
 
 #include "ash/system/time/time_tray_item_view.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"

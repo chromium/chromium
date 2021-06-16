@@ -6,7 +6,6 @@
 
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/root_window_controller.h"

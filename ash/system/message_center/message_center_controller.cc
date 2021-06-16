@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_base.h"
 #include "ash/session/session_controller_impl.h"

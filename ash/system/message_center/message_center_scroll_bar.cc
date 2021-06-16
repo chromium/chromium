@@ -4,7 +4,7 @@
 
 #include "ash/system/message_center/message_center_scroll_bar.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/compositor/layer.h"
 

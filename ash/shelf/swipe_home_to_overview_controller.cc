@@ -5,8 +5,8 @@
 #include "ash/shelf/swipe_home_to_overview_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_tooltip.h"

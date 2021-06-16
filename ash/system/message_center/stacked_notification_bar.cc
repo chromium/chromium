@@ -4,7 +4,6 @@
 
 #include "ash/system/message_center/stacked_notification_bar.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/message_center_style.h"

@@ -5,7 +5,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 
 #include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/system/network/network_observer.h"

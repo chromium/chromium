@@ -15,7 +15,7 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/test/test_assistant_service.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/root_window_controller.h"

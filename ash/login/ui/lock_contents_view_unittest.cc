@@ -30,7 +30,6 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/mojom/tray_action.mojom.h"

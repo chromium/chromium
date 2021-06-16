@@ -4,7 +4,7 @@
 
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/session/session_controller_impl.h"

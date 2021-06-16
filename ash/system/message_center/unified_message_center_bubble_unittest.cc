@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"

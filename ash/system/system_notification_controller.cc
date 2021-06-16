@@ -5,7 +5,6 @@
 #include "ash/system/system_notification_controller.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/cast/cast_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"

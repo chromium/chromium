@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/feature_pods_container_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/system/tray/tray_constants.h"

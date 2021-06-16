@@ -8,7 +8,6 @@
 
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/display_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"

@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk_mini_view.h"

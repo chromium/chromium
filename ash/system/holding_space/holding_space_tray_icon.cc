@@ -4,7 +4,6 @@
 
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"

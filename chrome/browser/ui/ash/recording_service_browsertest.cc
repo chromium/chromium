@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"

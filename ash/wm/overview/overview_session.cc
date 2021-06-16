@@ -11,7 +11,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"

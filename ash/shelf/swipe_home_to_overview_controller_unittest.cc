@@ -8,7 +8,6 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_metrics.h"

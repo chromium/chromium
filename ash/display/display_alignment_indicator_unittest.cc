@@ -4,7 +4,6 @@
 
 #include "ash/display/display_alignment_indicator.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

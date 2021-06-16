@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/stylus_utils.h"

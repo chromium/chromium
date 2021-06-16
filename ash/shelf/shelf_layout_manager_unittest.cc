@@ -20,7 +20,6 @@
 #include "ash/keyboard/ui/keyboard_ui.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"

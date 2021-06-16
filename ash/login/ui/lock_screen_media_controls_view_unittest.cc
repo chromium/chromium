@@ -4,11 +4,11 @@
 
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/media_controls_header_view.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/test/metrics/histogram_tester.h"

@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "build/branding_buildflags.h"

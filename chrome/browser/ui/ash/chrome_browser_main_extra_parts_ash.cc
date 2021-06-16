@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/media_notification_provider.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"

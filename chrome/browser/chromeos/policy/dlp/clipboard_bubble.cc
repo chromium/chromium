@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "components/strings/grit/components_strings.h"

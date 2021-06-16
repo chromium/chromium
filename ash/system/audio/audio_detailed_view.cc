@@ -6,7 +6,6 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"

@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/notification_counter_view.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"

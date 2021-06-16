@@ -6,9 +6,8 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"

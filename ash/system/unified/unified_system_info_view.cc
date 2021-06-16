@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/unified_system_info_view.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/resources/vector_icons/vector_icons.h"

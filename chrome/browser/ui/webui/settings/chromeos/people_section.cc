@@ -7,7 +7,6 @@
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"

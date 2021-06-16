@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/scoped_feature_list.h"

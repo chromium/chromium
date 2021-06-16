@@ -5,8 +5,8 @@
 #include "ash/system/unified/unified_system_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"

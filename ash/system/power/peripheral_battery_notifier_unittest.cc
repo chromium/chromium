@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/power/peripheral_battery_listener.h"

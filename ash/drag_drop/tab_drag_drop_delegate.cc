@@ -4,7 +4,7 @@
 
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"

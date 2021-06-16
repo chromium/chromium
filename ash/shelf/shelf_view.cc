@@ -9,11 +9,11 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"

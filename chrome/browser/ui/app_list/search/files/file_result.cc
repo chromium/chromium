@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"

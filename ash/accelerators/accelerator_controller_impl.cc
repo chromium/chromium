@@ -38,7 +38,6 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_profile_uma.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"

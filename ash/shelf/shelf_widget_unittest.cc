@@ -4,11 +4,11 @@
 
 #include "ash/shelf/shelf_widget.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"

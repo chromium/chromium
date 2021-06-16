@@ -4,12 +4,12 @@
 
 #include "ash/display/cros_display_config.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/display_alignment_controller.h"
 #include "ash/display/display_highlight_controller.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/touch_calibrator_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

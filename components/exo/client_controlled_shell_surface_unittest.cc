@@ -4,12 +4,12 @@
 
 #include "components/exo/client_controlled_shell_surface.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"

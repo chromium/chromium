@@ -44,7 +44,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"

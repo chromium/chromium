@@ -11,7 +11,6 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"

@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_test_api.h"

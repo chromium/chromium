@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/display/mouse_cursor_event_filter.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"

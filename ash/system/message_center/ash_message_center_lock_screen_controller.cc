@@ -4,8 +4,8 @@
 
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/session/session_controller_impl.h"

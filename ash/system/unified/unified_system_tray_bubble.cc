@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/unified_system_tray_bubble.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"

@@ -7,7 +7,6 @@
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/unified/unified_system_tray_controller.h"

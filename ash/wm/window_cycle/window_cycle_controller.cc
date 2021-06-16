@@ -6,12 +6,12 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
 #include "ash/metrics/task_switch_source.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"

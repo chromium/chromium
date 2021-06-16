@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"

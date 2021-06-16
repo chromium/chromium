@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
-#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"

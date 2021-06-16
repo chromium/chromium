@@ -34,7 +34,6 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"

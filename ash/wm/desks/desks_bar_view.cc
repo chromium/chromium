@@ -8,8 +8,8 @@
 #include <iterator>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/gradient_layer_delegate.h"

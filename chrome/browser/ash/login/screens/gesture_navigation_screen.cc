@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/histogram_functions.h"

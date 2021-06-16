@@ -6,7 +6,6 @@
 
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/display_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

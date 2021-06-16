@@ -53,7 +53,6 @@
 #include "ui/views/widget/root_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "chromeos/ui/base/window_properties.h"

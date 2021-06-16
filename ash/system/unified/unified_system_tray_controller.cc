@@ -10,7 +10,6 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_feature_pod_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/system_tray_client.h"

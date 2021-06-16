@@ -9,7 +9,6 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

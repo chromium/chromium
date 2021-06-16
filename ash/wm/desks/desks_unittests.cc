@@ -6,12 +6,12 @@
 
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/event_rewriter_controller.h"

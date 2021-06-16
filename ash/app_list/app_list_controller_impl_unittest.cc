@@ -28,7 +28,6 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"

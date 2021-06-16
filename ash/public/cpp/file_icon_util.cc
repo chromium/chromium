@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"

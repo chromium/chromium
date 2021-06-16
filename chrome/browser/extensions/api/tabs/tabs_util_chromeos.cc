@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_util.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"

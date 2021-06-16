@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/system_tray_test_api.h"

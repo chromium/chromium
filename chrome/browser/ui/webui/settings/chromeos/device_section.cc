@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/command_line.h"

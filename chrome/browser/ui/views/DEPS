@@ -9,7 +9,6 @@ include_rules = [
 
 specific_include_rules = {
   "chrome_views_delegate_chromeos\.cc": [
-    "+ash/public/cpp/ash_features.h",
     "+ash/shell.h",
   ],
   "qrcode_generator\.*": [

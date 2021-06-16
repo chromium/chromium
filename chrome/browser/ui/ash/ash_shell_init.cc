@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
 #include "chrome/browser/browser_process.h"

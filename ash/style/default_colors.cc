@@ -4,7 +4,7 @@
 
 #include "ash/style/default_colors.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 
 namespace ash {
 

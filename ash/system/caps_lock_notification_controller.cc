@@ -5,7 +5,7 @@
 #include "ash/system/caps_lock_notification_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"

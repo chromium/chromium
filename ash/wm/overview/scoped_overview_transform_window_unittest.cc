@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_utils.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/internet_section.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"

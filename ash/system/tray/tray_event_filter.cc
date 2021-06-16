@@ -5,7 +5,6 @@
 #include "ash/system/tray/tray_event_filter.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"

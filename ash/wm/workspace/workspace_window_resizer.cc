@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"

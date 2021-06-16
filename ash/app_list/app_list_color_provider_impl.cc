@@ -4,7 +4,7 @@
 
 #include "ash/app_list/app_list_color_provider_impl.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_colors.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"

@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"

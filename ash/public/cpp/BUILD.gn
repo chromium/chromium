@@ -61,8 +61,6 @@ component("cpp") {
     "arc_app_id_provider.h",
     "arc_resize_lock_type.h",
     "ash_constants.h",
-    "ash_features.cc",
-    "ash_features.h",
     "ash_pref_names.cc",
     "ash_pref_names.h",
     "ash_public_export.h",

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/assistant/util/assistant_util.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
 #include "ash/system/palette/tools/capture_region_mode.h"

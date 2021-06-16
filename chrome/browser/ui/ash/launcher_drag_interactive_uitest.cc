@@ -5,7 +5,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/macros.h"

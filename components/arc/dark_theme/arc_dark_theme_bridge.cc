@@ -4,7 +4,7 @@
 
 #include "components/arc/dark_theme/arc_dark_theme_bridge.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/logging.h"

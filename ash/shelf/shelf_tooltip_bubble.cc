@@ -4,7 +4,7 @@
 
 #include "ash/shelf/shelf_tooltip_bubble.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"

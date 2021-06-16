@@ -5,9 +5,9 @@
 #include "ash/system/overview/overview_button_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/login_status.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/root_window_controller.h"

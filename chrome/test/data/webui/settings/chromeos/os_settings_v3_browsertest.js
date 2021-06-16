@@ -7,7 +7,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "ash/public/cpp/ash_features.h"');
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "components/full_restore/features.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "build/branding_buildflags.h"');

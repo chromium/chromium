@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/bind.h"

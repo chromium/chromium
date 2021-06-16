@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"

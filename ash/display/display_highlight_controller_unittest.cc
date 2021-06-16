@@ -4,7 +4,7 @@
 
 #include "ash/display/display_highlight_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"

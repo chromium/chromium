@@ -4,7 +4,6 @@
 
 #include "ash/system/message_center/unified_message_list_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"

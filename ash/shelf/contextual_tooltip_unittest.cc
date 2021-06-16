@@ -4,7 +4,7 @@
 
 #include "ash/shelf/contextual_tooltip.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_nudge_status_tracker.h"

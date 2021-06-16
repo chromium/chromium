@@ -12,7 +12,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"

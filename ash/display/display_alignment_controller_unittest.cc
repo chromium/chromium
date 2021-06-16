@@ -4,8 +4,8 @@
 
 #include "ash/display/display_alignment_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/display_alignment_indicator.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"

@@ -5,7 +5,7 @@
 #include "ash/app_menu/app_menu_model_adapter.h"
 
 #include "ash/app_menu/notification_menu_controller.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"

@@ -6,10 +6,10 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shell.h"

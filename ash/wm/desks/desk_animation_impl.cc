@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"

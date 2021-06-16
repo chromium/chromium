@@ -5,7 +5,6 @@
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "base/bind.h"

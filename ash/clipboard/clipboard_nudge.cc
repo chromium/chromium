@@ -4,7 +4,7 @@
 
 #include "ash/clipboard/clipboard_nudge.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"

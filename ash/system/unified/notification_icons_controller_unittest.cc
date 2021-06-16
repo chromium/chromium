@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/system/tray/tray_item_view.h"

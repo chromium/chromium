@@ -8,7 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"

@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/constants/ash_features.h"
 #include "ash/login_status.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_button_controller.h"

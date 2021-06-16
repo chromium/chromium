@@ -4,7 +4,6 @@
 
 #include "ash/system/update/update_notification_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/session/shutdown_confirmation_dialog.h"
