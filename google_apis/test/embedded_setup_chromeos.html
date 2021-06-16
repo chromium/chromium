@@ -9,7 +9,8 @@ gaia.chromeOSLogin.parent_webview_oob_url_ = 'chrome://oobe';
 gaia.chromeOSLogin.parent_webview_ = undefined;
 gaia.chromeOSLogin.parent_webview_url_ = undefined;
 gaia.chromeOSLogin.initialized_ = false;
-gaia.chromeOSLogin.sendImplicitServices = true;
+gaia.chromeOSLogin.shouldSendImplicitServices = true;
+gaia.chromeOSLogin.shouldSendCloseView = true;
 
 const urlParams = new URLSearchParams(window.location.search);
 const useNativeNavigation = !!urlParams.get('use_native_navigation');
@@ -138,7 +139,7 @@ function goNext() {
       services = [];
     } else {
       console.warn("Services are not set for testing.");
-      if (gaia.chromeOSLogin.sendImplicitServices)
+      if (gaia.chromeOSLogin.shouldSendImplicitServices)
         services = []
     }
 
@@ -152,6 +153,8 @@ function goNext() {
         }
         if (services)
           gaia.chromeOSLogin.sendUserInfo(services);
+        if (gaia.chromeOSLogin.shouldSendCloseView)
+          gaia.chromeOSLogin.sendCloseView();
         history.pushState({}, "", window.location.pathname + "#close");
       }
     };

@@ -352,7 +352,12 @@ class WebviewLoginTest : public OobeBaseTest {
 
   void DisableImplicitServices() {
     SigninFrameJS().ExecuteAsync(
-        "gaia.chromeOSLogin.sendImplicitServices = false");
+        "gaia.chromeOSLogin.shouldSendImplicitServices = false");
+  }
+
+  void DisableCloseViewMessage() {
+    SigninFrameJS().ExecuteAsync(
+        "gaia.chromeOSLogin.shouldSendCloseView = false");
   }
 
   void WaitForServicesSet() {
@@ -436,6 +441,8 @@ class WebviewCloseViewLoginTest
 IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, NativeTest) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
+  // Test will send `closerView` manually (if the feature is enabled).
+  DisableCloseViewMessage();
   SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
                                FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
@@ -503,6 +510,8 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, Basic) {
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   ExpectIdentifierPage();
+  // Test will send `closerView` manually (if the feature is enabled).
+  DisableCloseViewMessage();
 
   SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
                                FakeGaiaMixin::kEmailPath);
@@ -547,6 +556,8 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, BackButton) {
 
   // Start with identifer page.
   ExpectIdentifierPage();
+  // Test will send `closerView` manually (if the feature is enabled).
+  DisableCloseViewMessage();
 
   // Move to password page.
   auto back_button_waiter = CreateGaiaPageEventWaiter("backButton");
@@ -1737,6 +1748,8 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, MAYBE_UserInfoNeverSent) {
   WaitForGaiaPageLoadAndPropertyUpdate();
   ExpectIdentifierPage();
   DisableImplicitServices();
+  // Test will send `closerView` manually (if the feature is enabled).
+  DisableCloseViewMessage();
   SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
                                FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kPrimaryButton);
