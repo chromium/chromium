@@ -705,7 +705,8 @@ void HTMLFormElement::CollectListedElements(
     ListedElement::List* elements_including_shadow_trees,
     bool in_shadow_tree) const {
   DCHECK(!in_shadow_tree || elements_including_shadow_trees);
-  elements.clear();
+  if (!in_shadow_tree)
+    elements.clear();
   for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
       // If there is a <form> in between |root| and |listed_element|, then we

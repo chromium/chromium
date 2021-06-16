@@ -254,4 +254,42 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
             ListedElement::List{});
 }
 
+// This tree is created manually because innerHTML assignment doesn't invoke the
+// parser for declarative ShadowDOM. The created tree looks like this:
+//  <form id=form1>
+//    <input id=input1>
+//    <div id=div1>
+//      <template shadowroot=open>
+//        <input id=input2>
+//      </template>
+//    </div>
+//  </form>
+TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+
+  HTMLFormElement* form1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  body->AppendChild(form1);
+
+  HTMLInputElement* input1 = MakeGarbageCollected<HTMLInputElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  form1->AppendChild(input1);
+
+  HTMLDivElement* form1div =
+      MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  form1->AppendChild(form1div);
+  ShadowRoot& form1root =
+      form1div->AttachShadowRootInternal(ShadowRootType::kOpen);
+
+  HTMLInputElement* input2 = MakeGarbageCollected<HTMLInputElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  form1root.AppendChild(input2);
+
+  EXPECT_EQ(form1->ListedElements(), ListedElement::List{input1});
+  ListedElement::List list;
+  list.push_back(input1);
+  list.push_back(input2);
+  EXPECT_EQ(form1->ListedElements(/*include_shadow_trees=*/true), list);
+  EXPECT_EQ(form1->ListedElements(), ListedElement::List{input1});
+}
+
 }  // namespace blink
