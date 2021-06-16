@@ -620,10 +620,20 @@ public class LocationBarMediatorTest {
     public void testUpdateAssistantVoiceSearchDrawablesAndColors() {
         AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
         ColorStateList csl = Mockito.mock(ColorStateList.class);
-        doReturn(csl).when(avs).getMicButtonColorStateList(anyInt(), anyObject());
+        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), anyObject());
         mMediator.setAssistantVoiceSearchServiceForTesting(avs);
 
         verify(mLocationBarLayout).setMicButtonTint(csl);
+    }
+
+    @Test
+    public void testUpdateLensButtonColors() {
+        AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
+        ColorStateList csl = Mockito.mock(ColorStateList.class);
+        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), anyObject());
+        mMediator.setAssistantVoiceSearchServiceForTesting(avs);
+
+        verify(mLocationBarLayout).setLensButtonTint(csl);
     }
 
     @Test
