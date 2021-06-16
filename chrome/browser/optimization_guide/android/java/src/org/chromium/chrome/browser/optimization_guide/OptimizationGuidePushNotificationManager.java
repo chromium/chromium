@@ -162,6 +162,22 @@ public class OptimizationGuidePushNotificationManager {
     }
 
     /**
+     * Returns a list of all the optimization types that have push notification cached. Optimization
+     * types with overflowed caches are not included.
+     */
+    public static List<OptimizationType> getOptTypesWithPushNotifications() {
+        List<OptimizationType> types = new ArrayList<OptimizationType>();
+        for (OptimizationType type : OptimizationType.values()) {
+            Set<String> cache =
+                    SharedPreferencesManager.getInstance().readStringSet(cacheKey(type));
+            if (cache != null && cache.size() > 0 && !checkForOverflow(cache)) {
+                types.add(type);
+            }
+        }
+        return types;
+    }
+
+    /**
      * Returns a list of all the optimization types that overflowed their push notification caches.
      */
     public static List<OptimizationType> getOptTypesThatOverflowedPushNotifications() {

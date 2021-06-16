@@ -152,15 +152,8 @@ void AndroidPushNotificationManager::OnDelegateReady() {
   }
 
   size_t cached_notifications_total = 0;
-  for (int int_opt_type = proto::OptimizationType_MIN;
-       int_opt_type <= proto::OptimizationType_MAX; int_opt_type++) {
-    if (!proto::OptimizationType_IsValid(int_opt_type)) {
-      // Handles parsing to reserved tag numbers.
-      continue;
-    }
-    proto::OptimizationType opt_type =
-        static_cast<proto::OptimizationType>(int_opt_type);
-
+  for (proto::OptimizationType opt_type :
+       OptimizationGuideBridge::GetOptTypesWithPushNotifications()) {
     std::vector<proto::HintNotificationPayload> notifications =
         OptimizationGuideBridge::GetCachedNotifications(opt_type);
     cached_notifications_total += notifications.size();

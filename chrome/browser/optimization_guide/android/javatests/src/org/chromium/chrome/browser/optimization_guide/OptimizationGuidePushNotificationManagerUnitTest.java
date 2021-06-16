@@ -137,6 +137,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         .getNotificationCacheForOptimizationType(OptimizationType.LITE_PAGE)
                         .length);
 
+        Assert.assertEquals(Arrays.asList(OptimizationType.PERFORMANCE_HINTS),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
+
         OptimizationGuidePushNotificationManager.clearCacheForOptimizationType(
                 OptimizationType.PERFORMANCE_HINTS);
         cached = OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
@@ -160,6 +163,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertNotNull(cached);
         Assert.assertEquals(0, cached.length);
 
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
+
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .onNewPushNotification(anyLong(), eq(NOTIFICATION_WITHOUT_PAYLOAD.toByteArray()));
     }
@@ -180,6 +186,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         OptimizationType.PERFORMANCE_HINTS);
         Assert.assertNotNull(cached);
         Assert.assertEquals(0, cached.length);
+
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
     @Test
@@ -206,6 +215,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         .getNotificationCacheForOptimizationType(OptimizationType.LITE_VIDEO)
                         .length);
 
+        Assert.assertEquals(Arrays.asList(OptimizationType.LITE_PAGE, OptimizationType.LITE_VIDEO),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
+
         setFeatureStatusForTest(false);
         // Push another notification to trigger the clear.
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
@@ -218,6 +230,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                 OptimizationGuidePushNotificationManager
                         .getNotificationCacheForOptimizationType(OptimizationType.LITE_VIDEO)
                         .length);
+
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
     @Test
@@ -248,12 +263,18 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         OptimizationType.PERFORMANCE_HINTS);
         Assert.assertNull(cached);
 
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
+
         OptimizationGuidePushNotificationManager.clearCacheForOptimizationType(
                 OptimizationType.PERFORMANCE_HINTS);
         cached = OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
                 OptimizationType.PERFORMANCE_HINTS);
         Assert.assertNotNull(cached);
         Assert.assertEquals(0, cached.length);
+
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
     @Test
@@ -276,6 +297,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertNotNull(cached);
         Assert.assertEquals(1, cached.length);
         Assert.assertEquals(NOTIFICATION_WITHOUT_PAYLOAD, cached[0]);
+
+        Assert.assertEquals(Arrays.asList(OptimizationType.PERFORMANCE_HINTS),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
     @Test
@@ -307,6 +331,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         OptimizationType.PERFORMANCE_HINTS);
         Assert.assertNotNull(cached);
         Assert.assertEquals(0, cached.length);
+
+        Assert.assertEquals(new ArrayList<OptimizationType>(),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
     @Test
@@ -323,6 +350,9 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertNotNull(cached);
         Assert.assertEquals(1, cached.length);
         Assert.assertEquals(NOTIFICATION_WITHOUT_PAYLOAD, cached[0]);
+
+        Assert.assertEquals(Arrays.asList(OptimizationType.PERFORMANCE_HINTS),
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
     @Test

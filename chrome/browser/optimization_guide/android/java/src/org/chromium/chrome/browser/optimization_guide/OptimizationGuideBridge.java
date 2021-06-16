@@ -157,6 +157,20 @@ public class OptimizationGuideBridge {
     }
 
     /**
+     * Returns an array of all the optimization types that have cached push notifications.
+     */
+    @CalledByNative
+    private static int[] getOptTypesWithPushNotifications() {
+        List<OptimizationType> cachedTypes =
+                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications();
+        int[] intCachedTypes = new int[cachedTypes.size()];
+        for (int i = 0; i < cachedTypes.size(); i++) {
+            intCachedTypes[i] = cachedTypes.get(i).getNumber();
+        }
+        return intCachedTypes;
+    }
+
+    /**
      * Returns an array of all the optimization types that overflowed their cache for push
      * notifications.
      */

@@ -98,6 +98,25 @@ OptimizationGuideBridge::GetCachedNotifications(
 
 // static
 base::flat_set<proto::OptimizationType>
+OptimizationGuideBridge::GetOptTypesWithPushNotifications() {
+  JNIEnv* env = AttachCurrentThread();
+  std::vector<int> cached_int_types;
+  JavaIntArrayToIntVector(
+      env, Java_OptimizationGuideBridge_getOptTypesWithPushNotifications(env),
+      &cached_int_types);
+
+  base::flat_set<proto::OptimizationType> cached_types;
+  for (int int_type : cached_int_types) {
+    // Handles parsing of reserved tag numbers.
+    if (proto::OptimizationType_IsValid(int_type)) {
+      cached_types.insert(static_cast<proto::OptimizationType>(int_type));
+    }
+  }
+  return cached_types;
+}
+
+// static
+base::flat_set<proto::OptimizationType>
 OptimizationGuideBridge::GetOptTypesThatOverflowedPushNotifications() {
   JNIEnv* env = AttachCurrentThread();
   std::vector<int> overflowed_int_types;

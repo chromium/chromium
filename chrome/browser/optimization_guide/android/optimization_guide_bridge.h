@@ -25,6 +25,8 @@ class OptimizationGuideBridge {
   static std::vector<proto::HintNotificationPayload> GetCachedNotifications(
       proto::OptimizationType opt_type);
   static base::flat_set<proto::OptimizationType>
+  GetOptTypesWithPushNotifications();
+  static base::flat_set<proto::OptimizationType>
   GetOptTypesThatOverflowedPushNotifications();
   static void ClearCacheForOptimizationType(proto::OptimizationType opt_type);
   static void OnNotificationNotHandledByNative(
