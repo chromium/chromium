@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/common/prefetched_signed_exchange_info.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 
 namespace content {
@@ -50,7 +50,7 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
   // navigation was served from the cache, |prefetched_signed_exchanges|
   // contains the all prefetched signed exchanges and they will be passed to the
   // renderer.
-  std::vector<mojom::PrefetchedSignedExchangeInfoPtr>
+  std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>
       prefetched_signed_exchanges;
 };
 

@@ -335,33 +335,6 @@ void ParamTraits<viz::SurfaceInfo>::Log(const param_type& p, std::string* l) {
   l->append(")");
 }
 
-void ParamTraits<net::SHA256HashValue>::Write(base::Pickle* m,
-                                              const param_type& p) {
-  m->WriteData(reinterpret_cast<const char*>(p.data), sizeof(p.data));
-}
-
-bool ParamTraits<net::SHA256HashValue>::Read(const base::Pickle* m,
-                                             base::PickleIterator* iter,
-                                             param_type* r) {
-  const char* data;
-  int data_length;
-  if (!iter->ReadData(&data, &data_length)) {
-    NOTREACHED();
-    return false;
-  }
-  if (data_length != sizeof(r->data)) {
-    NOTREACHED();
-    return false;
-  }
-  memcpy(r->data, data, sizeof(r->data));
-  return true;
-}
-
-void ParamTraits<net::SHA256HashValue>::Log(const param_type& p,
-                                            std::string* l) {
-  l->append("<SHA256HashValue>");
-}
-
 }  // namespace IPC
 
 // Generate param traits write methods.

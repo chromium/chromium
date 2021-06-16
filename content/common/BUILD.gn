@@ -445,7 +445,6 @@ mojom("mojo_bindings") {
     "native_types.mojom",
     "navigation_client.mojom",
     "navigation_params.mojom",
-    "prefetched_signed_exchange_info.mojom",
     "render_accessibility.mojom",
     "render_message_filter.mojom",
     "renderer.mojom",
@@ -594,10 +593,6 @@ mojom("mojo_bindings") {
         {
           mojom = "content.mojom.PageTransition"
           cpp = "::ui::PageTransition"
-        },
-        {
-          mojom = "content.mojom.SHA256HashValue"
-          cpp = "::net::SHA256HashValue"
         },
       ]
       traits_headers = [

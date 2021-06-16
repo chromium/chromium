@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module content.mojom;
+module blink.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "url/mojom/url.mojom";
 
-[Native]
-struct SHA256HashValue;
+struct SHA256HashValue {
+  mojo_base.mojom.ByteString data;
+};
 
 // Used for SignedExchangeSubresourcePrefetch.
 // This struct keeps the information about a prefetched signed exchange. It is

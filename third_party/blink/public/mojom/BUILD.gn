@@ -123,6 +123,7 @@ mojom("mojom_platform") {
     "modal_close_watcher/modal_close_listener.mojom",
     "native_io/native_io.mojom",
     "navigation/navigation_policy.mojom",
+    "navigation/prefetched_signed_exchange_info.mojom",
     "navigation/was_activated_option.mojom",
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",
@@ -496,6 +497,15 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/frame/frame_ad_evidence_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.SHA256HashValue"
+          cpp = "::net::SHA256HashValue"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/navigation/prefetched_signed_exchange_info_mojom_traits.h" ]
     },
   ]
   cpp_typemaps = [

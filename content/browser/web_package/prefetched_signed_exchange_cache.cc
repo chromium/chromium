@@ -466,7 +466,7 @@ class PrefetchedNavigationLoaderInterceptor
  public:
   PrefetchedNavigationLoaderInterceptor(
       std::unique_ptr<const PrefetchedSignedExchangeCacheEntry> exchange,
-      std::vector<mojom::PrefetchedSignedExchangeInfoPtr> info_list)
+      std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr> info_list)
       : exchange_(std::move(exchange)), info_list_(std::move(info_list)) {}
 
   ~PrefetchedNavigationLoaderInterceptor() override {}
@@ -559,7 +559,7 @@ class PrefetchedNavigationLoaderInterceptor
 
   State state_ = State::kInitial;
   const std::unique_ptr<const PrefetchedSignedExchangeCacheEntry> exchange_;
-  std::vector<mojom::PrefetchedSignedExchangeInfoPtr> info_list_;
+  std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr> info_list_;
 
   base::WeakPtrFactory<PrefetchedNavigationLoaderInterceptor> weak_factory_{
       this};
@@ -752,7 +752,7 @@ void PrefetchedSignedExchangeCache::RecordHistograms() {
                            headers_size_total);
 }
 
-std::vector<mojom::PrefetchedSignedExchangeInfoPtr>
+std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>
 PrefetchedSignedExchangeCache::GetInfoListForNavigation(
     const PrefetchedSignedExchangeCacheEntry& main_exchange,
     const base::Time& verification_time,
@@ -766,7 +766,7 @@ PrefetchedSignedExchangeCache::GetInfoListForNavigation(
       url::Origin::Create(main_exchange.inner_url());
   const auto inner_url_header_integrity_map = GetAllowedAltSXG(main_exchange);
 
-  std::vector<mojom::PrefetchedSignedExchangeInfoPtr> info_list;
+  std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr> info_list;
   EntryMap::iterator exchanges_it = exchanges_.begin();
   while (exchanges_it != exchanges_.end()) {
     const std::unique_ptr<const PrefetchedSignedExchangeCacheEntry>& exchange =
@@ -810,7 +810,7 @@ PrefetchedSignedExchangeCache::GetInfoListForNavigation(
     new SubresourceSignedExchangeURLLoaderFactory(
         pending_loader_factory.InitWithNewPipeAndPassReceiver(),
         exchange->Clone(), request_initiator_origin_lock);
-    info_list.emplace_back(mojom::PrefetchedSignedExchangeInfo::New(
+    info_list.emplace_back(blink::mojom::PrefetchedSignedExchangeInfo::New(
         exchange->outer_url(), *exchange->header_integrity(),
         exchange->inner_url(), exchange->inner_response().Clone(),
         std::move(pending_loader_factory)));

@@ -32,6 +32,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "ui/gfx/text_elider.h"
 
 #if defined(OS_ANDROID)
@@ -815,7 +816,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           should_clear_history_list(), mojom::NavigationTiming::New(),
           absl::nullopt, blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
-          std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
+          std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if defined(OS_ANDROID)
           std::string(),
 #endif
