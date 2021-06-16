@@ -282,6 +282,8 @@ inline NGInlineItemResult* NGLineBreaker::AddItem(const NGInlineItem& item,
   DCHECK_GE(offset_, item.StartOffset());
   DCHECK_GE(end_offset, offset_);
   DCHECK_LE(end_offset, item.EndOffset());
+  if (UNLIKELY(item.IsTextCombine()))
+    line_info->SetHaveTextCombineItem();
   NGInlineItemResults* item_results = line_info->MutableResults();
   return &item_results->emplace_back(
       &item, item_index_, NGTextOffset(offset_, end_offset),

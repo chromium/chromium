@@ -131,6 +131,11 @@ class CORE_EXPORT NGLineInfo {
   // justify alignment.
   bool NeedsAccurateEndPosition() const { return needs_accurate_end_position_; }
 
+  // |MayHaveTextCombineItem()| is used for treating text-combine box as
+  // ideographic character during "text-align:justify".
+  bool MayHaveTextCombineItem() const { return may_have_text_combine_item_; }
+  void SetHaveTextCombineItem() { may_have_text_combine_item_ = true; }
+
  private:
   ETextAlign GetTextAlign(bool is_last_line = false) const;
   bool ComputeNeedsAccurateEndPosition() const;
@@ -165,6 +170,12 @@ class CORE_EXPORT NGLineInfo {
   bool needs_accurate_end_position_ = false;
   bool is_ruby_base_ = false;
   bool is_ruby_text_ = false;
+  // Even if text combine item causes line break, this variable is not reset.
+  // This variable is used to add spacing before/after text combine items if
+  // "text-align: justify".
+  // Note: To avoid scanning |NGInlineItemResults|, this variable is true
+  // when |NGInlineItemResult| to |results_|.
+  bool may_have_text_combine_item_ = false;
 };
 
 std::ostream& operator<<(std::ostream& ostream, const NGLineInfo& line_info);

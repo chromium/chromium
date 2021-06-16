@@ -587,7 +587,8 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
     // Note: |item_result->spacing_before| is non-zero if this |item_result|
     // is |LayoutNGTextCombine| and after CJK character.
     // See "text-combine-justify.html".
-    const LayoutUnit inline_offset = box->margin_inline_start;
+    const LayoutUnit inline_offset =
+        box->margin_inline_start + item_result->spacing_before;
     line_box->AddChild(std::move(item_result->layout_result),
                        LogicalOffset{inline_offset, box->text_top},
                        item_result->inline_size, /* children_count */ 0,
@@ -837,11 +838,33 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   if (end_offset == line_info->StartOffset())
     return absl::nullopt;
 
+  const UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
+
   // Construct the line text to compute spacing for.
   StringBuilder line_text_builder;
-  line_text_builder.Append(StringView(line_info->ItemsData().text_content,
-                                      line_info->StartOffset(),
-                                      end_offset - line_info->StartOffset()));
+  if (UNLIKELY(line_info->MayHaveTextCombineItem())) {
+    for (const NGInlineItemResult& item_result : line_info->Results()) {
+      if (item_result.StartOffset() >= end_offset)
+        break;
+      if (item_result.item->IsTextCombine()) {
+        // To apply justification before and after the combined text, we put
+        // ideographic character to increment |ShapeResultSpacing::
+        // expansion_opportunity_count_| for legacy layout compatibility.
+        // See "fast/writing-mode/text-combine-justify.html".
+        // Note: The spec[1] says we should treat combined text as U+FFFC.
+        // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
+        line_text_builder.Append(kTextCombineItemMarker);
+        continue;
+      }
+      line_text_builder.Append(StringView(line_info->ItemsData().text_content,
+                                          item_result.StartOffset(),
+                                          item_result.Length()));
+    }
+  } else {
+    line_text_builder.Append(StringView(line_info->ItemsData().text_content,
+                                        line_info->StartOffset(),
+                                        end_offset - line_info->StartOffset()));
+  }
 
   // Append a hyphen if the last word is hyphenated. The hyphen is in
   // |ShapeResult|, but not in text. |ShapeResultSpacing| needs the text that
@@ -901,15 +924,24 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
         item_result.inline_size += item_result.HyphenInlineSize();
       item_result.shape_result = ShapeResultView::Create(shape_result.get());
     } else if (item_result.item->Type() == NGInlineItem::kAtomicInline) {
-      float offset = 0.f;
+      float spacing_before = 0.0f;
       DCHECK_LE(line_info->StartOffset(), item_result.StartOffset());
-      unsigned line_text_offset =
+      const unsigned line_text_offset =
           item_result.StartOffset() - line_info->StartOffset();
-      DCHECK_EQ(kObjectReplacementCharacter, line_text[line_text_offset]);
-      item_result.inline_size +=
-          spacing.ComputeSpacing(line_text_offset, offset);
-      // |offset| is non-zero only before CJK characters.
-      DCHECK_EQ(offset, 0.f);
+      const float spacing_after =
+          spacing.ComputeSpacing(line_text_offset, spacing_before);
+      if (UNLIKELY(item_result.item->IsTextCombine())) {
+        // |spacing_before| is non-zero if this |item_result| is after
+        // non-CJK character. See "text-combine-justify.html".
+        DCHECK_EQ(kTextCombineItemMarker, line_text[line_text_offset]);
+        item_result.inline_size += spacing_after;
+        item_result.spacing_before = LayoutUnit(spacing_before);
+      } else {
+        DCHECK_EQ(kObjectReplacementCharacter, line_text[line_text_offset]);
+        item_result.inline_size += spacing_after;
+        // |spacing_before| is non-zero only before CJK characters.
+        DCHECK_EQ(spacing_before, 0.0f);
+      }
     }
   }
   return inset / 2;

@@ -63,6 +63,10 @@ struct CORE_EXPORT NGInlineItemResult {
   // Inline size of this item.
   LayoutUnit inline_size;
 
+  // Non-zero if text-combine after non-ideographic character
+  // See "text-combine-justify.html".
+  LayoutUnit spacing_before;
+
   // Pending inline-end overhang amount for RubyRun.
   // This is committed if a following item meets conditions.
   LayoutUnit pending_end_overhang;
