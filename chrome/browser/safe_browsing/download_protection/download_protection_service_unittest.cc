@@ -23,7 +23,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -139,7 +138,11 @@ namespace {
 // a given URL.
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
-  MockSafeBrowsingDatabaseManager() {}
+  MockSafeBrowsingDatabaseManager() = default;
+  MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
+      delete;
+  MockSafeBrowsingDatabaseManager& operator=(
+      const MockSafeBrowsingDatabaseManager&) = delete;
 
   MOCK_METHOD1(MatchDownloadAllowlistUrl, bool(const GURL&));
   MOCK_METHOD1(MatchDownloadAllowlistString, bool(const std::string&));
@@ -148,8 +151,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
                     SafeBrowsingDatabaseManager::Client* client));
 
  private:
-  ~MockSafeBrowsingDatabaseManager() override {}
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingDatabaseManager);
+  ~MockSafeBrowsingDatabaseManager() override = default;
 };
 
 std::unique_ptr<KeyedService> CreateTestBinaryUploadService(
@@ -162,13 +164,14 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
   explicit FakeSafeBrowsingService(Profile* profile)
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        download_report_count_(0) {
+                &test_url_loader_factory_)) {
     services_delegate_ = ServicesDelegate::CreateForTest(this, this);
     BinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating(&CreateTestBinaryUploadService));
     mock_database_manager_ = new MockSafeBrowsingDatabaseManager();
   }
+  FakeSafeBrowsingService(const FakeSafeBrowsingService&) = delete;
+  FakeSafeBrowsingService& operator=(const FakeSafeBrowsingService&) = delete;
 
   // Returned pointer has the same lifespan as the database_manager_ refcounted
   // object.
@@ -220,7 +223,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
   int download_report_count() { return download_report_count_; }
 
  protected:
-  ~FakeSafeBrowsingService() override {}
+  ~FakeSafeBrowsingService() override = default;
 
   void RegisterAllDelayedAnalysis() override {}
 
@@ -245,9 +248,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
       test_shared_loader_factory_map_;
 
   scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
-  int download_report_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingService);
+  int download_report_count_ = 0;
 };
 
 using NiceMockDownloadItem = NiceMock<download::MockDownloadItem>;
@@ -3137,6 +3138,10 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
                          })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
+    EXPECT_CALL(*sb_service_->mock_database_manager(),
+                MatchDownloadAllowlistUrl(_))
+        .WillRepeatedly(Return(false));
+
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -3192,6 +3197,9 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
 
   EXPECT_CALL(item, GetReceivedBytes())
       .WillRepeatedly(Return(100 * 1024 * 1024));
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_))
+      .WillRepeatedly(Return(false));
 
   TestBinaryUploadService* test_upload_service =
       static_cast<TestBinaryUploadService*>(
