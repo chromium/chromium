@@ -239,7 +239,11 @@ aura::Window* GetTopVisibleWindow() {
   return nullptr;
 }
 
-void LogAppListShowSource(AppListShowSource show_source) {
+void LogAppListShowSource(AppListShowSource show_source, bool app_list_bubble) {
+  if (app_list_bubble) {
+    UMA_HISTOGRAM_ENUMERATION("Apps.AppListBubbleShowSource", show_source);
+    return;
+  }
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListShowSource", show_source);
 }
 
@@ -712,10 +716,12 @@ bool AppListControllerImpl::GetTargetVisibility(
 void AppListControllerImpl::Show(int64_t display_id,
                                  absl::optional<AppListShowSource> show_source,
                                  base::TimeTicks event_time_stamp) {
+  const bool show_app_list_bubble =
+      features::IsAppListBubbleEnabled() && !IsTabletMode();
   if (show_source.has_value())
-    LogAppListShowSource(show_source.value());
+    LogAppListShowSource(show_source.value(), show_app_list_bubble);
 
-  if (features::IsAppListBubbleEnabled() && !IsTabletMode()) {
+  if (show_app_list_bubble) {
     bubble_presenter_->Show(display_id);
     return;
   }
@@ -763,15 +769,15 @@ ShelfAction AppListControllerImpl::ToggleAppList(
       Back();
       return SHELF_ACTION_APP_LIST_BACK;
     }
-
-    LogAppListShowSource(show_source);
+    LogAppListShowSource(show_source, /*app_list_bubble=*/false);
     return SHELF_ACTION_APP_LIST_SHOWN;
   }
 
   if (features::IsAppListBubbleEnabled()) {
-    bubble_presenter_->Toggle(display_id);
-    return bubble_presenter_->IsShowing() ? SHELF_ACTION_APP_LIST_SHOWN
-                                          : SHELF_ACTION_APP_LIST_DISMISSED;
+    ShelfAction action = bubble_presenter_->Toggle(display_id);
+    if (action == SHELF_ACTION_APP_LIST_SHOWN)
+      LogAppListShowSource(show_source, /*app_list_bubble=*/true);
+    return action;
   }
 
   base::AutoReset<bool> auto_reset(&should_dismiss_immediately_,
@@ -779,7 +785,7 @@ ShelfAction AppListControllerImpl::ToggleAppList(
   ShelfAction action = fullscreen_presenter_->ToggleAppList(
       display_id, show_source, event_time_stamp);
   if (action == SHELF_ACTION_APP_LIST_SHOWN)
-    LogAppListShowSource(show_source);
+    LogAppListShowSource(show_source, /*app_list_bubble=*/false);
   return action;
 }
 
@@ -1256,6 +1262,7 @@ void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
 }
 
 void AppListControllerImpl::Back() {
+  // TODO(https://crbug.com/1220808): Handle back action for AppListBubble
   fullscreen_presenter_->GetView()->Back();
 }
 

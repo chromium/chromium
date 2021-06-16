@@ -1006,6 +1006,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppListBubbleShowSource" enum="AppListShowSource"
+    expires_after="2022-06-15">
+  <owner>newcomer@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of times the different sources for showing the bubble app list
+    are used. This is logged when the bubble app list is shown, which only
+    exists in clamshell mode. See sister metric
+    &quot;Apps.AppListShowSource&quot; for tablet mode and fullscreen app list
+    metrics.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppListCreationTime" units="ms"
     expires_after="2021-04-18">
   <owner>calamity@chromium.org</owner>

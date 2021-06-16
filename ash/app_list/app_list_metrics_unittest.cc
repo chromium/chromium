@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_impl.h"
@@ -25,6 +26,7 @@
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -38,6 +40,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 
@@ -535,11 +538,11 @@ class AppListShowSourceMetricTest : public AshTestBase {
 TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
   base::HistogramTester histogram_tester;
 
-  // Enable accessibility feature that forces home button to be shown even with
-  // kHideShelfControlsInTabletMode enabled.
-  // TODO(https://crbug.com/1050544) Use the a11y feature specific to showing
-  // navigation buttons in tablet mode once it lands.
-  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
+  // Enable accessibility feature that forces home button to be shown in tablet
+  // mode.
+  Shell::Get()
+      ->accessibility_controller()
+      ->SetTabletModeShelfNavigationButtonsEnabled(true);
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -572,7 +575,7 @@ TEST_F(AppListShowSourceMetricTest, TabletModeWithWindowOpen) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   GetAppListTestHelper()->CheckVisibility(false);
 
-  // Ensure that no AppListShowSource metric was recoreded.
+  // Ensure that no AppListShowSource metric was recorded.
   histogram_tester.ExpectTotalCount("Apps.AppListShowSource", 0);
 }
 
@@ -587,6 +590,101 @@ TEST_F(AppListShowSourceMetricTest, TabletModeWithNoWindowOpen) {
   histogram_tester.ExpectBucketCount(
       "Apps.AppListShowSource", kTabletMode,
       1 /* Number of times app list shown after entering tablet mode */);
+}
+
+class AppListBubbleShowSourceMetricTest : public AppListShowSourceMetricTest {
+ public:
+  AppListBubbleShowSourceMetricTest() {
+    scoped_feature_list_.InitWithFeatures({features::kAppListBubble}, {});
+  }
+  ~AppListBubbleShowSourceMetricTest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that showing the AppListBubble in clamshell mode records the proper
+// metrics for Apps.AppListBubbleShowSource.
+TEST_F(AppListBubbleShowSourceMetricTest, ClamshellModeHomeButton) {
+  base::HistogramTester histogram_tester;
+  auto* app_list_bubble_presenter =
+      Shell::Get()->app_list_controller()->bubble_presenter_for_test();
+  // Show the Bubble AppList.
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  EXPECT_TRUE(app_list_bubble_presenter->IsShowing());
+
+  // Test that the proper histogram is logged.
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 1);
+
+  // Hide the Bubble AppList.
+  GetAppListTestHelper()->Dismiss();
+  EXPECT_FALSE(app_list_bubble_presenter->IsShowing());
+
+  // Test that no histograms were logged.
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 1);
+
+  // Show the Bubble AppList one more time.
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  EXPECT_TRUE(app_list_bubble_presenter->IsShowing());
+
+  // Test that the histogram records 2 total shows.
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 2);
+
+  // Test that no fullscreen app list metrics were recorded.
+  histogram_tester.ExpectTotalCount("Apps.AppListShowSource", 0);
+}
+
+// Test that tablet mode launcher operations do not record AppListBubble
+// metrics.
+TEST_F(AppListBubbleShowSourceMetricTest,
+       TabletModeDoesNotRecordAppListBubbleShow) {
+  base::HistogramTester histogram_tester;
+  // Enable accessibility feature that forces home button to be shown in tablet
+  // mode.
+  Shell::Get()
+      ->accessibility_controller()
+      ->SetTabletModeShelfNavigationButtonsEnabled(true);
+
+  // Go to tablet mode, the tablet mode (non bubble) launcher will show. Create
+  // a test widget so the launcher will show in the background.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  auto* app_list_bubble_presenter =
+      Shell::Get()->app_list_controller()->bubble_presenter_for_test();
+  EXPECT_FALSE(app_list_bubble_presenter->IsShowing());
+
+  // Ensure that no AppListBubbleShowSource metric was recorded.
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 0);
+
+  // Press the Home Button, which hides `widget` and shows the tablet mode
+  // launcher.
+  ClickHomeButton();
+  EXPECT_FALSE(app_list_bubble_presenter->IsShowing());
+
+  // Test that no AppListBubble metrics were recorded.
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 0);
+}
+
+// Tests that Toggling the AppListBubble does not record metrics when the
+// result of the toggle is that the AppListBubble is hidden.
+TEST_F(AppListBubbleShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
+  base::HistogramTester histogram_tester;
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+
+  // Toggle the AppListBubble to show it.
+  app_list_controller->ToggleAppList(GetPrimaryDisplayId(),
+                                     AppListShowSource::kSearchKey,
+                                     base::TimeTicks::Now());
+  auto* app_list_bubble_presenter =
+      Shell::Get()->app_list_controller()->bubble_presenter_for_test();
+  ASSERT_TRUE(app_list_bubble_presenter->IsShowing());
+
+  // Toggle the AppListBubble once more, to hide it.
+  app_list_controller->ToggleAppList(GetPrimaryDisplayId(),
+                                     AppListShowSource::kSearchKey,
+                                     base::TimeTicks::Now());
+  ASSERT_FALSE(app_list_bubble_presenter->IsShowing());
+  // Test that only one show was recorded.
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 1);
 }
 
 }  // namespace ash

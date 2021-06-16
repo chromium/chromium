@@ -60,13 +60,14 @@ void AppListBubblePresenter::Show(int64_t display_id) {
                           base::Unretained(this)));
 }
 
-void AppListBubblePresenter::Toggle(int64_t display_id) {
+ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
   if (bubble_widget_) {
     Dismiss();
-    return;
+    return SHELF_ACTION_APP_LIST_DISMISSED;
   }
   Show(display_id);
+  return SHELF_ACTION_APP_LIST_SHOWN;
 }
 
 void AppListBubblePresenter::Dismiss() {

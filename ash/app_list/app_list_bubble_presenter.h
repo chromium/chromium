@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {
@@ -31,8 +32,9 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
   // Shows the bubble on the display with `display_id`.
   void Show(int64_t display_id);
 
-  // Shows or hides the bubble on the display with `display_id`.
-  void Toggle(int64_t display_id);
+  // Shows or hides the bubble on the display with `display_id`. Returns the
+  // appropriate ShelfAction to indicate whether the bubble was shown or hidden.
+  ShelfAction Toggle(int64_t display_id);
 
   // Closes and destroys the bubble.
   void Dismiss();
