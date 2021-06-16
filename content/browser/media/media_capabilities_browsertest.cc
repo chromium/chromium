@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -171,11 +172,18 @@ class MediaCapabilitiesTestWithConfigType
   }
 };
 
+// Fails on Linux: http://crbug.com/1220321.
+#if defined(OS_LINUX)
+#define MAYBE_CommonVideoDecodeTypes DISABLED_CommonVideoDecodeTypes
+#else
+#define MAYBE_CommonVideoDecodeTypes CommonVideoDecodeTypes
+#endif
+
 // Cover basic codec support of content types where the answer of support
 // (or not) should be common to both "media-source" and "file" query types.
 // for more exhaustive codec string testing.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
-                       CommonVideoDecodeTypes) {
+                       MAYBE_CommonVideoDecodeTypes) {
   base::FilePath file_path = media::GetTestDataFilePath(kDecodeTestFile);
 
   const std::string& config_type = GetTypeString();
@@ -364,9 +372,16 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                               /*spatial_rendering*/ true));
 }
 
+// Fails on Linux: http://crbug.com/1220321.
+#if defined(OS_LINUX)
+#define MAYBE_VideoTypesWithDynamicRange DISABLED_VideoTypesWithDynamicRange
+#else
+#define MAYBE_VideoTypesWithDynamicRange VideoTypesWithDynamicRange
+#endif
+
 // Cover basic HDR support.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
-                       VideoTypesWithDynamicRange) {
+                       MAYBE_VideoTypesWithDynamicRange) {
   base::FilePath file_path = media::GetTestDataFilePath(kDecodeTestFile);
 
   const std::string& config_type = GetTypeString();
