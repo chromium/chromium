@@ -8,54 +8,36 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+PRESUBMIT_VERSION = '2.0.0'
 USE_PYTHON3 = True
 
 
-def CommonChecks(input_api, output_api):
-  commands = [
-      input_api.Command(name='generate_buildbot_json',
+def CheckSourceSideSpecs(input_api, output_api):
+  return input_api.RunTests([
+      input_api.Command(name='check source side specs',
                         cmd=[
                             input_api.python3_executable,
                             'generate_buildbot_json.py', '--check', '--verbose'
                         ],
                         kwargs={},
                         message=output_api.PresubmitError),
-      input_api.Command(name='generate_buildbot_json_unittest',
-                        cmd=[
-                            input_api.python3_executable,
-                            'generate_buildbot_json_unittest.py'
-                        ],
-                        kwargs={},
-                        message=output_api.PresubmitError),
-      input_api.Command(name='generate_buildbot_json_coveragetest',
-                        cmd=[
-                            input_api.python3_executable,
-                            'generate_buildbot_json_coveragetest.py'
-                        ],
-                        kwargs={},
-                        message=output_api.PresubmitError),
-      input_api.Command(name='buildbot_json_magic_substitutions_unittest',
-                        cmd=[
-                            input_api.python3_executable,
-                            'buildbot_json_magic_substitutions_unittest.py',
-                        ],
-                        kwargs={},
-                        message=output_api.PresubmitError),
+  ])
+
+
+def CheckTests(input_api, output_api):
+  glob = input_api.os_path.join(input_api.PresubmitLocalPath(), '*test.py')
+  tests = input_api.canned_checks.GetUnitTests(input_api,
+                                               output_api,
+                                               input_api.glob(glob),
+                                               run_on_python2=False)
+  return input_api.RunTests(tests)
+
+
+def CheckManageJsonFiles(input_api, output_api):
+  return input_api.RunTests([
       input_api.Command(
-          name='manage',
+          name='manage JSON files',
           cmd=[input_api.python3_executable, 'manage.py', '--check'],
           kwargs={},
           message=output_api.PresubmitError),
-  ]
-  messages = []
-
-  messages.extend(input_api.RunTests(commands))
-  return messages
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return CommonChecks(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return CommonChecks(input_api, output_api)
+  ])
