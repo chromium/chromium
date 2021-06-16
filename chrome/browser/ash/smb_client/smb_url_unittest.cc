@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace smb_client {
 
 class SmbUrlTest : public testing::Test {
@@ -128,4 +128,4 @@ TEST_F(SmbUrlTest, GetWindowsURL) {
 }
 
 }  // namespace smb_client
-}  // namespace chromeos
+}  // namespace ash
