@@ -22,7 +22,6 @@ class LayoutShiftNormalization {
     return normalized_cls_data_;
   }
 
-  void AddInputTimeStamps(const std::vector<base::TimeTicks>& input_timestamps);
   void AddNewLayoutShifts(
       const std::vector<page_load_metrics::mojom::LayoutShiftPtr>& new_shifts,
       base::TimeTicks current_time,
@@ -64,7 +63,6 @@ class LayoutShiftNormalization {
       base::TimeDelta max_duration,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator begin,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator end,
-      std::vector<base::TimeTicks>& input_timestamps,
       float& max_score,
       uint32_t& count);
 
@@ -74,20 +72,12 @@ class LayoutShiftNormalization {
   // This vector is maintained in sorted order.
   std::vector<std::pair<base::TimeTicks, double>> recent_layout_shifts_;
 
-  // This vector which contains input timestamps is maintained in sorted order.
-  std::vector<base::TimeTicks> recent_input_timestamps_;
-
   // Sliding window vectors are maintained in sorted order.
   std::vector<SlidingWindow> sliding_300ms_;
   std::vector<SlidingWindow> sliding_1000ms_;
   SessionWindow session_gap1000ms_max5000ms_;
   SessionWindow session_gap1000ms_;
   SessionWindow session_gap5000ms_;
-  SessionWindow session_by_inputs_gap1000ms_max5000ms_;
-  // A new input in non-stale data can split the session window and make the
-  // max_cls smaller. We need to store the "max_cls" calculated by the stale
-  // data.
-  float potential_max_cls_session_by_inputs_gap1000ms_max5000ms_ = 0.0;
   uint32_t session_gap5000ms_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(LayoutShiftNormalization);

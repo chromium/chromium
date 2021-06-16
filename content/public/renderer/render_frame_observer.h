@@ -205,11 +205,6 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }
 
-  // Reports input timestamps for segmenting layout shifts
-  // (bit.ly/lsm-explainer) by users inputs to create Session window.
-  virtual void DidObserveInputForLayoutShiftTracking(
-      base::TimeTicks timestamp) {}
-
   // Reports the number of LayoutBlock creation, and LayoutObject::UpdateLayout
   // calls. All values are deltas since the last calls of this function.
   virtual void DidObserveLayoutNg(uint32_t all_block_count,

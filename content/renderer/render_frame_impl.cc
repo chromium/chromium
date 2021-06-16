@@ -4213,12 +4213,6 @@ void RenderFrameImpl::DidObserveLayoutShift(double score,
     observer.DidObserveLayoutShift(score, after_input_or_scroll);
 }
 
-void RenderFrameImpl::DidObserveInputForLayoutShiftTracking(
-    base::TimeTicks timestamp) {
-  for (auto& observer : observers_)
-    observer.DidObserveInputForLayoutShiftTracking(timestamp);
-}
-
 void RenderFrameImpl::DidObserveLayoutNg(uint32_t all_block_count,
                                          uint32_t ng_block_count,
                                          uint32_t all_call_count,

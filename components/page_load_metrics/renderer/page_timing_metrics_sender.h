@@ -49,7 +49,6 @@ class PageTimingMetricsSender {
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior);
   void DidObserveNewFeatureUsage(const blink::UseCounterFeature& feature);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
-  void DidObserveInputForLayoutShiftTracking(base::TimeTicks timestamp);
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
