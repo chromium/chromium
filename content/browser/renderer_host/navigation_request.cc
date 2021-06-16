@@ -888,8 +888,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
       frame_tree_node, std::move(common_params), std::move(navigation_params),
       std::move(commit_params), browser_initiated,
-      false /* from_begin_navigation */, false /* is_for_commit */, frame_entry,
-      entry, std::move(navigation_ui_data), std::move(blob_url_loader_factory),
+      false /* from_begin_navigation */,
+      false /* is_synchronous_renderer_commit */, frame_entry, entry,
+      std::move(navigation_ui_data), std::move(blob_url_loader_factory),
       mojo::NullAssociatedRemote(),
       nullptr /* prefetched_signed_exchange_cache */,
       nullptr /* web_bundle_handle_tracker */,
@@ -989,7 +990,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       std::move(commit_params),
       false,    // browser_initiated
       true,     // from_begin_navigation
-      false,    // is_for_commit
+      false,    // is_synchronous_renderer_commit
       nullptr,  // frame_entry
       entry,
       nullptr,  // navigation_ui_data
@@ -1097,7 +1098,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
       frame_tree_node, std::move(common_params), std::move(begin_params),
       std::move(commit_params), false /* browser_initiated */,
-      false /* from_begin_navigation */, true /* is_for_commit */,
+      false /* from_begin_navigation */,
+      true /* is_synchronous_renderer_commit */,
       nullptr /* frame_navigation_entry */, nullptr /* navigation_entry */,
       nullptr /* navigation_ui_data */, nullptr /* blob_url_loader_factory */,
       mojo::NullAssociatedRemote(),
@@ -1120,7 +1122,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
   navigation_request->coep_reporter_ = std::move(coep_reporter);
   navigation_request->isolation_info_for_subresources_ =
       isolation_info_for_subresources;
-  navigation_request->StartNavigation(true);
+  navigation_request->StartNavigation();
   DCHECK(navigation_request->IsNavigationStarted());
 
   return navigation_request;
@@ -1137,7 +1139,7 @@ NavigationRequest::NavigationRequest(
     mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
     bool from_begin_navigation,
-    bool is_for_commit,
+    bool is_synchronous_renderer_commit,
     const FrameNavigationEntry* frame_entry,
     NavigationEntryImpl* entry,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
@@ -1150,7 +1152,7 @@ NavigationRequest::NavigationRequest(
     int initiator_process_id,
     bool was_opener_suppressed)
     : frame_tree_node_(frame_tree_node),
-      is_for_commit_(is_for_commit),
+      is_synchronous_renderer_commit_(is_synchronous_renderer_commit),
       common_params_(std::move(common_params)),
       begin_params_(std::move(begin_params)),
       commit_params_(std::move(commit_params)),
@@ -1362,7 +1364,7 @@ NavigationRequest::NavigationRequest(
   net::HttpRequestHeaders headers;
   // Only add specific headers when creating a NavigationRequest before the
   // network request is made, not at commit time.
-  if (!is_for_commit) {
+  if (!is_synchronous_renderer_commit) {
     BrowserContext* browser_context = controller->GetBrowserContext();
     ClientHintsControllerDelegate* client_hints_delegate =
         browser_context->GetClientHintsControllerDelegate();
@@ -1568,7 +1570,7 @@ void NavigationRequest::BeginNavigation() {
   if (net_error != net::OK) {
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
-    StartNavigation(false);
+    StartNavigation();
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error),
                             false /* skip_throttles */,
                             absl::nullopt /* error_page_content */,
@@ -1584,7 +1586,7 @@ void NavigationRequest::BeginNavigation() {
           LegacyProtocolInSubresourceCheckResult::BLOCK_REQUEST) {
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
-    StartNavigation(false);
+    StartNavigation();
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
         false /* skip_throttles  */, absl::nullopt /* error_page_content */,
@@ -1595,7 +1597,7 @@ void NavigationRequest::BeginNavigation() {
     return;
   }
 
-  StartNavigation(false);
+  StartNavigation();
 
   if (CheckAboutSrcDoc() == AboutSrcDocCheckResult::BLOCK_REQUEST) {
     OnRequestFailedInternal(
@@ -1732,8 +1734,9 @@ void NavigationRequest::SetWaitingForRendererResponse() {
   SetState(WAITING_FOR_RENDERER_RESPONSE);
 }
 
-void NavigationRequest::StartNavigation(bool is_for_commit) {
-  DCHECK(frame_tree_node_->navigation_request() == this || is_for_commit);
+void NavigationRequest::StartNavigation() {
+  DCHECK(frame_tree_node_->navigation_request() == this ||
+         is_synchronous_renderer_commit_);
   FrameTreeNode* frame_tree_node = frame_tree_node_;
 
   if (blink::features::IsPrerender2Enabled()) {
@@ -1784,7 +1787,7 @@ void NavigationRequest::StartNavigation(bool is_for_commit) {
   // Finally, add the current URL to the vector of redirects.
   // Note: for NavigationRequests created at commit time, the current URL has
   // been added to |commit_params_->redirects|, so don't add it a second time.
-  if (!is_for_commit) {
+  if (!is_synchronous_renderer_commit_) {
     if (!common_params_->base_url_for_data_url.is_empty()) {
       // If this is a loadDataWithBaseURL/loadDataAsStringWithBaseUrl
       // navigation, use the base URL instead of the data: URL used for commit.
@@ -5432,7 +5435,7 @@ void NavigationRequest::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("frame_tree_node", frame_tree_node_);
   dict.Add("browser_initiated", commit_params_->is_browser_initiated);
   dict.Add("from_begin_navigation", from_begin_navigation_);
-  dict.Add("is_for_commit", is_for_commit_);
+  dict.Add("is_synchronous_renderer_commit", is_synchronous_renderer_commit_);
   dict.Add("reload_type", reload_type_);
   dict.Add("state", state_);
   dict.Add("navigation_type", common_params_->navigation_type);
@@ -5942,7 +5945,7 @@ bool NavigationRequest::IsServedFromBackForwardCache() {
 void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
   // Only add specific headers when creating a NavigationRequest before the
   // network request is made, not at commit time.
-  if (is_for_commit_)
+  if (is_synchronous_renderer_commit_)
     return;
 
   // This code assumes it is only called from DidStartNavigation().

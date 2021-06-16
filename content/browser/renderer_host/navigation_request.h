@@ -455,10 +455,8 @@ class CONTENT_EXPORT NavigationRequest
 
   // Notifies the NavigatorDelegate the navigation started. This should be
   // called after any previous NavigationRequest for the FrameTreeNode has been
-  // destroyed. |is_for_commit| should only be true when creating a
-  // NavigationRequest at commit time (this happens for renderer-initiated
-  // same-document navigations).
-  void StartNavigation(bool is_for_commit);
+  // destroyed.
+  void StartNavigation();
 
   void set_on_start_checks_complete_closure_for_testing(
       base::OnceClosure closure) {
@@ -928,7 +926,7 @@ class CONTENT_EXPORT NavigationRequest
       mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
       bool from_begin_navigation,
-      bool is_for_commit,
+      bool is_synchronous_renderer_commit,
       const FrameNavigationEntry* frame_navigation_entry,
       NavigationEntryImpl* navitation_entry,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
@@ -1356,8 +1354,12 @@ class CONTENT_EXPORT NavigationRequest
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
-  // Value of |is_for_commit| supplied to the constructor.
-  const bool is_for_commit_;
+  // Used for short-lived NavigationRequest created at DidCommit time for the
+  // purpose of committing navigation that were not driven by the browser
+  // process. This is used in only two cases:
+  //  - same-document navigation initiated by the renderer process.
+  //  - the synchronous about:blank navigation.
+  const bool is_synchronous_renderer_commit_;
 
   // Invariant: At least one of |loader_| or |render_frame_host_| is null.
   RenderFrameHostImpl* render_frame_host_ = nullptr;

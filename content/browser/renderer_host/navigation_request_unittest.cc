@@ -76,15 +76,12 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
-    // Release the |request_| before destroying the WebContents, to match
-    // the WebContentsObserverConsistencyChecker expectations.
-    request_.reset();
     RenderViewHostImplTestHarness::TearDown();
   }
 
   void CancelDeferredNavigation(
       NavigationThrottle::ThrottleCheckResult result) {
-    request_->CancelDeferredNavigationInternal(result);
+    GetNavigationRequest()->CancelDeferredNavigationInternal(result);
   }
 
   // Helper function to call WillStartRequest on |handle|. If this function
@@ -96,11 +93,11 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
 
     // It's safe to use base::Unretained since the NavigationRequest is owned by
     // the NavigationRequestTest.
-    request_->set_complete_callback_for_testing(
+    GetNavigationRequest()->set_complete_callback_for_testing(
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
-    request_->WillStartRequest();
+    GetNavigationRequest()->WillStartRequest();
   }
 
   // Helper function to call WillRedirectRequest on |handle|. If this function
@@ -114,13 +111,13 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
 
     // It's safe to use base::Unretained since the NavigationRequest is owned by
     // the NavigationRequestTest.
-    request_->set_complete_callback_for_testing(
+    GetNavigationRequest()->set_complete_callback_for_testing(
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
-    request_->WillRedirectRequest(GURL(),
-                                  WebExposedIsolationInfo::CreateNonIsolated(),
-                                  nullptr /* post_redirect_process */);
+    GetNavigationRequest()->WillRedirectRequest(
+        GURL(), WebExposedIsolationInfo::CreateNonIsolated(),
+        nullptr /* post_redirect_process */);
   }
 
   // Helper function to call WillFailRequest on |handle|. If this function
@@ -131,15 +128,15 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
       const absl::optional<net::SSLInfo> ssl_info = absl::nullopt) {
     was_callback_called_ = false;
     callback_result_ = NavigationThrottle::DEFER;
-    request_->set_net_error(net_error_code);
+    GetNavigationRequest()->set_net_error(net_error_code);
 
     // It's safe to use base::Unretained since the NavigationRequest is owned by
     // the NavigationRequestTest.
-    request_->set_complete_callback_for_testing(
+    GetNavigationRequest()->set_complete_callback_for_testing(
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
-    request_->WillFailRequest();
+    GetNavigationRequest()->WillFailRequest();
   }
 
   // Whether the callback was called.
@@ -150,7 +147,9 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
     return callback_result_;
   }
 
-  NavigationRequest::NavigationState state() { return request_->state(); }
+  NavigationRequest::NavigationState state() {
+    return GetNavigationRequest()->state();
+  }
 
   bool call_counts_match(TestNavigationThrottle* throttle,
                          int start,
@@ -172,10 +171,10 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   TestNavigationThrottle* CreateTestNavigationThrottle(
       NavigationThrottle::ThrottleCheckResult result) {
     TestNavigationThrottle* test_throttle =
-        new TestNavigationThrottle(request_.get());
+        new TestNavigationThrottle(GetNavigationRequest());
     test_throttle->SetResponseForAllMethods(TestNavigationThrottle::SYNCHRONOUS,
                                             result);
-    request_->RegisterThrottleForTesting(
+    GetNavigationRequest()->RegisterThrottleForTesting(
         std::unique_ptr<TestNavigationThrottle>(test_throttle));
     return test_throttle;
   }
@@ -202,7 +201,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
     auto commit_params = CreateCommitNavigationParams();
     commit_params->frame_policy =
         main_test_rfh()->frame_tree_node()->pending_frame_policy();
-    request_ = NavigationRequest::CreateBrowserInitiated(
+    auto request = NavigationRequest::CreateBrowserInitiated(
         main_test_rfh()->frame_tree_node(), std::move(common_params),
         std::move(commit_params), false /* browser-initiated */,
         false /* was_opener_suppressed */, nullptr /* initiator_frame_token */,
@@ -210,7 +209,9 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, nullptr /* post_body */,
         nullptr /* navigation_ui_data */, absl::nullopt /* impression */);
-    request_->StartNavigation(true);
+    main_test_rfh()->frame_tree_node()->CreatedNavigationRequest(
+        std::move(request));
+    GetNavigationRequest()->StartNavigation();
   }
 
  private:
@@ -224,7 +225,11 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
     return true;
   }
 
-  std::unique_ptr<NavigationRequest> request_;
+  // This must be called after CreateNavigationHandle().
+  NavigationRequest* GetNavigationRequest() {
+    return main_test_rfh()->frame_tree_node()->navigation_request();
+  }
+
   bool was_callback_called_ = false;
   NavigationThrottle::ThrottleCheckResult callback_result_;
 };
