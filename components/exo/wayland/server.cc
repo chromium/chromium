@@ -183,7 +183,7 @@ Server::Server(Display* display) : display_(display) {
     // If DRM atomic is not supported, linux-explicit-sync interface is
     // disabled.
     wl_global_create(wl_display_.get(),
-                     &zwp_linux_explicit_synchronization_v1_interface, 1,
+                     &zwp_linux_explicit_synchronization_v1_interface, 2,
                      display_, bind_linux_explicit_synchronization);
   }
   wl_global_create(wl_display_.get(), &zaura_shell_interface,

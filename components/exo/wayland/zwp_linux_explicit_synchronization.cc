@@ -160,7 +160,8 @@ void linux_surface_synchronization_get_release(wl_client* client,
   }
 
   auto* linux_buffer_release_resource =
-      wl_resource_create(client, &zwp_linux_buffer_release_v1_interface, 1, id);
+      wl_resource_create(client, &zwp_linux_buffer_release_v1_interface,
+                         wl_resource_get_version(resource), id);
 
   SetImplementation(linux_buffer_release_resource, nullptr,
                     std::make_unique<LinuxBufferRelease>(
@@ -197,7 +198,8 @@ void linux_explicit_synchronization_get_synchronization(
   }
 
   wl_resource* linux_surface_synchronization_resource = wl_resource_create(
-      client, &zwp_linux_surface_synchronization_v1_interface, 1, id);
+      client, &zwp_linux_surface_synchronization_v1_interface,
+      wl_resource_get_version(resource), id);
 
   SetImplementation(linux_surface_synchronization_resource,
                     &linux_surface_synchronization_implementation,
@@ -217,7 +219,7 @@ void bind_linux_explicit_synchronization(wl_client* client,
                                          uint32_t version,
                                          uint32_t id) {
   wl_resource* resource = wl_resource_create(
-      client, &zwp_linux_explicit_synchronization_v1_interface, 1, id);
+      client, &zwp_linux_explicit_synchronization_v1_interface, version, id);
 
   wl_resource_set_implementation(resource,
                                  &linux_explicit_synchronization_implementation,
