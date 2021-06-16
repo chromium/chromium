@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/pffft/src/pffft.h"
 namespace blink {
 
@@ -43,19 +44,46 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
   // we're confident the first call is from the main thread.
   static bool first_call = true;
 
-  if (first_call) {
-    // Make sure we construct the fft_setups vector below on the main thread.
-    // Once constructed, we can access it from any thread.
-    DCHECK(IsMainThread());
-    first_call = false;
-  }
-
   // A HashMap to hold all of the possible FFT setups we need.  The setups are
   // initialized lazily.  The key is the fft size, and the value is the setup
   // data.
   typedef HashMap<unsigned, std::unique_ptr<FFTSetup>> FFTHashMap_t;
 
-  DEFINE_STATIC_LOCAL(FFTHashMap_t, fft_setups, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(FFTHashMap_t, fft_setups, ());
+
+  if (first_call) {
+    DEFINE_STATIC_LOCAL(Mutex, setup_lock, ());
+
+    // Make sure we construct the fft_setups vector below on the main thread.
+    // Once constructed, we can access it from any thread.
+    DCHECK(IsMainThread());
+    first_call = false;
+
+    MutexLocker locker(setup_lock);
+
+    // Initialize the hash map with all the possible keys (FFT sizes), with a
+    // value of nullptr because we want to initialize the setup data lazily. The
+    // set of valid FFT sizes for PFFFT are of the form 2^k*3^m*5*n where k >=
+    // 5, m >= 0, n >= 0.  We only go up to a max size of 32768, because we need
+    // at least an FFT size of 32768 for the convolver node.
+
+    // TODO(crbug.com/988121):  Sync this with kMaxFFTPow2Size.
+    const int kMaxConvolverFFTSize = 32768;
+
+    for (int n = 1; n <= kMaxConvolverFFTSize; n *= 5) {
+      for (int m = 1; m <= kMaxConvolverFFTSize / n; m *= 3) {
+        for (int k = 32; k <= kMaxConvolverFFTSize / (n * m); k *= 2) {
+          int size = k * m * n;
+          if (size <= kMaxConvolverFFTSize && !fft_setups.Contains(size)) {
+            fft_setups.insert(size, nullptr);
+          }
+        }
+      }
+    }
+
+    // There should be 87 entries when we're done.
+    DCHECK_EQ(fft_setups.size(), 87u);
+  }
 
   return fft_setups;
 }
@@ -63,13 +91,19 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
 void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
-  if (!setup.Contains(fft_size)) {
+  DCHECK(setup.Contains(fft_size));
+
+  if (setup.find(fft_size)->value == nullptr) {
+    DEFINE_STATIC_LOCAL(Mutex, setup_lock, ());
+
     // Make sure allocation of a new setup only occurs on the main thread so we
     // don't have a race condition with multiple threads trying to write to the
     // same element of the vector.
     DCHECK(IsMainThread());
 
-    setup.insert(fft_size, std::make_unique<FFTSetup>(fft_size));
+    auto fft_data = std::make_unique<FFTSetup>(fft_size);
+    MutexLocker locker(setup_lock);
+    setup.find(fft_size)->value = std::move(fft_data);
   }
 }
 
@@ -77,6 +111,7 @@ PFFFT_Setup* FFTFrame::FFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
   DCHECK(setup.Contains(fft_size));
+  DCHECK(setup.find(fft_size)->value);
 
   return setup.find(fft_size)->value->GetSetup();
 }
