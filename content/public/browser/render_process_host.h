@@ -193,6 +193,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // non-guest RenderFrames in the same process if IsForGuestsOnly() is false.
   virtual bool IsForGuestsOnly() = 0;
 
+  // Indicates whether the current RenderProcessHost is running with JavaScript
+  // JIT disabled.
+  virtual bool IsJitDisabled() = 0;
+
   // Returns the storage partition associated with this process.
   virtual StoragePartition* GetStoragePartition() = 0;
 

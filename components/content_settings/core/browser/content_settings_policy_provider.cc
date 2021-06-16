@@ -88,6 +88,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_BLOCK},
         {prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
          ContentSettingsType::INSECURE_PRIVATE_NETWORK, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedJavaScriptJitAllowedForSites,
+         ContentSettingsType::JAVASCRIPT_JIT, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedJavaScriptJitBlockedForSites,
+         ContentSettingsType::JAVASCRIPT_JIT, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -120,6 +124,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedWebUsbAllowDevicesForUrls,
     prefs::kManagedWebUsbAskForUrls,
     prefs::kManagedWebUsbBlockedForUrls,
+    prefs::kManagedJavaScriptJitAllowedForSites,
+    prefs::kManagedJavaScriptJitBlockedForSites,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -146,6 +152,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultSerialGuardSetting,
     prefs::kManagedDefaultWebBluetoothGuardSetting,
     prefs::kManagedDefaultWebUsbGuardSetting,
+    prefs::kManagedDefaultJavaScriptJitSetting,
 };
 
 }  // namespace
@@ -193,6 +200,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
         {ContentSettingsType::SENSORS, prefs::kManagedDefaultSensorsSetting},
         {ContentSettingsType::INSECURE_PRIVATE_NETWORK,
          prefs::kManagedDefaultInsecurePrivateNetworkSetting},
+        {ContentSettingsType::JAVASCRIPT_JIT,
+         prefs::kManagedDefaultJavaScriptJitSetting},
 };
 
 // static

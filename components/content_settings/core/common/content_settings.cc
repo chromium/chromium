@@ -97,6 +97,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, 76},
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, 77},
     {ContentSettingsType::FEDERATED_IDENTITY_REQUEST, 78},
+    {ContentSettingsType::JAVASCRIPT_JIT, 79},
 };
 
 }  // namespace

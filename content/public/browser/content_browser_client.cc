@@ -1202,6 +1202,11 @@ bool ContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
   return false;
 }
 
+bool ContentBrowserClient::IsJitDisabledForSite(BrowserContext* browser_context,
+                                                const GURL& site_url) {
+  return false;
+}
+
 ukm::UkmService* ContentBrowserClient::GetUkmService() {
   return nullptr;
 }

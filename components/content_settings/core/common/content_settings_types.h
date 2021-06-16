@@ -261,6 +261,9 @@ enum class ContentSettingsType : int32_t {
   // associated with the relying party's origin.
   FEDERATED_IDENTITY_REQUEST,
 
+  // Whether to use the v8 optimized JIT for running JavaScript on the page.
+  JAVASCRIPT_JIT,
+
   NUM_TYPES,
 };
 

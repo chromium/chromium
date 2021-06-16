@@ -8504,10 +8504,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_NE(process1, process2);
   EXPECT_EQ(GURL("http://foo.com"),
             web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
-  EXPECT_EQ(ProcessLock(SiteInfo(GURL("http://foo.com"), GURL("http://foo.com"),
-                                 false /* is_origin_keyed */,
-                                 WebExposedIsolationInfo::CreateNonIsolated())),
-            policy->GetProcessLock(process2->GetID()));
+  EXPECT_EQ(
+      ProcessLock(SiteInfo(
+          GURL("http://foo.com"), GURL("http://foo.com"),
+          false /* is_origin_keyed */,
+          WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
+          false /* does_site_request_dedicated_process_for_coop */,
+          false /* is_jit_disabled */)),
+      policy->GetProcessLock(process2->GetID()));
 
   // Ensure also that the foo.com process didn't change midway through the
   // navigation.

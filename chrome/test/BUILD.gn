@@ -1639,6 +1639,7 @@ if (!is_android) {
       "../browser/policy/test/force_google_safe_search_policy_browsertest.cc",
       "../browser/policy/test/hide_webstore_icon_policy_browsertest.cc",
       "../browser/policy/test/hsts_policy_browsertest.cc",
+      "../browser/policy/test/jit_policy_browsertest.cc",
       "../browser/policy/test/media_stream_policy_browsertest.cc",
       "../browser/policy/test/network_prediction_policy_browsertest.cc",
       "../browser/policy/test/policy_browsertest.cc",

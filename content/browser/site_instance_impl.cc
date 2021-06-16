@@ -112,27 +112,39 @@ SiteInfo SiteInfo::CreateForErrorPage(
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
   return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
                   false /* is_origin_keyed */, web_exposed_isolation_info,
-                  false /* is_guest */);
+                  false /* is_guest */,
+                  false /* does_site_request_dedicated_process_for_coop */,
+                  false /* is_jit_disabled */);
 }
 
 // static
 SiteInfo SiteInfo::CreateForDefaultSiteInstance(
+    BrowserContext* browser_context,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
+  // Get default JIT policy for this browser_context by passing in an empty
+  // site_url.
+  bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
+      browser_context, GURL());
+
   return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
                   SiteInstanceImpl::GetDefaultSiteURL(),
                   false /* is_origin_keyed */, web_exposed_isolation_info,
-                  false /* is_guest */);
+                  false /* is_guest */,
+                  false /* does_site_request_dedicated_process_for_coop */,
+                  is_jit_disabled);
 }
 
 // static
-SiteInfo SiteInfo::CreateForGuest(const GURL& guest_site_url) {
-  DCHECK(!guest_site_url.SchemeIs(kChromeErrorScheme));
+SiteInfo SiteInfo::CreateForGuest(BrowserContext* browser_context,
+                                  const GURL& guest_site_url) {
   // Setting site and lock directly without the site URL conversions we
   // do for user provided URLs. Callers expect GetSiteURL() to return the
   // value they provide in |guest_site_url|.
   return SiteInfo(guest_site_url, guest_site_url, false /* is_origin_keyed */,
                   WebExposedIsolationInfo::CreateNonIsolated(),
-                  true /* is_guest */);
+                  true /* is_guest */,
+                  false /* does_site_request_dedicated_process_for_coop */,
+                  false /* is_jit_disabled */);
 }
 
 // static
@@ -168,9 +180,15 @@ SiteInfo SiteInfo::CreateInternal(
 
   GURL lock_url = DetermineProcessLockURL(isolation_context, url_info);
   GURL site_url = lock_url;
+  bool is_jitless = false;
   if (compute_site_url) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     site_url = GetSiteForURLInternal(isolation_context, url_info,
                                      true /* should_use_effective_urls */);
+
+    is_jitless = GetContentClient()->browser()->IsJitDisabledForSite(
+        isolation_context.browser_or_resource_context().ToBrowserContext(),
+        lock_url);
   }
   bool is_origin_keyed =
       ChildProcessSecurityPolicyImpl::GetInstance()
@@ -186,7 +204,7 @@ SiteInfo SiteInfo::CreateInternal(
 
   return SiteInfo(site_url, lock_url, is_origin_keyed,
                   web_exposed_isolation_info, false /* is_guest */,
-                  does_site_request_dedicated_process_for_coop);
+                  does_site_request_dedicated_process_for_coop, is_jitless);
 }
 
 // static
@@ -206,14 +224,16 @@ SiteInfo::SiteInfo(const GURL& site_url,
                    bool is_origin_keyed,
                    const WebExposedIsolationInfo& web_exposed_isolation_info,
                    bool is_guest,
-                   bool does_site_request_dedicated_process_for_coop)
+                   bool does_site_request_dedicated_process_for_coop,
+                   bool is_jit_disabled)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       is_origin_keyed_(is_origin_keyed),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       is_guest_(is_guest),
       does_site_request_dedicated_process_for_coop_(
-          does_site_request_dedicated_process_for_coop) {}
+          does_site_request_dedicated_process_for_coop),
+      is_jit_disabled_(is_jit_disabled) {}
 
 // static
 auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
@@ -226,7 +246,8 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   return std::tie(site_info.site_url_.possibly_invalid_spec(),
                   site_info.process_lock_url_.possibly_invalid_spec(),
                   site_info.is_origin_keyed_,
-                  site_info.web_exposed_isolation_info_, site_info.is_guest_);
+                  site_info.web_exposed_isolation_info_, site_info.is_guest_,
+                  site_info.is_jit_disabled_);
 }
 
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
@@ -243,7 +264,8 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
       web_exposed_isolation_info_ == other.web_exposed_isolation_info_ &&
       is_guest_ == other.is_guest_ &&
       does_site_request_dedicated_process_for_coop_ ==
-          other.does_site_request_dedicated_process_for_coop_;
+          other.does_site_request_dedicated_process_for_coop_ &&
+      is_jit_disabled_ == other.is_jit_disabled_;
 
   if (is_match) {
     // If all the fields match, then the "same principal" subset must also
@@ -291,6 +313,9 @@ std::string SiteInfo::GetDebugString() const {
 
   if (does_site_request_dedicated_process_for_coop_)
     debug_string += ", requests coop isolation";
+
+  if (is_jit_disabled_)
+    debug_string += ", jitless";
 
   return debug_string;
 }
@@ -725,7 +750,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
   DCHECK(browser_context);
   DCHECK_NE(guest_site_url, GetDefaultSiteURL());
 
-  auto guest_site_info = SiteInfo::CreateForGuest(guest_site_url);
+  auto guest_site_info =
+      SiteInfo::CreateForGuest(browser_context, guest_site_url);
   scoped_refptr<SiteInstanceImpl> site_instance =
       base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
           browser_context, guest_site_info.web_exposed_isolation_info())));
@@ -970,7 +996,7 @@ void SiteInstanceImpl::SetSiteInfoToDefault() {
   default_site_instance_state_ = std::make_unique<DefaultSiteInstanceState>();
   original_url_ = GetDefaultSiteURL();
   SetSiteInfoInternal(SiteInfo::CreateForDefaultSiteInstance(
-      browsing_instance_->web_exposed_isolation_info()));
+      GetBrowserContext(), browsing_instance_->web_exposed_isolation_info()));
 }
 
 void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
@@ -1338,6 +1364,10 @@ bool SiteInstanceImpl::IsGuest() {
   return site_info_.is_guest();
 }
 
+bool SiteInstanceImpl::IsJitDisabled() {
+  return site_info_.is_jit_disabled();
+}
+
 std::string SiteInstanceImpl::GetPartitionDomain(
     StoragePartitionImpl* storage_partition) {
   auto storage_partition_config =
@@ -1571,8 +1601,8 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
   if (kCreateForURLAllowsDefaultSiteInstance &&
       CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url_info.url,
                                        site_info)) {
-    site_info =
-        SiteInfo::CreateForDefaultSiteInstance(GetWebExposedIsolationInfo());
+    site_info = SiteInfo::CreateForDefaultSiteInstance(
+        GetBrowserContext(), GetWebExposedIsolationInfo());
   }
 
   return site_info_.IsExactMatch(site_info);

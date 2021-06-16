@@ -201,6 +201,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   unsigned int GetFrameDepth() override;
   bool GetIntersectsViewport() override;
   bool IsForGuestsOnly() override;
+  bool IsJitDisabled() override;
   StoragePartition* GetStoragePartition() override;
   bool Shutdown(int exit_code) override;
   bool ShutdownRequested() override;
@@ -748,7 +749,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
     // Indicates whether this RenderProcessHost is exclusively hosting guest
     // RenderFrames.
-    kForGuestsOnly = 1 << 0
+    kForGuestsOnly = 1 << 0,
+
+    // Indicates whether JavaScript JIT will be disabled for the renderer
+    // process hosted by this RenderProcessHost.
+    kJitDisabled = 1 << 1
   };
 
   // Use CreateRenderProcessHost() instead of calling this constructor

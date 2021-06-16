@@ -159,6 +159,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_REQUEST, nullptr},
+    {ContentSettingsType::JAVASCRIPT_JIT, nullptr},
 };
 
 static_assert(base::size(kContentSettingsTypeGroupNames) ==

@@ -62,8 +62,10 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
 SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                               bool is_origin_keyed) {
   return SiteInfo(GURL("https://www.foo.com"), process_lock_url,
-                  is_origin_keyed,
-                  WebExposedIsolationInfo::CreateNonIsolated());
+                  is_origin_keyed, WebExposedIsolationInfo::CreateNonIsolated(),
+                  false /* is_guest */,
+                  false /* does_site_request_dedicated_process_for_coop */,
+                  false /* is_jit_disabled */);
 }
 
 }  // namespace
@@ -272,10 +274,22 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
       GURL("https://foo.com") /* process_lock_url */,
       false /* is_origin_keyed */, WebExposedIsolationInfo::CreateNonIsolated(),
       false /* is_guest */,
-      true /* does_site_request_dedicated_process_for_coop */);
+      true /* does_site_request_dedicated_process_for_coop */,
+      false /* is_jit_disabled */);
   EXPECT_TRUE(
       site_info_1.IsSamePrincipalWith(site_info_1_with_isolation_request));
   EXPECT_EQ(site_info_1, site_info_1_with_isolation_request);
+
+  // Check that SiteInfos with differing values of `is_jit_disabled`` are
+  // considered not same-principal.
+  auto site_info_1_with_jit_disabled = SiteInfo(
+      GURL("https://www.foo.com") /* site_url */,
+      GURL("https://foo.com") /* process_lock_url */,
+      false /* is_origin_keyed */, WebExposedIsolationInfo::CreateNonIsolated(),
+      false /* is_guest */,
+      false /* does_site_request_dedicated_process_for_coop */,
+      true /* is_jit_disabled */);
+  EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_jit_disabled));
 
   {
     std::map<SiteInfo, int> test_map;
@@ -486,9 +500,9 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
 
   EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
   EXPECT_TRUE(site_instance->HasSite());
-  EXPECT_EQ(
-      site_instance->GetSiteInfo(),
-      SiteInfo::CreateForDefaultSiteInstance(cross_origin_isolation_info));
+  EXPECT_EQ(site_instance->GetSiteInfo(),
+            SiteInfo::CreateForDefaultSiteInstance(
+                &browser_context, cross_origin_isolation_info));
   EXPECT_FALSE(site_instance->RequiresDedicatedProcess());
 }
 
@@ -712,10 +726,12 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
     EXPECT_EQ(app_url, site_info.site_url());
   }
 
-  SiteInfo expected_site_info(app_url /* site_url */,
-                              nonapp_site_url /* process_lock_url */,
-                              false /* is_origin_keyed */,
-                              WebExposedIsolationInfo::CreateNonIsolated());
+  SiteInfo expected_site_info(
+      app_url /* site_url */, nonapp_site_url /* process_lock_url */,
+      false /* is_origin_keyed */, WebExposedIsolationInfo::CreateNonIsolated(),
+      false /* is_guest */,
+      false /* does_site_request_dedicated_process_for_coop */,
+      false /* is_jit_disabled */);
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.
   {
@@ -1508,10 +1524,12 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       SetBrowserClientForTesting(&modified_client);
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
 
-  SiteInfo expected_site_info(app_url /* site_url */,
-                              original_url /* process_lock_url */,
-                              false /* is_origin_keyed */,
-                              WebExposedIsolationInfo::CreateNonIsolated());
+  SiteInfo expected_site_info(
+      app_url /* site_url */, original_url /* process_lock_url */,
+      false /* is_origin_keyed */, WebExposedIsolationInfo::CreateNonIsolated(),
+      false /* is_guest */,
+      false /* does_site_request_dedicated_process_for_coop */,
+      false /* is_jit_disabled */);
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.  In
   // this and subsequent cases, the site URL should consist of the effective
@@ -1555,8 +1573,11 @@ TEST_F(SiteInstanceTest, OriginalURL) {
 namespace {
 
 ProcessLock ProcessLockFromString(const std::string& url) {
-  return ProcessLock(SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */,
-                              WebExposedIsolationInfo::CreateNonIsolated()));
+  return ProcessLock(SiteInfo(
+      GURL(url), GURL(url), false /* is_origin_keyed */,
+      WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
+      false /* does_site_request_dedicated_process_for_coop */,
+      false /* is_jit_disabled */));
 }
 
 }  // namespace

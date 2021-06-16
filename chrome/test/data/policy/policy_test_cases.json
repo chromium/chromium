@@ -2065,6 +2065,21 @@
     ]
   },
 
+  "DefaultJavaScriptJitSetting": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "DefaultJavaScriptJitSetting": 1 },
+        "prefs": { "profile.managed_default_content_settings.javascript_jit": { "value": 1 } }
+      },
+      {
+        "policies": { "DefaultJavaScriptJitSetting": 2 },
+        "prefs": { "profile.managed_default_content_settings.javascript_jit": { "value": 2 } }
+      }
+    ]
+  },
+
   "DefaultKeygenSetting": {
     "note": "This policy is retired, see https://crbug.com/568184."
   },
@@ -2440,6 +2455,30 @@
       {
         "policies": { "JavaScriptBlockedForUrls": ["[*.]google.com"]},
         "prefs": { "profile.managed_javascript_blocked_for_urls": {} }
+      }
+    ]
+  },
+
+  "JavaScriptJitAllowedForSites": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "JavaScriptJitAllowedForSites": ["[*.]google.com"]
+        },
+        "prefs": { "profile.managed_javascript_jit_allowed_for_sites": {} }
+      }
+    ]
+  },
+
+  "JavaScriptJitBlockedForSites": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "JavaScriptJitBlockedForSites": ["[*.]google.com"]},
+        "prefs": { "profile.managed_javascript_jit_blocked_for_sites": {} }
       }
     ]
   },

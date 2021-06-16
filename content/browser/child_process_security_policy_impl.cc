@@ -176,8 +176,10 @@ void LogCanAccessDataForOriginCrashKeys(
 // static
 ProcessLock ProcessLock::CreateAllowAnySite(
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
-  return ProcessLock(
-      SiteInfo(GURL(), GURL(), false, web_exposed_isolation_info));
+  return ProcessLock(SiteInfo(
+      GURL(), GURL(), false, web_exposed_isolation_info, /* is_guest */ false,
+      /* does_site_request_dedicated_process_for_coop */ false,
+      /* is_jit_disabled */ false));
 }
 
 // static

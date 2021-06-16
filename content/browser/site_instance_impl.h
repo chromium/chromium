@@ -143,8 +143,10 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo CreateForErrorPage(
       const WebExposedIsolationInfo& web_exposed_isolation_info);
   static SiteInfo CreateForDefaultSiteInstance(
+      BrowserContext* browser_context,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
-  static SiteInfo CreateForGuest(const GURL& guest_site_url);
+  static SiteInfo CreateForGuest(BrowserContext* browser_context,
+                                 const GURL& guest_site_url);
 
   // This function returns a SiteInfo with the appropriate site_url and
   // process_lock_url computed. This function can only be called on the UI
@@ -208,8 +210,9 @@ class CONTENT_EXPORT SiteInfo {
            const GURL& process_lock_url,
            bool is_origin_keyed,
            const WebExposedIsolationInfo& web_exposed_isolation_info,
-           bool is_guest = false,
-           bool does_site_request_dedicated_process_for_coop = false);
+           bool is_guest,
+           bool does_site_request_dedicated_process_for_coop,
+           bool is_jit_disabled);
   SiteInfo();
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
@@ -269,6 +272,7 @@ class CONTENT_EXPORT SiteInfo {
 
   bool is_guest() const { return is_guest_; }
   bool is_error_page() const;
+  bool is_jit_disabled() const { return is_jit_disabled_; }
 
   // See comments on `does_site_request_dedicated_process_for_coop_` for more
   // details.
@@ -403,6 +407,9 @@ class CONTENT_EXPORT SiteInfo {
   // Indicates that there is a request to require a dedicated process for this
   // SiteInfo due to a hint from the Cross-Origin-Opener-Policy header.
   bool does_site_request_dedicated_process_for_coop_ = false;
+
+  // Indicates that JIT is disabled for this SiteInfo.
+  bool is_jit_disabled_ = false;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
@@ -645,6 +652,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // storage_partition->GetPartitionDomain() once we've verified that this is
   // safe.
   std::string GetPartitionDomain(StoragePartitionImpl* storage_partition);
+
+  // Returns true if this SiteInstance is for a site that has JIT disabled.
+  bool IsJitDisabled();
 
   // Set the web site that this SiteInstance is rendering pages for.
   // This includes the scheme and registered domain, but not the port.  If the

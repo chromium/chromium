@@ -2022,6 +2022,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const url::Origin& origin);
 
+  // Whether the JIT should be disabled for the given |browser_context| and
+  // |site_url|. Pass an empty GURL for |site_url| to get the default JIT policy
+  // for the current |browser_context|.
+  // |site_url| should not be resolved to an effective URL before passing to
+  // this function.
+  virtual bool IsJitDisabledForSite(BrowserContext* browser_context,
+                                    const GURL& site_url);
+
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();
 

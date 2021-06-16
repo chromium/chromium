@@ -707,6 +707,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldAllowInsecurePrivateNetworkRequests(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
+  bool IsJitDisabledForSite(content::BrowserContext* browser_context,
+                            const GURL& site_url) override;
   ukm::UkmService* GetUkmService() override;
 
   void OnKeepaliveRequestStarted(

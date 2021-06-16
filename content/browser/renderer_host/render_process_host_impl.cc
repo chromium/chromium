@@ -454,9 +454,14 @@ class RendererSandboxedProcessLauncherDelegate
 class RendererSandboxedProcessLauncherDelegateWin
     : public RendererSandboxedProcessLauncherDelegate {
  public:
-  RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line)
+  RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
+                                              bool is_jit_disabled)
       : renderer_code_integrity_enabled_(
             GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()) {
+    if (is_jit_disabled) {
+      dynamic_code_can_be_disabled_ = true;
+      return;
+    }
     if (cmd_line->HasSwitch(switches::kJavaScriptFlags)) {
       std::string js_flags =
           cmd_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
@@ -650,6 +655,13 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
     bool embedder_allows_spare_usage =
         GetContentClient()->browser()->ShouldUseSpareRenderProcessHost(
             browser_context, site_instance->GetSiteInfo().site_url());
+
+    // The spare RenderProcessHost always launches with JIT enabled, so if JIT
+    // is disabled for the site then it's not possible to use this as the JIT
+    // policy will differ.
+    if (GetContentClient()->browser()->IsJitDisabledForSite(
+            browser_context, site_instance->GetSiteInfo().process_lock_url()))
+      embedder_allows_spare_usage = false;
 
     // We shouldn't use the spare if:
     // 1. The SiteInstance has already got an associated process.  This is
@@ -1664,6 +1676,9 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     }
   }
 
+  if (site_instance && site_instance->IsJitDisabled())
+    flags |= RenderProcessFlags::kJitDisabled;
+
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
                                    flags);
 }
@@ -1991,7 +2006,7 @@ bool RenderProcessHostImpl::Init() {
 #if defined(OS_WIN)
     std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
         std::make_unique<RendererSandboxedProcessLauncherDelegateWin>(
-            cmd_line.get());
+            cmd_line.get(), IsJitDisabled());
 #else
     std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
         std::make_unique<RendererSandboxedProcessLauncherDelegate>();
@@ -3241,6 +3256,10 @@ bool RenderProcessHostImpl::IsForGuestsOnly() {
   return !!(flags_ & RenderProcessFlags::kForGuestsOnly);
 }
 
+bool RenderProcessHostImpl::IsJitDisabled() {
+  return !!(flags_ & RenderProcessFlags::kJitDisabled);
+}
+
 StoragePartition* RenderProcessHostImpl::GetStoragePartition() {
   return storage_partition_impl_;
 }
@@ -3302,6 +3321,9 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
            .empty()) {
     command_line->AppendSwitch(switches::kNoZygote);
   }
+
+  if (IsJitDisabled())
+    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--jitless");
 
 #if defined(OS_WIN)
   command_line->AppendSwitchASCII(
@@ -4149,6 +4171,11 @@ bool RenderProcessHostImpl::IsSuitableHost(
   if (host->IsForGuestsOnly() || site_info.is_guest())
     return false;
 
+  // If this process has a different JIT policy to the site then it can't be
+  // reused.
+  if (host->IsJitDisabled() != site_info.is_jit_disabled())
+    return false;
+
   // Check whether the given host and the intended site_info will be using the
   // same StoragePartition, since a RenderProcessHost can only support a
   // single StoragePartition.  This is relevant for packaged apps.
@@ -4551,7 +4578,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     }
   }
 
-  // If we found a process to reuse, sanity check that it is suitable for
+  // If we found a process to reuse, double-check that it is suitable for
   // |site_instance|. For example, if the SiteInfo for |site_instance| requires
   // a dedicated process, we should never pick a process used by, or locked to,
   // a different site.

@@ -533,6 +533,7 @@
         'DefaultImagesSetting',
         'DefaultInsecureContentSetting',
         'DefaultJavaScriptSetting',
+        'DefaultJavaScriptJitSetting',
         'DefaultPluginsSetting',
         'DefaultPopupsSetting',
         'DefaultNotificationsSetting',
@@ -559,6 +560,8 @@
         'InsecureContentBlockedForUrls',
         'JavaScriptAllowedForUrls',
         'JavaScriptBlockedForUrls',
+        'JavaScriptJitAllowedForSites',
+        'JavaScriptJitBlockedForSites',
         'KeygenAllowedForUrls',
         'KeygenBlockedForUrls',
         'LegacySameSiteCookieBehaviorEnabled',
@@ -26211,6 +26214,100 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
        If the policy is Enabled, Chrome will use the existing lock icon for secure connections.
        If the policy is Disabled or not set, Chrome will use the default icon for secure connections.''',
     },
+    {
+      'name': 'DefaultJavaScriptJitSetting',
+      'owners': ['wfh@chromium.org', 'nasko@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 1, 2 ],
+      },
+      'items': [
+        {
+          'name': 'AllowJavaScriptJit',
+          'value': 1,
+          'caption': '''Allow any site to run JavaScript JIT''',
+        },
+        {
+          'name': 'BlockJavaScriptJit',
+          'value': 2,
+          'caption': '''Do not allow any site to run JavaScript JIT''',
+        },
+      ],
+      'supported_on': ['chrome.*:93-', 'chrome_os:93-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'default': 1,
+      'example_value': 1,
+      'id': 867,
+      'caption': '''Control use of JavaScript JIT''',
+      'tags': [],
+      'desc': '''Allows you to set whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will run the v8 JavaScript engine with JIT (Just In Time) compiler enabled or not.
+
+          Disabling the JavaScript JIT will mean that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may render web content more slowly, and may also disable parts of JavaScript including WebAssembly. Disabling the JavaScript JIT may allow <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to render web content in a more secure configuration.
+
+          This policy can be overridden for specific URL patterns using the <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME">JavaScriptJitAllowedForSites</ph> and <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME">JavaScriptJitBlockedForSites</ph> policies.
+
+          If this policy is left not set, JavaScript JIT is enabled.''',
+    },
+    {
+      'name': 'JavaScriptJitAllowedForSites',
+      'owners': ['wfh@chromium.org', 'nasko@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'supported_on': ['chrome.*:93-', 'chrome_os:93-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['[*.]example.edu'],
+      'id': 868,
+      'caption': '''Allow JavaScript to use JIT on these sites''',
+      'tags': [],
+      'desc': '''Allows you to set a list of site url patterns that specify sites which are allowed to run JavaScript with JIT (Just In Time) compiler enabled.
+
+          For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+
+          JavaScript JIT policy exceptions will only be enforced at a site granularity (eTLD+1). A policy set for only subdomain.site.com will not correctly apply to site.com or subdomain.site.com since they both resolve to the same eTLD+1 (site.com) for which there is no policy. In this case, policy must be set on site.com to apply correctly for both site.com and subdomain.site.com.
+
+          This policy applies on a frame-by-frame basis and not based on top level origin url alone, so e.g. if site-one.com is listed in the <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME">JavaScriptJitAllowedForSites</ph> policy but site-one.com loads a frame containing site-two.com then site-one.com will have JavaScript JIT enabled, but site-two.com will use the policy from <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME">DefaultJavaScriptJitSetting</ph>, if set, or default to JavaScript JIT enabled.
+
+          If this policy is not set for a site then the policy from <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME">DefaultJavaScriptJitSetting</ph> applies to the site, if set, otherwise Javascript JIT is enabled for the site.''',
+    },
+    {
+      'name': 'JavaScriptJitBlockedForSites',
+      'owners': ['wfh@chromium.org', 'nasko@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'supported_on': ['chrome.*:93-', 'chrome_os:93-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['[*.]example.edu'],
+      'id': 869,
+      'caption': '''Block JavaScript from using JIT on these sites''',
+      'tags': [],
+      'desc': '''Allows you to set a list of site url patterns that specify sites which are not allowed to run JavaScript JIT (Just In Time) compiler enabled.
+
+          Disabling the JavaScript JIT will mean that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may render web content more slowly, and may also disable parts of JavaScript including WebAssembly. Disabling the JavaScript JIT may allow <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to render web content in a more secure configuration.
+
+          For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+
+          JavaScript JIT policy exceptions will only be enforced at a site granularity (eTLD+1). A policy set for only subdomain.site.com will not correctly apply to site.com or subdomain.site.com since they both resolve to the same eTLD+1 (site.com) for which there is no policy. In this case, policy must be set on site.com to apply correctly for both site.com and subdomain.site.com.
+
+          This policy applies on a frame-by-frame basis and not based on top level origin url alone, so e.g. if site-one.com is listed in the <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME">JavaScriptJitBlockedForSites</ph> policy but site-one.com loads a frame containing site-two.com then site-one.com will have JavaScript JIT disabled, but site-two.com will use the policy from <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME">DefaultJavaScriptJitSetting</ph>, if set, or default to JavaScript JIT enabled.
+
+          If this policy is not set for a site then the policy from <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME">DefaultJavaScriptJitSetting</ph> applies to the site, if set, otherwise JavaScript JIT is enabled for the site.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -27145,6 +27242,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 866,
+  'highest_id_currently_used': 869,
   'highest_atomic_group_id_currently_used': 40
 }
