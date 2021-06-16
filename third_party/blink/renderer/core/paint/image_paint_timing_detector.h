@@ -344,6 +344,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // image. This value is reset when paint is finished and is computed if unset
   // when needed. 0 means that the size has not been computed.
   absl::optional<uint64_t> viewport_size_;
+  // Whether the viewport size used is the page viewport.
+  bool uses_page_viewport_;
 
   ImageRecordsManager records_manager_;
   Member<LocalFrameView> frame_view_;

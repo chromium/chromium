@@ -1002,5 +1002,10 @@ const base::Feature kAutofillShadowDOM{"AutofillShadowDOM",
 const base::Feature kClipboardCustomFormats{"ClipboardCustomFormats",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Uses page viewport instead of frame viewport in the Largest Contentful Paint
+// heuristic where images occupying the full viewport are ignored.
+const base::Feature kUsePageViewportInLCP{"UsePageViewportInLCP",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

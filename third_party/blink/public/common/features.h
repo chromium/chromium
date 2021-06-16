@@ -426,6 +426,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kAutofillShadowDOM;
 // crbug.com/106449.
 BLINK_COMMON_EXPORT extern const base::Feature kClipboardCustomFormats;
 
+// Uses page viewport instead of frame viewport in the Largest Contentful Paint
+// heuristic where images occupying the full viewport are ignored.
+BLINK_COMMON_EXPORT extern const base::Feature kUsePageViewportInLCP;
+
 }  // namespace features
 }  // namespace blink
 

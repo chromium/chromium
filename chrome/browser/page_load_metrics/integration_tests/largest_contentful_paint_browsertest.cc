@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 
+#include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -144,4 +148,33 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
                                 gfx::Point(100, 100));
 
   EXPECT_EQ(EvalJs(sub, "test_step_2()").value.GetString(), "green-16x16.png");
+}
+
+class PageViewportInLCPTest : public MetricIntegrationTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeatures(
+        {blink::features::kUsePageViewportInLCP} /*enabled*/, {} /*disabled*/);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
+  Start();
+  StartTracing({"loading"});
+  Load("/full_size_image.html");
+  content::EvalJsResult result = EvalJs(web_contents(), "waitForLCP()");
+  double lcpTime = EvalJs(web_contents(), "lcpTime").ExtractDouble();
+
+  // Navigate away to force metrics recording.
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+
+  // |lcpTime| is computed from 3 different JS timestamps, so use an epsilon of
+  // 2 to account for coarsening and UKM integer rounding.
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name, lcpTime,
+      2.0);
+  ExpectUniqueUMAPageLoadMetricNear(
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2", lcpTime);
 }
