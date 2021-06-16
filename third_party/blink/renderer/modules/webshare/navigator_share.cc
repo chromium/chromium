@@ -319,10 +319,11 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 }
 
 void NavigatorShare::OnConnectionError() {
-  for (auto& client : clients_) {
+  HeapHashSet<Member<ShareClientImpl>> clients;
+  clients_.swap(clients);
+  for (auto& client : clients) {
     client->OnConnectionError();
   }
-  clients_.clear();
   service_remote_.reset();
 }
 
