@@ -1408,6 +1408,9 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux_chromium_chromeos_asan_rel_ng",
     goma_jobs = goma.jobs.J150,
+    # TODO(crbug/1144484): Remove this timeout once we figure out the
+    # regression in compiler or toolchain.
+    execution_timeout = 7 * time.hour,
 )
 
 try_.chromium_linux_builder(
