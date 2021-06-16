@@ -27,6 +27,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/autofill/android/save_address_profile_flow_manager.h"
+#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #else  // !OS_ANDROID
@@ -196,7 +197,6 @@ class ChromeAutofillClient
   std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
-  CardUnmaskPromptControllerImpl unmask_controller_;
   std::unique_ptr<LogManager> log_manager_;
   // If set to true, the popup will stay open regardless of external changes on
   // the test machine, that may normally cause the popup to be hidden
@@ -206,7 +206,9 @@ class ChromeAutofillClient
       card_expiration_date_fix_flow_controller_;
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   SaveAddressProfileFlowManager save_address_profile_flow_manager_;
+  AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
 #endif
+  CardUnmaskPromptControllerImpl unmask_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

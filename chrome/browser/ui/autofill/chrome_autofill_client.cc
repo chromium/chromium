@@ -114,6 +114,10 @@ namespace autofill {
 
 using AutoselectFirstSuggestion =
     AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
+#if defined(OS_ANDROID)
+using AutofillErrorDialogType =
+    AutofillErrorDialogController::AutofillErrorDialogType;
+#endif  // OS_ANDROID
 
 ChromeAutofillClient::~ChromeAutofillClient() {
   // NOTE: It is too late to clean up the autofill popup; that cleanup process
@@ -298,6 +302,33 @@ void ChromeAutofillClient::ShowUnmaskPrompt(
 void ChromeAutofillClient::OnUnmaskVerificationResult(
     PaymentsRpcResult result) {
   unmask_controller_.OnVerificationResult(result);
+#if defined(OS_ANDROID)
+  // For VCN related errors, on Android we show a new error dialog instead of
+  // updating the CVC unmask prompt with the error message.
+  absl::optional<AutofillErrorDialogType> error_dialog_type;
+  switch (result) {
+    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+      error_dialog_type = AutofillErrorDialogType::VIRTUAL_CARD_PERMANENT_ERROR;
+      break;
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+      error_dialog_type = AutofillErrorDialogType::VIRTUAL_CARD_TEMPORARY_ERROR;
+      break;
+    case AutofillClient::SUCCESS:
+    case AutofillClient::TRY_AGAIN_FAILURE:
+    case AutofillClient::PERMANENT_FAILURE:
+    case AutofillClient::NETWORK_ERROR:
+      // Do nothing
+      break;
+    case AutofillClient::NONE:
+      NOTREACHED();
+      return;
+  }
+  if (error_dialog_type) {
+    autofill_error_dialog_controller_.Show(
+        AutofillErrorDialogView::Create(&autofill_error_dialog_controller_),
+        error_dialog_type.value());
+  }
+#endif  // OS_ANDROID
 }
 
 #if !defined(OS_ANDROID)
@@ -820,15 +851,19 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           payments_client_.get(),
           GetPersonalDataManager(),
           GetPersonalDataManager()->app_locale())),
+#if defined(OS_ANDROID)
+      autofill_error_dialog_controller_(web_contents),
+#endif  // OS_ANDROID
       unmask_controller_(
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())) {
-  // TODO(crbug.com/928595): Replace the closure with a callback to the renderer
-  // that indicates if log messages should be sent from the renderer.
+  // TODO(crbug.com/928595): Replace the closure with a callback to the
+  // renderer that indicates if log messages should be sent from the
+  // renderer.
   log_manager_ =
       LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
                              web_contents->GetBrowserContext()),
                          base::NullCallback());
-  // Initialize StrikeDatabase so its cache will be loaded and ready to use when
+  // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();
 

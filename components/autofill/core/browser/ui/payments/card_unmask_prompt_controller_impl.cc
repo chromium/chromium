@@ -112,8 +112,12 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
   AutofillMetrics::LogRealPanResult(result, card_type);
   AutofillMetrics::LogUnmaskingDuration(
       AutofillClock::Now() - verify_timestamp_, result, card_type);
-
-  card_unmask_view_->GotVerificationResult(error_message, AllowsRetry(result));
+  if (ShouldDismissUnmaskPromptUponResult(unmasking_result_)) {
+    card_unmask_view_->Dismiss();
+  } else {
+    card_unmask_view_->GotVerificationResult(error_message,
+                                             AllowsRetry(result));
+  }
 }
 
 void CardUnmaskPromptControllerImpl::OnUnmaskDialogClosed() {
@@ -321,6 +325,17 @@ bool CardUnmaskPromptControllerImpl::AllowsRetry(
     return false;
   }
   return true;
+}
+
+bool CardUnmaskPromptControllerImpl::ShouldDismissUnmaskPromptUponResult(
+    AutofillClient::PaymentsRpcResult result) {
+#if defined(OS_ANDROID)
+  // For virtual card errors on Android, we'd dismiss the unmask prompt and
+  // instead show a different error dialog.
+  return result == AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE ||
+         result == AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
+#endif  // OS_ANDROID
+  return false;
 }
 
 void CardUnmaskPromptControllerImpl::LogOnCloseEvents() {

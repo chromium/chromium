@@ -58,11 +58,20 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
 
 class TestCardUnmaskPromptView : public CardUnmaskPromptView {
  public:
+  TestCardUnmaskPromptView(CardUnmaskPromptController* controller)
+      : controller_(controller) {}
   void Show() override {}
+  void Dismiss() override {
+    // Notify the controller that the view was dismissed.
+    controller_->OnUnmaskDialogClosed();
+  }
   void ControllerGone() override {}
   void DisableAndWaitForVerification() override {}
   void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override {}
+
+ private:
+  CardUnmaskPromptController* controller_;
 };
 
 class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
@@ -94,10 +103,11 @@ class CardUnmaskPromptControllerImplGenericTest {
   CardUnmaskPromptControllerImplGenericTest() {}
 
   void SetUp() {
-    test_unmask_prompt_view_ = std::make_unique<TestCardUnmaskPromptView>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     controller_ =
         std::make_unique<TestCardUnmaskPromptController>(pref_service_.get());
+    test_unmask_prompt_view_ =
+        std::make_unique<TestCardUnmaskPromptView>(controller_.get());
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
   }
 
@@ -780,5 +790,49 @@ INSTANTIATE_TEST_SUITE_P(
                     ExpirationDateTestCase{"10", "40", true},
                     ExpirationDateTestCase{"01", "1940", false},
                     ExpirationDateTestCase{"13", "2040", false}));
+
+class VirtualCardErrorTest
+    : public CardUnmaskPromptControllerImplGenericTest,
+      public testing::TestWithParam<AutofillClient::PaymentsRpcResult> {
+ public:
+  void SetUp() override {
+    CardUnmaskPromptControllerImplGenericTest::SetUp();
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAutofillWalletImportStorageCheckboxState, false);
+#if defined(OS_ANDROID)
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+#endif
+  }
+};
+
+#if defined(OS_ANDROID)
+TEST_P(VirtualCardErrorTest, VirtualCardFailureDismissesUnmaskPrompt) {
+  ShowPromptAndSimulateResponse(/*should_store_pan=*/false,
+                                /*enable_fido_auth=*/false,
+                                /*should_unmask_virtual_card=*/true);
+  base::HistogramTester histogram_tester;
+
+  controller_->OnVerificationResult(GetParam());
+
+  // Verify that the dialog is closed by checking the state.
+  EXPECT_EQ(AutofillClient::NONE, controller_->GetVerificationResult());
+  // Verify that prompt closing metrics are logged.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.UnmaskPrompt.Events",
+      AutofillMetrics::
+          UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_NON_RETRIABLE_FAILURE,
+      1);
+  histogram_tester.ExpectTotalCount("Autofill.UnmaskPrompt.Duration", 1);
+  histogram_tester.ExpectTotalCount("Autofill.UnmaskPrompt.Duration.Failure",
+                                    1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CardUnmaskPromptControllerImplTest,
+    VirtualCardErrorTest,
+    testing::Values(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE,
+                    AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE));
+#endif  // OS_ANDROID
 
 }  // namespace autofill

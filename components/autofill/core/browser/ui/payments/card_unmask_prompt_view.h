@@ -17,6 +17,7 @@ namespace autofill {
 class CardUnmaskPromptView {
  public:
   virtual void Show() = 0;
+  virtual void Dismiss() {}
   virtual void ControllerGone() = 0;
   virtual void DisableAndWaitForVerification() = 0;
   virtual void GotVerificationResult(const std::u16string& error_message,

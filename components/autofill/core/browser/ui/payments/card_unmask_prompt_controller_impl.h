@@ -73,6 +73,8 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
  private:
   bool AllowsRetry(AutofillClient::PaymentsRpcResult result);
+  bool ShouldDismissUnmaskPromptUponResult(
+      AutofillClient::PaymentsRpcResult result);
   void LogOnCloseEvents();
   AutofillMetrics::UnmaskPromptEvent GetCloseReasonEvent();
 
