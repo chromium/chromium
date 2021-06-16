@@ -114,7 +114,7 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
       &CreateMediaFoundationVEA,
       gpu_preferences.enable_media_foundation_vea_on_windows7,
       base::FeatureList::IsEnabled(kMediaFoundationAsyncH264Encoding) &&
-          !gpu_workarounds.disable_mediafoundation_async_h264_encoding));
+          !gpu_workarounds.disable_media_foundation_async_h264_encoding));
 #endif
   return vea_factory_functions;
 }
