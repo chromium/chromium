@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import { assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
 
@@ -13,8 +12,7 @@ import {Crostini} from '../../externs/background/crostini.m.js';
 import {EntryLocation} from '../../externs/entry_location.m.js';
 import {VolumeManager} from '../../externs/volume_manager.m.js';
 
-import {createCrostiniForTest} from './mock_crostini.m.js';
-// clang-format on
+import {createCrostiniForTest} from './mock_crostini.js';
 
 /**
  * Mock metrics.

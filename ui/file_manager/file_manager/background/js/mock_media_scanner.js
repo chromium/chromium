@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assertTrue, assertEquals} from 'chrome://test/chai_assert.js';
-// #import {importer} from '../../common/js/importer_common.m.js';
-// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
-// #import {mediaScanner} from './media_scanner.m.js';
-// clang-format on
+import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {importer} from '../../common/js/importer_common.m.js';
+import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
+
+import {mediaScanner} from './media_scanner.js';
 
 /**
  * mediaScannerInterfaces.MediaScanner and mediaScannerInterfaces.ScanResult
@@ -15,7 +15,7 @@
  *
  * @implements {mediaScannerInterfaces.MediaScanner}
  */
-/* #export */ class TestMediaScanner {
+export class TestMediaScanner {
   constructor() {
     /** @private {!Array<!mediaScannerInterfaces.ScanResult>} */
     this.scans_ = [];
@@ -133,7 +133,7 @@
  *
  * @implements {mediaScannerInterfaces.ScanResult}
  */
-/* #export */ class TestScanResult {
+export class TestScanResult {
   /**
    * @param {!Array<!FileEntry>} fileEntries
    */
@@ -254,7 +254,7 @@ TestScanResult.lastId_ = 0;
 /**
  * @implements {mediaScanner.DirectoryWatcher}
  */
-/* #export */ class TestDirectoryWatcher {
+export class TestDirectoryWatcher {
   constructor(callback) {
     /**
      * @public {function()}

@@ -4,8 +4,8 @@
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {createCrostiniForTest} from '../../background/js/mock_crostini.m.js';
-import {MockProgressCenter} from '../../background/js/mock_progress_center.m.js';
+import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
+import {MockProgressCenter} from '../../background/js/mock_progress_center.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {installMockChrome} from '../../common/js/mock_chrome.m.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';

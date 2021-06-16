@@ -12,9 +12,9 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
 import {VolumeInfo} from '../../externs/volume_info.m.js';
 
-import {duplicateFinder} from './duplicate_finder.m.js';
-import {MockVolumeManager} from './mock_volume_manager.m.js';
-import {importerTestHistory} from './test_import_history.m.js';
+import {duplicateFinder} from './duplicate_finder.js';
+import {MockVolumeManager} from './mock_volume_manager.js';
+import {importerTestHistory} from './test_import_history.js';
 
 /** @type {!duplicateFinder.DriveDuplicateFinder} */
 let duplicateFinderTest;

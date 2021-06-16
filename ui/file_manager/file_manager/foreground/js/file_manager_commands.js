@@ -8,7 +8,7 @@
  */
 
 // clang-format off
-// #import {TrashEntry} from '../../common/js/trash.m.js';
+// #import {TrashEntry} from '../../common/js/trash.js';
 // #import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';

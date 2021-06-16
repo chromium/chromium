@@ -8,7 +8,7 @@ import * as wrappedUtil from './util.m.js';
 const {util} = wrappedUtil;
 import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
 const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://test/chai_assert.js';
 
 let fileSystem;

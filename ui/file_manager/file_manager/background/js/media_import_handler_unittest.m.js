@@ -16,13 +16,13 @@ import {importerHistoryInterfaces} from '../../externs/background/import_history
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.m.js';
 import {VolumeInfo} from '../../externs/volume_info.m.js';
 
-import {fileOperationUtil} from './file_operation_util.m.js';
-import {mediaImport} from './media_import_handler.m.js';
-import {MockDriveSyncHandler} from './mock_drive_sync_handler.m.js';
-import {TestScanResult} from './mock_media_scanner.m.js';
-import {MockProgressCenter} from './mock_progress_center.m.js';
-import {MockVolumeManager} from './mock_volume_manager.m.js';
-import {importerTestHistory} from './test_import_history.m.js';
+import {fileOperationUtil} from './file_operation_util.js';
+import {mediaImport} from './media_import_handler.js';
+import {MockDriveSyncHandler} from './mock_drive_sync_handler.js';
+import {TestScanResult} from './mock_media_scanner.js';
+import {MockProgressCenter} from './mock_progress_center.js';
+import {MockVolumeManager} from './mock_volume_manager.js';
+import {importerTestHistory} from './test_import_history.js';
 
 /** @type {!MockProgressCenter} */
 let progressCenter;

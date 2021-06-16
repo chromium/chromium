@@ -19,19 +19,19 @@
  * TrashEntry combines both files for display.
  */
 
-// clang-format off
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {util, str} from './util.m.js';
-// #import {FakeEntryImpl, CombinedReaders} from './files_app_entry_types.m.js';
-// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+import {VolumeManager} from '../../externs/volume_manager.m.js';
+
+import {CombinedReaders, FakeEntryImpl} from './files_app_entry_types.m.js';
+import {str, util} from './util.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.m.js';
 
 /**
  * Configuration for where Trash is stored in a volume.
  */
-/* #export */ class TrashConfig {
+export class TrashConfig {
   /**
    * @param {VolumeManagerCommon.VolumeType} volumeType
    * @param {string} topDir Top directory of volume. Must end with a slash to
@@ -91,7 +91,7 @@ TrashConfig.CONFIG = [
 /**
  * Wrapper for /.Trash/files and /.Trash/info directories.
  */
-/* #export */ class TrashDirs {
+export class TrashDirs {
   /**
    * @param {!DirectoryEntry} files /.Trash/files directory entry.
    * @param {!DirectoryEntry} info /.Trash/info directory entry.
@@ -148,7 +148,7 @@ TrashConfig.CONFIG = [
  *
  * @implements {FilesAppEntry}
  */
-/* #export */ class TrashEntry {
+export class TrashEntry {
   /**
    * @param {string} name Name of the file deleted.
    * @param {!Date} deletionDate DeletionDate of deleted file from infoEntry.
@@ -483,7 +483,7 @@ class TrashDirectoryReader {
  * Root Trash entry sits inside "My files". It shows the combined entries of
  * trashes defined in TrashConfig.
  */
-/* #export */ class TrashRootEntry extends FakeEntryImpl {
+export class TrashRootEntry extends FakeEntryImpl {
   /**
    * @param {!VolumeManager} volumeManager
    */

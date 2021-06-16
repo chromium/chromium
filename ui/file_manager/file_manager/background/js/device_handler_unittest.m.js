@@ -13,9 +13,9 @@ import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {VolumeInfo} from '../../externs/volume_info.m.js';
 
-import {DeviceHandler} from './device_handler.m.js';
-import {MockProgressCenter} from './mock_progress_center.m.js';
-import {MockVolumeManager} from './mock_volume_manager.m.js';
+import {DeviceHandler} from './device_handler.js';
+import {MockProgressCenter} from './mock_progress_center.js';
+import {MockVolumeManager} from './mock_volume_manager.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;

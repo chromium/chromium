@@ -5,8 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {TestMediaScanner} from '../../background/js/mock_media_scanner.m.js';
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {TestMediaScanner} from '../../background/js/mock_media_scanner.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {MockChromeStorageAPI, MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';

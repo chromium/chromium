@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.m.js';
 import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';

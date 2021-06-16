@@ -13,7 +13,7 @@ import {importerTest} from '../../common/js/test_importer_common.m.js';
 import {TestCallRecorder} from '../../common/js/unittest_util.m.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
 
-import {importerHistory} from './import_history.m.js';
+import {importerHistory} from './import_history.js';
 // clang-format on
 
 /** @const {string} */

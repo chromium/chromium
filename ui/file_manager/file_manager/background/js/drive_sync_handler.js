@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
-// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
-// #import {str, strf} from '../../common/js/util.m.js';
-// #import {fileOperationUtil} from './file_operation_util.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
-// #import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {launcher, LaunchType} from './launcher.m.js';
-// clang-format on
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.m.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
+import {str, strf} from '../../common/js/util.m.js';
+import {xfm} from '../../common/js/xfm.m.js';
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
+
+import {fileOperationUtil} from './file_operation_util.js';
+import {launcher, LaunchType} from './launcher.m.js';
 
 /**
  * Handler of the background page for the Drive sync events.
  * @implements {DriveSyncHandler}
  */
-/* #export */ class DriveSyncHandlerImpl extends cr.EventTarget {
+export class DriveSyncHandlerImpl extends EventTarget {
   /** @param {ProgressCenter} progressCenter */
   constructor(progressCenter) {
     super();

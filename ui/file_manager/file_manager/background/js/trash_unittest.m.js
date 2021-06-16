@@ -7,11 +7,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
-import {TrashDirs} from '../../common/js/trash.m.js';
+import {TrashDirs} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 
-import {MockVolumeManager} from './mock_volume_manager.m.js';
-import {Trash} from './trash.m.js';
+import {MockVolumeManager} from './mock_volume_manager.js';
+import {Trash} from './trash.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;

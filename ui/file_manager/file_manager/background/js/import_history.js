@@ -7,16 +7,15 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// clang-format off
-// #import {metadataProxy} from './metadata_proxy.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
-// #import {importer} from '../../common/js/importer_common.m.js';
-// clang-format on
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+
+import {importer} from '../../common/js/importer_common.m.js';
+import {util} from '../../common/js/util.m.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+
+import {metadataProxy} from './metadata_proxy.m.js';
 
 // Namespace
-/* #ignore */ window.importer = window.importer || {};
 // eslint-disable-next-line no-var
 var importerHistory = {};
 
@@ -850,4 +849,4 @@ importerHistory.createMetadataHashcode = function(fileEntry) {
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-/* #export */ {importerHistory};
+export {importerHistory};

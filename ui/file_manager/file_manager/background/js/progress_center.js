@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.m.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// #import {str} from '../../common/js/util.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
-// #import {ProgressItemState, ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
-// clang-format on
+import {AsyncUtil} from '../../common/js/async_util.m.js';
+import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
+import {str} from '../../common/js/util.m.js';
+import {xfm} from '../../common/js/xfm.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.m.js';
 
 /**
  * Implementation of {ProgressCenter} at the background page.
  * @implements {ProgressCenter}
  * @final
  */
-/* #export */ class ProgressCenterImpl {
+export class ProgressCenterImpl {
   constructor() {
     /**
      * Current items managed by the progress center.

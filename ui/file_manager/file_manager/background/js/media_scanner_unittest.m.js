@@ -9,10 +9,10 @@ import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {assertFileEntryPathsEqual} from '../../common/js/unittest_util.m.js';
 import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
 
-import {fileOperationUtil} from './file_operation_util.m.js';
-import {mediaScanner} from './media_scanner.m.js';
-import {TestDirectoryWatcher} from './mock_media_scanner.m.js';
-import {importerTestHistory} from './test_import_history.m.js';
+import {fileOperationUtil} from './file_operation_util.js';
+import {mediaScanner} from './media_scanner.js';
+import {TestDirectoryWatcher} from './mock_media_scanner.js';
+import {importerTestHistory} from './test_import_history.js';
 
 /**
  * Stub out the metrics package.

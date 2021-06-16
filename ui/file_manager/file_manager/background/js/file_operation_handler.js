@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
-// #import {util, strf, str} from '../../common/js/util.m.js';
-// #import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
-// #import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
-// clang-format on
+import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
+import {str, strf, util} from '../../common/js/util.m.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 
 /**
  * An event handler of the background page for file operations.
  */
-/* #export */ class FileOperationHandler {
+export class FileOperationHandler {
   /**
    * @param {!FileOperationManager} fileOperationManager
    * @param {!ProgressCenter} progressCenter

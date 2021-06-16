@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #ignore */ 'use strict';
 
-// clang-format off
-// #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// clang-format on
+import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 
 
 /**
@@ -15,7 +12,7 @@
  * @implements {ProgressCenter}
  * @final
  */
-/* #export */ class MockProgressCenter {
+export class MockProgressCenter {
   constructor() {
     /**
      * Items stored in the progress center.

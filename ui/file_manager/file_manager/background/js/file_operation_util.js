@@ -7,15 +7,15 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// clang-format off
-// #import {FileOperationProgressEvent, FileOperationError} from '../../common/js/file_operation_common.m.js';
-// #import {TrashEntry} from '../../common/js/trash.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {metadataProxy} from './metadata_proxy.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.m.js';
+import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+import {TrashEntry} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.m.js';
+
+import {metadataProxy} from './metadata_proxy.m.js';
 
 /**
  * Utilities for file operations.
@@ -1184,64 +1184,64 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
-    const f = async () => {
-      try {
-        // TODO(fdegros) Per-entry zip progress update with accurate byte count.
-        // For now just set processedBytes to 0 so that it is not full until
-        // the zip operation is done.
-        this.processedBytes = 0;
-        progressCallback();
+    // TODO(fdegros) Per-entry zip progress update with accurate byte count.
+    // For now just set processedBytes to 0 so that it is not full until
+    // the zip operation is done.
+    this.processedBytes = 0;
+    progressCallback();
 
-        // TODO(fdegros) Localize the name.
-        let destName = 'Archive';
+    this.run_().then(
+        entry => {
+          this.processedBytes = this.totalBytes;
+          entryChangedCallback(util.EntryChangedKind.CREATED, entry);
+          successCallback();
+        },
+        error => errorCallback(new FileOperationError(
+            util.FileOperationErrorType.FILESYSTEM_ERROR,
+            /** @type DOMError */ (error))));
+  }
 
-        // If there is only one entry to zip, use this entry's name for the ZIP
-        // filename.
-        if (this.sourceEntries.length == 1) {
-          const entryName = this.sourceEntries[0].name;
-          const i = entryName.lastIndexOf('.');
-          destName = ((i < 0) ? entryName : entryName.substr(0, i));
-        }
+  /**
+   * Runs a zip file creation task.
+   *
+   * @return {!Promise<FileEntry>} Promise fulfilled with the created archive
+   *     entry, or rejected with a DOMError.
+   * @private
+   */
+  async run_() {
+    // TODO(fdegros) Localize the name.
+    let destName = 'Archive';
 
-        const destPath = await fileOperationUtil.deduplicatePath(
-            this.targetDirEntry, destName + '.zip');
+    // If there is only one entry to zip, use this entry's name for the ZIP
+    // filename.
+    if (this.sourceEntries.length == 1) {
+      const entryName = this.sourceEntries[0].name;
+      const i = entryName.lastIndexOf('.');
+      destName = ((i < 0) ? entryName : entryName.substr(0, i));
+    }
 
-        this.cancelCallback_ = () => {
-          console.log('Cancelling ZIP task...');
-          chrome.fileManagerPrivate.cancelZip(this.zipBaseDirEntry, destPath);
-        };
+    const destPath = await fileOperationUtil.deduplicatePath(
+        this.targetDirEntry, destName + '.zip');
 
-        const success = await new Promise(
-            resolve => chrome.fileManagerPrivate.zipSelection(
-                assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
-                resolve));
-
-        if (!success) {
-          // Cannot create ZIP archive.
-          throw util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
-        }
-
-        // Get the created entry.
-        const entry = await new Promise(
-            (resolve, reject) => this.zipBaseDirEntry.getFile(
-                destPath, {create: false}, resolve, reject));
-
-        this.processedBytes = this.totalBytes;
-        entryChangedCallback(util.EntryChangedKind.CREATED, entry);
-      } catch (error) {
-        // Don't display any error message if the task was cancelled.
-        if (!this.cancelRequested_) {
-          errorCallback(new FileOperationError(
-              util.FileOperationErrorType.FILESYSTEM_ERROR,
-              /** @type DOMError */ (error)));
-          return;
-        }
-      }
-
-      successCallback();
+    this.cancelCallback_ = () => {
+      console.log('Cancelling ZIP task...');
+      chrome.fileManagerPrivate.cancelZip(this.zipBaseDirEntry, destPath);
     };
 
-    f();
+    const success = await new Promise(
+        resolve => chrome.fileManagerPrivate.zipSelection(
+            assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
+            resolve));
+
+    if (!success) {
+      // Cannot create ZIP archive.
+      throw util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
+    }
+
+    // Get the created entry.
+    return new Promise(
+        (resolve, reject) => this.zipBaseDirEntry.getFile(
+            destPath, {create: false}, resolve, reject));
   }
 };
 
@@ -1282,7 +1282,7 @@ fileOperationUtil.DeleteTask;
  *
  * TODO(hidehiko): Reorganize the event dispatching mechanism.
  */
-fileOperationUtil.EventRouter = class extends cr.EventTarget {
+fileOperationUtil.EventRouter = class extends EventTarget {
   constructor() {
     super();
     this.pendingDeletedEntries_ = {};
@@ -1561,4 +1561,4 @@ fileOperationUtil.Speedometer = class {
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-/* #export */ {fileOperationUtil};
+export {fileOperationUtil};

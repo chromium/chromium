@@ -7,18 +7,16 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// clang-format off
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {importer} from '../../common/js/importer_common.m.js';
+import {LRUCache} from '../../common/js/lru_cache.m.js';
+import {metrics} from '../../common/js/metrics.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+import {VolumeManager} from '../../externs/volume_manager.m.js';
 
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
-// #import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
-// #import {volumeManagerFactory} from './volume_manager_factory.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {importerHistory} from './import_history.m.js';
-// #import {LRUCache} from '../../common/js/lru_cache.m.js';
-// #import {importer} from '../../common/js/importer_common.m.js';
-// clang-format on
+import {importerHistory} from './import_history.js';
+import {volumeManagerFactory} from './volume_manager_factory.m.js';
 
 // eslint-disable-next-line no-var
 var duplicateFinder = {};
@@ -292,4 +290,4 @@ duplicateFinder.DispositionCheckerImpl = class {
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-/* #export */ {duplicateFinder};
+export {duplicateFinder};

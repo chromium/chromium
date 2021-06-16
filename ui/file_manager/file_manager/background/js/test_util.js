@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {background} from './background.m.js';
+// #import {background} from './background.js';
 // #import {test} from './test_util_base.m.js';
 // #import {launcher} from './launcher.m.js';
 // #import {util} from '../../common/js/util.m.js';

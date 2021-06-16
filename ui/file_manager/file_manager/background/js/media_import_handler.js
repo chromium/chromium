@@ -2,29 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
-// #import {strf, util} from '../../common/js/util.m.js';
-// #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
-// #import {fileOperationUtil} from './file_operation_util.m.js';
-// #import {taskQueue} from './task_queue.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
-// #import {importer} from '../../common/js/importer_common.m.js';
-// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
-// #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
-// #import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
-// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
-// #import {mediaImportInterfaces} from '../../externs/background/media_import_handler.m.js';
-// #import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// clang-format on
+import {AsyncUtil} from '../../common/js/async_util.m.js';
+import {importer} from '../../common/js/importer_common.m.js';
+import {metrics} from '../../common/js/metrics.m.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
+import {strf, util} from '../../common/js/util.m.js';
+import {xfm} from '../../common/js/xfm.m.js';
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+import {mediaImportInterfaces} from '../../externs/background/media_import_handler.m.js';
+import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
+
+import {fileOperationUtil} from './file_operation_util.js';
+import {taskQueue} from './task_queue.m.js';
 
 
 // Namespace
-/* #export */ const mediaImport = {};
+export const mediaImport = {};
 
 /**
  * Handler for importing media from removable devices into the user's Drive.

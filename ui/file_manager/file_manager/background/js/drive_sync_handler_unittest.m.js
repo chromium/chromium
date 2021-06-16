@@ -9,8 +9,8 @@ import {assertEquals,assertFalse, assertTrue} from 'chrome://test/chai_assert.js
 import {installMockChrome} from '../../common/js/mock_chrome.m.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
 
-import {DriveSyncHandlerImpl} from './drive_sync_handler.m.js';
-import {MockProgressCenter} from './mock_progress_center.m.js';
+import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
+import {MockProgressCenter} from './mock_progress_center.js';
 // clang-format on
 
 /**

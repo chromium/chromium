@@ -10,5 +10,5 @@
 import './metrics_start.m.js';
 import '../../common/js/error_counter.m.js';
 
-import './background.m.js';
+import './background.js';
 import './test_util.m.js';

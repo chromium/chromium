@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 
-/* #ignore */ 'use strict';
 
 /**
  * Mock implementation of {FileOperationManager} for tests.
  * @implements {FileOperationManager}
  */
-/* #export */ class MockFileOperationManager extends cr.EventTarget {
+export class MockFileOperationManager extends EventTarget {
   constructor() {
     super();
 

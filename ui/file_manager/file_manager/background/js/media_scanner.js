@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {metadataProxy} from './metadata_proxy.m.js';
-// #import {fileOperationUtil} from './file_operation_util.m.js';
-// #import {importer} from '../../common/js/importer_common.m.js';
-// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {importer} from '../../common/js/importer_common.m.js';
+import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
+
+import {fileOperationUtil} from './file_operation_util.js';
+import {metadataProxy} from './metadata_proxy.m.js';
 
 // Namespace
-/* #export */ const mediaScanner = {};
+export const mediaScanner = {};
 
 /**
  * Recursively scans through a list of given files and directories, and creates

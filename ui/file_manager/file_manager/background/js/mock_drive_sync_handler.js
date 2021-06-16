@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
-// clang-format on
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-/* #ignore */ 'use strict';
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
+
 
 /**
  * Mock of DriveSyncHandler.
  * @implements {DriveSyncHandler}
  */
-/* #export */ class MockDriveSyncHandler extends cr.EventTarget {
+export class MockDriveSyncHandler extends EventTarget {
   constructor() {
     super();
 

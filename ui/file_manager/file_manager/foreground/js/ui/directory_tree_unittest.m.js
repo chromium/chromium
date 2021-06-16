@@ -6,7 +6,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertArrayEquals,assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {MockVolumeManager} from '../../../background/js/mock_volume_manager.m.js';
+import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {EntryList} from '../../../common/js/files_app_entry_types.m.js';
 import {metrics} from '../../../common/js/metrics.m.js';
 import {installMockChrome, MockCommandLinePrivate} from '../../../common/js/mock_chrome.m.js';

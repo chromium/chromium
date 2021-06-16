@@ -2,39 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {Crostini} from '../../externs/background/crostini.m.js';
-// #import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.m.js';
-// #import {mediaImportInterfaces} from '../../externs/background/media_import_handler.m.js';
-// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
-// #import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
-// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
-// #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {fileOperationUtil} from './file_operation_util.m.js';
-// #import {launcher, LaunchType, nextFileManagerWindowID, FILES_ID_PATTERN} from './launcher.m.js';
-// #import {FileOperationHandler} from './file_operation_handler.m.js';
-// #import {FileOperationManagerImpl} from './file_operation_manager.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {volumeManagerFactory} from './volume_manager_factory.m.js';
-// #import {MountMetrics} from './mount_metrics.m.js';
-// #import {CrostiniImpl} from './crostini.m.js';
-// #import {mediaImport} from './media_import_handler.m.js';
-// #import {mediaScanner} from './media_scanner.m.js';
-// #import {duplicateFinder} from './duplicate_finder.m.js';
-// #import {DriveSyncHandlerImpl} from './drive_sync_handler.m.js';
-// #import {DeviceHandler} from './device_handler.m.js';
-// #import {importer} from '../../common/js/importer_common.m.js';
-// #import {importerHistory} from './import_history.m.js';
-// #import {ProgressCenterImpl} from './progress_center.m.js';
-// #import {BackgroundBaseImpl} from './background_base.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
-// clang-format on
+import {importer} from '../../common/js/importer_common.m.js';
+import {metrics} from '../../common/js/metrics.m.js';
+import {str, util} from '../../common/js/util.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {xfm} from '../../common/js/xfm.m.js';
+import {Crostini} from '../../externs/background/crostini.m.js';
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
+import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.m.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+import {mediaImportInterfaces} from '../../externs/background/media_import_handler.m.js';
+import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+import {VolumeInfo} from '../../externs/volume_info.m.js';
+import {VolumeManager} from '../../externs/volume_manager.m.js';
+
+import {BackgroundBaseImpl} from './background_base.m.js';
+import {CrostiniImpl} from './crostini.js';
+import {DeviceHandler} from './device_handler.js';
+import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
+import {duplicateFinder} from './duplicate_finder.js';
+import {FileOperationHandler} from './file_operation_handler.js';
+import {FileOperationManagerImpl} from './file_operation_manager.js';
+import {fileOperationUtil} from './file_operation_util.js';
+import {importerHistory} from './import_history.js';
+import {FILES_ID_PATTERN, launcher, LaunchType, nextFileManagerWindowID} from './launcher.m.js';
+import {mediaImport} from './media_import_handler.js';
+import {mediaScanner} from './media_scanner.js';
+import {MountMetrics} from './mount_metrics.m.js';
+import {ProgressCenterImpl} from './progress_center.js';
+import {volumeManagerFactory} from './volume_manager_factory.m.js';
 
 /**
  * Root class of the background page.
@@ -588,7 +587,7 @@ const GPLUS_PHOTOS_APP_ORIGIN =
  * Singleton instance of Background object.
  * @type {!FileBrowserBackgroundFull}
  */
-/* #export */ const background = new FileBrowserBackgroundImpl();
+export const background = new FileBrowserBackgroundImpl();
 window.background = background;
 
 /**

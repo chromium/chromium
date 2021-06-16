@@ -9,10 +9,10 @@ import {FileOperationProgressEvent} from '../../common/js/file_operation_common.
 import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
 import {util} from '../../common/js/util.m.js';
 
-import {FileOperationHandler} from './file_operation_handler.m.js';
-import {fileOperationUtil} from './file_operation_util.m.js';
-import {MockFileOperationManager} from './mock_file_operation_manager.m.js';
-import {MockProgressCenter} from './mock_progress_center.m.js';
+import {FileOperationHandler} from './file_operation_handler.js';
+import {fileOperationUtil} from './file_operation_util.js';
+import {MockFileOperationManager} from './mock_file_operation_manager.js';
+import {MockProgressCenter} from './mock_progress_center.js';
 // clang-format on
 
 
