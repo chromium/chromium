@@ -11,6 +11,7 @@
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_link_fetcher.h"
+#include "chrome/browser/cart/cart_metrics_tracker.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
@@ -92,6 +93,12 @@ class CartService : public history::HistoryServiceObserver,
   // rule-based discount is enabled.
   void GetDiscountURL(const GURL& cart_url,
                       base::OnceCallback<void(const GURL&)> callback);
+  // Gets called when a navigation to |cart_url| is happening or might happen.
+  // This can be triggered by either left click on a cart in cart module or
+  // right click to open context menu which could lead to open the cart later.
+  // This method is used to record the latest interacted cart, and then use that
+  // to identify whether a navigation originated from cart module has happened.
+  void PrepareForNavigation(const GURL& cart_url);
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -179,6 +186,7 @@ class CartService : public history::HistoryServiceObserver,
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
   std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
+  std::unique_ptr<CartMetricsTracker> metrics_tracker_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

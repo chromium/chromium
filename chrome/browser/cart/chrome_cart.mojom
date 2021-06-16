@@ -52,4 +52,8 @@ interface CartHandler {
   GetDiscountEnabled() => (bool enabled);
   // Sets whether the rule-based discount feature is enabled.
   SetDiscountEnabled(bool enabled);
+  // Passes the |cart_url| that user is navigating or about to navigate
+  // towards to browser process, in order to help identify navigations
+  // originated from cart module.
+  PrepareForNavigation(url.mojom.Url cart_url);
 };

@@ -14,6 +14,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -111,7 +112,9 @@ CartService::CartService(Profile* profile)
       domain_name_mapping_(JSONToDictionary(IDR_CART_DOMAIN_NAME_MAPPING_JSON)),
       domain_cart_url_mapping_(
           JSONToDictionary(IDR_CART_DOMAIN_CART_URL_MAPPING_JSON)),
-      discount_link_fetcher_(std::make_unique<CartDiscountLinkFetcher>()) {
+      discount_link_fetcher_(std::make_unique<CartDiscountLinkFetcher>()),
+      metrics_tracker_(std::make_unique<CartMetricsTracker>(
+          chrome::FindTabbedBrowser(profile, false))) {
   if (history_service_) {
     history_service_observation_.Observe(history_service_);
   }
@@ -368,6 +371,10 @@ void CartService::OnDiscountURLFetched(
   }
 }
 
+void CartService::PrepareForNavigation(const GURL& cart_url) {
+  metrics_tracker_->PrepareToRecordUKM(cart_url);
+}
+
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
   cart_db_->LoadCartsWithPrefix(
       kFakeDataPrefix,
@@ -394,6 +401,7 @@ void CartService::Shutdown() {
   // Delete content of all carts that are removed.
   cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCartsContent,
                                         weak_ptr_factory_.GetWeakPtr()));
+  metrics_tracker_->ShutDown();
 }
 
 void CartService::OnURLsDeleted(history::HistoryService* history_service,
