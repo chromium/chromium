@@ -5924,6 +5924,92 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   }
 }
 
+// Tests that the "requestMethods" and "excludedRequestMethods" properties of a
+// rule condition are considered properly for non-HTTP(s) requests.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       BlockRequests_NonHTTPMethods) {
+  // Load an extension with some DNR rules that have different request method
+  // conditions.
+  std::vector<TestRule> rules;
+
+  TestRule rule1 = CreateGenericRule(1);
+  rule1.condition->url_filter = "default";
+  rules.push_back(rule1);
+
+  TestRule rule2 = CreateGenericRule(2);
+  rule2.condition->url_filter = "all_methods";
+  rule2.condition->request_methods = {"delete", "get",  "head", "options",
+                                      "patch",  "post", "put"};
+  rules.push_back(rule2);
+
+  TestRule rule3 = CreateGenericRule(3);
+  rule3.condition->url_filter = "some_methods";
+  rule3.condition->request_methods = {"get", "put"};
+  rules.push_back(rule3);
+
+  TestRule rule4 = CreateGenericRule(4);
+  rule4.condition->url_filter = "all_methods_excluded";
+  rule4.condition->excluded_request_methods = {
+      "delete", "get", "head", "options", "patch", "post", "put"};
+  rules.push_back(rule4);
+
+  TestRule rule5 = CreateGenericRule(5);
+  rule5.condition->url_filter = "some_methods_excluded";
+  rule5.condition->excluded_request_methods = {"get", "put"};
+  rules.push_back(rule5);
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  // Start a web socket test server.
+  net::SpawnedTestServer websocket_test_server(
+      net::SpawnedTestServer::TYPE_WS, net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(websocket_test_server.Start());
+  std::string websocket_url =
+      websocket_test_server.GetURL("echo-with-no-extension").spec();
+
+  const char kOpenWebSocketsScript[] = R"(
+    {
+      const websocketUrl = "%s";
+      const testCases = ["default", "all_methods", "some_methods",
+                         "all_methods_excluded", "some_methods_excluded"];
+
+      let blockedTestCases = [];
+
+      Promise.allSettled(
+        testCases.map(testCase =>
+          new Promise(resolve =>
+          {
+            let websocket = new WebSocket(websocketUrl + "?" + testCase);
+            websocket.addEventListener("open", event =>
+            {
+              websocket.close();
+              resolve();
+            });
+            websocket.addEventListener("error", event =>
+            {
+              blockedTestCases.push(testCase);
+              resolve();
+            });
+          })
+        )
+      ).then(() =>
+      {
+        window.domAutomationController.send(blockedTestCases.sort().join());
+      });
+    }
+  )";
+
+  content::RenderFrameHost* main_frame = GetMainFrame();
+
+  std::string actual_blocked;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      main_frame,
+      base::StringPrintf(kOpenWebSocketsScript, websocket_url.c_str()),
+      &actual_blocked));
+  EXPECT_EQ("all_methods_excluded,default,some_methods_excluded",
+            actual_blocked);
+}
+
 // Tests that FLEDGE requests can be blocked by the declarativeNetRequest API,
 // and that if they try to redirect requests, the request is blocked, instead of
 // being redirected.

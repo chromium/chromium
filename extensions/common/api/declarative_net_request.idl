@@ -261,7 +261,10 @@ namespace declarativeNetRequest {
 
     // List of HTTP request methods which the rule can match. An empty list is
     // not allowed.
-    // Note: Non HTTP requests are considered to have the "get" request method.
+    //
+    // Note: Specifying a <code>requestMethods</code> rule condition will also
+    // exclude non-HTTP(s) requests, whereas specifying
+    // <code>excludedRequestMethods</code> will not.
     RequestMethod[]? requestMethods;
 
     // List of request methods which the rule won't match. Only one of

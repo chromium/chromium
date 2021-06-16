@@ -65,8 +65,12 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
 }
 
 // Maps an HTTP request method string to flat_rule::RequestMethod.
-// TODO(kzar): Return `flat_rule::RequestMethod_NONE` for non-HTTP requests.
-flat_rule::RequestMethod GetRequestMethod(const std::string& method) {
+// Returns `flat::RequestMethod_NON_HTTP` for non-HTTP(s) requests.
+flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
+                                          const std::string& method) {
+  if (!http_or_https)
+    return flat_rule::RequestMethod_NON_HTTP;
+
   using net::HttpRequestHeaders;
   static const base::NoDestructor<
       base::flat_map<base::StringPiece, flat_rule::RequestMethod>>
@@ -173,7 +177,7 @@ RequestParams::RequestParams(const WebRequestInfo& info)
     : url(&info.url),
       first_party_origin(info.initiator.value_or(url::Origin())),
       element_type(GetElementType(info.web_request_type)),
-      method(GetRequestMethod(info.method)),
+      method(GetRequestMethod(info.url.SchemeIsHTTPOrHTTPS(), info.method)),
       parent_routing_id(info.parent_routing_id),
       embedder_conditions_matcher(base::BindRepeating(DoEmbedderConditionsMatch,
                                                       info.frame_data.tab_id)) {

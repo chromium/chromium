@@ -85,7 +85,7 @@ int CompareDomains(base::StringPiece lhs_domain, base::StringPiece rhs_domain);
 // Increase this value when introducing an incompatible change to the
 // UrlPatternIndex schema (flat/url_pattern_index.fbs). url_pattern_index
 // clients can use this as a signal to rebuild rulesets.
-constexpr int kUrlPatternIndexFormatVersion = 9;
+constexpr int kUrlPatternIndexFormatVersion = 10;
 
 // The class used to construct an index over the URL patterns of a set of URL
 // rules. The rules themselves need to be converted to FlatBuffers format by the
