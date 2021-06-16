@@ -1011,6 +1011,94 @@ TEST_F(WebMClusterParserTest,
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
 }
 
+// Verify the parser can handle block timestamps that are negative
+// relative-to-cluster and to absolute time. With BlockDurations provided, there
+// is no buffer duration estimation, and the ready-buffer extraction bounds are
+// always maximal, for both a partial cluster and a full cluster parse.
+TEST_F(WebMClusterParserTest,
+       ParseClusterWithNegativeBlockTimestampsAndWithBlockDurations) {
+  InSequence s;
+
+  EXPECT_LT(kTestAudioFrameDefaultDurationInMs, 23);
+  EXPECT_LT(kTestVideoFrameDefaultDurationInMs, 33);
+
+  const BlockInfo kBlockInfo[] = {
+      {kVideoTrackNum, -33, 10, false, NULL, 0, false},
+      {kAudioTrackNum, -23, 5, false, NULL, 0, false},
+  };
+
+  int block_count = base::size(kBlockInfo);
+  // Using 0 for cluster timecode will make each of the blocks, above, use a
+  // negative relative timecode to achieve the desired negative block
+  // timestamps.
+  std::unique_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
+
+  // Send slightly less than the full cluster so all but the last block is
+  // parsed. None should be held aside for duration estimation prior to end of
+  // cluster detection because all blocks have BlockDurations.
+  int result = parser_->Parse(cluster->data(), cluster->size() - 1);
+  EXPECT_GT(result, 0);
+  EXPECT_LT(result, cluster->size());
+  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count - 1));
+
+  parser_->Reset();
+
+  // Now parse a whole cluster to verify that all the blocks will get parsed.
+  result = parser_->Parse(cluster->data(), cluster->size());
+  EXPECT_EQ(cluster->size(), result);
+  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+}
+
+// Verify the parser can handle block timestamps that are negative
+// relative-to-cluster and to absolute time. With neither BlockDurations nor
+// DefaultDuration provided, all blocks' durations are derived from interblock
+// timestamps in the track or estimated for the last block in the each track in
+// the cluster, requiring holding back the last block in each track (unless the
+// cluster is fully parsed to completion) so it can get estimated duration based
+// on the next block in that track in the cluster. The ready-buffer extraction
+// methods are driven by the test block to have negative upper-bounds in the
+// partial-block parse in this case.
+TEST_F(WebMClusterParserTest,
+       ParseClusterWithNegativeBlockTimestampsAndWithoutDurations) {
+  InSequence s;
+
+  // Simple blocks, used here, include no block duration information.
+  const BlockInfo kBlockInfo[] = {
+      {kVideoTrackNum, -68, 33, true, NULL, 0, false},
+      {kAudioTrackNum, -48, 23, true, NULL, 0, false},
+      {kVideoTrackNum, -35, 33, true, NULL, 0, false},
+      {kAudioTrackNum, -25, 23, true, NULL, 0, false},
+  };
+
+  int block_count = base::size(kBlockInfo);
+  // Using 0 for cluster timecode will make each of the blocks, above, use a
+  // negative relative timecode to achieve the desired negative block
+  // timestamps.
+  std::unique_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
+
+  // Send slightly less than the full cluster so all but the last block is
+  // parsed. Only the first video block should be readable from the parser since
+  // the second video is held back still (not yet at end of cluster) and the
+  // first audio is held back still (no second block parsed fully yet and not
+  // yet at end of cluster).
+  int result = parser_->Parse(cluster->data(), cluster->size() - 1);
+  EXPECT_GT(result, 0);
+  EXPECT_LT(result, cluster->size());
+  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count - 3));
+
+  parser_->Reset();
+
+  // Now parse a whole cluster to verify that all the blocks will get parsed and
+  // have estimated durations applied correctly. Implementation applies audio
+  // block estimations before video block estimations upon reaching the end of
+  // the cluster, hence the expected order of MEDIA_LOGs here.
+  EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(23));
+  EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(33));
+  result = parser_->Parse(cluster->data(), cluster->size());
+  EXPECT_EQ(cluster->size(), result);
+  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+}
+
 TEST_F(WebMClusterParserTest,
        ParseDegenerateClusterYieldsHardcodedEstimatedDurations) {
   const BlockInfo kBlockInfo[] = {

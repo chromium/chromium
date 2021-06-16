@@ -645,8 +645,7 @@ DecodeTimestamp WebMClusterParser::Track::GetReadyUpperBound() {
 void WebMClusterParser::Track::ExtractReadyBuffers(
     const DecodeTimestamp before_timestamp) {
   DCHECK(ready_buffers_.empty());
-  DCHECK(DecodeTimestamp() <= before_timestamp);
-  DCHECK(kNoDecodeTimestamp() != before_timestamp);
+  DCHECK(kNoDecodeTimestamp() < before_timestamp);
 
   if (buffers_.empty())
     return;
@@ -755,9 +754,8 @@ bool WebMClusterParser::Track::QueueBuffer(
   // WebMClusterParser::OnBlock() gives MEDIA_LOG and parse error on decreasing
   // block timecode detection within a cluster. Therefore, we should not see
   // those here.
-  DecodeTimestamp previous_buffers_timestamp = buffers_.empty() ?
-      DecodeTimestamp() : buffers_.back()->GetDecodeTimestamp();
-  CHECK(previous_buffers_timestamp <= buffer->GetDecodeTimestamp());
+  CHECK(buffers_.empty() ||
+        buffers_.back()->GetDecodeTimestamp() <= buffer->GetDecodeTimestamp());
 
   base::TimeDelta duration = buffer->duration();
   if (duration < base::TimeDelta() || duration == kNoTimestamp) {
@@ -842,8 +840,7 @@ void WebMClusterParser::UpdateReadyBuffers() {
   } else {
     ready_buffer_upper_bound_ = std::min(audio_.GetReadyUpperBound(),
                                          video_.GetReadyUpperBound());
-    DCHECK(DecodeTimestamp() <= ready_buffer_upper_bound_);
-    DCHECK(kNoDecodeTimestamp() != ready_buffer_upper_bound_);
+    DCHECK(kNoDecodeTimestamp() < ready_buffer_upper_bound_);
   }
 
   // Prepare each track's ready buffers for retrieval.
