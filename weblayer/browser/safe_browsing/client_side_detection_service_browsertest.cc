@@ -14,6 +14,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,6 +68,10 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   prefs->SetBoolean(::prefs::kSafeBrowsingEnabled, true);
 
   base::RunLoop run_loop;
+
+  // Ensure that IPCs to set the model have propagated, otherwise they may
+  // interrupt classification.
+  content::RunAllTasksUntilIdle();
 
   content::RenderFrameHost* rfh = GetWebContents()->GetMainFrame();
   mojo::Remote<safe_browsing::mojom::PhishingDetector> phishing_detector;
