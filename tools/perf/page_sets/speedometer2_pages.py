@@ -33,12 +33,15 @@ class Speedometer2Story(press_story.PressStory):
   URL = 'file://InteractiveRunner.html'
   NAME = 'Speedometer2'
 
-  def __init__(self, ps, should_filter_suites, filtered_suite_names=None,
-               enable_smoke_test_mode=False):
+  def __init__(self,
+               ps,
+               should_filter_suites,
+               filtered_suite_names=None,
+               iterations=None):
     super(Speedometer2Story, self).__init__(ps)
     self._should_filter_suites = should_filter_suites
     self._filtered_suite_names = filtered_suite_names
-    self._enable_smoke_test_mode = enable_smoke_test_mode
+    self._iterations = iterations
     self._enabled_suites = []
 
   @staticmethod
@@ -55,14 +58,14 @@ class Speedometer2Story(press_story.PressStory):
 
   def ExecuteTest(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
-    iterationCount = 10
-    # A single iteration on android takes ~75 seconds, the benchmark times out
-    # when running for 10 iterations.
-    if action_runner.tab.browser.platform.GetOSName() == 'android':
-      iterationCount = 3
-    # For a smoke test one iteration is sufficient
-    if self._enable_smoke_test_mode:
-      iterationCount = 1
+    if not self._iterations:
+      iterationCount = 10
+      # A single iteration on android takes ~75 seconds, the benchmark times out
+      # when running for 10 iterations.
+      if action_runner.tab.browser.platform.GetOSName() == 'android':
+        iterationCount = 3
+    else:
+      iterationCount = self._iterations
 
     if self._should_filter_suites:
       action_runner.ExecuteJavaScript("""

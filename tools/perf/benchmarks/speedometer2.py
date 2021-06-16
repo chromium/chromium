@@ -34,6 +34,7 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
 
   enable_smoke_test_mode = False
   enable_rcs = False
+  iteration_count = None
 
   @classmethod
   def Name(cls):
@@ -46,8 +47,17 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
             speedometer2_pages.Speedometer2Story.GetSuites(options.suite))
 
     ps = story.StorySet(base_dir=_SPEEDOMETER_DIR)
-    ps.AddStory(speedometer2_pages.Speedometer2Story(ps, should_filter_suites,
-        filtered_suite_names, self.enable_smoke_test_mode))
+
+    # For a smoke test one iteration is sufficient
+    if self.enable_smoke_test_mode and not self.iteration_count:
+      iteration_count = 1
+    else:
+      iteration_count = self.iteration_count
+
+    ps.AddStory(
+        speedometer2_pages.Speedometer2Story(ps, should_filter_suites,
+                                             filtered_suite_names,
+                                             iteration_count))
     return ps
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
@@ -83,6 +93,9 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
     parser.add_option('--enable-rcs',
                       action="store_true",
                       help="Enables runtime call stats")
+    parser.add_option('--iteration-count',
+                      type="int",
+                      help="Override the default number of iterations")
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -94,6 +107,8 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
         raise parser.error('--suite: Invalid regex.')
     if args.enable_rcs:
       cls.enable_rcs = True
+    if args.iteration_count:
+      cls.iteration_count = args.iteration_count
 
 
 @benchmark.Info(emails=['hablich@chromium.org'],
