@@ -127,7 +127,9 @@ public class NoteCreationDialog extends DialogFragment {
         View background = parent.findViewById(R.id.background);
         template.mainBackground.apply(background);
         background.setClipToOutline(true);
-
+        background.setContentDescription(
+                getActivity().getString(R.string.content_creation_note_template_selected,
+                        model.get(NoteProperties.TEMPLATE).localizedName));
         Typeface typeface = model.get(NoteProperties.TYPEFACE);
         TextView noteText = (TextView) parent.findViewById(R.id.text);
         noteText.setTypeface(typeface);

@@ -9,7 +9,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_bg_color"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:contentDescription="@string/content_creation_note_dialog_description"
+    android:importantForAccessibility="yes">
 
     <include layout="@layout/top_bar"/>
 
@@ -31,7 +33,7 @@
             android:layout_marginBottom="17dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/note_title_outline"
-            android:textAppearance="@style/TextAppearance.TextSmall" />
+            android:textAppearance="@style/TextAppearance.TextSmall"/>
 
 	    <androidx.recyclerview.widget.RecyclerView
 	      android:id="@+id/note_carousel"
