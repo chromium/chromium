@@ -2777,7 +2777,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'web_engine_gtests',
+          'gtest_tests': 'fuchsia_gtests',
         },
         'mixins': [
           'arm64',
