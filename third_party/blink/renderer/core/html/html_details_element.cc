@@ -92,8 +92,16 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   HTMLSlotElement* content_slot =
       HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument());
   content_slot->SetIdAttribute(shadow_element_names::kIdDetailsContent);
-  content_slot->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                       CSSValueID::kNone);
+  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
+    content_slot->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                         CSSValueID::kHidden);
+    content_slot->EnsureDisplayLockContext().SetForDetailsElement(true);
+    content_slot->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                         CSSValueID::kBlock);
+  } else {
+    content_slot->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                         CSSValueID::kNone);
+  }
   root.AppendChild(content_slot);
 
   auto* default_summary_style = MakeGarbageCollected<HTMLStyleElement>(
@@ -143,11 +151,25 @@ void HTMLDetailsElement::ParseAttribute(
     Element* content = EnsureUserAgentShadowRoot().getElementById(
         shadow_element_names::kIdDetailsContent);
     DCHECK(content);
-    if (is_open_) {
-      content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+
+    if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
+      if (is_open_) {
+        content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      } else {
+        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                        CSSValueID::kBlock);
+        content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                        CSSValueID::kHidden);
+        content->EnsureDisplayLockContext().SetForDetailsElement(true);
+      }
     } else {
-      content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                      CSSValueID::kNone);
+      if (is_open_) {
+        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      } else {
+        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                        CSSValueID::kNone);
+      }
     }
 
     return;

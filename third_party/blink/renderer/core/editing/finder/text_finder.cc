@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -103,6 +104,43 @@ static void ScrollToVisible(Range* match) {
     // below.
     first_node.GetDocument().UpdateStyleAndLayoutForNode(
         &first_node, DocumentUpdateReason::kFindInPage);
+  }
+
+  // If the active match is hidden inside a <details> element, then we should
+  // expand it so find-in-page can scroll to it.
+  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
+    bool details_opened = false;
+
+    for (Node& parent : FlatTreeTraversal::AncestorsOf(first_node)) {
+      if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
+        // If the active match is inside the <summary> of a <details>, then we
+        // shouldn't expand the <details> because the active match is already
+        // visible.
+        bool inside_summary = false;
+        Element& summary = *details->FindMainSummary();
+        for (Node& ancestor : FlatTreeTraversal::AncestorsOf(first_node)) {
+          if (&ancestor == &summary) {
+            inside_summary = true;
+            break;
+          }
+        }
+
+        if (!inside_summary &&
+            !details->FastHasAttribute(html_names::kOpenAttr)) {
+          details->setAttribute(html_names::kOpenAttr, g_empty_atom);
+          details_opened = true;
+        }
+      }
+    }
+
+    if (details_opened) {
+      // If we opened any details elements, we need to update style and layout
+      // to account for the new content to render inside the now-expanded
+      // details element before we scroll to it. The added open attribute may
+      // also affect style.
+      first_node.GetDocument().UpdateStyleAndLayoutForNode(
+          &first_node, DocumentUpdateReason::kFindInPage);
+    }
   }
 
   // We don't always have a LayoutObject for the node we're trying to scroll to
