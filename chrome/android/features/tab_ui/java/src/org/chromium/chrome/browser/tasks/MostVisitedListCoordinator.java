@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks;
 import android.app.Activity;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -65,6 +67,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
     private final Supplier<Tab> mParentTabSupplier;
     private final SnackbarManager mSnackbarManager;
     private TileGroup mTileGroup;
+    private TileGroup.Delegate mTileGroupDelegate;
     private TileRenderer mRenderer;
     private SuggestionsUiDelegate mSuggestionsUiDelegate;
     private ContextMenuManager mContextMenuManager;
@@ -130,10 +133,10 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
             mOfflinePageBridge =
                     SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
         }
-        TileGroupDelegateImpl tileGroupDelegate = new TileGroupDelegateImpl(
+        mTileGroupDelegate = new TileGroupDelegateImpl(
                 mActivity, profile, mNavigationDelegate, mSnackbarManager);
         mTileGroup = new TileGroup(mRenderer, mSuggestionsUiDelegate, mContextMenuManager,
-                tileGroupDelegate, this, mOfflinePageBridge);
+                mTileGroupDelegate, this, mOfflinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
         mInitializationComplete = true;
     }
@@ -254,6 +257,21 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
             mTabDelegate.createTabInOtherWindow(loadUrlParams, mActivity,
                     mParentTabSupplier.get() == null ? -1 : mParentTabSupplier.get().getId());
         }
+    }
+
+    /** Called when the TasksSurface is hidden. */
+    public void destroyMVTiles() {
+        if (mTileGroupDelegate != null) {
+            mTileGroupDelegate.destroy();
+            mTileGroupDelegate = null;
+        }
+        mTileGroup = null;
+        mMvTilesLayout.removeAllViews();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean isMVTilesCleanedUp() {
+        return mTileGroupDelegate == null && mTileGroup == null;
     }
 
     /** Suggestions UI Delegate for constructing the TileGroup. */

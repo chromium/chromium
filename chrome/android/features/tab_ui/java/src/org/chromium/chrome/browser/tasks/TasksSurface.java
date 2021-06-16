@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -28,8 +29,9 @@ public interface TasksSurface {
      * It should be called before showing.
      * It should not be called in the critical startup process since it will do expensive work.
      * It might be called many times.
+     * @param refreshMVTiles Whether to refresh MV Tiles if exists.
      */
-    void initialize();
+    void initialize(boolean refreshMVTiles);
 
     /**
      * Set the listener to get the {@link Layout#onTabSelecting} event from the Grid Tab Switcher.
@@ -100,4 +102,13 @@ public interface TasksSurface {
      * Remove the omnibox shrink animation.
      */
     void removeFakeSearchBoxShrinkAnimation();
+
+    /**
+     * Called when the Tasks surface is hidden.
+     */
+    void onHide();
+
+    @VisibleForTesting
+    /** Returns whether the cleanup of MV Tiles has been done after hiding the Start surface. */
+    boolean isMVTilesCleanedUp();
 }

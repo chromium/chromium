@@ -1736,6 +1736,34 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testCleanUpMVTilesAfterHiding() {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceCoordinator startSurfaceCoordinator =
+                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(startSurfaceCoordinator.isMVTilesCleanedUpForTesting());
+        });
+
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        Assert.assertEquals("The launched tab should have the launch type FROM_START_SURFACE",
+                TabLaunchType.FROM_START_SURFACE,
+                cta.getActivityTabProvider().get().getLaunchType());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(startSurfaceCoordinator.isMVTilesCleanedUpForTesting());
+        });
+    }
+
     private MvTilesLayout getMvTilesLayout() {
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout));
         MvTilesLayout mvTilesLayout = mActivityTestRule.getActivity().findViewById(

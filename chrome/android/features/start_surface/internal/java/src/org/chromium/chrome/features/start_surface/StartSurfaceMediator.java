@@ -497,7 +497,6 @@ class StartSurfaceMediator
         }
     }
 
-    @VisibleForTesting
     @Override
     @StartSurfaceState
     public int getStartSurfaceState() {
