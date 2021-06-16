@@ -313,7 +313,6 @@ mojom("interfaces") {
   sources = [
     "drop_data.mojom",
     "resource_usage_reporter.mojom",
-    "was_activated_option.mojom",
     "webplugininfo.mojom",
     "window_container_type.mojom",
   ]

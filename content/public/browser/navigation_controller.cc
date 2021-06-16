@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/was_activated_option.mojom.h"
+#include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 
 namespace content {
 

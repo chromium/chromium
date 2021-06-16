@@ -2514,7 +2514,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.started_from_context_menu = false;
   /* params.navigation_ui_data: skip */
   /* params.input_start: skip */
-  params.was_activated = mojom::WasActivatedOption::kUnknown;
+  params.was_activated = blink::mojom::WasActivatedOption::kUnknown;
   /* params.reload_type: skip */
   params.impression = impression;
 
@@ -3504,7 +3504,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           false /* was_discarded */, is_view_source_mode,
           params.should_clear_history_list, mojom::NavigationTiming::New(),
           absl::nullopt /* appcache_host_id */,
-          mojom::WasActivatedOption::kUnknown,
+          blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
           std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if defined(OS_ANDROID)

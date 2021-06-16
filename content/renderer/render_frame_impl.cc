@@ -966,7 +966,7 @@ void FillMiscNavigationParams(
       common_params.input_start);
 
   navigation_params->is_user_activated =
-      commit_params.was_activated == mojom::WasActivatedOption::kYes;
+      commit_params.was_activated == blink::mojom::WasActivatedOption::kYes;
 
   navigation_params->has_text_fragment_token =
       common_params.text_fragment_token;

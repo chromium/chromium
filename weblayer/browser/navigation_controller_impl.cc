@@ -14,6 +14,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/navigation/was_activated_option.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "weblayer/browser/navigation_entry_data.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
@@ -238,7 +239,7 @@ void NavigationControllerImpl::Navigate(
   params->navigation_ui_data = std::move(data);
 
   if (enable_auto_play)
-    params->was_activated = content::mojom::WasActivatedOption::kYes;
+    params->was_activated = blink::mojom::WasActivatedOption::kYes;
 
   DoNavigate(std::move(params));
 }
@@ -313,7 +314,7 @@ void NavigationControllerImpl::Navigate(
   load_params->should_replace_current_entry =
       params.should_replace_current_entry;
   if (params.enable_auto_play)
-    load_params->was_activated = content::mojom::WasActivatedOption::kYes;
+    load_params->was_activated = blink::mojom::WasActivatedOption::kYes;
 
   DoNavigate(std::move(load_params));
 }

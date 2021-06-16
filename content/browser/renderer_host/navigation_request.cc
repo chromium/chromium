@@ -951,7 +951,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*should_clear_history_list=*/false,
           /*navigation_timing=*/mojom::NavigationTiming::New(),
           /*appcache_host_id=*/absl::nullopt,
-          mojom::WasActivatedOption::kUnknown,
+          blink::mojom::WasActivatedOption::kUnknown,
           /*navigation_token=*/base::UnguessableToken::Create(),
           /*prefetched_signed_exchanges=*/
           std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
@@ -1070,7 +1070,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           -1 /* current_history_list_length */, false /* was_discard */,
           false /* is_view_source */, false /* should_clear_history_list */,
           mojom::NavigationTiming::New(), absl::nullopt /* appcache_host_id */,
-          mojom::WasActivatedOption::kUnknown,
+          blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
           std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if defined(OS_ANDROID)
@@ -2693,8 +2693,9 @@ void NavigationRequest::OnResponseStarted(
   //    context menu. This should apply to pages that open in a new tab and we
   //    have to follow the referrer. It means that the activation might not be
   //    transmitted if it should have.
-  if (commit_params_->was_activated == mojom::WasActivatedOption::kUnknown) {
-    commit_params_->was_activated = mojom::WasActivatedOption::kNo;
+  if (commit_params_->was_activated ==
+      blink::mojom::WasActivatedOption::kUnknown) {
+    commit_params_->was_activated = blink::mojom::WasActivatedOption::kNo;
 
     if (!commit_params_->is_browser_initiated &&
         (frame_tree_node_->HasStickyUserActivation() ||
@@ -2702,7 +2703,7 @@ void NavigationRequest::OnResponseStarted(
         ShouldPropagateUserActivation(
             frame_tree_node_->current_origin(),
             url::Origin::Create(common_params_->url))) {
-      commit_params_->was_activated = mojom::WasActivatedOption::kYes;
+      commit_params_->was_activated = blink::mojom::WasActivatedOption::kYes;
       // TODO(805871): the next check is relying on sanitized_referrer_ but
       // should ideally use a more reliable source for the originating URL when
       // the navigation is renderer initiated.
@@ -2712,7 +2713,7 @@ void NavigationRequest::OnResponseStarted(
                ShouldPropagateUserActivation(
                    url::Origin::Create(sanitized_referrer_->url),
                    url::Origin::Create(common_params_->url))) {
-      commit_params_->was_activated = mojom::WasActivatedOption::kYes;
+      commit_params_->was_activated = blink::mojom::WasActivatedOption::kYes;
     }
   }
 

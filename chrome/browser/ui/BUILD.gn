@@ -2818,6 +2818,7 @@ static_library("ui") {
       "//components/services/app_service/public/cpp:instance_update",
       "//components/session_manager/core",
       "//components/user_manager",
+      "//content/public/common",
       "//extensions/browser/api/messaging",
       "//extensions/browser/api/virtual_keyboard_private",
       "//extensions/browser/api/vpn_provider",

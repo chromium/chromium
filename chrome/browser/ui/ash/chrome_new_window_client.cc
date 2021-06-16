@@ -75,10 +75,10 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/was_activated_option.mojom.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -693,7 +693,7 @@ content::WebContents* ChromeNewWindowClient::OpenUrlImpl(
                                 ui::PAGE_TRANSITION_FROM_API));
 
   if (from_user_interaction)
-    navigate_params.was_activated = content::mojom::WasActivatedOption::kYes;
+    navigate_params.was_activated = blink::mojom::WasActivatedOption::kYes;
 
   Navigate(&navigate_params);
 

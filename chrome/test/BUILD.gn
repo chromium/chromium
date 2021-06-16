@@ -1161,6 +1161,7 @@ if (!is_android) {
       "//components/webapps/browser",
       "//components/webrtc",
       "//components/webrtc_logging/browser",
+      "//content/public/common",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//courgette:bsdiff",

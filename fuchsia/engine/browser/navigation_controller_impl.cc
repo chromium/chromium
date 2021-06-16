@@ -10,10 +10,10 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/was_activated_option.mojom.h"
 #include "fuchsia/base/string_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
+#include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 NavigationControllerImpl::NavigationControllerImpl(
@@ -169,9 +169,9 @@ void NavigationControllerImpl::LoadUrl(std::string url,
   params_converted.transition_type = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   if (params.has_was_user_activated() && params.was_user_activated()) {
-    params_converted.was_activated = content::mojom::WasActivatedOption::kYes;
+    params_converted.was_activated = blink::mojom::WasActivatedOption::kYes;
   } else {
-    params_converted.was_activated = content::mojom::WasActivatedOption::kNo;
+    params_converted.was_activated = blink::mojom::WasActivatedOption::kNo;
   }
 
   web_contents_->GetController().LoadURLWithParams(params_converted);

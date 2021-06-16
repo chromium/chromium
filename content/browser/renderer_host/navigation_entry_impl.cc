@@ -813,7 +813,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           pending_offset_to_send, current_offset_to_send,
           current_length_to_send, false, IsViewSourceMode(),
           should_clear_history_list(), mojom::NavigationTiming::New(),
-          absl::nullopt, mojom::WasActivatedOption::kUnknown,
+          absl::nullopt, blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
           std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if defined(OS_ANDROID)

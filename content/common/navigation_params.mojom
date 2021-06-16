@@ -5,7 +5,6 @@
 module content.mojom;
 
 import "content/common/prefetched_signed_exchange_info.mojom";
-import "content/public/common/was_activated_option.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -24,6 +23,7 @@ import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
+import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
@@ -397,7 +397,7 @@ struct CommitNavigationParams {
   // gesture but whether there was an activation prior to the navigation or to
   // start it. `was_activated` will answer the former question while
   // `user_gesture` will answer the latter.
-  WasActivatedOption was_activated = kUnknown;
+  blink.mojom.WasActivatedOption was_activated = kUnknown;
 
   // A token that should be passed to the browser process in
   // DidCommitProvisionalLoadParams.
