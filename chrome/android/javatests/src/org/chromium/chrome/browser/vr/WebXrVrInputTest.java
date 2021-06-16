@@ -277,7 +277,8 @@ public class WebXrVrInputTest {
     }
 
     /**
-     * Tests that screen touches are registered as XR input when the viewer is Cardboard.
+     * Tests that screen touches are registered as XR input in immersive sessions,
+     *  when the viewer is Cardboard.
      */
     @Test
     @MediumTest
@@ -288,31 +289,20 @@ public class WebXrVrInputTest {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_input", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
-        // Make it so that the webpage doesn't try to finish the JavaScript step after each input
-        // since we don't need to ack each one like with the Daydream controller.
-        mWebXrVrTestFramework.runJavaScriptOrFail(
-                "finishAfterEachInput = false", POLL_TIMEOUT_SHORT_MS);
-        int numIterations = 10;
-        mWebXrVrTestFramework.runJavaScriptOrFail(
-                "stepSetupListeners(" + String.valueOf(numIterations) + ")", POLL_TIMEOUT_SHORT_MS);
 
-        int x = mWebXrVrTestFramework.getCurrentContentView().getWidth() / 2;
-        int y = mWebXrVrTestFramework.getCurrentContentView().getHeight() / 2;
         // TODO(mthiesse, https://crbug.com/758374): Injecting touch events into the root GvrLayout
         // (VrShell) is flaky. Sometimes the events just don't get routed to the presentation
         // view for no apparent reason. We should figure out why this is and see if it's fixable.
-        final View presentationView =
-                TestVrShellDelegate.getVrShellForTesting().getPresentationViewForTesting();
-
-        // Tap the screen a bunch of times and make sure that they're all registered.
-        spamScreenTaps(presentationView, x, y, numIterations);
-
-        mWebXrVrTestFramework.waitOnJavaScriptStep();
-        mWebXrVrTestFramework.endTest();
+        // Note that we only use 5 iterations, vs the 10 used in the inline test, because it seems
+        // that on M, we get enough memory pressure that the yet-to-be-processed taps get GC'd.
+        // See https://crbug.com/1194906 for more details.
+        testScreenTapsRegisteredOnCardboardImpl(
+                TestVrShellDelegate.getVrShellForTesting().getPresentationViewForTesting(), 5);
     }
 
     /**
-     * Tests that screen touches are registered as transient XR input when the viewer is Cardboard.
+     * Tests that screen touches are registered as transient XR input in inline sessions,
+     * when the viewer is Cardboard.
      */
     @Test
     @MediumTest
@@ -322,17 +312,22 @@ public class WebXrVrInputTest {
     public void testTransientScreenTapsRegisteredOnCardboard_WebXr() {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_transient_input", PAGE_LOAD_TIMEOUT_S);
+
+        testScreenTapsRegisteredOnCardboardImpl(mWebXrVrTestFramework.getCurrentContentView(), 10);
+    }
+
+    // Note that the page should load the appropriate test page and enter any relevant session
+    // before calling this.
+    private void testScreenTapsRegisteredOnCardboardImpl(View presentationView, int numIterations) {
         // Make it so that the webpage doesn't try to finish the JavaScript step after each input
         // since we don't need to ack each one like with the Daydream controller.
         mWebXrVrTestFramework.runJavaScriptOrFail(
                 "finishAfterEachInput = false", POLL_TIMEOUT_SHORT_MS);
-        int numIterations = 10;
         mWebXrVrTestFramework.runJavaScriptOrFail(
                 "stepSetupListeners(" + String.valueOf(numIterations) + ")", POLL_TIMEOUT_SHORT_MS);
 
-        int x = mWebXrVrTestFramework.getCurrentContentView().getWidth() / 2;
-        int y = mWebXrVrTestFramework.getCurrentContentView().getHeight() / 2;
-        final View presentationView = mWebXrVrTestFramework.getCurrentContentView();
+        int x = presentationView.getWidth() / 2;
+        int y = presentationView.getHeight() / 2;
 
         // Tap the screen a bunch of times and make sure that they're all registered.
         spamScreenTaps(presentationView, x, y, numIterations);
