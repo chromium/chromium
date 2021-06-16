@@ -4249,12 +4249,6 @@ ci.fyi_ios_builder(
             category = "iOS|iOS15",
             short_name = "ios15",
         ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.ios",
-            category = "chromium.fyi|15",
-            short_name = "ios15",
-        ),
     ],
     os = os.MAC_11,
 )
@@ -4264,12 +4258,6 @@ ci.fyi_ios_builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "iOS|iOS15",
-            short_name = "dev",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.ios",
-            category = "chromium.fyi|15",
             short_name = "dev",
         ),
     ],
@@ -4282,13 +4270,7 @@ ci.fyi_ios_builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "iOS|iOS15",
-            short_name = "sdk13",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.ios",
-            category = "chromium.fyi|15",
-            short_name = "sim",
+            short_name = "sdk15",
         ),
     ],
     os = os.MAC_11,
