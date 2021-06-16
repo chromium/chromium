@@ -213,9 +213,8 @@ void SSLManager::DidDisplayMixedContent() {
   NavigationEntryImpl* entry = controller_->GetLastCommittedEntry();
   if (entry && entry->GetURL().SchemeIsCryptographic() &&
       entry->GetSSL().certificate) {
-    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-        controller_->delegate()->GetWebContents());
-    ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+    RenderFrameHostImpl* main_frame = controller_->frame_tree().GetMainFrame();
+    ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
     LogMixedContentMetrics(MixedContentType::kOptionallyBlockableMixedContent,
                            source_id, ukm::UkmRecorder::Get());
   }
@@ -227,9 +226,8 @@ void SSLManager::DidContainInsecureFormAction() {
   NavigationEntryImpl* entry = controller_->GetLastCommittedEntry();
   if (entry && entry->GetURL().SchemeIsCryptographic() &&
       entry->GetSSL().certificate) {
-    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-        controller_->delegate()->GetWebContents());
-    ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+    RenderFrameHostImpl* main_frame = controller_->frame_tree().GetMainFrame();
+    ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
     LogMixedContentMetrics(MixedContentType::kMixedForm, source_id,
                            ukm::UkmRecorder::Get());
   }
@@ -245,9 +243,9 @@ void SSLManager::DidDisplayContentWithCertErrors() {
     // Only record information about subresources with cert errors if the
     // main page is HTTPS with a valid certificate.
     if (!net::IsCertStatusError(entry->GetSSL().cert_status)) {
-      WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-          controller_->delegate()->GetWebContents());
-      ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+      RenderFrameHostImpl* main_frame =
+          controller_->frame_tree().GetMainFrame();
+      ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
       LogMixedContentMetrics(
           MixedContentType::kOptionallyBlockableWithCertErrors, source_id,
           ukm::UkmRecorder::Get());
@@ -262,9 +260,8 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
     return;
 
   if (entry->GetURL().SchemeIsCryptographic() && entry->GetSSL().certificate) {
-    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-        controller_->delegate()->GetWebContents());
-    ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+    RenderFrameHostImpl* main_frame = controller_->frame_tree().GetMainFrame();
+    ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
     LogMixedContentMetrics(MixedContentType::kBlockableMixedContent, source_id,
                            ukm::UkmRecorder::Get());
   }
@@ -291,9 +288,8 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
   // main page is HTTPS with a valid certificate.
   if (entry->GetURL().SchemeIsCryptographic() && entry->GetSSL().certificate &&
       !net::IsCertStatusError(entry->GetSSL().cert_status)) {
-    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-        controller_->delegate()->GetWebContents());
-    ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+    RenderFrameHostImpl* main_frame = controller_->frame_tree().GetMainFrame();
+    ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
     LogMixedContentMetrics(MixedContentType::kBlockableWithCertErrors,
                            source_id, ukm::UkmRecorder::Get());
   }
