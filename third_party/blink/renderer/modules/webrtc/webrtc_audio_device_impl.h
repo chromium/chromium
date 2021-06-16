@@ -127,7 +127,7 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // Called on the AudioOutputDevice worker thread.
   void RenderData(media::AudioBus* audio_bus,
                   int sample_rate,
-                  int audio_delay_milliseconds,
+                  base::TimeDelta audio_delay,
                   base::TimeDelta* current_time) override;
 
   // Called on the main render thread.
@@ -175,9 +175,9 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   webrtc::AudioTransport* audio_transport_callback_;
 
   // Cached value of the current audio delay on the output/renderer side.
-  int output_delay_ms_ GUARDED_BY(lock_);
+  base::TimeDelta output_delay_ GUARDED_BY(lock_);
 
-  // Protects |renderer_|, |playout_sinks_|, |output_delay_ms_|, |playing_|,
+  // Protects |renderer_|, |playout_sinks_|, |output_delay_|, |playing_|,
   // and |recording_|.
   mutable base::Lock lock_;
 

@@ -12,7 +12,7 @@ namespace media {
 // static
 base::TimeDelta AudioTimestampHelper::FramesToTime(int64_t frames,
                                                    int samples_per_second) {
-  DCHECK_GE(samples_per_second, 0);
+  DCHECK_GT(samples_per_second, 0);
   return base::TimeDelta::FromMicroseconds(
       frames * base::Time::kMicrosecondsPerSecond / samples_per_second);
 }

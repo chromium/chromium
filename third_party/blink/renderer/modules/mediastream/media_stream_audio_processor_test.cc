@@ -129,7 +129,8 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
           }
         }
         audio_processor->OnPlayoutData(data_bus_playout_to_use,
-                                       params.sample_rate(), 10);
+                                       params.sample_rate(),
+                                       base::TimeDelta::FromMilliseconds(10));
       }
 
       media::AudioBus* processed_data = nullptr;

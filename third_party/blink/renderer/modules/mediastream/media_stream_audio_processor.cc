@@ -303,7 +303,7 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     const AudioProcessingProperties& properties,
     bool use_capture_multi_channel_processing,
     scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source)
-    : render_delay_ms_(0),
+    : render_delay_(base::TimeDelta()),
       audio_delay_stats_reporter_(kBuffersPerSecond),
       playout_data_source_(std::move(playout_data_source)),
       main_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
@@ -501,7 +501,7 @@ bool MediaStreamAudioProcessor::WouldModifyAudio(
 
 void MediaStreamAudioProcessor::OnPlayoutData(media::AudioBus* audio_bus,
                                               int sample_rate,
-                                              int audio_delay_milliseconds) {
+                                              base::TimeDelta audio_delay) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
   DCHECK_GE(audio_bus->channels(), 1);
   DCHECK_LE(audio_bus->channels(), media::limits::kMaxChannels);
@@ -516,10 +516,8 @@ void MediaStreamAudioProcessor::OnPlayoutData(media::AudioBus* audio_bus,
   }
 
   TRACE_EVENT1("audio", "MediaStreamAudioProcessor::OnPlayoutData",
-               "delay (ms)", audio_delay_milliseconds);
-  DCHECK_LT(audio_delay_milliseconds,
-            std::numeric_limits<base::subtle::Atomic32>::max());
-  base::subtle::Release_Store(&render_delay_ms_, audio_delay_milliseconds);
+               "delay (ms)", audio_delay.InMillisecondsF());
+  render_delay_ = audio_delay;
 
   webrtc::StreamConfig input_stream_config(sample_rate, audio_bus->channels());
   // If the input audio appears to contain upmixed mono audio, then APM is only
@@ -535,8 +533,7 @@ void MediaStreamAudioProcessor::OnPlayoutData(media::AudioBus* audio_bus,
   for (int i = 0; i < static_cast<int>(input_stream_config.num_channels()); ++i)
     input_ptrs[i] = audio_bus->channel(i);
 
-  // TODO(ajm): Should AnalyzeReverseStream() account for the
-  // |audio_delay_milliseconds|?
+  // TODO(ajm): Should AnalyzeReverseStream() account for the |audio_delay|?
   const int apm_error = audio_processing_->AnalyzeReverseStream(
       input_ptrs.data(), input_stream_config);
   if (apm_error != webrtc::AudioProcessing::kNoError &&
@@ -800,29 +797,28 @@ int MediaStreamAudioProcessor::ProcessData(const float* const* process_ptrs,
   DCHECK(audio_processing_);
   DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
 
-  base::subtle::Atomic32 render_delay_ms =
-      base::subtle::Acquire_Load(&render_delay_ms_);
-  int64_t capture_delay_ms = capture_delay.InMilliseconds();
-  DCHECK_LT(capture_delay_ms,
-            std::numeric_limits<base::subtle::Atomic32>::max());
+  const base::TimeDelta render_delay = render_delay_;
 
   TRACE_EVENT2("audio", "MediaStreamAudioProcessor::ProcessData",
-               "capture_delay_ms", capture_delay_ms, "render_delay_ms",
-               render_delay_ms);
+               "capture_delay (ms)", capture_delay.InMillisecondsF(),
+               "render_delay (ms)", render_delay.InMillisecondsF());
 
-  const int total_delay_ms =
-      static_cast<int>(capture_delay_ms) + render_delay_ms;
+  const int64_t total_delay_ms =
+      (capture_delay + render_delay).InMilliseconds();
+
   if (total_delay_ms > 300 && large_delay_log_count_ < 10) {
-    LOG(WARNING) << "Large audio delay, capture delay: " << capture_delay_ms
-                 << "ms; render delay: " << render_delay_ms << "ms";
+    LOG(WARNING) << "Large audio delay, capture delay: "
+                 << capture_delay.InMillisecondsF()
+                 << "ms; render delay: " << render_delay.InMillisecondsF()
+                 << "ms";
     ++large_delay_log_count_;
   }
 
-  audio_delay_stats_reporter_.ReportDelay(
-      capture_delay, base::TimeDelta::FromMilliseconds(render_delay_ms));
+  audio_delay_stats_reporter_.ReportDelay(capture_delay, render_delay);
 
   webrtc::AudioProcessing* ap = audio_processing_.get();
-  ap->set_stream_delay_ms(total_delay_ms);
+  DCHECK_LE(total_delay_ms, std::numeric_limits<int>::max());
+  ap->set_stream_delay_ms(base::saturated_cast<int>(total_delay_ms));
 
   // Keep track of the maximum number of preferred channels. The number of
   // output channels of APM can increase if preferred by the sinks, but

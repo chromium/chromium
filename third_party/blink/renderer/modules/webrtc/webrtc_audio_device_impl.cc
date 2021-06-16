@@ -32,7 +32,6 @@ void SendLogMessage(const std::string& message) {
 WebRtcAudioDeviceImpl::WebRtcAudioDeviceImpl()
     : audio_processing_id_(base::UnguessableToken::Create()),
       audio_transport_callback_(nullptr),
-      output_delay_ms_(0),
       initialized_(false),
       playing_(false),
       recording_(false) {
@@ -56,7 +55,7 @@ WebRtcAudioDeviceImpl::~WebRtcAudioDeviceImpl() {
 
 void WebRtcAudioDeviceImpl::RenderData(media::AudioBus* audio_bus,
                                        int sample_rate,
-                                       int audio_delay_milliseconds,
+                                       base::TimeDelta audio_delay,
                                        base::TimeDelta* current_time) {
   {
     base::AutoLock auto_lock(lock_);
@@ -79,7 +78,7 @@ void WebRtcAudioDeviceImpl::RenderData(media::AudioBus* audio_bus,
     }
     DCHECK(audio_transport_callback_);
     // Store the reported audio delay locally.
-    output_delay_ms_ = audio_delay_milliseconds;
+    output_delay_ = audio_delay;
   }
 
   const int frames_per_10_ms = sample_rate / 100;
@@ -114,7 +113,7 @@ void WebRtcAudioDeviceImpl::RenderData(media::AudioBus* audio_bus,
   // Pass the render data to the playout sinks.
   base::AutoLock auto_lock(lock_);
   for (auto* sink : playout_sinks_)
-    sink->OnPlayoutData(audio_bus, sample_rate, audio_delay_milliseconds);
+    sink->OnPlayoutData(audio_bus, sample_rate, audio_delay);
 }
 
 void WebRtcAudioDeviceImpl::RemoveAudioRenderer(
@@ -352,7 +351,9 @@ int32_t WebRtcAudioDeviceImpl::MinMicrophoneVolume(uint32_t* min_volume) const {
 int32_t WebRtcAudioDeviceImpl::PlayoutDelay(uint16_t* delay_ms) const {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::AutoLock auto_lock(lock_);
-  *delay_ms = static_cast<uint16_t>(output_delay_ms_);
+  const int64_t output_delay_ms = output_delay_.InMilliseconds();
+  DCHECK_LE(output_delay_ms, std::numeric_limits<uint16_t>::max());
+  *delay_ms = base::saturated_cast<uint16_t>(output_delay_ms);
   return 0;
 }
 

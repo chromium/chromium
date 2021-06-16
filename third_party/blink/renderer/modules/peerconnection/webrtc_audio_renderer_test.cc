@@ -57,7 +57,7 @@ class MockAudioRendererSource : public blink::WebRtcAudioRendererSource {
   MOCK_METHOD4(RenderData,
                void(media::AudioBus* audio_bus,
                     int sample_rate,
-                    int audio_delay_milliseconds,
+                    base::TimeDelta audio_delay,
                     base::TimeDelta* current_time));
   MOCK_METHOD1(RemoveAudioRenderer, void(blink::WebRtcAudioRenderer* renderer));
   MOCK_METHOD0(AudioRendererThreadStopped, void());
