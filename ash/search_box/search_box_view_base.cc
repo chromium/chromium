@@ -233,9 +233,6 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
     : delegate_(delegate),
       content_container_(new views::View),
       search_box_(new SearchBoxTextfield(this)) {
-  // Focus should be able to move from search box to items in app list view.
-  SetFocusTraversesOut(true);
-
   DCHECK(delegate_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddChildView(content_container_);
@@ -408,13 +405,6 @@ void SearchBoxViewBase::OnMouseEvent(ui::MouseEvent* event) {
 
 void SearchBoxViewBase::NotifyGestureEvent() {
   search_box_->DestroyTouchSelection();
-}
-
-ax::mojom::Role SearchBoxViewBase::GetAccessibleWindowRole() {
-  // Default role of root view is ax::mojom::Role::kWindow which traps ChromeVox
-  // focus within the root view. Assign ax::mojom::Role::kGroup here to allow
-  // the focus to move from elements in search box to app list view.
-  return ax::mojom::Role::kGroup;
 }
 
 void SearchBoxViewBase::OnSearchBoxFocusedChanged() {

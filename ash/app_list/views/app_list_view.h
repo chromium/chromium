@@ -547,9 +547,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   AppListMainView* app_list_main_view_ = nullptr;
   gfx::NativeView parent_window_ = nullptr;
 
-  views::Widget* search_box_widget_ =
-      nullptr;                                // Owned by the app list's widget.
-  SearchBoxView* search_box_view_ = nullptr;  // Owned by |search_box_widget_|.
+  SearchBoxView* search_box_view_ = nullptr;  // Owned by views hierarchy.
   // Owned by the app list's widget. Used to show the darkened AppList
   // background.
   AppListBackgroundShieldView* app_list_background_shield_ = nullptr;

@@ -96,9 +96,8 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // The container for KeyboardShortcutItemViews matching a user's query.
   views::View* search_results_container_ = nullptr;
 
-  // SearchBoxViewBase is a WidgetDelegateView, which owns itself and cannot be
-  // deleted from the views hierarchy automatically.
-  std::unique_ptr<KSVSearchBoxView> search_box_view_;
+  // Owned by views hierarchy.
+  KSVSearchBoxView* search_box_view_ = nullptr;
 
   // Contains all the shortcut item views from all categories. This list is also
   // used for searching. The views are not owned by the Views hierarchy to avoid

@@ -42,7 +42,7 @@ class KeyPressCounterView : public ContentsView {
  public:
   explicit KeyPressCounterView(AppListView* app_list_view)
       : ContentsView(app_list_view), count_(0) {}
-  ~KeyPressCounterView() override {}
+  ~KeyPressCounterView() override = default;
 
   int GetCountAndReset() {
     int count = count_;
@@ -78,28 +78,30 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     app_list_view_->InitView(GetContext());
 
     widget_ = CreateTopLevelPlatformWidget();
-    view_ =
-        std::make_unique<SearchBoxView>(this, &view_delegate_, app_list_view());
-    view_->Init(false /*is_tablet_mode*/);
     widget_->SetBounds(gfx::Rect(0, 0, 300, 200));
-    counter_view_ = new KeyPressCounterView(app_list_view_);
-    widget_->GetContentsView()->AddChildView(view());
-    widget_->GetContentsView()->AddChildView(counter_view_);
+
+    auto view =
+        std::make_unique<SearchBoxView>(this, &view_delegate_, app_list_view());
+    view->Init(/*is_tablet_mode=*/false);
+    view_ = widget_->GetContentsView()->AddChildView(std::move(view));
+
+    counter_view_ = widget_->GetContentsView()->AddChildView(
+        std::make_unique<KeyPressCounterView>(app_list_view_));
+
     widget_->Show();
     counter_view_->Init(view_delegate_.GetModel());
-    view()->set_contents_view(counter_view_);
+    view_->set_contents_view(counter_view_);
   }
 
   void TearDown() override {
     app_list_view_->GetWidget()->Close();
     widget_->CloseNow();
-    view_.reset();
     views::test::WidgetTest::TearDown();
   }
 
  protected:
   views::Widget* widget() { return widget_; }
-  SearchBoxView* view() { return view_.get(); }
+  SearchBoxView* view() { return view_; }
   AppListView* app_list_view() { return app_list_view_; }
   AppListTestViewDelegate* view_delegate() { return &view_delegate_; }
 
@@ -183,10 +185,10 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
-  views::Widget* widget_;
+  views::Widget* widget_ = nullptr;
   AppListView* app_list_view_ = nullptr;
-  std::unique_ptr<SearchBoxView> view_;
-  KeyPressCounterView* counter_view_;
+  SearchBoxView* view_ = nullptr;                // Owned by views hierarchy.
+  KeyPressCounterView* counter_view_ = nullptr;  // Owned by views hierarchy.
   std::u16string last_query_;
   int query_changed_count_ = 0;
   int last_result_id_ = 0;

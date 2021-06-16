@@ -365,9 +365,9 @@ KeyboardShortcutView::KeyboardShortcutView() {
 void KeyboardShortcutView::InitViews() {
   TRACE_EVENT0("shortcut_viewer", "InitViews");
   // Init search box view.
-  search_box_view_ = std::make_unique<KSVSearchBoxView>(this);
-  search_box_view_->Init();
-  AddChildView(search_box_view_.get());
+  auto search_box_view = std::make_unique<KSVSearchBoxView>(this);
+  search_box_view->Init();
+  search_box_view_ = AddChildView(std::move(search_box_view));
 
   // Init no search result illustration view.
   search_no_result_view_ = CreateNoSearchResultView();
@@ -611,7 +611,7 @@ KeyboardShortcutView::GetShortcutViewsForTesting() const {
 }
 
 KSVSearchBoxView* KeyboardShortcutView::GetSearchBoxViewForTesting() {
-  return search_box_view_.get();
+  return search_box_view_;
 }
 
 const std::vector<KeyboardShortcutItemView*>&

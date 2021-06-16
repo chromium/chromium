@@ -754,10 +754,24 @@ void AppListView::InitChildWidget() {
   search_box_widget_params.opacity =
       views::Widget::InitParams::WindowOpacity::kTranslucent;
   search_box_widget_params.name = "SearchBoxView";
-  search_box_widget_params.delegate = search_box_view_;
+
+  // Focus should be able to move from search box to items in app list view.
+  auto widget_delegate = std::make_unique<views::WidgetDelegate>();
+  widget_delegate->SetFocusTraversesOut(true);
+
+  // Default role of root view is ax::mojom::Role::kWindow which traps
+  // ChromeVox focus within the root view. Assign ax::mojom::Role::kGroup here
+  // to allow the focus to move from elements in search box to app list view.
+  widget_delegate->SetAccessibleRole(ax::mojom::Role::kGroup);
+
+  // SearchBoxView used to be a WidgetDelegateView, so we follow the legacy
+  // behavior and have the Widget delete the delegate.
+  widget_delegate->SetOwnedByWidget(true);
+  search_box_widget_params.delegate = widget_delegate.release();
 
   views::Widget* search_box_widget = new views::Widget;
   search_box_widget->Init(std::move(search_box_widget_params));
+  search_box_widget->SetContentsView(search_box_view_);
   DCHECK_EQ(search_box_widget, search_box_view_->GetWidget());
 
   // Assign an accessibility role to the native window of |search_box_widget|,

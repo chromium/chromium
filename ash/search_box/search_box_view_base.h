@@ -15,7 +15,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/view.h"
 
 namespace gfx {
 class ImageSkia;
@@ -25,7 +25,6 @@ namespace views {
 class BoxLayout;
 class ImageView;
 class Textfield;
-class View;
 }  // namespace views
 
 namespace ash {
@@ -43,14 +42,11 @@ enum class ActivationSource {
   kMaxValue = kGestureTap,
 };
 
-// TODO(wutao): WidgetDelegateView owns itself and cannot be deleted from the
-// views hierarchy automatically. Make SearchBoxViewBase a subclass of View
-// instead of WidgetDelegateView.
 // SearchBoxViewBase consists of icons and a Textfield. The Textfiled is for
 // inputting queries and triggering callbacks. The icons include a search icon,
 // a close icon and a back icon for different functionalities. This class
 // provides common functions for the search box view across Chrome OS.
-class SearchBoxViewBase : public views::WidgetDelegateView,
+class SearchBoxViewBase : public views::View,
                           public views::TextfieldController {
  public:
   explicit SearchBoxViewBase(SearchBoxViewDelegate* delegate);
@@ -91,9 +87,6 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
   // Allows for search box to be notified of gestures occurring outside, without
   // deactivating the searchbox.
   void NotifyGestureEvent();
-
-  // Overridden from views::WidgetDelegate:
-  ax::mojom::Role GetAccessibleWindowRole() override;
 
   // Used only in the tests to get the current search icon.
   views::ImageView* get_search_icon_for_test() { return search_icon_; }
