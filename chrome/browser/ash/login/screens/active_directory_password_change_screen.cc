@@ -87,6 +87,9 @@ void ActiveDirectoryPasswordChangeScreen::HandleCancel() {
 void ActiveDirectoryPasswordChangeScreen::ChangePassword(
     const std::string& old_password,
     const std::string& new_password) {
+  DCHECK(!old_password.empty() && !new_password.empty())
+      << "Empty passwords should have been blocked in the UI";
+
   authpolicy_login_helper_->AuthenticateUser(
       username_, std::string() /* object_guid */,
       old_password + "\n" + new_password + "\n" + new_password,
