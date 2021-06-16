@@ -42,6 +42,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
     "ENABLE_CAST_STREAMING_RENDERER=$enable_cast_streaming_renderer",
+    "ENABLE_CAST_RUNTIME_E2E_TESTING=$enable_cast_runtime_e2e_testing",
     "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
