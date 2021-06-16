@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter} from './launcher_internals.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory} from './launcher_internals.mojom-webui.js';
 
 export class BrowserProxy {
   callbackRouter: PageCallbackRouter = new PageCallbackRouter();
-  // TODO(crbug.com/1211232): Use PageHandlerFactory to create a page handler.
+
+  constructor() {
+    const factory = PageHandlerFactory.getRemote();
+    factory.createPageHandler(this.callbackRouter.$.bindNewPipeAndPassRemote());
+  }
 
   static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxy());

@@ -39,7 +39,9 @@ struct Result {
 // Interface for creating internals page handlers. Implemented by the WebUI
 // controller and used by chrome://launcher-internals.
 interface PageHandlerFactory {
-  // TODO(crbug.com/1211232): Add a CreatePageHandler method.
+  // Creates a page handler that observes the launcher and updates the
+  // internals page.
+  CreatePageHandler(pending_remote<Page> page);
 };
 
 // Interface for the launcher internals page. Implemented in Javascript and

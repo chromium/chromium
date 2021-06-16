@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_ui.h"
 
 #include "base/containers/span.h"
+#include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/launcher_internals_resources.h"
@@ -35,6 +36,17 @@ void LauncherInternalsUI::BindInterface(
         receiver) {
   factory_receiver_.reset();
   factory_receiver_.Bind(std::move(receiver));
+}
+
+void LauncherInternalsUI::CreatePageHandler(
+    mojo::PendingRemote<launcher_internals::mojom::Page> page) {
+  auto* search_controller =
+      AppListClientImpl::GetInstance()->search_controller();
+  if (!search_controller)
+    return;
+
+  page_handler_ = std::make_unique<LauncherInternalsHandler>(search_controller,
+                                                             std::move(page));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LauncherInternalsUI)

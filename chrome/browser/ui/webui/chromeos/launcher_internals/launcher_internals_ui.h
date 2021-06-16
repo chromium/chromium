@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LAUNCHER_INTERNALS_LAUNCHER_INTERNALS_UI_H_
 
 #include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,6 +30,11 @@ class LauncherInternalsUI
           receiver);
 
  private:
+  // launcher_internals::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<launcher_internals::mojom::Page> page) override;
+
+  std::unique_ptr<LauncherInternalsHandler> page_handler_;
   mojo::Receiver<launcher_internals::mojom::PageHandlerFactory>
       factory_receiver_{this};
 

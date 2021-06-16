@@ -63,11 +63,11 @@ class SearchController {
     // to another sequence because they may be invalidated.
     virtual void OnResultsAdded(
         const std::u16string& query,
-        const std::vector<ChromeSearchResult*>& results);
+        const std::vector<ChromeSearchResult*>& results) {}
 
     // Called whenever old results are cleared. This occurs whenever a new
     // search is started.
-    virtual void OnResultsCleared();
+    virtual void OnResultsCleared() {}
   };
 
   virtual ~SearchController() {}
