@@ -20,9 +20,6 @@ suite('<app-management-permission-item>', () => {
     fakeHandler = setupFakeHandler();
     replaceStore();
 
-    fakeHandler = setupFakeHandler();
-    replaceStore();
-
     const arcOptions = {
       type: apps.mojom.AppType.kArc,
       permissions: app_management.FakePageHandler.createArcPermissions([
