@@ -708,8 +708,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                              SourceDrawingBuffer) override;
   cc::Layer* CcLayer() const override;
   void Stop() override;
-  void DidDraw(const SkIRect&) override;
-  void DidDraw() override;
   void FinalizeFrame() override;
   bool PushFrame() override;
 

@@ -56,7 +56,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   cc::PaintCanvas* GetOrCreatePaintCanvas() final { return GetPaintCanvas(); }
   cc::PaintCanvas* GetPaintCanvas() const final;
 
-  void DidDraw(const SkIRect&) final;
+  void DidDraw2D(const SkIRect&) final;
 
   double shadowOffsetX() const final;
   void setShadowOffsetX(double) final;

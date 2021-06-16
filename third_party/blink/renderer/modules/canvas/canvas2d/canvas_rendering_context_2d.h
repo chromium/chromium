@@ -175,6 +175,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void ClearFilterReferences();
 
   // BaseRenderingContext2D implementation
+  void DidDraw2D(const SkIRect& dirty_rect) final;
   bool OriginClean() const final;
   void SetOriginTainted() final;
   bool WouldTaintOrigin(CanvasImageSource* source) final {
@@ -194,7 +195,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() const final;
 
-  void DidDraw(const SkIRect& dirty_rect) final;
   scoped_refptr<StaticBitmapImage> GetImage() final;
 
   bool StateHasFilter() final;

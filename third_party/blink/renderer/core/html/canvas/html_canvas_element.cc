@@ -452,8 +452,8 @@ bool HTMLCanvasElement::IsWebGLBlocked() const {
   return blocked;
 }
 
-void HTMLCanvasElement::DidDraw(const FloatRect& rect) {
-  if (rect.IsEmpty())
+void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
+  if (rect.isEmpty())
     return;
   if (GetLayoutObject() && GetLayoutObject()->PreviousVisibilityVisible() &&
       GetDocument().GetPage())
@@ -463,18 +463,14 @@ void HTMLCanvasElement::DidDraw(const FloatRect& rect) {
     GetLayoutObject()->SetShouldCheckForPaintInvalidation();
   if (IsRenderingContext2D() && context_->ShouldAntialias() && GetPage() &&
       GetPage()->DeviceScaleFactorDeprecated() > 1.0f) {
-    FloatRect inflated_rect = rect;
+    FloatRect inflated_rect = FloatRect(IntRect(rect));
     inflated_rect.Inflate(1);
     dirty_rect_.Unite(inflated_rect);
   } else {
-    dirty_rect_.Unite(rect);
+    dirty_rect_.Unite(FloatRect(IntRect(rect)));
   }
   if (IsRenderingContext2D() && canvas2d_bridge_)
-    canvas2d_bridge_->DidDraw(rect);
-}
-
-void HTMLCanvasElement::DidDraw() {
-  DidDraw(FloatRect(0, 0, Size().Width(), Size().Height()));
+    canvas2d_bridge_->DidDraw();
 }
 
 void HTMLCanvasElement::PreFinalizeFrame() {
@@ -585,8 +581,10 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
     if (dirty_rect_.IsEmpty())
       return;
 
-    if (canvas2d_bridge_)
-      canvas2d_bridge_->DoPaintInvalidation(invalidation_rect);
+    if (canvas2d_bridge_) {
+      canvas2d_bridge_->DoPaintInvalidation(
+          EnclosingIntRect(invalidation_rect));
+    }
   }
 
   if (context_ && HasImageBitmapContext() && context_->CcLayer())

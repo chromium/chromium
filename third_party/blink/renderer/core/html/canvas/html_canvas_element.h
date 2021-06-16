@@ -153,8 +153,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool HasCanvasCapture() const final { return !listeners_.IsEmpty(); }
 
   // Used for rendering
-  void DidDraw(const FloatRect&) override;
-  void DidDraw() override;
+  void DidDraw(const SkIRect&) override;
+  using CanvasRenderingContextHost::DidDraw;
 
   void Paint(GraphicsContext&,
              const PhysicalRect&,

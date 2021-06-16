@@ -90,8 +90,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   void SetIsInHiddenPage(bool);
   void SetIsBeingDisplayed(bool);
   void SetFilterQuality(SkFilterQuality filter_quality);
-  void DidDraw(const FloatRect&);
-  void DoPaintInvalidation(const FloatRect& dirty_rect);
+  void DidDraw();
+  void DoPaintInvalidation(const IntRect& dirty_rect);
   cc::Layer* Layer();
   bool Restore();
 

@@ -467,12 +467,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   return ResourceProvider();
 }
 
-void OffscreenCanvas::DidDraw() {
-  DidDraw(FloatRect(0, 0, Size().Width(), Size().Height()));
-}
-
-void OffscreenCanvas::DidDraw(const FloatRect& rect) {
-  if (rect.IsEmpty())
+void OffscreenCanvas::DidDraw(const SkIRect& rect) {
+  if (rect.isEmpty())
     return;
 
   if (HasPlaceholderCanvas()) {
