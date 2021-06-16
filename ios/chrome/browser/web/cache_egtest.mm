@@ -223,7 +223,9 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
   // Type a search into omnnibox and select the first suggestion (second row)
   [ChromeEarlGreyUI focusOmniboxAndType:@"cachetestfirstpage"];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"omnibox suggestion 1")]
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              @"omnibox suggestion 1"),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Verify title and hitCount. Cache should not be used.

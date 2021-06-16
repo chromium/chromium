@@ -336,7 +336,9 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Select URL.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"French URL")]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"French URL"),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Tap cancel after modifying the url.
