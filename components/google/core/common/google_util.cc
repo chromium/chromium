@@ -116,6 +116,8 @@ bool IsCanonicalHostYoutubeHostname(base::StringPiece canonical_host,
       youtube_tlds(
           std::initializer_list<base::StringPiece>({YOUTUBE_TLD_LIST}));
   return IsValidHostName(canonical_host, "youtube", subdomain_permission,
+                         *youtube_tlds) ||
+      IsValidHostName(canonical_host, "youtubekids", subdomain_permission,
                          *youtube_tlds);
 }
 

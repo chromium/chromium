@@ -402,6 +402,11 @@ TEST(GoogleUtilTest, YoutubeDomains) {
                                   google_util::ALLOW_SUBDOMAIN,
                                   google_util::DISALLOW_NON_STANDARD_PORTS));
 
+  // YouTube Kids
+  EXPECT_TRUE(IsYoutubeDomainUrl(GURL("http://www.youtubekids.com"),
+                                 google_util::ALLOW_SUBDOMAIN,
+                                 google_util::DISALLOW_NON_STANDARD_PORTS));
+
   // TLD checks.
   EXPECT_TRUE(IsYoutubeDomainUrl(GURL("http://www.youtube.ca"),
                                  google_util::ALLOW_SUBDOMAIN,
