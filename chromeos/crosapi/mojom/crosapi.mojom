@@ -324,6 +324,15 @@ struct DefaultPaths {
   mojo_base.mojom.FilePath downloads@1;
 };
 
+// The device specific data needed in Lacros.
+// TODO(igorcov): Include DeviceAttributes here.
+[Stable, Extensible]
+struct DeviceProperties {
+  // The value of device DM token. It is the raw data from the policy, not
+  // encrypted.
+  string device_dm_token@0;
+};
+
 
 [Stable, Extensible]
 enum ExoImeSupport {
@@ -383,8 +392,8 @@ enum InitialBrowserAction {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 21
-// Next id: 21
+// Next version: 22
+// Next id: 22
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -517,6 +526,10 @@ struct BrowserInitParams {
 
   [MinVersion=20]
   NativeThemeInfo? native_theme_info@20;
+
+  // The set of static device specific data.
+  [MinVersion=21]
+  DeviceProperties? device_properties@21;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

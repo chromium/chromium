@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -201,6 +202,21 @@ absl::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
   std::string policy_data = environment_provider->GetDeviceAccountPolicy();
   return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
 }
+
+// Returns the device specific data needed for Lacros.
+mojom::DevicePropertiesPtr GetDeviceProperties() {
+  mojom::DevicePropertiesPtr result = mojom::DeviceProperties::New();
+  if (ash::DeviceSettingsService::IsInitialized() &&
+      ash::DeviceSettingsService::Get()->policy_data() &&
+      ash::DeviceSettingsService::Get()->policy_data()->has_request_token()) {
+    result->device_dm_token =
+        ash::DeviceSettingsService::Get()->policy_data()->request_token();
+  } else {
+    result->device_dm_token = "";
+  }
+
+  return result;
+}  // namespace
 
 struct InterfaceVersionEntry {
   base::Token uuid;
@@ -597,6 +613,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->web_apps_enabled =
       base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
   params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
+  params->device_properties = GetDeviceProperties();
 
   return params;
 }
