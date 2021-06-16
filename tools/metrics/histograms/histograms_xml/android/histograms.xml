@@ -2923,6 +2923,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ConnectedToVariationService" enum="Boolean"
     expires_after="M93">
+  <obsolete>
+    Removed Jun 2021 for cleanup (no longer needed): https://crbug.com/1217220
+  </obsolete>
   <owner>hazems@chromium.org</owner>
   <owner>webview-team@google.com</owner>
   <summary>

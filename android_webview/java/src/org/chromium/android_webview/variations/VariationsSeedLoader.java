@@ -213,16 +213,12 @@ public class VariationsSeedLoader {
                 VariationsUtils.replaceOldWithNewSeed();
             }
 
-            boolean connectedToVariationsService = false;
             if (mNeedNewSeed) {
                 // The new seed will arrive asynchronously; the new seed file is written by the
                 // service, and may complete after this app process has died.
-                connectedToVariationsService = requestSeedFromService(mCurrentSeedDate);
+                requestSeedFromService(mCurrentSeedDate);
                 VariationsUtils.updateStampTime();
             }
-
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.ConnectedToVariationService", connectedToVariationsService);
 
             onBackgroundWorkFinished();
         }
