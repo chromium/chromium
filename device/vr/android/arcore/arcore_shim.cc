@@ -29,6 +29,7 @@ namespace {
   DO(ArAugmentedImage_getTrackingMethod)                           \
   DO(ArAugmentedImageDatabase_addImageWithPhysicalSize)            \
   DO(ArAugmentedImageDatabase_create)                              \
+  DO(ArAugmentedImageDatabase_destroy)                             \
   DO(ArAugmentedImageDatabase_getNumImages)                        \
   DO(ArCamera_getDisplayOrientedPose)                              \
   DO(ArCamera_getProjectionMatrix)                                 \
@@ -286,6 +287,11 @@ void ArAugmentedImageDatabase_create(
     ArAugmentedImageDatabase** out_augmented_image_database) {
   g_arcore_api->impl_ArAugmentedImageDatabase_create(
       session, out_augmented_image_database);
+}
+
+void ArAugmentedImageDatabase_destroy(
+    ArAugmentedImageDatabase* augmented_image_database) {
+  g_arcore_api->impl_ArAugmentedImageDatabase_destroy(augmented_image_database);
 }
 
 void ArAugmentedImageDatabase_getNumImages(
