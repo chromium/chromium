@@ -232,7 +232,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     }
 
     private void populateCache() {
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             for (Account account : accounts) {
                 mAccountInfoService.getAccountInfoByEmail(account.name)
                         .then(this::onAccountInfoUpdated);
@@ -243,7 +243,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     private void populateCacheLegacy() {
         assert mProfileDataSource
                 != null : "This only populates cache with the Legacy profile data source.";
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             for (Account account : accounts) {
                 ProfileData profileData = mProfileDataSource.getProfileDataForAccount(account.name);
                 if (profileData != null) {

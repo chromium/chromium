@@ -131,6 +131,8 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
                     : ProfileDataCache.createWithoutBadge(getActivity(), R.dimen.user_picture_size);
             // ProfileDataCache only populates the cache when an observer is added.
             mProfileDataCache.addObserver(mObserver);
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mImageView.setImageDrawable(
                     mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
         });
