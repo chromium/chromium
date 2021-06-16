@@ -75,7 +75,7 @@ class CORE_EXPORT CanvasRenderingContext
     kContextImageBitmap = 5,
     kContextXRPresent = 6,
     // WebGL2Compute used to be 7.
-    kContextGPUPresent = 8,
+    kContextGPUPresent = 8,  // WebGPU
     kContextTypeUnknown = 9,
     kMaxValue = kContextTypeUnknown,
   };
@@ -215,8 +215,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ResetUsageTracking() {}
 
   // WebGL-specific interface
-  // TODO(crbug.com/1219761): Remove Is3d() in lieu of IsWebGL() and IsWebGPU().
-  virtual bool Is3d() const { return false; }
   virtual bool IsWebGL() const { return false; }
   virtual bool UsingSwapChain() const { return false; }
   virtual void SetFilterQuality(SkFilterQuality) { NOTREACHED(); }
@@ -235,12 +233,13 @@ class CORE_EXPORT CanvasRenderingContext
     return IntSize(0, 0);
   }
 
+  // WebGPU-specific methods
+  virtual bool IsWebGPU() const { return false; }
+
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }
   virtual ImageBitmap* TransferToImageBitmap(ScriptState*) { return nullptr; }
 
-  // WebGPU-specific methods
-  virtual bool IsWebGPU() const { return false; }
 
   bool WouldTaintOrigin(CanvasImageSource*);
   void DidMoveToNewDocument(Document*);

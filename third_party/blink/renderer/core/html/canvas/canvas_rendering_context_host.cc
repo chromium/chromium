@@ -75,10 +75,6 @@ void CanvasRenderingContextHost::RestoreCanvasMatrixClipStack(
     RenderingContext()->RestoreCanvasMatrixClipStack(canvas);
 }
 
-bool CanvasRenderingContextHost::Is3d() const {
-  return RenderingContext() && RenderingContext()->Is3d();
-}
-
 bool CanvasRenderingContextHost::IsWebGL() const {
   return RenderingContext() && RenderingContext()->IsWebGL();
 }
@@ -107,7 +103,7 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
       } else if (IsWebGL()) {
         CreateCanvasResourceProviderWebGL();
       } else {
-        DCHECK(!Is3d());
+        DCHECK(IsRenderingContext2D());
         CreateCanvasResourceProvider2D(hint);
       }
     }
@@ -134,7 +130,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
 }
 
 void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
-  DCHECK(Is3d());
+  DCHECK(IsWebGL());
 
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       GetOrCreateResourceDispatcher()

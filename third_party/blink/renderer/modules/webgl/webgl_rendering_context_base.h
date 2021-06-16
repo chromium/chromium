@@ -696,7 +696,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void SetupFlags();
 
   // CanvasRenderingContext implementation.
-  bool Is3d() const override { return true; }
   bool IsComposited() const override { return true; }
   bool IsAccelerated() const override { return true; }
   bool UsingSwapChain() const override;

@@ -371,7 +371,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
 
   probe::DidCreateCanvasContext(&GetDocument());
 
-  if (Is3d())
+  if (IsWebGL())
     UpdateMemoryUsage();
 
   LayoutObject* layout_object = GetLayoutObject();
@@ -646,7 +646,7 @@ void HTMLCanvasElement::Reset() {
 
   SetSurfaceSize(new_size);
 
-  if (Is3d() && old_size != Size())
+  if (IsWebGL() && old_size != Size())
     context_->Reshape(width(), height());
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
@@ -732,7 +732,7 @@ void HTMLCanvasElement::SetFilterQuality(SkFilterQuality filter_quality) {
   if (IsOffscreenCanvasRegistered())
     UpdateOffscreenCanvasFilterQuality(filter_quality);
 
-  if (context_ && Is3d())
+  if (context_ && (IsWebGL() || IsWebGPU()))
     context_->SetFilterQuality(filter_quality);
   else if (canvas2d_bridge_)
     canvas2d_bridge_->SetFilterQuality(filter_quality);
@@ -801,7 +801,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
 
     // display list rendering: we replay the last full PaintRecord, if Canvas
     // has been redraw since beginprint happened.
-    if (IsPrinting() && !Is3d() && canvas2d_bridge_) {
+    if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
       canvas2d_bridge_->FlushRecording();
       if (canvas2d_bridge_->getLastRecord()) {
         if (FilterQuality() != kNone_SkFilterQuality) {
@@ -843,7 +843,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       context.FillRect(FloatRect(r), Color(0, 0, 0));
   }
 
-  if (Is3d() && PaintsIntoCanvasBuffer())
+  if (IsWebGL() && PaintsIntoCanvasBuffer())
     context_->MarkLayerComposited();
 }
 
@@ -875,11 +875,15 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   if (size_.IsEmpty())
     return nullptr;
 
+  // TODO(crbug/1220065): Implement WebGPU snapshot.
+  if (IsWebGPU())
+    return nullptr;
+
   scoped_refptr<StaticBitmapImage> image_bitmap;
   if (OffscreenCanvasFrame()) {  // Offscreen Canvas
     DCHECK(OffscreenCanvasFrame()->OriginClean());
     image_bitmap = OffscreenCanvasFrame()->Bitmap();
-  } else if (Is3d()) {  // WebGL or WebGL2 canvas
+  } else if (IsWebGL()) {
     if (context_->CreationAttributes().premultiplied_alpha) {
       context_->PaintRenderingResultsToCanvas(source_buffer);
       if (ResourceProvider())
@@ -1245,7 +1249,7 @@ void HTMLCanvasElement::PageVisibilityChanged() {
     return;
 
   context_->SetIsInHiddenPage(hidden);
-  if (hidden && Is3d())
+  if (hidden && (IsWebGL() || IsWebGPU()))
     DiscardResourceProvider();
 }
 
@@ -1346,7 +1350,7 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(
 
     if (!image)
       image = GetTransparentImage();
-  } else if (Is3d()) {
+  } else if (IsWebGL()) {
     // TODO(ccameron): Canvas should produce sRGB images.
     // https://crbug.com/672299
     // Because WebGL sources always require making a copy of the back buffer, we
@@ -1538,7 +1542,7 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   int non_gpu_buffer_count = 0;
   int gpu_buffer_count = 0;
 
-  if (!IsRenderingContext2D() && !Is3d())
+  if (!IsRenderingContext2D() && !IsWebGL())
     return;
   if (ResourceProvider()) {
     non_gpu_buffer_count++;
@@ -1551,7 +1555,7 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
     }
   }
 
-  if (Is3d())
+  if (IsWebGL())
     non_gpu_buffer_count += context_->ExternallyAllocatedBufferCountPerPixel();
 
   const int bytes_per_pixel = ColorParams().BytesPerPixel();

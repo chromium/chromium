@@ -172,7 +172,7 @@ void OffscreenCanvas::SetSize(const IntSize& size) {
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(size_);
   if (context_) {
-    if (context_->Is3d()) {
+    if (context_->IsWebGL()) {
       context_->Reshape(size_.Width(), size_.Height());
     } else if (context_->IsRenderingContext2D()) {
       context_->Reset();
@@ -398,11 +398,14 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   IntSize surface_size(width(), height());
   const bool can_use_gpu =
       SharedGpuContext::IsGpuCompositingEnabled() &&
-      (Is3d() || (RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
-                  !context_->CreationAttributes().will_read_frequently));
+      (IsWebGL() || IsWebGPU() ||
+       (RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
+        !context_->CreationAttributes().will_read_frequently));
   const bool composited_mode =
-      (Is3d() ? RuntimeEnabledFeatures::WebGLImageChromiumEnabled()
-              : RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled());
+      IsWebGPU() ||
+      (IsWebGL() && RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) ||
+      (IsRenderingContext2D() &&
+       RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled());
 
   uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY;
   if (composited_mode && HasPlaceholderCanvas())

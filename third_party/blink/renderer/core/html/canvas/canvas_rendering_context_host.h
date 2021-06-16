@@ -101,8 +101,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
 
-  // TODO(crbug.com/1219761): Remove Is3d() in lieu of IsWebGL() and IsWebGPU().
-  bool Is3d() const;
   bool IsWebGL() const;
   bool IsWebGPU() const;
   bool IsRenderingContext2D() const;

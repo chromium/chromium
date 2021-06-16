@@ -59,7 +59,6 @@ class GPUCanvasContext : public CanvasRenderingContext {
   bool IsComposited() const final { return true; }
   bool IsAccelerated() const final { return true; }
   bool IsOriginTopLeft() const final { return true; }
-  bool Is3d() const final { return true; }
   bool IsWebGPU() const final { return true; }
   void SetFilterQuality(SkFilterQuality) override;
   bool IsPaintable() const final { return true; }
