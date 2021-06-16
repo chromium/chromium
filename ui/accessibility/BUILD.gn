@@ -155,6 +155,7 @@ component("accessibility") {
 
   public_deps = [
     ":ax_base",
+    "//skia",
     "//ui/accessibility/platform",
   ]
 
