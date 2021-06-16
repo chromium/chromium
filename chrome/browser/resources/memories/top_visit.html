@@ -1,5 +1,7 @@
 <style>
   :host {
+    --indentation: 52px;
+    --search-query-margin: 10px;
     display: block;
     padding: 10px 0;
     position: relative;
@@ -28,12 +30,43 @@
     --cr-section-vertical-padding: 0;
   }
 
+  #related-visits,
+  #related-searches {
+    margin-inline-start: var(--indentation);
+  }
+
   #related-visits {
-    margin-inline-start: 52px;
+    margin-bottom: var(--search-query-margin);
   }
 
   #related-visits visit-row {
     padding: 4px 0;
+  }
+
+  #related-searches {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-top: calc(-1 * var(--search-query-margin));
+  }
+
+  #related-searches-label {
+    color: var(--cr-secondary-text-color);
+    margin-inline-end: 16px;
+    margin-top: var(--search-query-margin);
+  }
+
+  #search-queries {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  search-query {
+    margin-top: var(--search-query-margin);
+  }
+
+  search-query:not(:last-of-type) {
+    margin-inline-end: var(--search-query-margin);
   }
 </style>
 <div id="vertical-line"></div>
@@ -47,6 +80,14 @@
       <template is="dom-repeat" items="[[visit.relatedVisits]]">
         <visit-row visit="[[item]]"></visit-row>
       </template>
+    </div>
+    <div id="related-searches" hidden="[[!visit.relatedSearches.length]]">
+      <div id="related-searches-label">$i18n{relatedSearchesLabel}</div>
+      <div id="search-queries">
+        <template is="dom-repeat" items="[[visit.relatedSearches]]">
+          <search-query search-query="[[item]]"></search-query>
+        </template>
+      </div>
     </div>
   </iron-collapse>
 </template>

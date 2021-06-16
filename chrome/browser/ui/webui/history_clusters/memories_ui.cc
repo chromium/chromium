@@ -41,7 +41,7 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddString("searchPrompt", u"Search clusters");
   source->AddString("titleDescription", u"Based on previous web activity");
   source->AddString("visitsSectionHeader", u"From Chrome History");
-  source->AddString("relatedSearchesSectionHeader", u"Try searching for");
+  source->AddString("relatedSearchesLabel", u"Related:");
   source->AddString("removeAllFromHistory", u"Remove all from history");
 
   webui::SetupWebUIDataSource(

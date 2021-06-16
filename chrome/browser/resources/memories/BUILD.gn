@@ -48,7 +48,6 @@ js_library("history_clusters") {
 js_library("cluster") {
   deps = [
     ":page_favicon",
-    ":search_query",
     ":top_visit",
     ":utils",
     "//components/history_clusters/core:mojo_bindings_webui_js",
@@ -80,6 +79,7 @@ js_library("search_query") {
 
 js_library("top_visit") {
   deps = [
+    ":search_query",
     ":visit_row",
     "//components/history_clusters/core:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",

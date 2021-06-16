@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './page_favicon.js';
-import './search_query.js';
 import './shared_vars.js';
 import './top_visit.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
