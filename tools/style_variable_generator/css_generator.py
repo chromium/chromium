@@ -22,14 +22,20 @@ class CSSStyleGenerator(BaseGenerator):
         if self.generate_single_mode:
             resolved_colors = self.model[VariableType.COLOR].Flatten(
                 resolve_missing=True)
+            resolved_opacities = self.model[VariableType.OPACITY].Flatten(
+                resolve_missing=True)
             colors = {
                 Modes.DEFAULT: resolved_colors[self.generate_single_mode]
             }
+            opacities = {
+                Modes.DEFAULT: resolved_opacities[self.generate_single_mode]
+            }
         else:
             colors = self.model[VariableType.COLOR].Flatten()
+            opacities = self.model[VariableType.OPACITY].Flatten()
 
         return {
-            'opacities': self.model[VariableType.OPACITY].Flatten(),
+            'opacities': opacities,
             'colors': colors,
         }
 

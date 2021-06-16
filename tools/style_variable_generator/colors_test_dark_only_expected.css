@@ -19,5 +19,5 @@ html:not(body) {
 
   --cros-disabled-opacity: 0.38;
 
-  --cros-reference-opacity: var(--cros-disabled-opacity);
+  --cros-reference-opacity: 1;
 }
