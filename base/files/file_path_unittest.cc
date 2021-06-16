@@ -793,17 +793,23 @@ TEST_F(FilePathTest, Extension2) {
     { FPL("/user.js"),               FPL(".js") },
   };
   const struct UnaryTestData double_extension_cases[] = {
-    { FPL("/foo.tar.gz"),            FPL(".tar.gz") },
+    // `kCommonDoubleExtensionSuffixes` cases. Blah is not on that allow-list.
+    // Membership is (ASCII) case-insensitive: both ".Z" and ".z" match.
     { FPL("/foo.tar.Z"),             FPL(".tar.Z") },
+    { FPL("/foo.tar.blah"),          FPL(".blah") },
+    { FPL("/foo.tar.bz"),            FPL(".tar.bz") },
     { FPL("/foo.tar.bz2"),           FPL(".tar.bz2") },
+    { FPL("/foo.tar.gz"),            FPL(".tar.gz") },
+    { FPL("/foo.tar.xz"),            FPL(".tar.xz") },
+    { FPL("/foo.tar.z"),             FPL(".tar.z") },
+    // `kCommonDoubleExtensions` cases.
+    { FPL("/foo.1234.user.js"),      FPL(".user.js") },
+    { FPL("foo.user.js"),            FPL(".user.js") },
+    // Other cases.
     { FPL("/foo.1234.gz"),           FPL(".1234.gz") },
     { FPL("/foo.1234.tar.gz"),       FPL(".tar.gz") },
     { FPL("/foo.tar.tar.gz"),        FPL(".tar.gz") },
     { FPL("/foo.tar.gz.gz"),         FPL(".gz.gz") },
-    { FPL("/foo.1234.user.js"),      FPL(".user.js") },
-    { FPL("foo.user.js"),            FPL(".user.js") },
-    { FPL("/foo.tar.bz"),            FPL(".tar.bz") },
-    { FPL("/foo.tar.xz"),            FPL(".tar.xz") },
   };
   // clang-format on
 

@@ -256,14 +256,26 @@ class BASE_EXPORT FilePath {
   // this is the only situation in which BaseName will return an absolute path.
   FilePath BaseName() const WARN_UNUSED_RESULT;
 
-  // Returns ".jpg" for path "C:\pics\jojo.jpg", or an empty string if
-  // the file has no extension.  If non-empty, Extension() will always start
-  // with precisely one ".".  The following code should always work regardless
-  // of the value of path.  For common double-extensions like .tar.gz and
-  // .user.js, this method returns the combined extension.  For a single
-  // component, use FinalExtension().
-  // new_path = path.RemoveExtension().value().append(path.Extension());
-  // ASSERT(new_path == path.value());
+  // Returns ".jpg" for path "C:\pics\jojo.jpg", or an empty string if the file
+  // has no extension.  If non-empty, Extension() will always start with
+  // precisely one ".".
+  //
+  // For common double-extensions like ".tar.gz" and ".user.js", this method
+  // returns the combined extension.  For a single component, use
+  // FinalExtension().
+  //
+  // Common means that detecting double-extensions is based on a hard-coded
+  // allow-list (including but not limited to ".*.gz" and ".user.js") and isn't
+  // solely dependent on the number of dots.  Specifically, even if somebody
+  // invents a new Blah compression algorithm:
+  //   - calling this function with "foo.tar.bz2" will return ".tar.bz2", but
+  //   - calling this function with "foo.tar.blah" will return just ".blah"
+  //     until ".*.blah" is added to the hard-coded allow-list.
+  //
+  // The following code should always work regardless of the value of path.
+  //   new_path = path.RemoveExtension().value().append(path.Extension());
+  //   ASSERT(new_path == path.value());
+  //
   // NOTE: this is different from the original file_util implementation which
   // returned the extension without a leading "." ("jpg" instead of ".jpg")
   StringType Extension() const WARN_UNUSED_RESULT;
