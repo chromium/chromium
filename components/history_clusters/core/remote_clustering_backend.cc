@@ -17,12 +17,11 @@
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/proto/clusters.pb.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace history_clusters {
 
 namespace {
-
-const size_t kMaxExpectedResponseSize = 1024 * 1024;
 
 // Also writes one line of debug information per visit to `debug_string`, if
 // the parameter is non-nullptr.
@@ -191,6 +190,14 @@ void RemoteClusteringBackend::GetClusters(
 
   auto url_loader = CreateLoader(CreateRequest(endpoint), request_body);
   network::SimpleURLLoader* unowned_url_loader = url_loader.get();
+
+  // Retry 3 times (chosen arbitrarily) for transient-type network issues.
+  int retry_mode =
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+      network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE |
+      network::SimpleURLLoader::RetryMode::RETRY_ON_NAME_NOT_RESOLVED;
+  unowned_url_loader->SetRetryOptions(3, retry_mode);
+
   unowned_url_loader->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
@@ -220,7 +227,7 @@ void RemoteClusteringBackend::GetClusters(
           },
           std::move(url_loader), debug_logger_, visits)
           .Then(std::move(callback)),
-      kMaxExpectedResponseSize);
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 // static
