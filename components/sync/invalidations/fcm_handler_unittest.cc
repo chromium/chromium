@@ -119,7 +119,7 @@ class FCMHandlerTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList override_features_;
 
   gcm::FakeGCMDriver fake_gcm_driver_;

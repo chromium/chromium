@@ -42,7 +42,8 @@ class MockSyncServiceObserver : public SyncServiceObserver {
 class SyncServiceImplStartupTest : public testing::Test {
  public:
   SyncServiceImplStartupTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
         sync_prefs_(sync_service_impl_bundle_.pref_service()) {
     sync_service_impl_bundle_.identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
@@ -134,7 +135,7 @@ class SyncServiceImplStartupTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   SyncServiceImplBundle sync_service_impl_bundle_;
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;

@@ -212,9 +212,7 @@ class SyncManagerImplTest : public testing::Test {
   MockSyncScheduler* scheduler() { return scheduler_; }
 
  private:
-  // Needed by |sync_manager_|.
-  base::test::TaskEnvironment task_environment_;
-  // Needed by |sync_manager_|.
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
 

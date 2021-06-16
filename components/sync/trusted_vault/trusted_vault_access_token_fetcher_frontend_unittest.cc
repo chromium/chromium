@@ -33,7 +33,7 @@ class TrustedVaultAccessTokenFetcherFrontendTest : public testing::Test {
   signin::IdentityTestEnvironment* identity_env() { return &identity_env_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   // |identity_env_| must outlive |frontend_|.
   signin::IdentityTestEnvironment identity_env_;
   TrustedVaultAccessTokenFetcherFrontend frontend_;

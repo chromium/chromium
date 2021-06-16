@@ -232,7 +232,7 @@ class SyncServiceImplTest : public ::testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   SyncServiceImplBundle sync_service_impl_bundle_;
   std::unique_ptr<SyncServiceImpl> service_;
   SyncClientMock* sync_client_;  // Owned by |service_|.
