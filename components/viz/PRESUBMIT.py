@@ -4,6 +4,8 @@
 
 """Top-level presubmit script for components/viz."""
 
+USE_PYTHON3 = True
+
 def CheckChangeOnUpload(input_api, output_api):
   import sys
   original_sys_path = sys.path

@@ -5,7 +5,6 @@
 """Presubmit checks used in viz"""
 
 import re
-import string
 
 def CheckChangeLintsClean(input_api, output_api, allowlist, denylist=None):
   source_filter = lambda x: input_api.FilterSourceFile(x, allowlist, denylist)
