@@ -61,11 +61,11 @@ class FileSystemContextTest : public testing::Test {
   }
 
  protected:
-  FileSystemContext* CreateFileSystemContextForTest(
-      ExternalMountPoints* external_mount_points) {
-    return new FileSystemContext(
+  scoped_refptr<FileSystemContext> CreateFileSystemContextForTest(
+      scoped_refptr<ExternalMountPoints> external_mount_points) {
+    return FileSystemContext::Create(
         base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), external_mount_points,
+        base::ThreadTaskRunnerHandle::Get(), std::move(external_mount_points),
         storage_policy_, mock_quota_manager_->proxy(),
         std::vector<std::unique_ptr<FileSystemBackend>>(),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
@@ -101,8 +101,8 @@ class FileSystemContextTest : public testing::Test {
 // ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(FileSystemContextTest, NullExternalMountPoints) {
-  scoped_refptr<FileSystemContext> file_system_context(
-      CreateFileSystemContextForTest(nullptr));
+  scoped_refptr<FileSystemContext> file_system_context =
+      CreateFileSystemContextForTest(/*external_mount_points=*/nullptr);
 
   // Cracking system external mount and isolated mount points should work.
   std::string isolated_name = "root";
@@ -154,11 +154,8 @@ TEST_F(FileSystemContextTest, FileSystemContextKeepsMountPointsAlive) {
       "system", kFileSystemTypeLocal, FileSystemMountOption(),
       base::FilePath(DRIVE FPL("/test/sys/"))));
 
-  scoped_refptr<FileSystemContext> file_system_context(
-      CreateFileSystemContextForTest(mount_points.get()));
-
-  // Release a MountPoints reference created in the test.
-  mount_points = nullptr;
+  scoped_refptr<FileSystemContext> file_system_context =
+      CreateFileSystemContextForTest(std::move(mount_points));
 
   // FileSystemContext should keep a reference to the |mount_points|, so it
   // should be able to resolve the URL.
@@ -178,10 +175,10 @@ TEST_F(FileSystemContextTest, FileSystemContextKeepsMountPointsAlive) {
 }
 
 TEST_F(FileSystemContextTest, CrackFileSystemURL) {
-  scoped_refptr<ExternalMountPoints> external_mount_points(
-      ExternalMountPoints::CreateRefCounted());
-  scoped_refptr<FileSystemContext> file_system_context(
-      CreateFileSystemContextForTest(external_mount_points.get()));
+  scoped_refptr<ExternalMountPoints> external_mount_points =
+      ExternalMountPoints::CreateRefCounted();
+  scoped_refptr<FileSystemContext> file_system_context =
+      CreateFileSystemContextForTest(external_mount_points);
 
   // Register an isolated mount point.
   std::string isolated_file_system_name = "root";
@@ -295,10 +292,10 @@ TEST_F(FileSystemContextTest, CrackFileSystemURL) {
 }
 
 TEST_F(FileSystemContextTest, CanServeURLRequest) {
-  scoped_refptr<ExternalMountPoints> external_mount_points(
-      ExternalMountPoints::CreateRefCounted());
-  scoped_refptr<FileSystemContext> context(
-      CreateFileSystemContextForTest(external_mount_points.get()));
+  scoped_refptr<ExternalMountPoints> external_mount_points =
+      ExternalMountPoints::CreateRefCounted();
+  scoped_refptr<FileSystemContext> context =
+      CreateFileSystemContextForTest(std::move(external_mount_points));
 
   // A request for a sandbox mount point should be served.
   FileSystemURL cracked_url =
@@ -338,8 +335,8 @@ TEST_F(FileSystemContextTest, CanServeURLRequest) {
 TEST_F(FileSystemContextTest, IsolatedFileSystemsTypesHandled) {
   // This does not provide any "additional" file system handlers. In particular,
   // on Chrome OS it does not provide chromeos::FileSystemBackend.
-  scoped_refptr<FileSystemContext> file_system_context(
-      CreateFileSystemContextForTest(nullptr));
+  scoped_refptr<FileSystemContext> file_system_context =
+      CreateFileSystemContextForTest(/*external_mount_points=*/nullptr);
 
   // Isolated file system types are handled.
   EXPECT_TRUE(

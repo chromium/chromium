@@ -66,15 +66,14 @@ TEST(BrowserFileSystemHelperTest,
   storage::FileSystemOptions file_system_options(
       storage::FileSystemOptions::PROFILE_MODE_NORMAL,
       /*force_in_memory=*/false, std::vector<std::string>());
-  auto test_file_system_context =
-      base::MakeRefCounted<storage::FileSystemContext>(
-          /*io_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
-          /*file_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
-          std::move(external_mount_points), /*special_storage_policy=*/nullptr,
-          /*quota_manager_proxy=*/nullptr,
-          std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
-          std::vector<storage::URLRequestAutoMountHandler>(),
-          /*partition_path=*/base::FilePath(), file_system_options);
+  auto test_file_system_context = storage::FileSystemContext::Create(
+      /*io_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
+      /*file_task_runner=*/base::MakeRefCounted<base::NullTaskRunner>(),
+      std::move(external_mount_points), /*special_storage_policy=*/nullptr,
+      /*quota_manager_proxy=*/nullptr,
+      std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
+      std::vector<storage::URLRequestAutoMountHandler>(),
+      /*partition_path=*/base::FilePath(), file_system_options);
 
   // Prepare content::DropData containing |file_system_url|.
   DropData::FileSystemFileInfo filesystem_file_info;

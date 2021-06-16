@@ -127,7 +127,7 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
 
   auto options = CreateBrowserFileSystemOptions(
       browser_context->CanUseDiskWhenOffTheRecord() ? false : is_incognito);
-  auto file_system_context = base::MakeRefCounted<storage::FileSystemContext>(
+  auto file_system_context = storage::FileSystemContext::Create(
       GetIOThreadTaskRunner({}),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

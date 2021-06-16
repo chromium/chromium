@@ -72,7 +72,7 @@ class BlobRegistryImplTest : public testing::Test {
         data_dir_.GetPath(), data_dir_.GetPath(),
         base::ThreadPool::CreateTaskRunner({base::MayBlock()}));
     auto storage_policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-    file_system_context_ = base::MakeRefCounted<FileSystemContext>(
+    file_system_context_ = FileSystemContext::Create(
         base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get(),
         /*external_mount_points=*/nullptr, std::move(storage_policy),

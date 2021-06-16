@@ -716,8 +716,7 @@ void DatabaseTracker::ScheduleDatabasesForDeletion(
   DCHECK(!databases.empty());
 
   if (!callback.is_null())
-    deletion_callbacks_.push_back(
-        std::make_pair(std::move(callback), databases));
+    deletion_callbacks_.emplace_back(std::move(callback), databases);
   for (const auto& origin_dbs : databases) {
     for (const std::u16string& db : origin_dbs.second)
       ScheduleDatabaseForDeletion(origin_dbs.first, db);

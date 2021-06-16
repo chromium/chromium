@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
@@ -88,6 +89,8 @@ using URLRequestAutoMountHandler = base::RepeatingCallback<bool(
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
     : public base::RefCountedDeleteOnSequence<FileSystemContext> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Returns file permission policy we should apply for the given |type|.
   // The return value must be bitwise-or'd of FilePermissionPolicy.
   //
@@ -117,7 +120,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // |auto_mount_handlers| are used to resolve calls to
   // AttemptAutoMountForURLRequest. Only external filesystems are auto mounted
   // when a filesystem: URL request is made.
-  FileSystemContext(
+  static scoped_refptr<FileSystemContext> Create(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner,
       scoped_refptr<ExternalMountPoints> external_mount_points,
@@ -127,6 +130,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
       const base::FilePath& partition_path,
       const FileSystemOptions& options);
+
+  // Exposed for base::MakeRefCounted(). Instances should be obtained from the
+  // factory method Create().
+  FileSystemContext(
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+      scoped_refptr<ExternalMountPoints> external_mount_points,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+      scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+      std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
+      const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
+      const base::FilePath& partition_path,
+      const FileSystemOptions& options,
+      base::PassKey<FileSystemContext>);
 
   bool DeleteDataForOriginOnFileTaskRunner(const url::Origin& origin);
 
@@ -322,6 +339,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   friend class base::DeleteHelper<FileSystemContext>;
   friend class base::RefCountedDeleteOnSequence<FileSystemContext>;
   ~FileSystemContext();
+
+  // Must be called after creating the FileSystemContext.
+  void Initialize();
 
   // The list of quota-managed storage types covered by file system backends.
   //

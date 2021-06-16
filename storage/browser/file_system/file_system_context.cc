@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -133,6 +134,26 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
   return FILE_PERMISSION_ALWAYS_DENY;
 }
 
+scoped_refptr<FileSystemContext> FileSystemContext::Create(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    scoped_refptr<ExternalMountPoints> external_mount_points,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+    std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
+    const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
+    const base::FilePath& partition_path,
+    const FileSystemOptions& options) {
+  auto context = base::MakeRefCounted<FileSystemContext>(
+      std::move(io_task_runner), std::move(file_task_runner),
+      std::move(external_mount_points), std::move(special_storage_policy),
+      std::move(quota_manager_proxy), std::move(additional_backends),
+      auto_mount_handlers, partition_path, options,
+      base::PassKey<FileSystemContext>());
+  context->Initialize();
+  return context;
+}
+
 FileSystemContext::FileSystemContext(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
@@ -142,7 +163,8 @@ FileSystemContext::FileSystemContext(
     std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
     const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
     const base::FilePath& partition_path,
-    const FileSystemOptions& options)
+    const FileSystemOptions& options,
+    base::PassKey<FileSystemContext>)
     : base::RefCountedDeleteOnSequence<FileSystemContext>(io_task_runner),
       env_override_(options.is_in_memory()
                         ? leveldb_chrome::NewMemEnv("FileSystem")
@@ -188,7 +210,9 @@ FileSystemContext::FileSystemContext(
       !base::Contains(backend_map_, kFileSystemTypeLocal),
       !base::Contains(backend_map_, kFileSystemTypeLocalForPlatformApp));
   RegisterBackend(isolated_backend_.get());
+}
 
+void FileSystemContext::Initialize() {
   if (quota_manager_proxy_) {
     // Quota client assumes all backends have registered.
     // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().

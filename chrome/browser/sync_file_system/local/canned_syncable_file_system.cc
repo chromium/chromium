@@ -260,7 +260,7 @@ void CannedSyncableFileSystem::SetUp(QuotaMode quota_mode) {
   std::vector<std::unique_ptr<storage::FileSystemBackend>> additional_backends;
   additional_backends.push_back(SyncFileSystemBackend::CreateForTesting());
 
-  file_system_context_ = base::MakeRefCounted<FileSystemContext>(
+  file_system_context_ = FileSystemContext::Create(
       io_task_runner_, file_task_runner_,
       storage::ExternalMountPoints::CreateRefCounted(),
       std::move(storage_policy),

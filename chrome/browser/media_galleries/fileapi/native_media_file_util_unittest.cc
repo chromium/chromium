@@ -135,7 +135,7 @@ class NativeMediaFileUtilTest : public testing::Test {
     additional_providers.push_back(std::make_unique<MediaFileSystemBackend>(
         data_dir_.GetPath(), base::NullCallback()));
 
-    file_system_context_ = base::MakeRefCounted<storage::FileSystemContext>(
+    file_system_context_ = storage::FileSystemContext::Create(
         content::GetIOThreadTaskRunner({}),
         base::SequencedTaskRunnerHandle::Get(),
         storage::ExternalMountPoints::CreateRefCounted(),

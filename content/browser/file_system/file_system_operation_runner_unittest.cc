@@ -64,9 +64,12 @@ void DidOpenFile(base::File file, base::OnceClosure on_close_callback) {}
 }  // namespace
 
 class FileSystemOperationRunnerTest : public testing::Test {
- protected:
-  FileSystemOperationRunnerTest() {}
-  ~FileSystemOperationRunnerTest() override {}
+ public:
+  FileSystemOperationRunnerTest() = default;
+  FileSystemOperationRunnerTest(const FileSystemOperationRunnerTest&) = delete;
+  FileSystemOperationRunnerTest& operator=(
+      const FileSystemOperationRunnerTest&) = delete;
+  ~FileSystemOperationRunnerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
@@ -95,8 +98,6 @@ class FileSystemOperationRunnerTest : public testing::Test {
   base::ScopedTempDir base_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<FileSystemContext> file_system_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationRunnerTest);
 };
 
 TEST_F(FileSystemOperationRunnerTest, NotFoundError) {
@@ -195,7 +196,7 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
 
     base::FilePath base_dir = base_.GetPath();
-    file_system_context_ = base::MakeRefCounted<FileSystemContext>(
+    file_system_context_ = FileSystemContext::Create(
         base::ThreadTaskRunnerHandle::Get(),
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         storage::ExternalMountPoints::CreateRefCounted(),
