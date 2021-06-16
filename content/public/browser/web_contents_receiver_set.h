@@ -18,10 +18,56 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
+class ChromePasswordManagerClient;
+class EmbeddedSearchClientFactoryImpl;
+class LiteVideoObserver;
+class OfflinePageTabHelper;
+class PluginObserver;
+class SearchEngineTabHelper;
+class SupervisedUserNavigationObserver;
+class SyncEncryptionKeysTabHelper;
+
+namespace android_webview {
+class AwRenderViewHostExt;
+}
+namespace chrome_browser_net {
+class NetErrorTabHelper;
+}
+namespace extensions {
+class ExtensionFrameHost;
+class ChromeWebViewPermissionHelperDelegate;
+}  // namespace extensions
+namespace offline_pages {
+class OfflinePageTabHelper;
+}
+namespace page_load_metrics {
+class MetricsWebContentsObserver;
+}
+namespace pdf {
+class PDFWebContentsHelper;
+}
+namespace printing {
+class PrintManager;
+}
+namespace security_interstitials {
+class SecurityInterstitialTabHelper;
+}
+namespace subresource_redirect {
+class SubresourceRedirectObserver;
+}
+namespace subresource_filter {
+class ContentSubresourceFilterThrottleManager;
+}
+
 namespace content {
 
+class ConversionHost;
+class DisplayCutoutHostImpl;
 class RenderFrameHost;
+class ScreenOrientationProvider;
+class TestFrameInterfaceBinder;
 class WebContentsImpl;
+class WebContentsReceiverSetBrowserTest;
 
 // Base class for something which owns a mojo::AssociatedReceiverSet on behalf
 // of a WebContents. See WebContentsFrameReceiverSet<T> below.
@@ -63,6 +109,47 @@ class CONTENT_EXPORT WebContentsReceiverSet {
   Binder* binder_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsReceiverSet);
+};
+
+// The use of WebContentsFrameReceiverSet is restricted because it bypasses
+// security review of the IPC bindings. See https://crbug.com/1213679 for
+// details.
+//
+// This does not use base::PassKey<T> because it's not possible to create a
+// union of types for use in a template parameter, so using it would require
+// duplicating the WebContentsFrameReceiverSet constructor many times (one for
+// each friend below). This empty class is a bit simpler.
+//
+// New instances SHOULD NOT be added.
+// TODO(crbug.com/1213679): Remove WebContentsFrameReceiverSet.
+class WebContentsFrameReceiverSetPassKey {
+ private:
+  WebContentsFrameReceiverSetPassKey() = default;
+
+  friend class ::ChromePasswordManagerClient;
+  friend class ::EmbeddedSearchClientFactoryImpl;
+  friend class ::LiteVideoObserver;
+  friend class ::PluginObserver;
+  friend class ::SearchEngineTabHelper;
+  friend class ::SupervisedUserNavigationObserver;
+  friend class ::SyncEncryptionKeysTabHelper;
+  friend class ::android_webview::AwRenderViewHostExt;
+  friend class ::chrome_browser_net::NetErrorTabHelper;
+  friend class ::extensions::ChromeWebViewPermissionHelperDelegate;
+  friend class ::extensions::ExtensionFrameHost;
+  friend class ::offline_pages::OfflinePageTabHelper;
+  friend class ::page_load_metrics::MetricsWebContentsObserver;
+  friend class ::pdf::PDFWebContentsHelper;
+  friend class ::printing::PrintManager;
+  friend class ::security_interstitials::SecurityInterstitialTabHelper;
+  friend class ::subresource_filter::ContentSubresourceFilterThrottleManager;
+  friend class ::subresource_redirect::SubresourceRedirectObserver;
+  friend class ConversionHost;
+  friend class DisplayCutoutHostImpl;
+  friend class ScreenOrientationProvider;
+  friend class TestFrameInterfaceBinder;
+  FRIEND_TEST_ALL_PREFIXES(WebContentsReceiverSetBrowserTest,
+                           OverrideForTesting);
 };
 
 // Owns a set of Channel-associated interface receivers with frame context on
@@ -110,7 +197,9 @@ class CONTENT_EXPORT WebContentsReceiverSet {
 template <typename Interface>
 class WebContentsFrameReceiverSet : public WebContentsReceiverSet {
  public:
-  WebContentsFrameReceiverSet(WebContents* web_contents, Interface* impl)
+  WebContentsFrameReceiverSet(WebContents* web_contents,
+                              Interface* impl,
+                              WebContentsFrameReceiverSetPassKey pass_key)
       : WebContentsReceiverSet(web_contents, Interface::Name_),
         binder_(this, web_contents, impl) {
     SetBinder(&binder_);

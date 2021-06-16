@@ -76,7 +76,9 @@ ConversionHost::ConversionHost(
     std::unique_ptr<ConversionManager::Provider> conversion_manager_provider)
     : WebContentsObserver(web_contents),
       conversion_manager_provider_(std::move(conversion_manager_provider)),
-      receiver_(web_contents, this) {
+      receiver_(web_contents,
+                this,
+                content::WebContentsFrameReceiverSetPassKey()) {
   // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK
   // that the kConversionMeasurement feature is enabled.
 }

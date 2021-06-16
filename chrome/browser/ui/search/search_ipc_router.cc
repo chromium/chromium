@@ -34,6 +34,8 @@ bool IsInInstantProcess(content::RenderFrameHost* render_frame) {
   return instant_service->IsInstantProcess(process_host->GetID());
 }
 
+}  // namespace
+
 class EmbeddedSearchClientFactoryImpl
     : public SearchIPCRouter::EmbeddedSearchClientFactory,
       public search::mojom::EmbeddedSearchConnector {
@@ -42,7 +44,10 @@ class EmbeddedSearchClientFactoryImpl
   EmbeddedSearchClientFactoryImpl(
       content::WebContents* web_contents,
       mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* receiver)
-      : client_receiver_(receiver), factory_receivers_(web_contents, this) {
+      : client_receiver_(receiver),
+        factory_receivers_(web_contents,
+                           this,
+                           content::WebContentsFrameReceiverSetPassKey()) {
     DCHECK(web_contents);
     DCHECK(receiver);
     // Before we are connected to a frame we throw away all messages.
@@ -90,8 +95,6 @@ void EmbeddedSearchClientFactoryImpl::Connect(
   embedded_search_client_.reset();
   embedded_search_client_.Bind(std::move(client));
 }
-
-}  // namespace
 
 SearchIPCRouter::SearchIPCRouter(content::WebContents* web_contents,
                                  Delegate* delegate,

@@ -1,2 +1,4 @@
 # Note: don't add new owners here. Only content/OWNERS review public changes to
 # ensure consistency and that the public API guidelines are followed closely.
+per-file web_contents_receiver_set.h=file://ipc/SECURITY_OWNERS
+per-file web_contents_receiver_set.h=set noparent

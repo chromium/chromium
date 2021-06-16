@@ -49,7 +49,10 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
  public:
   EncryptionKeyApi(content::WebContents* web_contents,
                    syncer::SyncService* sync_service)
-      : sync_service_(sync_service), receivers_(web_contents, this) {
+      : sync_service_(sync_service),
+        receivers_(web_contents,
+                   this,
+                   content::WebContentsFrameReceiverSetPassKey()) {
     DCHECK(web_contents);
     DCHECK(sync_service);
   }

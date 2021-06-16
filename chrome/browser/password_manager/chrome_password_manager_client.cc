@@ -1176,7 +1176,10 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       password_reuse_detection_manager_(this),
       driver_factory_(nullptr),
       content_credential_manager_(this),
-      password_generation_driver_receivers_(web_contents, this),
+      password_generation_driver_receivers_(
+          web_contents,
+          this,
+          content::WebContentsFrameReceiverSetPassKey()),
       observer_(nullptr),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       credentials_filter_(

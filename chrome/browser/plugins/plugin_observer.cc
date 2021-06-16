@@ -77,7 +77,9 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
 
 PluginObserver::PluginObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      plugin_host_receivers_(web_contents, this) {}
+      plugin_host_receivers_(web_contents,
+                             this,
+                             content::WebContentsFrameReceiverSetPassKey()) {}
 
 PluginObserver::~PluginObserver() {
 }

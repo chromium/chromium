@@ -13,7 +13,10 @@ namespace printing {
 
 PrintManager::PrintManager(content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      print_manager_host_receivers_(contents, this) {}
+      print_manager_host_receivers_(
+          contents,
+          this,
+          content::WebContentsFrameReceiverSetPassKey()) {}
 
 PrintManager::~PrintManager() = default;
 

@@ -122,7 +122,9 @@ ContentSubresourceFilterThrottleManager::
         VerifiedRulesetDealer::Handle* dealer_handle,
         content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      receiver_(web_contents, this),
+      receiver_(web_contents,
+                this,
+                content::WebContentsFrameReceiverSetPassKey()),
       dealer_handle_(dealer_handle),
       database_manager_(std::move(database_manager)),
       profile_interaction_manager_(

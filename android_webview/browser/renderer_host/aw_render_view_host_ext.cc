@@ -57,7 +57,9 @@ AwRenderViewHostExt::AwRenderViewHostExt(AwRenderViewHostExtClient* client,
     : content::WebContentsObserver(contents),
       client_(client),
       has_new_hit_test_data_(false),
-      frame_host_receivers_(contents, this) {
+      frame_host_receivers_(contents,
+                            this,
+                            content::WebContentsFrameReceiverSetPassKey()) {
   DCHECK(client_);
 }
 

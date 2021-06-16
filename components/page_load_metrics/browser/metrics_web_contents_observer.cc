@@ -213,7 +213,10 @@ MetricsWebContentsObserver::MetricsWebContentsObserver(
                      content::Visibility::HIDDEN),
       embedder_interface_(std::move(embedder_interface)),
       has_navigated_(false),
-      page_load_metrics_receiver_(web_contents, this) {
+      page_load_metrics_receiver_(
+          web_contents,
+          this,
+          content::WebContentsFrameReceiverSetPassKey()) {
   // NoStatePrefetch loads erroneously report that they are initially visible,
   // so we manually override visibility state for prerender.
   if (embedder_interface_->IsNoStatePrefetch(web_contents))

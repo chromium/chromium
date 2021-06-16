@@ -22,7 +22,9 @@ ScreenOrientationDelegate* ScreenOrientationProvider::delegate_ = nullptr;
 ScreenOrientationProvider::ScreenOrientationProvider(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       lock_applied_(false),
-      receivers_(web_contents, this) {}
+      receivers_(web_contents,
+                 this,
+                 content::WebContentsFrameReceiverSetPassKey()) {}
 
 ScreenOrientationProvider::~ScreenOrientationProvider() = default;
 

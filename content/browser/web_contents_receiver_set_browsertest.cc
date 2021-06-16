@@ -28,14 +28,6 @@ namespace {
 const char kTestHost1[] = "foo.com";
 const char kTestHost2[] = "bar.com";
 
-class WebContentsReceiverSetBrowserTest : public ContentBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule(kTestHost1, "127.0.0.1");
-    host_resolver()->AddRule(kTestHost2, "127.0.0.1");
-  }
-};
-
 class TestInterfaceBinder : public WebContentsReceiverSetTestBinder<
                                 mojom::BrowserAssociatedInterfaceTestDriver> {
  public:
@@ -56,10 +48,22 @@ class TestInterfaceBinder : public WebContentsReceiverSetTestBinder<
   DISALLOW_COPY_AND_ASSIGN(TestInterfaceBinder);
 };
 
+}  // namespace
+
+class WebContentsReceiverSetBrowserTest : public ContentBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule(kTestHost1, "127.0.0.1");
+    host_resolver()->AddRule(kTestHost2, "127.0.0.1");
+  }
+};
+
 class TestFrameInterfaceBinder : public mojom::WebContentsFrameReceiverSetTest {
  public:
   explicit TestFrameInterfaceBinder(WebContents* web_contents)
-      : receivers_(web_contents, this) {}
+      : receivers_(web_contents,
+                   this,
+                   content::WebContentsFrameReceiverSetPassKey()) {}
   ~TestFrameInterfaceBinder() override {}
 
  private:
@@ -70,8 +74,6 @@ class TestFrameInterfaceBinder : public mojom::WebContentsFrameReceiverSetTest {
       receivers_;
 };
 
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest, OverrideForTesting) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,ho hum")));
 
@@ -79,7 +81,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest, OverrideForTesting) {
   // request handler.
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
   WebContentsFrameReceiverSet<mojom::BrowserAssociatedInterfaceTestDriver>
-      frame_receivers(web_contents, nullptr);
+      frame_receivers(web_contents, nullptr,
+                      content::WebContentsFrameReceiverSetPassKey());
 
   // Now override the binder for this interface. It quits |run_loop| whenever
   // an incoming pending receiver is received.

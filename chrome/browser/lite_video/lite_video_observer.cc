@@ -65,7 +65,9 @@ void LiteVideoObserver::MaybeCreateForWebContents(
 
 LiteVideoObserver::LiteVideoObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      receivers_(web_contents, this) {
+      receivers_(web_contents,
+                 this,
+                 content::WebContentsFrameReceiverSetPassKey()) {
   lite_video_decider_ = GetLiteVideoDeciderFromWebContents(web_contents);
   routing_ids_to_notify_ = {};
 }

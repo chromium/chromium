@@ -83,7 +83,9 @@ void SearchEngineTabHelper::WebContentsDestroyed() {
 
 SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      osdd_handler_receivers_(web_contents, this) {
+      osdd_handler_receivers_(web_contents,
+                              this,
+                              content::WebContentsFrameReceiverSetPassKey()) {
   DCHECK(web_contents);
 
   favicon::CreateContentFaviconDriverForWebContents(web_contents);

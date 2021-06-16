@@ -13,7 +13,10 @@
 namespace extensions {
 
 ExtensionFrameHost::ExtensionFrameHost(content::WebContents* web_contents)
-    : web_contents_(web_contents), receivers_(web_contents, this) {}
+    : web_contents_(web_contents),
+      receivers_(web_contents,
+                 this,
+                 content::WebContentsFrameReceiverSetPassKey()) {}
 
 ExtensionFrameHost::~ExtensionFrameHost() = default;
 

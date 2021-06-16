@@ -47,7 +47,9 @@ SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
 SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      receiver_(web_contents, this) {
+      receiver_(web_contents,
+                this,
+                content::WebContentsFrameReceiverSetPassKey()) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   supervised_user_service_ =

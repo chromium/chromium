@@ -14,7 +14,10 @@
 namespace content {
 
 DisplayCutoutHostImpl::DisplayCutoutHostImpl(WebContentsImpl* web_contents)
-    : receivers_(web_contents, this), web_contents_impl_(web_contents) {}
+    : receivers_(web_contents,
+                 this,
+                 content::WebContentsFrameReceiverSetPassKey()),
+      web_contents_impl_(web_contents) {}
 
 DisplayCutoutHostImpl::~DisplayCutoutHostImpl() = default;
 

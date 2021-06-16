@@ -42,7 +42,9 @@ ChromeWebViewPermissionHelperDelegate::ChromeWebViewPermissionHelperDelegate(
     : WebViewPermissionHelperDelegate(web_view_permission_helper)
 #if BUILDFLAG(ENABLE_PLUGINS)
       ,
-      plugin_auth_host_receivers_(web_contents(), this)
+      plugin_auth_host_receivers_(web_contents(),
+                                  this,
+                                  content::WebContentsFrameReceiverSetPassKey())
 #endif
 {
 }
