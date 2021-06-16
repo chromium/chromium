@@ -40,4 +40,12 @@ Polymer({
   getTopSectionClassName_() {
     return `top-section${this.isNetworkingCard ? '-padding' : ''}`;
   },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getBodyClassName_() {
+    return `data-points${this.isNetworkingCard ? '-column' : ''}`;
+  },
 });

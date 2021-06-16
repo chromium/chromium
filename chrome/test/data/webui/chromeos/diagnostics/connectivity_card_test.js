@@ -85,8 +85,8 @@ export function connectivityCardTestSuite() {
           const ethernetInfoElement = dx_utils.getEthernetInfoElement(
               connectivityCardElement.$$('network-info'));
           dx_utils.assertTextContains(
-              dx_utils.getDataPointValue(ethernetInfoElement, '#guid'),
-              fakeEthernetNetwork.guid);
+              dx_utils.getDataPointValue(ethernetInfoElement, '#name'),
+              fakeEthernetNetwork.name);
         });
   });
 

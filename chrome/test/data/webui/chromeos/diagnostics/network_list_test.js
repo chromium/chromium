@@ -178,9 +178,9 @@ export function networkListTestSuite() {
           const cellularInfoElement = dx_utils.getCellularInfoElement(
               networkCardElements[1].$$('network-info'));
           dx_utils.assertTextContains(
-              wifiInfoElement.$$('#guid').value, fakeWifiNetwork.guid);
+              wifiInfoElement.$$('#name').value, fakeWifiNetwork.name);
           dx_utils.assertTextContains(
-              cellularInfoElement.$$('#guid').value, fakeCellularNetwork.guid);
+              cellularInfoElement.$$('#name').value, fakeCellularNetwork.name);
 
           assertEquals(
               getConnectivityCard().activeGuid,
@@ -194,7 +194,7 @@ export function networkListTestSuite() {
           const cellularInfoElement = dx_utils.getCellularInfoElement(
               networkCardElements[0].$$('network-info'));
           dx_utils.assertTextContains(
-              cellularInfoElement.$$('#guid').value, fakeCellularNetwork.guid);
+              cellularInfoElement.$$('#name').value, fakeCellularNetwork.name);
           assertEquals(
               getConnectivityCard().activeGuid,
               fakeNetworkGuidInfoList[1].activeGuid);

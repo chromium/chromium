@@ -31,6 +31,12 @@
       line-height: 18px;
     }
 
+    .data-point-container {
+      display: flex;
+      flex-direction: column;
+      width: 40%;
+    }
+
     .diagnostics-cards-container {
       align-items: center;
       display: flex;
@@ -54,6 +60,19 @@
       padding-inline: 16px;
       position: relative;
       top: 24%;
+    }
+
+    .divider-horizontal {
+      align-self: center;
+      border-left: 1px solid var(--google-grey-200);
+      height: 94px;
+      margin: 10px 0;;
+    }
+
+    .horizontal-data-point-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
     }
 
     @media (min-width:600px) {

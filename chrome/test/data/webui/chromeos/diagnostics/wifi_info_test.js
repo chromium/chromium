@@ -8,7 +8,7 @@ import {fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
-import * as dx_utils from './diagnostics_test_utils.js';
+import {assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 
 export function wifiInfoTestSuite() {
   /** @type {?WifiInfoElement} */
@@ -38,39 +38,18 @@ export function wifiInfoTestSuite() {
 
   test('WifiInfoPopulated', () => {
     return initializeWifiInfo().then(() => {
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#state'),
-          `${fakeWifiNetwork.state}`);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#signalStrength'),
-          `${fakeWifiNetwork.typeProperties.wifi.signalStrength}`);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#frequency'),
-          `${fakeWifiNetwork.typeProperties.wifi.frequency}`);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#bssid'),
+      assertTextContains(
+          getDataPointValue(wifiInfoElement, '#name'),
+          `${fakeWifiNetwork.name}`);
+      assertTextContains(
+          getDataPointValue(wifiInfoElement, '#bssid'),
           fakeWifiNetwork.typeProperties.wifi.bssid);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#ssid'),
+      assertTextContains(
+          getDataPointValue(wifiInfoElement, '#ssid'),
           fakeWifiNetwork.typeProperties.wifi.ssid);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#guid'),
-          fakeWifiNetwork.guid);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#macAddress'),
-          `${fakeWifiNetwork.macAddress}`);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#ipAddress'),
+      assertTextContains(
+          getDataPointValue(wifiInfoElement, '#ipAddress'),
           `${fakeWifiNetwork.ipConfig.ipAddress}`);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#gateway'),
-          `${fakeWifiNetwork.ipConfig.gateway}`);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#nameServers'),
-          fakeWifiNetwork.ipConfig.nameServers[0]);
-      dx_utils.assertTextContains(
-          dx_utils.getDataPointValue(wifiInfoElement, '#subnetMask'),
-          `${fakeWifiNetwork.ipConfig.routingPrefix}`);
     });
   });
 }

@@ -50,6 +50,12 @@
     padding-inline: var(--data-point-container-padding);
   }
 
+  .data-points-column {
+    border-bottom: 1px solid var(--google-grey-200);
+    border-top: 1px solid var(--google-grey-200);
+    padding-inline: 24px;
+  }
+
   .routine-container {
     @apply --diagnostics-default-font;
   }
@@ -80,7 +86,8 @@
       <slot name="icon"></slot>
       <slot name="left-panel"></slot>
     </div>
-    <div id="body" class="data-points" hidden$="[[hideDataPoints]]">
+    <div id="body" class$="[[getBodyClassName_(isNetworkingCard)]]"
+        hidden$="[[hideDataPoints]]">
       <slot name="body"></slot>
     </div>
     <div id="routines" class="routine-container spacing">
