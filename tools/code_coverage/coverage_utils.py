@@ -224,6 +224,8 @@ class CoverageReportHtmlGenerator(object):
         table_entry_type=self._table_entry_type)
     html_footer = self._footer_template.render()
 
+    if not os.path.exists(os.path.dirname(self._output_path)):
+      os.makedirs(os.path.dirname(self._output_path))
     with open(self._output_path, 'w') as html_file:
       html_file.write(html_header + html_table + html_footer)
 
