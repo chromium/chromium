@@ -1226,6 +1226,15 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SPEED_DESCRIPTION" desc="The description on the page of the Switch Access setup guide adjusting the auto-scan speed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Choose how long the highlight should stay on each item
   </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_TITLE" desc="The title for the final page of the Switch Access setup guide, which informs the user that setup is complete and provides some final information. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    You're all set!
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_AUTO_SCAN_INSTRUCTIONS" desc="Instructions for how to close the Switch Access setup guide using Switch Access with auto-scan enabled. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer. Auto-scan is a feature of Switch Access where focus moves from one element to the next at a set interval automatically, so the user only has to select the element when it is highlighted.">
+    Press your switch when the focus is on the Done button to close the guide.
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_INFO" desc="Final advice on changing the settings for Switch Access after the Switch Access setup guide has been closed. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer.">
+    You can always change additional settings or open the setup guide again from Switch Access settings.
+  </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SLOWER" desc="The label on the button which slows the speed of Switch Access' auto-scan, which automatically advances the focus between elements at a fixed interval. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Slower
   </message>
@@ -1240,6 +1249,12 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_PREVIOUS" desc="A button in the Switch Access setup guide that takes the user to the previous step in the setup process.">
     Previous
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_START_OVER" desc="A button in the Switch Access setup guide to restart from the beginning, and reconfigure any/all of the settings. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Start over setup
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_DONE" desc="A button in the Switch Access setup guide to confirm that the user has finished configuring their settings and would like to close the dialog. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Done
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_ASSIGNED_ICON_LABEL" desc="A label for an icon indicating a switch is assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Assigned

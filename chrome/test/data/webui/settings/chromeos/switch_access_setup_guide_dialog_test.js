@@ -64,9 +64,15 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     nextButton.click();
 
     assertEquals(/*Auto-scan speed=*/4, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Closing=*/8, dialog.currentPageId_);
 
     const previousButton = dialog.$.previous;
     assertTrue(!!previousButton);
+    previousButton.click();
+
+    assertEquals(/*Auto-scan speed=*/4, dialog.currentPageId_);
     previousButton.click();
 
     assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
@@ -79,6 +85,16 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     previousButton.click();
 
     assertEquals(/*Intro=*/0, dialog.currentPageId_);
+
+    // Check that the "Start Over" button takes us from the closing page back to
+    // the intro.
+    dialog.currentPageId_ = /*Closing=*/8;
+
+    const startOverButton = dialog['$']['start-over'];
+    assertTrue(!!startOverButton);
+    startOverButton.click();
+
+    assertEquals(/*Intro=*/0, dialog.currentPageId_);
   });
 
   test('Page contents are hidden and shown as expected', function() {
@@ -87,67 +103,37 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     dialog.loadPage_(/*Intro=*/0);
 
     // Verify the contents of the Intro page.
-    assertFalse(dialog.$.bluetooth.hidden);
-    assertFalse(dialog.$.exit.hidden);
-    assertFalse(dialog.$.next.hidden);
-    assertTrue(dialog.$.previous.hidden);
     assertFalse(dialog['$']['intro']['hidden']);
-    assertTrue(dialog['$']['assign-select']['hidden']);
-    assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
-    assertTrue(dialog['$']['choose-switch-count']['hidden']);
-    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
 
     dialog.loadPage_(/*Assign select=*/1);
 
     // Verify the contents of the assign select page.
-    assertTrue(dialog.$.bluetooth.hidden);
-    assertTrue(dialog.$.exit.hidden);
-    assertFalse(dialog.$.next.hidden);
-    assertFalse(dialog.$.previous.hidden);
     assertTrue(dialog['$']['intro']['hidden']);
     assertFalse(dialog['$']['assign-select']['hidden']);
-    assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
-    assertTrue(dialog['$']['choose-switch-count']['hidden']);
-    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
 
     dialog.loadPage_(/*Auto-scan enabled=*/2);
 
     // Verify the contents of the auto-scan enabled page.
-    assertTrue(dialog.$.bluetooth.hidden);
-    assertTrue(dialog.$.exit.hidden);
-    assertFalse(dialog.$.next.hidden);
-    assertFalse(dialog.$.previous.hidden);
-    assertTrue(dialog['$']['intro']['hidden']);
     assertTrue(dialog['$']['assign-select']['hidden']);
     assertFalse(dialog['$']['auto-scan-enabled']['hidden']);
-    assertTrue(dialog['$']['choose-switch-count']['hidden']);
-    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
 
     dialog.loadPage_(/*Choose switch count=*/3);
 
     // Verify the contents of the choose switch count page.
-    assertTrue(dialog.$.bluetooth.hidden);
-    assertTrue(dialog.$.exit.hidden);
-    assertFalse(dialog.$.next.hidden);
-    assertFalse(dialog.$.previous.hidden);
-    assertTrue(dialog['$']['intro']['hidden']);
-    assertTrue(dialog['$']['assign-select']['hidden']);
     assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
     assertFalse(dialog['$']['choose-switch-count']['hidden']);
-    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
 
     dialog.loadPage_(/*Auto-scan speed=*/4);
 
     // Verify the contents of the auto-scan speed page.
-    assertTrue(dialog.$.bluetooth.hidden);
-    assertFalse(dialog.$.exit.hidden);
-    assertTrue(dialog.$.next.hidden);
-    assertFalse(dialog.$.previous.hidden);
-    assertTrue(dialog['$']['intro']['hidden']);
-    assertTrue(dialog['$']['assign-select']['hidden']);
-    assertTrue(dialog['$']['auto-scan-enabled']['hidden']);
     assertTrue(dialog['$']['choose-switch-count']['hidden']);
     assertFalse(dialog['$']['auto-scan-speed']['hidden']);
+
+    dialog.loadPage_(/*Closing=*/8);
+
+    // Verify the contents of the closing page.
+    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
+    assertFalse(dialog['$']['closing']['hidden']);
   });
 
   test('Auto-scan enabled and disabled correctly', function() {
@@ -199,6 +185,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
       }
     }
   });
+
   test('Auto-scan speed slower and faster buttons', function() {
     const setPrefData = [];
     // Mock this API to confirm it's getting called, and with the right values.

@@ -14,14 +14,17 @@
  */
 const SASetupElement = {
   BLUETOOTH_BUTTON: 'bluetooth',
+  DONE_BUTTON: 'done',
   EXIT_BUTTON: 'exit',
   NEXT_BUTTON: 'next',
   PREVIOUS_BUTTON: 'previous',
+  START_OVER_BUTTON: 'start-over',
   INTRO_CONTENT: 'intro',
   ASSIGN_SELECT_CONTENT: 'assign-select',
   AUTO_SCAN_ENABLED_CONTENT: 'auto-scan-enabled',
   CHOOSE_SWITCH_COUNT_CONTENT: 'choose-switch-count',
   AUTO_SCAN_SPEED_CONTENT: 'auto-scan-speed',
+  CLOSING_CONTENT: 'closing',
 };
 
 /**
@@ -37,7 +40,7 @@ const SASetupPageId = {
   ASSIGN_NEXT: 5,
   ASSIGN_PREVIOUS: 6,
   TIC_TAC_TOE: 7,
-  DONE: 8,
+  CLOSING: 8,
 };
 
 
@@ -88,8 +91,16 @@ SASetupPageList[SASetupPageId.CHOOSE_SWITCH_COUNT] = {
 SASetupPageList[SASetupPageId.AUTO_SCAN_SPEED] = {
   titleId: 'switchAccessSetupAutoScanSpeedTitle',
   visibleElements: [
-    SASetupElement.EXIT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
     SASetupElement.AUTO_SCAN_SPEED_CONTENT
+  ]
+};
+
+SASetupPageList[SASetupPageId.CLOSING] = {
+  titleId: 'switchAccessSetupClosingTitle',
+  visibleElements: [
+    SASetupElement.DONE_BUTTON, SASetupElement.START_OVER_BUTTON,
+    SASetupElement.CLOSING_CONTENT
   ]
 };
 
@@ -197,8 +208,10 @@ Polymer({
       case SASetupPageId.AUTO_SCAN_ENABLED:
         return SASetupPageId.CHOOSE_SWITCH_COUNT;
       case SASetupPageId.CHOOSE_SWITCH_COUNT:
-      default:
         return SASetupPageId.AUTO_SCAN_SPEED;
+      case SASetupPageId.AUTO_SCAN_SPEED:
+      default:
+        return SASetupPageId.CLOSING;
     }
   },
 
@@ -209,6 +222,8 @@ Polymer({
    */
   getPreviousPageId_() {
     switch (this.currentPageId_) {
+      case SASetupPageId.CLOSING:
+        return SASetupPageId.AUTO_SCAN_SPEED;
       case SASetupPageId.AUTO_SCAN_SPEED:
         return SASetupPageId.CHOOSE_SWITCH_COUNT;
       case SASetupPageId.CHOOSE_SWITCH_COUNT:
@@ -224,6 +239,11 @@ Polymer({
   /** @private */
   onExitClick_() {
     this.$.switchAccessSetupGuideDialog.close();
+  },
+
+  /** @private */
+  onStartOverClick_() {
+    this.loadPage_(SASetupPageId.INTRO);
   },
 
   /** @private */
