@@ -512,6 +512,11 @@ bool IsDomainJoined() {
 }
 #endif  // !defined(OS_ANDROID)
 
+void RecordDisplayHDRStatus(const display::Display& display) {
+  base::UmaHistogramBoolean("Hardware.Display.SupportsHDR",
+                            display.color_spaces().SupportsHDR());
+}
+
 }  // namespace
 
 ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
@@ -762,11 +767,17 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   }
 #endif  // defined(OS_WIN)
 
-  display_count_ = display::Screen::GetScreen()->GetNumDisplays();
+  auto* screen = display::Screen::GetScreen();
+  screen->AddObserver(this);
+  is_screen_observer_ = true;
+
+  display_count_ = screen->GetNumDisplays();
   base::UmaHistogramCounts100("Hardware.Display.Count.OnStartup",
                               display_count_);
-  display::Screen::GetScreen()->AddObserver(this);
-  is_screen_observer_ = true;
+
+  for (const auto& display : screen->GetAllDisplays()) {
+    RecordDisplayHDRStatus(display);
+  }
 
 #if !defined(OS_ANDROID)
   metrics::BeginFirstWebContentsProfiling();
@@ -809,11 +820,20 @@ void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
 void ChromeBrowserMainExtraPartsMetrics::OnDisplayAdded(
     const display::Display& new_display) {
   EmitDisplaysChangedMetric();
+  RecordDisplayHDRStatus(new_display);
 }
 
 void ChromeBrowserMainExtraPartsMetrics::OnDisplayRemoved(
     const display::Display& old_display) {
   EmitDisplaysChangedMetric();
+}
+
+void ChromeBrowserMainExtraPartsMetrics::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (changed_metrics & DisplayObserver::DISPLAY_METRIC_COLOR_SPACE) {
+    RecordDisplayHDRStatus(display);
+  }
 }
 
 void ChromeBrowserMainExtraPartsMetrics::EmitDisplaysChangedMetric() {

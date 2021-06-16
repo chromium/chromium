@@ -27,6 +27,7 @@ namespace {
 
 const char kTouchEventFeatureDetectionEnabledHistogramName[] =
     "Touchscreen.TouchEventsEnabled";
+const char kSupportsHDRHistogramName[] = "Hardware.Display.SupportsHDR";
 
 }  // namespace
 
@@ -164,3 +165,14 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
 }
 
 #endif  // defined(USE_OZONE) || defined(USE_X11)
+
+// Verify a Hardware.Display.SupportsHDR value is recorded during
+// PostBrowserStart.
+TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
+       VerifySupportsHDRIsRecordedAfterPostBrowserStart) {
+  base::HistogramTester histogram_tester;
+  ChromeBrowserMainExtraPartsMetrics test_target;
+
+  test_target.PostBrowserStart();
+  histogram_tester.ExpectTotalCount(kSupportsHDRHistogramName, 1);
+}
