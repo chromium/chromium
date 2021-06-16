@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage.FileSaveRequest;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
@@ -88,7 +89,10 @@ public class FilePersistedTabDataStorageTest {
         });
         semaphore.acquire();
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            persistedTabDataStorage.restore(TAB_ID_1, DATA_ID_1, (res) -> {
+            persistedTabDataStorage.restore(TAB_ID_1, DATA_ID_1, (resByteBuffer) -> {
+                // TODO(crbug.com/1220763) update tests to use ByteBuffer#get to avoid
+                // ByteBuffer/byte[] conversions (and just use ByteBuffer).
+                byte[] res = TabTestUtils.toByteArray(resByteBuffer);
                 Assert.assertEquals(res.length, 2);
                 Assert.assertArrayEquals(res, DATA_A);
                 semaphore.release();

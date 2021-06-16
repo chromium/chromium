@@ -20,6 +20,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -144,7 +145,8 @@ public class LevelDBPersistedTabDataStorageTest {
         LoadCallbackHelper ch = new LoadCallbackHelper();
         int chCount = ch.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mPersistedTabDataStorage.restore(tabId, dataId, (res) -> { ch.notifyCalled(res); });
+            mPersistedTabDataStorage.restore(
+                    tabId, dataId, (res) -> { ch.notifyCalled(TabTestUtils.toByteArray(res)); });
         });
         ch.waitForCallback(chCount);
         Assert.assertArrayEquals(expected, ch.getRes());

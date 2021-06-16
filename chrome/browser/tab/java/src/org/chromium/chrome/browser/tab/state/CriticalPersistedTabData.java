@@ -127,7 +127,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     @VisibleForTesting
     protected CriticalPersistedTabData(
-            Tab tab, byte[] data, PersistedTabDataStorage storage, String persistedTabDataId) {
+            Tab tab, ByteBuffer data, PersistedTabDataStorage storage, String persistedTabDataId) {
         super(tab, storage, persistedTabDataId);
         deserializeAndLog(data);
     }
@@ -167,7 +167,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @return serialized {@link CriticalPersistedTabData}
      * TODO(crbug.com/1119452) rethink CriticalPersistedTabData contract
      */
-    public static byte[] restore(int tabId, boolean isIncognito) {
+    public static ByteBuffer restore(int tabId, boolean isIncognito) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, isIncognito);
         return config.getStorage().restore(tabId, config.getId());
@@ -179,7 +179,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @param isIncognito true if the {@link Tab} is incognito
      * @param callback the serialized {@link CriticalPersistedTabData} is passed back in
      */
-    public static void restore(int tabId, boolean isIncognito, Callback<byte[]> callback) {
+    public static void restore(int tabId, boolean isIncognito, Callback<ByteBuffer> callback) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, isIncognito);
         config.getStorage().restore(tabId, config.getId(), callback);
@@ -191,7 +191,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @param isCriticalPersistedTabDataEnabled true if CriticalPersistedData is enabled
      * as the storage/retrieval method
      */
-    public static void build(Tab tab, byte[] serialized, boolean isStorageRetrievalEnabled) {
+    public static void build(Tab tab, ByteBuffer serialized, boolean isStorageRetrievalEnabled) {
         CriticalPersistedTabData res = PersistedTabData.build(tab, (data, storage, id) -> {
             return new CriticalPersistedTabData(tab, data, storage, id);
         }, serialized, CriticalPersistedTabData.class);
@@ -208,7 +208,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    boolean deserialize(@Nullable byte[] bytes) {
+    boolean deserialize(@Nullable ByteBuffer bytes) {
         try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Deserialize")) {
             CriticalPersistedTabDataProto criticalPersistedTabDataProto =
                     CriticalPersistedTabDataProto.parseFrom(bytes);
@@ -364,6 +364,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
     }
 
+    // TODO(crbug.com/1220678) Change PersistedTabData saves to use ByteBuffer instead of byte[]
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Override
     public Supplier<byte[]> getSerializeSupplier() {

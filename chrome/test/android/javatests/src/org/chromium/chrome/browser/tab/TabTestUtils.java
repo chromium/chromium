@@ -14,6 +14,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
+import java.nio.ByteBuffer;
+
 /**
  * Exposes helper functions to be used in tests to instrument tab interaction.
  */
@@ -169,5 +171,30 @@ public class TabTestUtils {
      */
     public static void setIsShowingErrorPage(Tab tab, boolean isShowingErrorPage) {
         ((TabImpl) tab).setIsShowingErrorPage(isShowingErrorPage);
+    }
+
+    /**
+     * Acquire copy of byte array from a ByteBuffer.
+     * @param buffer {@link ByteBuffer} copy of backing byte array will be acquired from.
+     */
+    public static byte[] toByteArray(ByteBuffer buffer) {
+        if (buffer == null) {
+            return null;
+        }
+        if (buffer.hasArray() && buffer.arrayOffset() == 0) {
+            return buffer.array();
+        }
+        byte[] bytes = new byte[buffer.limit()];
+        buffer.rewind();
+        buffer.get(bytes);
+        return bytes;
+    }
+
+    /**
+     * Create ByteBuffer backed by a byte array.
+     * @param bytes byte array to create ByteBuffer from.
+     */
+    public static ByteBuffer toByteBuffer(byte[] bytes) {
+        return ByteBuffer.wrap(bytes);
     }
 }
