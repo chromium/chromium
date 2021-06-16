@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
@@ -158,7 +159,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
                           static_cast<int>(render_frame_id)),
       /*real_time_lookup_enabled=*/false,
       /*can_rt_check_subresource_url=*/false,
-      /*can_check_db=*/true,
+      /*can_check_db=*/true, content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr);
 
   checker_impl->CheckUrl(

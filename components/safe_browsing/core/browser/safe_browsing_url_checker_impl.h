@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "components/safe_browsing/core/db/database_manager.h"
@@ -80,6 +81,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
       bool can_check_db,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui);
 
   // Constructor that takes only a RequestDestination, a UrlCheckerDelegate, and
@@ -91,6 +93,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       const base::RepeatingCallback<web::WebState*()>& web_state_getter,
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui);
 
   ~SafeBrowsingUrlCheckerImpl() override;
@@ -178,7 +181,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       base::WeakPtr<SafeBrowsingUrlCheckerImpl> weak_checker_on_io,
       const GURL& url,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      scoped_refptr<SafeBrowsingDatabaseManager> database_manager);
+      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Called when the |request| from the real-time lookup service is sent.
   void OnRTLookupRequest(std::unique_ptr<RTLookupRequest> request,
@@ -239,6 +243,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     bool is_cached_safe_url;
   };
 
+  THREAD_CHECKER(thread_checker_);
   const net::HttpRequestHeaders headers_;
   const int load_flags_;
   const network::mojom::RequestDestination request_destination_;
@@ -278,6 +283,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // enterprise real time URL lookup is enabled and safe browsing is disabled
   // for this profile.
   bool can_check_db_;
+
+  // The task runner for the UI thread.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   // This object is used to perform real time url check. Can only be accessed in
   // UI thread.

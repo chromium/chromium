@@ -54,7 +54,8 @@ class WebApiHandshakeChecker::CheckerOnIO
         url_checker_delegate, web_contents_getter_,
         /*real_time_lookup_enabled=*/false,
         /*can_rt_check_subresource_url=*/false,
-        /*can_check_db=*/true, /*url_lookup_service=*/nullptr);
+        /*can_check_db=*/true, content::GetUIThreadTaskRunner({}),
+        /*url_lookup_service=*/nullptr);
     url_checker_->CheckUrl(
         url, "GET",
         base::BindOnce(&WebApiHandshakeChecker::CheckerOnIO::OnCheckUrlResult,

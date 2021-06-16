@@ -261,6 +261,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), real_time_lookup_enabled,
         /*can_rt_check_subresource_url=*/false, can_check_safe_browsing_db,
+        base::ThreadTaskRunnerHandle::Get(),
         real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr() : nullptr);
   }
 

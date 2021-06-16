@@ -120,6 +120,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       request_destination, url_checker_delegate_,
       web_state->CreateDefaultGetter(), can_perform_full_url_lookup,
       /*can_rt_check_subresource_url=*/false,
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
 }
 

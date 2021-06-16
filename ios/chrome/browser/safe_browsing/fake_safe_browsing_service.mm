@@ -5,9 +5,11 @@
 #include "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 
 #include "base/callback_helpers.h"
+#include "base/task/post_task.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
+#include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
@@ -31,6 +33,7 @@ class FakeSafeBrowsingUrlCheckerImpl
                 []() { return static_cast<web::WebState*>(nullptr); }),
             /*real_time_lookup_enabled=*/false,
             /*can_rt_check_subresource_url=*/false,
+            base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
             /*url_lookup_service_on_ui=*/nullptr) {}
   ~FakeSafeBrowsingUrlCheckerImpl() override = default;
 

@@ -76,7 +76,8 @@ class BrowserURLLoaderThrottle::CheckerOnIO
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
         headers, load_flags, request_destination, has_user_gesture,
         url_checker_delegate, web_contents_getter_, real_time_lookup_enabled_,
-        can_rt_check_subresource_url_, can_check_db_, url_lookup_service_);
+        can_rt_check_subresource_url_, can_check_db_,
+        content::GetUIThreadTaskRunner({}), url_lookup_service_);
 
     CheckUrl(url, method);
   }
