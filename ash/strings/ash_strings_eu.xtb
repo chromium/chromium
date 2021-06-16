@@ -158,7 +158,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Pasatu hiru hatz behera ikuspegi orokorretik irteteko</translation>
 <translation id="2208323208084708176">Mahaigain bateratuko modua</translation>
-<translation id="2220572644011485463">PIN kodea edo pasahitza</translation>
+<translation id="2220572644011485463">PINa edo pasahitza</translation>
 <translation id="2222338659135520253">Saioa hasi egin behar da</translation>
 <translation id="2222841058024245321">7. lan-eremua</translation>
 <translation id="2224075387478458881">Ezin da pantaila grabatu eduki babestua ikusgai dagoenean</translation>
@@ -186,7 +186,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Multimedia-edukia kontrolatzeko aukerak</translation>
 <translation id="2405664212338326887">Konektatu gabe</translation>
-<translation id="2408955596600435184">Idatzi PIN kodea</translation>
+<translation id="2408955596600435184">Idatzi PINa</translation>
 <translation id="2412593942846481727">Eguneratu egin daiteke</translation>
 <translation id="2427507373259914951">Egin klik ezkerreko botoiarekin</translation>
 <translation id="2429753432712299108">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Onartu aurretik, berretsi gailu horretan pasakode hau agertzen dela: <ph name="PASSKEY" /></translation>
@@ -526,7 +526,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="504465286040788597">Aurreko paragrafoa</translation>
 <translation id="5071064518267176975">Aplikazio batek mikrofonoa erabili nahi du</translation>
 <translation id="5075554201838155866">Abiarazi azpitituluak</translation>
-<translation id="5078796286268621944">Okerreko PIN kodea</translation>
+<translation id="5078796286268621944">Okerra da PINa</translation>
 <translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
 <translation id="5155897006997040331">Irakurketa-abiadura</translation>
@@ -575,7 +575,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="558849140439112033">Arrastatu argazkian agertzea nahi duzun eremua hautatzeko</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Ahozko argibideak desgaitzeko, sakatu Ktrl + Alt + Z.</translation>
-<translation id="5601503069213153581">PIN kodea</translation>
+<translation id="5601503069213153581">PINa</translation>
 <translation id="5619862035903135339">Administratzailearen gidalerroek pantaila-kaptura bat egitea desgaitzen dute</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonoaren konektorea</translation>
@@ -667,7 +667,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6330012934079202188">Lan-eremu guztietako leihoak daude ikusgai. Une honetako lan-eremuko leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> domeinuak kudeatutako saio kudeatua da <ph name="DISPLAY_NAME" /></translation>
 <translation id="6376931439017688372">Aktibatuta dago Bluetooth-a</translation>
-<translation id="6381109794406942707">Gailua desblokeatzeko, idatzi PIN kodea.</translation>
+<translation id="6381109794406942707">Gailua desblokeatzeko, idatzi PINa.</translation>
 <translation id="639644700271529076">BLOK MAIUS desaktibatuta dago</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
@@ -680,7 +680,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6459472438155181876">Pantaila <ph name="DISPLAY_NAME" /> gailura zabaltzen</translation>
 <translation id="6482559668224714696">Pantaila osoko lupa</translation>
 <translation id="6490471652906364588">USB-C gailua (eskuinaldeko ataka)</translation>
-<translation id="649452524636452238">Txartel adimendunaren PIN kodea</translation>
+<translation id="649452524636452238">Txartel adimendunaren PINa</translation>
 <translation id="6501401484702599040">Pantaila <ph name="RECEIVER_NAME" /> gailura igortzen ari da</translation>
 <translation id="6520517963145875092">Hautatu argazkian agertzea nahi duzun leihoa</translation>
 <translation id="652139407789908527">Eguneratu bitartean, pantaila ohi baino denbora gehiago egongo da hutsik (minutu bat gehienez ere). Eguneratu bitartean, ez sakatu etengailua.</translation>
@@ -743,7 +743,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6972754398087986839">Hasi erabiltzen</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="698231206551913481">Erabiltzailea kentzen denean, harekin erlazionatutako fitxategi eta gailuko datu guztiak betiko ezabatuko dira.</translation>
-<translation id="7007983414944123363">Ezin izan da egiaztatu PIN kodea edo pasahitza. Saiatu berriro.</translation>
+<translation id="7007983414944123363">Ezin izan da egiaztatu PINa edo pasahitza. Saiatu berriro.</translation>
 <translation id="7015766095477679451">Itzuli ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. lan-eremua</translation>
 <translation id="7025533177575372252">Konektatu <ph name="DEVICE_NAME" /> telefonoarekin</translation>
@@ -873,7 +873,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8000066093800657092">Ez dago sarerik</translation>
 <translation id="8004512796067398576">Gehikuntza</translation>
 <translation id="8029247720646289474">Ezin izan da konektatu wifi-gunera</translation>
-<translation id="8029629653277878342">PIN kodea edo pasahitza behar da gailua babestuago edukitzeko</translation>
+<translation id="8029629653277878342">PINa edo pasahitza behar da gailua babestuago edukitzeko</translation>
 <translation id="8030169304546394654">Deskonektatuta</translation>
 <translation id="8036504271468642248">Aurreko esaldia</translation>
 <translation id="8042893070933512245">Ireki Erabilerraztasun-ezarpenak menua</translation>
@@ -976,7 +976,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8841375032071747811">Atzera botoia</translation>
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Bilaketa + Ihes</translation>
-<translation id="8853703225951107899">Oraindik ezin izan da egiaztatu PIN kodea edo pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, erabili pasahitz zaharra. Saioa amaitu eta gero aplikatuko da pasahitz berria.</translation>
+<translation id="8853703225951107899">Oraindik ezin izan da egiaztatu PINa edo pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, erabili pasahitz zaharra. Saioa amaitu eta gero aplikatuko da pasahitz berria.</translation>
 <translation id="8870509716567206129">Aplikazioak ez du onartzen pantaila zatitua erabiltzea.</translation>
 <translation id="8871580645200179206">Aldatu gai ilunaren egoera. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Konektatu gabe</translation>

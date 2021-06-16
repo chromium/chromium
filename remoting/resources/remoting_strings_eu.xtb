@@ -37,7 +37,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="2676780859508944670">Lanean…</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Arazo bat izan da autentifikatzean. Hasi berriro saioa.</translation>
-<translation id="2803375539583399270">Idatzi PIN kodea</translation>
+<translation id="2803375539583399270">Idatzi PINa</translation>
 <translation id="2919669478609886916">Gailua beste erabiltzaile batekin partekatzen ari zara. Partekatzen jarraitu nahi duzu?</translation>
 <translation id="2939145106548231838">Autentifikatu ostalariaren aurrean</translation>
 <translation id="3027681561976217984">Ukipen modua</translation>
@@ -99,7 +99,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="5397086374758643919">Chrome-ren Urruneko pantaila eginbidearen ostalariaren desinstalatzailea</translation>
 <translation id="5419418238395129586">Azken konexioa: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Ostalaria itzali da.</translation>
-<translation id="5601503069213153581">PIN kodea</translation>
+<translation id="5601503069213153581">PINa</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Mahaigaina <ph name="USER" /> erabiltzailearekin partekatzen ari zara.</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> gisa hasi duzu saioa.</translation>
@@ -137,7 +137,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="7434397035092923453">Sarbidea ukatu zaio bezero honi: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Konektatutako bezeroa: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Aldatu kontua</translation>
-<translation id="7628469622942688817">Gogoratu nire PIN kodea gailu honetan.</translation>
+<translation id="7628469622942688817">Gogoratu nire PINa gailu honetan.</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
