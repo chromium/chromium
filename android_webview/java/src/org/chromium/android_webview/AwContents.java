@@ -932,7 +932,7 @@ public class AwContents implements SmartClipProvider {
                     (float) openWebPixelCoverage / RectUtils.getRectArea(rootVisibleRect);
 
             AwContentsJni.get().updateOpenWebScreenArea(
-                    openWebPixelCoverage, (int) openWebVisiblePercentage);
+                    openWebPixelCoverage, (int) (openWebVisiblePercentage * 100));
         }
     }
 
