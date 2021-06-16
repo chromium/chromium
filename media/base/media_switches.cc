@@ -728,7 +728,7 @@ const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
 // (APO), driver, and hardware.
 // https://docs.microsoft.com/en-us/windows/win32/api/audioclient/ne-audioclient-audclnt_streamoptions
 const base::Feature MEDIA_EXPORT kWasapiRawAudioCapture{
-    "WASAPIRawAudioCapture", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WASAPIRawAudioCapture", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #endif  // defined(OS_WIN)
 

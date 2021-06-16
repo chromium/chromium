@@ -8886,21 +8886,6 @@
             ]
         }
     ],
-    "WASAPIRawAudioCapture": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WASAPIRawAudioCapture"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebOtpBackendAuto": [
         {
             "platforms": [

@@ -4438,7 +4438,7 @@
   {
     "name": "raw-audio-capture",
     "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
   },
   {
     "name": "raw-clipboard",
