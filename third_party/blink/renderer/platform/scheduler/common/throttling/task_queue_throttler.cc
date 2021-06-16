@@ -82,18 +82,7 @@ void TaskQueueThrottler::IncreaseThrottleRefCount(TaskQueue* task_queue) {
     return;
 
   task_queue->SetTimeDomain(time_domain_.get());
-  // This blocks any tasks from |task_queue| until PumpThrottledTasks() to
-  // enforce task alignment.
-  task_queue->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
-
-  if (!task_queue->IsQueueEnabled())
-    return;
-
-  if (!task_queue->IsEmpty()) {
-    LazyNow lazy_now(tick_clock_);
-    OnQueueNextWakeUpChanged(task_queue,
-                             NextTaskRunTime(&lazy_now, task_queue).value());
-  }
+  UpdateQueueSchedulingLifecycleState(tick_clock_->NowTicks(), task_queue);
 }
 
 void TaskQueueThrottler::DecreaseThrottleRefCount(TaskQueue* task_queue) {
@@ -230,16 +219,12 @@ base::TimeTicks TaskQueueThrottler::AlignedThrottledRunTime(
 void TaskQueueThrottler::MaybeSchedulePumpThrottledTasks(
     const base::Location& from_here,
     base::TimeTicks now,
-    base::TimeTicks unaligned_runtime) {
+    base::TimeTicks runtime) {
   if (!allow_throttling_)
     return;
 
-  // TODO(altimin): Consider removing alignment here.
-  base::TimeTicks runtime =
-      std::max(now, unaligned_runtime)
-          .SnappedToNextTick(base::TimeTicks(),
-                             base::TimeDelta::FromSeconds(1));
-  DCHECK_LE(now, runtime);
+  // Clamp to |now|.
+  runtime = std::max(now, runtime);
 
   // If there is a pending call to PumpThrottledTasks and it's sooner than
   // |runtime| then return.
@@ -351,11 +336,11 @@ void TaskQueueThrottler::UpdateQueueSchedulingLifecycleStateInternal(
     return;
   }
 
-  if (!next_desired_run_time)
-    return;
-
-  const base::TimeTicks next_run_time =
-      UpdateNextAllowedRunTime(queue, next_desired_run_time.value());
+  base::TimeTicks next_run_time;
+  if (next_desired_run_time.has_value()) {
+    next_run_time =
+        UpdateNextAllowedRunTime(queue, next_desired_run_time.value());
+  }
 
   // Insert a fence of an approriate type.
   absl::optional<QueueBlockType> block_type = GetQueueBlockType(now, queue);
@@ -365,10 +350,8 @@ void TaskQueueThrottler::UpdateQueueSchedulingLifecycleStateInternal(
     case QueueBlockType::kAllTasks:
       queue->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
 
-      {
-        // Braces limit the scope for a declared variable. Does not compile
-        // otherwise.
-        TRACE_EVENT1(
+      if (next_desired_run_time.has_value()) {
+        TRACE_EVENT_INSTANT(
             "renderer.scheduler",
             "TaskQueueThrottler::PumpThrottledTasks_ExpensiveTaskThrottled",
             "throttle_time_in_seconds",
@@ -385,7 +368,8 @@ void TaskQueueThrottler::UpdateQueueSchedulingLifecycleStateInternal(
   }
 
   // Schedule a pump.
-  MaybeSchedulePumpThrottledTasks(FROM_HERE, now, next_run_time);
+  if (next_desired_run_time.has_value())
+    MaybeSchedulePumpThrottledTasks(FROM_HERE, now, next_run_time);
 }
 
 absl::optional<QueueBlockType> TaskQueueThrottler::GetQueueBlockType(
@@ -564,9 +548,6 @@ void TaskQueueThrottler::EnableThrottling() {
 
     TaskQueue* queue = map_entry.key;
 
-    // Throttling is enabled and task queue should be blocked immediately
-    // to enforce task alignment.
-    queue->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
     queue->SetTimeDomain(time_domain_.get());
     UpdateQueueSchedulingLifecycleState(lazy_now.Now(), queue);
   }

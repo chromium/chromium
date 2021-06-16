@@ -37,8 +37,10 @@ void WakeUpBudgetPool::SetWakeUpDuration(base::TimeDelta duration) {
   wake_up_duration_ = duration;
 }
 
-void WakeUpBudgetPool::AllowUnalignedWakeUpIfNoRecentWakeUp() {
-  allow_unaligned_wake_up_is_no_recent_wake_up_ = true;
+void WakeUpBudgetPool::AllowLowerAlignmentIfNoRecentWakeUp(
+    base::TimeDelta alignment) {
+  DCHECK_LE(alignment, wake_up_interval_);
+  wake_up_alignment_if_no_recent_wake_up_ = alignment;
 }
 
 void WakeUpBudgetPool::RecordTaskRunTime(TaskQueue* queue,
@@ -86,25 +88,29 @@ base::TimeTicks WakeUpBudgetPool::GetNextAllowedRunTime(
     return desired_run_time;
   }
 
-  // Do not throttle if there hasn't been a wake up in the last wake up
-  // interval.
-  if (allow_unaligned_wake_up_is_no_recent_wake_up_) {
-    // If unaligned wake ups are allowed, the first wake up can happen at any
-    // point.
-    if (!last_wake_up_.has_value())
-      return desired_run_time;
+  // If there hasn't been a wake up in the last wake up interval, the next wake
+  // up is simply aligned on |wake_up_alignment_if_no_recent_wake_up_|.
+  if (!wake_up_alignment_if_no_recent_wake_up_.is_zero()) {
+    // The first wake up is simply aligned on
+    // |wake_up_alignment_if_no_recent_wake_up_|.
+    if (!last_wake_up_.has_value()) {
+      return desired_run_time.SnappedToNextTick(
+          base::TimeTicks(), wake_up_alignment_if_no_recent_wake_up_);
+    }
 
-    // Unaligned wake ups can happen at most every |wake_up_interval_| after the
-    // last wake up.
-    auto next_unaligned_wake_up =
-        std::max(desired_run_time, last_wake_up_.value() + wake_up_interval_);
+    // The next wake up is allowed at least |wake_up_interval_| after the last
+    // wake up.
+    auto next_aligned_wake_up =
+        std::max(desired_run_time, last_wake_up_.value() + wake_up_interval_)
+            .SnappedToNextTick(base::TimeTicks(),
+                               wake_up_alignment_if_no_recent_wake_up_);
 
-    // Aligned wake ups happen every |wake_up_interval_|, snapped to the minute.
-    auto next_aligned_wake_up = desired_run_time.SnappedToNextTick(
+    // A wake up is also allowed every |wake_up_interval_|.
+    auto next_wake_up_at_interval = desired_run_time.SnappedToNextTick(
         base::TimeTicks(), wake_up_interval_);
 
     // Pick the earliest of the two allowed run times.
-    return std::min(next_unaligned_wake_up, next_aligned_wake_up);
+    return std::min(next_aligned_wake_up, next_wake_up_at_interval);
   }
 
   return desired_run_time.SnappedToNextTick(base::TimeTicks(),
@@ -119,6 +125,12 @@ void WakeUpBudgetPool::OnQueueNextWakeUpChanged(
 }
 
 void WakeUpBudgetPool::OnWakeUp(base::TimeTicks now) {
+  // To ensure that we correctly enforce wakeup limits for rapid successive
+  // wakeups, if |now| is within the last wakeup duration (e.g. |now| is 2ms
+  // after the last wakeup and |wake_up_duration_| is 3ms), this isn't counted
+  // as a new wakeup.
+  if (last_wake_up_ && now < last_wake_up_.value() + wake_up_duration_)
+    return;
   last_wake_up_ = now;
 }
 
@@ -129,6 +141,8 @@ void WakeUpBudgetPool::WriteIntoTrace(perfetto::TracedValue context,
   dict.Add("name", name_);
   dict.Add("wake_up_interval_in_seconds", wake_up_interval_.InSecondsF());
   dict.Add("wake_up_duration_in_seconds", wake_up_duration_.InSecondsF());
+  dict.Add("wake_up_alignment_if_no_recent_wake_up_in_seconds",
+           wake_up_alignment_if_no_recent_wake_up_.InSecondsF());
   if (last_wake_up_) {
     dict.Add("last_wake_up_seconds_ago",
              (now - last_wake_up_.value()).InSecondsF());

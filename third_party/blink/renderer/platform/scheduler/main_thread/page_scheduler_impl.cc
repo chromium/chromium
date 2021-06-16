@@ -732,7 +732,7 @@ void PageSchedulerImpl::MaybeInitializeWakeUpBudgetPools(
 
   if (IsIntensiveWakeUpThrottlingEnabled()) {
     same_origin_intensive_wake_up_budget_pool_
-        ->AllowUnalignedWakeUpIfNoRecentWakeUp();
+        ->AllowLowerAlignmentIfNoRecentWakeUp(base::TimeDelta::FromSeconds(1));
   }
 
   UpdateWakeUpBudgetPools(lazy_now);

@@ -100,6 +100,7 @@ class WorkerSchedulerTest : public testing::Test {
                                                     nullptr /* proxy */)) {
     mock_task_runner_->AdvanceMockTickClock(
         base::TimeDelta::FromMicroseconds(5000));
+    start_time_ = mock_task_runner_->NowTicks();
   }
 
   WorkerSchedulerTest(const WorkerSchedulerTest&) = delete;
@@ -141,6 +142,7 @@ class WorkerSchedulerTest : public testing::Test {
       sequence_manager_;
   std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
   std::unique_ptr<WorkerSchedulerForTest> worker_scheduler_;
+  base::TimeTicks start_time_;
 };
 
 TEST_F(WorkerSchedulerTest, TestPostTasks) {
@@ -274,12 +276,12 @@ TEST_F(WorkerSchedulerTest,
 
   RunUntilIdle();
 
-  EXPECT_THAT(
-      tasks, ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(1),
-                         base::TimeTicks() + base::TimeDelta::FromSeconds(11),
-                         base::TimeTicks() + base::TimeDelta::FromSeconds(21),
-                         base::TimeTicks() + base::TimeDelta::FromSeconds(31),
-                         base::TimeTicks() + base::TimeDelta::FromSeconds(41)));
+  EXPECT_THAT(tasks,
+              ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(1),
+                          start_time_ + base::TimeDelta::FromSeconds(10),
+                          start_time_ + base::TimeDelta::FromSeconds(20),
+                          start_time_ + base::TimeDelta::FromSeconds(30),
+                          start_time_ + base::TimeDelta::FromSeconds(40)));
 }
 
 TEST_F(WorkerSchedulerTest, MAYBE_PausableTasks) {

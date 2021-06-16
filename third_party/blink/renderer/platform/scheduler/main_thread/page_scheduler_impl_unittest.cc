@@ -1137,6 +1137,7 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
   page_scheduler_ =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   EXPECT_FALSE(page_scheduler_->IsCPUTimeThrottled());
+  base::TimeTicks start_time = test_task_runner_->NowTicks();
 
   Vector<base::TimeTicks> run_times;
   frame_scheduler_ =
@@ -1185,10 +1186,9 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   // Check that tasks are aligned and throttled.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(16),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(26)));
+  EXPECT_THAT(run_times,
+              ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(16),
+                          start_time + base::TimeDelta::FromSeconds(25)));
 
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 }
@@ -1200,6 +1200,7 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
   InitializeTrialParams();
   std::unique_ptr<PageSchedulerImpl> page_scheduler =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
+  base::TimeTicks start_time = test_task_runner_->NowTicks();
 
   Vector<base::TimeTicks> run_times;
 
@@ -1227,11 +1228,10 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
   FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(55500));
 
   // Check that tasks are throttled.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(21),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(26),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(51)));
+  EXPECT_THAT(run_times,
+              ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(21),
+                          start_time + base::TimeDelta::FromSeconds(25),
+                          start_time + base::TimeDelta::FromSeconds(50)));
   run_times.clear();
 
   FrameScheduler::SchedulingAffectingFeatureHandle websocket_feature =
@@ -1299,9 +1299,10 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
   // WebSocket is closed, budget-based throttling now applies.
   EXPECT_THAT(
       run_times,
-      ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(84),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(109),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(134)));
+      ElementsAre(
+          base::TimeTicks() + base::TimeDelta::FromMilliseconds(84500),
+          base::TimeTicks() + base::TimeDelta::FromMilliseconds(109500),
+          base::TimeTicks() + base::TimeDelta::FromMilliseconds(134500)));
 
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 }

@@ -2511,18 +2511,6 @@ TEST_F(MainThreadSchedulerImplTest, StopAndThrottleThrottleableQueue) {
   EXPECT_THAT(run_order, testing::ElementsAre());
 }
 
-TEST_F(MainThreadSchedulerImplTest, ThrottleAndPauseRenderer) {
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "T1 T2");
-
-  MainThreadTaskQueue::ThrottleHandle handle =
-      throttleable_task_queue()->Throttle();
-  base::RunLoop().RunUntilIdle();
-  auto pause_handle = scheduler_->PauseRenderer();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre());
-}
-
 TEST_F(MainThreadSchedulerImplTest, MultipleStopsNeedMultipleResumes) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "T1 T2");

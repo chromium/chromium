@@ -187,9 +187,8 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
 
   void PumpThrottledTasks();
 
-  // Note |unthrottled_runtime| might be in the past. When this happens we
-  // compute the delay to the next runtime based on now rather than
-  // unthrottled_runtime.
+  // Note |runtime| might be in the past. When this happens we compute the delay
+  // to the next runtime based on now rather than |runtime|.
   void MaybeSchedulePumpThrottledTasks(const base::Location& from_here,
                                        base::TimeTicks now,
                                        base::TimeTicks runtime);

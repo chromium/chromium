@@ -953,13 +953,13 @@ TEST_F(FrameSchedulerImplTest, FreezeForegroundOnlyTasks) {
   ForegroundOnlyTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
 
-  page_scheduler_->SetPageVisible(false);
+  frame_scheduler_->SetFrameVisible(false);
 
   EXPECT_EQ(0, counter);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, counter);
 
-  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetFrameVisible(true);
 
   EXPECT_EQ(0, counter);
   base::RunLoop().RunUntilIdle();
@@ -3017,12 +3017,13 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     }
 
     task_environment_.FastForwardBy(kGracePeriod);
-    EXPECT_THAT(run_times, testing::ElementsAre(
-                               scope_start + base::TimeDelta::FromSeconds(1),
-                               scope_start + base::TimeDelta::FromSeconds(2),
-                               scope_start + base::TimeDelta::FromSeconds(3),
-                               scope_start + base::TimeDelta::FromSeconds(4),
-                               scope_start + base::TimeDelta::FromSeconds(5)));
+    EXPECT_THAT(run_times,
+                testing::ElementsAre(
+                    scope_start + kDefaultThrottledWakeUpInterval,
+                    scope_start + 2 * kDefaultThrottledWakeUpInterval,
+                    scope_start + 3 * kDefaultThrottledWakeUpInterval,
+                    scope_start + 4 * kDefaultThrottledWakeUpInterval,
+                    scope_start + 5 * kDefaultThrottledWakeUpInterval));
   }
 
   // After the grace period:
@@ -3426,36 +3427,24 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     // Wake ups are intensively throttled, since there is no throttling opt-out.
     const base::TimeTicks scope_start = base::TimeTicks::Now();
     std::vector<base::TimeTicks> run_times;
-    for (int i = 1; i < kNumTasks + 1; ++i) {
-      task_runner->PostDelayedTask(FROM_HERE,
-                                   base::BindOnce(&RecordRunTime, &run_times),
-                                   i * kShortDelay);
-    }
-    for (int i = 1; i < kNumTasks + 1; ++i) {
-      task_runner->PostDelayedTask(
-          FROM_HERE, base::BindOnce(&RecordRunTime, &run_times),
-          kDefaultThrottledWakeUpInterval + i * kShortDelay);
-    }
+    task_runner->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&RecordRunTime, &run_times), kShortDelay);
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 base::BindOnce(&RecordRunTime, &run_times),
+                                 kDefaultThrottledWakeUpInterval + kShortDelay);
     task_environment_.FastForwardUntilNoTasksRemain();
     if (IsIntensiveThrottlingExpected()) {
-      // Note: Wake ups can be unaligned when there is no recent wake up.
+      // Note: Intensive throttling is not applied on the 1st task since there
+      // is no recent wake up.
       EXPECT_THAT(
           run_times,
           testing::ElementsAre(
               scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kIntensiveThrottlingDurationBetweenWakeUps,
-              scope_start + kIntensiveThrottlingDurationBetweenWakeUps,
               scope_start + kIntensiveThrottlingDurationBetweenWakeUps));
     } else {
       EXPECT_THAT(run_times,
                   testing::ElementsAre(
                       scope_start + kDefaultThrottledWakeUpInterval,
-                      scope_start + kDefaultThrottledWakeUpInterval,
-                      scope_start + kDefaultThrottledWakeUpInterval,
-                      scope_start + 2 * kDefaultThrottledWakeUpInterval,
-                      scope_start + 2 * kDefaultThrottledWakeUpInterval,
                       scope_start + 2 * kDefaultThrottledWakeUpInterval));
     }
   }
@@ -3512,36 +3501,24 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     // Wake ups are intensively throttled, since there is no throttling opt-out.
     const base::TimeTicks scope_start = base::TimeTicks::Now();
     std::vector<base::TimeTicks> run_times;
-    for (int i = 1; i < kNumTasks + 1; ++i) {
-      task_runner->PostDelayedTask(FROM_HERE,
-                                   base::BindOnce(&RecordRunTime, &run_times),
-                                   i * kShortDelay);
-    }
-    for (int i = 1; i < kNumTasks + 1; ++i) {
-      task_runner->PostDelayedTask(
-          FROM_HERE, base::BindOnce(&RecordRunTime, &run_times),
-          kDefaultThrottledWakeUpInterval + i * kShortDelay);
-    }
+    task_runner->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&RecordRunTime, &run_times), kShortDelay);
+    task_runner->PostDelayedTask(FROM_HERE,
+                                 base::BindOnce(&RecordRunTime, &run_times),
+                                 kDefaultThrottledWakeUpInterval + kShortDelay);
     task_environment_.FastForwardUntilNoTasksRemain();
     if (IsIntensiveThrottlingExpected()) {
-      // Note: Wake ups can be unaligned when there is no recent wake up.
+      // Note: Intensive throttling is not applied on the 1st task since there
+      // is no recent wake up.
       EXPECT_THAT(
           run_times,
           testing::ElementsAre(
               scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kIntensiveThrottlingDurationBetweenWakeUps,
-              scope_start + kIntensiveThrottlingDurationBetweenWakeUps,
               scope_start + kIntensiveThrottlingDurationBetweenWakeUps));
     } else {
       EXPECT_THAT(run_times,
                   testing::ElementsAre(
                       scope_start + kDefaultThrottledWakeUpInterval,
-                      scope_start + kDefaultThrottledWakeUpInterval,
-                      scope_start + kDefaultThrottledWakeUpInterval,
-                      scope_start + 2 * kDefaultThrottledWakeUpInterval,
-                      scope_start + 2 * kDefaultThrottledWakeUpInterval,
                       scope_start + 2 * kDefaultThrottledWakeUpInterval));
     }
   }
