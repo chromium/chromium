@@ -112,6 +112,7 @@
 <if expr="is_linux and not chromeos and not lacros">
         <div class="hr" hidden="[[!pageVisibility.bookmarksBar]]"></div>
         <settings-toggle-button
+            hidden="[[!showCustomChromeFrame_]]"
             pref="{{prefs.browser.custom_chrome_frame}}"
             label="$i18n{showWindowDecorations}"
             inverted>

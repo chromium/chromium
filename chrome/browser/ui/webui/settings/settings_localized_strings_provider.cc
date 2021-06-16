@@ -113,6 +113,10 @@
 #include "ui/accessibility/accessibility_features.h"
 #endif
 
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/display/screen.h"
+#endif
+
 #if defined(OS_WIN)
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "device/fido/win/webauthn_api.h"
@@ -128,6 +132,12 @@
 #if defined(USE_NSS_CERTS)
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
 #endif
+
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace settings {
 namespace {
 
@@ -369,6 +379,21 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                          zoom::GetPresetZoomFactorsAsJSON());
   html_source->AddBoolean("showReaderModeOption",
                           dom_distiller::OfferReaderModeInSettings());
+
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(USE_OZONE)
+  const bool show_custom_chrome_frame =
+      features::IsUsingOzonePlatform() &&
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_server_side_window_decorations;
+#else
+  const bool show_custom_chrome_frame = true;
+#endif
+  html_source->AddBoolean("showCustomChromeFrame", show_custom_chrome_frame);
+#endif
 }
 
 void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,

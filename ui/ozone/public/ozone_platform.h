@@ -161,6 +161,12 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     bool fetch_buffer_formats_for_gmb_on_gpu = false;
   };
 
+  // Groups platform properties that can only be known at run time.
+  struct PlatformRuntimeProperties {
+    // Indicates whether the platform supports server-side window decorations.
+    bool supports_server_side_window_decorations = true;
+  };
+
   // Properties available in the host process after initialization.
   struct InitializedHostProperties {
     // Whether the underlying platform supports deferring compositing of buffers
@@ -262,6 +268,9 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // current platform implementation. This can be called from either host or GPU
   // process at any time.
   virtual const PlatformProperties& GetPlatformProperties();
+
+  // Returns runtime properties of the current platform implementation.
+  virtual const PlatformRuntimeProperties& GetPlatformRuntimeProperties();
 
   // Returns a struct that contains properties available in the host process
   // after InitializeForUI() runs.

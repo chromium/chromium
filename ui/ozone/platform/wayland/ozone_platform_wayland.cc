@@ -268,6 +268,16 @@ class OzonePlatformWayland : public OzonePlatform {
     return *properties;
   }
 
+  const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    static base::NoDestructor<OzonePlatform::PlatformRuntimeProperties>
+        properties;
+    if (connection_) {
+      properties->supports_server_side_window_decorations =
+          (connection_->xdg_decoration_manager_v1() != nullptr);
+    }
+    return *properties;
+  }
+
   const InitializedHostProperties& GetInitializedHostProperties() override {
     static base::NoDestructor<OzonePlatform::InitializedHostProperties>
         properties;
