@@ -11,17 +11,27 @@
 #include "ui/views/widget/widget.h"
 
 WindowControlsOverlayInputRoutingMac::WindowControlsOverlayInputRoutingMac(
-    BrowserNonClientFrameViewMac const* browser_non_client_frame_view_mac,
+    BrowserNonClientFrameViewMac* browser_non_client_frame_view_mac,
     views::View* overlay_view,
     remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type)
-    : browser_non_client_frame_view_mac(browser_non_client_frame_view_mac),
+    : browser_non_client_frame_view_mac_(browser_non_client_frame_view_mac),
       overlay_view_(overlay_view),
       overlay_type_(overlay_type) {
-  overlay_view_->AddObserver(this);
+  // WebAppOriginText animates and disappears during initial launch so we want
+  // to observe that and update the remote view accordingly.
+  if (overlay_type_ ==
+      remote_cocoa::mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar)
+    overlay_view_->AddObserver(this);
+  else
+    browser_non_client_frame_view_mac_->AddObserver(this);
 }
 
 WindowControlsOverlayInputRoutingMac::~WindowControlsOverlayInputRoutingMac() {
-  overlay_view_->RemoveObserver(this);
+  if (overlay_type_ ==
+      remote_cocoa::mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar)
+    overlay_view_->RemoveObserver(this);
+  else
+    browser_non_client_frame_view_mac_->RemoveObserver(this);
 }
 
 void WindowControlsOverlayInputRoutingMac::OnViewBoundsChanged(
@@ -31,7 +41,7 @@ void WindowControlsOverlayInputRoutingMac::OnViewBoundsChanged(
 
 void WindowControlsOverlayInputRoutingMac::Enable() {
   auto window =
-      browser_non_client_frame_view_mac->GetWidget()->GetNativeWindow();
+      browser_non_client_frame_view_mac_->GetWidget()->GetNativeWindow();
   host_ = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(window);
 
   host_->AddRemoteWindowControlsOverlayView(overlay_type_);

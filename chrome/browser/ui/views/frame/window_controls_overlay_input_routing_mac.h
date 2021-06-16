@@ -22,7 +22,7 @@ class BrowserNonClientFrameViewMac;
 class WindowControlsOverlayInputRoutingMac : public views::ViewObserver {
  public:
   WindowControlsOverlayInputRoutingMac(
-      BrowserNonClientFrameViewMac const* browser_non_client_frame_view_mac,
+      BrowserNonClientFrameViewMac* browser_non_client_frame_view_mac,
       views::View* overlay_view,
       remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type);
   ~WindowControlsOverlayInputRoutingMac() override;
@@ -36,7 +36,7 @@ class WindowControlsOverlayInputRoutingMac : public views::ViewObserver {
  private:
   void UpdateNSViewPosition();
 
-  BrowserNonClientFrameViewMac const* browser_non_client_frame_view_mac =
+  BrowserNonClientFrameViewMac* browser_non_client_frame_view_mac_ =
       nullptr;                 // weak
   views::View* overlay_view_;  // weak. Owned by BrowserNonClientFrameViewMac.
   views::NativeWidgetMacNSWindowHost* host_;  // weak. Owned by NativeWidgetMac.
