@@ -1610,6 +1610,9 @@ void NetworkStateHandler::TechnologyListChanged() {
   // Eventually we would like to replace Technology state with Device state.
   // For now, treat technology state changes as device list changes.
   NotifyDeviceListChanged();
+
+  // Stub cellular networks can be affected by cellular technology state.
+  SyncStubCellularNetworks();
 }
 
 void NetworkStateHandler::ManagedStateListChanged(

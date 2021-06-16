@@ -62,9 +62,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) StubCellularNetworksProvider
   // already exists in |shill_iccids| 2) Stub networks that do not have
   // corresponding entry in |esim_profiles| or a slot info entry on given
   // |device| (e.g. eSIM profile was removed or pSIM was removed from the slot).
+  // if both |esim_slot_metadata| and |shill_iccids| are nullptr, then all stub
+  // networks are removed.
   bool RemoveStubCellularNetworks(
-      const std::vector<IccidEidPair>& esim_and_slot_metadata,
-      const base::flat_set<std::string>& shill_iccids,
+      const std::vector<IccidEidPair>* esim_and_slot_metadata,
+      const base::flat_set<std::string>* shill_iccids,
       NetworkStateHandler::ManagedStateList& network_list);
 
   NetworkStateHandler* network_state_handler_ = nullptr;
