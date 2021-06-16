@@ -1649,13 +1649,15 @@
     "ChromeLabs": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210128",
+                    "name": "Enabled",
                     "enable_features": [
                         "ChromeLabs"
                     ]
