@@ -11175,7 +11175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PaintHolding.InputTiming2" enum="PaintHoldingInputTiming"
-    expires_after="2021-07-15">
+    expires_after="2021-11-21">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
