@@ -6,6 +6,9 @@
 
 #include "base/bind.h"
 #include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast_streaming/public/config_conversions.h"
+#include "media/base/audio_decoder_config.h"
+#include "media/base/video_decoder_config.h"
 
 ReceiverSessionClient::ReceiverSessionClient(
     fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request)
@@ -20,12 +23,26 @@ void ReceiverSessionClient::SetCastStreamingReceiver(
         cast_streaming_receiver) {
   DCHECK(message_port_request_);
 
-  receiver_session_ = cast_streaming::ReceiverSession::Create(base::BindOnce(
-      [](fidl::InterfaceRequest<fuchsia::web::MessagePort> port)
-          -> std::unique_ptr<cast_api_bindings::MessagePort> {
-        return cast_api_bindings::MessagePortFuchsia::Create(std::move(port));
-      },
-      std::move(message_port_request_)));
+  // TODO: Add streaming session Constraints based on system capabilities
+  // (see crbug.com/1013412) and DisplayDescription (see crbug.com/1087520).
+  // TODO(crbug.com/1218498): Only populate codecs corresponding to those called
+  // out by build flags.
+  auto stream_config =
+      std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
+          cast_streaming::ToVideoCaptureConfigCodecs(
+              media::VideoCodec::kCodecH264, media::VideoCodec::kCodecVP8),
+          cast_streaming::ToAudioCaptureConfigCodecs(
+              media::AudioCodec::kCodecAAC, media::AudioCodec::kCodecOpus));
+
+  receiver_session_ = cast_streaming::ReceiverSession::Create(
+      std::move(stream_config),
+      base::BindOnce(
+          [](fidl::InterfaceRequest<fuchsia::web::MessagePort> port)
+              -> std::unique_ptr<cast_api_bindings::MessagePort> {
+            return cast_api_bindings::MessagePortFuchsia::Create(
+                std::move(port));
+          },
+          std::move(message_port_request_)));
   receiver_session_->SetCastStreamingReceiver(
       std::move(cast_streaming_receiver));
 }

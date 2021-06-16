@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/cast_streaming/browser/config_conversions.h"
+#include "components/cast_streaming/public/config_conversions.h"
 #include "third_party/openscreen/src/cast/streaming/capture_recommendations.h"
 
 namespace cast_streaming {
@@ -88,14 +88,12 @@ bool CastStreamingTestSender::Start(
 
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
   if (audio_config) {
-    audio_configs.push_back(
-        AudioDecoderConfigToAudioCaptureConfig(audio_config.value()));
+    audio_configs.push_back(ToAudioCaptureConfig(audio_config.value()));
   }
 
   std::vector<openscreen::cast::VideoCaptureConfig> video_configs;
   if (video_config) {
-    video_configs.push_back(
-        VideoDecoderConfigToVideoCaptureConfig(video_config.value()));
+    video_configs.push_back(ToVideoCaptureConfig(video_config.value()));
   }
 
   openscreen::Error error = sender_session_->Negotiate(
@@ -191,14 +189,12 @@ void CastStreamingTestSender::OnNegotiated(
 
   if (senders.audio_sender) {
     audio_sender_ = senders.audio_sender;
-    audio_decoder_config_ =
-        AudioCaptureConfigToAudioDecoderConfig(senders.audio_config);
+    audio_decoder_config_ = ToAudioDecoderConfig(senders.audio_config);
   }
 
   if (senders.video_sender) {
     video_sender_ = senders.video_sender;
-    video_decoder_config_ =
-        VideoCaptureConfigToVideoDecoderConfig(senders.video_config);
+    video_decoder_config_ = ToVideoDecoderConfig(senders.video_config);
   }
 
   is_active_ = true;

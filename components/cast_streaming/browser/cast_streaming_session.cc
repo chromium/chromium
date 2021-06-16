@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "components/cast_streaming/browser/config_conversions.h"
 #include "components/cast_streaming/browser/stream_consumer.h"
+#include "components/cast_streaming/public/config_conversions.h"
 #include "media/base/timestamp_constants.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -38,6 +38,7 @@ namespace cast_streaming {
 
 CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     CastStreamingSession::Client* client,
+    std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
@@ -51,15 +52,9 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
   DCHECK(task_runner);
   DCHECK(client_);
 
-  // TODO(crbug.com/1087520): Add streaming session Constraints and
-  // DisplayDescription.
   receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
       this, &environment_, &cast_message_port_impl_,
-      openscreen::cast::ReceiverSession::Preferences(
-          {openscreen::cast::VideoCodec::kH264,
-           openscreen::cast::VideoCodec::kVp8},
-          {openscreen::cast::AudioCodec::kAac,
-           openscreen::cast::AudioCodec::kOpus}));
+      std::move(*av_constraints));
 
   init_timeout_timer_.Start(
       FROM_HERE, kInitTimeout,
@@ -102,9 +97,8 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)));
 
-  return AudioStreamInfo{
-      AudioCaptureConfigToAudioDecoderConfig(audio_capture_config),
-      std::move(data_pipe_consumer)};
+  return AudioStreamInfo{ToAudioDecoderConfig(audio_capture_config),
+                         std::move(data_pipe_consumer)};
 }
 
 absl::optional<CastStreamingSession::VideoStreamInfo>
@@ -137,9 +131,8 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)));
 
-  return VideoStreamInfo{
-      VideoCaptureConfigToVideoDecoderConfig(video_capture_config),
-      std::move(data_pipe_consumer)};
+  return VideoStreamInfo{ToVideoDecoderConfig(video_capture_config),
+                         std::move(data_pipe_consumer)};
 }
 
 void CastStreamingSession::ReceiverSessionClient::OnNegotiated(
@@ -266,13 +259,14 @@ CastStreamingSession::~CastStreamingSession() = default;
 
 void CastStreamingSession::Start(
     Client* client,
+    std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DVLOG(1) << __func__;
   DCHECK(client);
   DCHECK(!receiver_session_);
   receiver_session_ = std::make_unique<ReceiverSessionClient>(
-      client, std::move(message_port), task_runner);
+      client, std::move(av_constraints), std::move(message_port), task_runner);
 }
 
 void CastStreamingSession::Stop() {

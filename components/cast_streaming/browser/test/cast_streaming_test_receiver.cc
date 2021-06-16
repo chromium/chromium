@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/cast_streaming/public/config_conversions.h"
 
 namespace cast_streaming {
 
@@ -16,7 +17,14 @@ CastStreamingTestReceiver::~CastStreamingTestReceiver() = default;
 void CastStreamingTestReceiver::Start(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port) {
   VLOG(1) << __func__;
-  receiver_session_.Start(this, std::move(message_port),
+  auto stream_config =
+      std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
+          ToVideoCaptureConfigCodecs(media::VideoCodec::kCodecH264,
+                                     media::VideoCodec::kCodecVP8),
+          ToAudioCaptureConfigCodecs(media::AudioCodec::kCodecAAC,
+                                     media::AudioCodec::kCodecOpus));
+  receiver_session_.Start(this, std::move(stream_config),
+                          std::move(message_port),
                           base::SequencedTaskRunnerHandle::Get());
 }
 

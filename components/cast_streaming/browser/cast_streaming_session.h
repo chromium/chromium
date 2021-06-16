@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/cast_message_port_impl.h"
+#include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/openscreen_platform/network_util.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "media/base/audio_decoder_config.h"
@@ -85,7 +86,11 @@ class CastStreamingSession {
   // * On failure, OnSessionEnded() will be called.
   // * When a new offer is sent by the Cast Streaming Sender,
   //   OnSessionReinitialization() will be called.
+  //
+  // |av_constraints| specifies the supported media codecs and limitations
+  // surrounding this support.
   void Start(Client* client,
+             std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
              std::unique_ptr<cast_api_bindings::MessagePort> message_port,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -101,6 +106,7 @@ class CastStreamingSession {
    public:
     ReceiverSessionClient(
         CastStreamingSession::Client* client,
+        std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
         std::unique_ptr<cast_api_bindings::MessagePort> message_port,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
     ~ReceiverSessionClient() final;

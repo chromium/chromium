@@ -22,16 +22,28 @@ source_set("core") {
   sources = [
     "cast_message_port_impl.cc",
     "cast_message_port_impl.h",
-    "config_conversions.cc",
-    "config_conversions.h",
     "message_serialization.cc",
     "message_serialization.h",
   ]
 }
 
+source_set("receiver_session_public") {
+  deps = [
+    "//base",
+    "//mojo/public/cpp/system",
+  ]
+  public_deps = [
+    "//components/cast_streaming/public/mojom",
+    "//third_party/openscreen/src/cast/streaming:receiver",
+  ]
+  visibility = [ ":*" ]
+  sources = [ "public/receiver_session.h" ]
+}
+
 source_set("receiver_session") {
   deps = [
     ":core",
+    ":receiver_session_public",
     ":streaming_session",
     "//base",
     "//media",
@@ -41,10 +53,9 @@ source_set("receiver_session") {
   ]
   public_deps = [
     "//components/cast_streaming/public/mojom",
-    "//third_party/openscreen/src/cast/common:channel",
+    "//third_party/openscreen/src/cast/streaming:receiver",
   ]
   visibility = [ ":*" ]
-  public = [ "public/receiver_session.h" ]
   sources = [
     "receiver_session_impl.cc",
     "receiver_session_impl.h",
@@ -54,7 +65,9 @@ source_set("receiver_session") {
 source_set("streaming_session") {
   deps = [
     ":core",
+    ":receiver_session_public",
     "//base",
+    "//components/cast_streaming/public",
     "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
@@ -84,13 +97,12 @@ source_set("network_context") {
   sources = [ "network_context_getter.cc" ]
 }
 
-# TODO(crbug.com/1208194): Also move cast_streaming_session_client here from
-# //fuchsia.
 source_set("browser") {
   public_deps = [
     ":network_context",
-    ":receiver_session",
+    ":receiver_session_public",
   ]
+  deps = [ ":receiver_session" ]
 }
 
 # TODO(crbug.com/1207715): Move to /tests directory.
@@ -98,6 +110,7 @@ source_set("test_sender") {
   testonly = true
   deps = [
     ":core",
+    "//components/cast_streaming/public",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/system",
@@ -125,6 +138,7 @@ source_set("test_receiver") {
   deps = [
     ":streaming_session",
     "//base",
+    "//components/cast_streaming/public",
     "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",

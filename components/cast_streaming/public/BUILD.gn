@@ -5,18 +5,33 @@
 import("//testing/test.gni")
 
 source_set("public") {
-  deps = [ "//url" ]
+  deps = [
+    "//base",
+    "//media",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+  public_deps = [
+    "//third_party/openscreen/src/cast/streaming:receiver",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+  ]
   sources = [
     "cast_streaming_url.cc",
     "cast_streaming_url.h",
+    "config_conversions.cc",
+    "config_conversions.h",
   ]
 }
 
-# NOTE: This source set is intentionally empty. It is used to force the building
-# of the code defined in this directory, as it is production code which must
-# be validated as part of the CQ.
 source_set("unit_tests") {
   testonly = true
-  deps = [ ":public" ]
-  sources = []
+  deps = [
+    ":public",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//media/mojo:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "config_conversions_unittest.cc" ]
 }

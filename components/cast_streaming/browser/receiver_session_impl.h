@@ -19,7 +19,11 @@ namespace cast_streaming {
 class ReceiverSessionImpl : public cast_streaming::CastStreamingSession::Client,
                             public ReceiverSession {
  public:
-  explicit ReceiverSessionImpl(MessagePortProvider message_port_provider);
+  // |av_constraints| specifies the supported media codecs and limitations
+  // surrounding this support.
+  ReceiverSessionImpl(
+      std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
+      MessagePortProvider message_port_provider);
   ~ReceiverSessionImpl() final;
 
   ReceiverSessionImpl(const ReceiverSessionImpl&) = delete;
@@ -55,6 +59,7 @@ class ReceiverSessionImpl : public cast_streaming::CastStreamingSession::Client,
   // Populated in the ctor, and empty following a call to either
   // OnReceiverEnabled() or OnMojoDisconnect().
   MessagePortProvider message_port_provider_;
+  std::unique_ptr<ReceiverSession::AVConstraints> av_constraints_;
 
   mojo::AssociatedRemote<mojom::CastStreamingReceiver> cast_streaming_receiver_;
   cast_streaming::CastStreamingSession cast_streaming_session_;

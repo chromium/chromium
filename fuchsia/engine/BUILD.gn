@@ -104,6 +104,7 @@ component("web_engine_core") {
     "//base/util/memory_pressure",
     "//components/cast/message_port:message_port_fuchsia",
     "//components/cast_streaming/browser",
+    "//components/cast_streaming/public",
     "//components/cast_streaming/public/mojom",
     "//components/cast_streaming/renderer",
     "//components/cdm/renderer",

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 
 namespace cast_api_bindings {
 class MessagePort;
@@ -21,14 +22,25 @@ namespace cast_streaming {
 // |message_port| and with a given |cast_streaming_receiver|. On destruction,
 // the Cast Streaming Receiver Session will be terminated if it was ever
 // started.
+// TODO(1220176): Forward declare ReceiverSession::Preferences instead of
+// requiring the import above.
 class ReceiverSession {
  public:
   using MessagePortProvider =
       base::OnceCallback<std::unique_ptr<cast_api_bindings::MessagePort>()>;
+  using AVConstraints = openscreen::cast::ReceiverSession::Preferences;
 
   virtual ~ReceiverSession() = default;
 
+  // |av_constraints| specifies the supported media codecs, an ordering to
+  // signify the receiver's preferences of which codecs should be used, and any
+  // limitations surrounding this support.
+  // |message_port_provider| creates a new MessagePort to be used for sending
+  // and receiving Cast messages.
+  // TODO(crbug.com/1219079): Add conversion functions to create the
+  // ReceiverSession::Preferences object from //media types.
   static std::unique_ptr<ReceiverSession> Create(
+      std::unique_ptr<AVConstraints> av_constraints,
       MessagePortProvider message_port_provider);
 
   // Sets up the CastStreamingReceiver mojo remote. This will immediately call
