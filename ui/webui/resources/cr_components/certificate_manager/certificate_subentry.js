@@ -13,36 +13,47 @@ import '../../cr_elements/policy/cr_policy_indicator.m.js';
 import '../../cr_elements/icons.m.js';
 import './certificate_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
 
 import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from './certificate_manager_types.js';
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode, CertificateType} from './certificates_browser_proxy.js';
 
-Polymer({
-  is: 'certificate-subentry',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const CertificateSubentryElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CertificateSubentryElement extends CertificateSubentryElementBase {
+  static get is() {
+    return 'certificate-subentry';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!CertificateSubnode} */
-    model: Object,
+  static get properties() {
+    return {
+      /** @type {!CertificateSubnode} */
+      model: Object,
 
-    /** @type {!CertificateType} */
-    certificateType: String,
-  },
+      /** @type {!CertificateType} */
+      certificateType: String,
+    };
+  }
 
-  /** @private {CertificatesBrowserProxy} */
-  browserProxy_: null,
-
-  /** @override */
-  created() {
+  constructor() {
+    super();
+    /** @private {!CertificatesBrowserProxy} */
     this.browserProxy_ = CertificatesBrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * Dispatches an event indicating which certificate action was tapped. It is
@@ -51,15 +62,17 @@ Polymer({
    * @private
    */
   dispatchCertificateActionEvent_(action) {
-    this.fire(
-        CertificateActionEvent,
-        /** @type {!CertificateActionEventDetail} */ ({
-          action: action,
-          subnode: this.model,
-          certificateType: this.certificateType,
-          anchor: this.$.dots,
-        }));
-  },
+    this.dispatchEvent(new CustomEvent(CertificateActionEvent, {
+      bubbles: true,
+      composed: true,
+      detail: /** @type {!CertificateActionEventDetail} */ ({
+        action: action,
+        subnode: this.model,
+        certificateType: this.certificateType,
+        anchor: this.$.dots,
+      }),
+    }));
+  }
 
   /**
    * Handles the case where a call to the browser resulted in a rejected
@@ -76,26 +89,30 @@ Polymer({
 
     // Otherwise propagate the error to the parents, such that a dialog
     // displaying the error will be shown.
-    this.fire('certificates-error', {error: error, anchor: this.$.dots});
-  },
+    this.dispatchEvent(new CustomEvent('certificates-error', {
+      bubbles: true,
+      composed: true,
+      detail: {error: error, anchor: null},
+    }));
+  }
 
   /** @private */
   onViewClick_() {
     this.closePopupMenu_();
     this.browserProxy_.viewCertificate(this.model.id);
-  },
+  }
 
   /** @private */
   onEditClick_() {
     this.closePopupMenu_();
     this.dispatchCertificateActionEvent_(CertificateAction.EDIT);
-  },
+  }
 
   /** @private */
   onDeleteClick_() {
     this.closePopupMenu_();
     this.dispatchCertificateActionEvent_(CertificateAction.DELETE);
-  },
+  }
 
   /** @private */
   onExportClick_() {
@@ -107,7 +124,7 @@ Polymer({
     } else {
       this.browserProxy_.exportCertificate(this.model.id);
     }
-  },
+  }
 
   /**
    * @param {!CertificateSubnode} model
@@ -116,7 +133,7 @@ Polymer({
    */
   canEdit_(model) {
     return model.canBeEdited;
-  },
+  }
 
   /**
    * @param {!CertificateType} certificateType
@@ -129,7 +146,7 @@ Polymer({
       return model.extractable;
     }
     return true;
-  },
+  }
 
   /**
    * @param {!CertificateSubnode} model
@@ -138,22 +155,25 @@ Polymer({
    */
   canDelete_(model) {
     return model.canBeDeleted;
-  },
+  }
 
   /** @private */
   closePopupMenu_() {
-    this.$$('cr-action-menu').close();
-  },
+    this.shadowRoot.querySelector('cr-action-menu').close();
+  }
 
   /** @private */
   onDotsClick_() {
     const actionMenu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
     actionMenu.showAt(this.$.dots);
-  },
+  }
 
   /** @private */
   getPolicyIndicatorType_(model) {
     return model.policy ? CrPolicyIndicatorType.USER_POLICY :
                           CrPolicyIndicatorType.NONE;
-  },
-});
+  }
+}
+
+customElements.define(
+    CertificateSubentryElement.is, CertificateSubentryElement);

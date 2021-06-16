@@ -11,27 +11,40 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './certificate_shared_css.js';
 import './certificate_subentry.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
 
 import {CertificatesOrgGroup, CertificateType} from './certificates_browser_proxy.js';
 
-Polymer({
-  is: 'certificate-entry',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const CertificateEntryElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class CertificateEntryElement extends CertificateEntryElementBase {
+  static get is() {
+    return 'certificate-entry';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!CertificatesOrgGroup} */
-    model: Object,
+  static get properties() {
+    return {
+      /** @type {!CertificatesOrgGroup} */
+      model: Object,
 
-    /** @type {!CertificateType} */
-    certificateType: String,
-  },
+      /** @type {!CertificateType} */
+      certificateType: String,
+    };
+  }
 
   /**
    * @param {number} index
@@ -40,10 +53,12 @@ Polymer({
    */
   isLast_(index) {
     return index === this.model.subnodes.length - 1;
-  },
+  }
 
   getPolicyIndicatorType_() {
     return this.model.containsPolicyCerts ? CrPolicyIndicatorType.USER_POLICY :
                                             CrPolicyIndicatorType.NONE;
-  },
-});
+  }
+}
+
+customElements.define(CertificateEntryElement.is, CertificateEntryElement);

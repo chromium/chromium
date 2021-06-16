@@ -13,38 +13,60 @@ import './certificate_provisioning_entry.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 
-Polymer({
-  is: 'certificate-provisioning-list',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const CertificateProvisioningListElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CertificateProvisioningListElement extends
+    CertificateProvisioningListElementBase {
+  static get is() {
+    return 'certificate-provisioning-list';
+  }
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!Array<!CertificateProvisioningProcess>} */
-    provisioningProcesses_: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
+  static get properties() {
+    return {
+      /** @type {!Array<!CertificateProvisioningProcess>} */
+      provisioningProcesses_: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
 
-    /**
-     * The model to be passed to certificate provisioning details dialog.
-     * @private {?CertificateProvisioningProcess}
-     */
-    provisioningDetailsDialogModel_: Object,
+      /**
+       * The model to be passed to certificate provisioning details dialog.
+       * @private {?CertificateProvisioningProcess}
+       */
+      provisioningDetailsDialogModel_: Object,
 
-    /** @private */
-    showProvisioningDetailsDialog_: Boolean,
-  },
+      /** @private */
+      showProvisioningDetailsDialog_: Boolean,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?HTMLElement} */
+    this.previousAnchor_ = null;
+  }
 
   /**
    * @param {!Array<!CertificateProvisioningProcess>} provisioningProcesses The
@@ -55,7 +77,7 @@ Polymer({
    */
   hasCertificateProvisioningEntries_(provisioningProcesses) {
     return provisioningProcesses.length !== 0;
-  },
+  }
 
   /**
    * @param {!Array<!CertificateProvisioningProcess>} certProvisioningProcesses
@@ -80,41 +102,43 @@ Polymer({
     } else {
       // Close cert provisioning process details dialog if the process is no
       // longer in the list eg. when process completed successfully.
-      this.$$('certificate-provisioning-details-dialog').close();
+      this.shadowRoot.querySelector('certificate-provisioning-details-dialog')
+          .close();
     }
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.addWebUIListener(
         'certificate-provisioning-processes-changed',
         this.onCertificateProvisioningProcessesChanged_.bind(this));
     CertificateProvisioningBrowserProxyImpl.getInstance()
         .refreshCertificateProvisioningProcesses();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.addEventListener(
         CertificateProvisioningViewDetailsActionEvent, event => {
           const detail =
               /** @type {!CertificateProvisioningActionEventDetail} */ (
                   event.detail);
           this.provisioningDetailsDialogModel_ = detail.model;
-
-          const previousAnchor = assert(detail.anchor);
+          this.previousAnchor_ = detail.anchor;
           this.showProvisioningDetailsDialog_ = true;
-          this.async(() => {
-            const dialog = this.$$('certificate-provisioning-details-dialog');
-            // The listener is destroyed when the dialog is removed (because of
-            // 'restamp').
-            dialog.addEventListener('close', () => {
-              this.showProvisioningDetailsDialog_ = false;
-              focusWithoutInk(previousAnchor);
-            });
-          });
-
           event.stopPropagation();
         });
   }
-});
+
+  /** @private */
+  onDialogClose_() {
+    this.showProvisioningDetailsDialog_ = false;
+    focusWithoutInk(assert(this.previousAnchor_));
+    this.previousAnchor_ = null;
+  }
+}
+
+customElements.define(
+    CertificateProvisioningListElement.is, CertificateProvisioningListElement);

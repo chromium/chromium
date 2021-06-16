@@ -18,149 +18,164 @@ import './certificates_error_dialog.js';
 import './certificate_provisioning_list.js';
 // </if>
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.m.js';
 import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '../../js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '../../js/web_ui_listener_behavior.m.js';
 
 import {CertificateAction, CertificateActionEvent, CertificatesErrorEventDetail} from './certificate_manager_types.js';
 import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateSubnode, CertificateType} from './certificates_browser_proxy.js';
 
-Polymer({
-  is: 'certificate-manager',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const CertificateManagerElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CertificateManagerElement extends CertificateManagerElementBase {
+  static get is() {
+    return 'certificate-manager';
+  }
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {number} */
-    selected: {
-      type: Number,
-      value: 0,
-    },
-
-    /** @type {!Array<!CertificatesOrgGroup>} */
-    personalCerts: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /** @type {number} */
+      selected: {
+        type: Number,
+        value: 0,
       },
-    },
 
-    /** @type {!Array<!CertificatesOrgGroup>} */
-    serverCerts: {
-      type: Array,
-      value() {
-        return [];
+      /** @type {!Array<!CertificatesOrgGroup>} */
+      personalCerts: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /** @type {!Array<!CertificatesOrgGroup>} */
-    caCerts: {
-      type: Array,
-      value() {
-        return [];
+      /** @type {!Array<!CertificatesOrgGroup>} */
+      serverCerts: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /** @type {!Array<!CertificatesOrgGroup>} */
-    otherCerts: {
-      type: Array,
-      value() {
-        return [];
+      /** @type {!Array<!CertificatesOrgGroup>} */
+      caCerts: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /**
-     * Indicates if client certificate import is allowed
-     * by Chrome OS specific policy ClientCertificateManagementAllowed.
-     * Value exists only for Chrome OS.
-     */
-    clientImportAllowed: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates if CA certificate import is allowed
-     * by Chrome OS specific policy CACertificateManagementAllowed.
-     * Value exists only for Chrome OS.
-     */
-    caImportAllowed: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    certificateTypeEnum_: {
-      type: Object,
-      value: CertificateType,
-      readOnly: true,
-    },
-
-    /** @private */
-    showCaTrustEditDialog_: Boolean,
-
-    /** @private */
-    showDeleteConfirmationDialog_: Boolean,
-
-    /** @private */
-    showPasswordEncryptionDialog_: Boolean,
-
-    /** @private */
-    showPasswordDecryptionDialog_: Boolean,
-
-    /** @private */
-    showErrorDialog_: Boolean,
-
-    /**
-     * The model to be passed to dialogs that refer to a given certificate.
-     * @private {?CertificateSubnode}
-     */
-    dialogModel_: Object,
-
-    /**
-     * The certificate type to be passed to dialogs that refer to a given
-     * certificate.
-     * @private {?CertificateType}
-     */
-    dialogModelCertificateType_: String,
-
-    /**
-     * The model to be passed to the error dialog.
-     * @private {null|!CertificatesError|!CertificatesImportError}
-     */
-    errorDialogModel_: Object,
-
-    /**
-     * The element to return focus to, when the currently shown dialog is
-     * closed.
-     * @private {?HTMLElement}
-     */
-    activeDialogAnchor_: Object,
-
-    /** @private */
-    isKiosk_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isKiosk') &&
-            loadTimeData.getBoolean('isKiosk');
+      /** @type {!Array<!CertificatesOrgGroup>} */
+      otherCerts: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /** @private {!Array<string>} */
-    tabNames_: {
-      type: Array,
-      computed: 'computeTabNames_(isKiosk_)',
-    },
-  },
+      /**
+       * Indicates if client certificate import is allowed
+       * by Chrome OS specific policy ClientCertificateManagementAllowed.
+       * Value exists only for Chrome OS.
+       */
+      clientImportAllowed: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates if CA certificate import is allowed
+       * by Chrome OS specific policy CACertificateManagementAllowed.
+       * Value exists only for Chrome OS.
+       */
+      caImportAllowed: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      certificateTypeEnum_: {
+        type: Object,
+        value: CertificateType,
+        readOnly: true,
+      },
+
+      /** @private */
+      showCaTrustEditDialog_: Boolean,
+
+      /** @private */
+      showDeleteConfirmationDialog_: Boolean,
+
+      /** @private */
+      showPasswordEncryptionDialog_: Boolean,
+
+      /** @private */
+      showPasswordDecryptionDialog_: Boolean,
+
+      /** @private */
+      showErrorDialog_: Boolean,
+
+      /**
+       * The model to be passed to dialogs that refer to a given certificate.
+       * @private {?CertificateSubnode}
+       */
+      dialogModel_: Object,
+
+      /**
+       * The certificate type to be passed to dialogs that refer to a given
+       * certificate.
+       * @private {?CertificateType}
+       */
+      dialogModelCertificateType_: String,
+
+      /**
+       * The model to be passed to the error dialog.
+       * @private {null|!CertificatesError|!CertificatesImportError}
+       */
+      errorDialogModel_: Object,
+
+      /**
+       * The element to return focus to, when the currently shown dialog is
+       * closed.
+       * @private {?HTMLElement}
+       */
+      activeDialogAnchor_: Object,
+
+      /** @private */
+      isKiosk_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isKiosk') &&
+              loadTimeData.getBoolean('isKiosk');
+        },
+      },
+
+      /** @private {!Array<string>} */
+      tabNames_: {
+        type: Array,
+        computed: 'computeTabNames_(isKiosk_)',
+      },
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.addWebUIListener('certificates-changed', this.set.bind(this));
     this.addWebUIListener(
         'client-import-allowed-changed',
@@ -168,17 +183,17 @@ Polymer({
     this.addWebUIListener(
         'ca-import-allowed-changed', this.setCAImportAllowed.bind(this));
     CertificatesBrowserProxyImpl.getInstance().refreshCertificates();
-  },
+  }
 
   /** @private */
   setClientImportAllowed(allowed) {
     this.clientImportAllowed = allowed;
-  },
+  }
 
   /** @private */
   setCAImportAllowed(allowed) {
     this.caImportAllowed = allowed;
-  },
+  }
 
   /**
    * @param {number} selectedIndex
@@ -188,10 +203,11 @@ Polymer({
    */
   isTabSelected_(selectedIndex, tabIndex) {
     return selectedIndex === tabIndex;
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.addEventListener(CertificateActionEvent, event => {
       this.dialogModel_ = event.detail.subnode;
       this.dialogModelCertificateType_ = event.detail.certificateType;
@@ -233,7 +249,7 @@ Polymer({
           'certificates-error-dialog', 'showErrorDialog_', detail.anchor);
       event.stopPropagation();
     });
-  },
+  }
 
   /**
    * Opens a dialog and registers a listener for removing the dialog from the
@@ -255,14 +271,14 @@ Polymer({
       this.activeDialogAnchor_ = anchor;
     }
     this.set(domIfBooleanName, true);
-    this.async(() => {
-      const dialog = this.$$(dialogTagName);
+    window.setTimeout(() => {
+      const dialog = this.shadowRoot.querySelector(dialogTagName);
       dialog.addEventListener('close', () => {
         this.set(domIfBooleanName, false);
         focusWithoutInk(assert(this.activeDialogAnchor_));
       });
-    });
-  },
+    }, 0);
+  }
 
   /**
    * @return {!Array<string>}
@@ -279,5 +295,7 @@ Polymer({
               ]),
       loadTimeData.getString('certificateManagerOthers'),
     ];
-  },
-});
+  }
+}
+
+customElements.define(CertificateManagerElement.is, CertificateManagerElement);

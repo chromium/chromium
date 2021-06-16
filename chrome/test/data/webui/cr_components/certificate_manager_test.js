@@ -8,15 +8,15 @@
 
 // clang-format off
 import 'chrome://settings/strings.m.js';
-import 'chrome://resources/cr_components/certificate_manager/ca_trust_edit_dialog.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_delete_confirmation_dialog.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_list.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_password_decryption_dialog.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_password_encryption_dialog.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
 
+import {CaTrustEditDialogElement} from 'chrome://resources/cr_components/certificate_manager/ca_trust_edit_dialog.js';
+import {CertificateDeleteConfirmationDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_delete_confirmation_dialog.js';
+import {CertificateListElement} from 'chrome://resources/cr_components/certificate_manager/certificate_list.js';
+import {CertificateManagerElement} from 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
 import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
+import {CertificatePasswordDecryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_decryption_dialog.js';
+import {CertificatePasswordEncryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_encryption_dialog.js';
+import {CertificateSubentryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
 import { CaTrustInfo,CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificatesOrgGroup, CertificateSubnode, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -233,17 +233,23 @@ import {eventToPromise} from '../test_util.m.js';
       return browserProxy.whenCalled('getCaCertificateTrust')
           .then(function(id) {
             assertEquals(dialog.model.id, id);
-            assertEquals(caTrustInfo.ssl, dialog.$$('#ssl').checked);
-            assertEquals(caTrustInfo.email, dialog.$$('#email').checked);
-            assertEquals(caTrustInfo.objSign, dialog.$$('#objSign').checked);
+            assertEquals(
+                caTrustInfo.ssl,
+                dialog.shadowRoot.querySelector('#ssl').checked);
+            assertEquals(
+                caTrustInfo.email,
+                dialog.shadowRoot.querySelector('#email').checked);
+            assertEquals(
+                caTrustInfo.objSign,
+                dialog.shadowRoot.querySelector('#objSign').checked);
 
             // Simulate toggling all checkboxes.
-            dialog.$$('#ssl').click();
-            dialog.$$('#email').click();
-            dialog.$$('#objSign').click();
+            dialog.shadowRoot.querySelector('#ssl').click();
+            dialog.shadowRoot.querySelector('#email').click();
+            dialog.shadowRoot.querySelector('#objSign').click();
 
             // Simulate clicking 'OK'.
-            dialog.$$('#ok').click();
+            dialog.shadowRoot.querySelector('#ok').click();
 
             return browserProxy.whenCalled('editCaCertificateTrust');
           })
@@ -255,7 +261,7 @@ import {eventToPromise} from '../test_util.m.js';
             assertEquals(caTrustInfo.email, !args.email);
             assertEquals(caTrustInfo.objSign, !args.objSign);
             // Check that the dialog is closed.
-            assertFalse(dialog.$$('#dialog').open);
+            assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
           });
     });
 
@@ -263,15 +269,15 @@ import {eventToPromise} from '../test_util.m.js';
       dialog.model = {name: 'Dummy certificate name'};
       document.body.appendChild(dialog);
 
-      assertFalse(dialog.$$('#ssl').checked);
-      assertFalse(dialog.$$('#email').checked);
-      assertFalse(dialog.$$('#objSign').checked);
+      assertFalse(dialog.shadowRoot.querySelector('#ssl').checked);
+      assertFalse(dialog.shadowRoot.querySelector('#email').checked);
+      assertFalse(dialog.shadowRoot.querySelector('#objSign').checked);
 
-      dialog.$$('#ssl').click();
-      dialog.$$('#email').click();
+      dialog.shadowRoot.querySelector('#ssl').click();
+      dialog.shadowRoot.querySelector('#email').click();
 
       // Simulate clicking 'OK'.
-      dialog.$$('#ok').click();
+      dialog.shadowRoot.querySelector('#ok').click();
       return browserProxy.whenCalled('importCaCertificateTrustSelected')
           .then(function(args) {
             assertTrue(args.ssl);
@@ -289,7 +295,7 @@ import {eventToPromise} from '../test_util.m.js';
 
       return browserProxy.whenCalled('getCaCertificateTrust')
           .then(function() {
-            dialog.$$('#ok').click();
+            dialog.shadowRoot.querySelector('#ok').click();
             return browserProxy.whenCalled('editCaCertificateTrust');
           })
           .then(function() {
@@ -324,18 +330,19 @@ import {eventToPromise} from '../test_util.m.js';
     });
 
     test('DeleteSuccess', function() {
-      assertTrue(dialog.$$('#dialog').open);
+      assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
       // Check that the dialog title includes the certificate name.
-      const titleEl = dialog.$$('#dialog').querySelector('[slot=title]');
+      const titleEl = dialog.shadowRoot.querySelector('#dialog').querySelector(
+          '[slot=title]');
       assertTrue(titleEl.textContent.includes(model.name));
 
       // Simulate clicking 'OK'.
-      dialog.$$('#ok').click();
+      dialog.shadowRoot.querySelector('#ok').click();
 
       return browserProxy.whenCalled('deleteCertificate').then(function(id) {
         assertEquals(model.id, id);
         // Check that the dialog is closed.
-        assertFalse(dialog.$$('#dialog').open);
+        assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
       });
     });
 
@@ -344,7 +351,7 @@ import {eventToPromise} from '../test_util.m.js';
       const whenErrorEventFired = eventToPromise('certificates-error', dialog);
 
       // Simulate clicking 'OK'.
-      dialog.$$('#ok').click();
+      dialog.shadowRoot.querySelector('#ok').click();
       return browserProxy.whenCalled('deleteCertificate').then(function(id) {
         assertEquals(model.id, id);
         // Ensure that the 'error' event was fired.
@@ -381,36 +388,37 @@ import {eventToPromise} from '../test_util.m.js';
 
     test('EncryptSuccess', function() {
       const passwordInputElements =
-          dialog.$$('#dialog').querySelectorAll('cr-input');
+          dialog.shadowRoot.querySelector('#dialog').querySelectorAll(
+              'cr-input');
       const passwordInputElement =
           /** @type {!HTMLElement} */ (passwordInputElements[0]);
       const confirmPasswordInputElement =
           /** @type {!HTMLElement} */ (passwordInputElements[1]);
 
-      assertTrue(dialog.$$('#dialog').open);
-      assertTrue(dialog.$$('#ok').disabled);
+      assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+      assertTrue(dialog.shadowRoot.querySelector('#ok').disabled);
 
       // Test that the 'OK' button is disabled when the password fields are
       // empty (even though they both have the same value).
       triggerInputEvent(passwordInputElement);
-      assertTrue(dialog.$$('#ok').disabled);
+      assertTrue(dialog.shadowRoot.querySelector('#ok').disabled);
 
       // Test that the 'OK' button is disabled until the two password fields
       // match.
       passwordInputElement.value = 'foopassword';
       triggerInputEvent(passwordInputElement);
-      assertTrue(dialog.$$('#ok').disabled);
+      assertTrue(dialog.shadowRoot.querySelector('#ok').disabled);
       confirmPasswordInputElement.value = passwordInputElement.value;
       triggerInputEvent(confirmPasswordInputElement);
-      assertFalse(dialog.$$('#ok').disabled);
+      assertFalse(dialog.shadowRoot.querySelector('#ok').disabled);
 
       // Simulate clicking 'OK'.
-      dialog.$$('#ok').click();
+      dialog.shadowRoot.querySelector('#ok').click();
 
       return browserProxy.whenCalled(methodName).then(function(password) {
         assertEquals(passwordInputElement.value, password);
         // Check that the dialog is closed.
-        assertFalse(dialog.$$('#dialog').open);
+        assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
       });
     });
 
@@ -418,7 +426,8 @@ import {eventToPromise} from '../test_util.m.js';
       browserProxy.forceCertificatesError();
 
       const passwordInputElements =
-          dialog.$$('#dialog').querySelectorAll('cr-input');
+          dialog.shadowRoot.querySelector('#dialog').querySelectorAll(
+              'cr-input');
       const passwordInputElement =
           /** @type {!HTMLElement} */ (passwordInputElements[0]);
       passwordInputElement.value = 'foopassword';
@@ -428,7 +437,7 @@ import {eventToPromise} from '../test_util.m.js';
       triggerInputEvent(passwordInputElement);
 
       const whenErrorEventFired = eventToPromise('certificates-error', dialog);
-      dialog.$$('#ok').click();
+      dialog.shadowRoot.querySelector('#ok').click();
 
       return browserProxy.whenCalled(methodName).then(function() {
         return whenErrorEventFired;
@@ -459,24 +468,25 @@ import {eventToPromise} from '../test_util.m.js';
     });
 
     test('DecryptSuccess', function() {
-      const passwordInputElement = dialog.$$('#dialog').querySelector('cr-input');
-      assertTrue(dialog.$$('#dialog').open);
+      const passwordInputElement =
+          dialog.shadowRoot.querySelector('#dialog').querySelector('cr-input');
+      assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
 
       // Test that the 'OK' button is enabled even when the password field is
       // empty.
       assertEquals('', passwordInputElement.value);
-      assertFalse(dialog.$$('#ok').disabled);
+      assertFalse(dialog.shadowRoot.querySelector('#ok').disabled);
 
       passwordInputElement.value = 'foopassword';
-      assertFalse(dialog.$$('#ok').disabled);
+      assertFalse(dialog.shadowRoot.querySelector('#ok').disabled);
 
       // Simulate clicking 'OK'.
-      dialog.$$('#ok').click();
+      dialog.shadowRoot.querySelector('#ok').click();
 
       return browserProxy.whenCalled(methodName).then(function(password) {
         assertEquals(passwordInputElement.value, password);
         // Check that the dialog is closed.
-        assertFalse(dialog.$$('#dialog').open);
+        assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
       });
     });
 
@@ -484,12 +494,12 @@ import {eventToPromise} from '../test_util.m.js';
       browserProxy.forceCertificatesError();
       // Simulate entering some password.
       const passwordInputElement = /** @type {!HTMLElement} */ (
-          dialog.$$('#dialog').querySelector('cr-input'));
+          dialog.shadowRoot.querySelector('#dialog').querySelector('cr-input'));
       passwordInputElement.value = 'foopassword';
       triggerInputEvent(passwordInputElement);
 
       const whenErrorEventFired = eventToPromise('certificates-error', dialog);
-      dialog.$$('#ok').click();
+      dialog.shadowRoot.querySelector('#ok').click();
       return browserProxy.whenCalled(methodName).then(function() {
         return whenErrorEventFired;
       });
@@ -521,7 +531,7 @@ import {eventToPromise} from '../test_util.m.js';
       document.body.appendChild(subentry);
 
       // Bring up the popup menu for the following tests to use.
-      subentry.$$('#dots').click();
+      subentry.shadowRoot.querySelector('#dots').click();
       flush();
     });
 
@@ -723,7 +733,9 @@ import {eventToPromise} from '../test_util.m.js';
     function testDialogOpensOnAction(dialogTagName, eventDetail) {
       assertFalse(!!page.shadowRoot.querySelector(dialogTagName));
       const whenDialogOpen = eventToPromise('cr-dialog-open', page);
-      page.fire(CertificateActionEvent, eventDetail);
+      page.dispatchEvent(new CustomEvent(
+          CertificateActionEvent,
+          {bubbles: true, composed: true, detail: eventDetail}));
 
       // Some dialogs are opened after some async operation to fetch initial
       // data. Ensure that the underlying cr-dialog is actually opened before
@@ -793,12 +805,14 @@ import {eventToPromise} from '../test_util.m.js';
         flush();
         const certificateLists =
             page.shadowRoot.querySelectorAll('certificate-list');
-        const clientImportButton = certificateLists[0].$$('#import');
+        const clientImportButton =
+            certificateLists[0].shadowRoot.querySelector('#import');
         assertTrue(clientImportButton.hidden);
         const clientImportAndBindButton =
-            certificateLists[0].$$('#importAndBind');
+            certificateLists[0].shadowRoot.querySelector('#importAndBind');
         assertTrue(clientImportAndBindButton.hidden);
-        const caImportButton = certificateLists[1].$$('#import');
+        const caImportButton =
+            certificateLists[1].shadowRoot.querySelector('#import');
         assertTrue(caImportButton.hidden);
       });
 
@@ -818,14 +832,16 @@ import {eventToPromise} from '../test_util.m.js';
               'client-import-allowed-changed', true /* clientImportAllowed */);
           // Verify that import buttons are shown in the client certificate
           // tab.
-          const clientImportButton = certificateLists[0].$$('#import');
+          const clientImportButton =
+              certificateLists[0].shadowRoot.querySelector('#import');
           assertFalse(clientImportButton.hidden);
           const clientImportAndBindButton =
-              certificateLists[0].$$('#importAndBind');
+              certificateLists[0].shadowRoot.querySelector('#importAndBind');
           assertFalse(clientImportAndBindButton.hidden);
           // Verify that import button is still hidden in the CA certificate
           // tab.
-          const caImportButton = certificateLists[1].$$('#import');
+          const caImportButton =
+              certificateLists[1].shadowRoot.querySelector('#import');
           assertTrue(caImportButton.hidden);
         });
       });
@@ -846,14 +862,16 @@ import {eventToPromise} from '../test_util.m.js';
               'client-import-allowed-changed', false /* clientImportAllowed */);
           // Verify that import buttons are still hidden in the client
           // certificate tab.
-          const clientImportButton = certificateLists[0].$$('#import');
+          const clientImportButton =
+              certificateLists[0].shadowRoot.querySelector('#import');
           assertTrue(clientImportButton.hidden);
           const clientImportAndBindButton =
-              certificateLists[0].$$('#importAndBind');
+              certificateLists[0].shadowRoot.querySelector('#importAndBind');
           assertTrue(clientImportAndBindButton.hidden);
           // Verify that import button is still hidden in the CA certificate
           // tab.
-          const caImportButton = certificateLists[1].$$('#import');
+          const caImportButton =
+              certificateLists[1].shadowRoot.querySelector('#import');
           assertTrue(caImportButton.hidden);
         });
       });
@@ -874,13 +892,15 @@ import {eventToPromise} from '../test_util.m.js';
               'ca-import-allowed-changed', true /* clientImportAllowed */);
           // Verify that import buttons are still hidden in the client
           // certificate tab.
-          const clientImportButton = certificateLists[0].$$('#import');
+          const clientImportButton =
+              certificateLists[0].shadowRoot.querySelector('#import');
           assertTrue(clientImportButton.hidden);
           const clientImportAndBindButton =
-              certificateLists[0].$$('#importAndBind');
+              certificateLists[0].shadowRoot.querySelector('#importAndBind');
           assertTrue(clientImportAndBindButton.hidden);
           // Verify that import button is shown in the CA certificate tab.
-          const caImportButton = certificateLists[1].$$('#import');
+          const caImportButton =
+              certificateLists[1].shadowRoot.querySelector('#import');
           assertFalse(caImportButton.hidden);
         });
       });
@@ -901,14 +921,16 @@ import {eventToPromise} from '../test_util.m.js';
               'ca-import-allowed-changed', false /* clientImportAllowed */);
           // Verify that import buttons are still hidden in the client
           // certificate tab.
-          const clientImportButton = certificateLists[0].$$('#import');
+          const clientImportButton =
+              certificateLists[0].shadowRoot.querySelector('#import');
           assertTrue(clientImportButton.hidden);
           const clientImportAndBindButton =
-              certificateLists[0].$$('#importAndBind');
+              certificateLists[0].shadowRoot.querySelector('#importAndBind');
           assertTrue(clientImportAndBindButton.hidden);
           // Verify that import button is still hidden in the CA certificate
           // tab.
-          const caImportButton = certificateLists[1].$$('#import');
+          const caImportButton =
+              certificateLists[1].shadowRoot.querySelector('#import');
           assertTrue(caImportButton.hidden);
         });
       });
@@ -950,8 +972,9 @@ import {eventToPromise} from '../test_util.m.js';
       element.certificateType = certificateType;
       flush();
 
-      const importButton =
-          bindBtn ? element.$$('#importAndBind') : element.$$('#import');
+      const importButton = bindBtn ?
+          element.shadowRoot.querySelector('#importAndBind') :
+          element.shadowRoot.querySelector('#import');
       assertTrue(!!importButton);
 
       const waitForActionEvent = actionEventExpected ?

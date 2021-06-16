@@ -10,34 +10,49 @@ import '../../cr_elements/cr_button/cr_button.m.js';
 import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import './certificate_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CertificatesError, CertificatesImportError} from './certificates_browser_proxy.js';
 
-Polymer({
-  is: 'certificates-error-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const CertificatesErrorDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class CertificatesErrorDialogElement extends
+    CertificatesErrorDialogElementBase {
+  static get is() {
+    return 'certificates-error-dialog';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!CertificatesError|!CertificatesImportError} */
-    model: Object,
-  },
+  static get properties() {
+    return {
+      /** @type {!CertificatesError|!CertificatesImportError} */
+      model: Object,
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
-  },
+  }
 
   /** @private */
   onOkTap_() {
     /** @type {!CrDialogElement} */ (this.$.dialog).close();
-  },
+  }
 
   /**
    * @param {{name: string, error: string}} importError
@@ -47,5 +62,8 @@ Polymer({
   getCertificateErrorText_(importError) {
     return loadTimeData.getStringF(
         'certificateImportErrorFormat', importError.name, importError.error);
-  },
-});
+  }
+}
+
+customElements.define(
+    CertificatesErrorDialogElement.is, CertificatesErrorDialogElement);

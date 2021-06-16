@@ -11,57 +11,70 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './certificate_entry.js';
 import './certificate_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertNotReached} from '../../js/assert.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from './certificate_manager_types.js';
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
-Polymer({
-  is: 'certificate-list',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const CertificateListElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CertificateListElement extends CertificateListElementBase {
+  static get is() {
+    return 'certificate-list';
+  }
 
-  properties: {
-    /** @type {!Array<!CertificatesOrgGroup>} */
-    certificates: {
-      type: Array,
-      value() {
-        return [];
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @type {!Array<!CertificatesOrgGroup>} */
+      certificates: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /** @type {!CertificateType} */
-    certificateType: String,
+      /** @type {!CertificateType} */
+      certificateType: String,
 
-    /** @type {boolean} */
-    importAllowed: Boolean,
+      /** @type {boolean} */
+      importAllowed: Boolean,
 
-    // 'if expr="chromeos"' here is breaking vulcanize. TODO(stevenjb/dpapad):
-    // Restore after migrating to polymer-bundler, crbug.com/731881.
-    /** @private */
-    isGuest_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isGuest') &&
-            loadTimeData.getBoolean('isGuest');
+      // 'if expr="chromeos"' here is breaking vulcanize. TODO(stevenjb/dpapad):
+      // Restore after migrating to polymer-bundler, crbug.com/731881.
+      /** @private */
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isGuest') &&
+              loadTimeData.getBoolean('isGuest');
+        },
       },
-    },
 
-    /** @private */
-    isKiosk_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isKiosk') &&
-            loadTimeData.getBoolean('isKiosk');
+      /** @private */
+      isKiosk_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isKiosk') &&
+              loadTimeData.getBoolean('isKiosk');
+        },
       },
-    },
-  },
-
-  behaviors: [I18nBehavior],
+    };
+  }
 
   /**
    * @return {string}
@@ -84,7 +97,7 @@ Polymer({
     }
 
     assertNotReached();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -93,7 +106,7 @@ Polymer({
   canImport_() {
     return !this.isKiosk_ && this.certificateType !== CertificateType.OTHER &&
         this.importAllowed;
-  },
+  }
 
   // <if expr="chromeos">
   /**
@@ -103,7 +116,7 @@ Polymer({
   canImportAndBind_() {
     return !this.isGuest_ &&
         this.certificateType === CertificateType.PERSONAL && this.importAllowed;
-  },
+  }
   // </if>
 
   /**
@@ -121,8 +134,12 @@ Polymer({
 
     // Otherwise propagate the error to the parents, such that a dialog
     // displaying the error will be shown.
-    this.fire('certificates-error', {error: error, anchor: anchor});
-  },
+    this.dispatchEvent(new CustomEvent('certificates-error', {
+      bubbles: true,
+      composed: true,
+      detail: {error, anchor},
+    }));
+  }
 
 
   /**
@@ -131,15 +148,17 @@ Polymer({
    * @private
    */
   dispatchImportActionEvent_(subnode, anchor) {
-    this.fire(
-        CertificateActionEvent,
-        /** @type {!CertificateActionEventDetail} */ ({
-          action: CertificateAction.IMPORT,
-          subnode: subnode,
-          certificateType: this.certificateType,
-          anchor: anchor,
-        }));
-  },
+    this.dispatchEvent(new CustomEvent(CertificateActionEvent, {
+      bubbles: true,
+      composed: true,
+      detail: /** @type {!CertificateActionEventDetail} */ ({
+        action: CertificateAction.IMPORT,
+        subnode: subnode,
+        certificateType: this.certificateType,
+        anchor: anchor,
+      }),
+    }));
+  }
 
   /**
    * @param {!Event} e
@@ -147,7 +166,7 @@ Polymer({
    */
   onImportTap_(e) {
     this.handleImport_(false, /** @type {!HTMLElement} */ (e.target));
-  },
+  }
 
   // <if expr="chromeos">
   /**
@@ -156,7 +175,7 @@ Polymer({
    */
   onImportAndBindTap_(e) {
     this.handleImport_(true, /** @type {!HTMLElement} */ (e.target));
-  },
+  }
   // </if>
 
   /**
@@ -183,5 +202,7 @@ Polymer({
     } else {
       assertNotReached();
     }
-  },
-});
+  }
+}
+
+customElements.define(CertificateListElement.is, CertificateListElement);
