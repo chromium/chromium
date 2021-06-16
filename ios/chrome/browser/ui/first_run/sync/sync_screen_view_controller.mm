@@ -71,17 +71,10 @@ constexpr CGFloat kMarginBetweenContents = 12;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.numberOfLines = 0;
   label.textColor = [UIColor colorNamed:kGrey600Color];
-
   label.textAlignment = NSTextAlignmentCenter;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.adjustsFontForContentSizeCategory = YES;
-
-  if (self.unifiedButtonStyle) {
-    label.text = l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_MINOR_MODE);
-  } else {
-    label.text = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT);
-  }
+  label.text = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT);
   return label;
 }
 

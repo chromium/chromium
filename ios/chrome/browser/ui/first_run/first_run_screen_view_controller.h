@@ -51,9 +51,6 @@
 // NO.
 @property(nonatomic, assign) BOOL scrollToEndMandatory;
 
-// YES if an unified button style applies to all buttons.
-@property(nonatomic, assign) BOOL unifiedButtonStyle;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_H_

@@ -38,7 +38,6 @@ constexpr CGFloat kContentWidthMultiplier = 0.65;
 constexpr CGFloat kContentMaxWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
-constexpr CGFloat kVerticalButtonSpacing = 10;
 
 }  // namespace
 
@@ -216,11 +215,6 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
                                  constant:-extraBottomMargin],
   ]];
 
-  // Add vertical spacing to buttons if they are applying the same style.
-  if (self.unifiedButtonStyle) {
-    actionStackView.spacing = kVerticalButtonSpacing;
-  }
-
   // Also constrain the width layout guide to a maximum constant, but at a lower
   // priority so that it only applies in compact screens.
   NSLayoutConstraint* contentLayoutGuideWidthConstraint =
@@ -254,9 +248,8 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
         self.didReachBottom = YES;
       } else {
         NSDictionary* textAttributes = @{
-          NSForegroundColorAttributeName : self.unifiedButtonStyle
-              ? [UIColor colorNamed:kBlueColor]
-              : [UIColor colorNamed:kSolidButtonTextColor],
+          NSForegroundColorAttributeName :
+              [UIColor colorNamed:kSolidButtonTextColor],
           NSFontAttributeName :
               [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
         };
@@ -414,13 +407,6 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
     _primaryActionButton.titleEdgeInsets =
         UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
     _primaryActionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-
-    if (self.unifiedButtonStyle) {
-      [_primaryActionButton
-          setBackgroundColor:[UIColor colorNamed:kBlueHaloColor]];
-      [_primaryActionButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                                 forState:UIControlStateNormal];
-    }
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -461,25 +447,17 @@ constexpr CGFloat kVerticalButtonSpacing = 10;
           accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   [button setTitle:buttonText forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorNamed:kBlueColor]
-               forState:UIControlStateNormal];
   button.contentEdgeInsets =
       UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  [button setBackgroundColor:[UIColor clearColor]];
+  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
+  [button setTitleColor:titleColor forState:UIControlStateNormal];
+  button.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
   button.accessibilityIdentifier = accessibilityIdentifier;
   button.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-
-  if (self.unifiedButtonStyle) {
-    [button setBackgroundColor:[UIColor colorNamed:kBlueHaloColor]];
-    button.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    button.layer.cornerRadius = kPrimaryButtonCornerRadius;
-  } else {
-    [button setBackgroundColor:[UIColor clearColor]];
-    button.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  }
 
   if (@available(iOS 13.4, *)) {
     button.pointerInteractionEnabled = YES;

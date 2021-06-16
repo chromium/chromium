@@ -77,7 +77,6 @@
 
   self.viewController = [[SyncScreenViewController alloc] init];
   self.viewController.delegate = self;
-  self.viewController.unifiedButtonStyle = self.isMinorMode;
 
   // Setup mediator.
   self.mediator = [[SyncScreenMediator alloc]
@@ -159,15 +158,6 @@
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
   [self.delegate skipAll];
-}
-
-#pragma mark - Private
-
-// Returns whether a minor mode UI needs to be shown.
-- (BOOL)isMinorMode {
-  // TODO(crbug.com/1205783): check if the user account is a minor/family link
-  // account
-  return NO;
 }
 
 @end
