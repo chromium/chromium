@@ -12,5 +12,19 @@
       "is_debug": false,
       "use_goma": true
     }
+  },
+  "linux-local-ssd-nvme-rel": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "linux-local-ssd-scsi-rel": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
   }
 }

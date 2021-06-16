@@ -5517,22 +5517,32 @@ ci.linux_builder(
 ci.infra_builder(
     name = "linux-component-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "component build",
         short_name = "comp",
     ),
-    schedule = "triggered",
-    triggered_by = [],
     builderless = False,
 )
 
 ci.infra_builder(
     name = "linux-control-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "control",
         short_name = "cntrl",
     ),
-    schedule = "triggered",
-    triggered_by = [],
+    builderless = False,
+)
+
+ci.infra_builder(
+    name = "linux-local-ssd-nvme-rel",
+    console_view_entry = consoles.console_view_entry(
+        short_name = "nvme",
+    ),
+    builderless = False,
+)
+
+ci.infra_builder(
+    name = "linux-local-ssd-scsi-rel",
+    console_view_entry = consoles.console_view_entry(
+        short_name = "scsi",
+    ),
     builderless = False,
 )
 
