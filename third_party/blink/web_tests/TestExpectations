@@ -6928,3 +6928,4 @@ crbug.com/1218947 [ Linux ] external/wpt/websockets/remove-own-iframe-during-one
 # Sheriff 2021-06-15
 crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfoEncryptedMedia.https.html [ Pass Failure ]
 crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfo.any.html [ Pass Failure ]
+crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Pass Failure ]
