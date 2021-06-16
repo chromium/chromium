@@ -457,7 +457,6 @@ public abstract class SyncConsentFragmentBase
     public void onAccountSelected(String accountName, boolean isDefaultAccount) {
         selectAccount(accountName, isDefaultAccount);
         mAccountPickerDialogCoordinator.dismissDialog();
-        mAccountPickerDialogCoordinator = null;
     }
 
     @Override
@@ -484,10 +483,8 @@ public abstract class SyncConsentFragmentBase
             if (addedAccountName == null) return;
 
             // Found the account name, dismiss the dialog if it is shown
-            if (mAccountPickerDialogCoordinator != null) {
-                mAccountPickerDialogCoordinator.dismissDialog();
-                mAccountPickerDialogCoordinator = null;
-            }
+            mAccountPickerDialogCoordinator.dismissDialog();
+
             // Wait for the account cache to be updated and select newly-added account.
             mAccountSelectionPending = true;
             mRequestedAccountName = addedAccountName;
