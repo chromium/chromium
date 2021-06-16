@@ -62,9 +62,13 @@ constexpr base::FilePath::CharType kBluetoothLogsFilePath[] =
     FILE_PATH_LITERAL("/var/log/bluetooth/log.bz2");
 constexpr base::FilePath::CharType kBluetoothLogsFilePathOld[] =
     FILE_PATH_LITERAL("/var/log/bluetooth/log.bz2.old");
+constexpr base::FilePath::CharType kBluetoothQualityReportFilePath[] =
+    FILE_PATH_LITERAL("/var/log/bluetooth/bluetooth_quality_report");
 
 constexpr char kBluetoothLogsAttachmentName[] = "bluetooth_logs.bz2";
 constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
+constexpr char kBluetoothQualityReportAttachmentName[] =
+    "bluetooth_quality_report";
 
 constexpr int kChromeLabsAndKaleidoscopeProductId = 5192933;
 
@@ -420,6 +424,11 @@ void FeedbackPrivateSendFeedbackFunction::OnAllLogsFetched(
     if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePathOld),
                                &bluetooth_logs)) {
       feedback_data->AddFile(kBluetoothLogsAttachmentNameOld,
+                             std::move(bluetooth_logs));
+    }
+    if (base::ReadFileToString(base::FilePath(kBluetoothQualityReportFilePath),
+                               &bluetooth_logs)) {
+      feedback_data->AddFile(kBluetoothQualityReportAttachmentName,
                              std::move(bluetooth_logs));
     }
   }
