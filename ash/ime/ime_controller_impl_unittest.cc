@@ -102,9 +102,9 @@ TEST_F(ImeControllerImplTest, RefreshIme) {
 
   // Cached data was updated.
   EXPECT_EQ("ime1", controller->current_ime().id);
-  ASSERT_EQ(2u, controller->available_imes().size());
-  EXPECT_EQ("ime1", controller->available_imes()[0].id);
-  EXPECT_EQ("ime2", controller->available_imes()[1].id);
+  ASSERT_EQ(2u, controller->GetVisibleImes().size());
+  EXPECT_EQ("ime1", controller->GetVisibleImes()[0].id);
+  EXPECT_EQ("ime2", controller->GetVisibleImes()[1].id);
   ASSERT_EQ(1u, controller->current_ime_menu_items().size());
   EXPECT_EQ("menu1", controller->current_ime_menu_items()[0].key);
 
@@ -118,11 +118,36 @@ TEST_F(ImeControllerImplTest, NoCurrentIme) {
   // Set up a single IME.
   RefreshImes("ime1", {"ime1"});
   EXPECT_EQ("ime1", controller->current_ime().id);
+  EXPECT_TRUE(controller->IsCurrentImeVisible());
 
   // When there is no current IME the cached current IME is empty.
   const std::string empty_ime_id;
   RefreshImes(empty_ime_id, {"ime1"});
   EXPECT_TRUE(controller->current_ime().id.empty());
+}
+
+TEST_F(ImeControllerImplTest, CurrentImeNotVisible) {
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+
+  // Add only Dictation.
+  std::string dictation_id =
+      "_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation";
+  RefreshImes(dictation_id, {dictation_id});
+  EXPECT_EQ(dictation_id, controller->current_ime().id);
+  EXPECT_FALSE(controller->IsCurrentImeVisible());
+  EXPECT_EQ(0u, controller->GetVisibleImes().size());
+
+  // Add something else too, but Dictation is active.
+  RefreshImes(dictation_id, {dictation_id, "ime1"});
+  EXPECT_EQ(dictation_id, controller->current_ime().id);
+  EXPECT_FALSE(controller->IsCurrentImeVisible());
+  EXPECT_EQ(1u, controller->GetVisibleImes().size());
+
+  // Inactivate the other IME, leave Dictation in the list.
+  RefreshImes("ime1", {dictation_id, "ime1"});
+  EXPECT_EQ("ime1", controller->current_ime().id);
+  EXPECT_TRUE(controller->IsCurrentImeVisible());
+  EXPECT_EQ(1u, controller->GetVisibleImes().size());
 }
 
 TEST_F(ImeControllerImplTest, SetImesManagedByPolicy) {
@@ -152,7 +177,7 @@ TEST_F(ImeControllerImplTest, CanSwitchIme) {
   ImeControllerImpl* controller = Shell::Get()->ime_controller();
 
   // Can't switch IMEs when none are available.
-  ASSERT_EQ(0u, controller->available_imes().size());
+  ASSERT_EQ(0u, controller->GetVisibleImes().size());
   EXPECT_FALSE(controller->CanSwitchIme());
 
   // Can't switch with only 1 IME.
@@ -208,7 +233,7 @@ TEST_F(ImeControllerImplTest, SwitchImeWithAccelerator) {
   const ui::Accelerator wide_half_2(ui::VKEY_DBE_DBCSCHAR, ui::EF_NONE);
 
   // When there are no IMEs available switching by accelerator does not work.
-  ASSERT_EQ(0u, controller->available_imes().size());
+  ASSERT_EQ(0u, controller->GetVisibleImes().size());
   EXPECT_FALSE(controller->CanSwitchImeWithAccelerator(convert));
   EXPECT_FALSE(controller->CanSwitchImeWithAccelerator(non_convert));
   EXPECT_FALSE(controller->CanSwitchImeWithAccelerator(wide_half_1));

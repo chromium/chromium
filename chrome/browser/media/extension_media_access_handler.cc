@@ -26,7 +26,8 @@ namespace {
 // 5. Hotwording component extension.
 // 6. XKB input method component extension.
 // 7. M17n/T13n/CJK input method component extension.
-// Once http://crbug.com/292856 is fixed, remove this whitelist.
+// 8. Accessibility Common extension (used for Dictation)
+// Once http://crbug.com/292856 is fixed, remove this allowlist.
 bool IsMediaRequestAllowedForExtension(const extensions::Extension* extension) {
   return extension->id() == "mppnpdlheglhdfmldimlhpnegondlapf" ||
          extension->id() == "jokbpnebhdcladagohdnfgjcpejggllo" ||
@@ -34,7 +35,8 @@ bool IsMediaRequestAllowedForExtension(const extensions::Extension* extension) {
          extension->id() == "nnckehldicaciogcbchegobnafnjkcne" ||
          extension->id() == "nbpagnldghgfoolbancepceaanlmhfmd" ||
          extension->id() == "jkghodnilhceideoidjikpgommlajknk" ||
-         extension->id() == "gjaehgfemfahhmlgpdfknkhdnemmolop";
+         extension->id() == "gjaehgfemfahhmlgpdfknkhdnemmolop" ||
+         extension->id() == "egfdjlfmgnehecnclamagfafdccgfndp";
 }
 
 }  // namespace

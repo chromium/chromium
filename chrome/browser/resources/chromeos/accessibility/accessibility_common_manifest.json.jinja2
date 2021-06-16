@@ -17,10 +17,22 @@
     "accessibilityFeatures.read",
     "accessibilityFeatures.modify",
     "commandLinePrivate",
-    "settingsPrivate"
+    "input",
+    "inputMethodPrivate",
+    "settingsPrivate",
+    "languageSettingsPrivate"
   ],
   "automation": {
     "desktop": true
   },
-  "default_locale": "en"
+  "default_locale": "en",
+  "input_components": [
+    {
+      "name": "Dictation",
+      "type": "ime",
+      "id": "dictation",
+      "description": "Dictation",
+      "language": ["none"]
+    }
+  ]
 }

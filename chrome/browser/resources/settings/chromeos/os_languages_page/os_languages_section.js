@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The IME ID for the Accessibility Common extension used by Dictation.
+/** @type {string} */
+const ACCESSIBILITY_COMMON_IME_ID =
+    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
+
 /**
  * @fileoverview
  * 'os-settings-languages-section' is the top-level settings section for
@@ -106,6 +111,9 @@ Polymer({
    * @private
    */
   getInputMethodDisplayName_(id, languageHelper) {
+    if (id === ACCESSIBILITY_COMMON_IME_ID) {
+      return '';
+    }
     // LanguageHelper.getInputMethodDisplayName will throw an error if the ID
     // isn't found, such as when using CrOS on Linux.
     try {

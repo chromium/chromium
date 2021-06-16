@@ -2131,7 +2131,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   int bold_length = 0;
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.
-  if (ime_controller->available_imes().size() > 1 && !IsTabletMode()) {
+  if (ime_controller->GetVisibleImes().size() > 1 && !IsTabletMode()) {
     error_text += u" ";
     bold_start = error_text.length();
     std::u16string shortcut =

@@ -49,6 +49,12 @@ var MockAccessibilityPrivate = {
   /** @private {?string} */
   highlightColor_: null,
 
+  /** @private {function<boolean>} */
+  dictationToggleListener_: null,
+
+  /** @private {boolean} */
+  dictationActivated_: false,
+
   // Methods from AccessibilityPrivate API. //
 
   onScrollableBoundsForPointRequested: {
@@ -62,6 +68,7 @@ var MockAccessibilityPrivate = {
 
     /**
      * Removes the listener.
+     * @param {function<number, number>} listener
      */
     removeListener: (listener) => {
       if (MockAccessibilityPrivate.boundsListener_ === listener) {
@@ -70,10 +77,8 @@ var MockAccessibilityPrivate = {
     }
   },
 
-  onMagnifierBoundsChanged: {
-    addListener: (listener) => {},
-    removeListener: (listener) => {}
-  },
+  onMagnifierBoundsChanged:
+      {addListener: (listener) => {}, removeListener: (listener) => {}},
 
   onSelectToSpeakPanelAction: {
     /**
@@ -84,6 +89,26 @@ var MockAccessibilityPrivate = {
     addListener: (listener) => {
       MockAccessibilityPrivate.selectToSpeakPanelActionListener_ = listener;
     },
+  },
+
+  onToggleDictation: {
+    /**
+     * Adds a listener to onToggleDictation.
+     * @param {function<boolean>} listener
+     */
+    addListener: (listener) => {
+      MockAccessibilityPrivate.dictationToggleListener_ = listener;
+    },
+
+    /**
+     * Removes the listener.
+     * @param {function<boolean>} listener
+     */
+    removeListener: (listener) => {
+      if (MockAccessibilityPrivate.dictationToggleListener_ === listener) {
+        MockAccessibilityPrivate.dictationToggleListener_ = null;
+      }
+    }
   },
 
   onSelectToSpeakStateChangeRequested: {
@@ -146,6 +171,14 @@ var MockAccessibilityPrivate = {
   updateSelectToSpeakPanel: (show, anchor, isPaused, speed) => {
     MockAccessibilityPrivate
         .selectToSpeakPanelState_ = {show, anchor, isPaused, speed};
+  },
+
+  /**
+   * Called in order to toggle Dictation listening.
+   */
+  toggleDictation: () => {
+    MockAccessibilityPrivate.dictationActivated_ =
+        !MockAccessibilityPrivate.dictationActivated_;
   },
 
   // Methods for testing. //
@@ -238,5 +271,27 @@ var MockAccessibilityPrivate = {
     if (MockAccessibilityPrivate.selectToSpeakStateChangeListener_) {
       MockAccessibilityPrivate.selectToSpeakStateChangeListener_();
     }
+  },
+
+  /**
+   * Simulates Dictation activation change from AccessibilityManager, which may
+   * occur when the user or a chrome extension toggles Dictation active state.
+   * @param {boolean} activated
+   */
+  callOnToggleDictation: (activated) => {
+    MockAccessibilityPrivate.dictationActivated_ = activated;
+    if (MockAccessibilityPrivate.dictationToggleListener_) {
+      MockAccessibilityPrivate.dictationToggleListener_(activated);
+    }
+  },
+
+  /**
+   * Gets the current Dictation active state. This can be flipped when
+   * MockAccessibilityPrivate.toggleDictation is called, and set when
+   * MocakAccessibilityPrivate.callOnToggleDictation is called.
+   * @returns {boolean} The current Dictation active state.
+   */
+  getDictationActive() {
+    return MockAccessibilityPrivate.dictationActivated_;
   },
 };

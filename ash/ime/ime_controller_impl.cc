@@ -31,6 +31,10 @@ enum class ModeChangeKeyAction {
   kMaxValue = kSwitchIme
 };
 
+// The ID for the Accessibility Common IME (used for Dictation).
+const char* kAccessibilityCommonIMEId =
+    "_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation";
+
 }  // namespace
 
 ImeControllerImpl::ImeControllerImpl()
@@ -46,6 +50,14 @@ void ImeControllerImpl::AddObserver(Observer* observer) {
 
 void ImeControllerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+const std::vector<ImeInfo>& ImeControllerImpl::GetVisibleImes() const {
+  return visible_imes_;
+}
+
+bool ImeControllerImpl::IsCurrentImeVisible() const {
+  return current_ime_.id != kAccessibilityCommonIMEId;
 }
 
 void ImeControllerImpl::SetClient(ImeControllerClient* client) {
@@ -71,7 +83,7 @@ bool ImeControllerImpl::CanSwitchIme() const {
 
   // Do not consume key event if there is only one input method is enabled.
   // Ctrl+Space or Alt+Shift may be used by other application.
-  return available_imes_.size() > 1;
+  return GetVisibleImes().size() > 1;
 }
 
 void ImeControllerImpl::SwitchToNextIme() {
@@ -131,12 +143,17 @@ void ImeControllerImpl::RefreshIme(const std::string& current_ime_id,
 
   available_imes_.clear();
   available_imes_.reserve(available_imes.size());
+  visible_imes_.clear();
+  visible_imes_.reserve(visible_imes_.size());
   for (const auto& ime : available_imes) {
     if (ime.id.empty()) {
       DLOG(ERROR) << "Received IME with invalid ID.";
       continue;
     }
     available_imes_.push_back(ime);
+    if (ime.id != kAccessibilityCommonIMEId) {
+      visible_imes_.push_back(ime);
+    }
     if (ime.id == current_ime_id)
       current_ime_ = ime;
   }

@@ -75,7 +75,7 @@ void UnifiedIMEDetailedViewController::OnIMEMenuActivationChanged(
 void UnifiedIMEDetailedViewController::Update() {
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   view_->Update(ime_controller->current_ime().id,
-                ime_controller->available_imes(),
+                ime_controller->GetVisibleImes(),
                 ime_controller->current_ime_menu_items(),
                 ShouldShowKeyboardToggle(), GetSingleImeBehavior());
 }

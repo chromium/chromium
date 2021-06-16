@@ -71,6 +71,9 @@ js2gtest("accessibility_common_extjs_tests") {
     "../common/testing/callback_helper.js",
     "../common/testing/e2e_test_base.js",
     "../common/testing/mock_accessibility_private.js",
+    "../common/testing/mock_input_ime.js",
+    "../common/testing/mock_input_method_private.js",
+    "../common/testing/mock_language_settings_private.js",
   ]
 
   # The test base classes generate C++ code with these deps.
@@ -103,6 +106,8 @@ js_library("accessibility_common") {
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
     "$externs_path/command_line_private.js",
+    "$externs_path/input_method_private.js",
+    "$externs_path/language_settings_private.js",
   ]
 }
 
@@ -122,4 +127,9 @@ js_library("magnifier") {
 
 js_library("dictation") {
   sources = [ "dictation/dictation.js" ]
+  externs_list = [
+    "$externs_path/accessibility_private.js",
+    "$externs_path/input_method_private.js",
+    "$externs_path/language_settings_private.js",
+  ]
 }

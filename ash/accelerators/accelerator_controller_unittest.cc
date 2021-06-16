@@ -143,11 +143,25 @@ void AddTestImes() {
   ime1.id = "id1";
   ImeInfo ime2;
   ime2.id = "id2";
-  std::vector<ImeInfo> available_imes;
-  available_imes.push_back(std::move(ime1));
-  available_imes.push_back(std::move(ime2));
-  Shell::Get()->ime_controller()->RefreshIme("id1", std::move(available_imes),
+  std::vector<ImeInfo> visible_imes;
+  visible_imes.push_back(std::move(ime1));
+  visible_imes.push_back(std::move(ime2));
+  Shell::Get()->ime_controller()->RefreshIme("id1", std::move(visible_imes),
                                              std::vector<ImeMenuItem>());
+}
+
+void AddNotVisibleTestIme() {
+  ImeInfo dictation;
+  dictation.id = "_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation";
+  const std::vector<ImeInfo> visible_imes =
+      Shell::Get()->ime_controller()->GetVisibleImes();
+  std::vector<ImeInfo> available_imes;
+  for (auto ime : visible_imes) {
+    available_imes.push_back(ime);
+  }
+  available_imes.push_back(dictation);
+  Shell::Get()->ime_controller()->RefreshIme(
+      dictation.id, std::move(available_imes), std::vector<ImeMenuItem>());
 }
 
 ui::Accelerator CreateReleaseAccelerator(ui::KeyboardCode key_code,
@@ -1426,7 +1440,7 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppListFullscreen) {
 }
 
 TEST_F(AcceleratorControllerTest, ImeGlobalAccelerators) {
-  ASSERT_EQ(0u, Shell::Get()->ime_controller()->available_imes().size());
+  ASSERT_EQ(0u, Shell::Get()->ime_controller()->GetVisibleImes().size());
 
   // Cycling IME is blocked because there is nothing to switch to.
   ui::Accelerator control_space_down(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
@@ -1438,8 +1452,21 @@ TEST_F(AcceleratorControllerTest, ImeGlobalAccelerators) {
   EXPECT_FALSE(ProcessInController(control_space_up));
   EXPECT_FALSE(ProcessInController(control_shift_space));
 
+  // Adding only a not visible IME doesn't make IME accelerators available.
+  AddNotVisibleTestIme();
+  ASSERT_EQ(0u, Shell::Get()->ime_controller()->GetVisibleImes().size());
+  EXPECT_FALSE(ProcessInController(control_space_down));
+  EXPECT_FALSE(ProcessInController(control_space_up));
+  EXPECT_FALSE(ProcessInController(control_shift_space));
+
   // Cycling IME works when there are IMEs available.
   AddTestImes();
+  EXPECT_TRUE(ProcessInController(control_space_down));
+  EXPECT_TRUE(ProcessInController(control_space_up));
+  EXPECT_TRUE(ProcessInController(control_shift_space));
+
+  // Adding the not visible IME back doesn't block cycling.
+  AddNotVisibleTestIme();
   EXPECT_TRUE(ProcessInController(control_space_down));
   EXPECT_TRUE(ProcessInController(control_space_up));
   EXPECT_TRUE(ProcessInController(control_shift_space));

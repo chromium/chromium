@@ -92,7 +92,12 @@ void ImeModeView::Update() {
 
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
 
-  size_t ime_count = ime_controller->available_imes().size();
+  if (!ime_controller->IsCurrentImeVisible()) {
+    SetVisible(false);
+    return;
+  }
+
+  size_t ime_count = ime_controller->GetVisibleImes().size();
   SetVisible(!ime_menu_on_shelf_activated_ &&
              (ime_count > 1 || ime_controller->managed_by_policy()));
 

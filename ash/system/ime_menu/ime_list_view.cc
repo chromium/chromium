@@ -209,7 +209,7 @@ ImeListView::~ImeListView() = default;
 void ImeListView::Init(bool show_keyboard_toggle,
                        SingleImeBehavior single_ime_behavior) {
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
-  Update(ime_controller->current_ime().id, ime_controller->available_imes(),
+  Update(ime_controller->current_ime().id, ime_controller->GetVisibleImes(),
          ime_controller->current_ime_menu_items(), show_keyboard_toggle,
          single_ime_behavior);
 }

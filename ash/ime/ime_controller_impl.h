@@ -52,9 +52,10 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  const ImeInfo& current_ime() const { return current_ime_; }
+  const std::vector<ImeInfo>& GetVisibleImes() const;
+  bool IsCurrentImeVisible() const;
 
-  const std::vector<ImeInfo>& available_imes() const { return available_imes_; }
+  const ImeInfo& current_ime() const { return current_ime_; }
 
   bool is_extra_input_options_enabled() const {
     return is_extra_input_options_enabled_;
@@ -146,6 +147,10 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
 
   // "Available" IMEs are both installed and enabled by the user in settings.
   std::vector<ImeInfo> available_imes_;
+
+  // "Visible" IMEs are installed, enabled, and don't include built-in IMEs that
+  // shouldn't be shown to the user, like Dictation.
+  std::vector<ImeInfo> visible_imes_;
 
   // True if the available IMEs are currently managed by enterprise policy.
   // For example, can occur at the login screen with device-level policy.

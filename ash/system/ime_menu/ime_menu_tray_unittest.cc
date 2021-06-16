@@ -164,6 +164,39 @@ TEST_F(ImeMenuTrayTest, TrayLabelTest) {
   EXPECT_EQ(u"UK*", GetTrayText());
 }
 
+TEST_F(ImeMenuTrayTest, TrayLabelExludesDictation) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  ASSERT_TRUE(IsVisible());
+
+  ImeInfo info1;
+  info1.id = "ime1";
+  info1.name = u"English";
+  info1.short_name = u"US";
+  info1.third_party = false;
+
+  ImeInfo info2;
+  info2.id = "ime2";
+  info2.name = u"English UK";
+  info2.short_name = u"UK";
+  info2.third_party = true;
+
+  ImeInfo dictation;
+  dictation.id = "_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation";
+  dictation.name = u"Dictation";
+
+  // Changes the input method to "ime1".
+  SetCurrentIme("ime1", {info1, dictation, info2});
+  EXPECT_EQ(u"US", GetTrayText());
+
+  // Changes the input method to a third-party IME extension.
+  SetCurrentIme("ime2", {info1, dictation, info2});
+  EXPECT_EQ(u"UK*", GetTrayText());
+
+  // Sets to "dictation", which shouldn't be shown.
+  SetCurrentIme(dictation.id, {info1, dictation, info2});
+  EXPECT_EQ(u"", GetTrayText());
+}
+
 // Tests that IME menu tray changes background color when tapped/clicked. And
 // tests that the background color becomes 'inactive' when disabling the IME
 // menu feature. Also makes sure that the shelf won't autohide as long as the

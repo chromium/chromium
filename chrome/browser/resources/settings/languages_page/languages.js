@@ -47,6 +47,13 @@ const kTranslateLanguageSynonyms = {
 // one in ui/base/ime/chromeos/extension_ime_util.h.
 const kArcImeLanguage = '_arc_ime_language_';
 
+// <if expr="chromeos">
+// The IME ID for the Accessibility Common extension used by Dictation.
+/** @type {string} */
+const ACCESSIBILITY_COMMON_IME_ID =
+    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
+// </if>
+
 let preferredLanguagesPrefName = 'intl.accept_languages';
 // <if expr="chromeos">
 preferredLanguagesPrefName = 'settings.language.preferred_languages';
@@ -1214,11 +1221,13 @@ Polymer({
             .value.split(','));
     this.enabledInputMethodSet_ = new Set(enabledInputMethodIds);
 
-    // Return only supported input methods.
+    // Return only supported input methods. Don't include the Dictation
+    // (Accessibility Common) input method.
     return enabledInputMethodIds
         .map(id => this.supportedInputMethodMap_.get(id))
         .filter(function(inputMethod) {
-          return !!inputMethod;
+          return !!inputMethod &&
+              inputMethod.id !== ACCESSIBILITY_COMMON_IME_ID;
         });
   },
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The IME ID for the Accessibility Common extension used by Dictation.
+/** @type {string} */
+const ACCESSIBILITY_COMMON_IME_ID =
+    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
+
 /**
  * @fileoverview 'os-settings-add-input-methods-dialog' is a dialog for
  * adding input methods.
@@ -90,6 +95,10 @@ Polymer({
     return this.languages.inputMethods.supported.filter(inputMethod => {
       // Don't show input methods which are already enabled.
       if (this.languageHelper.isInputMethodEnabled(inputMethod.id)) {
+        return false;
+      }
+      // Don't show the Dictation (Accessibility Common) extension in this list.
+      if (inputMethod.id === ACCESSIBILITY_COMMON_IME_ID) {
         return false;
       }
       // Show input methods whose tags match the query.

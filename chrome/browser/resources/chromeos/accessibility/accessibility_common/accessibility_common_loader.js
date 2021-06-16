@@ -60,6 +60,11 @@ export class AccessibilityCommon {
         {}, this.onDictationUpdated_.bind(this));
     chrome.accessibilityFeatures.dictation.onChange.addListener(
         this.onDictationUpdated_.bind(this));
+
+    // AccessibilityCommon is an IME so it shows in the input methods list
+    // when it starts up. Remove from this list, Dictation will add it back
+    // whenever needed.
+    Dictation.removeAsInputMethod();
   }
 
   /**

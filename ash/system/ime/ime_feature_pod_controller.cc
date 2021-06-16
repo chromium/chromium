@@ -21,7 +21,7 @@ namespace {
 bool IsButtonVisible() {
   DCHECK(Shell::Get());
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
-  size_t ime_count = ime_controller->available_imes().size();
+  size_t ime_count = ime_controller->GetVisibleImes().size();
   return !ime_controller->is_menu_active() &&
          (ime_count > 1 || ime_controller->managed_by_policy());
 }
@@ -29,7 +29,7 @@ bool IsButtonVisible() {
 std::u16string GetLabelString() {
   DCHECK(Shell::Get());
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
-  size_t ime_count = ime_controller->available_imes().size();
+  size_t ime_count = ime_controller->GetVisibleImes().size();
   if (ime_count > 1) {
     return ime_controller->current_ime().short_name;
   } else {
@@ -42,7 +42,7 @@ std::u16string GetLabelString() {
 std::u16string GetTooltipString() {
   DCHECK(Shell::Get());
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
-  size_t ime_count = ime_controller->available_imes().size();
+  size_t ime_count = ime_controller->GetVisibleImes().size();
   if (ime_count > 1) {
     return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_IME_TOOLTIP_WITH_NAME,
                                       ime_controller->current_ime().name);
