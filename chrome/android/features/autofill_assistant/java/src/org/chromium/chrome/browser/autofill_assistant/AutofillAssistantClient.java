@@ -180,7 +180,7 @@ public class AutofillAssistantClient {
         if (mAccountInitializationStarted) return;
         mAccountInitializationStarted = true;
 
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             if (mNativeClientAndroid == 0) return;
             if (accounts.size() == 1) {
                 // If there's only one account, there aren't any doubts.
