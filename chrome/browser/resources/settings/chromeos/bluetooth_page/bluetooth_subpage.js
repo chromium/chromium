@@ -200,9 +200,9 @@ Polymer({
   },
 
   observers: [
-    'adapterStateChanged_(adapterState.*)',
     'deviceListChanged_(deviceList_.*)',
     'listUpdateFrequencyMsChanged_(listUpdateFrequencyMs)',
+    'updateDiscoveryAndMaybeRefreshDeviceList_(adapterState.*)',
   ],
 
   /**
@@ -211,6 +211,30 @@ Polymer({
    * @private
    */
   updateTimerId_: undefined,
+
+  /**
+   * Used to prevent duplicate event listeners being added for the focus event.
+   * @type {function(Event)|undefined}
+   * @private
+   */
+  onWindowFocusedListener_: undefined,
+
+  /**
+   * Used to prevent duplicate event listeners being added for the blur event.
+   * @type {function(Event)|undefined}
+   * @private
+   */
+  onWindowBlurredListener_: undefined,
+
+  /**
+   * Used to determine if the window has focus. This is overridden by tests so
+   * that focus logic can be better encapsulated in this element.
+   * @type {function():boolean}
+   * @private
+   */
+  isWindowFocusedFunction_: function() {
+    return document.hasFocus();
+  },
 
   /**
    * Overridden from DeepLinkingBehavior.
@@ -251,13 +275,15 @@ Polymer({
   currentRouteChanged(route) {
     // Any navigation resets the previous attempt to deep link.
     this.pendingSettingId_ = null;
-    this.updateDiscovery_();
-    this.startOrStopRefreshingDeviceList_();
+    this.updateDiscoveryAndMaybeRefreshDeviceList_();
 
     // Does not apply to this page.
     if (route !== routes.BLUETOOTH_DEVICES) {
+      this.removeWindowFocusEventListeners_();
       return;
     }
+
+    this.addWindowFocusEventListeners_();
 
     this.attemptDeepLink().then(result => {
       if (!result.deepLinkShown && result.pendingSettingId) {
@@ -275,7 +301,7 @@ Polymer({
   },
 
   /** @private */
-  adapterStateChanged_() {
+  updateDiscoveryAndMaybeRefreshDeviceList_() {
     this.updateDiscovery_();
     this.startOrStopRefreshingDeviceList_();
   },
@@ -336,7 +362,11 @@ Polymer({
     if (!this.adapterState || !this.adapterState.powered) {
       return;
     }
-    if (Router.getInstance().getCurrentRoute() === routes.BLUETOOTH_DEVICES) {
+
+    // Don't enable discovery if the window isn't focused to avoid keeping the
+    // Bluetooth stack in a busy loop.
+    if (Router.getInstance().getCurrentRoute() === routes.BLUETOOTH_DEVICES &&
+        this.isWindowFocusedFunction_()) {
       this.startDiscovery_();
     } else {
       this.stopDiscovery_();
@@ -407,6 +437,32 @@ Polymer({
       this.bluetoothToggleState = !this.bluetoothToggleState;
     }
     event.stopPropagation();
+  },
+
+  /** @private */
+  addWindowFocusEventListeners_() {
+    // Prevent duplicate event listener registrations by binding the event
+    // listener callbacks a single time and storing their values.
+    if (!this.onWindowFocusedListener_) {
+      this.onWindowFocusedListener_ =
+          this.updateDiscoveryAndMaybeRefreshDeviceList_.bind(this);
+    }
+    if (!this.onWindowBlurredListener_) {
+      this.onWindowBlurredListener_ =
+          this.updateDiscoveryAndMaybeRefreshDeviceList_.bind(this);
+    }
+    window.addEventListener('focus', this.onWindowFocusedListener_);
+    window.addEventListener('blur', this.onWindowBlurredListener_);
+  },
+
+  /** @private */
+  removeWindowFocusEventListeners_() {
+    if (this.onWindowFocusedListener_) {
+      window.removeEventListener('focus', this.onWindowFocusedListener_);
+    }
+    if (this.onWindowBlurredListener_) {
+      window.removeEventListener('blur', this.onWindowBlurredListener_);
+    }
   },
 
   /**

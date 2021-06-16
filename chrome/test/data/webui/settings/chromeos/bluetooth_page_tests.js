@@ -237,6 +237,7 @@ suite('Bluetooth', function() {
       bluetoothApi.simulateAdapterStateChangedForTest({
         available: true,
         powered: true,
+        discovering: true,
       });
 
       Polymer.dom.flush();
@@ -288,6 +289,44 @@ suite('Bluetooth', function() {
           subpage.$.enableToggle, getDeepActiveElement(),
           'Subpage on/off toggle should be focused for settingId=100.');
     });
+
+    test('Discovery starts/stops when navigating to/from subpage', function() {
+      settings.Router.getInstance().navigateTo(settings.routes.BASIC, null);
+      assertFalse(bluetoothApi.getAdapterStateForTest().discovering);
+
+      settings.Router.getInstance().navigateTo(
+          settings.routes.BLUETOOTH_DEVICES, null);
+      assertTrue(bluetoothApi.getAdapterStateForTest().discovering);
+    });
+
+    test('Discovery starts/stops when subpage focused/blurred', function() {
+      subpage.isWindowFocusedFunction_ = function() {
+        return false;
+      };
+      window.dispatchEvent(new FocusEvent('blur'));
+      assertFalse(bluetoothApi.getAdapterStateForTest().discovering);
+
+      subpage.isWindowFocusedFunction_ = function() {
+        return true;
+      };
+      window.dispatchEvent(new FocusEvent('focus'));
+      assertTrue(bluetoothApi.getAdapterStateForTest().discovering);
+    });
+
+    test(
+        'Repeated focus events do not cause duplicate event listener registrations',
+        function() {
+          subpage.isWindowFocusedFunction_ = function() {
+            return true;
+          };
+
+          assertTrue(bluetoothApi.getAdapterStateForTest().discovering);
+
+          for (let i = 0; i < 2; i++) {
+            window.dispatchEvent(new FocusEvent('focus'));
+            assertTrue(bluetoothApi.getAdapterStateForTest().discovering);
+          }
+        });
 
     async function waitForListUpdateTimeout() {
       // listUpdateFrequencyMs is set to 0 for tests, but we still need to wait
