@@ -14,6 +14,7 @@
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -184,6 +185,34 @@ TEST_F(PopupBlockerTabHelperTest, ClearsContentSettingsPopupStateOnNavigation) {
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   NavigateAndCommit(GURL(kUrl2));
+  EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
+                   web_contents()->GetMainFrame())
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
+}
+
+TEST_F(PopupBlockerTabHelperTest,
+       NavigatingNonPrimaryDoesntClearsContentSettings) {
+  TestPopupNavigationDelegate::ResultHolder result;
+  helper()->AddBlockedPopup(
+      std::make_unique<TestPopupNavigationDelegate>(GURL(kUrl1), &result),
+      blink::mojom::WindowFeatures(), PopupBlockType::kNoGesture);
+  EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
+                  web_contents()->GetMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
+
+  // Navigating a non-primary main frame shoudn't clear the popups.
+  content::MockNavigationHandle handle(GURL(kUrl2),
+                                       web_contents()->GetMainFrame());
+  handle.set_has_committed(true);
+  handle.set_is_in_primary_main_frame(false);
+  helper()->DidFinishNavigation(&handle);
+  EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
+                  web_contents()->GetMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
+
+  // Navigating the primary main frame should clear the popups.
+  handle.set_is_in_primary_main_frame(true);
+  helper()->DidFinishNavigation(&handle);
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
                    web_contents()->GetMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
