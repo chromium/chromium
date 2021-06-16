@@ -53,6 +53,10 @@ class IntegrationTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
+    logging::SetLogItems(true,    // enable_process_id
+                         true,    // enable_thread_id
+                         true,    // enable_timestamp
+                         false);  // enable_tickcount
     Clean();
     ExpectClean();
     EnterTestMode(GURL("http://localhost:1234"));
