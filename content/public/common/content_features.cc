@@ -202,6 +202,11 @@ const base::Feature kCriticalClientHint{"CriticalClientHint",
 const base::Feature kDataSaverHoldback{"DataSaverHoldback",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable debugging the issue crbug.com/1201355
+const base::Feature kDebugHistoryInterventionNoUserActivation{
+    "DebugHistoryInterventionNoUserActivation",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable changing source dynamically for desktop capture.
 const base::Feature kDesktopCaptureChangeSource{
     "DesktopCaptureChangeSource", base::FEATURE_ENABLED_BY_DEFAULT};

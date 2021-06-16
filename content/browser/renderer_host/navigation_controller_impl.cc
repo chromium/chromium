@@ -2319,11 +2319,14 @@ void NavigationControllerImpl::NotifyUserActivation() {
   // When a user activation occurs, ensure that all adjacent entries for the
   // same document clear their skippable bit, so that the history manipulation
   // intervention does not apply to them.
-  // TODO(crbug.com/949279) in case it becomes necessary for resetting based on
-  // which frame created an entry and which frame has the user gesture.
   auto* last_committed_entry = GetLastCommittedEntry();
   if (!last_committed_entry)
     return;
+
+  if (base::FeatureList::IsEnabled(
+          features::kDebugHistoryInterventionNoUserActivation)) {
+    return;
+  }
 
   SetSkippableForSameDocumentEntries(GetLastCommittedEntryIndex(), false);
 }

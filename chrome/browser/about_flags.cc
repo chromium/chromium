@@ -7258,6 +7258,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncTrustedVaultPassphraseRecoveryDescription, kOsAll,
      FEATURE_VALUE_TYPE(::switches::kSyncTrustedVaultPassphraseRecovery)},
 
+    {"debug-history-intervention-no-user-activation",
+     flag_descriptions::kDebugHistoryInterventionNoUserActivationName,
+     flag_descriptions::kDebugHistoryInterventionNoUserActivationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kDebugHistoryInterventionNoUserActivation)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

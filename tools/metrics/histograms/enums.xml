@@ -45697,6 +45697,8 @@ from previous Chrome versions.
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
+  <int value="-1589720671"
+      label="DebugHistoryInterventionNoUserActivation:disabled"/>
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>
@@ -47335,6 +47337,8 @@ from previous Chrome versions.
   <int value="-220298483" label="ImeOptionsInSettings:enabled"/>
   <int value="-217885320" label="CdmFactoryDaemon:disabled"/>
   <int value="-216219963" label="ash-shelf-color-scheme"/>
+  <int value="-216189310"
+      label="DebugHistoryInterventionNoUserActivation:enabled"/>
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>

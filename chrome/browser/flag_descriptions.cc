@@ -110,6 +110,14 @@ const char kDeprecateMenagerieAPIDescription[] =
     "If enabled, the legacy Menagerie API for profile data will be replaced by "
     "the new profile data source";
 
+const char kDebugHistoryInterventionNoUserActivationName[] =
+    "Debug flag for history intervention on no user activation";
+const char kDebugHistoryInterventionNoUserActivationDescription[] =
+    "This flag when enabled, will be used to debug an issue where a page that "
+    "did not get user activation "
+    "is able to work around the history intervention which is not the expected "
+    "behavior";
+
 const char kDetectedSourceLanguageOptionName[] =
     "Use Detected Language string on Desktop and Android";
 const char kDetectedSourceLanguageOptionDescription[] =

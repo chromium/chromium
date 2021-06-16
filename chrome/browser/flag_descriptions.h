@@ -96,6 +96,9 @@ extern const char kConversionMeasurementApiDescription[];
 extern const char kConversionMeasurementDebugModeName[];
 extern const char kConversionMeasurementDebugModeDescription[];
 
+extern const char kDebugHistoryInterventionNoUserActivationName[];
+extern const char kDebugHistoryInterventionNoUserActivationDescription[];
+
 extern const char kDeprecateMenagerieAPIName[];
 extern const char kDeprecateMenagerieAPIDescription[];
 
