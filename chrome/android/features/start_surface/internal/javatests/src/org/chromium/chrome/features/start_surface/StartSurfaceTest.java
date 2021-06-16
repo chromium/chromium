@@ -1764,6 +1764,32 @@ public class StartSurfaceTest {
         });
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testMVTilesInitialized() {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceCoordinator startSurfaceCoordinator =
+                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(startSurfaceCoordinator.isMVTilesInitializedForTesting());
+        });
+
+        TabUiTestHelper.enterTabSwitcher(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(startSurfaceCoordinator.isMVTilesInitializedForTesting());
+        });
+    }
+
     private MvTilesLayout getMvTilesLayout() {
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout));
         MvTilesLayout mvTilesLayout = mActivityTestRule.getActivity().findViewById(

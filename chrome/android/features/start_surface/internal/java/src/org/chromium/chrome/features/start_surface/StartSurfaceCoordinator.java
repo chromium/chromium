@@ -273,20 +273,8 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitPending = false;
         if (mTasksSurface != null) {
-            mTasksSurface.initialize(shouldRefreshMVTilesOnInitialize());
+            mTasksSurface.initialize();
         }
-    }
-
-    private boolean shouldRefreshMVTilesOnInitialize() {
-        // Only refreshes MV tiles when the Start surface homepage is showing or if the Tab switcher
-        // has a Home button.
-        @StartSurfaceState
-        int state = mStartSurfaceMediator.getStartSurfaceState();
-        return state == StartSurfaceState.SHOWN_HOMEPAGE
-                || state == StartSurfaceState.SHOWING_HOMEPAGE
-                || state == StartSurfaceState.SHOWING_START
-                || state == StartSurfaceState.SHOWING_PREVIOUS
-                || StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue();
     }
 
     @Override
@@ -389,7 +377,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             mIsSecondaryTaskInitPending = false;
             mSecondaryTasksSurface.onFinishNativeInitialization(
                     mActivity, mOmniboxStubSupplier.get());
-            mSecondaryTasksSurface.initialize(false);
+            mSecondaryTasksSurface.initialize();
         }
     }
 
@@ -468,6 +456,11 @@ public class StartSurfaceCoordinator implements StartSurface {
         return mTasksSurface.isMVTilesCleanedUp();
     }
 
+    @VisibleForTesting
+    public boolean isMVTilesInitializedForTesting() {
+        return mTasksSurface.isMVTilesInitialized();
+    }
+
     private void createAndSetStartSurface(boolean excludeMVTiles) {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(TasksSurfaceProperties.ALL_KEYS));
@@ -522,7 +515,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
                     mActivity, mOmniboxStubSupplier.get());
-            mSecondaryTasksSurface.initialize(false);
+            mSecondaryTasksSurface.initialize();
         } else {
             mIsSecondaryTaskInitPending = true;
         }
