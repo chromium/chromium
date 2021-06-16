@@ -74,7 +74,9 @@
   #clear-recents-hover {
     border: 2px solid transparent;
     margin: -2px;
-    padding: 6px 10px 6px 10px;
+    /* Padding should be 6/10 not 7/11, but without adding 1 there is a weird
+     * border.*/
+    padding: 7px 11px 7px 11px;
   }
   #clear-recents-hover:hover {
     background-color: rgba(var(--google-blue-refresh-500-rgb), .04);
