@@ -307,6 +307,18 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   DCHECK(delegate_);
   security_level_ = delegate_->GetSecurityLevel();
   visible_security_state_for_metrics_ = delegate_->GetVisibleSecurityState();
+
+  // TabSpecificContentSetting needs to be created before page load.
+  DCHECK(GetPageSpecificContentSettings());
+  ComputeUIInputs(site_url_);
+
+  // Every time this is created, page info dialog is opened.
+  // So this counts how often the page Info dialog is opened.
+  RecordPageInfoAction(PAGE_INFO_OPENED);
+
+  // Record the time when the page info dialog is opened so the total time it is
+  // open can be measured.
+  start_time_ = base::TimeTicks::Now();
 }
 
 PageInfo::~PageInfo() {
@@ -393,22 +405,11 @@ bool PageInfo::IsFileOrInternalPage(const GURL& url) {
 void PageInfo::InitializeUiState(PageInfoUI* ui) {
   ui_ = ui;
   DCHECK(ui_);
-  // TabSpecificContentSetting needs to be created before page load.
-  DCHECK(GetPageSpecificContentSettings());
 
-  ComputeUIInputs(site_url_);
   PresentSitePermissions();
   PresentSiteIdentity();
   PresentSiteData();
   PresentPageFeatureInfo();
-
-  // Every time the Page Info UI is opened, this method is called.
-  // So this counts how often the Page Info UI is opened.
-  RecordPageInfoAction(PAGE_INFO_OPENED);
-
-  // Record the time when the Page Info UI is opened so the total time it is
-  // open can be measured.
-  start_time_ = base::TimeTicks::Now();
 }
 
 void PageInfo::UpdateSecurityState() {

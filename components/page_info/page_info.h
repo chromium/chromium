@@ -176,7 +176,10 @@ class PageInfo : public content::WebContentsObserver {
   };
 
   // Creates a PageInfo for the passed |url| using the given |ssl| status
-  // object to determine the status of the site's connection.
+  // object to determine the status of the site's connection. Computes the UI
+  // inputs and records page info opened action. It is assumed that this is
+  // created when page info dialog is opened and destroyed when the dialog is
+  // closed.
   PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
            content::WebContents* web_contents,
            const GURL& url);
@@ -195,13 +198,8 @@ class PageInfo : public content::WebContentsObserver {
   // Returns whether this page info is for an internal page.
   static bool IsFileOrInternalPage(const GURL& url);
 
-  // Initializes UI state that is dependent on having access to the PageInfoUI
-  // object associated with this object. This explicit post-construction
-  // initialization step is necessary as PageInfoUI subclasses create this
-  // object and also may invoke it as part of the initialization flow that
-  // occurs in this method. If this initialization flow was done as part of
-  // PageInfo's constructor, those subclasses would not have their PageInfo
-  // member set and crashes would ensue.
+  // Initializes the current UI and calls present data methods on it to notify
+  // the current UI about the data it is subscribed to.
   void InitializeUiState(PageInfoUI* ui);
 
   // This method is called to update the presenter's security state and forwards
