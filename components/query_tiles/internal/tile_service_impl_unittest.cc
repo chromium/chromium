@@ -27,6 +27,7 @@
 
 using testing::_;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 
 namespace query_tiles {
 namespace {
@@ -83,7 +84,7 @@ class TileServiceImplTest : public testing::Test {
     auto tile_manager = std::make_unique<MockTileManager>();
     tile_manager_ = tile_manager.get();
     auto image_prefetcher = std::make_unique<MockImagePrefetcher>();
-    auto scheduler = std::make_unique<MockTileServiceScheduler>();
+    auto scheduler = std::make_unique<NiceMock<MockTileServiceScheduler>>();
     scheduler_ = scheduler.get();
     image_prefetcher_ = image_prefetcher.get();
     ON_CALL(*image_prefetcher_, Prefetch(_, _, _))
