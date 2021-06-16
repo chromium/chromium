@@ -45,6 +45,13 @@ class SharedAssociatedRemote {
   Interface* operator->() const { return get(); }
   Interface& operator*() const { return *get(); }
 
+  void set_disconnect_handler(
+      base::OnceClosure handler,
+      scoped_refptr<base::SequencedTaskRunner> handler_task_runner) {
+    remote_->set_disconnect_handler(std::move(handler),
+                                    std::move(handler_task_runner));
+  }
+
   // Clears this SharedAssociatedRemote. Note that this does *not* necessarily
   // close the remote's endpoint as other SharedAssociatedRemote instances may
   // reference the same underlying endpoint.

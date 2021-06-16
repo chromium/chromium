@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "ipc/ipc_test_sink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -23,10 +22,6 @@ namespace trace_event {
 class MemoryDumpManager;
 }  // namespace trace_event
 }  // namespace base
-
-namespace IPC {
-class Message;
-}  // namespace IPC
 
 namespace gpu {
 class GpuChannel;
@@ -58,14 +53,11 @@ class GpuChannelTestCommon : public testing::Test {
                            ContextResult* out_result,
                            Capabilities* out_capabilities);
 
-  void HandleMessage(GpuChannel* channel, IPC::Message* msg);
-
   base::UnsafeSharedMemoryRegion GetSharedMemoryRegion();
 
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::trace_event::MemoryDumpManager> memory_dump_manager_;
-  IPC::TestSink sink_;
   std::unique_ptr<SyncPointManager> sync_point_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<Scheduler> scheduler_;

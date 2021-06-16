@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/command_buffer.h"
@@ -24,7 +26,7 @@
 #include "media/base/limits.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
-#include "media/gpu/ipc/common/media_messages.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
@@ -115,65 +117,159 @@ class DebugAutoLock {
 };
 #endif
 
-class GpuVideoDecodeAccelerator::MessageFilter : public IPC::MessageFilter {
+// Receives incoming messages for the decoder. Operates exclusively on the IO
+// thread, since sometimes we want to do decodes directly from there.
+class GpuVideoDecodeAccelerator::MessageFilter
+    : public mojom::GpuAcceleratedVideoDecoder {
  public:
-  MessageFilter(GpuVideoDecodeAccelerator* owner, int32_t host_route_id)
-      : owner_(owner), host_route_id_(host_route_id) {}
+  MessageFilter(GpuVideoDecodeAccelerator* owner,
+                scoped_refptr<base::SequencedTaskRunner> owner_task_runner,
+                bool decode_on_io)
+      : owner_(owner),
+        owner_task_runner_(std::move(owner_task_runner)),
+        decode_on_io_(decode_on_io) {}
+  ~MessageFilter() override = default;
 
-  void OnChannelError() override { sender_ = nullptr; }
-
-  void OnChannelClosing() override { sender_ = nullptr; }
-
-  void OnFilterAdded(IPC::Channel* channel) override { sender_ = channel; }
-
-  void OnFilterRemoved() override {
-    // This will delete |owner_| and |this|.
-    owner_->OnFilterRemoved();
-  }
-
-  bool OnMessageReceived(const IPC::Message& msg) override {
-    if (msg.routing_id() != host_route_id_)
+  // Called from the main thread. Posts to `io_task_runner` to do the binding
+  // and waits for completion before returning. This ensures the decoder's
+  // endpoint is established before the synchronous request to establish it is
+  // acknowledged to the client.
+  bool Bind(mojo::PendingAssociatedReceiver<mojom::GpuAcceleratedVideoDecoder>
+                receiver,
+            const scoped_refptr<base::SequencedTaskRunner>& io_task_runner) {
+    base::WaitableEvent bound_event;
+    if (!io_task_runner->PostTask(
+            FROM_HERE, base::BindOnce(&MessageFilter::BindOnIoThread,
+                                      base::Unretained(this),
+                                      std::move(receiver), &bound_event))) {
       return false;
-
-    IPC_BEGIN_MESSAGE_MAP(MessageFilter, msg)
-      IPC_MESSAGE_FORWARD(AcceleratedVideoDecoderMsg_Decode, owner_,
-                          GpuVideoDecodeAccelerator::OnDecode)
-      IPC_MESSAGE_UNHANDLED(return false)
-    IPC_END_MESSAGE_MAP()
+    }
+    bound_event.Wait();
     return true;
   }
 
-  bool SendOnIOThread(IPC::Message* message) {
-    DCHECK(!message->is_sync());
-    if (!sender_) {
-      delete message;
-      return false;
-    }
-    return sender_->Send(message);
+  // Must be called on the IO thread. Posts back to the owner's task runner to
+  // destroy it.
+  void RequestShutdown() {
+    if (!owner_)
+      return;
+
+    // Must be reset here on the IO thread before `this` is destroyed.
+    receiver_.reset();
+
+    GpuVideoDecodeAccelerator* owner = owner_;
+    owner_ = nullptr;
+
+    // Invalidate any IO thread WeakPtrs which may be held by the
+    // VideoDecodeAccelerator, and post to delete our owner which will in turn
+    // delete us. Note that it is unsafe to access any members of `this` once
+    // the task below is posted.
+    owner->weak_factory_for_io_.InvalidateWeakPtrs();
+    owner_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::DeleteSelfNow,
+                                  base::Unretained(owner)));
   }
 
- protected:
-  ~MessageFilter() override = default;
+  // mojom::GpuAcceleratedVideoDecoder:
+  void Decode(BitstreamBuffer buffer) override;
+  void AssignPictureBuffers(
+      std::vector<mojom::PictureBufferAssignmentPtr> assignments) override;
+  void ReusePictureBuffer(int32_t picture_buffer_id) override;
+  void Flush(FlushCallback callback) override;
+  void Reset(ResetCallback callback) override;
+  void SetOverlayInfo(const OverlayInfo& overlay_info) override;
 
  private:
-  GpuVideoDecodeAccelerator* const owner_;
-  const int32_t host_route_id_;
-  // The sender to which this filter was added.
-  IPC::Sender* sender_;
+  void BindOnIoThread(mojo::PendingAssociatedReceiver<
+                          mojom::GpuAcceleratedVideoDecoder> receiver,
+                      base::WaitableEvent* bound_event) {
+    receiver_.Bind(std::move(receiver));
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&MessageFilter::OnDisconnect, base::Unretained(this)));
+    bound_event->Signal();
+  }
+
+  void OnDisconnect() {
+    if (!owner_)
+      return;
+
+    owner_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnDestroy,
+                                  base::Unretained(owner_)));
+  }
+
+  GpuVideoDecodeAccelerator* owner_;
+  const scoped_refptr<base::SequencedTaskRunner> owner_task_runner_;
+  const bool decode_on_io_;
+  mojo::AssociatedReceiver<mojom::GpuAcceleratedVideoDecoder> receiver_{this};
 };
 
+void GpuVideoDecodeAccelerator::MessageFilter::Decode(BitstreamBuffer buffer) {
+  if (!owner_)
+    return;
+
+  if (decode_on_io_) {
+    owner_->OnDecode(std::move(buffer));
+  } else {
+    owner_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnDecode,
+                                  base::Unretained(owner_), std::move(buffer)));
+  }
+}
+
+void GpuVideoDecodeAccelerator::MessageFilter::AssignPictureBuffers(
+    std::vector<mojom::PictureBufferAssignmentPtr> assignments) {
+  if (!owner_)
+    return;
+  owner_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GpuVideoDecodeAccelerator::OnAssignPictureBuffers,
+                     base::Unretained(owner_), std::move(assignments)));
+}
+
+void GpuVideoDecodeAccelerator::MessageFilter::ReusePictureBuffer(
+    int32_t picture_buffer_id) {
+  if (!owner_)
+    return;
+  owner_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GpuVideoDecodeAccelerator::OnReusePictureBuffer,
+                     base::Unretained(owner_), picture_buffer_id));
+}
+
+void GpuVideoDecodeAccelerator::MessageFilter::Flush(FlushCallback callback) {
+  if (!owner_)
+    return;
+  owner_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnFlush,
+                                base::Unretained(owner_), std::move(callback)));
+}
+
+void GpuVideoDecodeAccelerator::MessageFilter::Reset(ResetCallback callback) {
+  if (!owner_)
+    return;
+  owner_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnReset,
+                                base::Unretained(owner_), std::move(callback)));
+}
+
+void GpuVideoDecodeAccelerator::MessageFilter::SetOverlayInfo(
+    const OverlayInfo& overlay_info) {
+  if (!owner_)
+    return;
+  owner_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnSetOverlayInfo,
+                                base::Unretained(owner_), overlay_info));
+}
+
 GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(
-    int32_t host_route_id,
     gpu::CommandBufferStub* stub,
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
     const AndroidOverlayMojoFactoryCB& overlay_factory_cb)
-    : host_route_id_(host_route_id),
-      stub_(stub),
+    : stub_(stub),
       texture_target_(0),
       pixel_format_(PIXEL_FORMAT_UNKNOWN),
       textures_per_buffer_(0),
-      filter_removed_(base::WaitableEvent::ResetPolicy::MANUAL,
-                      base::WaitableEvent::InitialState::NOT_SIGNALED),
       child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       io_task_runner_(io_task_runner),
       overlay_factory_cb_(overlay_factory_cb) {
@@ -202,6 +298,10 @@ GpuVideoDecodeAccelerator::~GpuVideoDecodeAccelerator() {
   DCHECK(!video_decode_accelerator_);
 }
 
+void GpuVideoDecodeAccelerator::DeleteSelfNow() {
+  delete this;
+}
+
 // static
 gpu::VideoDecodeAcceleratorCapabilities
 GpuVideoDecodeAccelerator::GetCapabilities(
@@ -211,33 +311,8 @@ GpuVideoDecodeAccelerator::GetCapabilities(
       gpu_preferences, workarounds);
 }
 
-bool GpuVideoDecodeAccelerator::OnMessageReceived(const IPC::Message& msg) {
-  if (!video_decode_accelerator_)
-    return false;
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(GpuVideoDecodeAccelerator, msg)
-    IPC_MESSAGE_HANDLER(AcceleratedVideoDecoderMsg_Decode, OnDecode)
-    IPC_MESSAGE_HANDLER(AcceleratedVideoDecoderMsg_AssignPictureBuffers,
-                        OnAssignPictureBuffers)
-    IPC_MESSAGE_HANDLER(AcceleratedVideoDecoderMsg_ReusePictureBuffer,
-                        OnReusePictureBuffer)
-    IPC_MESSAGE_HANDLER(AcceleratedVideoDecoderMsg_Flush, OnFlush)
-    IPC_MESSAGE_HANDLER(AcceleratedVideoDecoderMsg_Reset, OnReset)
-    IPC_MESSAGE_HANDLER(AcceleratedVideoDecoderMsg_SetOverlayInfo,
-                        OnSetOverlayInfo)
-    IPC_MESSAGE_HANDLER(AcceleratedVideoDecoderMsg_Destroy, OnDestroy)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void GpuVideoDecodeAccelerator::NotifyInitializationComplete(Status status) {
-  // TODO(tmathmeyer) convert the IPC send to a Status.
-  if (!Send(new AcceleratedVideoDecoderHostMsg_InitializationComplete(
-          host_route_id_, status.is_ok())))
-    DLOG(ERROR)
-        << "Send(AcceleratedVideoDecoderHostMsg_InitializationComplete) failed";
+  decoder_client_->OnInitializationComplete(status.is_ok());
 }
 
 void GpuVideoDecodeAccelerator::ProvidePictureBuffers(
@@ -252,26 +327,21 @@ void GpuVideoDecodeAccelerator::ProvidePictureBuffers(
     NotifyError(VideoDecodeAccelerator::PLATFORM_FAILURE);
     return;
   }
-  if (!Send(new AcceleratedVideoDecoderHostMsg_ProvidePictureBuffers(
-          host_route_id_, requested_num_of_buffers, format, textures_per_buffer,
-          dimensions, texture_target))) {
-    DLOG(ERROR) << "Send(AcceleratedVideoDecoderHostMsg_ProvidePictureBuffers) "
-                << "failed";
-  }
+
   texture_dimensions_ = dimensions;
   textures_per_buffer_ = textures_per_buffer;
   texture_target_ = texture_target;
   pixel_format_ = format;
+
+  decoder_client_->OnProvidePictureBuffers(requested_num_of_buffers, format,
+                                           textures_per_buffer, dimensions,
+                                           texture_target);
 }
 
 void GpuVideoDecodeAccelerator::DismissPictureBuffer(
     int32_t picture_buffer_id) {
   // Notify client that picture buffer is now unused.
-  if (!Send(new AcceleratedVideoDecoderHostMsg_DismissPictureBuffer(
-          host_route_id_, picture_buffer_id))) {
-    DLOG(ERROR) << "Send(AcceleratedVideoDecoderHostMsg_DismissPictureBuffer) "
-                << "failed";
-  }
+  decoder_client_->OnDismissPictureBuffer(picture_buffer_id);
   DebugAutoLock auto_lock(debug_uncleared_textures_lock_);
   uncleared_textures_.erase(picture_buffer_id);
 }
@@ -288,49 +358,39 @@ void GpuVideoDecodeAccelerator::PictureReady(const Picture& picture) {
     DCHECK_EQ(0u, uncleared_textures_.count(picture.picture_buffer_id()));
   }
 
-  AcceleratedVideoDecoderHostMsg_PictureReady_Params params;
-  params.picture_buffer_id = picture.picture_buffer_id();
-  params.bitstream_buffer_id = picture.bitstream_buffer_id();
-  params.visible_rect = picture.visible_rect();
-  params.color_space = picture.color_space();
-  params.allow_overlay = picture.allow_overlay();
-  params.read_lock_fences_enabled = picture.read_lock_fences_enabled();
-  params.size_changed = picture.size_changed();
-  params.surface_texture = picture.texture_owner();
-  params.wants_promotion_hint = picture.wants_promotion_hint();
-  if (!Send(new AcceleratedVideoDecoderHostMsg_PictureReady(host_route_id_,
-                                                            params))) {
-    DLOG(ERROR) << "Send(AcceleratedVideoDecoderHostMsg_PictureReady) failed";
-  }
+  auto params = mojom::PictureReadyParams::New();
+  params->picture_buffer_id = picture.picture_buffer_id();
+  params->bitstream_buffer_id = picture.bitstream_buffer_id();
+  params->visible_rect = picture.visible_rect();
+  params->color_space = picture.color_space();
+  params->allow_overlay = picture.allow_overlay();
+  params->read_lock_fences_enabled = picture.read_lock_fences_enabled();
+  params->size_changed = picture.size_changed();
+  params->surface_texture = picture.texture_owner();
+  params->wants_promotion_hint = picture.wants_promotion_hint();
+  decoder_client_->OnPictureReady(std::move(params));
 }
 
 void GpuVideoDecodeAccelerator::NotifyEndOfBitstreamBuffer(
     int32_t bitstream_buffer_id) {
-  if (!Send(new AcceleratedVideoDecoderHostMsg_BitstreamBufferProcessed(
-          host_route_id_, bitstream_buffer_id))) {
-    DLOG(ERROR)
-        << "Send(AcceleratedVideoDecoderHostMsg_BitstreamBufferProcessed) "
-        << "failed";
-  }
+  decoder_client_->OnBitstreamBufferProcessed(bitstream_buffer_id);
 }
 
 void GpuVideoDecodeAccelerator::NotifyFlushDone() {
-  if (!Send(new AcceleratedVideoDecoderHostMsg_FlushDone(host_route_id_)))
-    DLOG(ERROR) << "Send(AcceleratedVideoDecoderHostMsg_FlushDone) failed";
+  DCHECK(!pending_flushes_.empty());
+  std::move(pending_flushes_.front()).Run();
+  pending_flushes_.pop_front();
 }
 
 void GpuVideoDecodeAccelerator::NotifyResetDone() {
-  if (!Send(new AcceleratedVideoDecoderHostMsg_ResetDone(host_route_id_)))
-    DLOG(ERROR) << "Send(AcceleratedVideoDecoderHostMsg_ResetDone) failed";
+  DCHECK(!pending_resets_.empty());
+  std::move(pending_resets_.front()).Run();
+  pending_resets_.pop_front();
 }
 
 void GpuVideoDecodeAccelerator::NotifyError(
     VideoDecodeAccelerator::Error error) {
-  if (!Send(new AcceleratedVideoDecoderHostMsg_ErrorNotification(host_route_id_,
-                                                                 error))) {
-    DLOG(ERROR) << "Send(AcceleratedVideoDecoderHostMsg_ErrorNotification) "
-                << "failed";
-  }
+  decoder_client_->OnError(error);
 }
 
 void GpuVideoDecodeAccelerator::OnWillDestroyStub(bool have_context) {
@@ -342,33 +402,22 @@ void GpuVideoDecodeAccelerator::OnWillDestroyStub(bool have_context) {
   // we don't want to synchronize the IO thread with the ChildThread.
   // So we have to wait for the RemoveFilter callback here instead and remove
   // the VDA after it arrives and before returning.
+  stub_->RemoveDestructionObserver(this);
   if (filter_) {
-    stub_->channel()->RemoveFilter(filter_.get());
-    filter_removed_.Wait();
+    io_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(&MessageFilter::RequestShutdown,
+                                             base::Unretained(filter_.get())));
   }
 
-  stub_->channel()->RemoveRoute(host_route_id_);
-  stub_->RemoveDestructionObserver(this);
-
   video_decode_accelerator_.reset();
-  delete this;
-}
-
-bool GpuVideoDecodeAccelerator::Send(IPC::Message* message) {
-  if (filter_ && io_task_runner_->BelongsToCurrentThread())
-    return filter_->SendOnIOThread(message);
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
-  return stub_->channel()->Send(message);
 }
 
 bool GpuVideoDecodeAccelerator::Initialize(
-    const VideoDecodeAccelerator::Config& config) {
+    const VideoDecodeAccelerator::Config& config,
+    mojo::PendingAssociatedReceiver<mojom::GpuAcceleratedVideoDecoder> receiver,
+    mojo::PendingAssociatedRemote<mojom::GpuAcceleratedVideoDecoderClient>
+        client) {
   DCHECK(!video_decode_accelerator_);
-
-  if (!stub_->channel()->AddRoute(host_route_id_, stub_->sequence_id(), this)) {
-    DLOG(ERROR) << "Initialize(): failed to add route";
-    return false;
-  }
 
 #if !defined(OS_WIN)
   // Ensure we will be able to get a GL context at all before initializing
@@ -404,15 +453,19 @@ bool GpuVideoDecodeAccelerator::Initialize(
     return false;
   }
 
+  decoder_client_.Bind(std::move(client), io_task_runner_);
+
   // Attempt to set up performing decoding tasks on IO thread, if supported by
   // the VDA.
-  if (video_decode_accelerator_->TryToSetupDecodeOnSeparateThread(
-          weak_factory_for_io_.GetWeakPtr(), io_task_runner_)) {
-    filter_ = new MessageFilter(this, host_route_id_);
-    stub_->channel()->AddFilter(filter_.get());
-  }
+  bool decode_on_io =
+      video_decode_accelerator_->TryToSetupDecodeOnSeparateThread(
+          weak_factory_for_io_.GetWeakPtr(), io_task_runner_);
 
-  return true;
+  // Bind the receiver on the IO thread. We wait here for it to be bound
+  // before returning and signaling that the decoder has been created.
+  filter_ =
+      std::make_unique<MessageFilter>(this, stub_->task_runner(), decode_on_io);
+  return filter_->Bind(std::move(receiver), io_task_runner_);
 }
 
 // Runs on IO thread if VDA::TryToSetupDecodeOnSeparateThread() succeeded,
@@ -423,27 +476,21 @@ void GpuVideoDecodeAccelerator::OnDecode(BitstreamBuffer bitstream_buffer) {
 }
 
 void GpuVideoDecodeAccelerator::OnAssignPictureBuffers(
-    const std::vector<int32_t>& buffer_ids,
-    const std::vector<PictureBuffer::TextureIds>& texture_ids) {
-  if (buffer_ids.size() != texture_ids.size()) {
-    NotifyError(VideoDecodeAccelerator::INVALID_ARGUMENT);
-    return;
-  }
-
+    std::vector<mojom::PictureBufferAssignmentPtr> assignments) {
   gpu::DecoderContext* decoder_context = stub_->decoder_context();
   gpu::gles2::TextureManager* texture_manager =
       stub_->decoder_context()->GetContextGroup()->texture_manager();
 
   std::vector<PictureBuffer> buffers;
   std::vector<std::vector<scoped_refptr<gpu::gles2::TextureRef>>> textures;
-  for (uint32_t i = 0; i < buffer_ids.size(); ++i) {
-    if (buffer_ids[i] < 0) {
-      DLOG(ERROR) << "Buffer id " << buffer_ids[i] << " out of range";
+  for (const auto& assignment : assignments) {
+    if (assignment->buffer_id < 0) {
+      DLOG(ERROR) << "Buffer id " << assignment->buffer_id << " out of range";
       NotifyError(VideoDecodeAccelerator::INVALID_ARGUMENT);
       return;
     }
     std::vector<scoped_refptr<gpu::gles2::TextureRef>> current_textures;
-    PictureBuffer::TextureIds buffer_texture_ids = texture_ids[i];
+    PictureBuffer::TextureIds buffer_texture_ids = assignment->texture_ids;
     PictureBuffer::TextureIds service_ids;
     if (buffer_texture_ids.size() != textures_per_buffer_) {
       DLOG(ERROR) << "Requested " << textures_per_buffer_
@@ -511,14 +558,14 @@ void GpuVideoDecodeAccelerator::OnAssignPictureBuffers(
       service_ids.push_back(texture_base->service_id());
     }
     textures.push_back(current_textures);
-    buffers.push_back(PictureBuffer(buffer_ids[i], texture_dimensions_,
-                                    buffer_texture_ids, service_ids,
-                                    texture_target_, pixel_format_));
+    buffers.emplace_back(assignment->buffer_id, texture_dimensions_,
+                         buffer_texture_ids, service_ids, texture_target_,
+                         pixel_format_);
   }
   {
     DebugAutoLock auto_lock(debug_uncleared_textures_lock_);
-    for (uint32_t i = 0; i < buffer_ids.size(); ++i)
-      uncleared_textures_[buffer_ids[i]] = textures[i];
+    for (uint32_t i = 0; i < assignments.size(); ++i)
+      uncleared_textures_[assignments[i]->buffer_id] = textures[i];
   }
   video_decode_accelerator_->AssignPictureBuffers(buffers);
 }
@@ -529,13 +576,17 @@ void GpuVideoDecodeAccelerator::OnReusePictureBuffer(
   video_decode_accelerator_->ReusePictureBuffer(picture_buffer_id);
 }
 
-void GpuVideoDecodeAccelerator::OnFlush() {
+void GpuVideoDecodeAccelerator::OnFlush(base::OnceClosure callback) {
   DCHECK(video_decode_accelerator_);
+  pending_flushes_.push_back(
+      base::BindPostTask(io_task_runner_, std::move(callback)));
   video_decode_accelerator_->Flush();
 }
 
-void GpuVideoDecodeAccelerator::OnReset() {
+void GpuVideoDecodeAccelerator::OnReset(base::OnceClosure callback) {
   DCHECK(video_decode_accelerator_);
+  pending_resets_.push_back(
+      base::BindPostTask(io_task_runner_, std::move(callback)));
   video_decode_accelerator_->Reset();
 }
 
@@ -548,12 +599,6 @@ void GpuVideoDecodeAccelerator::OnSetOverlayInfo(
 void GpuVideoDecodeAccelerator::OnDestroy() {
   DCHECK(video_decode_accelerator_);
   OnWillDestroyStub(false);
-}
-
-void GpuVideoDecodeAccelerator::OnFilterRemoved() {
-  // We're destroying; cancel all callbacks.
-  weak_factory_for_io_.InvalidateWeakPtrs();
-  filter_removed_.Signal();
 }
 
 void GpuVideoDecodeAccelerator::SetTextureCleared(const Picture& picture) {

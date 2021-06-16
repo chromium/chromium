@@ -529,15 +529,7 @@ class ChannelAssociatedGroupController
       task_runner_ = std::move(runner);
       client_ = client;
 
-      const bool binding_to_calling_sequence =
-          task_runner_->RunsTasksInCurrentSequence();
-      const bool binding_to_channel_sequence =
-          binding_to_calling_sequence &&
-          (controller_->proxy_task_runner_->RunsTasksInCurrentSequence() ||
-           controller_->task_runner_->RunsTasksInCurrentSequence());
-      const bool tried_to_bind_off_sequence =
-          !binding_to_calling_sequence || !binding_to_channel_sequence;
-      if (tried_to_bind_off_sequence && CanBindOffSequence())
+      if (CanBindOffSequence())
         was_bound_off_sequence_ = true;
     }
 
@@ -994,7 +986,6 @@ class ChannelAssociatedGroupController
   }
 
   void AcceptSyncMessage(mojo::InterfaceId interface_id, uint32_t message_id) {
-    DCHECK(proxy_task_runner_->BelongsToCurrentThread());
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
                  "ChannelAssociatedGroupController::AcceptSyncMessage");
 
@@ -1012,7 +1003,8 @@ class ChannelAssociatedGroupController
     // Using client->interface_name() is safe here because this is a static
     // string defined for each mojo interface.
     TRACE_EVENT0("mojom", client->interface_name());
-    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence());
+    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence() ||
+           proxy_task_runner_->RunsTasksInCurrentSequence());
     MessageWrapper message_wrapper = endpoint->PopSyncMessage(message_id);
 
     // The message must have already been dequeued by the endpoint waking up

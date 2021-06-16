@@ -158,6 +158,11 @@ void CommandBufferProxyImpl::OnDisconnect() {
   OnGpuAsyncMessageError(context_lost_reason, gpu::error::kLostContext);
 }
 
+void CommandBufferProxyImpl::BindMediaReceiver(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  command_buffer_->BindMediaReceiver(std::move(receiver));
+}
+
 void CommandBufferProxyImpl::OnDestroyed(gpu::error::ContextLostReason reason,
                                          gpu::error::Error error) {
   base::AutoLockMaybe lock(lock_);

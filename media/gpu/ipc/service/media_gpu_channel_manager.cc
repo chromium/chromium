@@ -29,7 +29,6 @@ void MediaGpuChannelManager::AddChannel(
   DCHECK(gpu_channel);
   auto media_gpu_channel =
       std::make_unique<MediaGpuChannel>(gpu_channel, overlay_factory_cb_);
-  gpu_channel->SetUnhandledMessageListener(media_gpu_channel.get());
   media_gpu_channels_[client_id] = std::move(media_gpu_channel);
   channel_to_token_[client_id] = channel_token;
   token_to_channel_[channel_token] = client_id;

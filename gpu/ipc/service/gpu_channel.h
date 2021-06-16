@@ -32,6 +32,7 @@
 #include "ipc/ipc_sender.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/message_router.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_share_group.h"
@@ -84,7 +85,16 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   base::WeakPtr<GpuChannel> AsWeakPtr();
 
-  void SetUnhandledMessageListener(IPC::Listener* listener);
+  using CommandBufferMediaBinder =
+      base::RepeatingCallback<void(CommandBufferStub*,
+                                   mojo::GenericPendingAssociatedReceiver)>;
+  void set_command_buffer_media_binder(CommandBufferMediaBinder binder) {
+    command_buffer_media_binder_ = std::move(binder);
+  }
+
+  const CommandBufferMediaBinder& command_buffer_media_binder() const {
+    return command_buffer_media_binder_;
+  }
 
   // Get the GpuChannelManager that owns this channel.
   GpuChannelManager* gpu_channel_manager() const {
@@ -155,8 +165,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       gfx::BufferPlane plane,
       SurfaceHandle surface_handle);
 
-  void HandleMessage(const IPC::Message& msg);
-
   // Executes a DeferredRequest that was previously received and has now been
   // scheduled by the scheduler.
   void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params);
@@ -173,7 +181,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       int32_t end,
       mojom::GpuChannel::WaitForGetOffsetInRangeCallback callback);
 
-  void HandleMessageForTesting(const IPC::Message& msg);
   mojom::GpuChannel& GetGpuChannelForTesting();
 
   ImageDecodeAcceleratorStub* GetImageDecodeAcceleratorStub() const;
@@ -239,6 +246,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // The message filter on the io thread.
   scoped_refptr<GpuChannelMessageFilter> filter_;
 
+  // An optional binder to handle associated interface requests from the Media
+  // stack, targeting a specific CommandBuffer.
+  CommandBufferMediaBinder command_buffer_media_binder_;
+
   // Map of routing id to command buffer stub.
   base::flat_map<int32_t, std::unique_ptr<CommandBufferStub>> stubs_;
 
@@ -255,8 +266,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // Sync point manager. Outlives the channel and is guaranteed to outlive the
   // message loop.
   SyncPointManager* const sync_point_manager_;
-
-  IPC::Listener* unhandled_message_listener_ = nullptr;
 
   // Used to implement message routing functionality to CommandBuffer objects
   IPC::MessageRouter router_;

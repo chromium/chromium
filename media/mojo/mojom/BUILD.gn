@@ -27,6 +27,7 @@ mojom("mojom") {
     "demuxer_stream.mojom",
     "display_media_information.mojom",
     "frame_interface_factory.mojom",
+    "gpu_accelerated_video_decoder.mojom",
     "interface_factory.mojom",
     "key_system_support.mojom",
     "media_log.mojom",
@@ -157,6 +158,21 @@ mojom("mojom") {
         "//media",
         "//media/base/ipc",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "media.mojom.BitstreamBuffer"
+          cpp = "::media::BitstreamBuffer"
+          move_only = true
+        },
+        {
+          mojom = "media.mojom.VideoDecodeAcceleratorConfig"
+          cpp = "::media::VideoDecodeAccelerator::Config"
+        },
+      ]
+      traits_headers = [ "//media/gpu/ipc/common/media_param_traits.h" ]
+      traits_public_deps = [ "//media/gpu/ipc/common" ]
     },
     {
       types = [

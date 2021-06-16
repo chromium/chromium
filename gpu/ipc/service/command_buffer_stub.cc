@@ -600,6 +600,16 @@ void CommandBufferStub::SignalQuery(uint32_t query_id, uint32_t id) {
     OnSignalAck(id);
   }
 }
+
+void CommandBufferStub::BindMediaReceiver(
+    mojo::GenericPendingAssociatedReceiver receiver,
+    BindMediaReceiverCallback callback) {
+  const auto& binder = channel_->command_buffer_media_binder();
+  if (binder)
+    binder.Run(this, std::move(receiver));
+  std::move(callback).Run();
+}
+
 void CommandBufferStub::OnFenceSyncRelease(uint64_t release) {
   SyncToken sync_token(CommandBufferNamespace::GPU_IO, command_buffer_id_,
                        release);

@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/program_cache.h"
+#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -50,7 +51,6 @@ class MemoryTracker;
 struct SyncToken;
 struct WaitForCommandState;
 class GpuChannel;
-class SchedulerTaskRunner;
 class SyncPointClientState;
 
 // CommandBufferStub is a base class for different CommandBuffer backends
@@ -88,6 +88,13 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                     int32_t route_id);
 
   ~CommandBufferStub() override;
+
+  // Exposes a SequencedTaskRunner which can be used to schedule tasks in
+  // sequence with this CommandBufferStub -- that is, on the same gpu::Scheduler
+  // sequence. Does not support nested loops or delayed tasks.
+  scoped_refptr<base::SequencedTaskRunner> task_runner() const {
+    return scheduler_task_runner_;
+  }
 
   // This must leave the GL context associated with the newly-created
   // CommandBufferStub current, so the GpuChannel can initialize
@@ -221,6 +228,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void DestroyImage(int32_t id) override;
   void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
   void SignalQuery(uint32_t query, uint32_t id) override;
+  void BindMediaReceiver(mojo::GenericPendingAssociatedReceiver receiver,
+                         BindMediaReceiverCallback callback) override;
 
   virtual void OnTakeFrontBuffer(const Mailbox& mailbox) {}
   virtual void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) {}

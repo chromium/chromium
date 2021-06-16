@@ -18,6 +18,7 @@ source_set("client") {
     "//media:media_buildflags",
     "//media/gpu",
     "//media/gpu/ipc/common",
+    "//media/mojo/mojom",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",

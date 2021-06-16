@@ -12,6 +12,7 @@ import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/generic_pending_associated_receiver.mojom";
 import "services/viz/public/mojom/compositing/resource_format.mojom";
 import "skia/public/mojom/image_info.mojom";
 import "skia/public/mojom/surface_origin.mojom";
@@ -268,6 +269,13 @@ interface CommandBuffer {
   // then sends a corresponding SignalAck on the CommandBufferClient interface,
   // using `signal_id` to identify this request.
   SignalQuery(uint32 query, uint32 signal_id);
+
+  // Binds an associated interface which shares its message ordering with this
+  // CommandBuffer. This allows the Media stack above the core GPU layer to
+  // establish such interfaces without introducing a layering violation. See
+  // GpuChannel::set_command_buffer_media_binder().
+  [Sync] BindMediaReceiver(
+      mojo_base.mojom.GenericPendingAssociatedReceiver receiver) => ();
 };
 
 // Corresponds to gpu::SwapBuffersCompleteParams.

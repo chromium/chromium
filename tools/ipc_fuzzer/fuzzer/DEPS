@@ -1,6 +1,8 @@
 include_rules = [
   "+components/content_settings",
   "+components/viz/common",
+  "+gpu/ipc/common",
+  "+media/gpu/ipc/common",
   "+printing/mojom",
   "+third_party/skia/include",
   "+third_party/blink/public",

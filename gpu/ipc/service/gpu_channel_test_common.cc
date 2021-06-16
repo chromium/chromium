@@ -115,7 +115,6 @@ GpuChannel* GpuChannelTestCommon::CreateChannel(int32_t client_id,
   GpuChannel* channel = channel_manager()->EstablishChannel(
       base::UnguessableToken::Create(), client_id, kClientTracingId,
       is_gpu_host, true);
-  channel->InitForTesting(&sink_);
   base::ProcessId kProcessId = 1;
   channel->OnChannelConnected(kProcessId);
   return channel;
@@ -144,43 +143,6 @@ void GpuChannelTestCommon::CreateCommandBuffer(
             quit.Run();
           }));
   loop.Run();
-}
-
-void GpuChannelTestCommon::HandleMessage(GpuChannel* channel,
-                                         IPC::Message* msg) {
-  // Some IPCs (such as GpuCommandBufferMsg_Initialize) will generate more
-  // delayed responses, drop those if they exist.
-  sink_.ClearMessages();
-
-  // Needed to appease DCHECKs.
-  msg->set_unblock(false);
-
-  // Message filter gets message first on IO thread.
-  channel->HandleMessageForTesting(*msg);
-
-  // Run the HandleMessage task posted to the main thread.
-  task_environment_.RunUntilIdle();
-
-  // Replies are sent to the sink.
-  if (msg->is_sync()) {
-    const IPC::Message* reply_msg = sink_.GetMessageAt(0);
-    ASSERT_TRUE(reply_msg);
-    EXPECT_TRUE(!reply_msg->is_reply_error());
-
-    EXPECT_TRUE(IPC::SyncMessage::IsMessageReplyTo(
-        *reply_msg, IPC::SyncMessage::GetMessageId(*msg)));
-
-    IPC::MessageReplyDeserializer* deserializer =
-        static_cast<IPC::SyncMessage*>(msg)->GetReplyDeserializer();
-    ASSERT_TRUE(deserializer);
-    deserializer->SerializeOutputParameters(*reply_msg);
-
-    delete deserializer;
-  }
-
-  sink_.ClearMessages();
-
-  delete msg;
 }
 
 base::UnsafeSharedMemoryRegion GpuChannelTestCommon::GetSharedMemoryRegion() {

@@ -1,0 +1,3 @@
+# For security review.
+per-file media_gpu_channel.cc=set noparent
+per-file media_gpu_channel.cc=file://ipc/SECURITY_OWNERS

@@ -347,33 +347,7 @@ void GpuChannelMessageFilter::RemoveChannelFilter(
 bool GpuChannelMessageFilter::OnMessageReceived(const IPC::Message& message) {
   DCHECK(io_thread_checker_.CalledOnValidThread());
   DCHECK(ipc_channel_);
-
-  if (message.should_unblock() || message.is_reply())
-    return MessageErrorHandler(message, "Unexpected message type");
-
-  for (scoped_refptr<IPC::MessageFilter>& filter : channel_filters_) {
-    if (filter->OnMessageReceived(message))
-      return true;
-  }
-
-  base::AutoLock auto_lock(gpu_channel_lock_);
-  if (!gpu_channel_)
-    return MessageErrorHandler(message, "Channel destroyed");
-
-  if (message.routing_id() == MSG_ROUTING_CONTROL)
-    return MessageErrorHandler(message, "Invalid control message");
-
-  // Messages which do not have sync token dependencies.
-  SequenceId sequence_id = GetSequenceId(message.routing_id());
-  if (sequence_id.is_null())
-    return MessageErrorHandler(message, "Invalid route id");
-
-  scheduler_->ScheduleTask(
-      Scheduler::Task(sequence_id,
-                      base::BindOnce(&gpu::GpuChannel::HandleMessage,
-                                     gpu_channel_->AsWeakPtr(), message),
-                      std::vector<SyncToken>()));
-  return true;
+  return false;
 }
 
 SequenceId GpuChannelMessageFilter::GetSequenceId(int32_t route_id) const {
@@ -650,18 +624,6 @@ void GpuChannel::Init(IPC::ChannelHandle channel_handle,
   channel_ = sync_channel_.get();
 }
 
-void GpuChannel::InitForTesting(IPC::Channel* channel) {
-  channel_ = channel;
-  // |channel| is an IPC::TestSink in tests, so don't add the filter to it
-  // because it will forward sent messages back to the filter.
-  // Call OnFilterAdded() to prevent DCHECK failures.
-  filter_->OnFilterAdded(channel);
-}
-
-void GpuChannel::SetUnhandledMessageListener(IPC::Listener* listener) {
-  unhandled_message_listener_ = listener;
-}
-
 base::WeakPtr<GpuChannel> GpuChannel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -820,11 +782,6 @@ void GpuChannel::WaitForGetOffsetInRange(
                                 std::move(callback));
 }
 
-void GpuChannel::HandleMessageForTesting(const IPC::Message& msg) {
-  // Message filter gets message first on IO thread.
-  filter_->OnMessageReceived(msg);
-}
-
 mojom::GpuChannel& GpuChannel::GetGpuChannelForTesting() {
   return *filter_;
 }
@@ -845,23 +802,6 @@ bool GpuChannel::CreateSharedImageStub() {
 
   filter_->AddRoute(shared_image_route_id, shared_image_stub_->sequence());
   return true;
-}
-
-void GpuChannel::HandleMessage(const IPC::Message& msg) {
-  int32_t routing_id = msg.routing_id();
-  CommandBufferStub* stub = LookupCommandBuffer(routing_id);
-
-  DCHECK(!stub || stub->IsScheduled());
-
-  DVLOG(1) << "received message @" << &msg << " on channel @" << this
-           << " with type " << msg.type();
-
-  bool handled = false;
-  if (routing_id != MSG_ROUTING_CONTROL)
-    handled = router_.RouteMessage(msg);
-
-  if (!handled && unhandled_message_listener_)
-    handled = unhandled_message_listener_->OnMessageReceived(msg);
 }
 
 #if defined(OS_ANDROID)

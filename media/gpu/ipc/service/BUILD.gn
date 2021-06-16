@@ -36,6 +36,7 @@ target(link_target_type, "service") {
     "//ipc",
     "//media",
     "//media/gpu",
+    "//media/mojo/mojom",
   ]
   deps = [
     "//build:chromeos_buildflags",
