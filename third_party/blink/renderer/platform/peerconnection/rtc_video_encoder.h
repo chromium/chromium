@@ -64,6 +64,9 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
       const webrtc::VideoEncoder::RateControlParameters& parameters) override;
   EncoderInfo GetEncoderInfo() const override;
 
+  // Returns true if there's VP9 HW support for spatial layers.
+  static bool Vp9HwSupportForSpatialLayers();
+
  private:
   class Impl;
   friend class RTCVideoEncoder::Impl;

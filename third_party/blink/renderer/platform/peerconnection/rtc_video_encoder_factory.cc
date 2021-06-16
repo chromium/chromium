@@ -13,6 +13,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/media/base/codec.h"
@@ -232,6 +233,44 @@ RTCVideoEncoderFactory::GetSupportedFormats() const {
   CheckAndWaitEncoderSupportStatusIfNeeded();
 
   return GetSupportedFormatsInternal(gpu_factories_).sdp_formats;
+}
+
+webrtc::VideoEncoderFactory::CodecSupport
+RTCVideoEncoderFactory::QueryCodecSupport(
+    const webrtc::SdpVideoFormat& format,
+    absl::optional<std::string> scalability_mode) const {
+  media::VideoCodec codec =
+      WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name));
+  if (scalability_mode) {
+    absl::optional<int> spatial_layers =
+        WebRtcScalabilityModeSpatialLayers(*scalability_mode);
+
+    // Check that the scalability mode was correctly parsed and that the
+    // configuration is valid (e.g., H264 doesn't support SVC at all and VP8
+    // doesn't support spatial layers).
+    if (!spatial_layers ||
+        (codec != media::kCodecVP8 && codec != media::kCodecVP9 &&
+         codec != media::kCodecAV1) ||
+        (codec == media::kCodecVP8 && *spatial_layers > 1)) {
+      // Ivalid scalability_mode, return unsupported.
+      return {false, false};
+    }
+    DCHECK(spatial_layers);
+    // Most HW encoders cannot handle spatial layers, so return false if the
+    // configuration contains spatial layers and spatial layers are not
+    // supported.
+    if (codec == media::kCodecVP9 && *spatial_layers > 1 &&
+        !RTCVideoEncoder::Vp9HwSupportForSpatialLayers()) {
+      return {false, false};
+    }
+  }
+
+  if (format.IsCodecInList(GetSupportedFormats())) {
+    // Supported and power efficient.
+    return {true, true};
+  }
+  // Unsupported.
+  return {false, false};
 }
 
 }  // namespace blink

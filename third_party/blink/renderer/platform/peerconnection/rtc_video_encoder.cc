@@ -241,9 +241,10 @@ bool CreateSpatialLayersConfig(
   // Underlying encoder will check the spatial SVC encoding capability on CrOS.
 #if !defined(OS_CHROMEOS)
   if (codec_settings.codecType == webrtc::kVideoCodecVP9 &&
-      codec_settings.VP9().numberOfSpatialLayers > 1) {
+      codec_settings.VP9().numberOfSpatialLayers > 1 &&
+      !RTCVideoEncoder::Vp9HwSupportForSpatialLayers()) {
     DVLOG(1)
-        << "VP9 SVC not yet supported by HW codecs, falling back to sofware.";
+        << "VP9 SVC not yet supported by HW codecs, falling back to software.";
     return false;
   }
 #endif  // !defined(OS_CHROMEOS)
@@ -1579,6 +1580,12 @@ webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
     info = impl_->GetEncoderInfo();
 
   return info;
+}
+
+// static
+bool RTCVideoEncoder::Vp9HwSupportForSpatialLayers() {
+  // Spatial layers are not supported by hardware encoders.
+  return false;
 }
 
 }  // namespace blink

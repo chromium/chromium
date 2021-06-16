@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
@@ -19,7 +20,8 @@ namespace blink {
 
 // This class creates RTCVideoEncoder instances (each wrapping a
 // media::VideoEncodeAccelerator) on behalf of the WebRTC stack.
-class RTCVideoEncoderFactory : public webrtc::VideoEncoderFactory {
+class PLATFORM_EXPORT RTCVideoEncoderFactory
+    : public webrtc::VideoEncoderFactory {
  public:
   explicit RTCVideoEncoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories);
@@ -31,6 +33,9 @@ class RTCVideoEncoderFactory : public webrtc::VideoEncoderFactory {
   std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
       const webrtc::SdpVideoFormat& format) override;
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
+  webrtc::VideoEncoderFactory::CodecSupport QueryCodecSupport(
+      const webrtc::SdpVideoFormat& format,
+      absl::optional<std::string> scalability_mode) const override;
 
  private:
   void CheckAndWaitEncoderSupportStatusIfNeeded() const;
