@@ -360,7 +360,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"a")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -370,7 +370,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"ab")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -380,7 +380,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"abC")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -390,7 +390,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"abC1")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -400,7 +400,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"abC12")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -410,7 +410,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"abC12@")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -420,7 +420,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"abC12@{")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -430,7 +430,7 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
                                    grey_descendant(
                                        grey_accessibilityLabel(@"abC12@{#")),
                                    grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                                   nil)]
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   id<GREYMatcher> cancelButton =
