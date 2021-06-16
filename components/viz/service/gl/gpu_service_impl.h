@@ -217,6 +217,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
   void DidUpdateHDRStatus(bool hdr_enabled) override;
 #endif
+  void GetDawnInfo(GetDawnInfoCallback callback) override;
+
   void StoreShaderToDisk(int client_id,
                          const std::string& key,
                          const std::string& shader) override;
@@ -369,6 +371,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
 #if defined(OS_WIN)
   void UpdateOverlayAndHDRInfo();
 #endif
+
+  void GetDawnInfoOnMain(GetDawnInfoCallback callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> main_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_runner_;

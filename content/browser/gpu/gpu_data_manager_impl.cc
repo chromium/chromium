@@ -231,6 +231,12 @@ void GpuDataManagerImpl::TerminateInfoCollectionGpuProcess() {
 }
 #endif
 
+void GpuDataManagerImpl::UpdateDawnInfo(
+    const std::vector<std::string>& dawn_info_list) {
+  base::AutoLock auto_lock(lock_);
+  private_->UpdateDawnInfo(dawn_info_list);
+}
+
 void GpuDataManagerImpl::UpdateGpuFeatureInfo(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const absl::optional<gpu::GpuFeatureInfo>&
@@ -260,6 +266,11 @@ gpu::GpuFeatureInfo GpuDataManagerImpl::GetGpuFeatureInfoForHardwareGpu()
     const {
   base::AutoLock auto_lock(lock_);
   return private_->GetGpuFeatureInfoForHardwareGpu();
+}
+
+std::vector<std::string> GpuDataManagerImpl::GetDawnInfoList() const {
+  base::AutoLock auto_lock(lock_);
+  return private_->GetDawnInfoList();
 }
 
 bool GpuDataManagerImpl::GpuAccessAllowedForHardwareGpu(std::string* reason) {

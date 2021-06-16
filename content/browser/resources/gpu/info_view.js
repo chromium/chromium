@@ -100,6 +100,8 @@ export function makeInfoView(browserBridge) {
       const workaroundsList = this.querySelector('.workarounds-list');
       const ANGLEFeaturesDiv = this.querySelector('.angle-features-div');
       const ANGLEFeaturesList = this.querySelector('.angle-features-list');
+      const DAWNInfoDiv = this.querySelector('.dawn-info-div');
+      const DAWNInfoList = this.querySelector('.dawn-info-list');
 
       const basicInfoForHardwareGpuDiv =
           this.querySelector('.basic-info-for-hardware-gpu-div');
@@ -198,6 +200,15 @@ export function makeInfoView(browserBridge) {
           }
         }
 
+        if (gpuInfo.dawnInfo) {
+          if (gpuInfo.dawnInfo.length) {
+            DAWNInfoDiv.hidden = false;
+            this.createDawnInfoEl_(DAWNInfoList, gpuInfo.dawnInfo);
+          } else {
+            DAWNInfoDiv.hidden = true;
+          }
+        }
+
         if (gpuInfo.diagnostics) {
           diagnosticsDiv.hidden = false;
           diagnosticsLoadingDiv.hidden = true;
@@ -234,6 +245,7 @@ export function makeInfoView(browserBridge) {
         diagnosticsDiv.hidden = true;
         featureStatusList.textContent = '';
         problemsDiv.hidden = true;
+        DAWNInfoDiv.hidden = true;
       }
 
       // Log messages
@@ -535,7 +547,72 @@ export function makeInfoView(browserBridge) {
 
       peg.innerHTML = trustedTypes.emptyHTML;
       peg.appendChild(template);
-    }
+    },
+
+    createDawnInfoEl_: function(DAWNInfoList, gpuDawnInfo) {
+      DAWNInfoList.textContent = '';
+      let inProcessingToggles = false;
+
+      for (let i = 0; i < gpuDawnInfo.length; ++i) {
+        let infoString = gpuDawnInfo[i];
+        let infoEl;
+
+        if (infoString.startsWith('<')) {
+          // GPU type and backend type.
+          // Add an empty line for the next adaptor.
+          const separator = document.createElement('br');
+          separator.textContent = '';
+          DAWNInfoList.appendChild(separator);
+
+          // e.g. <Discrete GPU> D3D12 backend
+          infoEl = document.createElement('b');
+          infoEl.textContent = infoString;
+          DAWNInfoList.appendChild(infoEl);
+          // Go to the next line.
+          infoEl = document.createElement('br');
+          infoEl.textContent = '';
+          inProcessingToggles = false;
+        } else if (infoString.startsWith('[')) {
+          // e.g. [Default Toggle Names]
+          infoEl = document.createElement('span');
+          infoEl.classList.add('feature-green');
+          infoEl.textContent = infoString;
+
+          if (infoString == '[Supported Extensions]') {
+            inProcessingToggles = false;
+          } else {
+            inProcessingToggles = true;
+          }
+        } else if (inProcessingToggles) {
+          // Each toggle takes 3 strings
+          infoEl = document.createElement('li');
+
+          // The toggle name comes first, bolded.
+          const name = document.createElement('b');
+          name.textContent = infoString + ':  ';
+          infoEl.appendChild(name);
+
+          // URL
+          infoString = gpuDawnInfo[++i];
+          const url = document.createElement('a');
+          url.textContent = infoString;
+          url.href = infoString;
+          infoEl.appendChild(url);
+
+          // Description, italicized
+          infoString = gpuDawnInfo[++i];
+          const description = document.createElement('i');
+          description.textContent = ':  ' + infoString;
+          infoEl.appendChild(description);
+        } else {
+          // Display supported extensions
+          infoEl = document.createElement('li');
+          infoEl.textContent = infoString;
+        }
+
+        DAWNInfoList.appendChild(infoEl);
+      }
+    },
   };
 
   return InfoView;

@@ -54,6 +54,9 @@ wgpu::Device DawnContextProvider::CreateDevice(dawn_native::BackendType type) {
   DawnProcTable backend_procs = dawn_native::GetProcs();
   dawnProcSetProcs(&backend_procs);
 
+  // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
+  // info for about:gpu should be updated as well.
+
   // Disable validation in non-DCHECK builds.
   dawn_native::DeviceDescriptor descriptor;
 #if !DCHECK_IS_ON()

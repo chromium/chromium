@@ -562,6 +562,9 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
     device_descriptor.requiredExtensions.push_back("invalid_extension");
   }
 
+  // If a new toggle is added here, ForceDawnTogglesForWebGPU() which collects
+  // info for about:gpu should be updated as well.
+
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
   // is secure), unless --enable-unsafe-webgpu is used.
   if (!allow_spirv_) {

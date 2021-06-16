@@ -87,6 +87,10 @@ GPU_EXPORT void CollectGraphicsInfoForTesting(GPUInfo* gpu_info);
 GPU_EXPORT bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
                                     const GpuPreferences& prefs);
 
+// Collect Dawn Toggle name info for about:gpu
+GPU_EXPORT void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
+                                std::vector<std::string>* dawn_info_list);
+
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_GPU_INFO_COLLECTOR_H_

@@ -1240,4 +1240,22 @@ void GpuServiceImpl::UpdateOverlayAndHDRInfo() {
 }
 #endif
 
+void GpuServiceImpl::GetDawnInfo(GetDawnInfoCallback callback) {
+  DCHECK(io_runner_->BelongsToCurrentThread());
+
+  main_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&GpuServiceImpl::GetDawnInfoOnMain,
+                                base::Unretained(this), std::move(callback)));
+}
+
+void GpuServiceImpl::GetDawnInfoOnMain(GetDawnInfoCallback callback) {
+  DCHECK(main_runner_->BelongsToCurrentThread());
+
+  std::vector<std::string> dawn_info_list;
+  gpu::CollectDawnInfo(gpu_preferences_, &dawn_info_list);
+
+  io_runner_->PostTask(FROM_HERE,
+                       base::BindOnce(std::move(callback), dawn_info_list));
+}
+
 }  // namespace viz

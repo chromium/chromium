@@ -655,6 +655,18 @@ base::Value GetANGLEFeatures() {
   return angle_features_list;
 }
 
+base::Value GetDawnInfo() {
+  const std::vector<std::string> info_list_collected =
+      GpuDataManagerImpl::GetInstance()->GetDawnInfoList();
+  auto dawn_info_list = base::Value(base::Value::Type::LIST);
+
+  for (const auto& info : info_list_collected) {
+    dawn_info_list.Append(info);
+  }
+
+  return dawn_info_list;
+}
+
 // This class receives javascript messages from the renderer.
 // Note that the WebUI infrastructure runs on the UI thread, therefore all of
 // this class's methods are expected to run on the UI thread.
@@ -778,7 +790,7 @@ void GpuMessageHandler::OnBrowserBridgeInitialized(
   // Tell GpuDataManager it should have full GpuInfo. If the
   // Gpu process has not run yet, this will trigger its launch.
   GpuDataManagerImpl::GetInstance()->RequestDxdiagDx12VulkanGpuInfoIfNeeded(
-      kGpuInfoRequestAll, /*delayed=*/false);
+      GpuDataManagerImpl::kGpuInfoRequestAll, /*delayed=*/false);
 
   // Run callback immediately in case the info is ready and no update in the
   // future.
@@ -867,6 +879,7 @@ void GpuMessageHandler::OnGpuInfoUpdate() {
   gpu_info_val.SetKey("videoAcceleratorsInfo", GetVideoAcceleratorsInfo());
   gpu_info_val.SetKey("ANGLEFeatures", GetANGLEFeatures());
   gpu_info_val.SetKey("devicePerfInfo", GetDevicePerfInfo());
+  gpu_info_val.SetKey("dawnInfo", GetDawnInfo());
 
   // Send GPU Info to javascript.
   web_ui()->CallJavascriptFunctionUnsafe("browserBridge.onGpuInfoUpdate",

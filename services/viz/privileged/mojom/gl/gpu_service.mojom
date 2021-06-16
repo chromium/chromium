@@ -31,6 +31,7 @@ import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 
 interface GpuService {
   // Tells the GPU service to create a new channel for communication with a
@@ -175,6 +176,9 @@ interface GpuService {
   // The callback is invoked once the profile has been flushed to disk.
   [EnableIf=use_clang_profiling_inside_sandbox]
   WriteClangProfilingProfile() => ();
+
+  // Requests Dawn Info for about:gpu.
+  GetDawnInfo() => (array<string> dawn_info_list);
 
   Crash();
   Hang();

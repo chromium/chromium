@@ -43,10 +43,12 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void BlocklistWebGLForTesting();
   gpu::GPUInfo GetGPUInfo() const;
   gpu::GPUInfo GetGPUInfoForHardwareGpu() const;
+  std::vector<std::string> GetDawnInfoList() const;
   bool GpuAccessAllowed(std::string* reason) const;
   bool GpuAccessAllowedForHardwareGpu(std::string* reason) const;
-  void RequestDxdiagDx12VulkanGpuInfoIfNeeded(GpuInfoRequest request,
-                                              bool delayed);
+  void RequestDxdiagDx12VulkanGpuInfoIfNeeded(
+      GpuDataManagerImpl::GpuInfoRequest request,
+      bool delayed);
   bool IsEssentialGpuInfoAvailable() const;
   bool IsDx12VulkanVersionAvailable() const;
   bool IsGpuFeatureInfoAvailable() const;
@@ -78,6 +80,8 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void PostCreateThreads();
   void TerminateInfoCollectionGpuProcess();
 #endif
+  void UpdateDawnInfo(const std::vector<std::string>& dawn_info_list);
+
   void UpdateGpuFeatureInfo(const gpu::GpuFeatureInfo& gpu_feature_info,
                             const absl::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
@@ -202,6 +206,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void RequestDxDiagNodeData();
   void RequestGpuSupportedDx12Version(bool delayed);
   void RequestGpuSupportedVulkanVersion(bool delayed);
+  void RequestDawnInfo();
 
   void RecordCompositingMode();
 
@@ -220,6 +225,9 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool gpu_info_vulkan_requested_ = false;
   bool gpu_info_vulkan_request_failed_ = false;
 #endif
+  bool gpu_info_dawn_toggles_requested_ = false;
+  // The Dawn info queried from the GPU process.
+  std::vector<std::string> dawn_info_list_;
 
   // What we would have gotten if we haven't fallen back to SwiftShader or
   // pure software (in the viz case).
