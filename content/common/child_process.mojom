@@ -13,6 +13,15 @@ import "services/tracing/public/mojom/system_tracing_service.mojom";
 // The primordial interface child processes use to push requests to their
 // browser-side host object.
 interface ChildProcessHost {
+  // Pings the parent process, expecting a reply. Used to verify that the
+  // process and this interface connection are operational. When a child
+  // process is started, it begins a timer (default 15 seconds) and sends this
+  // message to the browser. If no reply comes back before time runs out, the
+  // process self-terminates. There are no other interesting side effects, nor
+  // are there any constraints on what either process can do while this is in
+  // flight.
+  Ping() => ();
+
   // Requests that the browser bind |receiver| on behalf of the child process.
   // Whether or not the interface type encapsulated by |receiver| is supported
   // depends on the process type and potentially on the Content embedder.

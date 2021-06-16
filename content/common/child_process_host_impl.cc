@@ -138,6 +138,13 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
     receiver_.Bind(mojo::PendingReceiver<mojom::ChildProcessHost>(
         mojo_invitation_->AttachMessagePipe(
             kChildProcessHostRemoteAttachmentName)));
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&ChildProcessHostImpl::OnDisconnectedFromChildProcess,
+                       base::Unretained(this)));
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+    child_process_->SetProfilingFile(OpenProfilingFile());
+#endif
   }
 }
 
@@ -148,9 +155,9 @@ ChildProcessHostImpl::~ChildProcessHostImpl() {
   if (!channel_)
     return;
 
-  for (size_t i = 0; i < filters_.size(); ++i) {
-    filters_[i]->OnChannelClosing();
-    filters_[i]->OnFilterRemoved();
+  for (auto& filter : filters_) {
+    filter->OnChannelClosing();
+    filter->OnFilterRemoved();
   }
 }
 
@@ -163,6 +170,20 @@ void ChildProcessHostImpl::AddFilter(IPC::MessageFilter* filter) {
 
 void ChildProcessHostImpl::BindReceiver(mojo::GenericPendingReceiver receiver) {
   child_process_->BindReceiver(std::move(receiver));
+}
+
+base::Process& ChildProcessHostImpl::GetPeerProcess() {
+  if (!peer_process_.IsValid()) {
+    const base::Process& process = delegate_->GetProcess();
+    if (process.IsValid()) {
+      peer_process_ = base::Process::OpenWithExtraPrivileges(process.Pid());
+      if (!peer_process_.IsValid())
+        peer_process_ = process.Duplicate();
+      DCHECK(peer_process_.IsValid());
+    }
+  }
+
+  return peer_process_;
 }
 
 void ChildProcessHostImpl::RunServiceDeprecated(
@@ -198,6 +219,12 @@ void ChildProcessHostImpl::CreateChannelMojo() {
   }
   DCHECK(channel_);
 
+  // Since we're initializing a legacy IPC Channel, we will use its connection
+  // status to monitor child process lifetime instead of using the status of the
+  // `receiver_` endpoint.
+  if (receiver_.is_bound())
+    receiver_.set_disconnect_handler(base::NullCallback());
+
   bool initialized = InitChannel();
   DCHECK(initialized);
 }
@@ -206,8 +233,8 @@ bool ChildProcessHostImpl::InitChannel() {
   if (!channel_->Connect())
     return false;
 
-  for (size_t i = 0; i < filters_.size(); ++i)
-    filters_[i]->OnFilterAdded(channel_.get());
+  for (auto& filter : filters_)
+    filter->OnFilterAdded(channel_.get());
 
   delegate_->OnChannelInitialized(channel_.get());
 
@@ -217,13 +244,21 @@ bool ChildProcessHostImpl::InitChannel() {
   child_process_->SetIPCLoggingEnabled(enabled);
 #endif
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
-  child_process_->SetProfilingFile(OpenProfilingFile());
-#endif
-
   opening_channel_ = true;
 
   return true;
+}
+
+void ChildProcessHostImpl::OnDisconnectedFromChildProcess() {
+  if (channel_) {
+    opening_channel_ = false;
+    delegate_->OnChannelError();
+    for (auto& filter : filters_)
+      filter->OnChannelError();
+  }
+
+  // This will delete host_, which will also destroy this!
+  delegate_->OnChildDisconnected();
 }
 
 bool ChildProcessHostImpl::IsChannelOpening() {
@@ -270,6 +305,10 @@ uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
          1;
 }
 
+void ChildProcessHostImpl::Ping(PingCallback callback) {
+  std::move(callback).Run();
+}
+
 void ChildProcessHostImpl::BindHostReceiver(
     mojo::GenericPendingReceiver receiver) {
   delegate_->BindHostReceiver(std::move(receiver));
@@ -288,8 +327,8 @@ bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
 #endif
 
   bool handled = false;
-  for (size_t i = 0; i < filters_.size(); ++i) {
-    if (filters_[i]->OnMessageReceived(msg)) {
+  for (auto& filter : filters_) {
+    if (filter->OnMessageReceived(msg)) {
       handled = true;
       break;
     }
@@ -307,27 +346,26 @@ bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
 }
 
 void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
-  if (!peer_process_.IsValid()) {
-    peer_process_ = base::Process::OpenWithExtraPrivileges(peer_pid);
-    if (!peer_process_.IsValid())
-       peer_process_ = delegate_->GetProcess().Duplicate();
-    DCHECK(peer_process_.IsValid());
-  }
+  // We ignore the `peer_pid` argument, which ultimately comes over IPC from the
+  // remote process, in favor of the PID already known by the browser after
+  // launching the process. This is partly because IPC Channel is being phased
+  // out and some process types no longer use it, but also because there's
+  // really no need to get this information from the child process when we
+  // already have it.
+  //
+  // TODO(crbug.com/616980): Remove the peer_pid argument altogether from
+  // IPC::Listener::OnChannelConnected.
+  const base::Process& peer_process = GetPeerProcess();
+  base::ProcessId pid =
+      peer_process.IsValid() ? peer_process.Pid() : base::GetCurrentProcId();
   opening_channel_ = false;
-  delegate_->OnChannelConnected(peer_pid);
-  for (size_t i = 0; i < filters_.size(); ++i)
-    filters_[i]->OnChannelConnected(peer_pid);
+  delegate_->OnChannelConnected(pid);
+  for (auto& filter : filters_)
+    filter->OnChannelConnected(pid);
 }
 
 void ChildProcessHostImpl::OnChannelError() {
-  opening_channel_ = false;
-  delegate_->OnChannelError();
-
-  for (size_t i = 0; i < filters_.size(); ++i)
-    filters_[i]->OnChannelError();
-
-  // This will delete host_, which will also destroy this!
-  delegate_->OnChildDisconnected();
+  OnDisconnectedFromChildProcess();
 }
 
 void ChildProcessHostImpl::OnBadMessageReceived(const IPC::Message& message) {

@@ -338,7 +338,7 @@ PluginMetricsProvider::GetChildProcessStats(
   return child_process_stats_buffer_[child_name];
 }
 
-void PluginMetricsProvider::BrowserChildProcessHostConnected(
+void PluginMetricsProvider::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
   GetChildProcessStats(data).process_launches++;
   RecordCurrentStateWithDelay();

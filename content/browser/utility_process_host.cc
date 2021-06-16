@@ -164,7 +164,6 @@ bool UtilityProcessHost::StartProcess() {
   started_ = true;
   process_->SetName(name_);
   process_->SetMetricsName(metrics_name_);
-  process_->GetHost()->CreateChannelMojo();
 
   if (RenderProcessHost::run_renderer_in_process()) {
     DCHECK(g_utility_main_thread_factory);

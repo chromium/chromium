@@ -156,45 +156,47 @@ bool CreateWaitAndExitThread(base::TimeDelta duration) {
 }
 #endif
 
+void TerminateSelfOnDisconnect() {
+  // For renderer/worker processes:
+  // On POSIX, at least, one can install an unload handler which loops
+  // forever and leave behind a renderer process which eats 100% CPU forever.
+  //
+  // This is because the terminate signals (FrameMsg_BeforeUnload and the
+  // error from the IPC sender) are routed to the main message loop but never
+  // processed (because that message loop is stuck in V8).
+  //
+  // One could make the browser SIGKILL the renderers, but that leaves open a
+  // large window where a browser failure (or a user, manually terminating
+  // the browser because "it's stuck") will leave behind a process eating all
+  // the CPU.
+  //
+  // So, we install a filter on the sender so that we can process this event
+  // here and kill the process.
+  base::debug::StopProfiling();
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
+  // Some sanitizer tools rely on exit handlers (e.g. to run leak detection,
+  // or dump code coverage data to disk). Instead of exiting the process
+  // immediately, we give it 60 seconds to run exit handlers.
+  CHECK(CreateWaitAndExitThread(base::TimeDelta::FromSeconds(60)));
+#if defined(LEAK_SANITIZER)
+  // Invoke LeakSanitizer early to avoid detecting shutdown-only leaks. If
+  // leaks are found, the process will exit here.
+  __lsan_do_leak_check();
+#endif
+#else
+  base::Process::TerminateCurrentProcessImmediately(0);
+#endif
+}
+
 class SuicideOnChannelErrorFilter : public IPC::MessageFilter {
  public:
   // IPC::MessageFilter
-  void OnChannelError() override {
-    // For renderer/worker processes:
-    // On POSIX, at least, one can install an unload handler which loops
-    // forever and leave behind a renderer process which eats 100% CPU forever.
-    //
-    // This is because the terminate signals (FrameMsg_BeforeUnload and the
-    // error from the IPC sender) are routed to the main message loop but never
-    // processed (because that message loop is stuck in V8).
-    //
-    // One could make the browser SIGKILL the renderers, but that leaves open a
-    // large window where a browser failure (or a user, manually terminating
-    // the browser because "it's stuck") will leave behind a process eating all
-    // the CPU.
-    //
-    // So, we install a filter on the sender so that we can process this event
-    // here and kill the process.
-    base::debug::StopProfiling();
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) || \
-    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(UNDEFINED_SANITIZER)
-    // Some sanitizer tools rely on exit handlers (e.g. to run leak detection,
-    // or dump code coverage data to disk). Instead of exiting the process
-    // immediately, we give it 60 seconds to run exit handlers.
-    CHECK(CreateWaitAndExitThread(base::TimeDelta::FromSeconds(60)));
-#if defined(LEAK_SANITIZER)
-    // Invoke LeakSanitizer early to avoid detecting shutdown-only leaks. If
-    // leaks are found, the process will exit here.
-    __lsan_do_leak_check();
-#endif
-#else
-    base::Process::TerminateCurrentProcessImmediately(0);
-#endif
-  }
+  void OnChannelError() override { TerminateSelfOnDisconnect(); }
 
  protected:
-  ~SuicideOnChannelErrorFilter() override {}
+  ~SuicideOnChannelErrorFilter() override = default;
 };
 
 #endif  // OS(POSIX)
@@ -415,21 +417,25 @@ ChildThread* ChildThread::Get() {
   return ChildThreadImpl::current();
 }
 
-ChildThreadImpl::Options::Options() : connect_to_browser(false) {}
+ChildThreadImpl::Options::Options() = default;
 
 ChildThreadImpl::Options::Options(const Options& other) = default;
 
-ChildThreadImpl::Options::~Options() {
-}
+ChildThreadImpl::Options::~Options() = default;
 
-ChildThreadImpl::Options::Builder::Builder() {
-}
+ChildThreadImpl::Options::Builder::Builder() = default;
 
 ChildThreadImpl::Options::Builder&
 ChildThreadImpl::Options::Builder::InBrowserProcess(
     const InProcessChildThreadParams& params) {
   options_.browser_process_io_runner = params.io_runner();
   options_.mojo_invitation = params.mojo_invitation();
+  return *this;
+}
+
+ChildThreadImpl::Options::Builder&
+ChildThreadImpl::Options::Builder::WithLegacyIPCChannel(bool with_channel) {
+  options_.with_legacy_ipc_channel = with_channel;
   return *this;
 }
 
@@ -545,14 +551,17 @@ void ChildThreadImpl::Init(const Options& options) {
   IPC::Logging::GetInstance();
 #endif
 
-  channel_ = IPC::SyncChannel::Create(
-      this, ChildProcess::current()->io_task_runner(),
-      ipc_task_runner_ ? ipc_task_runner_ : base::ThreadTaskRunnerHandle::Get(),
-      ChildProcess::current()->GetShutDownEvent());
+  if (options.with_legacy_ipc_channel) {
+    channel_ = IPC::SyncChannel::Create(
+        this, ChildProcess::current()->io_task_runner(),
+        ipc_task_runner_ ? ipc_task_runner_
+                         : base::ThreadTaskRunnerHandle::Get(),
+        ChildProcess::current()->GetShutDownEvent());
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  if (!IsInBrowserProcess())
-    IPC::Logging::GetInstance()->SetIPCSender(this);
+    if (!IsInBrowserProcess())
+      IPC::Logging::GetInstance()->SetIPCSender(this);
 #endif
+  }
 
   mojo::ScopedMessagePipeHandle child_process_pipe_for_receiver;
   mojo::ScopedMessagePipeHandle child_process_host_pipe_for_remote;
@@ -576,8 +585,10 @@ void ChildThreadImpl::Init(const Options& options) {
         invitation.ExtractMessagePipe(kChildProcessReceiverAttachmentName);
     child_process_host_pipe_for_remote =
         invitation.ExtractMessagePipe(kChildProcessHostRemoteAttachmentName);
-    legacy_ipc_bootstrap_pipe =
-        invitation.ExtractMessagePipe(kLegacyIpcBootstrapAttachmentName);
+    if (options.with_legacy_ipc_channel) {
+      legacy_ipc_bootstrap_pipe =
+          invitation.ExtractMessagePipe(kLegacyIpcBootstrapAttachmentName);
+    }
   } else {
     child_process_pipe_for_receiver =
         options.mojo_invitation->ExtractMessagePipe(
@@ -585,8 +596,10 @@ void ChildThreadImpl::Init(const Options& options) {
     child_process_host_pipe_for_remote =
         options.mojo_invitation->ExtractMessagePipe(
             kChildProcessHostRemoteAttachmentName);
-    legacy_ipc_bootstrap_pipe = options.mojo_invitation->ExtractMessagePipe(
-        kLegacyIpcBootstrapAttachmentName);
+    if (options.with_legacy_ipc_channel) {
+      legacy_ipc_bootstrap_pipe = options.mojo_invitation->ExtractMessagePipe(
+          kLegacyIpcBootstrapAttachmentName);
+    }
   }
 
   // Now that we've recovered the message pipe for the ChildProcessHost, build
@@ -596,7 +609,8 @@ void ChildThreadImpl::Init(const Options& options) {
   child_process_host_ = mojo::SharedRemote<mojom::ChildProcessHost>(
       std::move(remote_host), GetIOTaskRunner());
 
-  sync_message_filter_ = channel_->CreateSyncMessageFilter();
+  if (options.with_legacy_ipc_channel)
+    sync_message_filter_ = channel_->CreateSyncMessageFilter();
 
   // In single process mode, browser-side tracing and memory will cover the
   // whole process including renderers.
@@ -634,23 +648,35 @@ void ChildThreadImpl::Init(const Options& options) {
 #if defined(OS_POSIX)
   // Check that --process-type is specified so we don't do this in unit tests
   // and single-process mode.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kProcessType))
-    channel_->AddFilter(new SuicideOnChannelErrorFilter());
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kProcessType)) {
+    if (options.with_legacy_ipc_channel) {
+      channel_->AddFilter(new SuicideOnChannelErrorFilter());
+    } else {
+      child_process_host_.set_disconnect_handler(
+          base::BindOnce(&TerminateSelfOnDisconnect), GetIOTaskRunner());
+    }
+  }
 #endif
 
   // Add filters passed here via options.
-  for (auto* startup_filter : options.startup_filters) {
-    channel_->AddFilter(startup_filter);
+  if (options.with_legacy_ipc_channel) {
+    for (auto* startup_filter : options.startup_filters) {
+      channel_->AddFilter(startup_filter);
+    }
+
+    DCHECK(legacy_ipc_bootstrap_pipe.is_valid());
+    channel_->Init(IPC::ChannelMojo::CreateClientFactory(
+                       std::move(legacy_ipc_bootstrap_pipe),
+                       ChildProcess::current()->io_task_runner(),
+                       ipc_task_runner_ ? ipc_task_runner_
+                                        : base::ThreadTaskRunnerHandle::Get()),
+                   /*create_pipe_now=*/true);
+  } else {
+    DCHECK(options.startup_filters.empty());
   }
 
   DCHECK(child_process_pipe_for_receiver.is_valid());
-  DCHECK(legacy_ipc_bootstrap_pipe.is_valid());
-  channel_->Init(IPC::ChannelMojo::CreateClientFactory(
-                     std::move(legacy_ipc_bootstrap_pipe),
-                     ChildProcess::current()->io_task_runner(),
-                     ipc_task_runner_ ? ipc_task_runner_
-                                      : base::ThreadTaskRunnerHandle::Get()),
-                 /*create_pipe_now=*/true);
 
   ChildThreadImpl::GetIOTaskRunner()->PostTask(
       FROM_HERE,
@@ -668,6 +694,11 @@ void ChildThreadImpl::Init(const Options& options) {
       connection_timeout = temp;
   }
 
+  if (!options.with_legacy_ipc_channel) {
+    child_process_host_->Ping(
+        base::BindOnce(&ChildThreadImpl::OnChannelConnected,
+                       base::Unretained(this), /*unused=*/0));
+  }
   main_thread_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ChildThreadImpl::EnsureConnected,
@@ -693,17 +724,32 @@ ChildThreadImpl::~ChildThreadImpl() {
   IPC::Logging::GetInstance()->SetIPCSender(NULL);
 #endif
 
-  channel_->RemoveFilter(sync_message_filter_.get());
+  if (channel_) {
+    channel_->RemoveFilter(sync_message_filter_.get());
 
-  // The ChannelProxy object caches a pointer to the IPC thread, so need to
-  // reset it as it's not guaranteed to outlive this object.
-  // NOTE: this also has the side-effect of not closing the main IPC channel to
-  // the browser process.  This is needed because this is the signal that the
-  // browser uses to know that this process has died, so we need it to be alive
-  // until this process is shut down, and the OS closes the handle
-  // automatically.  We used to watch the object handle on Windows to do this,
-  // but it wasn't possible to do so on POSIX.
-  channel_->ClearIPCTaskRunner();
+    // The ChannelProxy object caches a pointer to the IPC thread, so need to
+    // reset it as it's not guaranteed to outlive this object.
+    // NOTE: this also has the side-effect of not closing the main IPC channel
+    // to the browser process.  This is needed because this is the signal that
+    // the browser uses to know that this process has died, so we need it to be
+    // alive until this process is shut down, and the OS closes the handle
+    // automatically.  We used to watch the object handle on Windows to do this,
+    // but it wasn't possible to do so on POSIX.
+    channel_->ClearIPCTaskRunner();
+  } else if (!IsInBrowserProcess()) {
+    // With no legacy IPC channel, the browser monitors the lifetime of the
+    // ChildProcessHost connection to detect our exit. For reasons similar to
+    // above, we leak our side of this connection to ensure that the browser
+    // does not observe disconnection until after our process is actually
+    // terminated.
+    auto leaked_remote =
+        std::make_unique<mojo::SharedRemote<mojom::ChildProcessHost>>(
+            std::move(child_process_host_));
+    auto* leaked_remote_ptr = leaked_remote.release();
+    ALLOW_UNUSED_LOCAL(leaked_remote_ptr);
+    ANNOTATE_LEAKING_OBJECT_PTR(leaked_remote_ptr);
+  }
+
   g_lazy_child_thread_impl_tls.Pointer()->Set(nullptr);
 }
 
@@ -765,7 +811,8 @@ void ChildThreadImpl::RecordComputedAction(const std::string& action) {
 }
 
 void ChildThreadImpl::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
-  child_process_host_->BindHostReceiver(std::move(receiver));
+  if (child_process_host_)
+    child_process_host_->BindHostReceiver(std::move(receiver));
 }
 
 IPC::MessageRouter* ChildThreadImpl::GetRouter() {
@@ -812,6 +859,10 @@ void ChildThreadImpl::GetBackgroundTracingAgentProvider(
         std::make_unique<tracing::BackgroundTracingAgentProviderImpl>();
   }
   background_tracing_agent_provider_->AddBinding(std::move(receiver));
+}
+
+void ChildThreadImpl::DisconnectChildProcessHost() {
+  child_process_host_.reset();
 }
 
 void ChildThreadImpl::RunServiceDeprecated(

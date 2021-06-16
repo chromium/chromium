@@ -1464,6 +1464,8 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
 
  private:
   // mojom::ChildProcessHost implementation:
+  void Ping(PingCallback callback) override { std::move(callback).Run(); }
+
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override {
     const auto& interceptor = GetBindHostReceiverInterceptor();
     if (interceptor) {

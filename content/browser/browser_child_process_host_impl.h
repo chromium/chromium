@@ -151,6 +151,8 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   friend class BrowserChildProcessHostIterator;
   friend class BrowserChildProcessObserver;
 
+  void OnProcessConnected();
+
   static BrowserChildProcessList* GetIterator();
 
   static void AddObserver(BrowserChildProcessObserver* observer);
@@ -218,9 +220,8 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // transferred to the child process.
   base::WritableSharedMemoryRegion metrics_shared_region_;
 
-  IPC::Channel* channel_ = nullptr;
-  bool is_channel_connected_;
-  bool notify_child_disconnected_;
+  bool has_legacy_ipc_channel_ = false;
+  bool notify_child_connection_status_ = true;
 
 #if defined(OS_ANDROID)
   // whether the child process can use pre-warmed up connection for better

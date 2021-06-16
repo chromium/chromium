@@ -148,11 +148,14 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // null if someone else has taken ownership.
   virtual absl::optional<mojo::OutgoingInvitation>& GetMojoInvitation() = 0;
 
-  // Creates the IPC channel over a Mojo message pipe. The pipe connection is
-  // brokered through the Service Manager like any other service connection.
+  // Creates a legacy IPC channel over a Mojo message pipe. Must be called if
+  // legacy IPC will be used to communicate with the child process, but
+  // otherwise should not be called.
   virtual void CreateChannelMojo() = 0;
 
-  // Returns true iff the IPC channel is currently being opened;
+  // Returns true iff the IPC channel is currently being opened; this means
+  // CreateChannelMojo() has been called, but OnChannelConnected() has not yet
+  // been invoked.
   virtual bool IsChannelOpening() = 0;
 
   // Adds an IPC message filter.  A reference will be kept to the filter.

@@ -122,7 +122,7 @@ void SubprocessMetricsProvider::MergeHistogramDeltas() {
   }
 }
 
-void SubprocessMetricsProvider::BrowserChildProcessHostConnected(
+void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

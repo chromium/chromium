@@ -74,7 +74,7 @@ class SubprocessMetricsProvider
   void MergeHistogramDeltas() override;
 
   // content::BrowserChildProcessObserver:
-  void BrowserChildProcessHostConnected(
+  void BrowserChildProcessLaunchedAndConnected(
       const content::ChildProcessData& data) override;
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;

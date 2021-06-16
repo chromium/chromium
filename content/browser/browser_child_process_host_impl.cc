@@ -85,11 +85,6 @@ void NotifyProcessLaunchedAndConnected(const ChildProcessData& data) {
     observer.BrowserChildProcessLaunchedAndConnected(data);
 }
 
-void NotifyProcessHostConnected(const ChildProcessData& data) {
-  for (auto& observer : g_browser_child_process_observers.Get())
-    observer.BrowserChildProcessHostConnected(data);
-}
-
 void NotifyProcessHostDisconnected(const ChildProcessData& data) {
   for (auto& observer : g_browser_child_process_observers.Get())
     observer.BrowserChildProcessHostDisconnected(data);
@@ -203,11 +198,7 @@ BrowserChildProcessHostImpl::BrowserChildProcessHostImpl(
     content::ProcessType process_type,
     BrowserChildProcessHostDelegate* delegate,
     ChildProcessHost::IpcMode ipc_mode)
-    : data_(process_type),
-      delegate_(delegate),
-      channel_(nullptr),
-      is_channel_connected_(false),
-      notify_child_disconnected_(false) {
+    : data_(process_type), delegate_(delegate) {
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
                           ? BrowserThread::UI
                           : BrowserThread::IO);
@@ -226,7 +217,7 @@ BrowserChildProcessHostImpl::BrowserChildProcessHostImpl(
 BrowserChildProcessHostImpl::~BrowserChildProcessHostImpl() {
   g_child_process_list.Get().remove(this);
 
-  if (notify_child_disconnected_) {
+  if (notify_child_connection_status_) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&NotifyProcessHostDisconnected, data_.Duplicate()));
@@ -300,11 +291,7 @@ const base::Process& BrowserChildProcessHostImpl::GetProcess() {
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
                           ? BrowserThread::UI
                           : BrowserThread::IO);
-  DCHECK(child_process_.get())
-      << "Requesting a child process handle before launching.";
-  DCHECK(child_process_->GetProcess().IsValid())
-      << "Requesting a child process handle before launch has completed OK.";
-  return child_process_->GetProcess();
+  return data_.GetProcess();
 }
 
 std::unique_ptr<base::PersistentMemoryAllocator>
@@ -380,7 +367,11 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
 
   data_.sandbox_type = delegate->GetSandboxType();
 
-  notify_child_disconnected_ = true;
+  // Note that if this host has a legacy IPC Channel, we don't dispatch any
+  // connection status notifications until we observe OnChannelConnected().
+  if (!has_legacy_ipc_channel_)
+    notify_child_connection_status_ = true;
+
   child_process_ = std::make_unique<ChildProcessLauncher>(
       std::move(delegate), std::move(cmd_line), data_.id, this,
       std::move(*child_process_host_->GetMojoInvitation()),
@@ -389,6 +380,9 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
                           base::ThreadTaskRunnerHandle::Get()),
       std::move(files_to_preload), terminate_on_shutdown);
   ShareMetricsAllocatorToProcess();
+
+  if (!has_legacy_ipc_channel_)
+    OnProcessConnected();
 }
 
 void BrowserChildProcessHostImpl::HistogramBadMessageTerminated(
@@ -434,26 +428,20 @@ void BrowserChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
                           ? BrowserThread::UI
                           : BrowserThread::IO);
 
-  is_channel_connected_ = true;
-  notify_child_disconnected_ = true;
-
-#if defined(OS_MAC)
-  ChildProcessTaskPortProvider::GetInstance()->OnChildProcessLaunched(
-      peer_pid, static_cast<ChildProcessHostImpl*>(child_process_host_.get())
-                    ->child_process());
-#endif
-
-#if defined(OS_WIN)
-  // From this point onward, the exit of the child process is detected by an
-  // error on the IPC channel.
-  early_exit_watcher_.StopWatching();
-#endif
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NotifyProcessHostConnected, data_.Duplicate()));
+  DCHECK(has_legacy_ipc_channel_);
+  notify_child_connection_status_ = true;
 
   delegate_->OnChannelConnected(peer_pid);
+
+  OnProcessConnected();
+}
+
+void BrowserChildProcessHostImpl::OnProcessConnected() {
+#if defined(OS_WIN)
+  // From this point onward, the exit of the child process is detected by an
+  // error on the IPC channel or ChildProcessHost pipe.
+  early_exit_watcher_.StopWatching();
+#endif
 
   if (IsProcessLaunched()) {
     GetUIThreadTaskRunner({})->PostTask(
@@ -489,7 +477,11 @@ void BrowserChildProcessHostImpl::TerminateOnBadMessageReceived(
 }
 
 void BrowserChildProcessHostImpl::OnChannelInitialized(IPC::Channel* channel) {
-  channel_ = channel;
+  has_legacy_ipc_channel_ = true;
+
+  // When using a legacy IPC Channel, we defer any notifications until the
+  // Channel handshake is complete. See OnChannelConnected().
+  notify_child_connection_status_ = false;
 }
 
 void BrowserChildProcessHostImpl::OnChildDisconnected() {
@@ -504,7 +496,8 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
   // early exit watcher so GetTerminationStatus can close the process handle.
   early_exit_watcher_.StopWatching();
 #endif
-  if (child_process_.get() || data_.GetProcess().IsValid()) {
+  const base::Process& process = data_.GetProcess();
+  if (child_process_.get() || (process.IsValid() && !process.is_current())) {
     ChildProcessTerminationInfo info =
         GetTerminationInfo(true /* known_dead */);
 #if defined(OS_ANDROID)
@@ -564,11 +557,11 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
     }
 #endif
   }
-  channel_ = nullptr;
   delete delegate_;  // Will delete us
 }
 
 bool BrowserChildProcessHostImpl::Send(IPC::Message* message) {
+  DCHECK(has_legacy_ipc_channel_);
   return child_process_host_->Send(message);
 }
 
@@ -646,7 +639,7 @@ void BrowserChildProcessHostImpl::ShareMetricsAllocatorToProcess() {
 
 void BrowserChildProcessHostImpl::OnProcessLaunchFailed(int error_code) {
   delegate_->OnProcessLaunchFailed(error_code);
-  notify_child_disconnected_ = false;
+  notify_child_connection_status_ = false;
   delete delegate_;  // Will delete us
 }
 
@@ -664,6 +657,13 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   const base::Process& process = child_process_->GetProcess();
   DCHECK(process.IsValid());
 
+#if defined(OS_MAC)
+  ChildProcessTaskPortProvider::GetInstance()->OnChildProcessLaunched(
+      process.Pid(),
+      static_cast<ChildProcessHostImpl*>(child_process_host_.get())
+          ->child_process());
+#endif
+
 #if defined(OS_WIN)
   // Start a WaitableEventWatcher that will invoke OnProcessExitedEarly if the
   // child process exits. This watcher is stopped once the IPC channel is
@@ -676,7 +676,7 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   data_.SetProcess(process.Duplicate());
   delegate_->OnProcessLaunched();
 
-  if (is_channel_connected_) {
+  if (notify_child_connection_status_) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&NotifyProcessLaunchedAndConnected, data_.Duplicate()));

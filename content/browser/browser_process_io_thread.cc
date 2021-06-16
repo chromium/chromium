@@ -162,7 +162,7 @@ void BrowserProcessIOThread::ProcessHostCleanUp() {
 
       ChildProcessHostImpl* child_process =
           static_cast<ChildProcessHostImpl*>(it.GetHost());
-      auto& process = child_process->peer_process();
+      auto& process = child_process->GetPeerProcess();
       if (!process.IsValid())
         continue;
       base::ScopedAllowBaseSyncPrimitives scoped_allow_base_sync_primitives;

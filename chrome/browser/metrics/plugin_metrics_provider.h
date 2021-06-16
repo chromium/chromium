@@ -78,7 +78,7 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   void RecordCurrentState();
 
   // content::BrowserChildProcessObserver:
-  void BrowserChildProcessHostConnected(
+  void BrowserChildProcessLaunchedAndConnected(
       const content::ChildProcessData& data) override;
   void BrowserChildProcessCrashed(
       const content::ChildProcessData& data,

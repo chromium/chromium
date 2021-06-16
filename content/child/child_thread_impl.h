@@ -124,6 +124,11 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
     return child_process_host_;
   }
 
+  // Explicitly closes the ChildProcessHost connection. This will cause the
+  // host-side object to be torn down and clean up resources tied to this
+  // process (or this thread object, in single-process mode).
+  void DisconnectChildProcessHost();
+
   virtual void RunServiceDeprecated(const std::string& service_name,
                                     mojo::ScopedMessagePipeHandle service_pipe);
 
@@ -243,10 +248,11 @@ struct ChildThreadImpl::Options {
 
   class Builder;
 
-  bool connect_to_browser;
+  bool with_legacy_ipc_channel = true;
+  bool connect_to_browser = false;
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner;
   std::vector<IPC::MessageFilter*> startup_filters;
-  mojo::OutgoingInvitation* mojo_invitation;
+  mojo::OutgoingInvitation* mojo_invitation = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner;
 
   // Indicates that this child process exposes one or more Mojo interfaces to
@@ -269,6 +275,7 @@ class ChildThreadImpl::Options::Builder {
 
   Builder& InBrowserProcess(const InProcessChildThreadParams& params);
   Builder& ConnectToBrowser(bool connect_to_browser);
+  Builder& WithLegacyIPCChannel(bool with_legacy_ipc_channel);
   Builder& AddStartupFilter(IPC::MessageFilter* filter);
   Builder& IPCTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);

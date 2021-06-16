@@ -78,7 +78,7 @@ class CONTENT_EXPORT ChildProcessHostImpl
       const std::string& service_name,
       mojo::ScopedMessagePipeHandle service_pipe) override;
 
-  base::Process& peer_process() { return peer_process_; }
+  base::Process& GetPeerProcess();
   mojom::ChildProcess* child_process() { return child_process_.get(); }
 
  private:
@@ -87,6 +87,7 @@ class CONTENT_EXPORT ChildProcessHostImpl
   ChildProcessHostImpl(ChildProcessHostDelegate* delegate, IpcMode ipc_mode);
 
   // mojom::ChildProcessHost implementation:
+  void Ping(PingCallback callback) override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
 
   // IPC::Listener methods:
@@ -98,6 +99,8 @@ class CONTENT_EXPORT ChildProcessHostImpl
   // Initializes the IPC channel and returns true on success. |channel_| must be
   // non-null.
   bool InitChannel();
+
+  void OnDisconnectedFromChildProcess();
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void DumpProfilingData(base::OnceClosure callback) override;
