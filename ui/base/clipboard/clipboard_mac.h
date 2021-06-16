@@ -19,10 +19,14 @@ namespace ui {
 
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
  private:
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina_Bitmap);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina_Bitmap);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage_Bitmap);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage_Bitmap);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina_Png);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina_Png);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage_Png);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage_Png);
   friend class Clipboard;
 
   ClipboardMac();
@@ -107,6 +111,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
                  const char* data_data,
                  size_t data_len) override;
 
+  std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer,
+                                       NSPasteboard* pasteboard) const;
   SkBitmap ReadImageInternal(ClipboardBuffer buffer,
                              NSPasteboard* pasteboard) const;
 

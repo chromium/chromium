@@ -4,6 +4,8 @@
 
 #import "ui/base/clipboard/clipboard_mac.h"
 
+#include <vector>
+
 #import <AppKit/AppKit.h>
 
 #include "base/mac/scoped_cftyperef.h"
@@ -14,6 +16,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
+#include "ui/gfx/codec/png_codec.h"
 
 @interface RedView : NSView
 @end
@@ -69,7 +72,7 @@ class ClipboardMacTest : public PlatformTest {
   }
 };
 
-TEST_F(ClipboardMacTest, ReadImageRetina) {
+TEST_F(ClipboardMacTest, ReadImageRetina_Bitmap) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -85,7 +88,25 @@ TEST_F(ClipboardMacTest, ReadImageRetina) {
   EXPECT_EQ(2 * height, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, ReadImageNonRetina) {
+TEST_F(ClipboardMacTest, ReadImageRetina_Png) {
+  int32_t width = 99;
+  int32_t height = 101;
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+  base::scoped_nsobject<NSImage> image = CreateImage(width, height, true);
+  [pasteboard->get() writeObjects:@[ image.get() ]];
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
+      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  EXPECT_EQ(2 * width, bitmap.width());
+  EXPECT_EQ(2 * height, bitmap.height());
+}
+
+TEST_F(ClipboardMacTest, ReadImageNonRetina_Bitmap) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
@@ -101,7 +122,25 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina) {
   EXPECT_EQ(height, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, EmptyImage) {
+TEST_F(ClipboardMacTest, ReadImageNonRetina_Png) {
+  int32_t width = 99;
+  int32_t height = 101;
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+  base::scoped_nsobject<NSImage> image = CreateImage(width, height, false);
+  [pasteboard->get() writeObjects:@[ image.get() ]];
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
+      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  EXPECT_EQ(width, bitmap.width());
+  EXPECT_EQ(height, bitmap.height());
+}
+
+TEST_F(ClipboardMacTest, EmptyImage_Bitmap) {
   base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
   [pasteboard->get() writeObjects:@[ image.get() ]];
@@ -115,7 +154,23 @@ TEST_F(ClipboardMacTest, EmptyImage) {
   EXPECT_EQ(0, bitmap.height());
 }
 
-TEST_F(ClipboardMacTest, PDFImage) {
+TEST_F(ClipboardMacTest, EmptyImage_Png) {
+  base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+  [pasteboard->get() writeObjects:@[ image.get() ]];
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
+      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  EXPECT_EQ(0, bitmap.width());
+  EXPECT_EQ(0, bitmap.height());
+}
+
+TEST_F(ClipboardMacTest, PDFImage_Bitmap) {
   int32_t width = 99;
   int32_t height = 101;
   NSRect frame = NSMakeRect(0, 0, width, height);
@@ -134,6 +189,31 @@ TEST_F(ClipboardMacTest, PDFImage) {
 
   SkBitmap bitmap = clipboard_mac->ReadImageInternal(
       ClipboardBuffer::kCopyPaste, pasteboard->get());
+  EXPECT_EQ(width, bitmap.width());
+  EXPECT_EQ(height, bitmap.height());
+}
+
+TEST_F(ClipboardMacTest, PDFImage_Png) {
+  int32_t width = 99;
+  int32_t height = 101;
+  NSRect frame = NSMakeRect(0, 0, width, height);
+
+  // This seems like a round-about way of getting a NSPDFImageRep to shove into
+  // an NSPasteboard. However, I haven't found any other way of generating a
+  // "PDF" image that makes NSPasteboard happy.
+  base::scoped_nsobject<NSView> v([[RedView alloc] initWithFrame:frame]);
+  NSData* data = [v dataWithPDFInsideRect:frame];
+
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+  [pasteboard->get() setData:data forType:NSPasteboardTypePDF];
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
+      ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }

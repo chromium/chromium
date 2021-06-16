@@ -15,6 +15,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -32,7 +33,9 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 #include "url/gurl.h"
 
@@ -45,6 +48,23 @@ NSPasteboard* GetPasteboard() {
   // that must be shared between all pasteboards.
   NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
   return pasteboard;
+}
+
+base::scoped_nsobject<NSImage> GetNSImage(NSPasteboard* pasteboard) {
+  // If the pasteboard's image data is not to its liking, the guts of NSImage
+  // may throw, and that exception will leak. Prevent a crash in that case;
+  // a blank image is better.
+  base::scoped_nsobject<NSImage> image;
+  @try {
+    if (pasteboard)
+      image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
+  } @catch (id exception) {
+  }
+  if (!image)
+    return base::scoped_nsobject<NSImage>();
+  if ([[image representations] count] == 0u)
+    return base::scoped_nsobject<NSImage>();
+  return image;
 }
 
 }  // namespace
@@ -274,8 +294,8 @@ void ClipboardMac::ReadRTF(ClipboardBuffer buffer,
 void ClipboardMac::ReadPng(ClipboardBuffer buffer,
                            const DataTransferEndpoint* data_dst,
                            ReadPngCallback callback) const {
-  // TODO(crbug.com/1201018): Implement this.
-  NOTIMPLEMENTED();
+  RecordRead(ClipboardFormatMetric::kPng);
+  std::move(callback).Run(ReadPngInternal(buffer, GetPasteboard()));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -467,23 +487,28 @@ void ClipboardMac::WriteWebSmartPaste() {
   [GetPasteboard() setData:nil forType:format];
 }
 
+std::vector<uint8_t> ClipboardMac::ReadPngInternal(
+    ClipboardBuffer buffer,
+    NSPasteboard* pasteboard) const {
+  DCHECK(CalledOnValidThread());
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+
+  base::scoped_nsobject<NSImage> image = GetNSImage(pasteboard);
+  if (!image)
+    return std::vector<uint8_t>();
+
+  scoped_refptr<base::RefCountedMemory> mem = gfx::Image(image).As1xPNGBytes();
+  std::vector<uint8_t> image_data(mem->data(), mem->data() + mem->size());
+  return image_data;
+}
+
 SkBitmap ClipboardMac::ReadImageInternal(ClipboardBuffer buffer,
                                          NSPasteboard* pasteboard) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  // If the pasteboard's image data is not to its liking, the guts of NSImage
-  // may throw, and that exception will leak. Prevent a crash in that case;
-  // a blank image is better.
-  base::scoped_nsobject<NSImage> image;
-  @try {
-    if (pasteboard)
-      image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
-  } @catch (id exception) {
-  }
+  base::scoped_nsobject<NSImage> image = GetNSImage(pasteboard);
   if (!image)
-    return SkBitmap();
-  if ([[image representations] count] == 0u)
     return SkBitmap();
 
   // This logic prevents loss of pixels from retina images, where size != pixel

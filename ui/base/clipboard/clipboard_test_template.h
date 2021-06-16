@@ -592,17 +592,17 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
                                       const U8x4* expect_data) {
   WriteBitmap(clipboard, info, reinterpret_cast<const void*>(bitmap_data));
 
-#if defined(OS_WIN)
-  // On Windows, PNG and bitmap are separate formats. Since we're writing
-  // bitmaps, only this format is available.
   EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetBitmapType(),
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
-#else
+
+#if !defined(OS_WIN) && !defined(OS_MAC)
+  // On Windows and Mac, PNG and bitmap are separate formats. Due to how the
+  // ScopedClipboardWriter writes bitmaps, only the bitmap format is available.
   EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetPngType(),
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
-#endif  // defined(OS_WIN)
+#endif  // !defined(OS_WIN) && !defined(OS_MAC)
   std::vector<uint8_t> result = clipboard_test_util::ReadPng(clipboard);
   SkBitmap image;
   gfx::PNGCodec::Decode(result.data(), result.size(), &image);
@@ -650,9 +650,6 @@ TYPED_TEST(ClipboardTest, Bitmap_N32_Premul_2x7) {
   TestBitmapWrite(&this->clipboard(), SkImageInfo::MakeN32Premul(2, 7), b, b);
 }
 
-// TODO(crbug.com/1201018): Enable as support for each OS is added.
-#if defined(USE_X11) || defined(USE_OZONE) || defined(OS_WIN)
-
 // Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
@@ -692,7 +689,6 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
   TestBitmapWriteAndPngRead(&this->clipboard(),
                             SkImageInfo::MakeN32Premul(2, 7), b, b);
 }
-#endif  // defined(USE_X11) || defined(USE_OZONE) || defined (OS_WIN)
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace
