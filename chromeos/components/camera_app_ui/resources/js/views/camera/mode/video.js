@@ -388,7 +388,7 @@ export class Video extends ModeBase {
       throw new CanceledError('Recording sound is canceled');
     }
 
-    if (this.captureStream_ !== null) {
+    if (this.captureStream_ === null) {
       this.captureStream_ = await StreamManager.getInstance().openCaptureStream(
           this.captureConstraints_);
     }
