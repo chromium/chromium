@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -39,6 +40,21 @@ std::ostream& operator<<(std::ostream& os, const ServiceKey& key) {
             << ", " << std::get<2>(key) << "}";
 }
 
+template <typename T>
+struct ServiceTraits {};
+
+template <>
+struct ServiceTraits<media::mojom::CdmService> {
+  using BrokerType = media::mojom::CdmServiceBroker;
+};
+
+#if defined(OS_WIN)
+template <>
+struct ServiceTraits<media::mojom::MediaFoundationService> {
+  using BrokerType = media::mojom::MediaFoundationServiceBroker;
+};
+#endif  // defined(OS_WIN)
+
 // A map hosts all service remotes, each of which corresponds to one service
 // process. There should be only one instance of this class stored in
 // base::SequenceLocalStorageSlot. See below.
@@ -58,7 +74,12 @@ class ServiceMap {
   }
 
  private:
-  std::map<ServiceKey, mojo::Remote<T>> remotes_;
+  using BrokerType = typename ServiceTraits<T>::BrokerType;
+
+  // Keep the broker remote to keep the process alive. Keep the service remote
+  // for reuse and for monitoring idle state (see below).
+  std::map<ServiceKey, std::pair<mojo::Remote<BrokerType>, mojo::Remote<T>>>
+      remotes_;
 };
 
 template <typename T>
@@ -84,7 +105,12 @@ template <typename T>
 T& GetService(const base::Token& guid,
               BrowserContext* browser_context,
               const GURL& site,
-              const std::string& service_name) {
+              const std::string& service_name,
+#if defined(OS_MAC)
+              mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
+                  token_provider,
+#endif  // defined(OS_MAC)
+              const base::FilePath& cdm_path) {
   ServiceKey key;
   std::string display_name = service_name;
 
@@ -100,12 +126,21 @@ T& GetService(const base::Token& guid,
   }
   DVLOG(2) << __func__ << ": key=" << key;
 
-  auto& remote = GetServiceMap<T>().GetOrCreateRemote(key);
+  auto& broker_service_pair = GetServiceMap<T>().GetOrCreateRemote(key);
+  auto& broker_remote = broker_service_pair.first;
+  auto& remote = broker_service_pair.second;
   if (!remote) {
     ServiceProcessHost::Options options;
     options.WithDisplayName(display_name);
-    ServiceProcessHost::Launch(remote.BindNewPipeAndPassReceiver(),
+    ServiceProcessHost::Launch(broker_remote.BindNewPipeAndPassReceiver(),
                                options.Pass());
+    broker_remote->GetService(cdm_path,
+#if defined(OS_MAC)
+                              std::move(token_provider),
+#endif
+                              remote.BindNewPipeAndPassReceiver());
+    // The idle handler must be set on the `remote` because the `broker_remote`
+    // will never idle when the `remote` is bound.
     remote.set_disconnect_handler(base::BindOnce(&EraseCdmService<T>, key));
     remote.set_idle_handler(kServiceIdleTimeout,
                             base::BindRepeating(EraseCdmService<T>, key));
@@ -116,20 +151,31 @@ T& GetService(const base::Token& guid,
 
 }  // namespace
 
-media::mojom::CdmService& GetCdmService(const base::Token& guid,
-                                        BrowserContext* browser_context,
-                                        const GURL& site,
-                                        const CdmInfo& cdm_info) {
+media::mojom::CdmService& GetCdmService(
+    const base::Token& guid,
+    BrowserContext* browser_context,
+    const GURL& site,
+#if defined(OS_MAC)
+    mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
+        token_provider,
+#endif  // defined(OS_MAC)
+    const CdmInfo& cdm_info) {
   return GetService<media::mojom::CdmService>(guid, browser_context, site,
-                                              cdm_info.name);
+                                              cdm_info.name,
+#if defined(OS_MAC)
+                                              std::move(token_provider),
+#endif
+                                              cdm_info.path);
 }
 
 #if defined(OS_WIN)
 media::mojom::MediaFoundationService& GetMediaFoundationService(
     BrowserContext* browser_context,
-    const GURL& site) {
+    const GURL& site,
+    const base::FilePath& cdm_path) {
   return GetService<media::mojom::MediaFoundationService>(
-      base::Token(), browser_context, site, "Media Foundation Service");
+      base::Token(), browser_context, site, "Media Foundation Service",
+      cdm_path);
 }
 #endif  // defined(OS_WIN)
 

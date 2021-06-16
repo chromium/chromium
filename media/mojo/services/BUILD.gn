@@ -123,6 +123,8 @@ component("services") {
     sources += [
       "cdm_service.cc",
       "cdm_service.h",
+      "cdm_service_broker.cc",
+      "cdm_service_broker.h",
     ]
 
     # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
@@ -157,6 +159,8 @@ component("services") {
       "media_foundation_renderer_wrapper.h",
       "media_foundation_service.cc",
       "media_foundation_service.h",
+      "media_foundation_service_broker.cc",
+      "media_foundation_service_broker.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
   }
@@ -204,6 +208,7 @@ source_set("unit_tests") {
 
   if (enable_library_cdms) {
     sources += [
+      "cdm_service_broker_unittest.cc",
       "cdm_service_unittest.cc",
       "mojo_cdm_allocator_unittest.cc",
       "mojo_cdm_file_io_unittest.cc",

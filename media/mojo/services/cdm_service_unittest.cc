@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/services/cdm_service.h"
+
 #include <memory>
 
 #include "base/bind.h"
@@ -13,7 +15,6 @@
 #include "media/base/mock_filters.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/services/cdm_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -173,24 +174,6 @@ class CdmServiceTest : public testing::Test {
 };
 
 }  // namespace
-
-TEST_F(CdmServiceTest, LoadCdm) {
-  Initialize();
-
-  // Even with a dummy path where the CDM cannot be loaded, EnsureSandboxed()
-  // should still be called to ensure the process is sandboxed.
-  EXPECT_CALL(*mock_cdm_service_client(), EnsureSandboxed());
-
-  base::FilePath cdm_path(FILE_PATH_LITERAL("dummy path"));
-#if defined(OS_MAC)
-  // Token provider will not be used since the path is a dummy path.
-  cdm_service_remote_->LoadCdm(cdm_path, mojo::NullRemote());
-#else
-  cdm_service_remote_->LoadCdm(cdm_path);
-#endif
-
-  cdm_service_remote_.FlushForTesting();
-}
 
 TEST_F(CdmServiceTest, InitializeCdm_Success) {
   Initialize();

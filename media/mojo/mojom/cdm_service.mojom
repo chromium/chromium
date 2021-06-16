@@ -17,24 +17,11 @@ import "sandbox/mac/mojom/seatbelt_extension_token.mojom";
 // runs in the CDM (utility) process. The service is always connected from the
 // browser process.
 interface CdmService {
-  // Loads the CDM at |cdm_path| into the process. Must be called before
-  // CreateCdmFactory(). Since the client will not know whether LoadCdm() has
-  // been called by a previous CdmService instance, the client should always
-  // call it after service connection. If the CDM is already loaded, this will
-  // be a no-op.
-  // |token_provider| can be used to get a sandbox seatbelt extension token
-  // synchronously so that the CdmService instance can load the CDM and other
-  // needed files within the Mac sandbox.
-  LoadCdm(mojo_base.mojom.FilePath cdm_path,
-          [EnableIf=is_mac]
-          pending_remote<SeatbeltExtensionTokenProvider>? token_provider);
-
-  // Requests an CdmFactory. |frame_interfaces| can optionally be used to
+  // Requests an CdmFactory. `frame_interfaces` can optionally be used to
   // provide interfaces hosted by the caller to the remote CdmFactory
   // implementation.
-  CreateCdmFactory(
-      pending_receiver<CdmFactory> factory,
-      pending_remote<FrameInterfaceFactory> frame_interfaces);
+  CreateCdmFactory(pending_receiver<CdmFactory> factory,
+                   pending_remote<FrameInterfaceFactory> frame_interfaces);
 };
 
 // An interface to provide a sandbox seatbelt extension token synchronously.
@@ -42,4 +29,26 @@ interface CdmService {
 interface SeatbeltExtensionTokenProvider {
   [Sync]
   GetTokens() => (array<sandbox.mac.mojom.SeatbeltExtensionToken> tokens);
+};
+
+// A broker service to get the `CdmService`, needed to pass necessary parameters
+// to preload the CDM before creating the `CdmService`. The `CdmServiceBroker`
+// runs in the CDM (utility) process and is connected from the browser process
+// (see content/browser/media/service_factory.cc). In the process there should
+// only be one `CdmServiceBroker` and one `CdmService` instance running. As such
+// the `GetService()` should only be called once and the subsequent calls will
+// simply fail.
+//
+// Notes on CDM preloading and sandbox:
+// - On Windows, when `CdmServiceBroker` is connected the CDM was not sandboxed
+// to allow CDM preloading. After `GetService()` the process is fully sandboxed.
+// - On Mac, the process is fully sandboxed when launched, and `token_provider`
+// is needed to help load the CDM in the process.
+// - On Linux/ChromeOS, the CDM is preloaded in the zygote sandbox.
+interface CdmServiceBroker {
+  // Loads the CDM at `cdm_path` into the process and returns the `CdmService`.
+  GetService(mojo_base.mojom.FilePath cdm_path,
+             [EnableIf=is_mac]
+             pending_remote<SeatbeltExtensionTokenProvider>? token_provider,
+             pending_receiver<CdmService> receiver);
 };

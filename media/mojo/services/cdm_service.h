@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
@@ -52,6 +51,8 @@ class MEDIA_MOJO_EXPORT CdmService final : public mojom::CdmService {
 
   CdmService(std::unique_ptr<Client> client,
              mojo::PendingReceiver<mojom::CdmService> receiver);
+  CdmService(const CdmService&) = delete;
+  CdmService operator=(const CdmService&) = delete;
   ~CdmService() final;
 
   size_t BoundCdmFactorySizeForTesting() const {
@@ -62,25 +63,16 @@ class MEDIA_MOJO_EXPORT CdmService final : public mojom::CdmService {
     return cdm_factory_receivers_.unbound_size();
   }
 
- private:
-// mojom::CdmService implementation.
-#if defined(OS_MAC)
-  void LoadCdm(const base::FilePath& cdm_path,
-               mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider>
-                   token_provider) final;
-#else
-  void LoadCdm(const base::FilePath& cdm_path) final;
-#endif  // defined(OS_MAC)
+  // mojom::CdmService implementation.
   void CreateCdmFactory(
       mojo::PendingReceiver<mojom::CdmFactory> receiver,
       mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces) final;
 
+ private:
   mojo::Receiver<mojom::CdmService> receiver_;
   std::unique_ptr<Client> client_;
   std::unique_ptr<CdmFactory> cdm_factory_;
   DeferredDestroyUniqueReceiverSet<mojom::CdmFactory> cdm_factory_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmService);
 };
 
 }  // namespace media

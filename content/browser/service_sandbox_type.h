@@ -71,28 +71,28 @@ content::GetServiceSandboxType<device::mojom::XRDeviceService>() {
 #endif  // !OS_WIN
 }
 
-// media::mojom::CdmService
+// media::mojom::CdmServiceBroker
 namespace media {
 namespace mojom {
-class CdmService;
+class CdmServiceBroker;
 }
 }  // namespace media
 template <>
 inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<media::mojom::CdmService>() {
+content::GetServiceSandboxType<media::mojom::CdmServiceBroker>() {
   return sandbox::policy::SandboxType::kCdm;
 }
 
 #if defined(OS_WIN)
-// media::mojom::MediaFoundationService
+// media::mojom::MediaFoundationServiceBroker
 namespace media {
 namespace mojom {
-class MediaFoundationService;
+class MediaFoundationServiceBroker;
 }
 }  // namespace media
 template <>
 inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<media::mojom::MediaFoundationService>() {
+content::GetServiceSandboxType<media::mojom::MediaFoundationServiceBroker>() {
   return sandbox::policy::SandboxType::kMediaFoundationCdm;
 }
 #endif  // defined(OS_WIN)

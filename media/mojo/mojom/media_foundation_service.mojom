@@ -10,26 +10,37 @@ import "media/mojo/mojom/key_system_support.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
 // A service to provide Windows MediaFoundation-based InterfaceFactory and
-// KeySystemCapability. The service runs in the MediaFoundationService process,
-// which is a specialized utility process with SandboxType::kMediaFoundationCdm.
-// The process is not sandboxed after launch. `Initialize()` must be called to
-// preload the CDM if needed, after which the sandbox will be sealed. The
-// service is always connected from the browser process. The remote
-// `InterfaceFactory` lives in the renderer process.
+// KeySystemCapability. See comments on MediaFoundationServiceBroker for the
+// process/sandbox model.
 interface MediaFoundationService {
-  // Must be called immediately after the `MediaFoundationService` is connected,
-  // before any other method can be called. Must seal the sandbox before return.
-  // If `cdm_path` is not empty, preloads the CDM into the process.
-  Initialize(mojo_base.mojom.FilePath cdm_path);
-
-  // Queries the capabilities of the MediaFoundation-based CDM.
+  // Queries the capabilities of the MediaFoundation-based CDM. The client lives
+  // in the browser process.
   IsKeySystemSupported(string key_system)
     => (bool is_supported, KeySystemCapability? key_system_capability);
 
   // Requests an InterfaceFactory. `frame_interfaces` can optionally be used to
   // provide interfaces hosted by the caller to the remote InterfaceFactory
-  // implementation.
+  // implementation.  The remote `InterfaceFactory` lives in the render process
+  // to support media playback. The interface implementations provided by
+  // the `frame_interfaces` live in the browser process so they are trusted.
   CreateInterfaceFactory(
       pending_receiver<InterfaceFactory> factory,
       pending_remote<FrameInterfaceFactory> frame_interfaces);
+};
+
+// A broker service to get the `MediaFoundationService`, needed to pass
+// parameters to preload the CDM before creating the `MediaFoundationService`.
+// It runs in the MediaFoundationCdm (utility) process and is connected from the
+// browser process (see content/browser/media/service_factory.cc). In the
+// process there should only be one `MediaFoundationServiceBroker` and one
+// `MediaFoundationService` instance running. As such `GetService()` should only
+// be called once and the subsequent calls will simply fail. When
+// `MediaFoundationServiceBroker` is connected the process was not sandboxed to
+// allow CDM preloading. After `GetService()` the process is fully sandboxed.
+interface MediaFoundationServiceBroker {
+  // Loads the CDM at `cdm_path` into the process and returns the
+  // `MediaFoundationService`.
+  GetService(
+      mojo_base.mojom.FilePath cdm_path,
+      pending_receiver<MediaFoundationService> receiver);
 };

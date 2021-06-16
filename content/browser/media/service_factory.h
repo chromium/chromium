@@ -19,22 +19,28 @@ namespace content {
 
 class BrowserContext;
 
-// Gets an instance of the CdmService for the CDM `guid`, `browser_context` and
-// the `site`. Instances are started lazily as needed.
-media::mojom::CdmService& GetCdmService(const base::Token& guid,
-                                        BrowserContext* browser_context,
-                                        const GURL& site,
-                                        const CdmInfo& cdm_info);
+// Gets an instance of the CdmService for the `guid`, `browser_context` and
+// the `site`. Instances are started lazily as needed. The CDM located at
+// `cdm_path` is loaded in the sandboxed process to be used by the service.
+// On Mac, `token_provider` is needed for the loading of the CDM in the sandbox.
+media::mojom::CdmService& GetCdmService(
+    const base::Token& guid,
+    BrowserContext* browser_context,
+    const GURL& site,
+#if defined(OS_MAC)
+    mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
+        token_provider,
+#endif  // defined(OS_MAC)
+    const CdmInfo& cdm_info);
 
 #if defined(OS_WIN)
 // Gets an instance of the MediaFoundationService for the `browser_context` and
-// the `site`. Instances are started lazily as needed.
-// TODO(xhwang): Not separating MediaFoundationService by CDM `guid` because we
-// run both the CDM and media Renderer in the service, and when connecting to
-// media Renderer, we don't know which CDM `guid` to use.
+// the `site`. Instances are started lazily as needed. The CDM located at
+// `cdm_path` is loaded in the sandboxed process to be used by the service.
 media::mojom::MediaFoundationService& GetMediaFoundationService(
     BrowserContext* browser_context,
-    const GURL& site);
+    const GURL& site,
+    const base::FilePath& cdm_path);
 #endif  // defined(OS_WIN)
 
 }  // namespace content

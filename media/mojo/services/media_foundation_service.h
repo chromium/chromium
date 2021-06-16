@@ -29,14 +29,12 @@ class MEDIA_MOJO_EXPORT MediaFoundationService final
   // ensure the process is sandboxed.
   MediaFoundationService(
       mojo::PendingReceiver<mojom::MediaFoundationService> receiver,
-      const base::FilePath& user_data_dir,
-      base::OnceClosure ensure_sandboxed_cb);
+      const base::FilePath& user_data_dir);
   MediaFoundationService(const MediaFoundationService&) = delete;
   MediaFoundationService operator=(const MediaFoundationService&) = delete;
   ~MediaFoundationService() final;
 
   // mojom::MediaFoundationService implementation:
-  void Initialize(const base::FilePath& cdm_path) final;
   void IsKeySystemSupported(const std::string& key_system,
                             IsKeySystemSupportedCallback callback) final;
   void CreateInterfaceFactory(
@@ -45,7 +43,6 @@ class MEDIA_MOJO_EXPORT MediaFoundationService final
 
  private:
   mojo::Receiver<mojom::MediaFoundationService> receiver_;
-  base::OnceClosure ensure_sandboxed_cb_;
   MediaFoundationMojoMediaClient mojo_media_client_;
   mojo::UniqueReceiverSet<mojom::InterfaceFactory> interface_factory_receivers_;
 };

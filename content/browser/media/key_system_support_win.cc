@@ -53,8 +53,7 @@ void GetMediaFoundationServiceHardwareSecureCdmCapability(
   }
 
   // CDM capability is global, use a generic BrowserContext and Site to query.
-  auto& mf_service = GetMediaFoundationService(nullptr, GURL());
-  mf_service.Initialize(cdm_path);
+  auto& mf_service = GetMediaFoundationService(nullptr, GURL(), cdm_path);
   mf_service.IsKeySystemSupported(
       key_system,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(

@@ -487,10 +487,7 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
 
   auto& mf_service = GetMediaFoundationService(
       render_frame_host_->GetBrowserContext(),
-      render_frame_host_->GetSiteInstance()->GetSiteURL());
-
-  // Must always call Initialize() after connecting to service.
-  mf_service.Initialize(cdm_path);
+      render_frame_host_->GetSiteInstance()->GetSiteURL(), cdm_path);
 
   // Passing empty arguments to GetFrameServices() as MediaFoundation-based
   // CDMs don't use CdmStorage currently.
@@ -566,10 +563,6 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
 
   DCHECK(!cdm_factory_map_.count(cdm_guid));
 
-  auto* browser_context = render_frame_host_->GetBrowserContext();
-  auto& site = render_frame_host_->GetSiteInstance()->GetSiteURL();
-  auto& cdm_service = GetCdmService(cdm_guid, browser_context, site, cdm_info);
-
 #if defined(OS_MAC)
   // LoadCdm() should always be called before CreateInterfaceFactory().
   mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
@@ -577,11 +570,16 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SeatbeltExtensionTokenProviderImpl>(cdm_info.path),
       token_provider_remote.InitWithNewPipeAndPassReceiver());
-
-  cdm_service.LoadCdm(cdm_info.path, std::move(token_provider_remote));
-#else
-  cdm_service.LoadCdm(cdm_info.path);
 #endif  // defined(OS_MAC)
+
+  auto* browser_context = render_frame_host_->GetBrowserContext();
+  auto& site = render_frame_host_->GetSiteInstance()->GetSiteURL();
+
+  auto& cdm_service = GetCdmService(cdm_guid, browser_context, site,
+#if defined(OS_MAC)
+                                    std::move(token_provider_remote),
+#endif  // defined(OS_MAC)
+                                    cdm_info);
 
   mojo::Remote<media::mojom::CdmFactory> cdm_factory_remote;
   cdm_service.CreateCdmFactory(cdm_factory_remote.BindNewPipeAndPassReceiver(),

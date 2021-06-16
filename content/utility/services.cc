@@ -40,12 +40,13 @@
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#include "media/cdm/cdm_adapter_factory.h"          // nogncheck
-#include "media/mojo/mojom/cdm_service.mojom.h"     // nogncheck
+#include "media/cdm/cdm_adapter_factory.h"                   // nogncheck
+#include "media/mojo/mojom/cdm_service.mojom.h"              // nogncheck
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"  // nogncheck
-#include "media/mojo/services/cdm_service.h"        // nogncheck
-#include "media/mojo/services/mojo_cdm_helper.h"    // nogncheck
-#include "media/mojo/services/mojo_media_client.h"  // nogncheck
+#include "media/mojo/services/cdm_service.h"                 // nogncheck
+#include "media/mojo/services/cdm_service_broker.h"          // nogncheck
+#include "media/mojo/services/mojo_cdm_helper.h"             // nogncheck
+#include "media/mojo/services/mojo_media_client.h"           // nogncheck
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #include "media/cdm/cdm_host_file.h"
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
@@ -74,7 +75,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 
 #if defined(OS_WIN)
 #include "media/mojo/mojom/media_foundation_service.mojom.h"  // nogncheck
-#include "media/mojo/services/media_foundation_service.h"     // nogncheck
+#include "media/mojo/services/media_foundation_service_broker.h"  // nogncheck
 #endif  // defined(OS_WIN)
 
 namespace content {
@@ -215,8 +216,9 @@ auto RunShapeDetectionService(
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-auto RunCdmService(mojo::PendingReceiver<media::mojom::CdmService> receiver) {
-  return std::make_unique<media::CdmService>(
+auto RunCdmServiceBroker(
+    mojo::PendingReceiver<media::mojom::CdmServiceBroker> receiver) {
+  return std::make_unique<media::CdmServiceBroker>(
       std::make_unique<ContentCdmServiceClient>(), std::move(receiver));
 }
 #endif
@@ -229,15 +231,17 @@ auto RunDataDecoder(
 }
 
 #if defined(OS_WIN)
-std::unique_ptr<media::MediaFoundationService> RunMediaFoundationService(
-    mojo::PendingReceiver<media::mojom::MediaFoundationService> receiver) {
+std::unique_ptr<media::MediaFoundationServiceBroker>
+RunMediaFoundationServiceBroker(
+    mojo::PendingReceiver<media::mojom::MediaFoundationServiceBroker>
+        receiver) {
   base::FilePath user_data;
   if (!GetContentClient()->utility()->GetDefaultUserDataDirectory(&user_data)) {
     receiver.ResetWithReason(0, "Cannot get user data directory!");
     return nullptr;
   }
 
-  return std::make_unique<media::MediaFoundationService>(
+  return std::make_unique<media::MediaFoundationServiceBroker>(
       std::move(receiver), user_data, base::BindOnce(&EnsureSandboxedWin));
 }
 #endif  // defined(OS_WIN)
@@ -292,11 +296,11 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  services.Add(RunCdmService);
+  services.Add(RunCdmServiceBroker);
 #endif
 
 #if defined(OS_WIN)
-  services.Add(RunMediaFoundationService);
+  services.Add(RunMediaFoundationServiceBroker);
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)

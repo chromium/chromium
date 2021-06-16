@@ -10,17 +10,10 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_factory.h"
-#include "media/cdm/cdm_module.h"
-#include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_cdm_service.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-
-#if defined(OS_MAC)
-#include <vector>
-#include "sandbox/mac/seatbelt_extension.h"
-#endif  // defined(OS_MAC)
 
 namespace media {
 
@@ -56,6 +49,8 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
         &CdmFactoryImpl::OnReceiverDisconnect, base::Unretained(this)));
   }
 
+  CdmFactoryImpl(const CdmFactoryImpl&) = delete;
+  CdmFactoryImpl operator=(const CdmFactoryImpl&) = delete;
   ~CdmFactoryImpl() final { DVLOG(1) << __func__; }
 
   // mojom::CdmFactory implementation.
@@ -146,8 +141,6 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CdmFactoryImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CdmFactoryImpl);
 };
 
 }  // namespace
@@ -161,67 +154,6 @@ CdmService::CdmService(std::unique_ptr<Client> client,
 
 CdmService::~CdmService() {
   DVLOG(1) << __func__;
-}
-
-#if defined(OS_MAC)
-void CdmService::LoadCdm(
-    const base::FilePath& cdm_path,
-    mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider) {
-#else
-void CdmService::LoadCdm(const base::FilePath& cdm_path) {
-#endif  // defined(OS_MAC)
-  DVLOG(1) << __func__ << ": cdm_path = " << cdm_path.value();
-
-  // Ignore request if service has already stopped.
-  if (!client_)
-    return;
-
-  CdmModule* instance = CdmModule::GetInstance();
-  if (instance->was_initialize_called()) {
-    DCHECK_EQ(cdm_path, instance->GetCdmPath());
-    return;
-  }
-
-#if defined(OS_MAC)
-  std::vector<std::unique_ptr<sandbox::SeatbeltExtension>> extensions;
-
-  if (token_provider) {
-    std::vector<sandbox::SeatbeltExtensionToken> tokens;
-    CHECK(mojo::Remote<mojom::SeatbeltExtensionTokenProvider>(
-              std::move(token_provider))
-              ->GetTokens(&tokens));
-
-    for (auto&& token : tokens) {
-      DVLOG(3) << "token: " << token.token();
-      auto extension = sandbox::SeatbeltExtension::FromToken(std::move(token));
-      if (!extension->Consume()) {
-        DVLOG(1) << "Failed to consume sandbox seatbelt extension. This could "
-                    "happen if --no-sandbox is specified.";
-      }
-      extensions.push_back(std::move(extension));
-    }
-  }
-#endif  // defined(OS_MAC)
-
-#if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
-  std::vector<CdmHostFilePath> cdm_host_file_paths;
-  client_->AddCdmHostFilePaths(&cdm_host_file_paths);
-  bool success = instance->Initialize(cdm_path, cdm_host_file_paths);
-#else
-  bool success = instance->Initialize(cdm_path);
-#endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
-
-  // This may trigger the sandbox to be sealed.
-  client_->EnsureSandboxed();
-
-#if defined(OS_MAC)
-  for (auto&& extension : extensions)
-    extension->Revoke();
-#endif  // defined(OS_MAC)
-
-  // Always called within the sandbox.
-  if (success)
-    instance->InitializeCdmModule();
 }
 
 void CdmService::CreateCdmFactory(
