@@ -153,7 +153,7 @@ void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
   }
 
   EXPECT_TRUE(
-      WaitUntilConditionOrTimeout(kWaitForClearBrowsingDataTimeout, ^{
+      WaitUntilConditionOrTimeout(kWaitForClearBrowsingDataTimeout * 2, ^{
         return data_removed;
       }));
 }
