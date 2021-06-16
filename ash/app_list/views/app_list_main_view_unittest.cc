@@ -19,7 +19,9 @@
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -34,7 +36,8 @@ namespace {
 
 const int kInitialItems = 2;
 
-class AppListMainViewTest : public views::ViewsTestBase {
+class AppListMainViewTest : public views::ViewsTestBase,
+                            public testing::WithParamInterface<bool> {
  public:
   AppListMainViewTest() = default;
   AppListMainViewTest(const AppListMainViewTest& other) = delete;
@@ -45,6 +48,8 @@ class AppListMainViewTest : public views::ViewsTestBase {
   void SetUp() override {
     AppListView::SetShortAnimationForTesting(true);
     views::ViewsTestBase::SetUp();
+    feature_list.InitWithFeatureState(app_list_features::kNewDragSpecInLauncher,
+                                      GetParam());
 
     // Create, and show the app list is fullscreen apps grid state.
     delegate_ = std::make_unique<AppListTestViewDelegate>();
@@ -213,16 +218,23 @@ class AppListMainViewTest : public views::ViewsTestBase {
     return dragged;
   }
 
+  bool IsPaginationPreviewActive() { return GetParam(); }
+
  protected:
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
+
+ private:
+  base::test::ScopedFeatureList feature_list;
 };
+
+INSTANTIATE_TEST_SUITE_P(All, AppListMainViewTest, testing::Bool());
 
 }  // namespace
 
 // Tests changing the AppListModel when switching profiles.
-TEST_F(AppListMainViewTest, ModelChanged) {
+TEST_P(AppListMainViewTest, ModelChanged) {
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   EXPECT_EQ(kInitialItems, GetRootViewModel()->view_size());
 
@@ -240,7 +252,7 @@ TEST_F(AppListMainViewTest, ModelChanged) {
 
 // Tests dragging an item out of a single item folder and drop it at the last
 // slot.
-TEST_F(AppListMainViewTest, DragLastItemFromFolderAndDropAtLastSlot) {
+TEST_P(AppListMainViewTest, DragLastItemFromFolderAndDropAtLastSlot) {
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   const gfx::Rect first_slot_tile = folder_item_view->bounds();
 
@@ -287,7 +299,10 @@ TEST_F(AppListMainViewTest, DragLastItemFromFolderAndDropAtLastSlot) {
 
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
-TEST_F(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
+TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
+  // TODO(anasalazar): Fix for cardified state
+  if (IsPaginationPreviewActive())
+    return;
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   ASSERT_TRUE(folder_item_view);
 
@@ -319,7 +334,7 @@ TEST_F(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
 // Test that an interrupted drag while reparenting an item from a folder, when
 // canceled via the root grid, correctly forwards the cancelation to the drag
 // ocurring from the folder.
-TEST_F(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
+TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
   CreateAndOpenSingleItemFolder();
   AppListItemView* dragged = StartDragForReparent(0);
 
@@ -342,7 +357,10 @@ TEST_F(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
 // Test that dragging an app out of a single item folder and reparenting it
 // back into its original folder results in a cancelled reparent. This is a
 // regression test for http://crbug.com/429083.
-TEST_F(AppListMainViewTest, ReparentSingleItemOntoSelf) {
+TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
+  // TODO(anasalazar): Fix for cardified state
+  if (IsPaginationPreviewActive())
+    return;
   // Add a folder with 1 item.
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   std::string folder_id = folder_item_view->item()->id();
