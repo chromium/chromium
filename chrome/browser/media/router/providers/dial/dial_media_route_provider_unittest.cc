@@ -4,6 +4,9 @@
 
 #include "chrome/browser/media/router/providers/dial/dial_media_route_provider.h"
 
+#include <map>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -27,6 +30,7 @@
 using media_router::mojom::RouteMessagePtr;
 using ::testing::_;
 using ::testing::IsEmpty;
+using ::testing::NiceMock;
 using ::testing::SaveArg;
 
 namespace media_router {
@@ -411,7 +415,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   network::TestURLLoaderFactory loader_factory_;
 
   mojo::Remote<mojom::MediaRouteProvider> provider_remote_;
-  MockMojoMediaRouter mock_router_;
+  NiceMock<MockMojoMediaRouter> mock_router_;
   std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
 
   TestDialMediaSinkServiceImpl mock_sink_service_;
