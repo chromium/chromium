@@ -11,12 +11,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
@@ -35,9 +33,6 @@ public class MerchantTrustSignalsCoordinator {
     private final MerchantTrustMessageScheduler mMessageScheduler;
     private final MerchantTrustBottomSheetCoordinator mDetailsTabCoordinator;
     private final Context mContext;
-    private final WindowAndroid mWindowAndroid;
-    private final BottomSheetController mBottomSheetController;
-    private final View mLayoutView;
     private final MerchantTrustMetrics mMetrics;
     private final MerchantTrustSignalsDataProvider mDataProvider;
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
@@ -45,34 +40,26 @@ public class MerchantTrustSignalsCoordinator {
     /** Creates a new instance. */
     public MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController, View layoutView,
-            TabModelSelector tabModelSelector, MessageDispatcher messageDispatcher,
-            Supplier<Tab> tabSupplier, ObservableSupplier<Profile> profileSupplier,
-            MerchantTrustMetrics metrics) {
-        this(context, windowAndroid, bottomSheetController, layoutView, tabModelSelector,
-                new MerchantTrustMessageScheduler(messageDispatcher, metrics), tabSupplier,
+            MessageDispatcher messageDispatcher, ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics) {
+        this(context, new MerchantTrustMessageScheduler(messageDispatcher, metrics), tabSupplier,
                 new MerchantTrustSignalsDataProvider(), metrics,
                 new MerchantTrustBottomSheetCoordinator(context, windowAndroid,
                         bottomSheetController, tabSupplier, layoutView, metrics),
-                profileSupplier, new MerchantTrustSignalsStorageFactory(profileSupplier));
+                new MerchantTrustSignalsStorageFactory(profileSupplier));
     }
 
     @VisibleForTesting
-    MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
-            BottomSheetController bottomSheetController, View layoutView,
-            TabModelSelector tabModelSelector, MerchantTrustMessageScheduler messageScheduler,
-            Supplier<Tab> tabSupplier, MerchantTrustSignalsDataProvider dataProvider,
+    MerchantTrustSignalsCoordinator(Context context, MerchantTrustMessageScheduler messageScheduler,
+            ObservableSupplier<Tab> tabSupplier, MerchantTrustSignalsDataProvider dataProvider,
             MerchantTrustMetrics metrics, MerchantTrustBottomSheetCoordinator detailsTabCoordinator,
-            ObservableSupplier<Profile> profileSupplier,
             MerchantTrustSignalsStorageFactory storageFactory) {
         mContext = context;
-        mWindowAndroid = windowAndroid;
-        mBottomSheetController = bottomSheetController;
-        mLayoutView = layoutView;
         mDataProvider = dataProvider;
         mMetrics = metrics;
         mStorageFactory = storageFactory;
 
-        mMediator = new MerchantTrustSignalsMediator(tabModelSelector, this::maybeDisplayMessage);
+        mMediator = new MerchantTrustSignalsMediator(tabSupplier, this::maybeDisplayMessage);
         mMessageScheduler = messageScheduler;
         mDetailsTabCoordinator = detailsTabCoordinator;
     }

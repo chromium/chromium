@@ -431,7 +431,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mMerchantTrustSignalsCoordinator = new MerchantTrustSignalsCoordinator(mActivity,
                 mActivity.getWindowAndroid(), getBottomSheetController(),
-                mActivity.getWindow().getDecorView(), mActivity.getTabModelSelector(),
+                mActivity.getWindow().getDecorView(),
                 MessageDispatcherProvider.from(mActivity.getWindowAndroid()),
                 mActivity.getActivityTabProvider(), mProfileSupplier, new MerchantTrustMetrics());
     }

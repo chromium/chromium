@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -36,7 +35,6 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -44,13 +42,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -96,13 +92,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     private Context mMockContext;
 
     @Mock
-    private BottomSheetController mMockBottomSheetController;
-
-    @Mock
-    private View mMockDecorView;
-
-    @Mock
-    private Supplier<Tab> mMockTabProvider;
+    private ObservableSupplier<Tab> mMockTabProvider;
 
     @Mock
     private WindowAndroid mMockWindowAndroid;
@@ -139,9 +129,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @Captor
     private ArgumentCaptor<Callback> mOnMessageEnqueuedCallbackCaptor;
-
-    @Mock
-    private ObservableSupplier<Profile> mMockProfileSupplier;
 
     @Mock
     private NavigationHandle mNavigationHandle;
@@ -420,10 +407,8 @@ public class MerchantTrustSignalsCoordinatorTest {
     }
 
     private MerchantTrustSignalsCoordinator getCoordinatorUnderTest() {
-        return new MerchantTrustSignalsCoordinator(mMockContext, mMockWindowAndroid,
-                mMockBottomSheetController, mMockDecorView, mMockTabModelSelector,
-                mMockMerchantMessageScheduler, mMockTabProvider, mMockMerchantTrustDataProvider,
-                mMockMetrics, mMockDetailsTabCoordinator, mMockProfileSupplier,
-                mMockMerchantTrustStorageFactory);
+        return new MerchantTrustSignalsCoordinator(mMockContext, mMockMerchantMessageScheduler,
+                mMockTabProvider, mMockMerchantTrustDataProvider, mMockMetrics,
+                mMockDetailsTabCoordinator, mMockMerchantTrustStorageFactory);
     }
 }

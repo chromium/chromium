@@ -5,13 +5,12 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,18 +22,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Tests for {@link MerchantTrustSignalsMediator}.
@@ -49,19 +46,10 @@ public class MerchantTrustSignalsMediatorTest {
     private MerchantTrustSignalsMediator.MerchantTrustSignalsCallback mMockDelegate;
 
     @Mock
-    private TabModelSelector mMockTabModelSelector;
+    private TabImpl mMockTab;
 
     @Mock
-    private TabModelObserver mMockTabModelObserver;
-
-    @Mock
-    private TabModelFilterProvider mTabModelFilterProvider;
-
-    @Mock
-    private TabImpl mMockPrimaryTab;
-
-    @Mock
-    private TabImpl mMockSecondaryTab;
+    private ObservableSupplier<Tab> mMockTabProvider;
 
     @Mock
     private WebContents mMockWebContents;
@@ -69,162 +57,92 @@ public class MerchantTrustSignalsMediatorTest {
     @Mock
     private NavigationHandle mMockNavigationHandle;
 
-    @Captor
-    private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Mock
+    private GURL mMockUrl;
 
     @Captor
-    private ArgumentCaptor<WebContentsObserver> mWebContentsObserver;
+    private ArgumentCaptor<Callback<Tab>> mTabSupplierCallbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+
+    private MerchantTrustSignalsMediator mMediator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        doReturn(mTabModelFilterProvider).when(mMockTabModelSelector).getTabModelFilterProvider();
-        doReturn(100).when(mMockPrimaryTab).getId();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mMockPrimaryTab).getUrl();
-        doReturn(mMockWebContents).when(mMockPrimaryTab).getWebContents();
-
-        doReturn(200).when(mMockSecondaryTab).getId();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2)).when(mMockSecondaryTab).getUrl();
-        doReturn(mMockWebContents).when(mMockSecondaryTab).getWebContents();
-    }
-
-    @Test
-    public void testObserversSetup() {
-        getMediatorUnderTest(mMockPrimaryTab);
-    }
-
-    @Test
-    public void testWebContentsUpdated() {
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(mMockPrimaryTab);
-
-        // Select another tab.
-        mTabModelObserverCaptor.getValue().didSelectTab(
-                mMockSecondaryTab, TabSelectionType.FROM_USER, 100);
-
-        verify(mMockWebContents, times(1)).removeObserver(eq(mWebContentsObserver.getValue()));
-        verify(mMockWebContents, times(2)).addObserver(mWebContentsObserver.capture());
-    }
-
-    @Test
-    public void testDestroyCleanup() {
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(mMockPrimaryTab);
-
-        mediator.destroy();
-        verify(mTabModelFilterProvider, times(1))
-                .removeTabModelFilterObserver(eq(mTabModelObserverCaptor.getValue()));
-    }
-
-    @Test
-    public void testWebContentsNavigation() {
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(mMockPrimaryTab);
-        GURL gurl = mock(GURL.class);
-
+        doReturn(mMockWebContents).when(mMockTab).getWebContents();
+        doReturn(false).when(mMockTab).isIncognito();
         doReturn(true).when(mMockNavigationHandle).hasCommitted();
         doReturn(true).when(mMockNavigationHandle).isInMainFrame();
         doReturn(false).when(mMockNavigationHandle).isSameDocument();
+        doReturn(mMockUrl).when(mMockNavigationHandle).getUrl();
+        doReturn("fake_host").when(mMockUrl).getHost();
 
-        doReturn("fake_host").when(gurl).getHost();
-        doReturn(gurl).when(mMockNavigationHandle).getUrl();
+        createMediatorAndVerify();
+    }
 
-        mWebContentsObserver.getValue().didFinishNavigation(mMockNavigationHandle);
+    @After
+    public void tearDown() {
+        destroyAndVerify();
+    }
 
+    private void createMediatorAndVerify() {
+        mMediator = new MerchantTrustSignalsMediator(mMockTabProvider, mMockDelegate);
+        verify(mMockTabProvider, times(1)).addObserver(mTabSupplierCallbackCaptor.capture());
+        mTabSupplierCallbackCaptor.getValue().onResult(mMockTab);
+        verify(mMockTab, times(1)).addObserver(mTabObserverCaptor.capture());
+    }
+
+    private void destroyAndVerify() {
+        mMediator.destroy();
+        verify(mMockTab, times(1)).removeObserver(mTabObserverCaptor.getValue());
+        verify(mMockTabProvider, times(1)).removeObserver(mTabSupplierCallbackCaptor.getValue());
+    }
+
+    @Test
+    public void testTabObserverOnDidFinishNavigation() {
+        mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, times(1)).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
     }
 
     @Test
-    public void testWebContentsNavigationNonCommit() {
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(mMockPrimaryTab);
-        GURL gurl = mock(GURL.class);
+    public void testTabObserverOnDidFinishNavigation_IncognitoTab() {
+        doReturn(true).when(mMockTab).isIncognito();
 
+        mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
+        verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
+    }
+
+    @Test
+    public void testTabObserverOnDidFinishNavigation_NavigationNonCommit() {
         doReturn(false).when(mMockNavigationHandle).hasCommitted();
-        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
-        doReturn(false).when(mMockNavigationHandle).isSameDocument();
 
-        doReturn("fake_host").when(gurl).getHost();
-        doReturn(gurl).when(mMockNavigationHandle).getUrl();
-
-        mWebContentsObserver.getValue().didFinishNavigation(mMockNavigationHandle);
-
+        mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
     }
 
     @Test
-    public void testWebContentsNavigationNonMainFrame() {
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(mMockPrimaryTab);
-        GURL gurl = mock(GURL.class);
-
-        doReturn(true).when(mMockNavigationHandle).hasCommitted();
+    public void testTabObserverOnDidFinishNavigation_NonMainFrame() {
         doReturn(false).when(mMockNavigationHandle).isInMainFrame();
-        doReturn(false).when(mMockNavigationHandle).isSameDocument();
 
-        doReturn("fake_host").when(gurl).getHost();
-        doReturn(gurl).when(mMockNavigationHandle).getUrl();
-
-        mWebContentsObserver.getValue().didFinishNavigation(mMockNavigationHandle);
-
+        mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
     }
 
     @Test
-    public void testWebContentsNavigationSameDoc() {
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(mMockPrimaryTab);
-        GURL gurl = mock(GURL.class);
-
-        doReturn(true).when(mMockNavigationHandle).hasCommitted();
-        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
+    public void testTabObserverOnDidFinishNavigation_SameDoc() {
         doReturn(true).when(mMockNavigationHandle).isSameDocument();
 
-        doReturn("fake_host").when(gurl).getHost();
-        doReturn(gurl).when(mMockNavigationHandle).getUrl();
-
-        mWebContentsObserver.getValue().didFinishNavigation(mMockNavigationHandle);
-
+        mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
     }
 
     @Test
-    public void testWebContentsNavigationMissingHost() {
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(mMockPrimaryTab);
-        GURL gurl = mock(GURL.class);
+    public void testTabObserverOnDidFinishNavigation_MissingHost() {
+        doReturn(null).when(mMockUrl).getHost();
 
-        doReturn(true).when(mMockNavigationHandle).hasCommitted();
-        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
-        doReturn(false).when(mMockNavigationHandle).isSameDocument();
-
-        doReturn(null).when(gurl).getHost();
-        doReturn(gurl).when(mMockNavigationHandle).getUrl();
-
-        mWebContentsObserver.getValue().didFinishNavigation(mMockNavigationHandle);
-
+        mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
-    }
-
-    @Test
-    public void testInitialTabSelection() {
-        doReturn(mMockPrimaryTab).when(mMockTabModelSelector).getCurrentTab();
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(null);
-        verify(mMockWebContents, times(1)).addObserver(mWebContentsObserver.capture());
-    }
-
-    @Test
-    public void testInitialTabEmpty() {
-        doReturn(null).when(mMockTabModelSelector).getCurrentTab();
-        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(null);
-        verify(mMockWebContents, never()).addObserver(mWebContentsObserver.capture());
-    }
-
-    private MerchantTrustSignalsMediator getMediatorUnderTest(TabImpl tabToSelect) {
-        MerchantTrustSignalsMediator mediator =
-                new MerchantTrustSignalsMediator(mMockTabModelSelector, mMockDelegate);
-        verify(mTabModelFilterProvider, times(1))
-                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
-
-        if (tabToSelect != null) {
-            mTabModelObserverCaptor.getValue().didSelectTab(
-                    mMockPrimaryTab, TabSelectionType.FROM_USER, 0);
-            verify(mMockWebContents, times(1)).addObserver(mWebContentsObserver.capture());
-        }
-
-        return mediator;
     }
 }
