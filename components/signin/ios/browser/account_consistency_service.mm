@@ -213,23 +213,17 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     return;
   }
 
-  // If the user has been prompted to enter their credentials on a Gaia sign-on
-  // page show the account consistency promo.
-  NSString* x_autologin_header = [[http_response allHeaderFields]
-      objectForKey:[NSString stringWithUTF8String:signin::kAutoLoginHeader]];
-  if (signin::IsMICEWebSignInEnabled() && x_autologin_header) {
-    show_consistency_promo_ = true;
-    // Allows the URL response to load before showing the consistency promo.
-    // The promo should always be displayed in the foreground of Gaia
-    // sign-on.
-    std::move(callback).Run(PolicyDecision::Allow());
-    return;
-  }
-
   NSString* manage_accounts_header = [[http_response allHeaderFields]
       objectForKey:
           [NSString stringWithUTF8String:signin::kChromeManageAccountsHeader]];
   if (!manage_accounts_header) {
+    // Header that detects whether a user has been prompted to enter their
+    // credentials on a Gaia sign-on page.
+    NSString* x_autologin_header = [[http_response allHeaderFields]
+        objectForKey:[NSString stringWithUTF8String:signin::kAutoLoginHeader]];
+    if (signin::IsMICEWebSignInEnabled() && x_autologin_header) {
+      show_consistency_promo_ = true;
+    }
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
@@ -268,6 +262,14 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
             return;
           }
         }
+      } else if (!identity_manager_->GetAccountsWithRefreshTokens().empty() &&
+                 signin::IsMICEWebSignInEnabled()) {
+        show_consistency_promo_ = true;
+        // Allows the URL response to load before showing the consistency promo.
+        // The promo should always be displayed in the foreground of Gaia
+        // sign-on.
+        std::move(callback).Run(PolicyDecision::Allow());
+        return;
       }
       [delegate_ onAddAccount];
       break;
