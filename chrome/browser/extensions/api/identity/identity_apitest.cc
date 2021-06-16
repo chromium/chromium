@@ -1100,6 +1100,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       IdentityGetAuthTokenError::State::kSignInFailed, 1);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1220066): Remove the lacros exclusion when DICE is disabled on
+// Lacros.
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        PRE_InteractiveNotSignedAndSigninNotAllowed) {
   // kSigninAllowed cannot be set after the profile creation. Use
@@ -1124,7 +1127,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       kGetAuthTokenResultHistogramName,
       IdentityGetAuthTokenError::State::kBrowserSigninNotAllowed, 1);
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NonInteractiveMintFailure) {
   SignIn("primary@example.com");

@@ -63,6 +63,9 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1220066): Remove the lacros exclusion when DICE is disabled on
+// Lacros.
 // Checks that changing the signin-allowed pref changes the Dice state on next
 // startup.
 TEST(AccountConsistencyModeManagerTest, SigninAllowedChangesDiceState) {
@@ -135,6 +138,7 @@ TEST(AccountConsistencyModeManagerTest, AllowBrowserSigninSwitch) {
               manager.GetAccountConsistencyMethod());
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Checks that Dice migration happens when the manager is created.
 TEST(AccountConsistencyModeManagerTest, MigrateAtCreation) {

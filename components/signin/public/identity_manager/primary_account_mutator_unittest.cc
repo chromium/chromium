@@ -357,6 +357,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_AlreadyHasPrimaryAccount) {
             primary_account_info.account_id);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Checks that trying to set the primary account fails if setting the primary
 // account is not allowed.
 TEST_F(PrimaryAccountMutatorTest,
@@ -387,6 +388,7 @@ TEST_F(PrimaryAccountMutatorTest,
   EXPECT_FALSE(primary_account_mutator->SetPrimaryAccount(
       primary_account_info.account_id, signin::ConsentLevel::kSync));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // End of tests of preconditions not being satisfied causing the setting of
 // the primary account to fail.

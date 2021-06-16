@@ -90,7 +90,12 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   DCHECK(profile_);
   DCHECK(ShouldBuildServiceForProfile(profile));
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros doesn't support account inconsistency.
+  // TODO(crbug.com/1220066): Remove this section when Lacros stops building
+  // with DICE.
+  profile->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   PrefService* prefs = profile->GetPrefs();
   // Propagate settings changes from the previous launch to the signin-allowed
   // pref.

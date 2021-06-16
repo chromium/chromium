@@ -58,7 +58,14 @@ bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
   DCHECK(!account_info.gaia.empty());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!pref_service_->GetBoolean(prefs::kSigninAllowed))
+  bool is_signin_allowed = pref_service_->GetBoolean(prefs::kSigninAllowed);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Check that `prefs::kSigninAllowed` has not been set to false in a context
+  // where Lacros wants to set a Primary Account. Lacros doesn't offer account
+  // inconsistency - just like Ash.
+  DCHECK(is_signin_allowed);
+#endif
+  if (!is_signin_allowed)
     return false;
 #endif
 
