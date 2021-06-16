@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -226,9 +227,9 @@ public class WebappDataStorage {
                 mPreferences.getInt(KEY_DISPLAY_MODE, WebDisplayMode.STANDALONE),
                 mPreferences.getInt(KEY_ORIENTATION, ScreenOrientationLockType.DEFAULT),
                 mPreferences.getLong(
-                        KEY_THEME_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING),
+                        KEY_THEME_COLOR, WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING),
                 mPreferences.getLong(
-                        KEY_BACKGROUND_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING),
+                        KEY_BACKGROUND_COLOR, WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING),
                 mPreferences.getBoolean(KEY_IS_ICON_GENERATED, false),
                 mPreferences.getBoolean(KEY_IS_ICON_ADAPTIVE, false));
     }
@@ -261,12 +262,12 @@ public class WebappDataStorage {
         }
 
         // For all other fields, assume that if the version key is present and equal to
-        // ShortcutHelper.WEBAPP_SHORTCUT_VERSION, then all fields are present and do not need to be
-        // updated. All fields except for the last used time, scope, and URL are either set or
+        // WebappConstants.WEBAPP_SHORTCUT_VERSION, then all fields are present and do not need to
+        // be updated. All fields except for the last used time, scope, and URL are either set or
         // cleared together.
         if (mPreferences.getInt(KEY_VERSION, VERSION_INVALID)
-                != ShortcutHelper.WEBAPP_SHORTCUT_VERSION) {
-            editor.putInt(KEY_VERSION, ShortcutHelper.WEBAPP_SHORTCUT_VERSION);
+                != WebappConstants.WEBAPP_SHORTCUT_VERSION) {
+            editor.putInt(KEY_VERSION, WebappConstants.WEBAPP_SHORTCUT_VERSION);
 
             if (info.isForWebApk()) {
                 editor.putString(KEY_WEBAPK_PACKAGE_NAME, info.webApkPackageName());

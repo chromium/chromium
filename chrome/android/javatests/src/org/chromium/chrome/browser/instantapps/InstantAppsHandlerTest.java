@@ -26,7 +26,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -112,7 +112,7 @@ public class InstantAppsHandlerTest {
     @SmallTest
     public void testInstantAppsDisabled_launchFromShortcut() {
         Intent i = createViewIntent();
-        i.putExtra(ShortcutHelper.EXTRA_SOURCE, 1);
+        i.putExtra(WebappConstants.EXTRA_SOURCE, 1);
         Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true));
     }
 

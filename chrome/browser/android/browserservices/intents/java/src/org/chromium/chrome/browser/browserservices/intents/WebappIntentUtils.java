@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps;
+package org.chromium.chrome.browser.browserservices.intents;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Browser;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.HashSet;
@@ -22,22 +21,22 @@ public class WebappIntentUtils {
      * PWA homescreen shortcut intent extras. Used for copying intent extras for
      * {@link WebappActivity} launch intent.
      */
-    private static final String[] WEBAPP_INTENT_EXTRAS = new String[] {ShortcutHelper.EXTRA_ID,
-            ShortcutHelper.EXTRA_URL, ShortcutHelper.EXTRA_FORCE_NAVIGATION,
-            ShortcutHelper.EXTRA_SOURCE, ShortcutHelper.EXTRA_SCOPE, ShortcutHelper.EXTRA_ICON,
-            ShortcutHelper.EXTRA_VERSION, ShortcutHelper.EXTRA_NAME,
-            ShortcutHelper.EXTRA_SHORT_NAME, ShortcutHelper.EXTRA_DISPLAY_MODE,
-            ShortcutHelper.EXTRA_ORIENTATION, ShortcutHelper.EXTRA_THEME_COLOR,
-            ShortcutHelper.EXTRA_BACKGROUND_COLOR, ShortcutHelper.EXTRA_IS_ICON_GENERATED,
-            ShortcutHelper.EXTRA_IS_ICON_ADAPTIVE};
+    private static final String[] WEBAPP_INTENT_EXTRAS = new String[] {WebappConstants.EXTRA_ID,
+            WebappConstants.EXTRA_URL, WebappConstants.EXTRA_FORCE_NAVIGATION,
+            WebappConstants.EXTRA_SOURCE, WebappConstants.EXTRA_SCOPE, WebappConstants.EXTRA_ICON,
+            WebappConstants.EXTRA_VERSION, WebappConstants.EXTRA_NAME,
+            WebappConstants.EXTRA_SHORT_NAME, WebappConstants.EXTRA_DISPLAY_MODE,
+            WebappConstants.EXTRA_ORIENTATION, WebappConstants.EXTRA_THEME_COLOR,
+            WebappConstants.EXTRA_BACKGROUND_COLOR, WebappConstants.EXTRA_IS_ICON_GENERATED,
+            WebappConstants.EXTRA_IS_ICON_ADAPTIVE};
 
     /**
      * WebAPK intent extras. Used for copying intent extras for {@link WebappActivity} launch
      * intent.
      */
-    private static final String[] WEBAPK_INTENT_EXTRAS = new String[] {ShortcutHelper.EXTRA_ID,
-            ShortcutHelper.EXTRA_URL, ShortcutHelper.EXTRA_FORCE_NAVIGATION,
-            ShortcutHelper.EXTRA_SOURCE, WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME,
+    private static final String[] WEBAPK_INTENT_EXTRAS = new String[] {WebappConstants.EXTRA_ID,
+            WebappConstants.EXTRA_URL, WebappConstants.EXTRA_FORCE_NAVIGATION,
+            WebappConstants.EXTRA_SOURCE, WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME,
             WebApkConstants.EXTRA_SPLASH_PROVIDED_BY_WEBAPK,
             WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME,
             WebApkConstants.EXTRA_NEW_STYLE_SPLASH_SHOWN_TIME,
@@ -48,22 +47,22 @@ public class WebappIntentUtils {
     /**
      * Converts color from signed Integer where an unspecified color is represented as null to
      * to unsigned long where an unspecified color is represented as
-     * {@link ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING}.
+     * {@link WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING}.
      */
     public static long colorFromIntegerColor(Integer color) {
         if (color != null) {
             return color.intValue();
         }
-        return ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING;
+        return WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING;
     }
 
     public static boolean isLongColorValid(long longColor) {
-        return (longColor != ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING);
+        return (longColor != WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING);
     }
 
     /**
      * Converts color from unsigned long where an unspecified color is represented as
-     * {@link ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING} to a signed Integer where an
+     * {@link WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING} to a signed Integer where an
      * unspecified color is represented as null.
      */
     public static Integer colorFromLongColor(long longColor) {
@@ -74,7 +73,7 @@ public class WebappIntentUtils {
      * Extracts id from homescreen shortcut intent.
      */
     public static String getIdForHomescreenShortcut(Intent intent) {
-        return IntentUtils.safeGetStringExtra(intent, ShortcutHelper.EXTRA_ID);
+        return IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_ID);
     }
 
     /**

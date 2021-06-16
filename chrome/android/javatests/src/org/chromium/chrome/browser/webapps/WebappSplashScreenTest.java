@@ -29,8 +29,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -219,7 +219,7 @@ public class WebappSplashScreenTest {
 
         ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
                 mActivityTestRule.createIntent().putExtra(
-                        ShortcutHelper.EXTRA_IS_ICON_GENERATED, true));
+                        WebappConstants.EXTRA_IS_ICON_GENERATED, true));
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
         // There's no icon displayed.

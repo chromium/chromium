@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -204,7 +205,7 @@ public class AddToHomescreenTest {
         Assert.assertEquals(WEBAPP_TITLE, mShortcutHelperDelegate.mRequestedShortcutTitle);
 
         Intent launchIntent = mShortcutHelperDelegate.mRequestedShortcutIntent;
-        Assert.assertEquals(WEBAPP_HTML, launchIntent.getStringExtra(ShortcutHelper.EXTRA_URL));
+        Assert.assertEquals(WEBAPP_HTML, launchIntent.getStringExtra(WebappConstants.EXTRA_URL));
         Assert.assertEquals(WEBAPP_ACTION_NAME, launchIntent.getAction());
         Assert.assertEquals(mActivity.getPackageName(), launchIntent.getPackage());
 
@@ -216,7 +217,7 @@ public class AddToHomescreenTest {
 
         Intent newLaunchIntent = mShortcutHelperDelegate.mRequestedShortcutIntent;
         Assert.assertEquals(
-                SECOND_WEBAPP_HTML, newLaunchIntent.getStringExtra(ShortcutHelper.EXTRA_URL));
+                SECOND_WEBAPP_HTML, newLaunchIntent.getStringExtra(WebappConstants.EXTRA_URL));
         Assert.assertEquals(WEBAPP_ACTION_NAME, newLaunchIntent.getAction());
         Assert.assertEquals(mActivity.getPackageName(), newLaunchIntent.getPackage());
 

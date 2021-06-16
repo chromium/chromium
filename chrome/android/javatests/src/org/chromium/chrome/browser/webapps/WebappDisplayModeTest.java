@@ -22,8 +22,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -126,9 +126,9 @@ public class WebappDisplayModeTest {
                 mActivityTestRule.getTestServer(), action);
         mActivityTestRule.startWebappActivity(
                 mActivityTestRule.createIntent()
-                        .putExtra(ShortcutHelper.EXTRA_URL, url)
-                        .putExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, displayMode)
-                        .putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN));
+                        .putExtra(WebappConstants.EXTRA_URL, url)
+                        .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, displayMode)
+                        .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
 
         return mActivityTestRule.getActivity();
     }

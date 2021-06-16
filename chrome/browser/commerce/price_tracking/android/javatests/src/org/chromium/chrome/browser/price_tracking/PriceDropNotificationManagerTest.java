@@ -37,8 +37,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -115,7 +115,7 @@ public class PriceDropNotificationManagerTest {
         assertEquals(ContextUtils.getApplicationContext().getPackageName(),
                 intent.getStringExtra(Browser.EXTRA_APPLICATION_ID));
         assertEquals(true,
-                intent.getBooleanExtra(ShortcutHelper.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
+                intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
     }
 
     @Test

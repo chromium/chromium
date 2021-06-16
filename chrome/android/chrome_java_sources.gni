@@ -1392,7 +1392,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebappInfo.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappIntentDataProvider.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappIntentDataProviderFactory.java",
-  "java/src/org/chromium/chrome/browser/webapps/WebappIntentUtils.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetrics.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappLauncherActivity.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappLocator.java",

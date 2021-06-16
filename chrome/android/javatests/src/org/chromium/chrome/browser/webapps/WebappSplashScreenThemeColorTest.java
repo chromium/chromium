@@ -18,7 +18,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
@@ -46,7 +46,7 @@ public class WebappSplashScreenThemeColorTest {
         // This is Color.Magenta with 50% opacity.
         final int intentThemeColor = Color.argb(0x80, 0xFF, 0, 0xFF);
         Intent intent = mActivityTestRule.createIntent().putExtra(
-                ShortcutHelper.EXTRA_THEME_COLOR, (long) intentThemeColor);
+                WebappConstants.EXTRA_THEME_COLOR, (long) intentThemeColor);
         mActivityTestRule.startWebappActivity(intent);
 
         final int expectedThemeColor = Color.MAGENTA;
@@ -66,8 +66,8 @@ public class WebappSplashScreenThemeColorTest {
                 "/chrome/test/data/android/theme_color_test.html");
         Intent intent =
                 mActivityTestRule.createIntent()
-                        .putExtra(ShortcutHelper.EXTRA_URL, pageWithThemeColorUrl)
-                        .putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) intentThemeColor);
+                        .putExtra(WebappConstants.EXTRA_URL, pageWithThemeColorUrl)
+                        .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) intentThemeColor);
         mActivityTestRule.startWebappActivity(intent);
 
         ThemeTestUtils.waitForThemeColor(mActivityTestRule.getActivity(), pageThemeColor);

@@ -10,15 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.trusted.sharing.ShareData;
 
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
+import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.components.webapps.ShortcutSource;
 
 import java.util.List;
@@ -100,11 +101,11 @@ public class WebappInfo {
 
     /**
      * Returns the toolbar color if it is valid, and
-     * ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING otherwise.
+     * WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING otherwise.
      */
     public long toolbarColor() {
         return hasValidToolbarColor() ? mProvider.getColorProvider().getToolbarColor()
-                                      : ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING;
+                                      : WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING;
     }
 
     /**
@@ -117,7 +118,7 @@ public class WebappInfo {
     /**
      * Background color is actually a 32 bit unsigned integer which encodes a color
      * in ARGB format. Return value is a long because we also need to encode the
-     * error state of ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING.
+     * error state of WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING.
      */
     public long backgroundColor() {
         return WebappIntentUtils.colorFromIntegerColor(getWebappExtras().backgroundColor);

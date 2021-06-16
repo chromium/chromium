@@ -22,7 +22,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -54,13 +54,14 @@ public class NotificationManager {
      */
     private static void openUrl(Uri uri) {
         Context context = ContextUtils.getApplicationContext();
-        Intent intent = new Intent()
-                                .setAction(Intent.ACTION_VIEW)
-                                .setData(uri)
-                                .setClass(context, ChromeLauncherActivity.class)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                .putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName())
-                                .putExtra(ShortcutHelper.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+        Intent intent =
+                new Intent()
+                        .setAction(Intent.ACTION_VIEW)
+                        .setData(uri)
+                        .setClass(context, ChromeLauncherActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName())
+                        .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         IntentUtils.addTrustedIntentExtras(intent);
         context.startActivity(intent);
     }

@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.webapps.WebApkActivityTestRule;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
@@ -58,7 +58,7 @@ public class CustomTabActivityTypeTestUtils {
 
     private static void launchWebapp(WebappActivityTestRule activityTestRule, String url) {
         Intent launchIntent = activityTestRule.createIntent();
-        launchIntent.putExtra(ShortcutHelper.EXTRA_URL, url);
+        launchIntent.putExtra(WebappConstants.EXTRA_URL, url);
         activityTestRule.startWebappActivity(launchIntent);
     }
 

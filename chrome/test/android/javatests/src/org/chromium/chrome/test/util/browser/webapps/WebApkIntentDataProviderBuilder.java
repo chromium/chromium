@@ -7,10 +7,10 @@ package org.chromium.chrome.test.util.browser.webapps;
 import android.content.Intent;
 import android.graphics.Color;
 
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -54,8 +54,8 @@ public class WebApkIntentDataProviderBuilder {
     public BrowserServicesIntentDataProvider build() {
         return WebApkIntentDataProviderFactory.create(new Intent(), mUrl, mScope, null, null, null,
                 null, mDisplayMode, ScreenOrientationLockType.DEFAULT, ShortcutSource.UNKNOWN,
-                ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING,
-                ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING, Color.WHITE,
+                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING,
+                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING, Color.WHITE,
                 false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable */,
                 mWebApkPackageName, /* shellApkVersion */ 1, mManifestUrl, mUrl,
                 WebApkDistributor.BROWSER,

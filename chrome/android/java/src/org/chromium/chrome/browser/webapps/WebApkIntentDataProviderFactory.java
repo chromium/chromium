@@ -40,8 +40,10 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
+import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -91,10 +93,10 @@ public class WebApkIntentDataProviderFactory {
         }
 
         // Force navigation if the extra is not specified to avoid breaking deep linking for old
-        // WebAPKs which don't specify the {@link ShortcutHelper#EXTRA_FORCE_NAVIGATION} intent
+        // WebAPKs which don't specify the {@link WebappConstants#EXTRA_FORCE_NAVIGATION} intent
         // extra.
         boolean forceNavigation = IntentUtils.safeGetBooleanExtra(
-                intent, ShortcutHelper.EXTRA_FORCE_NAVIGATION, true);
+                intent, WebappConstants.EXTRA_FORCE_NAVIGATION, true);
 
         ShareData shareData = null;
 
@@ -261,10 +263,10 @@ public class WebApkIntentDataProviderFactory {
         int orientation = orientationFromString(
                 IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.ORIENTATION));
         long themeColor = WebApkMetaDataUtils.getLongFromMetaData(bundle,
-                WebApkMetaDataKeys.THEME_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING);
+                WebApkMetaDataKeys.THEME_COLOR, WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING);
         long backgroundColor =
                 WebApkMetaDataUtils.getLongFromMetaData(bundle, WebApkMetaDataKeys.BACKGROUND_COLOR,
-                        ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING);
+                        WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING);
 
         // Fetch the default background color from the WebAPK's resources. Fetching the default
         // background color from the WebAPK is important for consistency when:
@@ -432,7 +434,7 @@ public class WebApkIntentDataProviderFactory {
 
     private static int computeSource(Intent intent, ShareData shareData) {
         int source = IntentUtils.safeGetIntExtra(
-                intent, ShortcutHelper.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
+                intent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
         if (source >= ShortcutSource.COUNT) {
             return ShortcutSource.UNKNOWN;
         }

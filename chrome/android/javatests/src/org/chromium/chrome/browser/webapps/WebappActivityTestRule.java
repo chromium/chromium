@@ -23,8 +23,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -92,10 +92,10 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
                 new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(WebappActivity.WEBAPP_SCHEME + "://" + WEBAPP_ID));
-        intent.putExtra(ShortcutHelper.EXTRA_ID, WEBAPP_ID);
-        intent.putExtra(ShortcutHelper.EXTRA_URL, "about:blank");
-        intent.putExtra(ShortcutHelper.EXTRA_NAME, WEBAPP_NAME);
-        intent.putExtra(ShortcutHelper.EXTRA_SHORT_NAME, WEBAPP_SHORT_NAME);
+        intent.putExtra(WebappConstants.EXTRA_ID, WEBAPP_ID);
+        intent.putExtra(WebappConstants.EXTRA_URL, "about:blank");
+        intent.putExtra(WebappConstants.EXTRA_NAME, WEBAPP_NAME);
+        intent.putExtra(WebappConstants.EXTRA_SHORT_NAME, WEBAPP_SHORT_NAME);
         return intent;
     }
 
@@ -153,7 +153,7 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
      * Starts up the WebappActivity with a specific Intent and sets up the test observer.
      */
     public final void startWebappActivity(Intent intent) {
-        String startUrl = intent.getStringExtra(ShortcutHelper.EXTRA_URL);
+        String startUrl = intent.getStringExtra(WebappConstants.EXTRA_URL);
 
         launchActivity(intent);
 
@@ -216,7 +216,7 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
     public final ViewGroup startWebappActivityAndWaitForSplashScreen(Intent intent) {
         // Reset the url to one that takes more time to load.
         // This is to make sure splash screen won't disappear during test.
-        intent.putExtra(ShortcutHelper.EXTRA_URL, getTestServer().getURL("/slow?2"));
+        intent.putExtra(WebappConstants.EXTRA_URL, getTestServer().getURL("/slow?2"));
         launchActivity(intent);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         CriteriaHelper.pollInstrumentationThread(() -> {

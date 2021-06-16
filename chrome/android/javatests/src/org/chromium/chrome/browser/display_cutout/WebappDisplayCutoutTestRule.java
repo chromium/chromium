@@ -16,8 +16,8 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 
 import java.lang.annotation.ElementType;
@@ -72,11 +72,11 @@ public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappAct
         Intent intent =
                 new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
         intent.setData(Uri.parse(WebappActivity.WEBAPP_SCHEME + "://" + WEBAPP_ID));
-        intent.putExtra(ShortcutHelper.EXTRA_ID, WEBAPP_ID);
-        intent.putExtra(ShortcutHelper.EXTRA_URL, getTestURL());
-        intent.putExtra(ShortcutHelper.EXTRA_NAME, WEBAPP_NAME);
-        intent.putExtra(ShortcutHelper.EXTRA_SHORT_NAME, WEBAPP_SHORT_NAME);
-        intent.putExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, displayMode);
+        intent.putExtra(WebappConstants.EXTRA_ID, WEBAPP_ID);
+        intent.putExtra(WebappConstants.EXTRA_URL, getTestURL());
+        intent.putExtra(WebappConstants.EXTRA_NAME, WEBAPP_NAME);
+        intent.putExtra(WebappConstants.EXTRA_SHORT_NAME, WEBAPP_SHORT_NAME);
+        intent.putExtra(WebappConstants.EXTRA_DISPLAY_MODE, displayMode);
 
         launchActivity(intent);
 

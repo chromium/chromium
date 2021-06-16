@@ -42,9 +42,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -126,7 +126,7 @@ public class WebappNavigationTest {
     public void testRegularLinkOffOriginThemeColor() throws Exception {
         WebappActivity activity =
                 runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent().putExtra(
-                        ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN));
+                        WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
         assertEquals(
                 BrowserControlsState.HIDDEN, WebappActivityTestRule.getToolbarShowState(activity));
 
@@ -148,12 +148,13 @@ public class WebappNavigationTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testRegularLinkOffOriginTwa() throws Exception {
         Intent launchIntent = mActivityTestRule.createIntent().putExtra(
-                ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN);
+                WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN);
         mActivityTestRule.addTwaExtrasToIntent(launchIntent);
         String url = WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer());
         CommandLine.getInstance().appendSwitchWithValue(
                 ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION, url);
-        mActivityTestRule.startWebappActivity(launchIntent.putExtra(ShortcutHelper.EXTRA_URL, url));
+        mActivityTestRule.startWebappActivity(
+                launchIntent.putExtra(WebappConstants.EXTRA_URL, url));
         WebappActivity activity = mActivityTestRule.getActivity();
         assertEquals(
                 BrowserControlsState.HIDDEN, WebappActivityTestRule.getToolbarShowState(activity));
@@ -175,7 +176,7 @@ public class WebappNavigationTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testFormSubmitOffOrigin() throws Exception {
         Intent launchIntent = mActivityTestRule.createIntent().putExtra(
-                ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN);
+                WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN);
         mActivityTestRule.addTwaExtrasToIntent(launchIntent);
         WebappActivity activity = runWebappActivityAndWaitForIdleWithUrl(launchIntent,
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/form.html"));
@@ -282,7 +283,7 @@ public class WebappNavigationTest {
     public void testOpenInChromeFromCustomMenuTabbedChrome() {
         WebappActivity activity =
                 runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent().putExtra(
-                        ShortcutHelper.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI));
+                        WebappConstants.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             activity.getComponent().resolveNavigationController().openCurrentUrlInBrowser(true);
@@ -303,8 +304,8 @@ public class WebappNavigationTest {
     public void testCanNavigateAfterReparentingToTabbedChrome() throws Exception {
         runWebappActivityAndWaitForIdle(
                 mActivityTestRule.createIntent()
-                        .putExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI)
-                        .putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN));
+                        .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI)
+                        .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             mActivityTestRule.getActivity()
@@ -400,7 +401,7 @@ public class WebappNavigationTest {
     }
 
     private WebappActivity runWebappActivityAndWaitForIdleWithUrl(Intent intent, String url) {
-        mActivityTestRule.startWebappActivity(intent.putExtra(ShortcutHelper.EXTRA_URL, url));
+        mActivityTestRule.startWebappActivity(intent.putExtra(WebappConstants.EXTRA_URL, url));
         return mActivityTestRule.getActivity();
     }
 

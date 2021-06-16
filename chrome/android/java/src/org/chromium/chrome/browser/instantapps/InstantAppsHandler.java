@@ -17,7 +17,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -184,8 +184,8 @@ public class InstantAppsHandler {
         }
 
         if (IntentUtils.safeGetBooleanExtra(
-                intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                || IntentUtils.safeHasExtra(intent, ShortcutHelper.EXTRA_SOURCE)
+                    intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                || IntentUtils.safeHasExtra(intent, WebappConstants.EXTRA_SOURCE)
                 || isIntentFromChrome(context, intent)
                 || (IntentHandler.getUrlFromIntent(intent) == null)) {
             Log.i(TAG, "Not handling with Instant Apps (other)");

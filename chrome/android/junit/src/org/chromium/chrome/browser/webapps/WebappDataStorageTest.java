@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 
 import java.util.concurrent.TimeUnit;
@@ -198,7 +199,7 @@ public class WebappDataStorageTest {
         final boolean isIconGenerated = false;
         final boolean isIconAdaptive = false;
         Intent shortcutIntent = ShortcutHelper.createWebappShortcutIntent(id, url, scope, name,
-                shortName, encodedIcon, ShortcutHelper.WEBAPP_SHORTCUT_VERSION, displayMode,
+                shortName, encodedIcon, WebappConstants.WEBAPP_SHORTCUT_VERSION, displayMode,
                 orientation, themeColor, backgroundColor, isIconGenerated, isIconAdaptive);
         BrowserServicesIntentDataProvider intentDataProvider =
                 WebappIntentDataProviderFactory.create(shortcutIntent);
@@ -213,7 +214,7 @@ public class WebappDataStorageTest {
         assertEquals(shortName,
                 mSharedPreferences.getString(WebappDataStorage.KEY_SHORT_NAME, null));
         assertEquals(encodedIcon, mSharedPreferences.getString(WebappDataStorage.KEY_ICON, null));
-        assertEquals(ShortcutHelper.WEBAPP_SHORTCUT_VERSION,
+        assertEquals(WebappConstants.WEBAPP_SHORTCUT_VERSION,
                 mSharedPreferences.getInt(WebappDataStorage.KEY_VERSION, 0));
         assertEquals(orientation, mSharedPreferences.getInt(WebappDataStorage.KEY_ORIENTATION, 0));
         assertEquals(themeColor, mSharedPreferences.getLong(WebappDataStorage.KEY_THEME_COLOR, 0));
@@ -262,7 +263,7 @@ public class WebappDataStorageTest {
         assertEquals(shortName,
                 mSharedPreferences.getString(WebappDataStorage.KEY_SHORT_NAME, null));
         assertEquals(encodedIcon, mSharedPreferences.getString(WebappDataStorage.KEY_ICON, null));
-        assertEquals(ShortcutHelper.WEBAPP_SHORTCUT_VERSION,
+        assertEquals(WebappConstants.WEBAPP_SHORTCUT_VERSION,
                 mSharedPreferences.getInt(WebappDataStorage.KEY_VERSION, 0));
         assertEquals(orientation, mSharedPreferences.getInt(WebappDataStorage.KEY_ORIENTATION, 0));
         assertEquals(themeColor, mSharedPreferences.getLong(WebappDataStorage.KEY_THEME_COLOR, 0));

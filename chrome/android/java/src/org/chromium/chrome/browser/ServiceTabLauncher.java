@@ -16,6 +16,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -109,7 +110,7 @@ public class ServiceTabLauncher {
                 if (doesBrowserBackWebApk) {
                     Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(
                             webApkPackageName, url, true /* forceNavigation */);
-                    intent.putExtra(ShortcutHelper.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
+                    intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
                     ContextUtils.getApplicationContext().startActivity(intent);
                     return;
                 }
@@ -167,9 +168,9 @@ public class ServiceTabLauncher {
             Intent intent = storage.createWebappLaunchIntent();
             // Replace the web app URL with the URL from the notification. This is within the
             // webapp's scope, so it is valid.
-            intent.putExtra(ShortcutHelper.EXTRA_URL, url);
-            intent.putExtra(ShortcutHelper.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
-            intent.putExtra(ShortcutHelper.EXTRA_FORCE_NAVIGATION, true);
+            intent.putExtra(WebappConstants.EXTRA_URL, url);
+            intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
+            intent.putExtra(WebappConstants.EXTRA_FORCE_NAVIGATION, true);
             tabDelegate.createNewStandaloneFrame(intent);
         }
     }

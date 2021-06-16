@@ -30,9 +30,10 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
@@ -226,7 +227,7 @@ public class WebappLauncherActivity extends Activity {
             return true;
         }
 
-        String webappMac = IntentUtils.safeGetStringExtra(intent, ShortcutHelper.EXTRA_MAC);
+        String webappMac = IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_MAC);
         return (isValidMacForUrl(launchData.url, webappMac) || wasIntentFromChrome(intent));
     }
 
@@ -270,17 +271,17 @@ public class WebappLauncherActivity extends Activity {
     /** Extracts start URL from source intent and launches URL in Chrome tab. */
     private static void launchInTab(Activity launchingActivity, Intent sourceIntent) {
         Context appContext = ContextUtils.getApplicationContext();
-        String webappUrl = IntentUtils.safeGetStringExtra(sourceIntent, ShortcutHelper.EXTRA_URL);
+        String webappUrl = IntentUtils.safeGetStringExtra(sourceIntent, WebappConstants.EXTRA_URL);
         int webappSource = IntentUtils.safeGetIntExtra(
-                sourceIntent, ShortcutHelper.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
+                sourceIntent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
 
         if (TextUtils.isEmpty(webappUrl)) return;
 
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webappUrl));
         launchIntent.setClassName(
                 appContext.getPackageName(), ChromeLauncherActivity.class.getName());
-        launchIntent.putExtra(ShortcutHelper.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-        launchIntent.putExtra(ShortcutHelper.EXTRA_SOURCE, webappSource);
+        launchIntent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+        launchIntent.putExtra(WebappConstants.EXTRA_SOURCE, webappSource);
         launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 
         Log.e(TAG, "Shortcut (%s) opened in Chrome.", webappUrl);

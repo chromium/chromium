@@ -31,7 +31,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -53,7 +53,7 @@ public class WebappActionsNotificationTest {
     @Before
     public void startWebapp() {
         mActivityTestRule.startWebappActivity(mActivityTestRule.createIntent().putExtra(
-                ShortcutHelper.EXTRA_URL, mActivityTestRule.getTestServer().getURL(WEB_APP_PATH)));
+                WebappConstants.EXTRA_URL, mActivityTestRule.getTestServer().getURL(WEB_APP_PATH)));
     }
 
     @Test

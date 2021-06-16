@@ -253,7 +253,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/webapps/WebappDataStorageTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappDirectoryManagerTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappInfoTest.java",
-  "junit/src/org/chromium/chrome/browser/webapps/WebappIntentUtilsTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappLauncherActivityTest.java",
   "junit/src/org/chromium/chrome/browser/webapps/WebappRegistryTest.java",
 ]

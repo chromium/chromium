@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -41,7 +41,7 @@ public class WebappSplashScreenIconTest {
                 .updateSplashScreenImage(WebappActivityTestRule.TEST_SPLASH_ICON);
         mSplashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
                 mActivityTestRule.createIntent().putExtra(
-                        ShortcutHelper.EXTRA_ICON, WebappActivityTestRule.TEST_ICON));
+                        WebappConstants.EXTRA_ICON, WebappActivityTestRule.TEST_ICON));
     }
 
     @Test

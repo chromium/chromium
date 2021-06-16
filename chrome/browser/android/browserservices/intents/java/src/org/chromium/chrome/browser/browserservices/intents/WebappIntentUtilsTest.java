@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps;
+package org.chromium.chrome.browser.browserservices.intents;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ShortcutHelper;
 
 import java.util.ArrayList;
 
@@ -34,10 +33,10 @@ public class WebappIntentUtilsTest {
     public void testCopyWebappLaunchIntentExtrasMissingKeys() {
         Intent toIntent = new Intent();
         WebappIntentUtils.copyWebappLaunchIntentExtras(new Intent(), toIntent);
-        assertFalse(toIntent.hasExtra(ShortcutHelper.EXTRA_NAME));
-        assertFalse(toIntent.hasExtra(ShortcutHelper.EXTRA_IS_ICON_ADAPTIVE));
-        assertFalse(toIntent.hasExtra(ShortcutHelper.EXTRA_DISPLAY_MODE));
-        assertFalse(toIntent.hasExtra(ShortcutHelper.EXTRA_BACKGROUND_COLOR));
+        assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_NAME));
+        assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_IS_ICON_ADAPTIVE));
+        assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_DISPLAY_MODE));
+        assertFalse(toIntent.hasExtra(WebappConstants.EXTRA_BACKGROUND_COLOR));
         assertFalse(toIntent.hasExtra(Intent.EXTRA_STREAM));
     }
 
@@ -48,19 +47,20 @@ public class WebappIntentUtilsTest {
     @Test
     public void testCopyWebappLaunchIntentExtras() {
         Intent fromIntent = new Intent();
-        fromIntent.putExtra(ShortcutHelper.EXTRA_NAME, "name");
-        fromIntent.putExtra(ShortcutHelper.EXTRA_IS_ICON_ADAPTIVE, false);
-        fromIntent.putExtra(ShortcutHelper.EXTRA_IS_ICON_GENERATED, true);
-        fromIntent.putExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, 1);
-        fromIntent.putExtra(ShortcutHelper.EXTRA_BACKGROUND_COLOR, 1L);
+        fromIntent.putExtra(WebappConstants.EXTRA_NAME, "name");
+        fromIntent.putExtra(WebappConstants.EXTRA_IS_ICON_ADAPTIVE, false);
+        fromIntent.putExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, true);
+        fromIntent.putExtra(WebappConstants.EXTRA_DISPLAY_MODE, 1);
+        fromIntent.putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 1L);
 
         Intent toIntent = new Intent();
         WebappIntentUtils.copyWebappLaunchIntentExtras(fromIntent, toIntent);
-        assertEquals("name", toIntent.getStringExtra(ShortcutHelper.EXTRA_NAME));
-        assertEquals(false, toIntent.getBooleanExtra(ShortcutHelper.EXTRA_IS_ICON_ADAPTIVE, true));
-        assertEquals(true, toIntent.getBooleanExtra(ShortcutHelper.EXTRA_IS_ICON_GENERATED, false));
-        assertEquals(1, toIntent.getIntExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, 0));
-        assertEquals(1L, toIntent.getLongExtra(ShortcutHelper.EXTRA_BACKGROUND_COLOR, 0L));
+        assertEquals("name", toIntent.getStringExtra(WebappConstants.EXTRA_NAME));
+        assertEquals(false, toIntent.getBooleanExtra(WebappConstants.EXTRA_IS_ICON_ADAPTIVE, true));
+        assertEquals(
+                true, toIntent.getBooleanExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, false));
+        assertEquals(1, toIntent.getIntExtra(WebappConstants.EXTRA_DISPLAY_MODE, 0));
+        assertEquals(1L, toIntent.getLongExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 0L));
     }
 
     /**
@@ -114,12 +114,12 @@ public class WebappIntentUtilsTest {
     public void testCopyWebappLaunchIntentExtrasDoesNotModifyFromIntent() {
         final String notInAllowlistKey = "not_in_allowlist";
         Intent fromIntent = new Intent();
-        fromIntent.putExtra(ShortcutHelper.EXTRA_NAME, "name");
+        fromIntent.putExtra(WebappConstants.EXTRA_NAME, "name");
         fromIntent.putExtra(notInAllowlistKey, "random");
         Intent toIntent = new Intent();
         WebappIntentUtils.copyWebappLaunchIntentExtras(fromIntent, toIntent);
-        assertEquals("name", fromIntent.getStringExtra(ShortcutHelper.EXTRA_NAME));
+        assertEquals("name", fromIntent.getStringExtra(WebappConstants.EXTRA_NAME));
         assertEquals("random", fromIntent.getStringExtra(notInAllowlistKey));
-        assertEquals("name", toIntent.getStringExtra(ShortcutHelper.EXTRA_NAME));
+        assertEquals("name", toIntent.getStringExtra(WebappConstants.EXTRA_NAME));
     }
 }
