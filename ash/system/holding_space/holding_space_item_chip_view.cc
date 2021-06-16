@@ -15,6 +15,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/holding_space/holding_space_view_builder.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/gfx/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -41,6 +43,7 @@ namespace {
 
 // Appearance.
 constexpr int kChildSpacing = 8;
+constexpr float kInProgressImageScaleFactor = 0.7f;
 constexpr int kLabelMaskGradientWidth = 16;
 constexpr gfx::Insets kLabelMargins(/*top=*/4, 0, /*bottom=*/4, /*right=*/2);
 constexpr gfx::Insets kPadding(0, /*left=*/8, 0, /*right=*/10);
@@ -75,10 +78,51 @@ BEGIN_VIEW_BUILDER(/*no export*/, PaintCallbackLabel, views::Label)
 VIEW_BUILDER_PROPERTY(PaintCallbackLabel::Callback, Callback)
 END_VIEW_BUILDER
 
+// ProgressRingView ------------------------------------------------------------
+
+class ProgressRingView : public views::View {
+ public:
+  ProgressRingView() = default;
+  ProgressRingView(const ProgressRingView&) = delete;
+  ProgressRingView& operator=(const ProgressRingView&) = delete;
+  ~ProgressRingView() override = default;
+
+  // Sets the underlying `item` for which to indicate progress.
+  // NOTE: This method should be invoked only once.
+  void SetHoldingSpaceItem(const HoldingSpaceItem* item) {
+    DCHECK(!progress_ring_);
+    progress_ring_ = std::make_unique<HoldingSpaceProgressRing>(item);
+
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->Add(progress_ring_->layer());
+  }
+
+ private:
+  // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    if (progress_ring_)
+      progress_ring_->layer()->SetBounds(GetLocalBounds());
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    if (progress_ring_)
+      progress_ring_->InvalidateLayer();
+  }
+
+  std::unique_ptr<HoldingSpaceProgressRing> progress_ring_;
+};
+
+BEGIN_VIEW_BUILDER(/*no export*/, ProgressRingView, views::View)
+VIEW_BUILDER_PROPERTY(const HoldingSpaceItem*, HoldingSpaceItem)
+END_VIEW_BUILDER
+
 }  // namespace
 }  // namespace ash
 
 DEFINE_VIEW_BUILDER(/*no export*/, ash::PaintCallbackLabel)
+DEFINE_VIEW_BUILDER(/*no export*/, ash::ProgressRingView)
 
 namespace ash {
 namespace {
@@ -157,7 +201,9 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       .SetLayoutManager(std::move(layout_manager))
       .AddChild(
           HoldingSpaceViewBuilder<views::View>(
-              views::Builder<views::View>().SetUseDefaultFillLayout(true))
+              views::Builder<ProgressRingView>()
+                  .SetHoldingSpaceItem(item)
+                  .SetUseDefaultFillLayout(true))
               .AddChild(views::Builder<RoundedImageView>()
                             .CopyAddressTo(&image_)
                             .SetID(kHoldingSpaceItemImageId)
@@ -233,6 +279,7 @@ void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);
   if (this->item() == item) {
+    UpdateImage();
     UpdateLabels();
     UpdateSecondaryAction();
   }
@@ -322,10 +369,25 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {
+  // Image.
   image_->SetImage(item()->image().GetImageSkia(
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize),
       /*dark_background=*/AshColorProvider::Get()->IsDarkModeEnabled()));
   SchedulePaint();
+
+  // Transform.
+  gfx::Transform transform;
+  if (item()->IsInProgress() && !image_->bounds().IsEmpty()) {
+    transform = gfx::GetScaleTransform(image_->bounds().CenterPoint(),
+                                       kInProgressImageScaleFactor);
+  }
+
+  if (!image_->layer()) {
+    image_->SetPaintToLayer();
+    image_->layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  image_->layer()->SetTransform(transform);
 }
 
 // TODO(dmblack): Implement secondary label text.
