@@ -372,6 +372,9 @@ const CGFloat kEditIconLength = 18;
               forControlEvents:UIControlEventAllEvents];
   [self setIdentifyingIcon:nil];
   self.identifyingIconButton.enabled = NO;
+  [self.identifyingIconButton removeTarget:nil
+                                    action:nil
+                          forControlEvents:UIControlEventAllEvents];
 }
 
 #pragma mark Accessibility
