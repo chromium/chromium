@@ -751,15 +751,8 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, LargeScreenshot) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 
 // Setting frame size (through RWHV) is not supported on Android.
-// This test seems to be very flaky on windows: https://crbug.com/801173
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
-#define MAYBE_CaptureScreenshotArea DISABLED_CaptureScreenshotArea
-#else
-#define MAYBE_CaptureScreenshotArea CaptureScreenshotArea
-#endif
-IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
-                       MAYBE_CaptureScreenshotArea) {
+// This test seems to be very flaky on all platforms: https://crbug.com/801173
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, DISABLED_CaptureScreenshotArea) {
   static const gfx::Size kFrameSize(800, 600);
 
   shell()->LoadURL(GURL("about:blank"));
