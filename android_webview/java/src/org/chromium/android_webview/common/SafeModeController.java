@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 import org.chromium.build.BuildConfig;
 
 import java.util.HashSet;
@@ -23,6 +25,8 @@ import java.util.Set;
 public class SafeModeController {
     public static final String SAFE_MODE_STATE_COMPONENT =
             "org.chromium.android_webview.SafeModeState";
+
+    private static final String TAG = "WebViewSafeMode";
 
     private SafeModeAction[] mRegisteredActions;
 
@@ -79,7 +83,12 @@ public class SafeModeController {
         }
         for (SafeModeAction action : mRegisteredActions) {
             if (actionsToExecute.contains(action.getId())) {
-                action.execute();
+                // Allow SafeModeActions in general to perform disk reads and writes.
+                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                    Log.i(TAG, "Starting to execute %s", action.getId());
+                    action.execute();
+                    Log.i(TAG, "Finished executing %s", action.getId());
+                }
             }
         }
     }
