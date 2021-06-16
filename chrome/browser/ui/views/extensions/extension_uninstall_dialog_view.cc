@@ -61,6 +61,7 @@ class ExtensionUninstallDialogViews
 
  private:
   void Show() override;
+  void Close() override;
 
   ExtensionUninstallDialogDelegateView* view_ = nullptr;
 
@@ -181,6 +182,12 @@ void ExtensionUninstallDialogViews::DialogCanceled() {
   view_->DialogDestroyed();
   view_ = nullptr;
   OnDialogClosed(CLOSE_ACTION_CANCELED);
+}
+
+void ExtensionUninstallDialogViews::Close() {
+  DCHECK(view_);
+  view_->GetWidget()->CloseNow();
+  DCHECK(!view_);
 }
 
 ExtensionUninstallDialogDelegateView::ExtensionUninstallDialogDelegateView(

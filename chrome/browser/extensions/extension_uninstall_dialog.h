@@ -148,6 +148,9 @@ class ExtensionUninstallDialog
   // Returns true if a checkbox for removing associated data should be shown.
   bool ShouldShowRemoveDataCheckbox() const;
 
+  // Forcefully closes the dialog view.
+  virtual void Close() = 0;
+
   Profile* const profile_;
 
   // The dialog's parent window.
@@ -168,8 +171,12 @@ class ExtensionUninstallDialog
   // Tracks whether |parent_| got destroyed.
   std::unique_ptr<NativeWindowTracker> parent_window_tracker_;
 
-  // Indicates that dialog was shown.
+// Indicates that dialog was shown.
   bool dialog_shown_ = false;
+
+  // Whether the extension was uninstalled before the user closed the dialog
+  // (e.g. by another source).
+  bool extension_uninstalled_early_ = false;
 
   UninstallReason uninstall_reason_ = UNINSTALL_REASON_FOR_TESTING;
 

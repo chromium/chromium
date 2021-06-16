@@ -157,8 +157,8 @@ void ExtensionUninstallDialog::OnExtensionUninstalled(
   if (extension != extension_)
     return;
 
-  delegate_->OnExtensionUninstallDialogClosed(
-      false, base::ASCIIToUTF16(kExtensionRemovedError));
+  extension_uninstalled_early_ = true;
+  Close();
 }
 
 std::string ExtensionUninstallDialog::GetHeadingText() {
@@ -200,6 +200,10 @@ base::string16 ExtensionUninstallDialog::GetCheckboxLabel() const {
 }
 
 void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
+  // Ensure the dialog isn't notified of an uninstallation after the dialog was
+  // closed.
+  observer_.RemoveAll();
+
   // We don't want to artificially weight any of the options, so only record if
   // a checkbox was shown.
   if (ShouldShowReportAbuseCheckbox()) {
@@ -247,7 +251,9 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
     case CLOSE_ACTION_CANCELED:
       base::RecordAction(
           base::UserMetricsAction("Extensions.UninstallDialogCancelClick"));
-      error = base::ASCIIToUTF16("User canceled uninstall dialog");
+      error = extension_uninstalled_early_
+                  ? base::ASCIIToUTF16(kExtensionRemovedError)
+                  : base::ASCIIToUTF16("User canceled uninstall dialog");
       break;
     case CLOSE_ACTION_LAST:
       NOTREACHED();
@@ -265,8 +271,6 @@ bool ExtensionUninstallDialog::Uninstall(base::string16* error) {
           "Extensions.RemovedDefaultInstalledExtension"));
     }
 
-    // Prevent notifications triggered by our request.
-    observer_.RemoveAll();
     return ExtensionSystem::Get(profile_)
         ->extension_service()
         ->UninstallExtension(extension_->id(), uninstall_reason_, error);
