@@ -224,7 +224,7 @@ class DragImageItemChipView : public DragImageItemView {
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
     auto* label = AddChildView(bubble_utils::CreateLabel(
-        bubble_utils::LabelStyle::kChipTitle, item->text()));
+        bubble_utils::LabelStyle::kChipTitle, item->GetText()));
     label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     layout->SetFlexForView(label, 1);

@@ -109,6 +109,19 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   bool SetBackingFile(const base::FilePath& file_path,
                       const GURL& file_system_url);
 
+  // Returns `text_`, falling back to the lossy display name of the item's
+  // backing file if absent.
+  std::u16string GetText() const;
+
+  // Sets the text that should be shown for the item, returning `true` if a
+  // change occurred or `false` to indicate no-op. If absent, the lossy display
+  // name of the item's backing file will be used.
+  bool SetText(const absl::optional<std::u16string>& text);
+
+  // Sets the secondary text that should be shown for the item, returning `true`
+  // if a change occurred or `false` to indicate no-op.
+  bool SetSecondaryText(const absl::optional<std::u16string>& text);
+
   // Returns whether the item is in progress.
   bool IsInProgress() const;
 
@@ -134,16 +147,13 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // NOTE: Only in-progress items can be paused.
   bool SetPaused(bool paused);
 
-  // Sets the current size (in bytes) of the file backing this item.
-  // NOTE: If present, the `current_size_in_bytes` must be >= `0`.
-  bool SetCurrentSizeInBytes(
-      const absl::optional<int64_t>& current_size_in_bytes);
-
   const std::string& id() const { return id_; }
 
   Type type() const { return type_; }
 
-  const std::u16string& text() const { return text_; }
+  const absl::optional<std::u16string>& secondary_text() const {
+    return secondary_text_;
+  }
 
   const HoldingSpaceImage& image() const { return *image_; }
 
@@ -153,10 +163,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const absl::optional<float>& progress() const { return progress_; }
 
-  const absl::optional<int64_t>& current_size_in_bytes() const {
-    return current_size_in_bytes_;
-  }
-
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
  private:
@@ -165,7 +171,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
                    const std::string& id,
                    const base::FilePath& file_path,
                    const GURL& file_system_url,
-                   const std::u16string& text,
                    std::unique_ptr<HoldingSpaceImage> image,
                    const absl::optional<float>& progress);
 
@@ -181,7 +186,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   GURL file_system_url_;
 
   // If set, the text that should be shown for the item.
-  std::u16string text_;
+  absl::optional<std::u16string> text_;
+
+  // If set, the secondary text that should be shown for the item.
+  absl::optional<std::u16string> secondary_text_;
 
   // The image representation of the item.
   std::unique_ptr<HoldingSpaceImage> image_;
@@ -194,12 +202,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Whether or not progress of this item is paused.
   // NOTE: Only in-progress items can be paused.
   bool paused_ = false;
-
-  // The current size (in bytes) of the file backing this item.
-  // NOTE: If present, the `current_size_in_bytes` is >= `0`.
-  // NOTE: This is currently set only in response to updates of in-progress
-  // downloads and only used when `progress_` != `1.f`.
-  absl::optional<int64_t> current_size_in_bytes_;
 
   // Mutable to allow const access from `AddDeletionCallback()`.
   mutable base::RepeatingClosureList deletion_callback_list_;

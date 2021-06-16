@@ -150,11 +150,17 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->progress(), 0.5f);
 
-  // Update current size
-  model().UpdateItem(item_ptr->id())->SetCurrentSizeInBytes(100);
+  // Update text.
+  model().UpdateItem(item_ptr->id())->SetText(u"text");
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
-  EXPECT_EQ(item_ptr->current_size_in_bytes(), 100);
+  EXPECT_EQ(item_ptr->GetText(), u"text");
+
+  // Update secondary text.
+  model().UpdateItem(item_ptr->id())->SetSecondaryText(u"secondary_text");
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->secondary_text(), u"secondary_text");
 
   // Update all attributes.
   updated_file_path = base::FilePath("again_updated_file_path");
@@ -162,7 +168,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   model()
       .UpdateItem(item_ptr->id())
       ->SetBackingFile(updated_file_path, updated_file_system_url)
-      .SetCurrentSizeInBytes(200)
+      .SetText(u"updated_text")
+      .SetSecondaryText(u"updated_secondary_text")
       .SetPaused(false)
       .SetProgress(0.75f);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
@@ -171,7 +178,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
   EXPECT_FALSE(item_ptr->IsPaused());
   EXPECT_EQ(item_ptr->progress(), 0.75f);
-  EXPECT_EQ(item_ptr->current_size_in_bytes(), 200);
+  EXPECT_EQ(item_ptr->GetText(), u"updated_text");
+  EXPECT_EQ(item_ptr->secondary_text(), u"updated_secondary_text");
 }
 
 // Verifies that updating items will no-op appropriately.
@@ -202,7 +210,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   model()
       .UpdateItem(item_ptr->id())
       ->SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
-      .SetCurrentSizeInBytes(absl::nullopt)
+      .SetText(absl::nullopt)
+      .SetSecondaryText(absl::nullopt)
       .SetPaused(item_ptr->IsPaused())
       .SetProgress(item_ptr->progress());
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 0);

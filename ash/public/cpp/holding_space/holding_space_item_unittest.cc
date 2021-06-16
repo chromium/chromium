@@ -153,29 +153,53 @@ TEST_P(HoldingSpaceItemTest, Progress) {
   EXPECT_EQ(holding_space_item->progress(), 1.f);
 }
 
-// Tests setting the current size (in bytes) for each holding space item type.
-TEST_P(HoldingSpaceItemTest, CurrentSizeInBytes) {
+// Tests setting the secondary text for each holding space item type.
+TEST_P(HoldingSpaceItemTest, SecondaryText) {
   // Create a `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
-  // Initially the current size should be absent.
-  EXPECT_FALSE(holding_space_item->current_size_in_bytes());
-  EXPECT_FALSE(holding_space_item->current_size_in_bytes());
+  // Initially the secondary text should be absent.
+  EXPECT_FALSE(holding_space_item->secondary_text());
 
-  // It should be possible to update current size to a new value.
-  EXPECT_TRUE(holding_space_item->SetCurrentSizeInBytes(100));
-  EXPECT_EQ(holding_space_item->current_size_in_bytes(), 100);
+  // It should be possible to update secondary text to a new value.
+  EXPECT_TRUE(holding_space_item->SetSecondaryText(u"secondary_text"));
+  EXPECT_EQ(holding_space_item->secondary_text().value(), u"secondary_text");
 
-  // It should no-op to try to update current size to its existing value.
-  EXPECT_FALSE(holding_space_item->SetCurrentSizeInBytes(100));
-  EXPECT_EQ(holding_space_item->current_size_in_bytes(), 100);
+  // It should no-op to try to update secondary text to its existing value.
+  EXPECT_FALSE(holding_space_item->SetSecondaryText(u"secondary_text"));
+  EXPECT_EQ(holding_space_item->secondary_text().value(), u"secondary_text");
 
-  // It should be possible to unset current size.
-  EXPECT_TRUE(holding_space_item->SetCurrentSizeInBytes(absl::nullopt));
-  EXPECT_FALSE(holding_space_item->current_size_in_bytes());
+  // It should be possible to unset secondary text.
+  EXPECT_TRUE(holding_space_item->SetSecondaryText(absl::nullopt));
+  EXPECT_FALSE(holding_space_item->secondary_text());
+}
+
+// Tests setting the text for each holding space item type.
+TEST_P(HoldingSpaceItemTest, Text) {
+  // Create a `holding_space_item`.
+  auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/GetParam(), base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"),
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
+
+  // Initially the text should reflect the backing file.
+  EXPECT_EQ(holding_space_item->GetText(), u"file_path");
+
+  // It should be possible to update text to a new value.
+  EXPECT_TRUE(holding_space_item->SetText(u"text"));
+  EXPECT_EQ(holding_space_item->GetText(), u"text");
+
+  // It should no-op to try to update text to its existing value.
+  EXPECT_FALSE(holding_space_item->SetText(u"text"));
+  EXPECT_EQ(holding_space_item->GetText(), u"text");
+
+  // It should be possible to unset text which will once again cause text to
+  // reflect the backing file.
+  EXPECT_TRUE(holding_space_item->SetText(absl::nullopt));
+  EXPECT_EQ(holding_space_item->GetText(), u"file_path");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

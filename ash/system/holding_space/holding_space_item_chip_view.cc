@@ -390,32 +390,27 @@ void HoldingSpaceItemChipView::UpdateImage() {
   image_->layer()->SetTransform(transform);
 }
 
-// TODO(dmblack): Implement secondary label text.
 void HoldingSpaceItemChipView::UpdateLabels() {
   const bool multiselect = delegate()->selection_ui() ==
                            HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   // Primary.
-  primary_label_->SetText(item()->text());
+  primary_label_->SetText(item()->GetText());
   primary_label_->SetEnabledColor(
       selected() && multiselect
           ? GetMultiSelectTextColor()
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorPrimary));
 
-  if (!item()->IsInProgress()) {
-    secondary_label_->SetVisible(false);
-    return;
-  }
-
   // Secondary.
-  secondary_label_->SetText(item()->text());
+  secondary_label_->SetText(
+      item()->secondary_text().value_or(base::EmptyString16()));
   secondary_label_->SetEnabledColor(
       selected() && multiselect
           ? GetMultiSelectTextColor()
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorSecondary));
-  secondary_label_->SetVisible(true);
+  secondary_label_->SetVisible(!secondary_label_->GetText().empty());
 }
 
 void HoldingSpaceItemChipView::UpdateSecondaryAction() {

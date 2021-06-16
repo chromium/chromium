@@ -37,7 +37,8 @@ HoldingSpaceItem::~HoldingSpaceItem() {
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_path_ == rhs.file_path_ &&
          file_system_url_ == rhs.file_system_url_ && text_ == rhs.text_ &&
-         *image_ == *rhs.image_ && progress_ == rhs.progress_;
+         secondary_text_ == rhs.secondary_text_ && *image_ == *rhs.image_ &&
+         progress_ == rhs.progress_ && paused_ == rhs.paused_;
 }
 
 // static
@@ -62,8 +63,8 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
   // Note: std::make_unique does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, /*id=*/base::UnguessableToken::Create().ToString(), file_path,
-      file_system_url, file_path.BaseName().LossyDisplayName(),
-      std::move(image_resolver).Run(type, file_path), progress));
+      file_system_url, std::move(image_resolver).Run(type, file_path),
+      progress));
 }
 
 // static
@@ -99,7 +100,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   // NOTE: `std::make_unique` does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, DeserializeId(dict), file_path,
-      /*file_system_url=*/GURL(), file_path.BaseName().LossyDisplayName(),
+      /*file_system_url=*/GURL(),
       std::move(image_resolver).Run(type, file_path), /*progress=*/1.f));
 }
 
@@ -166,9 +167,29 @@ bool HoldingSpaceItem::SetBackingFile(const base::FilePath& file_path,
 
   file_path_ = file_path;
   file_system_url_ = file_system_url;
-  text_ = file_path.BaseName().LossyDisplayName();
   image_->UpdateBackingFilePath(file_path);
 
+  return true;
+}
+
+std::u16string HoldingSpaceItem::GetText() const {
+  return text_.value_or(file_path_.BaseName().LossyDisplayName());
+}
+
+bool HoldingSpaceItem::SetText(const absl::optional<std::u16string>& text) {
+  if (text_ == text)
+    return false;
+
+  text_ = text;
+  return true;
+}
+
+bool HoldingSpaceItem::SetSecondaryText(
+    const absl::optional<std::u16string>& secondary_text) {
+  if (secondary_text_ == secondary_text)
+    return false;
+
+  secondary_text_ = secondary_text;
   return true;
 }
 
@@ -228,28 +249,16 @@ bool HoldingSpaceItem::SetPaused(bool paused) {
   return true;
 }
 
-bool HoldingSpaceItem::SetCurrentSizeInBytes(
-    const absl::optional<int64_t>& current_size_in_bytes) {
-  if (current_size_in_bytes_ == current_size_in_bytes)
-    return false;
-
-  DCHECK(!current_size_in_bytes || current_size_in_bytes >= 0);
-  current_size_in_bytes_ = current_size_in_bytes;
-  return true;
-}
-
 HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,
                                    const GURL& file_system_url,
-                                   const std::u16string& text,
                                    std::unique_ptr<HoldingSpaceImage> image,
                                    const absl::optional<float>& progress)
     : type_(type),
       id_(id),
       file_path_(file_path),
       file_system_url_(file_system_url),
-      text_(text),
       image_(std::move(image)),
       progress_(progress) {
   if (progress_.has_value()) {

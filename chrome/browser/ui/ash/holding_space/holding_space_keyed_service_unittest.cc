@@ -811,7 +811,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
     // Verify that the holding space item has been updated in place.
     ASSERT_EQ(holding_space_item->file_path(), new_file_path);
     ASSERT_EQ(holding_space_item->file_system_url(), new_file_path_url);
-    ASSERT_EQ(holding_space_item->text(),
+    ASSERT_EQ(holding_space_item->GetText(),
               new_file_path.BaseName().LossyDisplayName());
 
     // Verify that persistence has been updated.
@@ -846,7 +846,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
     // Verify that the holding space item has been updated in place.
     ASSERT_EQ(holding_space_item->file_path(), new_file_path);
     ASSERT_EQ(holding_space_item->file_system_url(), new_file_path_url);
-    ASSERT_EQ(holding_space_item->text(),
+    ASSERT_EQ(holding_space_item->GetText(),
               new_file_path.BaseName().LossyDisplayName());
 
     // Verify that persistence has been updated.
@@ -1234,7 +1234,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
     EXPECT_EQ(item->id(), restored_item->id());
     EXPECT_EQ(item->type(), restored_item->type());
-    EXPECT_EQ(item->text(), restored_item->text());
+    EXPECT_EQ(item->GetText(), restored_item->GetText());
     EXPECT_EQ(item->file_path(), item->file_path());
     // NOTE: `restored_item` was created with a fake file system URL (as it
     // could not be properly resolved at the time of item creation).
@@ -1361,7 +1361,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
     EXPECT_EQ(item->id(), restored_item->id());
     EXPECT_EQ(item->type(), restored_item->type());
-    EXPECT_EQ(item->text(), restored_item->text());
+    EXPECT_EQ(item->GetText(), restored_item->GetText());
     EXPECT_EQ(item->file_path(), item->file_path());
     // NOTE: `restored_item` was created with a fake file system URL (as it
     // could not be properly resolved at the time of item creation).
@@ -1480,7 +1480,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
     EXPECT_EQ(item->id(), restored_item->id());
     EXPECT_EQ(item->type(), restored_item->type());
-    EXPECT_EQ(item->text(), restored_item->text());
+    EXPECT_EQ(item->GetText(), restored_item->GetText());
     EXPECT_EQ(item->file_path(), item->file_path());
     // NOTE: `restored_item` was created with a fake file system URL (as it
     // could not be properly resolved at the time of item creation).
@@ -1906,7 +1906,7 @@ TEST_P(HoldingSpaceKeyedServiceAddItemTest, AddItem) {
   // Verify holding space `item` metadata.
   HoldingSpaceItem* const item = model->items()[0].get();
   EXPECT_EQ(item->type(), GetType());
-  EXPECT_EQ(item->text(), file_path.BaseName().LossyDisplayName());
+  EXPECT_EQ(item->GetText(), file_path.BaseName().LossyDisplayName());
   EXPECT_EQ(item->file_path(), file_path);
   EXPECT_EQ(item->file_system_url(),
             holding_space_util::ResolveFileSystemUrl(profile, file_path));
@@ -2044,7 +2044,7 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(item_1_virtual_path,
             GetVirtualPathFromUrl(item_1->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(u"File 1.png", item_1->text());
+  EXPECT_EQ(u"File 1.png", item_1->GetText());
 
   const HoldingSpaceItem* item_2 = model->items()[1].get();
   EXPECT_EQ(item_2_full_path, item_2->file_path());
@@ -2060,7 +2060,7 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(item_2_virtual_path,
             GetVirtualPathFromUrl(item_2->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(u"File 2.png", item_2->text());
+  EXPECT_EQ(u"File 2.png", item_2->GetText());
 }
 
 // Base class for tests of print-to-PDF integration. Parameterized by whether

@@ -33,9 +33,13 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   if (progress_)
     did_update |= item_->SetProgress(progress_.value());
 
-  // Update current size.
-  if (current_size_in_bytes_)
-    did_update |= item_->SetCurrentSizeInBytes(current_size_in_bytes_.value());
+  // Update secondary text.
+  if (secondary_text_)
+    did_update |= item_->SetSecondaryText(secondary_text_.value());
+
+  // Update text.
+  if (text_)
+    did_update |= item_->SetText(text_.value());
 
   // Notify observers if and only if an update occurred.
   if (did_update) {
@@ -67,10 +71,16 @@ HoldingSpaceModel::ScopedItemUpdate::SetProgress(
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
-HoldingSpaceModel::ScopedItemUpdate::SetCurrentSizeInBytes(
-    const absl::optional<int64_t>& current_size_in_bytes) {
-  DCHECK(!current_size_in_bytes || current_size_in_bytes >= 0);
-  current_size_in_bytes_ = current_size_in_bytes;
+HoldingSpaceModel::ScopedItemUpdate::SetSecondaryText(
+    const absl::optional<std::u16string>& secondary_text) {
+  secondary_text_ = secondary_text;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetText(
+    const absl::optional<std::u16string>& text) {
+  text_ = text;
   return *this;
 }
 

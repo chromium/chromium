@@ -126,7 +126,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   SetNotifyEnterExitOnChild(true);
 
   // Accessibility.
-  GetViewAccessibility().OverrideName(item->text());
+  GetViewAccessibility().OverrideName(item->GetText());
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   // Layer.
@@ -289,7 +289,7 @@ void HoldingSpaceItemView::OnThemeChanged() {
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   if (item_ == item) {
-    GetViewAccessibility().OverrideName(item->text());
+    GetViewAccessibility().OverrideName(item->GetText());
     UpdatePrimaryAction();
   }
 }

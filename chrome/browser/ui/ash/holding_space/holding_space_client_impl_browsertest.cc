@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItems) {
   // same text and file path as the original download holding space item.
   HoldingSpaceItem* pinned_file_item = holding_space_model->items()[1].get();
   EXPECT_EQ(pinned_file_item->type(), HoldingSpaceItem::Type::kPinnedFile);
-  EXPECT_EQ(download_item->text(), pinned_file_item->text());
+  EXPECT_EQ(download_item->GetText(), pinned_file_item->GetText());
   EXPECT_EQ(download_item->file_path(), pinned_file_item->file_path());
 }
 
