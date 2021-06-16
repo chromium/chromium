@@ -75,6 +75,21 @@ cast_source_set("web_preferences") {
   ]
 }
 
+cast_source_set("named_message_port_connector_cast") {
+  sources = [
+    "named_message_port_connector_cast.cc",
+    "named_message_port_connector_cast.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/browser:public",
+    "//components/cast/message_port:message_port_cast",
+    "//components/cast/named_message_port_connector",
+    "//components/on_load_script_injector/browser",
+  ]
+}
+
 group("browser") {
   public_deps = [ ":browser_base" ]
 }
@@ -181,6 +196,7 @@ cast_source_set("browser_base") {
 
   deps = [
     ":browser_buildflags",
+    ":named_message_port_connector_cast",
     ":web_preferences",
     "//base",
     "//base:i18n",
@@ -216,6 +232,7 @@ cast_source_set("browser_base") {
     "//chromecast/net",
     "//chromecast/net:connectivity_checker",
     "//chromecast/service",
+    "//components/cast/message_port:message_port_cast",
     "//components/cdm/browser",
     "//components/download/public/common:public",
     "//components/media_control/browser",

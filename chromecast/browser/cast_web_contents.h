@@ -32,11 +32,6 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
-namespace on_load_script_injector {
-template <typename>
-class OnLoadScriptInjectorHost;
-}  // namespace on_load_script_injector
-
 namespace chromecast {
 
 struct RendererFeature {
@@ -241,6 +236,8 @@ class CastWebContents {
     // Whether WebRTC peer connections are allowed to use legacy versions of the
     // TLS/DTLS protocols.
     bool webrtc_allow_legacy_tls_protocols = false;
+    // Enable NamedMessagePortConnectorCast JS APIs. This is only meant to be
+    // modified by testing targets.
 
     InitParams();
     InitParams(const InitParams& other);
@@ -344,11 +341,6 @@ class CastWebContents {
   // ===========================================================================
   // Page Communication
   // ===========================================================================
-
-  // Returns the script injector instance, which injects scripts at page load
-  // time.
-  virtual on_load_script_injector::OnLoadScriptInjectorHost<uint64_t>*
-  script_injector() = 0;
 
   // Executes a UTF-8 encoded |script| for every subsequent page load where
   // the frame's URL has an origin reflected in |origins|. The script is

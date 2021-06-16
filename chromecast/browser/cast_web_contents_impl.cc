@@ -24,6 +24,7 @@
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
 #include "chromecast/common/queryable_data.h"
 #include "chromecast/net/connectivity_checker.h"
+#include "components/cast/message_port/message_port_cast.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
 #include "content/public/browser/message_port_provider.h"
 #include "content/public/browser/navigation_entry.h"
@@ -349,11 +350,6 @@ void CastWebContentsImpl::SetAppProperties(const std::string& session_id,
       web_contents_, session_id, is_audio_app);
 }
 
-on_load_script_injector::OnLoadScriptInjectorHost<uint64_t>*
-CastWebContentsImpl::script_injector() {
-  return &script_injector_;
-}
-
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,
                                                   base::StringPiece script) {
   script_injector_.AddScriptForAllOrigins(id, std::string(script));
@@ -396,6 +392,11 @@ void CastWebContentsImpl::ConnectToBindingsService(
   DCHECK(api_bindings_remote);
 
   bindings_received_ = false;
+
+  named_message_port_connector_ =
+      std::make_unique<NamedMessagePortConnectorCast>(this);
+  named_message_port_connector_->RegisterPortHandler(base::BindRepeating(
+      &CastWebContentsImpl::OnPortConnected, base::Unretained(this)));
 
   api_bindings_.Bind(std::move(api_bindings_remote));
   // Fetch bindings and inject scripts into |script_injector_|.
@@ -596,6 +597,19 @@ void CastWebContentsImpl::OnBindingsReceived(
     pending_load_url_ = GURL();
     LoadUrl(gurl);
   }
+}
+
+bool CastWebContentsImpl::OnPortConnected(
+    base::StringPiece port_name,
+    std::unique_ptr<cast_api_bindings::MessagePort> port) {
+  DCHECK(api_bindings_);
+
+  api_bindings_->Connect(
+      std::string(port_name),
+      cast_api_bindings::MessagePortCast::FromMessagePort(port.get())
+          ->TakePort()
+          .PassPort());
+  return true;
 }
 
 void CastWebContentsImpl::OnInterfaceRequestFromFrame(

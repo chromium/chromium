@@ -41,10 +41,6 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(void, BlockMediaLoading, (bool), (override));
   MOCK_METHOD(void, BlockMediaStarting, (bool), (override));
   MOCK_METHOD(void, EnableBackgroundVideoPlayback, (bool), (override));
-  MOCK_METHOD(on_load_script_injector::OnLoadScriptInjectorHost<uint64_t>*,
-              script_injector,
-              (),
-              (override));
   MOCK_METHOD(void,
               AddBeforeLoadJavaScript,
               (uint64_t, base::StringPiece),
