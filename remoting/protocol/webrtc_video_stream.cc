@@ -18,6 +18,7 @@
 #include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_frame_scheduler_simple.h"
 #include "remoting/protocol/webrtc_transport.h"
+#include "remoting/protocol/webrtc_video_frame_adapter.h"
 #include "remoting/protocol/webrtc_video_track_source.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/notifier.h"
@@ -35,21 +36,6 @@ namespace {
 
 const char kStreamLabel[] = "screen_stream";
 const char kVideoLabel[] = "screen_video";
-
-std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
-  using EncodeResult = WebrtcVideoEncoder::EncodeResult;
-
-  switch (result) {
-    case EncodeResult::SUCCEEDED:
-      return "Succeeded";
-    case EncodeResult::FRAME_SIZE_EXCEEDS_CAPABILITY:
-      return "Frame size exceeds capability";
-    case EncodeResult::UNKNOWN_ERROR:
-      return "Unknown error";
-  }
-  NOTREACHED();
-  return "";
-}
 
 }  // namespace
 
@@ -127,11 +113,12 @@ void WebrtcVideoStream::Start(
 
   capturer_->Start(this);
 
-  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> src =
+  video_track_source_ =
       new rtc::RefCountedObject<WebrtcVideoTrackSource>(base::BindRepeating(
           &WebrtcVideoStream::OnEncoderReady, weak_factory_.GetWeakPtr()));
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      peer_connection_factory->CreateVideoTrack(kVideoLabel, src);
+      peer_connection_factory->CreateVideoTrack(kVideoLabel,
+                                                video_track_source_);
 
   webrtc::RtpTransceiverInit init;
   init.stream_ids = {kStreamLabel};
@@ -238,31 +225,15 @@ void WebrtcVideoStream::OnCaptureResult(
 
   current_frame_stats_->capturer_id = frame->capturer_id();
 
-  if (recreate_encoder_) {
-    recreate_encoder_ = false;
-    encoder_.reset();
-  }
-
-  if (!encoder_) {
-    encoder_selector_.SetDesktopFrame(*frame);
-    encoder_ = encoder_selector_.CreateEncoder();
-    encoder_->SetLosslessEncode(lossless_encode_);
-
-    // TODO(zijiehe): Permanently stop the video stream if we cannot create an
-    // encoder for the |frame|.
-  }
-
   WebrtcVideoEncoder::FrameParams frame_params;
   if (!scheduler_->OnFrameCaptured(frame.get(), &frame_params)) {
     return;
   }
 
-  if (encoder_) {
-    current_frame_stats_->encode_started_time = base::TimeTicks::Now();
-    encoder_->Encode(std::move(frame), frame_params,
-                     base::BindOnce(&WebrtcVideoStream::EncodeCallback,
-                                    weak_factory_.GetWeakPtr()));
-  }
+  // Send the captured frame to the registered sink, if any. WebRTC will route
+  // this to the appropriate encoder.
+  video_track_source_->SendCapturedFrame(std::move(frame),
+                                         std::move(current_frame_stats_));
 }
 
 void WebrtcVideoStream::OnChannelInitialized(
@@ -291,46 +262,7 @@ void WebrtcVideoStream::OnFrameEncoded(
     WebrtcVideoEncoder::EncodedFrame* frame) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  current_frame_stats_->encode_ended_time = base::TimeTicks::Now();
-
   scheduler_->OnFrameEncoded(encode_result, frame);
-
-  if (encode_result != WebrtcVideoEncoder::EncodeResult::SUCCEEDED) {
-    LOG(ERROR) << "Video encoder returns error "
-               << EncodeResultToString(encode_result);
-    // TODO(zijiehe): Restart the video stream.
-    encoder_.reset();
-    return;
-  }
-
-  if (!frame) {
-    return;
-  }
-
-  if (recreate_encoder_) {
-    // Don't send the encoded frame if the new SDP-negotiated encoder might be
-    // different from the current one. This would trigger a crash in WebRTC.
-    return;
-  }
-
-  // These next 3 lines are needed by
-  // WebrtcDummyVideoEncoderFactory::SendEncodedFrame(), which adds the
-  // timestamps to the frame sent to WebRTC.
-  // TODO(crbug.com/1192865): Remove them when standard encoding pipeline is
-  // implemented, as they will no longer be required by WebRTC.
-  frame->capture_time = current_frame_stats_->capture_started_time;
-  frame->encode_start = current_frame_stats_->encode_started_time;
-  frame->encode_finish = current_frame_stats_->encode_ended_time;
-
-  frame->stats = std::move(current_frame_stats_);
-
-  webrtc::EncodedImageCallback::Result result =
-      video_encoder_factory_->SendEncodedFrame(*frame);
-
-  // Directly call the handler to send the FrameStats message.
-  // TODO(crbug.com/1192865): Remove this when standard encoding pipeline is
-  // implemented - the encoder will be responsible for sending the frame.
-  OnEncodedFrameSent(result, *frame);
 }
 
 void WebrtcVideoStream::OnEncodedFrameSent(
@@ -402,6 +334,11 @@ void WebrtcVideoStream::OnEncoderCreated(
     webrtc::VideoCodecType codec_type,
     const webrtc::SdpVideoFormat::Parameters& parameters) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  // TODO(crbug.com/1192865): Remove this method (and the callback
+  // machinery that calls it), as this class no longer creates encoders.
+  // The encoder-selector, and the encoder-creation methods can also be
+  // removed.
 
   // This method is called when SDP has been negotiated and WebRTC has
   // created a preferred encoder via the WebrtcDummyVideoEncoderFactory

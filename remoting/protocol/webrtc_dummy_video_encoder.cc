@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "remoting/protocol/video_channel_state_observer.h"
+#include "remoting/protocol/webrtc_video_encoder_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/media/base/vp9_profile.h"
 
@@ -202,19 +203,15 @@ WebrtcDummyVideoEncoderFactory::WebrtcDummyVideoEncoderFactory()
 #endif
 }
 
-WebrtcDummyVideoEncoderFactory::~WebrtcDummyVideoEncoderFactory() {
-  DCHECK(encoders_.empty());
-}
+WebrtcDummyVideoEncoderFactory::~WebrtcDummyVideoEncoderFactory() = default;
 
 std::unique_ptr<webrtc::VideoEncoder>
 WebrtcDummyVideoEncoderFactory::CreateVideoEncoder(
     const webrtc::SdpVideoFormat& format) {
   webrtc::VideoCodecType type = webrtc::PayloadStringToCodecType(format.name);
-  std::unique_ptr<WebrtcDummyVideoEncoder> encoder =
-      base::WrapUnique(new WebrtcDummyVideoEncoder(
-          main_task_runner_, video_channel_state_observer_, this));
+  auto encoder = std::make_unique<WebrtcVideoEncoderWrapper>(
+      format, main_task_runner_, video_channel_state_observer_);
   base::AutoLock lock(lock_);
-  encoders_.push_back(encoder.get());
   if (encoder_created_callback_) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -228,28 +225,6 @@ WebrtcDummyVideoEncoderFactory::GetSupportedFormats() const {
   return formats_;
 }
 
-WebrtcDummyVideoEncoderFactory::CodecInfo
-WebrtcDummyVideoEncoderFactory::QueryVideoEncoder(
-    const webrtc::SdpVideoFormat& format) const {
-  CodecInfo codec_info;
-  // Set internal source to true to directly provide encoded frames to webrtc.
-  codec_info.has_internal_source = true;
-  return codec_info;
-}
-
-webrtc::EncodedImageCallback::Result
-WebrtcDummyVideoEncoderFactory::SendEncodedFrame(
-    const WebrtcVideoEncoder::EncodedFrame& frame) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  base::AutoLock lock(lock_);
-  if (encoders_.size() != 1) {
-    LOG(ERROR) << "Unexpected number of encoders " << encoders_.size();
-    return webrtc::EncodedImageCallback::Result(
-        webrtc::EncodedImageCallback::Result::ERROR_SEND_FAILED);
-  }
-  return encoders_.front()->SendEncodedFrame(frame);
-}
-
 void WebrtcDummyVideoEncoderFactory::RegisterEncoderSelectedCallback(
     const base::RepeatingCallback<
         void(webrtc::VideoCodecType,
@@ -260,25 +235,13 @@ void WebrtcDummyVideoEncoderFactory::RegisterEncoderSelectedCallback(
 void WebrtcDummyVideoEncoderFactory::SetVideoChannelStateObserver(
     base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(encoders_.empty());
   base::AutoLock lock(lock_);
   video_channel_state_observer_ = video_channel_state_observer;
 }
 
 void WebrtcDummyVideoEncoderFactory::EncoderDestroyed(
     WebrtcDummyVideoEncoder* encoder) {
-  base::AutoLock lock(lock_);
-  if (!encoder) {
-    LOG(ERROR) << "Attempting to destroy null encoder";
-    return;
-  }
-  for (auto pos = encoders_.begin(); pos != encoders_.end(); ++pos) {
-    if (*pos == encoder) {
-      encoders_.erase(pos);
-      return;
-    }
-  }
-  NOTREACHED() << "Asked to remove encoder not owned by factory.";
+  // TODO(crbug.com/1192865): Remove this method.
 }
 
 }  // namespace protocol

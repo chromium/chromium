@@ -22,6 +22,7 @@
 #include "remoting/protocol/host_video_stats_dispatcher.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/video_stream.h"
+#include "remoting/protocol/webrtc_video_track_source.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -110,6 +111,8 @@ class WebrtcVideoStream : public VideoStream,
   scoped_refptr<base::SequencedTaskRunner> encode_task_runner_;
   // Used to encode captured frames.
   std::unique_ptr<WebrtcVideoEncoder> encoder_;
+  // Used to send captured frames to the encoder.
+  rtc::scoped_refptr<WebrtcVideoTrackSource> video_track_source_;
 
   scoped_refptr<InputEventTimestampsSource> event_timestamps_source_;
 

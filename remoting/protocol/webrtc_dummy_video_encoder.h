@@ -14,6 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "remoting/codec/webrtc_video_encoder.h"
+#include "remoting/protocol/webrtc_video_encoder_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
@@ -30,6 +31,8 @@ class WebrtcDummyVideoEncoderFactory;
 // outside of this dummy encoder (in WebrtcVideoEncoder called from
 // WebrtcVideoStream). They are passed to SendEncodedFrame() to be delivered to
 // the network layer.
+// TODO(crbug.com/1192865): Remove this class and move the factory into new
+// {.cc, .h} files.
 class WebrtcDummyVideoEncoder : public webrtc::VideoEncoder {
  public:
   enum State { kUninitialized = 0, kInitialized };
@@ -84,14 +87,9 @@ class WebrtcDummyVideoEncoderFactory : public webrtc::VideoEncoderFactory {
   std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
       const webrtc::SdpVideoFormat& format) override;
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
-  CodecInfo QueryVideoEncoder(
-      const webrtc::SdpVideoFormat& format) const override;
 
-  webrtc::EncodedImageCallback::Result SendEncodedFrame(
-      const WebrtcVideoEncoder::EncodedFrame& packet);
-
-  // Callback will be called once the dummy encoder has been created on
-  // |main_task_runner_|.
+  // TODO(crbug.com/1192865): Remove these 2 methods, and just pass the
+  // callbacks in the ctor. Then the |lock_| can also be removed.
   void RegisterEncoderSelectedCallback(
       const base::RepeatingCallback<
           void(webrtc::VideoCodecType,
@@ -107,10 +105,9 @@ class WebrtcDummyVideoEncoderFactory : public webrtc::VideoEncoderFactory {
 
   std::vector<webrtc::SdpVideoFormat> formats_;
 
-  // Protects |video_channel_state_observer_| and |encoders_|.
+  // Protects |video_channel_state_observer_|.
   base::Lock lock_;
   base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer_;
-  std::vector<WebrtcDummyVideoEncoder*> encoders_;
   base::RepeatingCallback<void(webrtc::VideoCodecType,
                                const webrtc::SdpVideoFormat::Parameters&)>
       encoder_created_callback_;

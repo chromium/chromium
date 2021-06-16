@@ -92,9 +92,18 @@ TEST_F(WebrtcFrameSchedulerTest, EmptyFrameUpdate_ShouldNotBeSentImmediately) {
 
   // Initial capture, full frame.
   frame_.mutable_updated_region()->SetRect(DesktopRect::MakeWH(1, 1));
+
+  // Wait long enough to schedule a capture. OnFrameCaptured() must only be
+  // called after the scheduler has requested a screen capture.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  ASSERT_EQ(capture_callback_count_, 1);
   scheduler_->OnFrameCaptured(&frame_, &out_params);
+
   // Empty frame.
   frame_.mutable_updated_region()->Clear();
+  scheduler_->OnEncoderReady();  // Trigger scheduling another capture.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  ASSERT_EQ(capture_callback_count_, 2);
   bool result = scheduler_->OnFrameCaptured(&frame_, &out_params);
 
   // Should not be sent, because of throttling of empty frames.
@@ -110,11 +119,15 @@ TEST_F(WebrtcFrameSchedulerTest, EmptyFrameUpdate_ShouldBeSentAfter2000ms) {
 
   // Initial capture, full frame.
   frame_.mutable_updated_region()->SetRect(DesktopRect::MakeWH(1, 1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  ASSERT_EQ(capture_callback_count_, 1);
   scheduler_->OnFrameCaptured(&frame_, &out_params);
-  // Wait more than 2000ms.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(3000));
   // Empty frame.
   frame_.mutable_updated_region()->Clear();
+  scheduler_->OnEncoderReady();
+  // Wait more than 2000ms.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(3000));
+  ASSERT_EQ(capture_callback_count_, 2);
   bool result = scheduler_->OnFrameCaptured(&frame_, &out_params);
 
   // Empty frames should be sent at the throttled rate.

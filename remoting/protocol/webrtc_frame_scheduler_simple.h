@@ -80,7 +80,7 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
 
   LeakyBucket pacing_bucket_;
 
-  // Set to true when a frame is being captured or encoded.
+  // Set to true when a frame is being captured.
   bool frame_pending_ = false;
 
   base::TimeDelta rtt_estimate_{base::TimeDelta::Max()};

@@ -154,6 +154,8 @@ bool WebrtcFrameSchedulerSimple::OnFrameCaptured(
     const webrtc::DesktopFrame* frame,
     WebrtcVideoEncoder::FrameParams* params_out) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(frame_pending_);
+  frame_pending_ = false;
 
   base::TimeTicks now = tick_clock_->NowTicks();
 
@@ -237,8 +239,6 @@ void WebrtcFrameSchedulerSimple::OnFrameEncoded(
     WebrtcVideoEncoder::EncodeResult encode_result,
     WebrtcVideoEncoder::EncodedFrame* encoded_frame) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(frame_pending_);
-  frame_pending_ = false;
 
   base::TimeTicks now = tick_clock_->NowTicks();
 
