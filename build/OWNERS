@@ -9,7 +9,7 @@ thomasanderson@chromium.org
 tikuta@chromium.org
 
 # Clang build config changes:
-hans@chromium.org
+file://tools/clang/scripts/OWNERS
 
 # For java build changes:
 wnwen@chromium.org
