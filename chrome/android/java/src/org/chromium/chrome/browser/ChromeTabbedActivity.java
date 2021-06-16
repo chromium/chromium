@@ -1548,9 +1548,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             setTrackColdStartupMetrics(true);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mJankTracker = new JankTracker(this);
-        }
+        mJankTracker = new JankTracker(this);
 
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
@@ -2331,7 +2329,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mStartupPaintPreviewHelperSupplier.destroy();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mJankTracker != null) {
+        if (mJankTracker != null) {
             mJankTracker.destroy();
             mJankTracker = null;
         }

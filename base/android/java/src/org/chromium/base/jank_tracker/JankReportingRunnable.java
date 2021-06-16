@@ -29,7 +29,7 @@ class JankReportingRunnable implements Runnable {
             mMetricsStore.startTrackingScenario(mScenario);
         } else {
             FrameMetrics frames = mMetricsStore.stopTrackingScenario(mScenario);
-            if (frames == null) {
+            if (frames == null || frames.timestampsNs.length == 0) {
                 return;
             }
 

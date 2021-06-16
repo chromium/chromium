@@ -5,9 +5,7 @@
 package org.chromium.base.jank_tracker;
 
 import android.app.Activity;
-import android.os.Build.VERSION_CODES;
-
-import androidx.annotation.RequiresApi;
+import android.os.Build;
 
 /**
  * Class for recording janky frame metrics for a specific Activity.
@@ -16,8 +14,10 @@ import androidx.annotation.RequiresApi;
  * based on activity state. When the activity is being destroyed {@link #destroy()} should be called
  * to clear the activity state observer. All methods should be called from the UI thread.
  */
-@RequiresApi(api = VERSION_CODES.N)
 public final class JankTracker {
+    private static final boolean IS_TRACKING_ENABLED =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+
     private final JankActivityTracker mActivityTracker;
     private final JankReportingScheduler mReportingScheduler;
 
@@ -26,6 +26,12 @@ public final class JankTracker {
      * starts when the activity starts, and it's paused when the activity stops.
      */
     public JankTracker(Activity activity) {
+        if (!IS_TRACKING_ENABLED) {
+            mActivityTracker = null;
+            mReportingScheduler = null;
+            return;
+        }
+
         FrameMetricsStore metricsStore = new FrameMetricsStore();
         FrameMetricsListener metricsListener = new FrameMetricsListener(metricsStore);
         mReportingScheduler = new JankReportingScheduler(metricsStore);
@@ -34,10 +40,14 @@ public final class JankTracker {
     }
 
     public void startTrackingScenario(@JankScenario int scenario) {
+        if (!IS_TRACKING_ENABLED) return;
+
         mReportingScheduler.startTrackingScenario(scenario);
     }
 
     public void finishTrackingScenario(@JankScenario int scenario) {
+        if (!IS_TRACKING_ENABLED) return;
+
         mReportingScheduler.finishTrackingScenario(scenario);
     }
 
@@ -45,6 +55,8 @@ public final class JankTracker {
      * Stops listening for Activity state changes.
      */
     public void destroy() {
+        if (!IS_TRACKING_ENABLED) return;
+
         mActivityTracker.destroy();
     }
 }
