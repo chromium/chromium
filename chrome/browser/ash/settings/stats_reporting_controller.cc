@@ -85,11 +85,8 @@ void StatsReportingController::SetEnabled(Profile* profile, bool enabled) {
 bool StatsReportingController::IsEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool value = false;
-  if ((GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_NONE ||
-       is_value_being_set_with_service_) &&
-      GetPendingValue(&value)) {
-    // Return the pending value if it exists and we are sure there is no owner
-    // or the value has not been stored correctly in signed store:
+  if (ShouldReadFromPendingValue() && GetPendingValue(&value)) {
+    // Return the pending value if it exists.
     return value;
   }
   // Otherwise, always return the value from the signed store.
@@ -213,7 +210,7 @@ void StatsReportingController::NotifyObservers() {
 }
 
 DeviceSettingsService::OwnershipStatus
-StatsReportingController::GetOwnershipStatus() {
+StatsReportingController::GetOwnershipStatus() const {
   return DeviceSettingsService::Get()->GetOwnershipStatus();
 }
 
@@ -237,6 +234,21 @@ void StatsReportingController::ClearPendingValue() {
 
 bool StatsReportingController::GetSignedStoredValue(bool* result) {
   return CrosSettings::Get()->GetBoolean(kStatsReportingPref, result);
+}
+
+bool StatsReportingController::ShouldReadFromPendingValue() const {
+  // Read from pending value before ownership is taken or ownership is
+  // unknown. There's a brief moment when ownership is unknown for every
+  // Chrome starts. In that case, we will read from pending value if it exists
+  // (which means ownership is not taken), and read from service when pending
+  // value pending is cleared (which means ownership is taken).
+  if (GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_NONE ||
+      GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_UNKNOWN) {
+    return true;
+  }
+  // Read from pending value if ownership is taken but pending value has not
+  // been set successfully with service.
+  return is_value_being_set_with_service_;
 }
 
 }  // namespace ash
