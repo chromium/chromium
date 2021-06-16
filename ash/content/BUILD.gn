@@ -32,6 +32,8 @@ test("ash_content_unittests") {
   ]
 }
 
+# When adding new WebUI, add your closure_compile target here. Otherwise you
+# won't get type checking.
 group("closure_compile") {
   testonly = true
   deps = [

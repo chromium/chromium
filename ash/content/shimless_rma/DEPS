@@ -1,8 +1,6 @@
 include_rules = [
-  "-chrome",
   "+chromeos/dbus/rmad",
   "+chromeos/grit/chromeos_shimless_rma_resources.h",
-  "+content/public/browser",
   "+ui/resources",
   "+ui/web_dialogs",
   "+ui/chromeos/strings",
