@@ -98,6 +98,14 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 
 }  // namespace
 
+// TODO(crbug.com/1174560): Allow usage of iOS15 interactionState on iOS 14 SDK
+// based builds.
+#if !defined(__IPHONE_15_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_15_0
+@interface WKWebView (Additions)
+@property(nonatomic, nullable, copy) id interactionState;
+@end
+#endif
+
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
                                 CRWInputViewProvider,
                                 CRWJSInjectorDelegate,
@@ -907,7 +915,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 - (BOOL)setSessionStateData:(NSData*)data {
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
   if (@available(iOS 15, *)) {
     NSError* error = nil;
     NSKeyedUnarchiver* unarchiver =
@@ -929,12 +936,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     [self.webView setInteractionState:interactionState];
     return YES;
   }
-#endif
   return NO;
 }
 
 - (NSData*)sessionStateData {
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
   if (@available(iOS 15, *)) {
     NSError* error = nil;
     return [NSKeyedArchiver
@@ -942,7 +947,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
              requiringSecureCoding:NO
                              error:&error];
   }
-#endif
   return nil;
 }
 
