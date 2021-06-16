@@ -16,15 +16,14 @@ JNI_NoteServiceFactory_GetForProfile(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_profile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  ProfileKey* profile_key = profile->GetProfileKey();
 
   // Return null if there is no reasonable context for the provided Java
   // profile.
-  if (profile_key == nullptr)
+  if (profile == nullptr)
     return base::android::ScopedJavaLocalRef<jobject>();
 
   content_creation::NoteService* note_service =
-      NoteServiceFactory::GetInstance()->GetServiceInstance(profile_key);
+      content_creation::NoteServiceFactory::GetForProfile(profile);
   return content_creation::NoteServiceBridge::GetBridgeForNoteService(
       note_service);
 }

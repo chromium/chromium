@@ -1,0 +1,41 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/content_creation/notes/core/server/notes_repository.h"
+
+#include "components/content_creation/notes/core/server/notes_server_saver.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace content_creation {
+
+NotesRepository::NotesRepository(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : identity_manager_(identity_manager),
+      url_loader_factory_(url_loader_factory) {}
+
+NotesRepository::~NotesRepository() = default;
+
+void NotesRepository::PublishNote(const NoteData& note_data,
+                                  PublishNoteCallback callback) {
+  notes_saver_ = std::make_unique<NotesServerSaver>(
+      url_loader_factory_, identity_manager_, note_data,
+      base::BindOnce(&NotesRepository::OnNotePublished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  notes_saver_->Start();
+}
+
+// Used for tests.
+NotesRepository::NotesRepository() = default;
+
+void NotesRepository::OnNotePublished(PublishNoteCallback callback,
+                                      SaveNoteResponse save_response) {
+  notes_saver_.reset();
+
+  NOTIMPLEMENTED();
+}
+
+}  // namespace content_creation

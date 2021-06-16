@@ -8,6 +8,8 @@ static_library("server") {
   sources = [
     "note_data.cc",
     "note_data.h",
+    "notes_repository.cc",
+    "notes_repository.h",
     "notes_server_base.cc",
     "notes_server_base.h",
     "notes_server_saver.cc",

@@ -7,22 +7,20 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/core/simple_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+class KeyedService;
+class Profile;
 
 namespace content_creation {
-class NoteService;
-}  // namespace content_creation
 
-class SimpleFactoryKey;
+class NoteService;
 
 // Factory to create and retrieve a NoteService per profile.
-class NoteServiceFactory : public SimpleKeyedServiceFactory {
+class NoteServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static NoteServiceFactory* GetInstance();
-
-  static content_creation::NoteService* GetServiceInstance(
-      SimpleFactoryKey* key);
+  static content_creation::NoteService* GetForProfile(Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<NoteServiceFactory>;
@@ -30,12 +28,11 @@ class NoteServiceFactory : public SimpleKeyedServiceFactory {
   NoteServiceFactory();
   ~NoteServiceFactory() override;
 
-  // SimpleKeyedServiceFactory implementation:
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      SimpleFactoryKey* key) const override;
-  SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NoteServiceFactory);
+  // BrowserContextKeyedServiceFactory implementation:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
 };
+
+}  // namespace content_creation
 
 #endif  // CHROME_BROWSER_CONTENT_CREATION_NOTES_INTERNAL_NOTE_SERVICE_FACTORY_H_

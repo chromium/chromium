@@ -39,6 +39,7 @@ source_set("unit_tests") {
     ":features",
     "//base",
     "//base/test:test_support",
+    "//components/content_creation/notes/core/server",
     "//components/content_creation/notes/core/templates",
     "//components/content_creation/notes/core/test:test_support",
     "//testing/gmock",

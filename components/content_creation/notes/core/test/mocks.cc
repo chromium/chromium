@@ -10,5 +10,8 @@ namespace test {
 MockTemplateStore::MockTemplateStore() = default;
 MockTemplateStore::~MockTemplateStore() = default;
 
+MockNotesRepository::MockNotesRepository() = default;
+MockNotesRepository::~MockNotesRepository() = default;
+
 }  // namespace test
 }  // namespace content_creation
