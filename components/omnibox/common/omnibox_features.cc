@@ -292,7 +292,7 @@ const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
 // If enabled, clipboard suggestion will not show the clipboard content until
 // the user clicks the reveal button.
 const base::Feature kClipboardSuggestionContentHidden = {
-    "ClipboardSuggestionContentHidden", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ClipboardSuggestionContentHidden", enabled_by_default_android_only};
 
 // If enabled, shows slightly more compact suggestions, allowing the
 // kAdaptiveSuggestionsCount feature to fit more suggestions on screen.
