@@ -2632,7 +2632,6 @@ crbug.com/626703 [ Mac11.0 ] virtual/layout_ng_fragment_traversal/external/wpt/c
 crbug.com/626703 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-254.xht [ Failure Crash ]
 crbug.com/626703 [ Mac11.0 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-178.xht [ Failure Timeout ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/form-controls/input-placeholder-line-height.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht [ Failure ]
 crbug.com/626703 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/CSS2/backgrounds/background-attachment-005.xht [ Failure Timeout ]
@@ -3454,13 +3453,14 @@ crbug.com/626703 [ Win ] virtual/plz-dedicated-worker/external/wpt/resource-timi
 crbug.com/626703 [ Mac ] external/wpt/webrtc/RTCDTMFSender-ontonechange-long.https.html [ Pass Failure ]
 crbug.com/626703 [ Mac ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDTMFSender-ontonechange-long.https.html [ Pass Failure ]
 
-
 ### See crbug.com/891427 comment near the top of this file:
 crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins-2.html [ Failure ]
 crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-008.html [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-unsafe-none-report-to.https.html [ Pass Failure ]
+
+crbug.com/1220220 external/wpt/html/rendering/non-replaced-elements/form-controls/input-placeholder-line-height.html [ Failure ]
 
 # Tests pass under virtual/webrtc-wpt-plan-b
 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-operations.https.html [ Pass ]
