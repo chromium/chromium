@@ -13,13 +13,11 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_sandbox_type.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -243,22 +241,6 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
   return trusted_url_loader_factory_.get();
 }
 
-auction_worklet::mojom::AuctionWorkletService*
-AdAuctionServiceImpl::GetWorkletService() {
-  // If there are no live auctions, what's requesting the service?
-  DCHECK(!auctions_.empty());
-
-  if (!auction_worklet_service_ || !auction_worklet_service_.is_connected()) {
-    auction_worklet_service_.reset();
-    content::ServiceProcessHost::Launch(
-        auction_worklet_service_.BindNewPipeAndPassReceiver(),
-        ServiceProcessHost::Options()
-            .WithDisplayName("Auction Worklet Service")
-            .Pass());
-  }
-  return auction_worklet_service_.get();
-}
-
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AuctionRunner* auction,
@@ -271,9 +253,6 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   auto auction_it = auctions_.find(auction);
   DCHECK(auction_it != auctions_.end());
   auctions_.erase(auction_it);
-
-  if (auctions_.empty())
-    auction_worklet_service_.reset();
 
   // Forward debug information to devtools.
   for (const std::string& error : errors) {

@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/interest_group_manager.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -18,7 +20,8 @@ InterestGroupManager::InterestGroupManager(const base::FilePath& path,
     : impl_(base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-            in_memory ? base::FilePath() : path) {}
+            in_memory ? base::FilePath() : path),
+      auction_process_manager_(std::make_unique<AuctionProcessManager>()) {}
 
 InterestGroupManager::~InterestGroupManager() = default;
 

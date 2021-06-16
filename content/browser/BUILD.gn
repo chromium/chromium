@@ -1028,6 +1028,8 @@ source_set("browser") {
     "installedapp/installed_app_provider_impl.h",
     "interest_group/ad_auction_service_impl.cc",
     "interest_group/ad_auction_service_impl.h",
+    "interest_group/auction_process_manager.cc",
+    "interest_group/auction_process_manager.h",
     "interest_group/auction_runner.cc",
     "interest_group/auction_runner.h",
     "interest_group/auction_url_loader_factory_proxy.cc",

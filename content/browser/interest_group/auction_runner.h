@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/auction_process_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -67,10 +68,6 @@ class CONTENT_EXPORT AuctionRunner {
 
     // Trusted URLLoaderFactory used to load bidder worklets.
     virtual network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() = 0;
-
-    // Returns the AuctionWorkletService.
-    virtual auction_worklet::mojom::AuctionWorkletService*
-    GetWorkletService() = 0;
   };
 
   explicit AuctionRunner(const AuctionRunner&) = delete;
@@ -118,11 +115,13 @@ class CONTENT_EXPORT AuctionRunner {
  private:
   struct BidState {
     enum class State {
-      // Waiting for all the interest groups to load before starting to load
-      // worklets.
-      //
-      // TODO(mmenke): Consider removing this phase.
-      kWaitingToLoadWorklet,
+      // Waiting for all the interest groups to load, and then for the seller
+      // worklet to get a process.
+      kLoadingWorkletsAndOnSellerProcess,
+
+      // Waiting for the AuctionProcessManager to provide a process usable for
+      // this particular bidder worklet.
+      kWaitingForProcess,
 
       // Loading the bidder worklet script / trusted data and generating the
       // bid.
@@ -151,13 +150,19 @@ class CONTENT_EXPORT AuctionRunner {
     BidState(BidState&) = delete;
     BidState& operator=(BidState&) = delete;
 
-    State state = State::kWaitingToLoadWorklet;
+    // Convenient function to destroy `bidder_worklet` and `process_handle`.
+    // Safe to call if they're already null.
+    void ClosePipes();
+
+    State state = State::kLoadingWorkletsAndOnSellerProcess;
 
     auction_worklet::mojom::BiddingInterestGroupPtr bidder;
 
     // URLLoaderFactory proxy class configured only to load the URLs the bidder
     // needs.
-    std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_;
+    std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory;
+
+    std::unique_ptr<AuctionProcessManager::ProcessHandle> process_handle;
 
     mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet;
     auction_worklet::mojom::BidderWorkletBidPtr bid_result;
@@ -187,8 +192,19 @@ class CONTENT_EXPORT AuctionRunner {
       std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
           interest_groups);
 
-  // Starts loading worklets and generating bids.
-  void StartBidding();
+  // Request seller worklet process. No bidder processes are requested until a
+  // seller worklet process has been received.
+  void RequestSellerWorkletProcess();
+
+  // Invoked once the AuctionProcessManager has provided a process for the
+  // seller worklet. Starts loading the seller worklet, and requests processes
+  // for all bidders.
+  void OnSellerWorkletProcessReceived();
+
+  // Invoked whenever the AuctionProcessManager has provided a process for a
+  // bidder worklet. Starts loading the corresponding worklet and generating a
+  // bid.
+  void OnBidderWorkletProcessReceived(BidState* bid_state);
 
   void OnGenerateBidCrashed(BidState* state);
   void OnGenerateBidComplete(BidState* state,
@@ -274,6 +290,8 @@ class CONTENT_EXPORT AuctionRunner {
   std::unique_ptr<AuctionURLLoaderFactoryProxy> seller_url_loader_factory_;
 
   // State for the scoring phase.
+  std::unique_ptr<AuctionProcessManager::ProcessHandle>
+      seller_worklet_process_handle_;
   mojo::Remote<auction_worklet::mojom::SellerWorklet> seller_worklet_;
 
   // This is true if the seller script has been loaded successfully --- if the

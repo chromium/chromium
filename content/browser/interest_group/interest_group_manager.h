@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
 
+#include <memory>
+
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
+#include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
 
@@ -66,10 +69,25 @@ class CONTENT_EXPORT InterestGroupManager {
   void DeleteInterestGroupData(
       base::RepeatingCallback<bool(const url::Origin&)> origin_matcher);
 
+  AuctionProcessManager& auction_process_manager() {
+    return *auction_process_manager_;
+  }
+
+  // Allows the AuctionProcessManager to be overridden in unit tests, both to
+  // allow not creating a new process, and mocking out the Mojo service
+  // interface.
+  void set_auction_process_manager_for_testing(
+      std::unique_ptr<AuctionProcessManager> auction_process_manager) {
+    auction_process_manager_ = std::move(auction_process_manager);
+  }
+
  private:
   // Owns and manages access to the InterestGroupStorage living on a different
   // thread.
   base::SequenceBound<InterestGroupStorage> impl_;
+
+  // Stored as pointer so that tests can override it.
+  std::unique_ptr<AuctionProcessManager> auction_process_manager_;
 };
 
 }  // namespace content

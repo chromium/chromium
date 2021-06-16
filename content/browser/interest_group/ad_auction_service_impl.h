@@ -13,7 +13,6 @@
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service_base.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -45,7 +44,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // AuctionRunner::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
-  auction_worklet::mojom::AuctionWorkletService* GetWorkletService() override;
 
   using DocumentServiceBase::origin;
   using DocumentServiceBase::render_frame_host;
@@ -72,9 +70,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // callbacks over the AuctionWorkletService pipe, and mojo pipes must be
   // destroyed before any callbacks that are bound to them.
   std::set<std::unique_ptr<AuctionRunner>, base::UniquePtrComparator> auctions_;
-
-  mojo::Remote<auction_worklet::mojom::AuctionWorkletService>
-      auction_worklet_service_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
