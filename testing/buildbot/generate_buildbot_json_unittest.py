@@ -2823,16 +2823,6 @@ class UnitTest(TestCase):
     self.assertFalse(fbb.printed_lines)
 
   def test_nonexistent_bot_does_not_raise_when_validation_disabled(self):
-    self.args.disable_builder_existence_check = True
-    fbb = FakeBBGen(self.args,
-                    UNKNOWN_BOT_GTESTS_WATERFALL,
-                    FOO_TEST_SUITE,
-                    LUCI_MILO_CFG,
-                    project_pyl=None)
-    fbb.check_input_file_consistency(verbose=True)
-
-  def test_nonexistent_bot_does_not_raise_when_validation_disabled_by_config(
-      self):
     fbb = FakeBBGen(
         self.args,
         UNKNOWN_BOT_GTESTS_WATERFALL,
