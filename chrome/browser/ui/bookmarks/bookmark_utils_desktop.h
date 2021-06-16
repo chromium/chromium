@@ -70,8 +70,8 @@ int OpenCount(gfx::NativeWindow parent,
               content::BrowserContext* incognito_context = nullptr);
 
 // Asks the user before deleting a non-empty bookmark folder.
-bool ConfirmDeleteBookmarkNode(const bookmarks::BookmarkNode* node,
-                               gfx::NativeWindow window);
+bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
+                               const bookmarks::BookmarkNode* node);
 
 // Shows the bookmark all tabs dialog.
 void ShowBookmarkAllTabsDialog(Browser* browser);

@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
@@ -107,6 +108,11 @@ class BookmarkEditorViewTest : public testing::Test {
 
   void ExpandAndSelect() {
     editor_->ExpandAndSelect();
+  }
+
+  void DeleteNode(base::OnceCallback<bool(const bookmarks::BookmarkNode* node)>
+                      non_empty_folder_confirmation_cb) {
+    editor_->ExecuteCommandDelete(std::move(non_empty_folder_confirmation_cb));
   }
 
   views::TreeView* tree_view() { return editor_->tree_view_; }
@@ -452,4 +458,109 @@ TEST_F(BookmarkEditorViewTest, NewFolderTitleUpdatedOnCommit) {
   const BookmarkNode* new_folder = parent->children().front().get();
   ASSERT_TRUE(new_folder->is_folder());
   EXPECT_EQ("modified", base::UTF16ToASCII(new_folder->GetTitle()));
+}
+
+TEST_F(BookmarkEditorViewTest, DeleteNonEmptyFolder) {
+  CreateEditor(profile_.get(), nullptr,
+               BookmarkEditor::EditDetails::EditNode(GetNode("f1a")),
+               BookmarkEditorView::SHOW_TREE);
+  ExpandAndSelect();
+
+  // Select F11, a non-empty folder to be deleted.
+  tree_view()->SetSelectedNode(editor_tree_model()
+                                   ->AsNode(tree_view()->GetSelectedNode())
+                                   ->children()
+                                   .back()
+                                   .get());
+  ASSERT_EQ("F11",
+            base::UTF16ToASCII(tree_view()->GetSelectedNode()->GetTitle()));
+
+  const bookmarks::BookmarkNode* f1 = GetNode("f11a")->parent()->parent();
+  ASSERT_EQ(2u, f1->children().size());
+  ASSERT_NE(nullptr, GetNode("f11a"));
+
+  // Issue a deletion for F11. Since it's non-empty, it should ask the user for
+  // confirmation.
+  bool confirmation_requested = false;
+  DeleteNode(
+      base::BindLambdaForTesting([&](const bookmarks::BookmarkNode* node) {
+        confirmation_requested = true;
+        // Mimic the user confirming the deletion.
+        return true;
+      }));
+  EXPECT_TRUE(confirmation_requested);
+  ApplyEdits();
+
+  // Both F11 and f11a (its child) should have been deleted.
+  EXPECT_EQ(1u, f1->children().size());
+  EXPECT_EQ(nullptr, GetNode("f11a"));
+}
+
+TEST_F(BookmarkEditorViewTest, CancelNonEmptyFolderDeletion) {
+  CreateEditor(profile_.get(), nullptr,
+               BookmarkEditor::EditDetails::EditNode(GetNode("f1a")),
+               BookmarkEditorView::SHOW_TREE);
+  ExpandAndSelect();
+
+  // Select F11, a non-empty folder to be deleted.
+  tree_view()->SetSelectedNode(editor_tree_model()
+                                   ->AsNode(tree_view()->GetSelectedNode())
+                                   ->children()
+                                   .back()
+                                   .get());
+  ASSERT_EQ("F11",
+            base::UTF16ToASCII(tree_view()->GetSelectedNode()->GetTitle()));
+
+  const bookmarks::BookmarkNode* f1 = GetNode("f11a")->parent()->parent();
+  ASSERT_EQ(2u, f1->children().size());
+  ASSERT_NE(nullptr, GetNode("f11a"));
+
+  // Issue a deletion for F11. Since it's non-empty, it should ask the user for
+  // confirmation.
+  DeleteNode(
+      base::BindLambdaForTesting([](const bookmarks::BookmarkNode* node) {
+        // Mimic the user cancelling the deletion.
+        return false;
+      }));
+  ApplyEdits();
+
+  // Both F11 and f11a (its child) should have been deleted.
+  EXPECT_EQ(1u, f1->children().size());
+  EXPECT_NE(nullptr, GetNode("f11a"));
+}
+
+TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
+  CreateEditor(profile_.get(), nullptr,
+               BookmarkEditor::EditDetails::EditNode(GetNode("f1a")),
+               BookmarkEditorView::SHOW_TREE);
+  ExpandAndSelect();
+
+  // Select F11, a non-empty folder to be deleted.
+  tree_view()->SetSelectedNode(editor_tree_model()
+                                   ->AsNode(tree_view()->GetSelectedNode())
+                                   ->children()
+                                   .back()
+                                   .get());
+  ASSERT_EQ("F11",
+            base::UTF16ToASCII(tree_view()->GetSelectedNode()->GetTitle()));
+
+  const bookmarks::BookmarkNode* f1 = GetNode("f11a")->parent()->parent();
+  ASSERT_EQ(2u, f1->children().size());
+  ASSERT_NE(nullptr, GetNode("f11a"));
+
+  // Issue a deletion for F11. Since it's non-empty, it should ask the user for
+  // confirmation.
+  const bookmarks::BookmarkNode* f11 = GetNode("f11a")->parent();
+
+  DeleteNode(
+      base::BindLambdaForTesting([=](const bookmarks::BookmarkNode* node) {
+        // Before the user confirms the deletion, something else (e.g.
+        // extension) could delete the very same bookmark.
+        this->model_->Remove(f11);
+        // Mimic the user confirming the deletion.
+        return true;
+      }));
+  ApplyEdits();
+
+  EXPECT_EQ(nullptr, GetNode("f11a"));
 }
