@@ -4,7 +4,7 @@
 
 import("//build/config/linux/pkg_config.gni")
 
-assert(is_linux || is_chromeos, "This file should only be referenced on Linux")
+assert(is_linux, "This file should only be referenced on Linux")
 
 pkg_config("dri") {
   packages = [ "dri" ]
