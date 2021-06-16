@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -62,6 +63,23 @@
 namespace ui {
 
 namespace {
+
+// These values are persisted to logs.  Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Append new shells before kMaxValue and update LinuxWaylandShell
+// in tools/metrics/histograms/enums.xml accordingly.
+//
+// See also tools/metrics/histograms/README.md#enum-histograms
+enum class UMALinuxWaylandShell {
+  kZauraShell = 0,
+  kGtkShell1 = 1,
+  kOrgKdePlasmaShell = 2,
+  kXdgWmBase = 3,
+  kXdgShellV6 = 4,
+  kZwlrLayerShellV1 = 5,
+  kMaxValue = kZwlrLayerShellV1,
+};
 
 // The maximum supported versions for a given interface.
 // The version bound will be the minimum of the value and the version
@@ -120,6 +138,14 @@ int64_t ConvertTimespecResultToMicros(uint32_t tv_sec_hi,
   result *= base::Time::kMicrosecondsPerSecond;
   result += (tv_nsec / base::Time::kNanosecondsPerMicrosecond);
   return result.ValueOrDie();
+}
+
+void ReportShellUMA(UMALinuxWaylandShell shell) {
+  static std::set<UMALinuxWaylandShell> reported_shells;
+  if (reported_shells.count(shell) > 0)
+    return;
+  base::UmaHistogramEnumeration("Linux.Wayland.Shell", shell);
+  reported_shells.insert(shell);
 }
 
 }  // namespace
@@ -453,6 +479,7 @@ void WaylandConnection::Global(void* data,
     }
     zxdg_shell_v6_add_listener(connection->shell_v6_.get(), &shell_v6_listener,
                                connection);
+    ReportShellUMA(UMALinuxWaylandShell::kXdgShellV6);
   } else if (!connection->shell_ && strcmp(interface, "xdg_wm_base") == 0) {
     connection->shell_ = wl::Bind<xdg_wm_base>(
         registry, name, std::min(version, kMaxXdgShellVersion));
@@ -462,6 +489,7 @@ void WaylandConnection::Global(void* data,
     }
     xdg_wm_base_add_listener(connection->shell_.get(), &shell_listener,
                              connection);
+    ReportShellUMA(UMALinuxWaylandShell::kXdgWmBase);
   } else if (base::EqualsCaseInsensitiveASCII(interface, "wl_output")) {
     if (version < kMinWlOutputVersion) {
       LOG(ERROR)
@@ -516,6 +544,7 @@ void WaylandConnection::Global(void* data,
       return;
     }
     connection->gtk_shell1_ = std::make_unique<GtkShell1>(gtk_shell1.release());
+    ReportShellUMA(UMALinuxWaylandShell::kGtkShell1);
   } else if (!connection->zwp_primary_selection_device_manager_ &&
              strcmp(interface, "zwp_primary_selection_device_manager_v1") ==
                  0) {
@@ -624,6 +653,7 @@ void WaylandConnection::Global(void* data,
     }
     connection->zaura_shell_ =
         std::make_unique<WaylandZAuraShell>(zaura_shell.release(), connection);
+    ReportShellUMA(UMALinuxWaylandShell::kZauraShell);
   } else if (!connection->wayland_zwp_pointer_gestures_ &&
              strcmp(interface, "zwp_pointer_gestures_v1") == 0 &&
              version >= kMinZwpPointerGesturesVersion) {
@@ -664,6 +694,14 @@ void WaylandConnection::Global(void* data,
     }
     connection->org_kde_kwin_idle_ =
         std::make_unique<OrgKdeKwinIdle>(idle.release(), connection);
+  } else if (strcmp(interface, "org_kde_plasma_shell") == 0) {
+    NOTIMPLEMENTED_LOG_ONCE()
+        << interface << " is recognized but not yet supported";
+    ReportShellUMA(UMALinuxWaylandShell::kOrgKdePlasmaShell);
+  } else if (strcmp(interface, "zwlr_layer_shell_v1") == 0) {
+    NOTIMPLEMENTED_LOG_ONCE()
+        << interface << " is recognized but not yet supported";
+    ReportShellUMA(UMALinuxWaylandShell::kZwlrLayerShellV1);
   }
 
   connection->available_globals_.emplace_back(interface, version);

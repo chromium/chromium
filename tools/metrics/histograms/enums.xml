@@ -44636,6 +44636,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2147483648" label="Invalid"/>
 </enum>
 
+<enum name="LinuxWaylandShellName">
+  <int value="0" label="zaura_shell"/>
+  <int value="1" label="gtk_shell1"/>
+  <int value="2" label="org_kde_plasma_shell"/>
+  <int value="3" label="xdg_wm_base"/>
+  <int value="4" label="xdg_shell_v6"/>
+  <int value="5" label="zwlr_layer_shell_v1"/>
+</enum>
+
 <enum name="LinuxWindowManagerName">
   <int value="0" label="Other"/>
   <int value="1" label="Blackbox"/>

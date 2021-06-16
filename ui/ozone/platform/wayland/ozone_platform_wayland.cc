@@ -198,8 +198,6 @@ class OzonePlatformWayland : public OzonePlatform {
 #endif
 
     menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
-
-    // TODO(crbug.com/1138740): report which Wayland compositor is used.
   }
 
   void InitializeGPU(const InitParams& args) override {

@@ -283,8 +283,6 @@ void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
 
 base::Value WaylandScreen::GetGpuExtraInfoAsListValue(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  // TODO(https://crbug.com/1138740): it'd be good to have the compositor name
-  // in the about://gpu as well.
   auto list_value = GetDesktopEnvironmentInfoAsListValue();
   DCHECK(list_value.is_list());
   std::vector<std::string> protocols;
