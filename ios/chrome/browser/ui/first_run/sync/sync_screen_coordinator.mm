@@ -127,6 +127,8 @@
 }
 
 - (void)showSyncSettings {
+  base::UmaHistogramEnumeration(
+      "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
   [self.delegate skipAllAndShowSyncSettings];
 }
 

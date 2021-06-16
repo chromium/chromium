@@ -75,7 +75,6 @@ enum ExternalLaunch {
 // FirstRunStageResult enum in enums.xml for metrics.
 // TODO(crbug.com/1189815): Add welcome stage and record metrics.
 // TODO(crbug.com/1189836): Add signin stage and record metrics.
-// TODO(crbug.com/1189840): Add sync stage and record metrics.
 enum FirstRunStage {
   // The first run experience has started.
   kStart,
@@ -87,8 +86,11 @@ enum FirstRunStage {
   kSyncScreenCompletionWithSync,
   // Sync screen is closed without sync.
   kSyncScreenCompletionWithoutSync,
+  // Sync screen is closed when user taps on advance sync settings button.
+  kSyncScreenCompletionWithSyncSettings,
   // Max value of the first run experience stages.
-  kMaxValue = kSyncScreenCompletionWithoutSync,
+  // kMaxValue should share the value of the highest enumerator.
+  kMaxValue = kSyncScreenCompletionWithSyncSettings,
 };
 
 }  // namespace first_run
