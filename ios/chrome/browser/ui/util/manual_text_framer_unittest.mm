@@ -200,6 +200,10 @@ TEST_F(ManualTextFramerTest, SimpleOriginTest) {
 
 // Tests that lines that are laid out in RTL are right aligned.
 TEST_F(ManualTextFramerTest, OriginRTLTest) {
+  if (@available(iOS 15, *)) {
+    // TODO(crbug.com/1220239): Fix for TextInput2 changes in iOS15.
+    return;
+  }
   SetText(@"\u0641\u064e\u0628\u064e\u0642\u064e\u064a\u0652\u062a\u064f\u0020"
           @"\u0645\u064f\u062a\u064e\u0627\u0628\u0650\u0639\u064e\u0627\u064b"
           @"\u0020\u0028\u0634\u064f\u063a\u0652\u0644\u0650\u064a\u0029\u0020"
