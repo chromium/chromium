@@ -236,6 +236,22 @@ struct TextSelectionAction {
   [MinVersion=23] ArcBitmap? bitmap_icon;
 };
 
+// Location and metadata for a single file attached to an app launch.
+struct LaunchFileInfo {
+  // URI location for the file, likely with a content:// scheme.
+  url.mojom.Url content_uri;
+
+  // MIME type for the file. Will be "application/octet-stream" if no more
+  // specific type can be determined.
+  string type;
+
+  // Human readable name for the file.
+  string name;
+
+  // Size of the file in bytes.
+  uint64 size;
+};
+
 // Contains the information needed to launch an app along with any data which
 // was shared to it.
 struct LaunchIntent {
@@ -252,6 +268,9 @@ struct LaunchIntent {
 
   // The contents of Intent.EXTRA_TEXT.
   string? extra_text;
+
+  // File metadata for files shared through Intent.EXTRA_STREAM.
+  array<LaunchFileInfo>? files;
 };
 
 // Interface to interact with a custom tab.

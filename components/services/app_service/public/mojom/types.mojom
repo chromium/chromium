@@ -340,7 +340,18 @@ struct IntentFilter {
 
 // Metadata for a single file shared through an intent.
 struct IntentFile {
-  url.mojom.Url url;  // The URL of the file to share.
+  // The URL of the file to share. Normally has the filesystem: scheme, but
+  // could be externalfile: or a different scheme, depending on the source.
+  url.mojom.Url url;
+
+  // The following optional fields can be provided to supply additional metadata
+  // information in cases where fetching the metadata through the file would be
+  // difficult or expensive.
+
+  string? mime_type;  // File MIME type.
+  string? file_name;  // Human readable file name, including extension. Should
+                      // not contain path separators.
+  uint64 file_size;   // File size in bytes.
 };
 
 // Action and resource handling request. This should
