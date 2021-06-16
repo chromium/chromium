@@ -247,12 +247,13 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   virtual PaintImage PaintImageForCurrentFrame() = 0;
 
-  virtual bool HasDefaultOrientation() const { return true; }
-
   // Most image types have the default orientation. Only bitmap derived image
   // types need to override this method.
   virtual ImageOrientation CurrentFrameOrientation() const {
     return ImageOrientationEnum::kDefault;
+  }
+  bool HasDefaultOrientation() const {
+    return CurrentFrameOrientation() == ImageOrientationEnum::kDefault;
   }
 
   // Correct the src rect (rotate and maybe translate it) to account for a

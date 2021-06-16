@@ -98,9 +98,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   ImageOrientation CurrentFrameOrientation() const override {
     return orientation_;
   }
-  bool HasDefaultOrientation() const override {
-    return orientation_ == ImageOrientationEnum::kDefault;
-  }
 
   void SetOrientation(ImageOrientation orientation) {
     orientation_ = orientation;

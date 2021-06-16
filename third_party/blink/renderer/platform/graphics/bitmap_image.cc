@@ -155,11 +155,6 @@ void BitmapImage::RecordDecodedImageType(UseCounter* use_counter) {
                                             use_counter);
 }
 
-bool BitmapImage::HasDefaultOrientation() const {
-  ImageOrientation orientation = CurrentFrameOrientation();
-  return orientation == ImageOrientationEnum::kDefault;
-}
-
 bool BitmapImage::GetHotSpot(IntPoint& hot_spot) const {
   return decoder_ && decoder_->HotSpot(hot_spot);
 }
