@@ -481,7 +481,7 @@ void ProfileAttributesStorage::DownloadHighResAvatarIfNeeded(
 
   // If this is the placeholder avatar, it is already included in the
   // resources, so it doesn't need to be downloaded (and it will never be
-  // requested from disk by GetHighResAvatarOfProfileAtIndex).
+  // requested from disk by `ProfileAttributesEntry::GetHighResAvatar()`).
   if (icon_index == profiles::GetPlaceholderAvatarIndex())
     return;
 

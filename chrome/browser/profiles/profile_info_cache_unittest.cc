@@ -228,7 +228,7 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
         GetConcatenation(gaia_name, profile_name);
     EXPECT_EQ(expected_profile_name, entry->GetName());
 #if !defined(OS_ANDROID)
-    EXPECT_EQ(i, GetCache()->GetAvatarIconIndexOfProfileAtIndex(index));
+    EXPECT_EQ(i, entry->GetAvatarIconIndex());
 #endif
     EXPECT_EQ(true, entry->GetBackgroundStatus());
     EXPECT_EQ(gaia_name, entry->GetGAIAName());
@@ -429,14 +429,8 @@ TEST_F(ProfileInfoCacheTest, MutateProfile) {
   // Avatar icons not used on Android.
 #if !defined(OS_ANDROID)
   const size_t new_icon_index = 3;
-  GetCache()->SetAvatarIconOfProfileAtIndex(1, new_icon_index);
-  EXPECT_EQ(new_icon_index, GetCache()->GetAvatarIconIndexOfProfileAtIndex(1));
-
-  const size_t wrong_icon_index = profiles::GetDefaultAvatarIconCount() + 1;
-  const size_t generic_icon_index = 0;
-  GetCache()->SetAvatarIconOfProfileAtIndex(1, wrong_icon_index);
-  EXPECT_EQ(generic_icon_index,
-            GetCache()->GetAvatarIconIndexOfProfileAtIndex(1));
+  entry_2->SetAvatarIconIndex(new_icon_index);
+  EXPECT_EQ(new_icon_index, entry_2->GetAvatarIconIndex());
 #endif
 }
 
@@ -526,7 +520,7 @@ TEST_F(ProfileInfoCacheTest, GAIAPicture) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, entry->GetAvatarIcon()));
 
   // Set a non-default avatar. This should be preferred over the GAIA image.
-  GetCache()->SetAvatarIconOfProfileAtIndex(1, kOtherAvatarIndex);
+  entry->SetAvatarIconIndex(kOtherAvatarIndex);
   GetCache()->SetProfileIsUsingDefaultAvatarAtIndex(1, false);
   EXPECT_FALSE(GetCache()->ProfileIsUsingDefaultAvatarAtIndex(1));
   EXPECT_FALSE(GetCache()->IsUsingGAIAPictureOfProfileAtIndex(1));

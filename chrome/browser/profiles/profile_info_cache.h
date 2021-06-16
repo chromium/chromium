@@ -76,11 +76,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
   // Returns true if a GAIA picture has been loaded or has failed to load for
   // profile at |index|.
   bool IsGAIAPictureOfProfileAtIndexLoaded(size_t index) const;
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  size_t GetAvatarIconIndexOfProfileAtIndex(size_t index) const;
 
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  void SetAvatarIconOfProfileAtIndex(size_t index, size_t icon_index);
   void SetGAIAPictureOfProfileAtIndex(size_t index,
                                       const std::string& image_url_with_size,
                                       gfx::Image image);
@@ -132,11 +128,6 @@ class ProfileInfoCache : public ProfileInfoInterface,
   // Updates the position of the profile at the given index so that the list
   // of profiles is still sorted.
   void UpdateSortForProfileIndex(size_t index);
-
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  // Loads or uses an already loaded high resolution image of the
-  // generic profile avatar.
-  const gfx::Image* GetHighResAvatarOfProfileAtIndex(size_t index) const;
 
   // Download and high-res avatars used by the profiles.
   void DownloadAvatars();

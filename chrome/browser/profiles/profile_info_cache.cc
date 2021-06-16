@@ -317,44 +317,10 @@ bool ProfileInfoCache::IsGAIAPictureOfProfileAtIndexLoaded(size_t index) const {
       CacheKeyFromProfilePath(GetPathOfProfileAtIndex(index)));
 }
 
-size_t ProfileInfoCache::GetAvatarIconIndexOfProfileAtIndex(size_t index)
-    const {
-  std::string icon_url;
-  GetInfoForProfileAtIndex(index)->GetString(
-      ProfileAttributesEntry::kAvatarIconKey, &icon_url);
-  size_t icon_index = 0;
-  if (!profiles::IsDefaultAvatarIconUrl(icon_url, &icon_index))
-    DLOG(WARNING) << "Unknown avatar icon: " << icon_url;
-
-  return icon_index;
-}
-
 void ProfileInfoCache::NotifyProfileAuthInfoChanged(
     const base::FilePath& profile_path) {
   for (auto& observer : observer_list_)
     observer.OnProfileAuthInfoChanged(profile_path);
-}
-
-void ProfileInfoCache::SetAvatarIconOfProfileAtIndex(size_t index,
-                                                     size_t icon_index) {
-  if (!profiles::IsDefaultAvatarIconIndex(icon_index)) {
-    DLOG(WARNING) << "Unknown avatar icon index: " << icon_index;
-    // switch to generic avatar
-    icon_index = 0;
-  }
-  std::unique_ptr<base::DictionaryValue> info(
-      GetInfoForProfileAtIndex(index)->DeepCopy());
-  info->SetString(ProfileAttributesEntry::kAvatarIconKey,
-                  profiles::GetDefaultAvatarIconUrl(icon_index));
-  SetInfoForProfileAtIndex(index, std::move(info));
-
-  base::FilePath profile_path = GetPathOfProfileAtIndex(index);
-
-  if (!disable_avatar_download_for_testing_)
-    DownloadHighResAvatarIfNeeded(icon_index, profile_path);
-
-  for (auto& observer : observer_list_)
-    observer.OnProfileAvatarChanged(profile_path);
 }
 
 std::string
@@ -524,25 +490,6 @@ std::string ProfileInfoCache::CacheKeyFromProfilePath(
   DCHECK(user_data_dir_ == profile_path.DirName());
   base::FilePath base_name = profile_path.BaseName();
   return base_name.MaybeAsASCII();
-}
-
-const gfx::Image* ProfileInfoCache::GetHighResAvatarOfProfileAtIndex(
-    size_t index) const {
-  const size_t avatar_index = GetAvatarIconIndexOfProfileAtIndex(index);
-
-  // If this is the placeholder avatar, it is already included in the
-  // resources, so it doesn't need to be downloaded.
-  if (avatar_index == profiles::GetPlaceholderAvatarIndex()) {
-    return &ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  }
-
-  const std::string file_name =
-      profiles::GetDefaultAvatarIconFileNameAtIndex(avatar_index);
-  const base::FilePath image_path =
-      profiles::GetPathOfHighResAvatarAtIndex(avatar_index);
-  return LoadAvatarPictureFromPath(GetPathOfProfileAtIndex(index), file_name,
-                                   image_path);
 }
 
 #if !defined(OS_ANDROID)
