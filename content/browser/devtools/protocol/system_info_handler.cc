@@ -57,7 +57,8 @@ std::unique_ptr<SystemInfo::Size> GfxSizeToSystemInfoSize(
     defined(OS_WIN) || defined(ADDRESS_SANITIZER) || defined(USE_OZONE)
 const int kGPUInfoWatchdogTimeoutMs = 30000;
 #else
-const int kGPUInfoWatchdogTimeoutMs = 5000;
+// Increased from 5000 to 10000 -- see Issue 1220072.
+const int kGPUInfoWatchdogTimeoutMs = 10000;
 #endif
 
 class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
