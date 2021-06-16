@@ -207,6 +207,13 @@ inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
   // we traverse the fragment tree when hit-testing.
   if (obj.IsTextControlIncludingNG())
     return false;
+  // If this object participates in legacy block fragmentation (but still is a
+  // LayoutNG object, which may happen if we're using a layout type not
+  // supported in the legacy engine, such as custom layout), do not attempt to
+  // fragment-traverse it.
+  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled() &&
+      obj.IsInsideFlowThread())
+    return false;
   return true;
 }
 
