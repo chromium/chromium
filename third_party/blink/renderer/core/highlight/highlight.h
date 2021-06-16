@@ -15,6 +15,7 @@
 namespace blink {
 
 using HighlightSetIterable = SetlikeIterable<Member<AbstractRange>>;
+class HighlightRegistry;
 
 class CORE_EXPORT Highlight : public ScriptWrappable,
                               public HighlightSetIterable {
@@ -38,6 +39,17 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
   const int32_t& priority() const { return priority_; }
   void setPriority(const int32_t& priority) { priority_ = priority; }
 
+  const AtomicString& Name() const { return name_; }
+  bool Contains(AbstractRange*) const;
+
+  enum OverlayStackingPosition {
+    kOverlayStackingPositionBelow = -1,
+    kOverlayStackingPositionEquivalent = 0,
+    kOverlayStackingPositionAbove = 1,
+  };
+
+  int8_t CompareOverlayStackingPosition(const Highlight*) const;
+
   class IterationSource final : public HighlightSetIterable::IterationSource {
    public:
     explicit IterationSource(const Highlight& highlight);
@@ -58,10 +70,19 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
       ScriptState*,
       ExceptionState&) override;
 
+  const HeapLinkedHashSet<Member<AbstractRange>>& GetRanges() const {
+    return highlight_ranges_;
+  }
+
+  void SetHighlightRegistry(HighlightRegistry* highlight_registry) {
+    highlight_registry_ = highlight_registry;
+  }
+
  private:
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
   int32_t priority_ = 0;
   AtomicString name_;
+  Member<HighlightRegistry> highlight_registry_ = nullptr;
 };
 
 }  // namespace blink

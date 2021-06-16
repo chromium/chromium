@@ -735,8 +735,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Retrieve the ComputedStyle (if any) corresponding to the provided
   // PseudoId from cache, calculating the ComputedStyle on-demand if it's
-  // missing from the cache.
-  const ComputedStyle* CachedStyleForPseudoElement(PseudoId);
+  // missing from the cache. The |pseudo_argument| is also used to match the
+  // ComputedStyle in cases where the PseudoId corresponds to a pseudo element
+  // that takes arguments (e.g. ::highlight()).
+  const ComputedStyle* CachedStyleForPseudoElement(
+      PseudoId,
+      const AtomicString& pseudo_argument = g_null_atom);
 
   // Calculate the ComputedStyle corresponding to the provided StyleRequest,
   // bypassing the pseudo style cache.

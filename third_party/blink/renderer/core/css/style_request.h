@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -57,10 +58,13 @@ class StyleRequest {
       : parent_override(parent_override),
         layout_parent_override(parent_override) {}
 
-  StyleRequest(PseudoId pseudo_id, const ComputedStyle* parent_override)
+  StyleRequest(PseudoId pseudo_id,
+               const ComputedStyle* parent_override,
+               const AtomicString& pseudo_argument = g_null_atom)
       : parent_override(parent_override),
         layout_parent_override(parent_override),
-        pseudo_id(pseudo_id) {}
+        pseudo_id(pseudo_id),
+        pseudo_argument(pseudo_argument) {}
 
   StyleRequest(PseudoId pseudo_id,
                CustomScrollbar* scrollbar,
@@ -76,8 +80,7 @@ class StyleRequest {
       : pseudo_id(pseudo_id),
         type(request_type),
         scrollbar_part(kNoPart),
-        scrollbar(nullptr),
-        pseudo_argument(g_null_atom) {}
+        scrollbar(nullptr) {}
 };
 
 }  // namespace blink

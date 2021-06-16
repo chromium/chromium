@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
@@ -2718,6 +2719,14 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   // (or animations update) when in this mode.
   if (AnyFrameIsPrintingOrPaintingPreview())
     return;
+
+  if (LocalDOMWindow* window = GetFrame().DomWindow()) {
+    if (HighlightRegistry* highlight_registry =
+            window->Supplementable<LocalDOMWindow>::RequireSupplement<
+                HighlightRegistry>()) {
+      highlight_registry->ValidateHighlightMarkers();
+    }
+  }
 
   bool repainted = PaintTree(benchmark_mode);
 

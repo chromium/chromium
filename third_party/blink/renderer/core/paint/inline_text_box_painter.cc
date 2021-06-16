@@ -661,6 +661,10 @@ void InlineTextBoxPainter::PaintDocumentMarkers(
                                         styleable_marker, style, font);
         }
       } break;
+      case DocumentMarker::kHighlight:
+        inline_text_box_.PaintDocumentMarker(paint_info, box_origin, marker,
+                                             style, font, false);
+        break;
       default:
         // Marker is not painted, or painting code has not been added yet
         break;

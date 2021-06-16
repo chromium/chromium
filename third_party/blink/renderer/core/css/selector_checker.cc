@@ -1249,9 +1249,13 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       return true;
     }
     case CSSSelector::kPseudoHighlight: {
-      const AtomicString& highlight_name = selector.Argument();
       result.dynamic_pseudo = PseudoId::kPseudoIdHighlight;
-      return highlight_name == pseudo_argument_;
+      // A null pseudo_argument_ means we are matching rules on the originating
+      // element. We keep track of which pseudo elements may match for the
+      // element through result.dynamic_pseudo. For ::highlight() pseudo
+      // elements we have a single flag for tracking whether an element may
+      // match _any_ ::highlight() element (kPseudoIdHighlight).
+      return !pseudo_argument_ || pseudo_argument_ == selector.Argument();
     }
     case CSSSelector::kPseudoTargetText:
       if (!is_ua_rule_) {

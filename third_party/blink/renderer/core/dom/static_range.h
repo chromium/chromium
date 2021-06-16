@@ -62,17 +62,30 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
 
   Range* toRange(ExceptionState& = ASSERT_NO_EXCEPTION) const;
 
+  bool IsValid() const;
+  bool CrossesContainBoundary() const;
+  bool IsStaticRange() const override { return true; }
+
   void Trace(Visitor*) const override;
 
  private:
   Member<Document> owner_document_;  // Required by |toRange()|.
   Member<Node> start_container_;
-  unsigned start_offset_;
+  unsigned start_offset_ = 0;
   Member<Node> end_container_;
-  unsigned end_offset_;
+  unsigned end_offset_ = 0;
+  mutable bool is_valid_ = false;
+  mutable uint64_t dom_tree_version_ = 0;
 };
 
 using StaticRangeVector = HeapVector<Member<StaticRange>>;
+
+template <>
+struct DowncastTraits<StaticRange> {
+  static bool AllowFrom(const AbstractRange& abstract_range) {
+    return abstract_range.IsStaticRange();
+  }
+};
 
 }  // namespace blink
 

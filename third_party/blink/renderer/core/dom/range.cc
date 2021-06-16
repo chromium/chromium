@@ -44,10 +44,12 @@
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -93,6 +95,8 @@ class RangeUpdateScope {
       range_->RemoveFromSelectionIfInDifferentRoot(*old_document_);
       range_->UpdateSelectionIfAddedToSelection();
     }
+
+    range_->ScheduleVisualUpdateIfInRegisteredHighlight();
 #if DCHECK_IS_ON()
     current_range_ = nullptr;
 #endif
@@ -184,20 +188,6 @@ Node* Range::commonAncestorContainer(const Node* container_a,
   return container_a->CommonAncestor(*container_b, NodeTraversal::Parent);
 }
 
-static inline bool CheckForDifferentRootContainer(
-    const RangeBoundaryPoint& start,
-    const RangeBoundaryPoint& end) {
-  Node* end_root_container = &end.Container();
-  while (end_root_container->parentNode())
-    end_root_container = end_root_container->parentNode();
-  Node* start_root_container = &start.Container();
-  while (start_root_container->parentNode())
-    start_root_container = start_root_container->parentNode();
-
-  return start_root_container != end_root_container ||
-         (Range::compareBoundaryPoints(start, end, ASSERT_NO_EXCEPTION) > 0);
-}
-
 void Range::setStart(Node* ref_node,
                      unsigned offset,
                      ExceptionState& exception_state) {
@@ -221,7 +211,9 @@ void Range::setStart(Node* ref_node,
 
   start_.Set(*ref_node, offset, child_node);
 
-  if (did_move_document || CheckForDifferentRootContainer(start_, end_))
+  if (did_move_document ||
+      HasDifferentRootContainer(&start_.Container(), &end_.Container()) ||
+      compareBoundaryPoints(start_, end_, ASSERT_NO_EXCEPTION) > 0)
     collapse(true);
 }
 
@@ -248,7 +240,9 @@ void Range::setEnd(Node* ref_node,
 
   end_.Set(*ref_node, offset, child_node);
 
-  if (did_move_document || CheckForDifferentRootContainer(start_, end_))
+  if (did_move_document ||
+      HasDifferentRootContainer(&start_.Container(), &end_.Container()) ||
+      compareBoundaryPoints(start_, end_, ASSERT_NO_EXCEPTION) > 0)
     collapse(false);
 }
 
@@ -490,27 +484,6 @@ static inline Node* ChildOfCommonRootBeforeOffset(Node* container,
   return container;
 }
 
-static unsigned LengthOfContents(const Node* node) {
-  // This switch statement must be consistent with that of
-  // Range::processContentsBetweenOffsets.
-  switch (node->getNodeType()) {
-    case Node::kTextNode:
-    case Node::kCdataSectionNode:
-    case Node::kCommentNode:
-    case Node::kProcessingInstructionNode:
-      return To<CharacterData>(node)->length();
-    case Node::kElementNode:
-    case Node::kDocumentNode:
-    case Node::kDocumentFragmentNode:
-      return To<ContainerNode>(node)->CountChildren();
-    case Node::kAttributeNode:
-    case Node::kDocumentTypeNode:
-      return 0;
-  }
-  NOTREACHED();
-  return 0;
-}
-
 DocumentFragment* Range::ProcessContents(ActionType action,
                                          ExceptionState& exception_state) {
   DocumentFragment* fragment = nullptr;
@@ -568,7 +541,8 @@ DocumentFragment* Range::ProcessContents(ActionType action,
       common_root->contains(&original_start.Container())) {
     left_contents = ProcessContentsBetweenOffsets(
         action, nullptr, &original_start.Container(), original_start.Offset(),
-        LengthOfContents(&original_start.Container()), exception_state);
+        AbstractRange::LengthOfContents(&original_start.Container()),
+        exception_state);
     left_contents = ProcessAncestorsAndTheirSiblings(
         action, &original_start.Container(), kProcessContentsForward,
         left_contents, common_root, exception_state);
@@ -914,12 +888,15 @@ void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
 
   // 10. Let newOffset be parent's length if referenceNode is null, and
   // referenceNode's index otherwise.
-  unsigned new_offset =
-      reference_node ? reference_node->NodeIndex() : LengthOfContents(&parent);
+  unsigned new_offset = reference_node
+                            ? reference_node->NodeIndex()
+                            : AbstractRange::LengthOfContents(&parent);
 
   // 11. Increase newOffset by node's length if node is a DocumentFragment node,
   // and one otherwise.
-  new_offset += new_node->IsDocumentFragment() ? LengthOfContents(new_node) : 1;
+  new_offset += new_node->IsDocumentFragment()
+                    ? AbstractRange::LengthOfContents(new_node)
+                    : 1;
 
   // 12. Pre-insert node into parent before referenceNode.
   parent.insertBefore(new_node, reference_node, exception_state);
@@ -1766,6 +1743,21 @@ void Range::UpdateSelectionIfAddedToSelection() {
                              .SetDoNotSetFocus(true)
                              .Build());
   selection.CacheRangeOfDocument(this);
+}
+
+void Range::ScheduleVisualUpdateIfInRegisteredHighlight() {
+  if (LocalDOMWindow* window = OwnerDocument().domWindow()) {
+    if (HighlightRegistry* highlight_registry =
+            window->Supplementable<LocalDOMWindow>::RequireSupplement<
+                HighlightRegistry>()) {
+      for (const auto& highlight : highlight_registry->GetHighlights()) {
+        if (highlight->Contains(this)) {
+          highlight_registry->ScheduleRepaint();
+          return;
+        }
+      }
+    }
+  }
 }
 
 void Range::RemoveFromSelectionIfInDifferentRoot(Document& old_document) {

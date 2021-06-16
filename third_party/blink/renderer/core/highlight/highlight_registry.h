@@ -15,6 +15,7 @@
 namespace blink {
 
 using HighlightRegistrySetIterable = SetlikeIterable<Member<Highlight>>;
+class LocalFrame;
 
 class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
                                       public Supplement<LocalDOMWindow>,
@@ -36,7 +37,12 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   bool hasForBinding(ScriptState*, Highlight*, ExceptionState&) const;
   wtf_size_t size() const { return highlights_.size(); }
 
- public:
+  const HeapLinkedHashSet<Member<Highlight>>& GetHighlights() const {
+    return highlights_;
+  }
+  void ValidateHighlightMarkers();
+  void ScheduleRepaint() const;
+
   class IterationSource final
       : public HighlightRegistrySetIterable::IterationSource {
    public:
@@ -59,6 +65,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   // it can be determined in O(1) if a name is already present.
   HashSet<String, StringHash> registered_highlight_names_;
   HeapLinkedHashSet<Member<Highlight>> highlights_;
+  Member<LocalFrame> frame_;
 
   HighlightRegistrySetIterable::IterationSource* StartIteration(
       ScriptState*,

@@ -48,6 +48,7 @@
 namespace blink {
 
 class DocumentMarkerList;
+class Highlight;
 class SuggestionMarkerProperties;
 
 class CORE_EXPORT DocumentMarkerController final
@@ -79,6 +80,7 @@ class CORE_EXPORT DocumentMarkerController final
   void AddSuggestionMarker(const EphemeralRange&,
                            const SuggestionMarkerProperties&);
   void AddTextFragmentMarker(const EphemeralRange&);
+  void AddHighlightMarker(const EphemeralRange&, const Member<Highlight>);
 
   void MoveMarkers(const Text& src_node, int length, const Text& dst_node);
 

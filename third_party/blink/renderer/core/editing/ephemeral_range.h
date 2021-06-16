@@ -11,6 +11,7 @@
 namespace blink {
 
 class Document;
+class AbstractRange;
 class Range;
 
 // We should restrict access to the unwanted version of |TraversalRange::end()|
@@ -91,6 +92,7 @@ class EphemeralRangeTemplate final {
   // |position| should be |Position::isNull()| or in-document.
   explicit EphemeralRangeTemplate(
       const PositionTemplate<Strategy>& /* position */);
+  explicit EphemeralRangeTemplate(const AbstractRange*);
   // When |range| is nullptr, |EphemeralRangeTemplate| is |isNull()|.
   explicit EphemeralRangeTemplate(const Range* /* range */);
   EphemeralRangeTemplate();

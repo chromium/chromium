@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Highlight API Test: </title>
+<link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
+<link rel="match" href="custom-highlight-painting-001-ref.html">
+<meta name="assert" value="Highlights are repainted correctly when changing their priority after adding them to the HighlightRegistry">
+<style>
+  ::highlight(example-highlight) {
+    background-color: yellow;
+    color: blue;
+  }
+  ::highlight(another-highlight) {
+    background-color: red;
+    color: orange;
+  }
+</style>
+<body><span>One </span><span>two </span><span>three…</span>
+<script>
+  let r = new Range();
+  r.setStart(document.body, 0);
+  r.setEnd(document.body, 2);
+  let h1 = new Highlight("example-highlight", r);
+  let h2 = new Highlight("another-highlight", r);
+  CSS.highlights.add(h1);
+  CSS.highlights.add(h2);
+  h1.priority = 1;
+</script>

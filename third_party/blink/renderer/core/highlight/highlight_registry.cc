@@ -4,7 +4,11 @@
 
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 
+#include "third_party/blink/renderer/core/dom/abstract_range.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
 
@@ -19,7 +23,7 @@ HighlightRegistry* HighlightRegistry::From(LocalDOMWindow& window) {
 }
 
 HighlightRegistry::HighlightRegistry(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : Supplement<LocalDOMWindow>(window), frame_(window.GetFrame()) {}
 
 HighlightRegistry::~HighlightRegistry() = default;
 
@@ -27,8 +31,40 @@ const char HighlightRegistry::kSupplementName[] = "HighlightRegistry";
 
 void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_);
+  visitor->Trace(frame_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
+}
+
+// Deletes all HighlightMarkers and rebuilds them with the contents of
+// highlights_.
+void HighlightRegistry::ValidateHighlightMarkers() {
+  Document* document = frame_->GetDocument();
+  if (!document)
+    return;
+
+  document->Markers().RemoveMarkersOfTypes(
+      DocumentMarker::MarkerTypes::Highlight());
+
+  for (const auto& highlight : highlights_) {
+    for (const auto& abstract_range : highlight->GetRanges()) {
+      if (!abstract_range->collapsed()) {
+        auto* static_range = DynamicTo<StaticRange>(*abstract_range);
+        if (static_range && (!static_range->IsValid() ||
+                             static_range->CrossesContainBoundary()))
+          continue;
+
+        EphemeralRange eph_range(abstract_range);
+        document->Markers().AddHighlightMarker(eph_range, highlight);
+      }
+    }
+  }
+}
+
+void HighlightRegistry::ScheduleRepaint() const {
+  if (LocalFrameView* local_frame_view = frame_->View()) {
+    local_frame_view->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+  }
 }
 
 HighlightRegistry* HighlightRegistry::addForBinding(
@@ -41,6 +77,8 @@ HighlightRegistry* HighlightRegistry::addForBinding(
         "Cannot add a Highlight with the same name as an existing one.");
   } else {
     highlights_.insert(highlight);
+    highlight->SetHighlightRegistry(this);
+    ScheduleRepaint();
   }
 
   return this;
@@ -48,7 +86,10 @@ HighlightRegistry* HighlightRegistry::addForBinding(
 
 void HighlightRegistry::clearForBinding(ScriptState*, ExceptionState&) {
   registered_highlight_names_.clear();
+  for (const auto& highlight : highlights_)
+    highlight->SetHighlightRegistry(nullptr);
   highlights_.clear();
+  ScheduleRepaint();
 }
 
 bool HighlightRegistry::deleteForBinding(ScriptState*,
@@ -58,6 +99,8 @@ bool HighlightRegistry::deleteForBinding(ScriptState*,
   if (name_iterator != registered_highlight_names_.end()) {
     registered_highlight_names_.erase(name_iterator);
     highlights_.erase(highlight);
+    highlight->SetHighlightRegistry(nullptr);
+    ScheduleRepaint();
     return true;
   }
 
