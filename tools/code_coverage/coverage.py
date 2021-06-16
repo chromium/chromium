@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -79,8 +79,6 @@ import re
 import shlex
 import shutil
 import subprocess
-import urllib2
-
 import six
 
 if six.PY2:
@@ -349,7 +347,7 @@ def _GetTargetProfDataPathsByExecutingCommands(targets, commands):
     output_file_path = os.path.join(_GetLogsDirectoryPath(), output_file_name)
 
     profdata_file_path = None
-    for _ in xrange(MERGE_RETRIES):
+    for _ in range(MERGE_RETRIES):
       logging.info('Running command: "%s", the output is redirected to "%s".',
                    command, output_file_path)
 
@@ -631,7 +629,7 @@ def _GeneratePerFileCoverageSummary(binary_paths, profdata_file_path, filters,
   export_output = subprocess.check_output(subprocess_cmd)
 
   # Write output on the disk to be used by code coverage bot.
-  with open(_GetSummaryFilePath(), 'w') as f:
+  with open(_GetSummaryFilePath(), 'wb') as f:
     f.write(export_output)
 
   return export_output
