@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -54,6 +55,11 @@ WebViewApkProcess::WebViewApkProcess() {
       base::MessagePumpType::JAVA);
 
   RegisterPathProvider();
+  component_updater::RegisterPathProvider(
+      /*components_system_root_key=*/android_webview::DIR_COMPONENTS_ROOT,
+      /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
+      /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
+
   CreatePrefService();
 }
 

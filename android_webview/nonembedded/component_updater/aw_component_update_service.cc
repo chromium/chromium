@@ -18,7 +18,6 @@
 #include "base/command_line.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/component_updater/component_installer.h"
-#include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/crx_update_item.h"
@@ -36,13 +35,6 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_finished_callback) {
-  // Has to be called after init WebViewApkProcess, should only happen once
-  // during the lifetime of webview_apk process.
-  component_updater::RegisterPathProvider(
-      /*components_system_root_key=*/android_webview::DIR_COMPONENTS_ROOT,
-      /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
-      /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
-
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
           &base::android::RunIntCallbackAndroid,
