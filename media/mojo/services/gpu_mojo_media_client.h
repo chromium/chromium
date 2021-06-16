@@ -15,6 +15,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/service/command_buffer_stub.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/media_buildflags.h"
@@ -28,6 +29,72 @@ class GpuMemoryBufferFactory;
 namespace media {
 
 class MediaGpuChannelManager;
+class GpuMojoMediaClient;
+
+using GetConfigCacheCB =
+    base::RepeatingCallback<SupportedVideoDecoderConfigs()>;
+using GetCommandBufferStubCB =
+    base::RepeatingCallback<gpu::CommandBufferStub*()>;
+
+// Encapsulate parameters to pass to platform-specific helpers.
+struct VideoDecoderTraits {
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner;
+  std::unique_ptr<MediaLog> media_log;
+  RequestOverlayInfoCB request_overlay_info_cb;
+  const gfx::ColorSpace* const target_color_space;
+  gpu::GpuPreferences gpu_preferences;
+  gpu::GpuFeatureInfo gpu_feature_info;
+  const gpu::GpuDriverBugWorkarounds* const gpu_workarounds;
+  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory;
+
+  // Windows decoders need to ensure that the cache is populated.
+  GetConfigCacheCB get_cached_configs_cb;
+
+  // Android uses this twice.
+  GetCommandBufferStubCB get_command_buffer_stub_cb;
+
+  AndroidOverlayMojoFactoryCB android_overlay_factory_cb;
+
+  VideoDecoderTraits(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      std::unique_ptr<MediaLog> media_log,
+      RequestOverlayInfoCB request_overlay_info_cb,
+      const gfx::ColorSpace* target_color_space,
+      gpu::GpuPreferences gpu_preferences,
+      gpu::GpuFeatureInfo gpu_feature_info,
+      const gpu::GpuDriverBugWorkarounds* gpu_workarounds,
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+      GetConfigCacheCB get_cached_configs_cb,
+      GetCommandBufferStubCB get_command_buffer_stub_cb,
+      AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+  ~VideoDecoderTraits();
+};
+
+// Find platform specific implementations of these in
+// gpu_mojo_media_client_{platform}.cc
+// Creates a platform-specific media::VideoDecoder.
+std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
+    const VideoDecoderTraits&);
+
+// Queries the platform-specific VideoDecoder implementation for its
+// supported profiles. Many platforms fall back to use the VDAVideoDecoder
+// so that implementation is shared, and its supported configs can be
+// queries using the |get_vda_configs| callback.
+SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
+    gpu::GpuDriverBugWorkarounds gpu_workarounds,
+    gpu::GpuPreferences gpu_preferences,
+    base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs);
+
+// Creates a platform-specific media::AudioDecoder. Most platforms don't do
+// anything here, but android, for example, does.
+std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+// Creates a CDM factory, right now only used on android and chromeos.
+std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
+    mojom::FrameInterfaceFactory* frame_interfaces);
 
 class GpuMojoMediaClient final : public MojoMediaClient {
  public:
@@ -57,21 +124,20 @@ class GpuMojoMediaClient final : public MojoMediaClient {
       mojom::FrameInterfaceFactory* interface_provider) final;
 
  private:
+  // These are useful to bind into callbacks for platform specific
+  // implementations that can use these defaults as fallbacks.
+  SupportedVideoDecoderConfigs GetVDAVideoDecoderConfigs();
+
+  // Cross-platform cache supported config cache.
+  absl::optional<SupportedVideoDecoderConfigs> supported_config_cache_;
+
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager_;
   AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  // Indirectly owned by GpuChildThread.
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
-  absl::optional<SupportedVideoDecoderConfigs> cros_supported_configs_;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#if defined(OS_WIN)
-  absl::optional<SupportedVideoDecoderConfigs> d3d11_supported_configs_;
-#endif  // defined(OS_WIN)
-
   DISALLOW_COPY_AND_ASSIGN(GpuMojoMediaClient);
 };
 

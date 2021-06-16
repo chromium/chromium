@@ -104,6 +104,24 @@ component("services") {
   ]
 
   if (is_android) {
+    sources += [ "gpu_mojo_media_client_android.cc" ]
+  } else if (is_mac) {
+    sources += [ "gpu_mojo_media_client_mac.cc" ]
+  } else if (is_win) {
+    sources += [ "gpu_mojo_media_client_win.cc" ]
+  } else if (use_vaapi || use_v4l2_codec) {
+    sources += [ "gpu_mojo_media_client_cros.cc" ]
+
+    if (is_chromeos_ash) {
+      sources += [ "gpu_mojo_media_client_cros_ash.cc" ]
+      deps +=
+          [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+    }
+  } else {
+    sources += [ "gpu_mojo_media_client_stubs.cc" ]
+  }
+
+  if (is_android) {
     sources += [
       "android_mojo_media_client.cc",
       "android_mojo_media_client.h",
@@ -144,11 +162,6 @@ component("services") {
       "mojo_cdm_helper.h",
     ]
     deps += [ "//media/cdm:cdm_api" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps +=
-        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
 
   if (is_win) {
