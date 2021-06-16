@@ -264,6 +264,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     page. By combining the shown and bypassed metrics for a specific danger
     type, we can calculate whether the bypass rate is different between
     user-initiated and automatically triggered downloads.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
   <token key="DangerType" variants="DownloadDangerTypeForBypassMetrics"/>
   <token key="Action" variants="DownloadWarningAction"/>
@@ -281,6 +283,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     combining the shown and bypassed metrics for a specific danger type, we can
     calculate whether the bypass rate is different between HTTPS downloads and
     non-HTTPS downloads.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
   <token key="DangerType" variants="DownloadDangerTypeForBypassMetrics"/>
   <token key="Action" variants="DownloadWarningAction"/>
@@ -296,6 +300,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     bypassed from the download shelf or from the downloads page. By combining
     the shown and bypassed metrics for a specific danger type, we can calculate
     the bypass rate of different file types.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
   <token key="DangerType" variants="DownloadDangerTypeForBypassMetrics"/>
   <token key="Action" variants="DownloadWarningAction"/>
