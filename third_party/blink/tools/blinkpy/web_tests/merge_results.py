@@ -626,6 +626,8 @@ class WebTestDirMerger(DirMerger):
         self.add_helper(
             FilenameRegexMatch(r'wptserve_stderr\.txt$'),
             MergeFilesKeepFiles(self.filesystem))
+        self.add_helper(FilenameRegexMatch(r'wptserve_stdout\.txt$'),
+                        MergeFilesKeepFiles(self.filesystem))
         # keep chromedriver log for webdriver tests
         self.add_helper(FilenameRegexMatch(r'chromedriver\.log$'),
                         MergeFilesKeepFiles(self.filesystem))

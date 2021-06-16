@@ -90,6 +90,8 @@ class WPTServe(server_base.ServerBase):
 
         self._error_log_path = self._filesystem.join(output_dir,
                                                      'wptserve_stderr.txt')
+        self._output_log_path = self._filesystem.join(output_dir,
+                                                      'wptserve_stdout.txt')
 
         expiration_date = datetime.date(2025, 1, 4)
         if datetime.date.today() > expiration_date - datetime.timedelta(30):
@@ -117,6 +119,10 @@ class WPTServe(server_base.ServerBase):
         # The file is opened here instead in __init__ because _remove_stale_logs
         # will try to delete the log file, which causes deadlocks on Windows.
         self._stderr = fs.open_text_file_for_writing(self._error_log_path)
+
+        # The pywebsocket process started by wptserve logs to stdout. This can
+        # also cause deadlock, and so should also be redirected to a file.
+        self._stdout = fs.open_text_file_for_writing(self._output_log_path)
 
     def _stop_running_server(self):
         if not self._wait_for_action(self._check_and_kill):
