@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Ungependa kuwasha usawazishaji?</translation>
 <translation id="123724288017357924">Pakia upya ukurasa wa sasa, puuza maudhui ya akiba</translation>
 <translation id="1240288207750131269">Inapakia <ph name="LANG" /></translation>
+<translation id="1242883863226959074">kifaa</translation>
 <translation id="124678866338384709">Funga kichupo kilichofunguka</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Imeshindwa kushiriki <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6864459304226931083">Pakua picha</translation>
 <translation id="6865313869410766144">Data ya fomu ya Kujaza Kiotomatiki</translation>
 <translation id="6867400383614725881">Kichupo fiche kipya</translation>
+<translation id="6869056123412990582">kompyuta</translation>
 <translation id="6882836635272038266">Ulinzi wa kawaida dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari.</translation>
 <translation id="688738109438487280">Ongeza data iliyopo kwenye <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Fungua ili unakili nenosiri lako</translation>
@@ -1156,6 +1158,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8393700583063109961">Tuma ujumbe</translation>
 <translation id="8410695015584479363">Fuatilia bei</translation>
 <translation id="8413126021676339697">Onyesha historia kamili</translation>
+<translation id="8424781820952413435">Ukurasa umetumwa. Ili uuone, fungua Chrome kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="8427875596167638501">Kichupo cha kukagua kwanza kimefunguliwa nusu</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8438566539970814960">Boresha utafutaji na kuvinjari</translation>
@@ -1197,6 +1200,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="860282621117673749">Arifa kuhusu punguzo la bei</translation>
 <translation id="8616006591992756292">Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Ungependa kufungua URL iliyopendekezwa na kubainishwa katika maudhui yaliyopakuliwa?</translation>
+<translation id="8621068256433641644">simu</translation>
 <translation id="8636825310635137004">Ili upate vichupo kutoka kwenye vifaa vyako vingine, washa kipengele cha usawazishaji.</translation>
 <translation id="8641930654639604085">Jaribu kuzuia tovuti zilizo na maudhui ya watu wazima</translation>
 <translation id="8655129584991699539">Unaweza kufuta data hii katika Mipangilio ya Chrome</translation>

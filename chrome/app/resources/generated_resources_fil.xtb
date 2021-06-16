@@ -362,6 +362,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1403222014593521787">Hindi makakonekta sa proxy</translation>
 <translation id="1405779994569073824">Nag-crash.</translation>
 <translation id="1406500794671479665">Bine-verify...</translation>
+<translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1407135791313364759">Buksan lahat</translation>
 <translation id="140723521119632973">Pag-activate ng Cellular Network</translation>
 <translation id="1407489512183974736">Gitnang Naka-crop</translation>
@@ -5674,6 +5675,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="729583233778673644">Payagan ang AES at RC4 encryption. Magiging mas mapanganib para sa iyo kapag ginamit ang opsyong ito, dahil hindi secure ang mga RC4 cipher.</translation>
 <translation id="729761647156315797">Piliin ang iyong wika at keyboard</translation>
 <translation id="7297726121602187087">Dark green</translation>
+<translation id="7298195798382681320">Inirerekomenda</translation>
 <translation id="7299337219131431707">I-enable ang Pagba-browse ng bisita</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Maaaring hindi gumana nang maayos ang Chrome dahil sa application na ito.}one{Maaaring hindi gumana nang maayos ang Chrome dahil sa mga application na ito.}other{Maaaring hindi gumana nang maayos ang Chrome dahil sa mga application na ito.}}</translation>
 <translation id="7303281435234579599">Naku! Nagkaproblema habang sine-set up ang demo mode.</translation>
@@ -7275,6 +7277,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9026852570893462412">Maaaring abutin nang ilang minuto ang prosesong ito. Dina-download ang virtual machine.</translation>
 <translation id="9027459031423301635">Buksan ang Link sa Bagong &amp;Tab</translation>
 <translation id="9030515284705930323">Hindi na-enable ng iyong organisasyon ang Google Play Store para sa iyong account. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
+<translation id="9030754204056345429">Mas mabilis</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Hindi na sinusuportahan ang <ph name="PLUGIN_NAME" /></translation>
 <translation id="9031549947500880805">I-back up sa Google Drive. Walang hirap na i-restore ang iyong data o magpalit ng device anumang oras. Kasama sa iyong backup ang data ng app.</translation>

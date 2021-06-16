@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Activer la synchronisation?</translation>
 <translation id="123724288017357924">Actualiser la page, ignorer le contenu mis en cache</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> en cours de chargement…</translation>
+<translation id="1242883863226959074">appareil</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Partage impossible du contenu suivant : <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6864459304226931083">Télécharger l'image</translation>
 <translation id="6865313869410766144">Données de remplissage automatique de formulaires</translation>
 <translation id="6867400383614725881">Nouvel onglet de navigation privée</translation>
+<translation id="6869056123412990582">ordinateur</translation>
 <translation id="6882836635272038266">Protection standard contre les sites Web, les téléchargements et les extensions qui sont réputés être dangereux.</translation>
 <translation id="688738109438487280">Ajouter les données existantes à <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Déverrouillez pour copier votre mot de passe</translation>
@@ -1156,6 +1158,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8410695015584479363">Suivre les prix</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
+<translation id="8424781820952413435">Page envoyée. Pour la consulter, ouvrez Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">L'onglet d'aperçu est ouvert à moitié</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8438566539970814960">Amélioration des recherches et de la navigation</translation>
@@ -1197,6 +1200,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="860282621117673749">Alertes relatives aux baisses de prix</translation>
 <translation id="8616006591992756292">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Ouvrir l'URL suggérée du contenu téléchargé?</translation>
+<translation id="8621068256433641644">téléphone</translation>
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
 <translation id="8641930654639604085">Essayer de bloquer les sites pour adultes</translation>
 <translation id="8655129584991699539">Vous pouvez effacer les données dans les paramètres de Chrome</translation>

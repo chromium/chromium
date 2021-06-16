@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}many{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
 <translation id="1525508553941733066">סגירה</translation>
+<translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לאחר מכן בוחרים בשעה לפתיחת אזור הסטטוס ובאפשרות 'יציאה'. לאחר מכן נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
 <translation id="1546492247443594934">שולחן עבודה 2</translation>
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
@@ -524,6 +525,7 @@
 <translation id="5033299697334913360">כדי לצלם את המסך המלא, יש ללחוץ במקום כלשהו</translation>
 <translation id="5035236842988137213">מכשיר <ph name="DEVICE_NAME" /> התחבר לטלפון חדש</translation>
 <translation id="5035389544768382859">אישור הגדרת המסך</translation>
+<translation id="5039804452771397117">זה בסדר</translation>
 <translation id="504465286040788597">הפיסקה הקודמת</translation>
 <translation id="5071064518267176975">אפליקציה כלשהי מבקשת להשתמש במיקרופון</translation>
 <translation id="5075554201838155866">לפתיחת הכתוביות</translation>
@@ -801,6 +803,7 @@
 <translation id="7461924472993315131">הצמדה</translation>
 <translation id="746232733191930409">מצב הקלטת מסך</translation>
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
+<translation id="7473891865547856676">לא, תודה</translation>
 <translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
 <translation id="7483025031359818980">אזור הבחירה הוגדר כמסך מלא</translation>
 <translation id="7486227320194954040">כיווץ כלי הסימון</translation>

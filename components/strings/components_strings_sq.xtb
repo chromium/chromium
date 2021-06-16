@@ -494,7 +494,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="272451190272506600">Prek sensorët për të paguar</translation>
 <translation id="2728127805433021124">Certifikata e serverit është nënshkruar duke përdorur një algoritëm të dobët nënshkrimi.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e lidhjes<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Duke aktivizuar këto veçori, mund të humbësh të dhënat e shfletuesit ose të komprometosh sigurinë ose privatësinë tënde. Veçoritë e aktivizuara zbatohen për të gjithë përdoruesit e këtij shfletuesi.</translation>
 <translation id="2738330467931008676">Zgjidh adresën e marrjes</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2742870351467570537">Hiq artikujt e zgjedhur</translation>
@@ -2208,6 +2207,7 @@ Detaje shtesë:
 <translation id="9128870381267983090">Lidhu me rrjetin</translation>
 <translation id="9137013805542155359">Shfaq origjinalin</translation>
 <translation id="9141013498910525015">Menaxho adresat</translation>
+<translation id="9144951720726881238">Data e skadimit:</translation>
 <translation id="9148088599418889305">Zgjidh mënyrën e dërgimit</translation>
 <translation id="9148507642005240123">&amp;Zhbëje redaktimin</translation>
 <translation id="9150045010208374699">Përdor kamerën</translation>

@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Senkronizasyon açılsın mı?</translation>
 <translation id="123724288017357924">Önbelleğe alınmış içeriği yoksayarak geçerli sayfayı yeniden yükler</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yükleniyor</translation>
+<translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1258753120186372309">Google doodle'ı: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşılamadı</translation>
@@ -920,6 +921,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6864459304226931083">Resmi indir</translation>
 <translation id="6865313869410766144">Form otomatik doldurma verileri</translation>
 <translation id="6867400383614725881">Yeni Gizli sekme</translation>
+<translation id="6869056123412990582">bilgisayar</translation>
 <translation id="6882836635272038266">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı standart koruma.</translation>
 <translation id="688738109438487280">Mevcut veriler <ph name="TO_ACCOUNT" /> hesabına eklenir.</translation>
 <translation id="6891726759199484455">Şifrenizi kopyalamak için kilidi açın</translation>
@@ -1156,6 +1158,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8393700583063109961">İleti gönder</translation>
 <translation id="8410695015584479363">Fiyatları takip et</translation>
 <translation id="8413126021676339697">Tüm geçmişi göster</translation>
+<translation id="8424781820952413435">Sayfa gönderildi. Bu sayfayı görebilmek için <ph name="DEVICE_TYPE" /> cihazınızda Chrome'u açın.</translation>
 <translation id="8427875596167638501">Önizleme sekmesi yarım açık</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8438566539970814960">Aramaları ve göz atmayı daha iyi yap</translation>
@@ -1197,6 +1200,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="860282621117673749">Fiyat düşüşü uyarıları</translation>
 <translation id="8616006591992756292">Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir.</translation>
 <translation id="8617240290563765734">İndirilen öğede belirtilen URL önerisi açılsın mı?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Diğer cihazlarınızdaki sekmelerinize ulaşmak için senkronizasyonu etkinleştirin.</translation>
 <translation id="8641930654639604085">Yetişkinlere yönelik siteleri engellemeyi dene</translation>
 <translation id="8655129584991699539">Verileri Chrome Ayarlarından temizleyebilirsiniz</translation>

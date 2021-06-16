@@ -495,9 +495,6 @@
 <translation id="272451190272506600">Төлеу үшін датчикті түртіңіз.</translation>
 <translation id="2728127805433021124">Сервер сертификаты әлсіз қолтаңба алгоритмін пайдалану арқылы қол қойылған.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Connectivity Diagnostics құралын қосу<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Бұл функцияларды қоссаңыз, браузер деректері жоғалады немесе
-    қауіпсіздігіңізге не құпиялылығыңызға қауіп төнеді. Қосылған
-    функциялар браузердің барлық пайдаланушысына қатысты қолданылады.</translation>
 <translation id="2738330467931008676">Алып кету мекенжайын таңдау</translation>
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2742870351467570537">Таңдалған элементтерді жою</translation>
@@ -2213,6 +2210,7 @@
 <translation id="9128870381267983090">Желіге қосылу</translation>
 <translation id="9137013805542155359">Түпнұсқаны көрсету</translation>
 <translation id="9141013498910525015">Мекенжайларды басқару</translation>
+<translation id="9144951720726881238">Жарамдылық мерзімі:</translation>
 <translation id="9148088599418889305">Жөнелту әдісін таңдау</translation>
 <translation id="9148507642005240123">&amp;Өзгерту әрекетін кері қайтару</translation>
 <translation id="9150045010208374699">Камераңызды пайдалану</translation>

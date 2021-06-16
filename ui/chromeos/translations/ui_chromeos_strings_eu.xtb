@@ -73,7 +73,7 @@
 <translation id="1641780993263690097">Txinatarra (pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fitxategi konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="164969095109328410">Chrome-ko gailua</translation>
-<translation id="1661867754829461514">PIN kodea falta da</translation>
+<translation id="1661867754829461514">PINa falta da</translation>
 <translation id="166439687370499867">Ez da onartzen sare partekatuen konfigurazioak aldatzea</translation>
 <translation id="1665611772925418501">Ezin izan da fitxategia aldatu.</translation>
 <translation id="1673103856845176271">Ezin izan da atzitu fitxategia segurtasun-arrazoiengatik.</translation>
@@ -198,7 +198,7 @@
 <translation id="2771816809568414714">Gazta</translation>
 <translation id="2781645665747935084">Belgikarra</translation>
 <translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
-<translation id="2803375539583399270">Idatzi PIN kodea</translation>
+<translation id="2803375539583399270">Idatzi PINa</translation>
 <translation id="2820957248982571256">Bilatzen…</translation>
 <translation id="2830077785865012357">Txinatarra (zhuyina)</translation>
 <translation id="2843806747483486897">Aldatu ekintza lehenetsia…</translation>
@@ -315,7 +315,7 @@
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="3811494700605067549">Fitxategi bat hautatu da</translation>
 <translation id="3817579325494460411">Ez da zehaztu</translation>
-<translation id="3819448694985509187">PIN kodea okerra da. Saiakera bat gelditzen zaizu.</translation>
+<translation id="3819448694985509187">PINa okerra da. Saiakera bat gelditzen zaizu.</translation>
 <translation id="3822559385185038546">Administratzaileak ezartzen du proxya</translation>
 <translation id="3830674330436234648">Ez dago erreprodukziorik</translation>
 <translation id="383652340667548381">Serbiarra</translation>
@@ -582,7 +582,7 @@
 <translation id="6170470584681422115">Ogitartekoa</translation>
 <translation id="6187719147498869044">Hungariarra</translation>
 <translation id="6189412234224385711">Ireki <ph name="EXTENSION_NAME" /> luzapenarekin</translation>
-<translation id="6198252989419008588">Aldatu PIN kodea</translation>
+<translation id="6198252989419008588">Aldatu PINa</translation>
 <translation id="6199801702437275229">Tokiari buruzko informazioaren zain…</translation>
 <translation id="6205710420833115353">Eragiketa batzuk uste baino gehiago luzatzen ari dira. Bertan behera utzi nahi dituzu?</translation>
 <translation id="6220423280121890987">Punjabtarra</translation>
@@ -834,7 +834,7 @@
 <translation id="8395901698320285466">Dimentsioak</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> sarea. Konektatzen.</translation>
 <translation id="8425213833346101688">Aldatu</translation>
-<translation id="8431909052837336408">Aldatu SIM txartelaren PIN kodea</translation>
+<translation id="8431909052837336408">Aldatu SIMaren PINa</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM txartela falta da</translation>
 <translation id="8456681095658380701">Izenak ez du balio</translation>
@@ -865,7 +865,7 @@
 <translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
-<translation id="863903787380594467">PIN kodea okerra da. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
+<translation id="863903787380594467">PINa okerra da. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Ataka</translation>
 <translation id="8656768832129462377">Ez egiaztatu</translation>
 <translation id="8688591111840995413">Pasahitz okerra</translation>

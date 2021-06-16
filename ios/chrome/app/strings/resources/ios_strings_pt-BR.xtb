@@ -391,6 +391,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
 <translation id="5083464117946352670">Não é possível saber o tamanho do arquivo.</translation>
 <translation id="5090832849094901128">Remover a senha não excluirá a conta em <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Você pode salvar páginas para ler mais tarde ou off-line. O Chrome perguntará se você quer salvar páginas longas.</translation>
 <translation id="5094827893301452931">Tweet concluído.</translation>
 <translation id="5118764316110575523">Desativado</translation>
 <translation id="5127805178023152808">Sincronização desativada</translation>
@@ -757,6 +758,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8548878600947630424">Encontrar na página...</translation>
 <translation id="8574235780160508979">Os Termos de Serviço do Chrome serão atualizados em 31 de março. <ph name="BEGIN_LINK" />Leia aqui<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Desativada</translation>
+<translation id="8590913940444621808">Nunca perguntar</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="8605219856220328675">Fechar guia.</translation>
 <translation id="8620640915598389714">Editar</translation>

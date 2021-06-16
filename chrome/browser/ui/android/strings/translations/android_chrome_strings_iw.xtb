@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">להפעיל סנכרון?</translation>
 <translation id="123724288017357924">טעינה מחדש של הדף הנוכחי, תוך התעלמות מתוכן שמאוחסן בקובץ השמור</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> בטעינה</translation>
+<translation id="1242883863226959074">מכשיר</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1258753120186372309">‏דודל של Google‏: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@
 <translation id="6864459304226931083">הורדת תמונה</translation>
 <translation id="6865313869410766144">נתוני טפסים למילוי אוטומטי</translation>
 <translation id="6867400383614725881">כרטיסיית מצב אנונימי חדשה</translation>
+<translation id="6869056123412990582">מחשב</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
 <translation id="688738109438487280">הוספת נתונים קיימים אל <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">ביטול הנעילה יאפשר להעתיק את הסיסמה</translation>
@@ -1156,6 +1158,7 @@
 <translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8410695015584479363">מעקב אחר מחירים</translation>
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
+<translation id="8424781820952413435">‏הדף נשלח. כדי להציג אותו, יש לפתוח דפדפן Chrome ב<ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">כרטיסיית התצוגה המקדימה פתוחה בחצי גובה המסך</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>
@@ -1197,6 +1200,7 @@
 <translation id="860282621117673749">התראות על הנחות</translation>
 <translation id="8616006591992756292">‏ייתכן שלחשבון Google שלך יהיו צורות אחרות של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">האם לעבור אל כתובת האתר שצוינה כהצעה בתוכן שהורדת?</translation>
+<translation id="8621068256433641644">טלפון</translation>
 <translation id="8636825310635137004">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון.</translation>
 <translation id="8641930654639604085">יש לנסות לחסום אתרים שמכילים תוכן למבוגרים</translation>
 <translation id="8655129584991699539">‏אפשר לנקות את הנתונים דרך הגדרות Chrome.</translation>

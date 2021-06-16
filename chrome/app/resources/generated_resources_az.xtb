@@ -357,6 +357,7 @@
 <translation id="1403222014593521787">Proksiyə qoşulmaq olmur</translation>
 <translation id="1405779994569073824">Xəta baş verdi.</translation>
 <translation id="1406500794671479665">Təsdiqlənir...</translation>
+<translation id="1407069428457324124">Tünd tema</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="140723521119632973">Mobil Aktivasiya</translation>
 <translation id="1407489512183974736">Mərkəzi Kəsimli</translation>
@@ -5651,6 +5652,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="729583233778673644">AES və RC4 şifrələmələrinə icazə verin. RC4 şifrələri təhlükəli olduğu üçün bu seçimdən istifadə etmək riski artırır.</translation>
 <translation id="729761647156315797">Dil və klaviatura seçin</translation>
 <translation id="7297726121602187087">Tünd-yaşıl</translation>
+<translation id="7298195798382681320">Tövsiyə olunur</translation>
 <translation id="7299337219131431707">Qonaq brauzinqini aktiv edin</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Bu tətbiq Chrome'un düzgün işləməsinə mane olaq bilər.}other{Bu tətbiqlər Chrome'un düzgün işləməsinə mane ola bilər.}}</translation>
 <translation id="7303281435234579599">Ups! Demo rejimi quraşdırılarkən xəta baş verdi.</translation>
@@ -7245,6 +7247,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="9026852570893462412">Bir az səbr edin; virtual maşın endirilir.</translation>
 <translation id="9027459031423301635">Linki yeni paneldə açın</translation>
 <translation id="9030515284705930323">Təşkilatınız Google Play Mağazanı hesabınız üçün aktiv etməyib. Əlavə məlumat üçün administratorla əlaqə saxlayın.</translation>
+<translation id="9030754204056345429">Sürətli</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> artıq dəstəklənmir</translation>
 <translation id="9031549947500880805">Google Diskə yedəkləyin. İstənilən vaxt datanızı asanlıqla bərpa edin və ya cihazı dəyişin. Yedəkləmənizə tətbiq datası daxildir.</translation>

@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
 <translation id="1406500794671479665">確認中...</translation>
+<translation id="1407069428457324124">ダークテーマ</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="140723521119632973">モバイル有効化</translation>
 <translation id="1407489512183974736">中央トリミング</translation>
@@ -5657,6 +5658,7 @@
 <translation id="729583233778673644">AES 暗号化と RC4 暗号化を許可します。なお RC4 暗号は安全でないため、このオプションを使用するとリスクが高まります。</translation>
 <translation id="729761647156315797">言語とキーボードの選択</translation>
 <translation id="7297726121602187087">暗い緑</translation>
+<translation id="7298195798382681320">推奨</translation>
 <translation id="7299337219131431707">ゲストのブラウジングを許可する</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{このアプリケーションは、Chrome の正常な動作を妨げる可能性があります。}other{これらのアプリケーションは、Chrome の正常な動作を妨げる可能性があります。}}</translation>
 <translation id="7303281435234579599">デモモードの設定中にエラーが発生しました。</translation>
@@ -7254,6 +7256,7 @@
 <translation id="9026852570893462412">この処理には数分かかることがあります。仮想マシンをダウンロードします。</translation>
 <translation id="9027459031423301635">新しいタブで開く(&amp;T)</translation>
 <translation id="9030515284705930323">組織の設定により、アカウントで Google Play ストアをご利用いただくことができません。詳しくは管理者にお尋ねください。</translation>
+<translation id="9030754204056345429">速め</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">「<ph name="PLUGIN_NAME" />」のサポートは終了しました</translation>
 <translation id="9031549947500880805">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。</translation>

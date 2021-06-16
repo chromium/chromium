@@ -391,6 +391,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5062321486222145940">Asenna Google Drive</translation>
 <translation id="5083464117946352670">Tiedostokokoa ei voi määrittää</translation>
 <translation id="5090832849094901128">Vaikka poistat salasanan, tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
+<translation id="5092117651143801290">Voit tallentaa sivuja luettavaksi myöhemmin tai ilman verkkoyhteyttä. Chrome kysyy, haluatko tallentaa pitkiä sivuja.</translation>
 <translation id="5094827893301452931">Tweet julkaistu.</translation>
 <translation id="5118764316110575523">Pois päältä</translation>
 <translation id="5127805178023152808">Synkronointi on pois päältä</translation>
@@ -757,6 +758,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8548878600947630424">Haku sivulta...</translation>
 <translation id="8574235780160508979">Chromen käyttöehdot muuttuvat 31.3. <ph name="BEGIN_LINK" />Lue ehdot<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Pois päältä</translation>
+<translation id="8590913940444621808">Älä kysy ikinä</translation>
 <translation id="8591976964826315682">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="8605219856220328675">Sulje välilehti.</translation>
 <translation id="8620640915598389714">Muokkaa</translation>

@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">Nuk mund të lidhet me përfaqësuesin</translation>
 <translation id="1405779994569073824">U ndërpre aksidentalisht.</translation>
 <translation id="1406500794671479665">Po verifikon...</translation>
+<translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1407135791313364759">Hapi të gjitha</translation>
 <translation id="140723521119632973">Aktivizimi celular</translation>
 <translation id="1407489512183974736">Prerë në qendër</translation>
@@ -5654,6 +5655,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="729583233778673644">Lejo enkriptimin AES dhe RC4. Përdorimi i këtij opsioni rrit rrezikun për ty, pasi shifrat RC4 nuk janë të sigurta.</translation>
 <translation id="729761647156315797">Zgjidh gjuhën dhe tastierën</translation>
 <translation id="7297726121602187087">E gjelbër e errët</translation>
+<translation id="7298195798382681320">I rekomanduar</translation>
 <translation id="7299337219131431707">Aktivizo shfletimin "vizitor"</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ky aplikacion mund të pengojë që Chrome të funksionojë siç duhet.}other{Këto aplikacione mund të pengojnë që Chrome të funksionojë siç duhet}}</translation>
 <translation id="7303281435234579599">Mos! Ndodhi një gabim gjatë konfigurimit të modalitetit të demonstrimit.</translation>
@@ -7249,6 +7251,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9026852570893462412">Procesi mund të zgjasë disa minuta. Po shkarkohet pajisja virtuale.</translation>
 <translation id="9027459031423301635">Hape lidhjen në një &amp;skedë të re</translation>
 <translation id="9030515284705930323">Organizata jote nuk e ka aktivizuar Dyqanin e Google Play për llogarinë tënde. Kontakto me administratorin për më shumë informacione.</translation>
+<translation id="9030754204056345429">Më shpejt</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> nuk mbështetet më</translation>
 <translation id="9031549947500880805">Rezervo në "Diskun e Google". Restauro të dhënat e tua ose ndërro me lehtësi pajisjen në çdo kohë. Rezervimi yt përfshin të dhënat e aplikacioneve.</translation>

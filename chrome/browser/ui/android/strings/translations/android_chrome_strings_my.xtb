@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">စင့်ခ်လုပ်ခြင်းကို ဖွင့်မလား။</translation>
 <translation id="123724288017357924">လက်ရှိစာမျက်နှာကို ပြန်ဖွင့်ပြီး ကက်ရှ်ကို ပယ်ရန်</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ကို ဖွင့်နေသည်</translation>
+<translation id="1242883863226959074">စက်</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1258753120186372309">Google doodle- <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
@@ -919,6 +920,7 @@
 <translation id="6864459304226931083">ပုံကို ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="6865313869410766144">ဒေတာမှ အလိုလျောက် ဖြည့်စွက်</translation>
 <translation id="6867400383614725881">ရုပ်ဖျက်တဘ် အသစ်</translation>
+<translation id="6869056123412990582">ကွန်ပျူတာ</translation>
 <translation id="6882836635272038266">အန္တရာယ်ရှိသည်ဟု သိထားသော ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများအတွက် သာမန်ကာကွယ်မှု။</translation>
 <translation id="688738109438487280">လက်ရှိဒေတာကို <ph name="TO_ACCOUNT" /> သို့ ထည့်ပါ။</translation>
 <translation id="6891726759199484455">သင့်စကားဝှက်ကို မိတ္ထူကူးရန် ဖွင့်ပါ</translation>
@@ -1155,6 +1157,7 @@
 <translation id="8393700583063109961">စာပို့ရန်</translation>
 <translation id="8410695015584479363">ဈေးနှုန်းများ ခြေရာခံရန်</translation>
 <translation id="8413126021676339697">မှတ်တမ်း အပြည့် ပြရန်</translation>
+<translation id="8424781820952413435">စာမျက်နှာ ပို့လိုက်ပြီ။ ၎င်းကိုကြည့်ရန် သင်၏ <ph name="DEVICE_TYPE" /> တွင် Chrome ဖွင့်ပါ</translation>
 <translation id="8427875596167638501">အစမ်းကြည့်ရှုမှုတဘ်ကို တစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8438566539970814960">ရှာဖွေမှုနှင့် ဖွင့်ကြည့်မှု ပိုမိုကောင်းမွန်လာအောင် လုပ်ခြင်း</translation>
@@ -1196,6 +1199,7 @@
 <translation id="860282621117673749">ဈေးကျသွားကြောင်း သတိပေးချက်များ</translation>
 <translation id="8616006591992756292">သင့်  Google အကောင့်က ဖွင့်ကြည့်ထားသောမှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်။</translation>
 <translation id="8617240290563765734">ဒေါင်းလုပ်လုပ်ထားသည့် အကြောင်းအရာတွင် သတ်မှတ်ထားသည့် အကြံပြု URL ကိုဖွင့်မလား?</translation>
+<translation id="8621068256433641644">ဖုန်း</translation>
 <translation id="8636825310635137004">သင်၏ အခြားစက်ပစ္စည်းများမှ တဘ်များကိုအသုံးပြုရန် စင့်ခ်ကို ဖွင့်ပါ။</translation>
 <translation id="8641930654639604085">လိင်ဆိုင်ရာဆိုက်များကို ပိတ်ဆို့ရန်ကြိုးစားကြည့်ပါ</translation>
 <translation id="8655129584991699539">ဒေတာများကို 'Chrome ဆက်တင်များ' တွင် ရှင်းထုတ်နိုင်သည်</translation>

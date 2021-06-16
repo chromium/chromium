@@ -495,9 +495,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="272451190272506600">Sentuh penderia untuk bayar</translation>
 <translation id="2728127805433021124">Sijil pelayan ditandatangani menggunakan algoritma tandatangan yang lemah.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Jalankan Diagnostik Sambungan<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Langkah mendayakan ciri ini mungkin akan menyebabkan anda kehilangan data penyemak imbas atau
-    menjejaskan keselamatan atau privasi anda. Ciri yang didayakan digunakan untuk semua
-    pengguna penyemak imbas ini.</translation>
 <translation id="2738330467931008676">Pilih Alamat Pengambilan</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742870351467570537">Buang item yang dipilih</translation>
@@ -2216,6 +2213,7 @@ Butiran tambahan:
 <translation id="9128870381267983090">Sambung ke rangkaian</translation>
 <translation id="9137013805542155359">Paparkan asal</translation>
 <translation id="9141013498910525015">Urus alamat</translation>
+<translation id="9144951720726881238">Tarikh tamat tempoh:</translation>
 <translation id="9148088599418889305">Pilih Kaedah Penghantaran</translation>
 <translation id="9148507642005240123">&amp;Buat asal edit</translation>
 <translation id="9150045010208374699">Gunakan kamera anda</translation>

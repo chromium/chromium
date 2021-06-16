@@ -495,9 +495,6 @@
 <translation id="272451190272506600">Ödəniş etmək üçün sensora toxunun</translation>
 <translation id="2728127805433021124">Server sertifikatı zəif imza alqoritmi istifadə olunaraq daxil edildi.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Bağlantı Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Bu funksiyaları aktiv etməklə, brauzer datası silinə bilər, yaxud
-    təhlükəsizlik və ya məxfiliyinizi təhlükə altına ata bilərsiniz. Aktiv edilən funksiyalar bu brauzerin
-    bütün istifadəçilərinə tətbiq edilir.</translation>
 <translation id="2738330467931008676">Götürmə Ünvanı seçin</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742870351467570537">Seçilmiş elementləri silin</translation>
@@ -2209,6 +2206,7 @@
 <translation id="9128870381267983090">Şəbəkəyə qoşulun</translation>
 <translation id="9137013805542155359">Originalı göstərin</translation>
 <translation id="9141013498910525015">Ünvanları idarə edin</translation>
+<translation id="9144951720726881238">Bitmə tarixi:</translation>
 <translation id="9148088599418889305">Göndərmə Üsulu seçin</translation>
 <translation id="9148507642005240123">Düzəlişi geri qaytarın</translation>
 <translation id="9150045010208374699">Kameranızı istifadə edin</translation>

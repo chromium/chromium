@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Hidupkan penyegerakan?</translation>
 <translation id="123724288017357924">Muat semula laman semasa dan abaikan kdgn dicache</translation>
 <translation id="1240288207750131269">Memuatkan <ph name="LANG" /></translation>
+<translation id="1242883863226959074">peranti</translation>
 <translation id="124678866338384709">Tutup tab semasa</translation>
 <translation id="1258753120186372309">Coretan Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Tidak dapat berkongsi <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6864459304226931083">Muat turun imej</translation>
 <translation id="6865313869410766144">Autolengkap data borang</translation>
 <translation id="6867400383614725881">Tab Inkognito baharu</translation>
+<translation id="6869056123412990582">komputer</translation>
 <translation id="6882836635272038266">Perlindungan standard daripada tapak web, muat turun dan sambungan yang diketahui berbahaya.</translation>
 <translation id="688738109438487280">Tambahkan data sedia ada pada <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Buka kunci untuk menyalin kata laluan anda</translation>
@@ -1156,6 +1158,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="8393700583063109961">Hantar mesej</translation>
 <translation id="8410695015584479363">Jejaki harga</translation>
 <translation id="8413126021676339697">Paparkan sejarah penuh</translation>
+<translation id="8424781820952413435">Halaman dihantar. Untuk melihat halaman itu, buka Chrome pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8427875596167638501">Tab pratonton separa terbuka</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8438566539970814960">Mempertingkatkan carian dan penyemakan imbas</translation>
@@ -1197,6 +1200,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="860282621117673749">Makluman penurunan harga</translation>
 <translation id="8616006591992756292">Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Buka URL yang dicadangkan yang dinyatakan dalam kandungan yang dimuat turun?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain.</translation>
 <translation id="8641930654639604085">Cuba menyekat tapak dewasa</translation>
 <translation id="8655129584991699539">Anda boleh mengosongkan data dalam Tetapan Chrome</translation>

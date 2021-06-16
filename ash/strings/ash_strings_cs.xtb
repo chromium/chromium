@@ -80,6 +80,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1516740043221086139">Režim Nerušit je zapnutý.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}many{Zobrazit nastavení oznámení. U # aplikace jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
 <translation id="1525508553941733066">ZAVŘÍT</translation>
+<translation id="1536604384701784949">Pokud chcete použít účet <ph name="USER_EMAIL_ADDRESS" />, bude nutné se nejprve odhlásit od všech dalších účtů. Pokud se chcete odhlásit, vraťte se zpět pomocí tlačítka Zrušit. Poté výběrem času otevřete stavovou oblast a vyberte Odhlásit se. Poté se přihlaste k účtu <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Velký kurzor myši</translation>
 <translation id="1546492247443594934">Plocha 2</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte další možnosti</translation>
@@ -524,6 +525,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5033299697334913360">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
 <translation id="5035389544768382859">Potvrzení konfigurace monitoru</translation>
+<translation id="5039804452771397117">Povolit</translation>
 <translation id="504465286040788597">Předchozí odstavec</translation>
 <translation id="5071064518267176975">Aplikace chce použít mikrofon</translation>
 <translation id="5075554201838155866">Zapnout skryté titulky</translation>
@@ -801,6 +803,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7461924472993315131">Připnout</translation>
 <translation id="746232733191930409">Režim nahrávání obrazovky</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
+<translation id="7473891865547856676">Ne, děkuji</translation>
 <translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
 <translation id="7483025031359818980">Oblast výběru je nastavena na celou obrazovku</translation>
 <translation id="7486227320194954040">Sbalit zvýrazňovací nástroje</translation>

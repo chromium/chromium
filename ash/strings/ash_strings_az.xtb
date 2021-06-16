@@ -80,6 +80,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1516740043221086139">Narahat etməyin rejimi aktivdir</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildiriş ayarlarını göstərin. Bildirişlər tətbiqdə deaktivdir}other{Bildiriş ayarlarını göstərin. Bildirişlər # tətbiqdə deaktivdir}}</translation>
 <translation id="1525508553941733066">KƏNARLAŞDIRIN</translation>
+<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> istifadə etmək üçün bütün hesablardan çıxmalısınız. Çıxmaq üçün "Ləğv edin" seçiminə toxunaraq geri qayıdın. Sonra status sahəsini açmaq üçün vaxt seçin və "Çıxış" seçiminə toxunun. Sonra yenidən <ph name="USER_EMAIL_ADDRESS_2" /> hesabına daxil olun.</translation>
 <translation id="15373452373711364">Böyük maus kursoru</translation>
 <translation id="1546492247443594934">Masa 2</translation>
 <translation id="1550523713251050646">Əlavə seçimlər üçün klikləyin</translation>
@@ -524,6 +525,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5033299697334913360">Tam ekranı çəkmək üçün istənilən yerə klikləyin</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yeni telefona qoşuldu</translation>
 <translation id="5035389544768382859">Displey Konfiqurasiyasını təsdiq edin</translation>
+<translation id="5039804452771397117">İcazə verin</translation>
 <translation id="504465286040788597">Əvvəlki paraqraf</translation>
 <translation id="5071064518267176975">Tətbiq mikrofondan istifadə etmək istəyir</translation>
 <translation id="5075554201838155866">Bağlanmış subtitrləri başladın</translation>
@@ -801,6 +803,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Ekran yazılması rejimi</translation>
 <translation id="7466449121337984263">Sensora toxunun</translation>
+<translation id="7473891865547856676">Yox</translation>
 <translation id="7477793887173910789">Musiqi, video və daha çoxuna nəzarət edin</translation>
 <translation id="7483025031359818980">Seçim sahəsi tam ekran olaraq ayarlanıb</translation>
 <translation id="7486227320194954040">Marker alətlərini yığcamlaşdırın</translation>

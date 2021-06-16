@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Activezi sincronizarea?</translation>
 <translation id="123724288017357924">Reîncarcă pagina, ignorând conținutul din cache</translation>
 <translation id="1240288207750131269">Se încarcă <ph name="LANG" /></translation>
+<translation id="1242883863226959074">dispozitiv</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nu s-a trimis <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6864459304226931083">Descarcă imaginea</translation>
 <translation id="6865313869410766144">Datele salvate pentru completarea automată a formularelor</translation>
 <translation id="6867400383614725881">Filă incognito nouă</translation>
+<translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="688738109438487280">Adaugă datele existente în <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Deblochează pentru a copia parola</translation>
@@ -1156,6 +1158,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8410695015584479363">Urmărește prețurile</translation>
 <translation id="8413126021676339697">Afișează întregul istoric</translation>
+<translation id="8424781820952413435">Pagina a fost trimisă. Ca să o vezi, deschide Chrome pe <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Fila de previzualizare este pe jumătate deschisă</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8438566539970814960">Îmbunătățește căutările și navigarea</translation>
@@ -1197,6 +1200,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="860282621117673749">Alerte privind scăderile de preț</translation>
 <translation id="8616006591992756292">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Deschizi adresa URL sugerată specificată în conținutul descărcat?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea.</translation>
 <translation id="8641930654639604085">Încearcă să blochezi site-urile destinate adulților</translation>
 <translation id="8655129584991699539">Poți șterge datele în Setările Chrome</translation>

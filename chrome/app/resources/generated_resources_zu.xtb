@@ -362,6 +362,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1403222014593521787">Ayikwazi ukuxhuma kummeleli</translation>
 <translation id="1405779994569073824">Iphahlazekile.</translation>
 <translation id="1406500794671479665">Iyaqinisekisa...</translation>
+<translation id="1407069428457324124">Itimu emnyama</translation>
 <translation id="1407135791313364759">Vula konke</translation>
 <translation id="140723521119632973">Ukusetshenziswa kweselula</translation>
 <translation id="1407489512183974736">Imaphakathi lisikiwe</translation>
@@ -5674,6 +5675,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="729583233778673644">Vumela ukubethelwa kwe-AES ne-RC4. Ukusebenzisa le nketho kukhulisa ubucayi bakho, njengoba ama-chipers e-RC4 awaphephile.</translation>
 <translation id="729761647156315797">Khetha ulwimi lakho nekhibhodi</translation>
 <translation id="7297726121602187087">Okuluhlaza kakhulu</translation>
+<translation id="7298195798382681320">Kunconyiwe</translation>
 <translation id="7299337219131431707">Nika amandla ukudlulisa amehlo kwesihambeli</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Lolu hlelo lokusebenza luvikela i-Chrome ukuthi isebenze kahle.}one{Lezi zinhlelo zokusebenza zingavimbela i-Chrome ukuthi isebenze kahle.}other{Lezi zinhlelo zokusebenza zingavimbela i-Chrome ukuthi isebenze kahle.}}</translation>
 <translation id="7303281435234579599">Eshu! Okuthile akuhambanga kahle ngenkathi isetha imodi yedemo.</translation>
@@ -7272,6 +7274,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9026852570893462412">Le nqubo ingathatha amaminithi ambalwa. Ilanda umshini obonakalayo.</translation>
 <translation id="9027459031423301635">Vula isixhumanisi kuthebhu entsha</translation>
 <translation id="9030515284705930323">Inhlangano yakho ayizange inike amandla i-Google Play Isitolo se-akhawunti yakho. Xhumana nomlawuli wakho ukuze uthole olunye ulwazi.</translation>
+<translation id="9030754204056345429">Sheshasheshayo</translation>
 <translation id="9030785788945687215">I-Gmail</translation>
 <translation id="9030855135435061269">I-<ph name="PLUGIN_NAME" /> ayisasekelwa</translation>
 <translation id="9031549947500880805">Yenza isipele ku-Google Drayivu. Buyisa kalula idatha yakho noma shintsha idivayisi noma kunini. Isipele sakho sihlanganisa nedatha yohlelo lokusebenza.</translation>

@@ -362,6 +362,7 @@
 <translation id="1403222014593521787">प्रॉक्सी सर्वर से कनेक्ट नहीं किया जा सका</translation>
 <translation id="1405779994569073824">बंद हो गया.</translation>
 <translation id="1406500794671479665">सत्यापन हो रहा है...</translation>
+<translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
 <translation id="140723521119632973">सेल्युलर एक्टिवेशन</translation>
 <translation id="1407489512183974736">मध्य में काटा गया</translation>
@@ -5672,6 +5673,7 @@
 <translation id="729583233778673644">AES और RC4 सुरक्षा करने के तरीकों की मंज़ूरी दें. इस विकल्प का इस्तेमाल करने से आपका खतरा बढ़ जाता है, क्योंकि RC4 सिफ़र असुरक्षित होते हैं.</translation>
 <translation id="729761647156315797">अपनी भाषा और कीबोर्ड चुनें</translation>
 <translation id="7297726121602187087">गहरा हरा</translation>
+<translation id="7298195798382681320">सुझाए गए</translation>
 <translation id="7299337219131431707">मेहमान के तौर पर ब्राउज़िंग चालू करें</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{यह ऐप्लिकेशन Chrome को ठीक से काम करने से रोक सकता है.}one{ये ऐप्लिकेशन Chrome को ठीक से काम करने से रोक सकते हैं.}other{ये ऐप्लिकेशन Chrome को ठीक से काम करने से रोक सकते हैं.}}</translation>
 <translation id="7303281435234579599">ओह! डेमो मोड सेट अप करते समय कोई गड़बड़ी हुई.</translation>
@@ -7270,6 +7272,7 @@
 <translation id="9026852570893462412">इस प्रोसेस में कुछ मिनट लग सकते हैं. वर्चुअल मशीन को डाउनलोड किया जा रहा है.</translation>
 <translation id="9027459031423301635">नए &amp;टैब में लिंक खोलें</translation>
 <translation id="9030515284705930323">आपके संगठन ने आपके खाते के लिए Google Play स्टोर को सक्षम नहीं किया है. ज़्यादा जानकारी के लिए अपने व्यवस्थापक से संपर्क करें.</translation>
+<translation id="9030754204056345429">ज़्यादा तेज़</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> अब काम नहीं करता</translation>
 <translation id="9031549947500880805">'Google डिस्क' में बैक अप लें. अपना डेटा आसानी से वापस लाएं या किसी भी समय डिवाइस बदलें. आपके बैक अप में ऐप्लिकेशन डेटा शामिल होता है.</translation>

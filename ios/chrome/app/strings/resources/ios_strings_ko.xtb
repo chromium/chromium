@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">Google Drive 설치</translation>
 <translation id="5083464117946352670">파일 크기를 알 수 없습니다.</translation>
 <translation id="5090832849094901128">비밀번호를 삭제해도 <ph name="WEBSITE" /> 계정은 삭제되지 않습니다.</translation>
+<translation id="5092117651143801290">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다. Chrome에서 장문의 페이지를 저장할지 묻는 메시지가 표시됩니다.</translation>
 <translation id="5094827893301452931">Tweet이 완료되었습니다.</translation>
 <translation id="5118764316110575523">사용 안함</translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>
@@ -757,6 +758,7 @@
 <translation id="8548878600947630424">페이지에서 찾기...</translation>
 <translation id="8574235780160508979">Chrome의 서비스 약관이 3월 31일에 변경됩니다. <ph name="BEGIN_LINK" />검토하기<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">사용 안함</translation>
+<translation id="8590913940444621808">묻지 않음</translation>
 <translation id="8591976964826315682">시크릿 모드에서 타사 쿠키 차단</translation>
 <translation id="8605219856220328675">탭 닫기</translation>
 <translation id="8620640915598389714">수정</translation>

@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">無法連線至 Proxy</translation>
 <translation id="1405779994569073824">已停止運作。</translation>
 <translation id="1406500794671479665">驗證中...</translation>
+<translation id="1407069428457324124">深色主題</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="140723521119632973">啟用行動網路</translation>
 <translation id="1407489512183974736">置中並剪裁</translation>
@@ -5656,6 +5657,7 @@
 <translation id="729583233778673644">允許執行 AES 和 RC4 加密。由於 RC4 加密不安全，使用這個加密選項會提高風險。</translation>
 <translation id="729761647156315797">選擇語言和鍵盤</translation>
 <translation id="7297726121602187087">深綠色</translation>
+<translation id="7298195798382681320">建議採用</translation>
 <translation id="7299337219131431707">啟用訪客瀏覽</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{這個應用程式可能會造成 Chrome 無法正常運作。}other{這些應用程式可能會造成 Chrome 無法正常運作。}}</translation>
 <translation id="7303281435234579599">糟糕！設定示範模式時出了點狀況。</translation>
@@ -7254,6 +7256,7 @@
 <translation id="9026852570893462412">正在下載虛擬機器，過程可能需要幾分鐘。</translation>
 <translation id="9027459031423301635">在新分頁中開啟連結(T)</translation>
 <translation id="9030515284705930323">貴機構尚未為您的帳戶啟用 Google Play 商店。如需瞭解詳情，請與您的管理員聯絡。</translation>
+<translation id="9030754204056345429">較快</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">已不再支援「<ph name="PLUGIN_NAME" />」</translation>
 <translation id="9031549947500880805">使用 Google 雲端硬碟備份你的資料。你隨時可以輕鬆還原資料或切換裝置。備份項目包含應用程式資料。</translation>

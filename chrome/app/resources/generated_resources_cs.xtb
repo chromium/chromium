@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">K proxy se nelze připojit</translation>
 <translation id="1405779994569073824">Selhalo.</translation>
 <translation id="1406500794671479665">Ověřování...</translation>
+<translation id="1407069428457324124">Tmavý motiv</translation>
 <translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="140723521119632973">Aktivace mobilní sítě</translation>
 <translation id="1407489512183974736">Ořezat na střed</translation>
@@ -5656,6 +5657,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="729583233778673644">Povolit šifrování AES a RC4. Použití této možnosti zvyšuje riziko, protože šifry RC4 nejsou bezpečné.</translation>
 <translation id="729761647156315797">Výběr jazyka a klávesnice</translation>
 <translation id="7297726121602187087">Tmavě zelená</translation>
+<translation id="7298195798382681320">Doporučeno</translation>
 <translation id="7299337219131431707">Povolit prohlížení v roli hosta</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Tato aplikace by Chromu mohla bránit ve správném fungování.}few{Tyto aplikace by Chromu mohly bránit ve správném fungování.}many{Tyto aplikace by Chromu mohly bránit ve správném fungování.}other{Tyto aplikace by Chromu mohly bránit ve správném fungování.}}</translation>
 <translation id="7303281435234579599">Jejda! Při nastavování ukázkového režimu se něco pokazilo.</translation>
@@ -7254,6 +7256,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9026852570893462412">Tento proces může trvat několik minut. Probíhá stahování virtuálního počítače.</translation>
 <translation id="9027459031423301635">Otevří&amp;t odkaz v nové kartě</translation>
 <translation id="9030515284705930323">Vaše organizace pro váš účet Obchod Google Play nepovolila. Další informace získáte u svého administrátora.</translation>
+<translation id="9030754204056345429">Rychlejší</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Plugin <ph name="PLUGIN_NAME" /> už není podporován</translation>
 <translation id="9031549947500880805">Zálohování na Disk Google. Snadno obnovte svá data nebo kdykoliv přejděte na jiné zařízení. Záloha zahrnuje data aplikací.</translation>

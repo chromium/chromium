@@ -494,7 +494,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="272451190272506600">Toca o sensor para pagar</translation>
 <translation id="2728127805433021124">O certificado do servidor está asinado cun algoritmo de sinatura débil.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar diagnósticos de conectividade<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Ao activar estas funcións, poderías perder os datos do navegador ou poñer en perigo a túa seguranza ou privacidade. As funcións activadas aplícanse a todos os usuarios deste navegador.</translation>
 <translation id="2738330467931008676">Escoller enderezo de recollida</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2742870351467570537">Eliminar elementos seleccionados</translation>
@@ -2211,6 +2210,7 @@ Detalles adicionais:
 <translation id="9128870381267983090">Conectarse á rede</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9141013498910525015">Xestionar enderezos</translation>
+<translation id="9144951720726881238">Data de vencemento:</translation>
 <translation id="9148088599418889305">Escoller método de envío</translation>
 <translation id="9148507642005240123">&amp;Desfacer modificación</translation>
 <translation id="9150045010208374699">Utilizar a túa cámara</translation>

@@ -391,6 +391,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5062321486222145940">Nainštalovať Disk Google</translation>
 <translation id="5083464117946352670">Nedá sa zistiť veľkosť súboru.</translation>
 <translation id="5090832849094901128">Odstránením tohto hesla nevymažete svoj účet na <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Stránky si môžete uložiť a prečítať neskôr alebo offline. Chrome sa vás opýta, či chcete ukladať dlhé stránky.</translation>
 <translation id="5094827893301452931">Tweet bol uverejnený.</translation>
 <translation id="5118764316110575523">Vypnuté</translation>
 <translation id="5127805178023152808">Synchronizácia je vypnutá</translation>
@@ -757,6 +758,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8548878600947630424">Nájsť na stránke...</translation>
 <translation id="8574235780160508979">Zmluvné podmienky prehliadača Chrome sa 31. marca zmenia. <ph name="BEGIN_LINK" />Prehliadnuť si nové zmluvné podmienky<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Vypnúť</translation>
+<translation id="8590913940444621808">Nikdy sa nepýtať</translation>
 <translation id="8591976964826315682">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="8605219856220328675">Zatvoriť kartu.</translation>
 <translation id="8620640915598389714">Upraviť</translation>

@@ -362,6 +362,7 @@
 <translation id="1403222014593521787">امکان اتصال به پراکسی وجود ندارد</translation>
 <translation id="1405779994569073824">خراب.</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
+<translation id="1407069428457324124">طرح زمینه تیره</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="140723521119632973">فعال‌سازی شبکه داده تلفن همراه</translation>
 <translation id="1407489512183974736">برش خورده در مرکز</translation>
@@ -5670,6 +5671,7 @@
 <translation id="729583233778673644">‏مجاز کردن رمزگذاری AES و RC4. استفاده از این گزینه احتمال خطر را بالا می‌برد، زیرا رمزهای RC4 امن نیست.</translation>
 <translation id="729761647156315797">انتخاب زبان و صفحه‌کلید</translation>
 <translation id="7297726121602187087">سبز تیره</translation>
+<translation id="7298195798382681320">توصیه می‌شود</translation>
 <translation id="7299337219131431707">فعال کردن مرور به‌عنوان مهمان</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{‏این برنامه می‌تواند مانع عملکرد درست Chrome شود.}one{‏این برنامه‌ها می‌توانند مانع عملکرد درست Chrome شوند.}other{‏این برنامه‌ها می‌توانند مانع عملکرد درست Chrome شوند.}}</translation>
 <translation id="7303281435234579599">وای! هنگام راه‌اندازی حالت نمایشی، مشکلی پیش آمد.</translation>
@@ -7269,6 +7271,7 @@
 <translation id="9026852570893462412">این فرایند ممکن است چند دقیقه طول بکشد. درحال بارگیری دستگاه مجازی.</translation>
 <translation id="9027459031423301635">باز کردن پیوند در &amp;برگه جدید</translation>
 <translation id="9030515284705930323">‏سازمان شما فروشگاه Google Play را برای حسابتان فعال نکرده است. برای اطلاعات بیشتر با سرپرستتان تماس بگیرید.</translation>
+<translation id="9030754204056345429">سریع‌تر</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> دیگر پشتیبانی نمی‌شود</translation>
 <translation id="9031549947500880805">‏در Google Drive پشتیبان‌گیری کنید. به‌آسانی داده‌های خود را بازیابی کنید یا هرزمان خواستید دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است.</translation>

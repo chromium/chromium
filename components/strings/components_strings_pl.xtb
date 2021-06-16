@@ -491,9 +491,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="272451190272506600">Aby zapłacić, dotknij czytnika</translation>
 <translation id="2728127805433021124">Certyfikat serwera został podpisany przy użyciu słabego algorytmu podpisu.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Uruchomienie diagnostyki połączeń<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Włączenie tych funkcji może spowodować utratę danych z przeglądarki
-    oraz narazić bezpieczeństwo i prywatność użytkowników.
-    Funkcje są włączane dla wszystkich użytkowników tej przeglądarki.</translation>
 <translation id="2738330467931008676">Wybierz adres odbioru</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Usuń wybrane elementy</translation>

@@ -360,6 +360,7 @@
 <translation id="1403222014593521787">ከተኪው ጋር መገናኘት አልተቻለም</translation>
 <translation id="1405779994569073824">ተበላሽቷል።</translation>
 <translation id="1406500794671479665">በማረጋገጥ ላይ...</translation>
+<translation id="1407069428457324124">ጠቆር ያለ ገጽታ</translation>
 <translation id="1407135791313364759">ሁሉንም ክፈት</translation>
 <translation id="140723521119632973">ተንቀሳቃሽ ማግበሪያ</translation>
 <translation id="1407489512183974736">እስከ መሃከል የተከረከመ</translation>
@@ -5664,6 +5665,7 @@
 <translation id="729583233778673644">የAES እና የRC4 ምሥጠራን ይፍቀዱ። የRC4 ምሥጠራዎች ለደህንነት አስተማማኝ ስላልሆኑ ይህን አማራጭ መጠቀም የእርስዎን አደጋ ይጨምራል።</translation>
 <translation id="729761647156315797">የእርስዎን ቋንቋ እና የቁልፍ ሰሌዳ ይምረጡ</translation>
 <translation id="7297726121602187087">ጠቆር ያለ አረንጓዴ</translation>
+<translation id="7298195798382681320">የተመከሩ</translation>
 <translation id="7299337219131431707">የእንግዳ አሰሳን ያንቁ</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{ይህ መተግበሪያ Chrome በአግባቡ እንዳይሠራ ሊከላከል ይችላል።}one{እነዚህ መተግበሪያዎች Chrome በአግባቡ እንዳይሠራ ሊከላከሉ ይችላሉ።}other{እነዚህ መተግበሪያዎች Chrome በአግባቡ እንዳይሠራ ሊከላከሉ ይችላሉ።}}</translation>
 <translation id="7303281435234579599">ውይ! የቅንጭብ ማሳያ ሁነታን በማቀናበር ላይ ሳለ የሆነ ነገር ተሳስቷል።</translation>
@@ -7268,6 +7270,7 @@ nil</translation>
 <translation id="9026852570893462412">ይህ ሂደት ጥቂት ደቂቃዎችን ሊወስድ ይችላል። ምናባዊ ማሽኑን በማውረድ ላይ።</translation>
 <translation id="9027459031423301635">አገናኙን በአዲስ &amp;ትር ክፈት</translation>
 <translation id="9030515284705930323">የእርስዎ ድርጅት Google Play መደብርን ለመለያዎ አላነቃም። ተጨማሪ መረጃን ለማግኘት አስተዳዳሪዎን ያነጋግሩ።</translation>
+<translation id="9030754204056345429">በጣም ፈጣን</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> ከእንግዲህ አይደገፍም</translation>
 <translation id="9031549947500880805">ምትኬ ወደ Google Drive ያስቀምጡ። በማንኛውም ጊዜ ውሂብዎን በቀላሉ ወደነበሩበት ይመልሱ ወይም መሣሪያን ይቀይሩ። የእርስዎ ምትኬ የመተግበሪያ ውሂብን ያካትታል።</translation>

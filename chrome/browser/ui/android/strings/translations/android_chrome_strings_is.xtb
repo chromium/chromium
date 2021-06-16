@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Kveikja á samstillingu?</translation>
 <translation id="123724288017357924">Endurhlaða núverandi síðu, hunsa efni í skyndiminni</translation>
 <translation id="1240288207750131269">Hleður <ph name="LANG" /></translation>
+<translation id="1242883863226959074">tæki</translation>
 <translation id="124678866338384709">Loka núverandi flipa</translation>
 <translation id="1258753120186372309">Google dúlla: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6864459304226931083">Sækja mynd</translation>
 <translation id="6865313869410766144">Gögn sjálfvirkrar útfyllingar eyðublaða</translation>
 <translation id="6867400383614725881">Nýr huliðsflipi</translation>
+<translation id="6869056123412990582">tölva</translation>
 <translation id="6882836635272038266">Hefðbundin vörn gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg.</translation>
 <translation id="688738109438487280">Bæta fyrirliggjandi gögnum við <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Opnaðu til að afrita aðgangsorðið þitt</translation>
@@ -1156,6 +1158,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8393700583063109961">Senda skilaboð</translation>
 <translation id="8410695015584479363">Vakta verð</translation>
 <translation id="8413126021676339697">Sýna allan feril</translation>
+<translation id="8424781820952413435">Síða send. Opnaðu Chrome í <ph name="DEVICE_TYPE" /> til að sjá hana.</translation>
 <translation id="8427875596167638501">Forskoðunarflipinn er hálfopinn</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8438566539970814960">Bæta leit og vafra</translation>
@@ -1197,6 +1200,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="860282621117673749">Tilkynningar um verðlækkanir</translation>
 <translation id="8616006591992756292">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Opna ráðlögðu vefslóðina sem tilgreind er í sótta efninu?</translation>
+<translation id="8621068256433641644">sími</translation>
 <translation id="8636825310635137004">Kveiktu á samstillingu til að fá aðgang að flipunum þínum í öðrum tækjum.</translation>
 <translation id="8641930654639604085">Reyna að setja vefsvæði fyrir fullorðna á bannlista</translation>
 <translation id="8655129584991699539">Þú getur hreinsað gögnin í stillingum Chrome</translation>

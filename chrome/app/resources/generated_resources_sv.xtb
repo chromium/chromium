@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Det gick inte att ansluta till proxyservern</translation>
 <translation id="1405779994569073824">Har kraschat.</translation>
 <translation id="1406500794671479665">Verifierar …</translation>
+<translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="140723521119632973">Aktivering av mobilnätverk</translation>
 <translation id="1407489512183974736">Centrera och beskär</translation>
@@ -5673,6 +5674,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="729583233778673644">Tillåt AES- och RC4-kryptering. Det här alternativet är mer riskabelt eftersom RC4-chiffer är osäkra.</translation>
 <translation id="729761647156315797">Välj språk och tangentbord</translation>
 <translation id="7297726121602187087">Mörkgrön</translation>
+<translation id="7298195798382681320">Rekommenderas</translation>
 <translation id="7299337219131431707">Aktivera gästsurfning</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Den här appen kan göra så att Chrome inte fungerar korrekt.}other{De här apparna kan göra så att Chrome inte fungerar korrekt.}}</translation>
 <translation id="7303281435234579599">Något gick fel med konfigureringen av demoläget.</translation>
@@ -7271,6 +7273,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9026852570893462412">Detta kan ta några minuter. Den virtuella maskinen laddas ned.</translation>
 <translation id="9027459031423301635">Öppna länk i ny &amp;flik</translation>
 <translation id="9030515284705930323">Organisationen har inte aktiverat Google Play Butik för ditt konto. Kontakta administratören om du vill veta mer.</translation>
+<translation id="9030754204056345429">Snabbare</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> stöds inte längre</translation>
 <translation id="9031549947500880805">Säkerhetskopiera på Google Drive. Återställ data eller byt enkelt enhet när du vill. Säkerhetskopian innehåller appdata.</translation>

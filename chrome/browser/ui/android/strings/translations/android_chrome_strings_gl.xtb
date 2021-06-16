@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Queres activar a sincronización?</translation>
 <translation id="123724288017357924">Cargar a páxina, ignorando o contido da caché</translation>
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
+<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6864459304226931083">Descargar imaxe</translation>
 <translation id="6865313869410766144">Autocompletar datos do formulario</translation>
 <translation id="6867400383614725881">Nova pestana de incógnito</translation>
+<translation id="6869056123412990582">ordenador</translation>
 <translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
 <translation id="688738109438487280">Engade os datos existentes a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloquea a pantalla para copiar o teu contrasinal</translation>
@@ -1156,6 +1158,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8393700583063109961">Enviar mensaxe</translation>
 <translation id="8410695015584479363">Facer seguimento de prezos</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
+<translation id="8424781820952413435">Enviouse a páxina. Para vela, abre Chrome no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">A pestana de vista previa abriuse ata a metade</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
@@ -1197,6 +1200,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="860282621117673749">Alertas de baixada de prezos</translation>
 <translation id="8616006591992756292">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Queres abrir o URL específico suxerido no contido descargado?</translation>
+<translation id="8621068256433641644">teléfono</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="8641930654639604085">Tentar bloquear sitios con contido para adultos</translation>
 <translation id="8655129584991699539">Podes borrar os datos na configuración de Chrome</translation>

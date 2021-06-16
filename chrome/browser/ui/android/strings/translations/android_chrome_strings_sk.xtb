@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Chcete zapnúť synchronizáciu?</translation>
 <translation id="123724288017357924">Opätovné načítanie aktuálnej stránky a ignorovanie obsahu vo vyrovnávacej pamäti</translation>
 <translation id="1240288207750131269">Načítava sa <ph name="LANG" /></translation>
+<translation id="1242883863226959074">zariadenie</translation>
 <translation id="124678866338384709">Zavretie aktuálnej karty</translation>
 <translation id="1258753120186372309">Sviatočné logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> sa nepodarilo zdieľať</translation>
@@ -920,6 +921,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6864459304226931083">Stiahnuť obrázok</translation>
 <translation id="6865313869410766144">Dáta automatického dopĺňania formulárov</translation>
 <translation id="6867400383614725881">Nová karta inkognito</translation>
+<translation id="6869056123412990582">počítač</translation>
 <translation id="6882836635272038266">Štandardná ochrana pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami.</translation>
 <translation id="688738109438487280">Pridať existujúce dáta do účtu <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Heslo môžete kopírovať po odomknutí</translation>
@@ -1156,6 +1158,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8393700583063109961">Odoslať správu</translation>
 <translation id="8410695015584479363">Sledovať ceny</translation>
 <translation id="8413126021676339697">Zobraziť celú históriu</translation>
+<translation id="8424781820952413435">Stránka bola odoslaná. Ak ju chcete zobraziť, otvorte v zariadení <ph name="DEVICE_TYPE" /> Chrome</translation>
 <translation id="8427875596167638501">Karta ukážky je dopoly otvorená</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8438566539970814960">Zlepšovať vyhľadávanie a prehliadanie</translation>
@@ -1197,6 +1200,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="860282621117673749">Upozornenia na poklesy cien</translation>
 <translation id="8616006591992756292">Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Otvoriť navrhovanú webovú adresu určenú v stiahnutom obsahu?</translation>
+<translation id="8621068256433641644">telefón</translation>
 <translation id="8636825310635137004">Ak chcete získať karty zo svojich ostatných zariadení, zapnite synchronizáciu.</translation>
 <translation id="8641930654639604085">Pokúsiť sa blokovať weby pre dospelých</translation>
 <translation id="8655129584991699539">Môžete vymazať údaje v Nastaveniach Chromu</translation>

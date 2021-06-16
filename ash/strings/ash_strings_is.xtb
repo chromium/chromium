@@ -80,6 +80,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1516740043221086139">Kveikt er á „Ónáðið ekki“.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir forrit}one{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}other{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}}</translation>
 <translation id="1525508553941733066">LOKA</translation>
+<translation id="1536604384701784949">Til að nota <ph name="USER_EMAIL_ADDRESS" /> þarftu fyrst að skrá þig út af öllum reikningum. Veldu „Hætta við“ til að fara til baka og skrá þig út. Veldu svo tíma til að opna stöðusvæðið og veldu „Skrá út“. Skráðu þig svo aftur inn á <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Stór músarbendill</translation>
 <translation id="1546492247443594934">Skrifborð 2</translation>
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
@@ -524,6 +525,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5033299697334913360">Smelltu hvar sem er til að mynda allan skjáinn</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> tengdist nýjum síma</translation>
 <translation id="5035389544768382859">Staðfesta skjástillingu</translation>
+<translation id="5039804452771397117">Leyfa</translation>
 <translation id="504465286040788597">Fyrri málsgrein</translation>
 <translation id="5071064518267176975">Forrit vill nota hljóðnemann</translation>
 <translation id="5075554201838155866">Ræsa skjátexta</translation>
@@ -801,6 +803,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7461924472993315131">Festa</translation>
 <translation id="746232733191930409">Skjáupptökustilling</translation>
 <translation id="7466449121337984263">Snertu fingrafaralesarann</translation>
+<translation id="7473891865547856676">Nei, takk</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
 <translation id="7483025031359818980">Valsvæði stillt á allan skjáinn</translation>
 <translation id="7486227320194954040">Draga saman merkiverkfæri</translation>

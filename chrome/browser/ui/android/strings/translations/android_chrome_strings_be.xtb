@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Уключыць сінхранізацыю?</translation>
 <translation id="123724288017357924">Перазагрузіць бягучую старонку, ігнаруючы змесціва кэша</translation>
 <translation id="1240288207750131269">Ідзе загрузка пакета для наступнай мовы: <ph name="LANG" /></translation>
+<translation id="1242883863226959074">прыладзе</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6864459304226931083">Спампаваць відарыс</translation>
 <translation id="6865313869410766144">Даныя для аўтазапаўнення</translation>
 <translation id="6867400383614725881">Новая ўкладка ў рэжыме інкогніта</translation>
+<translation id="6869056123412990582">камп'ютары</translation>
 <translation id="6882836635272038266">Стандартная абарона ад вэб-сайтаў, спамповак і пашырэнняў, вядомых як небяспечныя.</translation>
 <translation id="688738109438487280">Дадаць існуючыя даныя ва ўліковы запіс <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Разблакіруйце, каб скапіраваць пароль</translation>
@@ -1156,6 +1158,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
 <translation id="8410695015584479363">Адсочваць цэны</translation>
 <translation id="8413126021676339697">Паказаць усю гісторыю</translation>
+<translation id="8424781820952413435">Старонка адпраўлена. Каб праглядзець яе, адкрыйце Chrome на <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Укладка перадпрагляду адкрыта напалову</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8438566539970814960">Паскорыць пошук і прагляд</translation>
@@ -1197,6 +1200,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="860282621117673749">Абвесткі пра зніжэнне цэн</translation>
 <translation id="8616006591992756292">На старонцы <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> могуць размяшчацца іншыя формы гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="8617240290563765734">Адкрыць прапанаваны URL-адрас, указаны ў спампаваным змесціве?</translation>
+<translation id="8621068256433641644">тэлефоне</translation>
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
 <translation id="8641930654639604085">Спрабаваць блакіраваць сайты для дарослых</translation>
 <translation id="8655129584991699539">Даныя можна выдаліць у наладах Chrome</translation>

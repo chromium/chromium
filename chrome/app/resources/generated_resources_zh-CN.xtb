@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">无法连接到代理</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
 <translation id="1406500794671479665">正在验证...</translation>
+<translation id="1407069428457324124">深色主题</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="140723521119632973">移动网络激活</translation>
 <translation id="1407489512183974736">居中并裁剪</translation>
@@ -5647,6 +5648,7 @@
 <translation id="729583233778673644">允许使用 AES 和 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
 <translation id="729761647156315797">选择语言和键盘</translation>
 <translation id="7297726121602187087">深绿色</translation>
+<translation id="7298195798382681320">推荐</translation>
 <translation id="7299337219131431707">启用访客浏览</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{这款应用可能会致使 Chrome 无法正常运行。}other{这些应用可能会致使 Chrome 无法正常运行。}}</translation>
 <translation id="7303281435234579599">糟糕！设置演示模式时出了点问题。</translation>
@@ -7241,6 +7243,7 @@
 <translation id="9026852570893462412">此过程可能需要几分钟的时间。正在下载虚拟机。</translation>
 <translation id="9027459031423301635">在新标签页中打开链接(&amp;T)</translation>
 <translation id="9030515284705930323">贵单位还没有为您的帐号启用 Google Play 商店。如需更多信息，请与管理员联系。</translation>
+<translation id="9030754204056345429">较快</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> 已不再受支持</translation>
 <translation id="9031549947500880805">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。</translation>

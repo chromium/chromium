@@ -80,6 +80,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1516740043221086139">El mode No molestis està activat.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a una aplicació.}other{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a # aplicacions.}}</translation>
 <translation id="1525508553941733066">IGNORA</translation>
+<translation id="1536604384701784949">Per utilitzar l'adreça <ph name="USER_EMAIL_ADDRESS" />, primer has de tancar la sessió de tots els comptes. Per tancar la sessió i tornar enrere, selecciona Cancel·la. Després selecciona l'hora per obrir l'àrea d'estat i, a continuació, l'opció Tanca la sessió. Torna a iniciar la sessió amb l'adreça <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor del ratolí gran</translation>
 <translation id="1546492247443594934">Escriptori 2</translation>
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
@@ -524,6 +525,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5033299697334913360">Fes clic en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> s'ha connectat a un altre telèfon</translation>
 <translation id="5035389544768382859">Confirma la configuració de la pantalla</translation>
+<translation id="5039804452771397117">Permet</translation>
 <translation id="504465286040788597">Paràgraf anterior</translation>
 <translation id="5071064518267176975">Una aplicació vol utilitzar el micròfon</translation>
 <translation id="5075554201838155866">Inicia els subtítols</translation>
@@ -801,6 +803,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7461924472993315131">Fixa</translation>
 <translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
+<translation id="7473891865547856676">No, gràcies</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
 <translation id="7483025031359818980">S'ha establert la pantalla completa com a àrea de selecció</translation>
 <translation id="7486227320194954040">Replega les eines de marcatge</translation>

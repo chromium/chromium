@@ -391,6 +391,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5062321486222145940">Namesti Google Drive</translation>
 <translation id="5083464117946352670">Velikost datoteke ni mogoče določiti.</translation>
 <translation id="5090832849094901128">Če izbrišete to geslo, ne izbrišete računa na <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Strani lahko shranite, če želite brati pozneje ali brez povezave. Chrome vas bo vprašal, ali želite shraniti dolge strani.</translation>
 <translation id="5094827893301452931">Tvit je dokončan.</translation>
 <translation id="5118764316110575523">Izklopljeno</translation>
 <translation id="5127805178023152808">Sinhroniziranje je izklopljeno</translation>
@@ -757,6 +758,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8548878600947630424">Najdi na strani ...</translation>
 <translation id="8574235780160508979">Pogoji storitve za Chrome se bodo spremenili 31. marca. <ph name="BEGIN_LINK" />Preglejte<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Izklop</translation>
+<translation id="8590913940444621808">Nikoli ne vprašaj</translation>
 <translation id="8591976964826315682">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Uredi</translation>

@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">เชื่อมต่อพร็อกซีไม่ได้</translation>
 <translation id="1405779994569073824">ขัดข้อง</translation>
 <translation id="1406500794671479665">กำลังยืนยันความถูกต้อง...</translation>
+<translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="140723521119632973">การเปิดใช้งานเครือข่ายมือถือ</translation>
 <translation id="1407489512183974736">ครอบตัดที่กึ่งกลาง</translation>
@@ -5657,6 +5658,7 @@
 <translation id="729583233778673644">อนุญาตการเข้ารหัส AES และ RC4 การใช้ตัวเลือกนี้เป็นการเพิ่มความเสี่ยงเนื่องจากการเข้ารหัส RC4 นั้นไม่ปลอดภัย</translation>
 <translation id="729761647156315797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7297726121602187087">สีเขียวเข้ม</translation>
+<translation id="7298195798382681320">แนะนำ</translation>
 <translation id="7299337219131431707">เปิดใช้งานการท่องเว็บในโหมดผู้มาเยือน</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{แอปพลิเคชันนี้อาจทำให้ Chrome ทำงานไม่ถูกต้อง}other{แอปพลิเคชันเหล่านี้อาจทำให้ Chrome ทำงานไม่ถูกต้อง}}</translation>
 <translation id="7303281435234579599">อ๊ะ! เกิดข้อผิดพลาดขณะตั้งค่าโหมดสาธิต</translation>
@@ -7254,6 +7256,7 @@
 <translation id="9026852570893462412">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังดาวน์โหลดเครื่องเสมือน</translation>
 <translation id="9027459031423301635">เปิดลิงก์ในแ&amp;ท็บใหม่</translation>
 <translation id="9030515284705930323">องค์กรของคุณยังไม่ได้เปิดใช้ Google Play Store สำหรับบัญชีของคุณ โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
+<translation id="9030754204056345429">เร็วขึ้น</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">ระบบไม่รองรับ <ph name="PLUGIN_NAME" /> อีกต่อไป</translation>
 <translation id="9031549947500880805">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะมีข้อมูลแอปอยู่ด้วย</translation>

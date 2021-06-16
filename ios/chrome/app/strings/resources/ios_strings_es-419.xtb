@@ -391,6 +391,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5083464117946352670">Tamaño de archivo desconocido</translation>
 <translation id="5090832849094901128">Si borras esta contraseña, no se quitará tu cuenta de <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Puedes guardar páginas para leerlas más tarde o sin conexión. Chrome te preguntará si deseas guardar páginas extensas.</translation>
 <translation id="5094827893301452931">Tweet publicado</translation>
 <translation id="5118764316110575523">No</translation>
 <translation id="5127805178023152808">La sincronización está desactivada.</translation>
@@ -757,6 +758,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8548878600947630424">Buscar en la página...</translation>
 <translation id="8574235780160508979">El 31 de marzo, cambiarán las Condiciones del Servicio de Chrome. <ph name="BEGIN_LINK" />Revísalas<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Apagada</translation>
+<translation id="8590913940444621808">Nunca preguntar</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="8605219856220328675">Cierra la pestaña.</translation>
 <translation id="8620640915598389714">Editar</translation>

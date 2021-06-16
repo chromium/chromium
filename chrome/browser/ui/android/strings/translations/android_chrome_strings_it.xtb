@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Attivare la sincronizzazione?</translation>
 <translation id="123724288017357924">Ricarica pag. corr. Ignora i contenuti nella cache</translation>
 <translation id="1240288207750131269">Caricamento della lingua <ph name="LANG" /> in corso…</translation>
+<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1258753120186372309">Doodle di Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6864459304226931083">Scarica immagine</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
 <translation id="6867400383614725881">Nuova scheda in incognito</translation>
+<translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="688738109438487280">Aggiungi i dati esistenti a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Sblocca per copiare la password</translation>
@@ -1156,6 +1158,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8410695015584479363">Monitora prezzi</translation>
 <translation id="8413126021676339697">Mostra cronologia completa</translation>
+<translation id="8424781820952413435">Pagina inviata. Per visualizzarla, apri Chrome sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">La scheda di anteprima è aperta nella parte inferiore dello schermo</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
@@ -1197,6 +1200,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="860282621117673749">Avvisi su cali di prezzo</translation>
 <translation id="8616006591992756292">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Aprire l'URL consigliato specificato nei contenuti scaricati?</translation>
+<translation id="8621068256433641644">telefono</translation>
 <translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
 <translation id="8641930654639604085">Prova a bloccare siti per adulti</translation>
 <translation id="8655129584991699539">Puoi cancellare i dati nelle Impostazioni di Chrome</translation>

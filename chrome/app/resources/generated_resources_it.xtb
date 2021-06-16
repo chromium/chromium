@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">Impossibile connettersi al proxy</translation>
 <translation id="1405779994569073824">Arresto anomalo.</translation>
 <translation id="1406500794671479665">Verifica in corso...</translation>
+<translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="140723521119632973">Attivazione della rete mobile</translation>
 <translation id="1407489512183974736">Ritagliato al centro</translation>
@@ -5657,6 +5658,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="729583233778673644">Consenti la crittografia AES e RC4. Se scegli di utilizzare quest'opzione vai incontro a un rischio maggiore, in quanto le crittografie RC4 non sono sicure.</translation>
 <translation id="729761647156315797">Scegli la lingua e la tastiera</translation>
 <translation id="7297726121602187087">Verde scuro</translation>
+<translation id="7298195798382681320">Consigliate</translation>
 <translation id="7299337219131431707">Attiva navigazione come ospite</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Questa applicazione potrebbe impedire il corretto funzionamento di Chrome.}other{Queste applicazioni potrebbero impedire il corretto funzionamento di Chrome.}}</translation>
 <translation id="7303281435234579599">Spiacenti. Si è verificato un problema durante la configurazione della modalità demo.</translation>
@@ -7255,6 +7257,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9026852570893462412">Questa procedura potrebbe richiedere alcuni minuti. Download della macchina virtuale in corso.</translation>
 <translation id="9027459031423301635">Apri link in un'altra &amp;scheda</translation>
 <translation id="9030515284705930323">La tua organizzazione non ha attivato Google Play Store per il tuo account. Contatta l'amministratore per avere ulteriori informazioni.</translation>
+<translation id="9030754204056345429">Più veloce</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> non è più supportato</translation>
 <translation id="9031549947500880805">Effettua il backup su Google Drive. Ripristina facilmente i tuoi dati o cambia dispositivo in qualsiasi momento. La copia di backup include i dati delle app.</translation>

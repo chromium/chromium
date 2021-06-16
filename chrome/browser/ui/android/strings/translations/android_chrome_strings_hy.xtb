@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
 <translation id="123724288017357924">Վերաբեռնել ընթացիկ էջը` անտեսելով հիշապահեստի բովանդակությունը</translation>
 <translation id="1240288207750131269">Բեռնվում է <ph name="LANG" /> լեզվի փաթեթը</translation>
+<translation id="1242883863226959074">սարք</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1258753120186372309">Google doodle՝ <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
@@ -920,6 +921,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6864459304226931083">Ներբեռնել պատկերը</translation>
 <translation id="6865313869410766144">Ինքնալցման տվյալներ</translation>
 <translation id="6867400383614725881">Նոր ինկոգնիտո ներդիր</translation>
+<translation id="6869056123412990582">համակարգիչ</translation>
 <translation id="6882836635272038266">Սովորական պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։</translation>
 <translation id="688738109438487280">Ավելացնել առկա տվյալները <ph name="TO_ACCOUNT" /> հաշվում:</translation>
 <translation id="6891726759199484455">Գաղտնաբառը պատճենելու համար ապակողպեք էկրանը</translation>
@@ -1156,6 +1158,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8410695015584479363">Հետևել գներին</translation>
 <translation id="8413126021676339697">Ցույց տալ ամբողջ պատմությունը</translation>
+<translation id="8424781820952413435">Էջն ուղարկվեց։ Այն տեսնելու համար բացեք Chrome դիտարկիչը <ph name="DEVICE_TYPE" /> հեռախոսում։</translation>
 <translation id="8427875596167638501">Նախադիտման ներդիրը կիսաբաց է</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8438566539970814960">Լավացնել որոնումն ու էջերի դիտումը</translation>
@@ -1197,6 +1200,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="860282621117673749">Գների իջեցման մասին ծանուցումներ</translation>
 <translation id="8616006591992756292">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="8617240290563765734">Բացե՞լ ներբեռնված բովանդակությունում հատկորոշված URL-ը:</translation>
+<translation id="8621068256433641644">հեռախոս</translation>
 <translation id="8636825310635137004">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը:</translation>
 <translation id="8641930654639604085">Արգելափակել մեծահասակների համար նախատեսված կայքերը</translation>
 <translation id="8655129584991699539">Տվյալները կարող եք ջնջել Chrome-ի կարգավորումներում</translation>

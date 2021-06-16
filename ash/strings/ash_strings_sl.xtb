@@ -80,6 +80,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1516740043221086139">Način »ne moti« je vklopljen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz nastavitev obvestil. Obvestila so izklopljena za eno aplikacijo.}one{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacijo.}two{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikaciji.}few{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacije.}other{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacij.}}</translation>
 <translation id="1525508553941733066">OPUSTI</translation>
+<translation id="1536604384701784949">Če želite uporabljati <ph name="USER_EMAIL_ADDRESS" />, se morate najprej odjaviti iz vseh računov. Če se želite odjaviti, izberite »Prekliči«, da se vrnete. Nato izberite čas, če želite odpreti območje stanja, in izberite »Odjava«. Nato se znova prijavite v <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Velik miškin kazalec</translation>
 <translation id="1546492247443594934">Namizje 2</translation>
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
@@ -524,6 +525,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5033299697334913360">Kliknite kjer koli za posnetek celotnega zaslona.</translation>
 <translation id="5035236842988137213">Naprava <ph name="DEVICE_NAME" /> je povezana z novim telefonom</translation>
 <translation id="5035389544768382859">Potrditev konfiguracije zaslona</translation>
+<translation id="5039804452771397117">Dovoli</translation>
 <translation id="504465286040788597">Prejšnji odstavek</translation>
 <translation id="5071064518267176975">Aplikacija želi uporabljati mikrofon</translation>
 <translation id="5075554201838155866">Začni podnapise</translation>
@@ -801,6 +803,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7461924472993315131">Pripni</translation>
 <translation id="746232733191930409">Način snemanja zaslona</translation>
 <translation id="7466449121337984263">Dotaknite se tipala</translation>
+<translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Upravljanje glasbe, videoposnetkov in drugega</translation>
 <translation id="7483025031359818980">Območje izbire je nastavljeno na celotni zaslon</translation>
 <translation id="7486227320194954040">Strni orodja označevalnika</translation>

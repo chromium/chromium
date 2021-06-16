@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Puhverserveriga ei õnnestunud ühendust luua</translation>
 <translation id="1405779994569073824">Jooksis kokku.</translation>
 <translation id="1406500794671479665">Kinnitamine ...</translation>
+<translation id="1407069428457324124">Tume teema</translation>
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="140723521119632973">Mobiilsidevõrgu aktiveerimine</translation>
 <translation id="1407489512183974736">Keskel, kärbitud</translation>
@@ -5663,6 +5664,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="729583233778673644">Lubatakse AES- ja RC4-krüpteerimine. Selle valiku kasutamine suurendab riski, kuna RC4-šifrid on ebaturvalised.</translation>
 <translation id="729761647156315797">Keele ja klaviatuuri valimine</translation>
 <translation id="7297726121602187087">Tumeroheline</translation>
+<translation id="7298195798382681320">Soovitatud</translation>
 <translation id="7299337219131431707">Luba külalisena sirvimine</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Rakendus võib takistada Chrome'i õiget toimimist.}other{Need rakendused võivad takistada Chrome'i õiget toimimist.}}</translation>
 <translation id="7303281435234579599">Demorežiimi seadistamisel läks midagi valesti.</translation>
@@ -7261,6 +7263,7 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="9026852570893462412">Protsess võib võtta mõne minuti. Virtuaalset masinat laaditakse alla.</translation>
 <translation id="9027459031423301635">Ava &amp;link uuel vahelehel</translation>
 <translation id="9030515284705930323">Organisatsioon pole Google Play poodi teie kontol lubanud. Lisateabe saamiseks võtke ühendust oma administraatoriga.</translation>
+<translation id="9030754204056345429">Kiirem</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Pistikprogrammi <ph name="PLUGIN_NAME" /> enam ei toetata</translation>
 <translation id="9031549947500880805">Andmete varundamine Google Drive'i. Teil on alati võimalik oma andmed hõlpsalt taastada või seadet vahetada. Teie varukoopia hõlmab rakenduste andmeid.</translation>

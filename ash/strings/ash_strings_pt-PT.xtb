@@ -80,6 +80,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1516740043221086139">O modo Não incomodar está ativado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar definições de notificação. As notificações estão desativadas para uma aplicação}other{Mostrar definições de notificação. As notificações estão desativadas para # aplicações}}</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
+<translation id="1536604384701784949">Para utilizar <ph name="USER_EMAIL_ADDRESS" />, primeiro, tem de terminar a sessão de todas as contas. Para terminar sessão, selecione Cancelar para retroceder. Em seguida, selecione a hora para abrir a área de estado e selecione Terminar sessão. Em seguida, volte a iniciar sessão com <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor do rato grande</translation>
 <translation id="1546492247443594934">Secretária 2</translation>
 <translation id="1550523713251050646">Clicar para obter mais opções</translation>
@@ -524,6 +525,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5033299697334913360">Clique em qualquer local para capturar o ecrã inteiro.</translation>
 <translation id="5035236842988137213">O dispositivo <ph name="DEVICE_NAME" /> estabeleceu ligação a um novo telemóvel.</translation>
 <translation id="5035389544768382859">Confirme a configuração do ecrã</translation>
+<translation id="5039804452771397117">Permitir</translation>
 <translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5071064518267176975">Uma app pretende utilizar o microfone</translation>
 <translation id="5075554201838155866">Iniciar legendas</translation>
@@ -801,6 +803,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746232733191930409">Modo de gravação de ecrã</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
+<translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
 <translation id="7483025031359818980">Área de seleção definida para ecrã inteiro</translation>
 <translation id="7486227320194954040">Reduzir ferramentas de marcador</translation>

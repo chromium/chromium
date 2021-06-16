@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Unable to connect to the proxy</translation>
 <translation id="1405779994569073824">Crashed.</translation>
 <translation id="1406500794671479665">Verifying...</translation>
+<translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="140723521119632973">Mobile activation</translation>
 <translation id="1407489512183974736">Centre Cropped</translation>
@@ -5673,6 +5674,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="729583233778673644">Allow AES and RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
 <translation id="729761647156315797">Choose your language &amp; keyboard</translation>
 <translation id="7297726121602187087">Dark green</translation>
+<translation id="7298195798382681320">Recommended</translation>
 <translation id="7299337219131431707">Enable Guest browsing</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{This application could prevent Chrome from working properly.}other{These applications could prevent Chrome from working properly.}}</translation>
 <translation id="7303281435234579599">Oops! Something went wrong while setting up demo mode.</translation>
@@ -7271,6 +7273,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9026852570893462412">This process may take a few minutes. Downloading the virtual machine.</translation>
 <translation id="9027459031423301635">Open Link in New &amp;Tab</translation>
 <translation id="9030515284705930323">Your organisation has not enabled Google Play Store for your account. Contact your administrator for more information.</translation>
+<translation id="9030754204056345429">Faster</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> is no longer supported</translation>
 <translation id="9031549947500880805">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data.</translation>

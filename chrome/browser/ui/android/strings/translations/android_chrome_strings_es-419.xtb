@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">¿Quieres activar la sincronización?</translation>
 <translation id="123724288017357924">Volver a cargar página actual; ignorar contenido en caché</translation>
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
+<translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">No se pudo compartir <ph name="CONTENT_TYPE" /></translation>
@@ -424,7 +425,7 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="3749259744154402564">No se admite esa acción</translation>
 <translation id="3771001275138982843">No se pudo descargar la actualización</translation>
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
-<translation id="3771290962915251154">Se inhabilitó esta configuración porque los Controles parentales están activados</translation>
+<translation id="3771290962915251154">Se inhabilitó esta configuración porque los controles parentales están activados</translation>
 <translation id="3771694256347217732">Condiciones del Servicio de Google</translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Activa Bluetooth<ph name="END_LINK" /> para permitir la sincronización</translation>
 <translation id="3773856050682458546">Información básica y datos sobre los sitios web que visitas y las apps que usas</translation>
@@ -920,6 +921,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6864459304226931083">Descargar imagen</translation>
 <translation id="6865313869410766144">Datos del formulario de autocompletar</translation>
 <translation id="6867400383614725881">Nueva pestaña de incógnito</translation>
+<translation id="6869056123412990582">computadora</translation>
 <translation id="6882836635272038266">Protección estándar contra descargas, extensiones y sitios web identificados como peligrosos.</translation>
 <translation id="688738109438487280">Agrega los datos existentes a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloquea la pantalla para copiar tu contraseña</translation>
@@ -1156,6 +1158,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8410695015584479363">Seguimiento de precios</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
+<translation id="8424781820952413435">Se envió la página. Para verla, abre Chrome en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">La pestaña de vista previa está abierta a la mitad</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8438566539970814960">Mejorar las búsquedas y la navegación</translation>
@@ -1197,6 +1200,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="860282621117673749">Alertas de descuentos</translation>
 <translation id="8616006591992756292">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">¿Quieres abrir la URL sugerida que se especifica en el contenido descargado?</translation>
+<translation id="8621068256433641644">teléfono</translation>
 <translation id="8636825310635137004">Activa la sincronización para obtener las pestañas de tus otros dispositivos.</translation>
 <translation id="8641930654639604085">Tratar de bloquear los sitios para adultos</translation>
 <translation id="8655129584991699539">Puedes borrar los datos en la Configuración de Chrome</translation>

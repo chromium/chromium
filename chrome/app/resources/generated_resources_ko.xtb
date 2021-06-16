@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">프록시에 연결할 수 없습니다.</translation>
 <translation id="1405779994569073824">비정상 종료됨</translation>
 <translation id="1406500794671479665">확인 중...</translation>
+<translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="140723521119632973">모바일 활성화</translation>
 <translation id="1407489512183974736">가운데 부분 자르기</translation>
@@ -5670,6 +5671,7 @@
 <translation id="729583233778673644">AES 및 RC4 암호화를 허용합니다. RC4 암호화는 안전하지 않으므로 이 옵션을 사용하면 보안 위험도가 높아집니다.</translation>
 <translation id="729761647156315797">언어 및 키보드 선택</translation>
 <translation id="7297726121602187087">진한 녹색</translation>
+<translation id="7298195798382681320">권장</translation>
 <translation id="7299337219131431707">게스트로 로그인 허용</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{이 애플리케이션으로 인해 Chrome이 제대로 작동하지 않을 수 있습니다.}other{이 애플리케이션으로 인해 Chrome이 제대로 작동하지 않을 수 있습니다.}}</translation>
 <translation id="7303281435234579599">데모 모드를 설정하는 동안 문제가 발생했습니다.</translation>
@@ -7268,6 +7270,7 @@
 <translation id="9026852570893462412">이 과정은 몇 분 정도 걸릴 수 있습니다. 가상 머신을 다운로드합니다.</translation>
 <translation id="9027459031423301635">새 탭에서 링크 열기(&amp;T)</translation>
 <translation id="9030515284705930323">조직에서 내 계정이 Google Play 스토어를 사용하도록 설정하지 않았습니다. 자세한 정보는 관리자에게 문의하세요.</translation>
+<translation id="9030754204056345429">조금 빠르게</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> 플러그인이 더 이상 지원되지 않습니다.</translation>
 <translation id="9031549947500880805">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다.</translation>

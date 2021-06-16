@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Không thể kết nối với proxy này</translation>
 <translation id="1405779994569073824">Đã bị lỗi.</translation>
 <translation id="1406500794671479665">Đang xác minh...</translation>
+<translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
 <translation id="140723521119632973">Kích hoạt mạng di động</translation>
 <translation id="1407489512183974736">Cắt giữa</translation>
@@ -5673,6 +5674,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="729583233778673644">Cho phép mã hóa AES và RC4. Việc sử dụng tùy chọn này sẽ làm gia tăng rủi ro vì các thuật toán mã hóa RC4 là không an toàn.</translation>
 <translation id="729761647156315797">Chọn ngôn ngữ và bàn phím của bạn</translation>
 <translation id="7297726121602187087">Xanh lục đậm</translation>
+<translation id="7298195798382681320">Được đề xuất</translation>
 <translation id="7299337219131431707">Bật duyệt với tư cách khách</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ứng dụng này có thể khiến Chrome hoạt động không bình thường.}other{Những ứng dụng này có thể khiến Chrome hoạt động không bình thường.}}</translation>
 <translation id="7303281435234579599">Rất tiếc! Đã có sự cố khi thiết lập chế độ minh họa.</translation>
@@ -7271,6 +7273,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9026852570893462412">Quá trình này có thể mất vài phút. Đang tải xuống máy ảo.</translation>
 <translation id="9027459031423301635">Mở Liên kết trong &amp;Tab Mới</translation>
 <translation id="9030515284705930323">Tổ chức chưa bật Cửa hàng Google Play cho tài khoản của bạn. Hãy liên hệ với quản trị viên để biết thêm thông tin.</translation>
+<translation id="9030754204056345429">Nhanh hơn</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> không được hỗ trợ nữa</translation>
 <translation id="9031549947500880805">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Nội dung sao lưu của bạn bao gồm các dữ liệu ứng dụng.</translation>

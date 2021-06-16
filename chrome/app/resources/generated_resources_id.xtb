@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Tidak dapat terhubung ke proxy</translation>
 <translation id="1405779994569073824">Error.</translation>
 <translation id="1406500794671479665">Memverifikasi...</translation>
+<translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="140723521119632973">Aktivasi Seluler</translation>
 <translation id="1407489512183974736">Dipangkas di Tengah</translation>
@@ -5673,6 +5674,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="729583233778673644">Izinkan enkripsi AES dan RC4. Penggunaan opsi ini akan meningkatkan risiko, karena cipher RC4 tidak aman.</translation>
 <translation id="729761647156315797">Pilih bahasa &amp; keyboard</translation>
 <translation id="7297726121602187087">Hijau tua</translation>
+<translation id="7298195798382681320">Direkomendasikan</translation>
 <translation id="7299337219131431707">Aktifkan penjelajahan Tamu</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Aplikasi ini dapat membuat Chrome tidak berfungsi dengan semestinya.}other{Aplikasi ini dapat membuat Chrome tidak berfungsi dengan semestinya.}}</translation>
 <translation id="7303281435234579599">Maaf, terjadi masalah saat menyiapkan mode demo.</translation>
@@ -7271,6 +7273,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="9026852570893462412">Proses ini dapat memerlukan waktu beberapa menit. Mendownload mesin virtual.</translation>
 <translation id="9027459031423301635">Buka Tautan di &amp;Tab Baru</translation>
 <translation id="9030515284705930323">Organisasi belum mengaktifkan Google Play Store untuk akun Anda. Hubungi administrator untuk informasi selengkapnya.</translation>
+<translation id="9030754204056345429">Lebih cepat</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> tidak lagi didukung</translation>
 <translation id="9031549947500880805">Cadangkan ke Google Drive. Pulihkan data Anda atau beralih perangkat kapan saja dengan mudah. Cadangan Anda mencakup data aplikasi.</translation>

@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Kunne ikke koble til proxy-tjeneren</translation>
 <translation id="1405779994569073824">Kræsjet.</translation>
 <translation id="1406500794671479665">Bekrefter …</translation>
+<translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="140723521119632973">Aktivering med mobiltelefon</translation>
 <translation id="1407489512183974736">Midstill og beskjær</translation>
@@ -5664,6 +5665,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="729583233778673644">Tillat AES- og RC4-kryptering. Hvis du bruker dette alternativet, øker risikoen, ettersom RC4-chiffere ikke er sikre.</translation>
 <translation id="729761647156315797">Velg språket og tastaturet ditt</translation>
 <translation id="7297726121602187087">Mørk grønn</translation>
+<translation id="7298195798382681320">Anbefalt</translation>
 <translation id="7299337219131431707">Slå på gjestesurfing</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Dette programmet kan hindre at Chrome fungerer skikkelig.}other{Disse programmene kan hindre at Chrome fungerer skikkelig.}}</translation>
 <translation id="7303281435234579599">Beklager, noe gikk galt under konfigurering av demomodus.</translation>
@@ -7261,6 +7263,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="9026852570893462412">Denne prosessen kan ta noen minutter. Laster ned den virtuelle maskinen.</translation>
 <translation id="9027459031423301635">Åpne link i ny &amp;fane</translation>
 <translation id="9030515284705930323">Organisasjonen din har ikke slått på Google Play-butikken for kontoen din. Kontakt administratoren din for å få mer informasjon.</translation>
+<translation id="9030754204056345429">Raskere</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> støttes ikke lenger</translation>
 <translation id="9031549947500880805">Sikkerhetskopiér til Google Disk. Gjenopprett dataene dine enkelt eller bytt enhet når som helst. Sikkerhetskopien din inkluderer appdata.</translation>

@@ -391,6 +391,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
 <translation id="5083464117946352670">Veličina datoteke nije utvrđena.</translation>
 <translation id="5090832849094901128">Brisanjem zaporke neće se izbrisati vaš račun na <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Stranice možete spremati da biste ih čitali kasnije ili izvanmrežno. Chrome će vas pitati želite li spremiti dugačke stranice.</translation>
 <translation id="5094827893301452931">Tweet je dovršen.</translation>
 <translation id="5118764316110575523">Isključeno</translation>
 <translation id="5127805178023152808">Sinkronizacija je isključena</translation>
@@ -757,6 +758,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8548878600947630424">Traženje na stranici...</translation>
 <translation id="8574235780160508979">Chromeovi Uvjeti pružanja usluge mijenjaju se 31. ožujka. <ph name="BEGIN_LINK" />Pregledajte<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Isključeno</translation>
+<translation id="8590913940444621808">Nikad ne pitaj</translation>
 <translation id="8591976964826315682">Blokiranje kolačića trećih strana u anonimnom načinu</translation>
 <translation id="8605219856220328675">Zatvori karticu.</translation>
 <translation id="8620640915598389714">Uredi</translation>

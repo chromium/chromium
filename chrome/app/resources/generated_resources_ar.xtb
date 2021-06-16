@@ -363,6 +363,7 @@
 <translation id="1403222014593521787">تعذّر الاتصال بالخادم الوكيل.</translation>
 <translation id="1405779994569073824">علامة التبويب تعطَّلت.</translation>
 <translation id="1406500794671479665">جارٍ التحقق...</translation>
+<translation id="1407069428457324124">المظهر الداكن</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="140723521119632973">تفعيل شبكة الجوّال</translation>
 <translation id="1407489512183974736">اقتصاص الوسط</translation>
@@ -5655,6 +5656,7 @@
 <translation id="729583233778673644">‏السماح بتشفير AES وRC4: يؤدي استخدام هذا الخيار إلى زيادة المخاطر، لأن رموز RC4 غير آمنة.</translation>
 <translation id="729761647156315797">اختيار اللغة ولوحة المفاتيح</translation>
 <translation id="7297726121602187087">أخضر داكن</translation>
+<translation id="7298195798382681320">موصى بها</translation>
 <translation id="7299337219131431707">تفعيل ميزة "تصفح الضيف"</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{‏قد يمنع هذا التطبيق تشغيل Chrome بشكلٍ صحيح.}zero{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}two{‏قد يمنع هذان التطبيقان تشغيل Chrome بشكلٍ صحيح.}few{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}many{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}other{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}}</translation>
 <translation id="7303281435234579599">عفوًا، لقد حدث خطأ أثناء إعداد الوضع التجريبي.</translation>
@@ -7254,6 +7256,7 @@
 <translation id="9026852570893462412">قد تستغرق هذه العملية بضع دقائق. جارٍ تنزيل الآلة الافتراضية.</translation>
 <translation id="9027459031423301635">فتح الرابط في &amp;علامة تبويب جديدة</translation>
 <translation id="9030515284705930323">‏لم تمكّن مؤسستك متجر Google Play لحسابك. اتصل بالمشرف للحصول على مزيد من المعلومات.</translation>
+<translation id="9030754204056345429">أسرع</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">لم يَعُد "<ph name="PLUGIN_NAME" />" متوافقًا.</translation>
 <translation id="9031549947500880805">‏يمكنك الاحتفاظ بنسخة احتياطية في Google Drive. ويمكنك استعادة بياناتك أو تبديل جهازك بسهولة وفي أي وقت. وتتضمّن نسختك الاحتياطية بيانات التطبيق.</translation>

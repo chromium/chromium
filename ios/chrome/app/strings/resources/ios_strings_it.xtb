@@ -391,6 +391,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5062321486222145940">Installa Google Drive</translation>
 <translation id="5083464117946352670">Impossibile stabilire le dimensioni del file.</translation>
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Puoi salvare le pagine da leggere in un secondo momento o quando sei offline. Chrome ti chiederà se vuoi salvare le pagine lunghe.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">La sincronizzazione è disattivata</translation>
@@ -757,6 +758,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8548878600947630424">Trova nella pagina...</translation>
 <translation id="8574235780160508979">I Termini di servizio di Chrome cambieranno il 31 marzo. <ph name="BEGIN_LINK" />Ti invitiamo a leggerli<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Non attiva</translation>
+<translation id="8590913940444621808">Non chiedere mai</translation>
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="8605219856220328675">Chiudi la scheda.</translation>
 <translation id="8620640915598389714">Modifica</translation>

@@ -80,6 +80,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1516740043221086139">Netrukdymo režimas įjungtas.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rodyti pranešimų nustatymus. Programos pranešimai išjungti}one{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}few{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}many{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}other{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}}</translation>
 <translation id="1525508553941733066">ATSISAKYTI</translation>
+<translation id="1536604384701784949">Kad galėtumėte naudoti <ph name="USER_EMAIL_ADDRESS" />, pirmiausia turite atsijungti nuo visų paskyrų. Norėdami atsijungti, pasirinkite „Atšaukti“, kad grįžtumėte. Tada pasirinkite laiką, kad atidarytumėte būsenos sritį, ir pasirinkite „Atsijungti“. Tada vėl prisijunkite prie <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Didelis pelės žymeklis</translation>
 <translation id="1546492247443594934">2 pultas</translation>
 <translation id="1550523713251050646">Spustelėkite, jei reikia daugiau parinkčių</translation>
@@ -524,6 +525,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5033299697334913360">Spustelėkite bet kur, kad užfiksuotumėte visą ekraną</translation>
 <translation id="5035236842988137213">„<ph name="DEVICE_NAME" />“ įrenginys buvo susietas su telefonu</translation>
 <translation id="5035389544768382859">Ekrano konfigūracijos patvirtinimas</translation>
+<translation id="5039804452771397117">Leisti</translation>
 <translation id="504465286040788597">Ankstesnė pastraipa</translation>
 <translation id="5071064518267176975">Programa nori naudoti mikrofoną</translation>
 <translation id="5075554201838155866">Įjungti subtitrus</translation>
@@ -801,6 +803,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7461924472993315131">Prisegti</translation>
 <translation id="746232733191930409">Ekrano vaizdo įrašymo režimas</translation>
 <translation id="7466449121337984263">Palieskite jutiklį</translation>
+<translation id="7473891865547856676">Ne, ačiū</translation>
 <translation id="7477793887173910789">Valdykite savo muziką, vaizdo įrašus ir žaidimus</translation>
 <translation id="7483025031359818980">Pasirinkta viso ekrano sritis</translation>
 <translation id="7486227320194954040">Sutraukti žymeklio įrankius</translation>

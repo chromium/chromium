@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Zapnout synchronizaci?</translation>
 <translation id="123724288017357924">Obnovit stránku a ignorovat obsah v mezipaměti</translation>
 <translation id="1240288207750131269">Načítání jazyka <ph name="LANG" /></translation>
+<translation id="1242883863226959074">zařízení</translation>
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1258753120186372309">Sváteční logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
@@ -920,6 +921,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6864459304226931083">Stáhnout obrázek</translation>
 <translation id="6865313869410766144">Automatické vyplňování formulářů</translation>
 <translation id="6867400383614725881">Nová anonymní karta</translation>
+<translation id="6869056123412990582">počítač</translation>
 <translation id="6882836635272038266">Standardní ochrana před weby, soubory ke stažení a rozšířeními, o nichž je známo, že jsou nebezpečné.</translation>
 <translation id="688738109438487280">Přidat existující data do účtu <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Chcete-li zkopírovat heslo, odemkněte zařízení</translation>
@@ -1156,6 +1158,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8393700583063109961">Odeslat zprávu</translation>
 <translation id="8410695015584479363">Sledovat ceny</translation>
 <translation id="8413126021676339697">Zobrazit celou historii</translation>
+<translation id="8424781820952413435">Stránka byla odeslána. Zobrazte ji v Chromu v zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Karta náhledu je otevřená na půlce</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8438566539970814960">Vylepšit vyhledávání a procházení</translation>
@@ -1197,6 +1200,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="860282621117673749">Upozornění na pokles ceny</translation>
 <translation id="8616006591992756292">Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="8617240290563765734">Otevřít navrhovanou adresu URL uvedenou ve staženém obsahu?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Chcete-li získat přístup ke kartám ze svých ostatních zařízení, zapněte synchronizaci.</translation>
 <translation id="8641930654639604085">Pokusit se blokovat weby pouze pro dospělé</translation>
 <translation id="8655129584991699539">Data můžete vymazat v nastavení Chromu</translation>

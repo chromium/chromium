@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">K proxy serveru sa nepodarilo pripojiť</translation>
 <translation id="1405779994569073824">Karta zlyhala.</translation>
 <translation id="1406500794671479665">Prebieha overovanie...</translation>
+<translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="140723521119632973">Aktivácia mobilnej siete</translation>
 <translation id="1407489512183974736">Orezať na stred</translation>
@@ -5659,6 +5660,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="729583233778673644">Povoľte šifrovania AES a RC4. Šifry RC4 sú nezabezpečené, takže použitím tejto možnosti zvýšite riziko.</translation>
 <translation id="729761647156315797">Výber jazyka a klávesnice</translation>
 <translation id="7297726121602187087">Tmavozelená</translation>
+<translation id="7298195798382681320">Odporúčané</translation>
 <translation id="7299337219131431707">Povoliť hosťovské prehliadanie</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Táto aplikácia môže brániť Chromu v správnom fungovaní.}few{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}many{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}other{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}}</translation>
 <translation id="7303281435234579599">Ojoj! Pri nastavovaní režimu ukážky sa vyskytol problém.</translation>
@@ -7258,6 +7260,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="9026852570893462412">Tento proces môže trvať niekoľko minút. Sťahuje sa virtuálny počítač.</translation>
 <translation id="9027459031423301635">Otvoriť odkaz na novej &amp;karte</translation>
 <translation id="9030515284705930323">Vaša organizácia nepovoľuje vo vašom účte Obchod Google Play. Ak chcete získať ďalšie informácie, kontaktujte svojho správcu.</translation>
+<translation id="9030754204056345429">Rýchlejšia</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Doplnok <ph name="PLUGIN_NAME" /> už nie je podporovaný</translation>
 <translation id="9031549947500880805">Zálohovanie na Disk Google. Jednoducho kedykoľvek obnovte svoje údaje alebo prejdite na iné zariadenie. Záloha obsahuje dáta aplikácií.</translation>

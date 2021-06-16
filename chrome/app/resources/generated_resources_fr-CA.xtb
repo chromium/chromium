@@ -360,6 +360,7 @@
 <translation id="1403222014593521787">Échec de connexion au serveur mandataire</translation>
 <translation id="1405779994569073824">Planté.</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
+<translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="140723521119632973">Activation cellulaire</translation>
 <translation id="1407489512183974736">Rogner et centrer</translation>
@@ -5659,6 +5660,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="729583233778673644">Autoriser le chiffrement AES et RC4. L'utilisation de cette option augmente les risques, car les chiffrements RC4 ne sont pas sécurisés.</translation>
 <translation id="729761647156315797">Choisir votre langue et votre clavier</translation>
 <translation id="7297726121602187087">Vert foncé</translation>
+<translation id="7298195798382681320">Recommandé</translation>
 <translation id="7299337219131431707">Activer la navigation en tant qu'invité</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Cette application peut empêcher Chrome de fonctionner correctement.}one{Cette application peut empêcher Chrome de fonctionner correctement.}other{Ces applications peuvent empêcher Chrome de fonctionner correctement.}}</translation>
 <translation id="7303281435234579599">Oups! Une erreur s'est produite lors de la configuration du mode démo.</translation>
@@ -7257,6 +7259,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9026852570893462412">Ce processus peut prendre quelques minutes. Téléchargement de la machine virtuelle en cours…</translation>
 <translation id="9027459031423301635">Ouvrir le lien dans un nouvel ongle&amp;t</translation>
 <translation id="9030515284705930323">Votre entreprise n'a pas activé la boutique Google Play Store pour votre compte. Communiquez avec votre administrateur pour en savoir plus.</translation>
+<translation id="9030754204056345429">Plus rapide</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Le plugiciel <ph name="PLUGIN_NAME" /> n'est plus pris en charge</translation>
 <translation id="9031549947500880805">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Votre sauvegarde inclut les données des applications.</translation>

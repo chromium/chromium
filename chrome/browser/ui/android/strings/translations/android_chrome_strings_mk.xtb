@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Да се вклучи синхронизација?</translation>
 <translation id="123724288017357924">Вчитај тековна страница, без кеширана содржина</translation>
 <translation id="1240288207750131269">Се вчитува <ph name="LANG" /></translation>
+<translation id="1242883863226959074">уред</translation>
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6864459304226931083">Преземи слика</translation>
 <translation id="6865313869410766144">Автоматско пополнување податоци во формулар</translation>
 <translation id="6867400383614725881">Нова картичка „Инкогнито“</translation>
+<translation id="6869056123412990582">компјутер</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
 <translation id="688738109438487280">Додајте ги постоечките податоци во <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Отклучете за да ја копирате лозинката</translation>
@@ -1156,6 +1158,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8393700583063109961">Испрати порака</translation>
 <translation id="8410695015584479363">Следете ги цените</translation>
 <translation id="8413126021676339697">Прикажи ја целата историја</translation>
+<translation id="8424781820952413435">Страницата е испратена. За да ја видите, отворете ја Chrome на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Картичката за преглед е отворена на половина екран</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8438566539970814960">Подобрете ги пребарувањата и прелистувањето</translation>
@@ -1197,6 +1200,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="860282621117673749">Известувања за попусти</translation>
 <translation id="8616006591992756292">Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Да се отвори предложената URL наведена во преземената содржина?</translation>
+<translation id="8621068256433641644">телефон</translation>
 <translation id="8636825310635137004">За да ги добиете картичките од другите уреди, вклучете ја синхронизацијата.</translation>
 <translation id="8641930654639604085">Обиди се да ги блокираш сајтовите за возрасни</translation>
 <translation id="8655129584991699539">Податоците може да ги избришете во „Поставки за Chrome“</translation>

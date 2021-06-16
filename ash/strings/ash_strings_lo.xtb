@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">ໂໝດຫ້າມລົບກວນເປີດຢູ່.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບໜຶ່ງແອັບ}other{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບ # ແອັບ}}</translation>
 <translation id="1525508553941733066">ປິດໄວ້</translation>
+<translation id="1536604384701784949">ເພື່ອໃຊ້ <ph name="USER_EMAIL_ADDRESS" /> ທ່ານຈະຕ້ອງອອກຈາກລະບົບທຸກບັນຊີກ່ອນ. ເພື່ອອອກຈາກລະບົບ, ໃຫ້ເລືອກຍົກເລີກເພື່ອກັບຄືນ. ຈາກນັ້ນເລືອກເວລາເພື່ອເປີດພື້ນທີ່ສະຖານະແລ້ວເລືອກອອກຈາກລະບົບ. ຈາກນັ້ນເຂົ້າສູ່ລະບົບຫາ <ph name="USER_EMAIL_ADDRESS_2" /> ຄືນໃໝ່.</translation>
 <translation id="15373452373711364">ເຄີເຊີເມົາສ໌ໃຫຍ່</translation>
 <translation id="1546492247443594934">ໂຕະ 2</translation>
 <translation id="1550523713251050646">ຄລິກສຳລັບຕົວເລືອກເພີ່ມເຕີມ</translation>
@@ -524,6 +525,7 @@
 <translation id="5033299697334913360">ຄລິກບ່ອນໃດກໍໄດ້ເພື່ອຖ່າຍຮູບແບບເຕັມຈໍ</translation>
 <translation id="5035236842988137213">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" />ກັບໂທລະສັບໃໝ່ແລ້ວ</translation>
 <translation id="5035389544768382859">ຢືນຢັນການຕັ້ງຄ່າຈໍສະແດງຜົນ</translation>
+<translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
 <translation id="504465286040788597">ຫຍໍ້ໜ້າກ່ອນໜ້າ</translation>
 <translation id="5071064518267176975">ມີແອັບຕ້ອງການໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="5075554201838155866">ເລີ່ມຄຳບັນຍາຍ</translation>
@@ -801,6 +803,7 @@
 <translation id="7461924472993315131">ປັກໝຸດ</translation>
 <translation id="746232733191930409">ໂໝດການບັນທຶກໜ້າຈໍ</translation>
 <translation id="7466449121337984263">ກະລຸນາແຕະເຊັນເຊີ</translation>
+<translation id="7473891865547856676">​ບໍ່, ຂອບ​ໃຈ</translation>
 <translation id="7477793887173910789">ຄວບຄຸມເພງ, ວິດີໂອຂອງທ່ານ ແລະ ອື່ນໆອີກ</translation>
 <translation id="7483025031359818980">ຕັ້ງຄ່າພື້ນທີ່ການເລືອກເປັນເຕັມຈໍແລ້ວ</translation>
 <translation id="7486227320194954040">ຫຍໍ້ເຄື່ອງໝາຍມາກເກີ</translation>

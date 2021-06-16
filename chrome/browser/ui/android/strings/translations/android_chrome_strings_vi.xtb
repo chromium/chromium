@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Bạn muốn bật tính năng đồng bộ hóa?</translation>
 <translation id="123724288017357924">Tải lại trang hiện tại, bỏ qua nội dung được lưu trong bộ nhớ đệm</translation>
 <translation id="1240288207750131269">Đang tải <ph name="LANG" /></translation>
+<translation id="1242883863226959074">thiết bị</translation>
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1258753120186372309">Hình tượng trưng của Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6864459304226931083">Tải hình ảnh xuống</translation>
 <translation id="6865313869410766144">Dữ liệu tự động điền vào biểu mẫu</translation>
 <translation id="6867400383614725881">Thẻ Ẩn danh mới</translation>
+<translation id="6869056123412990582">máy tính</translation>
 <translation id="6882836635272038266">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm.</translation>
 <translation id="688738109438487280">Thêm dữ liệu hiện có vào <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Mở khóa để sao chép mật khẩu của bạn</translation>
@@ -1156,6 +1158,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8393700583063109961">Gửi tin nhắn</translation>
 <translation id="8410695015584479363">Theo dõi giá</translation>
 <translation id="8413126021676339697">Hiển thị toàn bộ lịch sử</translation>
+<translation id="8424781820952413435">Đã gửi trang. Hãy mở Chrome trên <ph name="DEVICE_TYPE" /> của bạn để xem trang này.</translation>
 <translation id="8427875596167638501">Thẻ xem trước đang mở trên nửa màn hình</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8438566539970814960">Cải thiện tính năng tìm kiếm và duyệt web</translation>
@@ -1197,6 +1200,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="860282621117673749">Thông báo khi có mặt hàng giảm giá</translation>
 <translation id="8616006591992756292">Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Mở URL đề xuất được chỉ định trong nội dung được tải xuống?</translation>
+<translation id="8621068256433641644">điện thoại</translation>
 <translation id="8636825310635137004">Để có các thẻ từ các thiết bị khác của bạn, hãy bật đồng bộ hóa.</translation>
 <translation id="8641930654639604085">Cố gắng chặn các trang web cho người lớn</translation>
 <translation id="8655129584991699539">Bạn có thể xóa dữ liệu trong mục Cài đặt của Chrome</translation>

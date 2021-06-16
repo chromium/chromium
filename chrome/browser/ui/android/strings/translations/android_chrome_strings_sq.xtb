@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Të aktivizohet sinkronizimi?</translation>
 <translation id="123724288017357924">Ringarko faqen aktuale, duke shpërfillur përmbajtjen në memorien specifike</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> po ngarkohet</translation>
+<translation id="1242883863226959074">pajisja</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1258753120186372309">Logoja alternative e Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6864459304226931083">Shkarko imazhin</translation>
 <translation id="6865313869410766144">Plotëso automatikisht të dhënat e formularit</translation>
 <translation id="6867400383614725881">Skedë e re "e fshehtë"</translation>
+<translation id="6869056123412990582">kompjuter</translation>
 <translation id="6882836635272038266">Mbrojtje standarde kundër faqeve të internetit, shkarkimeve dhe shtesave që njihen si të rrezikshme.</translation>
 <translation id="688738109438487280">Shto të dhënat ekzistuese te <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Shkyçe për të kopjuar fjalëkalimin</translation>
@@ -1156,6 +1158,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8393700583063109961">Dërgo mesazh</translation>
 <translation id="8410695015584479363">Gjurmo çmimet</translation>
 <translation id="8413126021676339697">Shfaq historikun e plotë</translation>
+<translation id="8424781820952413435">Faqja u dërgua. Për ta parë, hap Chrome në <ph name="DEVICE_TYPE" /> tënde</translation>
 <translation id="8427875596167638501">Skeda e shikimit paraprak është gjysmë e hapur</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8438566539970814960">Përmirëson kërkimet dhe shfletimin</translation>
@@ -1197,6 +1200,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="860282621117673749">Alarme sinjalizuese për rënie çmimi</translation>
 <translation id="8616006591992756292">Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Të hapet URL-ja e sugjeruar në përmbajtjen e shkarkuar?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Për të marrë skedat e tua nga pajisjet e tjera, aktivizo sinkronizimin.</translation>
 <translation id="8641930654639604085">Përpiqu të bllokosh sajtet për të rriturit</translation>
 <translation id="8655129584991699539">Mund t'i pastrosh të dhënat në "Cilësimet" e Chrome</translation>

@@ -80,6 +80,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1516740043221086139">Funcția Nu deranja este activată.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afișează setările pentru notificări. Notificările sunt dezactivate pentru o aplicație}few{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # aplicații}other{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # de aplicații}}</translation>
 <translation id="1525508553941733066">ÎNCHIDE</translation>
+<translation id="1536604384701784949">Pentru a folosi <ph name="USER_EMAIL_ADDRESS" />, mai întâi trebuie să te deconectezi de la toate conturile. Ca să te deconectezi, selectează Anulează pentru a reveni. Apoi selectează ora pentru a deschide zona de stare și selectează Deconectează-te. Apoi conectează-te din nou la <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor de mouse mare</translation>
 <translation id="1546492247443594934">Desktop 2</translation>
 <translation id="1550523713251050646">Dă clic pentru mai multe opțiuni</translation>
@@ -524,6 +525,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5033299697334913360">Dă clic oriunde pentru a captura ecranul complet</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> conectat la un telefon nou</translation>
 <translation id="5035389544768382859">Confirmă configurația afișajului</translation>
+<translation id="5039804452771397117">Permite</translation>
 <translation id="504465286040788597">Paragraful anterior</translation>
 <translation id="5071064518267176975">O aplicație solicită permisiunea de a folosi microfonul</translation>
 <translation id="5075554201838155866">Pornește subtitrările</translation>
@@ -801,6 +803,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746232733191930409">Modul de înregistrare a ecranului</translation>
 <translation id="7466449121337984263">Atinge senzorul</translation>
+<translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7477793887173910789">Gestionează muzica, videoclipurile și altele</translation>
 <translation id="7483025031359818980">Zona de selectare este setată la ecran complet</translation>
 <translation id="7486227320194954040">Restrânge instrumentele pentru marker</translation>

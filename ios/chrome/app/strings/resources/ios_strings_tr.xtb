@@ -391,6 +391,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5062321486222145940">Google Drive'ı yükle</translation>
 <translation id="5083464117946352670">Dosya boyutu belirlenemiyor.</translation>
 <translation id="5090832849094901128">Bu şifre kaldırıldığında <ph name="WEBSITE" /> üzerindeki hesabınız silinmez.</translation>
+<translation id="5092117651143801290">Sayfaları daha sonra veya çevrimdışı okumak için kaydedebilirsiniz. Chrome, uzun sayfaları kaydetmek isteyip istemediğinizi sorar.</translation>
 <translation id="5094827893301452931">Tweet tamamlandı.</translation>
 <translation id="5118764316110575523">Kapalı</translation>
 <translation id="5127805178023152808">Senkronizasyon kapalı</translation>
@@ -757,6 +758,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8548878600947630424">Sayfada bul...</translation>
 <translation id="8574235780160508979">Chrome'un Hizmet Şartları 31 Mart'ta değişiyor. <ph name="BEGIN_LINK" />Lütfen inceleyin<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Kapalı</translation>
+<translation id="8590913940444621808">Asla Sorma</translation>
 <translation id="8591976964826315682">Gizli modda üçüncü taraf çerezleri engelle</translation>
 <translation id="8605219856220328675">Sekmeyi kapat.</translation>
 <translation id="8620640915598389714">Düzenle</translation>

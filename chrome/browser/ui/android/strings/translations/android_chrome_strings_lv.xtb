@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Vai ieslēgt sinhronizāciju?</translation>
 <translation id="123724288017357924">Atkārtoti ielādēt lapu, ignorējot saturu kešatmiņā</translation>
 <translation id="1240288207750131269">Notiek valodas ielāde (<ph name="LANG" />)</translation>
+<translation id="1242883863226959074">ierīcē</translation>
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
 <translation id="1258753120186372309">Google svētku logotips: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6864459304226931083">Lejupielādēt attēlu</translation>
 <translation id="6865313869410766144">Automātiskās aizpildes veidlapas dati</translation>
 <translation id="6867400383614725881">Jauna inkognito cilne</translation>
+<translation id="6869056123412990582">datorā</translation>
 <translation id="6882836635272038266">Standarta aizsardzība pret zināmām bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="688738109438487280">Pievienot esošos datus kontam <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Atbloķējiet, lai kopētu paroli</translation>
@@ -1156,6 +1158,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8393700583063109961">Sūtīt ziņojumu</translation>
 <translation id="8410695015584479363">Izsekot cenām</translation>
 <translation id="8413126021676339697">Rādīt pilnu vēsturi</translation>
+<translation id="8424781820952413435">Lapa ir nosūtīta. Lai to skatītu, atveriet pārlūku Chrome savā <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Priekšskatījuma cilne ir daļēji atvērta</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8438566539970814960">Uzlabot meklēšanu un pārlūkošanu</translation>
@@ -1197,6 +1200,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="860282621117673749">Brīdinājumi par cenu kritumu</translation>
 <translation id="8616006591992756292">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Vai atvērt lejupielādētajā saturā norādīto ieteikto URL?</translation>
+<translation id="8621068256433641644">tālrunī</translation>
 <translation id="8636825310635137004">Ieslēdziet sinhronizāciju, lai būtu pieejamas cilnes no citām jūsu ierīcēm.</translation>
 <translation id="8641930654639604085">Pēc iespējas bloķēt vietnes ar pieaugušajiem paredzētu saturu</translation>
 <translation id="8655129584991699539">Varat notīrīt datus Chrome iestatījumos</translation>

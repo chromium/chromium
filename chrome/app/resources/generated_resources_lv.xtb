@@ -361,6 +361,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1403222014593521787">Nevar izveidot savienojumu ar starpniekserveri</translation>
 <translation id="1405779994569073824">Avarējusi.</translation>
 <translation id="1406500794671479665">Notiek verificēšana...</translation>
+<translation id="1407069428457324124">Tumšais motīvs</translation>
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="140723521119632973">Mobilā tīkla aktivizācija</translation>
 <translation id="1407489512183974736">Apgriezt un centrēt</translation>
@@ -5656,6 +5657,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="729583233778673644">Atļaut AES un RC4 šifrēšanu. Ja izmantosiet šo opciju, palielināsies risks, jo RC4 šifri nav droši.</translation>
 <translation id="729761647156315797">Valodas un tastatūras izvēlēšanās</translation>
 <translation id="7297726121602187087">Tumši zaļa</translation>
+<translation id="7298195798382681320">Ieteicams</translation>
 <translation id="7299337219131431707">Iespējot viesa režīmu</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Tālāk norādītā lietojumprogramma, iespējams, izraisa pārlūka Chrome nepareizu darbību.}zero{Tālāk norādītās lietojumprogrammas, iespējams, izraisa pārlūka Chrome nepareizu darbību.}one{Tālāk norādītās lietojumprogrammas, iespējams, izraisa pārlūka Chrome nepareizu darbību.}other{Tālāk norādītās lietojumprogrammas, iespējams, izraisa pārlūka Chrome nepareizu darbību.}}</translation>
 <translation id="7303281435234579599">Hmm... Iestatot demonstrācijas režīmu, radās problēma.</translation>
@@ -7255,6 +7257,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9026852570893462412">Šis process var ilgt dažas minūtes. Notiek virtuālās mašīnas lejupielāde.</translation>
 <translation id="9027459031423301635">Atvēr&amp;t saiti jaunā cilnē</translation>
 <translation id="9030515284705930323">Jūsu organizācija nav iespējojusi Google Play veikalu jūsu kontam. Sazinieties ar administratoru, lai saņemtu plašāku informāciju.</translation>
+<translation id="9030754204056345429">Ātrāks</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Spraudnis <ph name="PLUGIN_NAME" /> vairs netiek atbalstīts</translation>
 <translation id="9031549947500880805">Datu dublēšana Google diskā. Varēsiet jebkurā laikā ērti atjaunot savus datus vai mainīt ierīci. Dublējumā ir ietverti arī lietotņu dati.</translation>

@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Ενεργοποίηση συγχρονισμού;</translation>
 <translation id="123724288017357924">Επαναφ. τρέχ.σελ. αγνοώντας το περιεχ. κρυφ.μνήμης</translation>
 <translation id="1240288207750131269">Φόρτωση <ph name="LANG" /></translation>
+<translation id="1242883863226959074">συσκευή</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Δεν ήταν δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@
 <translation id="6864459304226931083">Λήψη εικόνας</translation>
 <translation id="6865313869410766144">Δεδομένα φόρμας αυτόματης συμπλήρωσης</translation>
 <translation id="6867400383614725881">Νέα καρτ. ανών. περιήγ.</translation>
+<translation id="6869056123412990582">υπολογιστής</translation>
 <translation id="6882836635272038266">Βασική προστασία από ιστοτόπους, λήψεις και επεκτάσεις που είναι γνωστό ότι είναι επικίνδυνα.</translation>
 <translation id="688738109438487280">Προσθήκη υπαρχόντων δεδομένων στον λογαριασμό <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Ξεκλειδώστε για αντιγραφή του κωδικού πρόσβασης</translation>
@@ -1156,6 +1158,7 @@
 <translation id="8393700583063109961">Αποστολή μηνύματος</translation>
 <translation id="8410695015584479363">Παρακολούθηση τιμών</translation>
 <translation id="8413126021676339697">Εμφάνιση πλήρους ιστορικού</translation>
+<translation id="8424781820952413435">Η σελίδα στάλθηκε. Για να τη δείτε, ανοίξτε το Chrome σε <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Η καρτέλα προεπισκόπησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
@@ -1197,6 +1200,7 @@
 <translation id="860282621117673749">Ειδοποιήσεις πτώσης τιμής</translation>
 <translation id="8616006591992756292">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Άνοιγμα της προτεινόμενης διεύθυνσης URL που καθορίζεται στο ληφθέν περιεχόμενο;</translation>
+<translation id="8621068256433641644">τηλέφωνο</translation>
 <translation id="8636825310635137004">Για να εμφανίζονται οι καρτέλες από τις άλλες συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="8641930654639604085">Δοκιμάστε να αποκλείσετε τους ιστοτόπους με περιεχόμενο για ενηλίκους</translation>
 <translation id="8655129584991699539">Μπορείτε να διαγράψετε τα δεδομένα στις ρυθμίσεις του Chrome</translation>

@@ -80,6 +80,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1516740043221086139">Hali ya 'Usinisumbue' imewashwa</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Onyesha mipangilio ya arifa. Umezima arifa katika programu moja}other{Onyesha mipangilio ya arifa. Umezima arifa katika programu #}}</translation>
 <translation id="1525508553941733066">ONDOA</translation>
+<translation id="1536604384701784949">Ili uweze kutumia <ph name="USER_EMAIL_ADDRESS" />, unahitaji kuondoka kwenye akaunti zote kwanza. Kuondoka kwenye akaunti, chagua Ghairi ili urudi nyuma. Kisha, chagua wakati ili ufungue eneo la hali na uchague Ondoka kwenye akaunti. Kisha uingie katika akaunti tena kwa kutumia <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Kishale kikubwa cha kipanya</translation>
 <translation id="1546492247443594934">Eneokazi la 2</translation>
 <translation id="1550523713251050646">Bofya ili upate chaguo zaidi</translation>
@@ -524,6 +525,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5033299697334913360">Bofya popote ili unase skrini nzima</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> imeunganishwa kwenye simu mpya</translation>
 <translation id="5035389544768382859">Thibitisha Mipangilio ya Skrini</translation>
+<translation id="5039804452771397117">Ruhusu</translation>
 <translation id="504465286040788597">Aya iliyotangulia</translation>
 <translation id="5071064518267176975">Kuna programu inayotaka kutumia maikrofoni</translation>
 <translation id="5075554201838155866">Anzisha manukuu</translation>
@@ -801,6 +803,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7461924472993315131">Bana</translation>
 <translation id="746232733191930409">Hali ya kurekodi skrini</translation>
 <translation id="7466449121337984263">Tafadhali gusa kitambuzi</translation>
+<translation id="7473891865547856676">La Asante</translation>
 <translation id="7477793887173910789">Dhibiti muziki, video na vipengee vyako vingine</translation>
 <translation id="7483025031359818980">Sehemu iliyochaguliwa imewekwa kuwa skrini nzima</translation>
 <translation id="7486227320194954040">Kunja zana za kitia alama</translation>

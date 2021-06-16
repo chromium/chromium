@@ -360,6 +360,7 @@
 <translation id="1403222014593521787">ପ୍ରକ୍ସି ସହିତ ସଂଯୋଗ କରିବାକୁ ଅକ୍ଷମ</translation>
 <translation id="1405779994569073824">କ୍ରାସ୍ ହୋଇଯାଇଛି।</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
+<translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="140723521119632973">ସେଲ୍ୟୁଲାର୍ ସକ୍ରିୟକରଣ</translation>
 <translation id="1407489512183974736">କେନ୍ଦ୍ରସ୍ଥଳରେ କ୍ରପ୍‌ କରାଗଲା</translation>
@@ -1421,7 +1422,7 @@
 <translation id="252502352004572774">Chrome କ୍ଷତିକାରକ ସଫ୍ଟୱେର୍ ପାଇଁ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ଯାଞ୍ଚ କରୁଛି...</translation>
 <translation id="2526277209479171883">ଇନ୍‌ଷ୍ଟଲ୍‌ କରନ୍ତୁ ଏବଂ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2526590354069164005">ଡେସ୍କଟପ୍</translation>
-<translation id="2526619973349913024">କୌଣସି ଅପ୍‌ଡେଟ୍ ଅଛି କି ନାହିଁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="2526619973349913024">ଅପଡେଟ୍‌ ପାଇଁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2527167509808613699">ଯେକୌଣସି ପ୍ରକାରର ସଂଯୋଜନା</translation>
 <translation id="2530166226437958497">ଟ୍ରବୁଲସୁଟିଂ</translation>
 <translation id="2532589005999780174">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍</translation>
@@ -5649,6 +5650,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="729583233778673644">AES ଓ RC4 ଏନ୍‌କ୍ରିପ୍ସନ୍ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ। RC4 ସଂକେତାକ୍ଷରଗୁଡ଼ିକ ଅସୁରକ୍ଷିତ ଥିବାରୁ ଏହି ବିକଳ୍ପର ବ୍ୟବହାର ଆପଣଙ୍କର ବିପଦ ବଢ଼ାଇଥାଏ।</translation>
 <translation id="729761647156315797">ନିଜର ଭାଷା ଓ କୀବୋର୍ଡ ବାଛନ୍ତୁ</translation>
 <translation id="7297726121602187087">ଗାଢ଼ ସବୁଜ</translation>
+<translation id="7298195798382681320">ସୁପାରିଶ୍ କରାଯାଇଛି</translation>
 <translation id="7299337219131431707">ଗେଷ୍ଟ ବ୍ରାଉଜିଂ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{ଏହି ଆପ୍ଲିକେସନ୍ Chromeକୁ ଠିକ୍ ଭାବରେ କାର୍ଯ୍ୟ କରିବାରୁ ବାଧା ଦେଇପାରେ।}other{ଏହି ଆପ୍ଲିକେସନ୍ Chromeକୁ ଠିକ୍ ଭାବରେ କାର୍ଯ୍ୟ କରିବାରୁ ବାଧା ଦେଇପାରେ।}}</translation>
 <translation id="7303281435234579599">ଓହୋଃ! ଡେମୋ ମୋଡ୍‌ ସେଟ୍‍ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି</translation>

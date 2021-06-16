@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Vols activar la sincronització?</translation>
 <translation id="123724288017357924">Carrega pàgina actual; ignora contingut en memòria</translation>
 <translation id="1240288207750131269">S'està carregant <ph name="LANG" /></translation>
+<translation id="1242883863226959074">dispositiu</translation>
 <translation id="124678866338384709">Tanca la pestanya actual</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">No s'ha pogut compartir <ph name="CONTENT_TYPE" />.</translation>
@@ -920,6 +921,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6864459304226931083">Baixa la imatge</translation>
 <translation id="6865313869410766144">Dades d'Emplenament automàtic de formularis</translation>
 <translation id="6867400383614725881">Pestanya d'incògnit nova</translation>
+<translation id="6869056123412990582">ordinador</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="688738109438487280">Afegeix les dades existents a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloqueja la pantalla per copiar la contrasenya</translation>
@@ -1156,6 +1158,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8410695015584479363">Fes un seguiment dels preus</translation>
 <translation id="8413126021676339697">Mostra l'historial complet</translation>
+<translation id="8424781820952413435">S'ha enviat la pàgina. Per veure-la, obre Chrome al teu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">La pestanya de previsualització està oberta fins a la meitat</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8438566539970814960">Millora les cerques i la navegació</translation>
@@ -1197,6 +1200,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="860282621117673749">Alertes de baixada de preu</translation>
 <translation id="8616006591992756292">A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google.</translation>
 <translation id="8617240290563765734">Voleu obrir l'URL suggerit que s'especifica al contingut que s'ha baixat?</translation>
+<translation id="8621068256433641644">telèfon</translation>
 <translation id="8636825310635137004">Activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis.</translation>
 <translation id="8641930654639604085">Prova de bloquejar els llocs web per a adults</translation>
 <translation id="8655129584991699539">Pots esborrar les dades a la configuració de Chrome</translation>

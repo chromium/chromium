@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="123724288017357924">Memuat ulang halaman, mengabaikan konten dalam cache</translation>
 <translation id="1240288207750131269">Memuat <ph name="LANG" /></translation>
+<translation id="1242883863226959074">perangkat</translation>
 <translation id="124678866338384709">Menutup tab aktif</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Tidak dapat membagikan <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6864459304226931083">Download gambar</translation>
 <translation id="6865313869410766144">Data formulir isi-otomatis</translation>
 <translation id="6867400383614725881">Tab Samaran baru</translation>
+<translation id="6869056123412990582">komputer</translation>
 <translation id="6882836635272038266">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya.</translation>
 <translation id="688738109438487280">Menambahkan data yang sudah ada ke <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Buka kunci untuk menyalin sandi Anda</translation>
@@ -1156,6 +1158,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8393700583063109961">Kirim pesan</translation>
 <translation id="8410695015584479363">Pantau harga</translation>
 <translation id="8413126021676339697">Tampilkan histori lengkap</translation>
+<translation id="8424781820952413435">Halaman dikirim. Untuk melihatnya, buka Chrome di <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Tab pratinjau terbuka setengah</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8438566539970814960">Jadikan penelusuran dan penjelajahan lebih baik</translation>
@@ -1197,6 +1200,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="860282621117673749">Notifikasi diskon</translation>
 <translation id="8616006591992756292">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Buka URL yang disarankan yang ditentukan di konten download?</translation>
+<translation id="8621068256433641644">ponsel</translation>
 <translation id="8636825310635137004">Untuk mengakses tab Anda dari perangkat lainnya, aktifkan sinkronisasi.</translation>
 <translation id="8641930654639604085">Coba blokir situs dewasa</translation>
 <translation id="8655129584991699539">Anda dapat menghapus data di Setelan Chrome</translation>

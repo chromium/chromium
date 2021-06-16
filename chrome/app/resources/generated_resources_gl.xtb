@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">Non se puido establecer conexión co proxy</translation>
 <translation id="1405779994569073824">Produciuse un fallo.</translation>
 <translation id="1406500794671479665">Verificando...</translation>
+<translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="140723521119632973">Activación móbil</translation>
 <translation id="1407489512183974736">Centrar fondo de pantalla recortado</translation>
@@ -5655,6 +5656,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="729583233778673644">Permite os encriptados AES e RC4. Esta opción aumenta o risco, porque as cifraxes de RC4 non son seguras.</translation>
 <translation id="729761647156315797">Escolle un idioma e un teclado</translation>
 <translation id="7297726121602187087">Verde escuro</translation>
+<translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299337219131431707">Activar a navegación como invitado</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Esta aplicación podería impedir que Chrome funcione correctamente.}other{Estas aplicacións poderían impedir que Chrome funcione correctamente.}}</translation>
 <translation id="7303281435234579599">Produciuse un erro ao configurar o modo de demostración.</translation>
@@ -7251,6 +7253,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="9026852570893462412">Este proceso pode tardar uns minutos. Descargando a máquina virtual.</translation>
 <translation id="9027459031423301635">Abrir ligazón nunha pes&amp;tana nova</translation>
 <translation id="9030515284705930323">A organización non activou Google Play Store para a túa conta. Contacta co administrador para obter máis información.</translation>
+<translation id="9030754204056345429">Máis rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> xa non se admite</translation>
 <translation id="9031549947500880805">Facer copia de seguranza en Drive. Restaura os teus datos facilmente ou cambia de dispositivo en calquera momento. A túa copia de seguranza inclúe os datos das aplicacións.</translation>

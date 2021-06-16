@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">No s'ha pogut connectar amb el servidor intermediari</translation>
 <translation id="1405779994569073824">S'ha produït un error.</translation>
 <translation id="1406500794671479665">S'està verificant...</translation>
+<translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1407135791313364759">Obre-les totes</translation>
 <translation id="140723521119632973">Activació d'una xarxa mòbil</translation>
 <translation id="1407489512183974736">Retallat al centre</translation>
@@ -5658,6 +5659,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="729583233778673644">Permet l'encriptació AES i RC4. L'ús d'aquesta opció augmenta el risc, ja que els xifratges RC4 no són segurs.</translation>
 <translation id="729761647156315797">Tria l'idioma i el teclat</translation>
 <translation id="7297726121602187087">Verd fosc</translation>
+<translation id="7298195798382681320">Recomanada</translation>
 <translation id="7299337219131431707">Activa la navegació com a convidat</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Aquesta aplicació pot impedir que Chrome funcioni correctament.}other{Aquestes aplicacions poden impedir que Chrome funcioni correctament.}}</translation>
 <translation id="7303281435234579599">S'ha produït un error en configurar el mode de demostració.</translation>
@@ -7257,6 +7259,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="9026852570893462412">Aquest procés pot tardar uns quants minuts. S'està baixant la màquina virtual.</translation>
 <translation id="9027459031423301635">Obre l'enllaç en una pes&amp;tanya nova</translation>
 <translation id="9030515284705930323">La teva organització no t'ha activat Google Play Store al compte. Contacta amb l'administrador per obtenir més informació.</translation>
+<translation id="9030754204056345429">Més ràpida</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Ja no s'admet <ph name="PLUGIN_NAME" /></translation>
 <translation id="9031549947500880805">Crea còpies de seguretat a Google Drive. Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. La còpia de seguretat inclou dades d'aplicacions.</translation>

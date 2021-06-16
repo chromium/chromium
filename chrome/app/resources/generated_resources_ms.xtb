@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Tidak dapat menyambung kepada proksi</translation>
 <translation id="1405779994569073824">Ranap.</translation>
 <translation id="1406500794671479665">Mengesahkan...</translation>
+<translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="140723521119632973">Pengaktifan Selular</translation>
 <translation id="1407489512183974736">Tengah Dipotong</translation>
@@ -5673,6 +5674,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="729583233778673644">Benarkan penyulitan AES dan RC4. Penggunaan pilihan ini akan meningkatkan risiko anda, kerana sifer RC4 tidak selamat.</translation>
 <translation id="729761647156315797">Pilih bahasa &amp; papan kekunci anda</translation>
 <translation id="7297726121602187087">Hijau gelap</translation>
+<translation id="7298195798382681320">Disyorkan</translation>
 <translation id="7299337219131431707">Dayakan penyemakan imbas tetamu</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Aplikasi ini boleh menghalang Chrome daripada berfungsi dengan betul.}other{Aplikasi ini boleh menghalang Chrome daripada berfungsi dengan betul.}}</translation>
 <translation id="7303281435234579599">Op! Kesilapan telah berlaku semasa menyediakan mod tunjuk cara.</translation>
@@ -7272,6 +7274,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="9026852570893462412">Proses ini mungkin mengambil masa beberapa minit. Memuat turun mesin maya.</translation>
 <translation id="9027459031423301635">Buka Pautan dalam Tab &amp;Baharu</translation>
 <translation id="9030515284705930323">Organisasi anda belum mendayakan Gedung Google Play untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
+<translation id="9030754204056345429">Lebih laju</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> tidak disokong lagi</translation>
 <translation id="9031549947500880805">Sandarkan pada Google Drive. Pulihkan data atau tukar peranti anda dengan mudah pada bila-bila masa. Sandaran anda merangkumi data apl.</translation>

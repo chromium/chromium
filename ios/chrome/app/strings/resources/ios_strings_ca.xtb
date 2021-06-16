@@ -391,6 +391,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5062321486222145940">Instal. de Google Drive</translation>
 <translation id="5083464117946352670">No es determina mida fitxer.</translation>
 <translation id="5090832849094901128">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Pots desar pàgines per llegir-les més endavant o sense connexió. Chrome et demanarà si vols desar les pàgines llargues.</translation>
 <translation id="5094827893301452931">S'ha completat el tuit.</translation>
 <translation id="5118764316110575523">Desactivat</translation>
 <translation id="5127805178023152808">Sincronització desactivada</translation>
@@ -757,6 +758,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8548878600947630424">Cerca a la pàgina...</translation>
 <translation id="8574235780160508979">Les condicions del servei de Chrome canviaran el 31 de març. <ph name="BEGIN_LINK" />Revisa-les<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Desactivada</translation>
+<translation id="8590913940444621808">No ho demanis mai</translation>
 <translation id="8591976964826315682">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="8605219856220328675">Tanca la pestanya.</translation>
 <translation id="8620640915598389714">Edita</translation>

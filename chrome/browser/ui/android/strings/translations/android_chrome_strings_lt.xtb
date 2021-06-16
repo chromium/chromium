@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Įjungti sinchronizavimą?</translation>
 <translation id="123724288017357924">Įk. šį puslapį iš naujo, nepais. talp. es. turinio</translation>
 <translation id="1240288207750131269">Įkeliama <ph name="LANG" /></translation>
+<translation id="1242883863226959074">įrenginyje</translation>
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
 <translation id="1258753120186372309">„Google“ papuoštas logotipas: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6864459304226931083">Atsisiųsti vaizdą</translation>
 <translation id="6865313869410766144">Automatinio pildymo formos duomenys</translation>
 <translation id="6867400383614725881">Naujas inkognito skirtukas</translation>
+<translation id="6869056123412990582">kompiuteryje</translation>
 <translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
 <translation id="688738109438487280">Pridėti esamus duomenis prie <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Atrakinkite, kad galėtumėte kopijuoti slaptažodį</translation>
@@ -1156,6 +1158,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8393700583063109961">Siųsti pranešimą</translation>
 <translation id="8410695015584479363">Stebėti kainas</translation>
 <translation id="8413126021676339697">Rodyti visą istoriją</translation>
+<translation id="8424781820952413435">Puslapis išsiųstas. Norėdami jį peržiūrėti, atidarykite „Chrome“ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Peržiūros skirtukas atidarytas iki pusės ekrano</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8438566539970814960">Tobulinti paieškas ir naršymą</translation>
@@ -1197,6 +1200,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="860282621117673749">Įspėjimai apie sumažintas kainas</translation>
 <translation id="8616006591992756292">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Atidaryti atsisiųstame turinyje nurodytą siūlomą URL?</translation>
+<translation id="8621068256433641644">telefone</translation>
 <translation id="8636825310635137004">Jei norite pasiekti skirtukus iš kitų įrenginių, įjunkite sinchronizavimą.</translation>
 <translation id="8641930654639604085">Bandyti užblokuoti suaugusiesiems skirtas svetaines</translation>
 <translation id="8655129584991699539">Duomenis galite išvalyti „Chrome“ nustatymų“ skiltyje</translation>

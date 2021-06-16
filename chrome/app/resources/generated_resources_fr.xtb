@@ -360,6 +360,7 @@
 <translation id="1403222014593521787">Impossible de se connecter au proxy</translation>
 <translation id="1405779994569073824">A planté.</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
+<translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="140723521119632973">Activation mobile</translation>
 <translation id="1407489512183974736">Recadrer et centrer</translation>
@@ -1215,6 +1216,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2300383962156589922">Personnaliser et configurer <ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">Raccourcis clavier pour les mots clés de recherche</translation>
 <translation id="2301382460326681002">Le répertoire racine de l'extension est incorrect.</translation>
+<translation id="2301402091755573488">Onglet partagé</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" a demandé des autorisations supplémentaires.</translation>
 <translation id="23055578400314116">Sélectionnez un nom d'utilisateur</translation>
 <translation id="2307462900900812319">Configurer le réseau</translation>
@@ -1492,6 +1494,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2612676031748830579">Numéro de carte</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> pourra modifier <ph name="FILENAME" /></translation>
 <translation id="2616366145935564096">Accéder aux données du site <ph name="WEBSITE_1" /> et les modifier</translation>
+<translation id="2618274688675613222">Appuyez sur le bouton Suivant pour poursuivre la configuration ou sur le bouton Précédent pour modifier la sélection.</translation>
 <translation id="2618797463720777311">Configurer le Partage à proximité</translation>
 <translation id="2619761439309613843">Actualisation quotidienne</translation>
 <translation id="2620215283731032047">Impossible de télécharger <ph name="FILE_NAME" /> de manière sécurisée.</translation>
@@ -2888,6 +2891,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4120817667028078560">Chemin d'accès trop long.</translation>
 <translation id="4124823734405044952">Votre clé de sécurité a été réinitialisée</translation>
 <translation id="4124935795427217608">Licorne</translation>
+<translation id="4126916490446791914">Recherche automatique activée</translation>
 <translation id="412730574613779332">Super-héros</translation>
 <translation id="4130199216115862831">Journal d'appareils</translation>
 <translation id="4130207949184424187">Cette extension a modifié la page qui s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
@@ -3270,6 +3274,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
     Si votre enfant utilise un Chromebook à l'école et que vous souhaitez qu'il ait accès aux mêmes ressources à la maison pour faire ses devoirs, veuillez vous déconnecter du compte Family Link, puis vous connecter au compte scolaire depuis la page des comptes de Chrome OS. Remarque : le contrôle parental Family Link ne s'applique pas dans ce cas.&lt;br&gt;&lt;br&gt;
     Si votre enfant n'utilise pas un Chromebook à l'école ou si vous préférez gérer son activité à la maison avec Family Link, veuillez cliquer sur le bouton "Suivant" ci-dessous pour ajouter un compte scolaire à ce profil.</translation>
 <translation id="4576541033847873020">Associer un appareil Bluetooth</translation>
+<translation id="4576763597586015380">Pour continuer à enregistrer des mots de passe dans votre compte Google, confirmez votre identité</translation>
 <translation id="4579453506923101210">Supprimer le téléphone connecté</translation>
 <translation id="4579581181964204535">Impossible de caster <ph name="HOST_NAME" />.</translation>
 <translation id="4581774856936278355">Erreur lors de la restauration de Linux</translation>
@@ -4991,6 +4996,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6538098297809675636">Erreur lors de la détection du code</translation>
 <translation id="653920215766444089">Recherche du dispositif de pointage…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : N'activez cette option que si vous êtes sûr de ce que vous faites ou si vous avez été invité à le faire. En effet, la collecte d'informations est susceptible de diminuer les performances.</translation>
+<translation id="6540672086173674880">Google peut utiliser votre historique de navigation pour personnaliser la recherche et d'autres services Google. Vous pouvez modifier ce paramètre à tout moment sur myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">L'accès à vos capteurs de mouvement est bloqué pour ce site.</translation>
 <translation id="6545665334409411530">Fréquence de répétition</translation>
 <translation id="6545864417968258051">Recherche Bluetooth</translation>
@@ -5654,6 +5660,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="729583233778673644">Autorisez le chiffrement AES et RC4. L'activation de cette option est risquée, car les algorithmes de chiffrement RC4 ne sont pas sécurisés.</translation>
 <translation id="729761647156315797">Sélectionnez votre langue et votre clavier</translation>
 <translation id="7297726121602187087">Vert foncé</translation>
+<translation id="7298195798382681320">Recommandé</translation>
 <translation id="7299337219131431707">Activer la navigation en tant qu'invité</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Cette application peut empêcher Chrome de fonctionner correctement.}one{Cette application peut empêcher Chrome de fonctionner correctement.}other{Ces applications peuvent empêcher Chrome de fonctionner correctement.}}</translation>
 <translation id="7303281435234579599">Petit problème… Une erreur s'est produite lors de la configuration du mode de démonstration.</translation>
@@ -5876,6 +5883,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="754207240458482646">Ce réseau est synchronisé avec d'autres appareils associés à votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Activer les fonctionnalités de débogage sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Demande à tes parents</translation>
+<translation id="7546012169463147344">La recherche automatique se focalisera automatiquement sur les différents éléments à l'écran et les parcourra. Lorsqu'un élément est sélectionné, appuyez sur la touche Sélectionner que vous avez désignée pour l'activer.</translation>
 <translation id="7547317915858803630">Avertissement : Vos paramètres <ph name="PRODUCT_NAME" /> sont enregistrés sur un lecteur réseau, ce qui peut entraîner des ralentissements, des plantages, voire la perte de données.</translation>
 <translation id="7548856833046333824">Limonade</translation>
 <translation id="7550830279652415241">favoris_<ph name="DATESTAMP" />.html</translation>
@@ -6846,6 +6854,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8621866727807194849">Un logiciel malveillant a été détecté sur votre ordinateur. Chrome va le supprimer, restaurer vos paramètres et désactiver les extensions. Ceci permettra à votre navigateur de fonctionner à nouveau normalement.</translation>
 <translation id="8621979332865976405">Partager l'intégralité de votre écran</translation>
 <translation id="8624354461147303341">Obtenir des remises</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" /> : <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Non autorisé à utiliser votre micro</translation>
 <translation id="8625916342247441948">Ne pas autoriser les sites à se connecter à des appareils HID</translation>
@@ -6910,6 +6919,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8677212948402625567">Tout réduire...</translation>
 <translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8677859815076891398">Aucun album. Créez-en un dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8678538439778360739">Les données ont été chiffrées avec votre phrase secrète de synchronisation le <ph name="TIME" /> Cela ne s'applique pas aux modes de paiement ni aux adresses Google Pay.</translation>
 <translation id="8678582529642151449">Onglets non réduits</translation>
 <translation id="8678933587484842200">Comment souhaitez-vous que cette application soit lancée ?</translation>
 <translation id="8680251145628383637">Connectez-vous pour retrouver vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils. De plus, vous serez automatiquement connecté à vos services Google.</translation>
@@ -7250,6 +7260,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9026852570893462412">Cette opération peut prendre quelques minutes. Téléchargement de la machine virtuelle…</translation>
 <translation id="9027459031423301635">Ouvrir le lien dans un nouvel ongle&amp;t</translation>
 <translation id="9030515284705930323">Votre organisation n'a pas activé le Google Play Store pour votre compte. Contactez votre administrateur pour plus d'informations.</translation>
+<translation id="9030754204056345429">Plus rapide</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Le plug-in <ph name="PLUGIN_NAME" /> n'est plus compatible</translation>
 <translation id="9031549947500880805">Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées.</translation>

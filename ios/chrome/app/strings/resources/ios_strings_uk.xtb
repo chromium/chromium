@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">Установити Google Диск</translation>
 <translation id="5083464117946352670">Невідомий розмір файлу.</translation>
 <translation id="5090832849094901128">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться.</translation>
+<translation id="5092117651143801290">Ви можете зберігати сторінки, щоб читати їх пізніше або в режимі офлайн. Chrome запитуватиме вас, чи зберігати довгі сторінки.</translation>
 <translation id="5094827893301452931">Твіт опубліковано.</translation>
 <translation id="5118764316110575523">Вимк.</translation>
 <translation id="5127805178023152808">Синхронізацію вимкнено</translation>
@@ -757,6 +758,7 @@
 <translation id="8548878600947630424">Знайти на сторінці...</translation>
 <translation id="8574235780160508979">31 березня змінюються Умови використання Chrome. <ph name="BEGIN_LINK" />Переглянути<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Вимкнено</translation>
+<translation id="8590913940444621808">Не запитувати</translation>
 <translation id="8591976964826315682">Блокувати файли cookie третіх сторін в анонімному режимі</translation>
 <translation id="8605219856220328675">Закрити вкладку.</translation>
 <translation id="8620640915598389714">Редагувати</translation>

@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
 <translation id="123724288017357924">重新載入目前的網頁，忽略之前快取的內容</translation>
 <translation id="1240288207750131269">正在載入<ph name="LANG" /></translation>
+<translation id="1242883863226959074">裝置</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6864459304226931083">下載圖片</translation>
 <translation id="6865313869410766144">自動填入表格數據</translation>
 <translation id="6867400383614725881">新無痕式分頁</translation>
+<translation id="6869056123412990582">電腦</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="688738109438487280">將現有資料新增至 <ph name="TO_ACCOUNT" />。</translation>
 <translation id="6891726759199484455">解鎖即可複製您的密碼</translation>
@@ -1156,6 +1158,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8410695015584479363">追蹤價格</translation>
 <translation id="8413126021676339697">顯示完整記錄</translation>
+<translation id="8424781820952413435">已傳送網頁。如要查看，請在<ph name="DEVICE_TYPE" />上開啟 Chrome</translation>
 <translation id="8427875596167638501">預覽分頁喺畫面下半部分顯示</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
@@ -1197,6 +1200,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="860282621117673749">降價快訊</translation>
 <translation id="8616006591992756292">您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="8617240290563765734">您要開啟下載檔案中指定的建議網址嗎？</translation>
+<translation id="8621068256433641644">手機</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="8641930654639604085">嘗試封鎖成人網站</translation>
 <translation id="8655129584991699539">您可以在 Chrome 設定中清除資料</translation>

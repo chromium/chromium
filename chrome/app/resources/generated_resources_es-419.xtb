@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">No se pudo establecer conexión con el proxy.</translation>
 <translation id="1405779994569073824">Falló</translation>
 <translation id="1406500794671479665">Verificando...</translation>
+<translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Activación del teléfono celular</translation>
 <translation id="1407489512183974736">Centrar imagen recortada</translation>
@@ -2067,7 +2068,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3254715652085014625">Abre Chrome en tu teléfono Android, ve a "Configuración &gt; Contraseñas &gt; Usa el teléfono como llave de seguridad" y sigue las instrucciones.</translation>
 <translation id="3255355328033513170">Se borrarán todos los datos que almacenó <ph name="SITE_GROUP_NAME" /> y los sitios secundarios. También se borrarán las cookies. Saldrás de estos sitios, incluidas las pestañas abiertas.</translation>
 <translation id="3259723213051400722">Vuelve a intentarlo.</translation>
-<translation id="3261268979727295785">En el caso de niños más grandes, puedes agregar los Controles parentales una vez que finalices con la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
+<translation id="3261268979727295785">En el caso de niños más grandes, puedes agregar los controles parentales una vez que finalices con la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
 <translation id="3264544094376351444">Fuente Sans-serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Cerrar ventana</translation>
@@ -2285,7 +2286,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3487007233252413104">función anónima</translation>
 <translation id="348780365869651045">Esperando a AppCache...</translation>
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" />%</translation>
-<translation id="3491669675709357988">La cuenta de tu hijo no está configurada para los Controles parentales de Family Link; podrás agregarlos cuando completes la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
+<translation id="3491669675709357988">La cuenta de tu hijo no está configurada para los controles parentales de Family Link; podrás agregarlos cuando completes la configuración. En la app de Explorar, encontrarás información sobre estos controles.</translation>
 <translation id="3491678231052507920">Por lo general los sitios utilizan los datos y dispositivos de realidad virtual para otorgarte acceso a las sesiones de RV.</translation>
 <translation id="3493486281776271508">Se requiere una conexión a Internet</translation>
 <translation id="3493881266323043047">Validez</translation>
@@ -2540,7 +2541,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3765246971671567135">No se pudo leer la política del modo de demostración sin conexión.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Helado</translation>
-<translation id="3771290962915251154">Se inhabilitó esta configuración porque los Controles parentales están activados</translation>
+<translation id="3771290962915251154">Se inhabilitó esta configuración porque los controles parentales están activados</translation>
 <translation id="3771294271822695279">Archivos de video</translation>
 <translation id="3772609330847318323">Actualizar la contraseña para <ph name="ORIGIN" /></translation>
 <translation id="3775432569830822555">Certificado del servidor SSL</translation>
@@ -3035,7 +3036,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4330191372652740264">Agua helada</translation>
 <translation id="4330387663455830245">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="4331809312908958774">Chrome OS</translation>
-<translation id="4332976768901252016">Configura los Controles parentales</translation>
+<translation id="4332976768901252016">Configura los controles parentales</translation>
 <translation id="4333854382783149454">PKCS N. º 1, SHA-1 con encriptación RSA</translation>
 <translation id="4336434711095810371">Borrar todos los datos</translation>
 <translation id="4340125850502689798">Nombre de usuario no válido</translation>
@@ -4335,7 +4336,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5805697420284793859">Administrador de ventanas</translation>
 <translation id="5806773519584576205">0° (predeterminado)</translation>
-<translation id="5810809306422959727">Esta cuenta no es apta para los Controles parentales</translation>
+<translation id="5810809306422959727">Esta cuenta no es apta para los controles parentales</translation>
 <translation id="5812674658566766066">Expandir todo</translation>
 <translation id="5815645614496570556">Dirección X 400</translation>
 <translation id="5816434091619127343">Los cambios solicitados harán que la impresora no se pueda utilizar.</translation>
@@ -5046,7 +5047,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6602956230557165253">Utiliza las teclas de flecha hacia la izquierda y derecha para navegar.</translation>
 <translation id="6605847144724004692">Todavía no tiene una calificación de los usuarios.</translation>
 <translation id="6607831829715835317">Más herramientas</translation>
-<translation id="6607890859198268021"><ph name="DOMAIN" /> ya administra <ph name="USER_EMAIL" />. Para usar los Controles parentales con otra Cuenta de Google, sal de tu cuenta después de finalizar la configuración y, luego, selecciona "Agregar persona" en la pantalla de acceso.</translation>
+<translation id="6607890859198268021"><ph name="DOMAIN" /> ya administra <ph name="USER_EMAIL" />. Para usar los controles parentales con otra Cuenta de Google, sal de tu cuenta después de finalizar la configuración y, luego, selecciona "Agregar persona" en la pantalla de acceso.</translation>
 <translation id="6609478180749378879">Los datos de acceso se almacenarán en este dispositivo cuando salgas del modo Incógnito. Más tarde, podrás volver a acceder a este sitio web con tu dispositivo.</translation>
 <translation id="6611972847767394631">Encuentra tus pestañas aquí</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
@@ -5654,6 +5655,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="729583233778673644">Permite la encriptación AES y RC4. Esta opción es riesgosa, ya que los cifrados RC4 son inseguros.</translation>
 <translation id="729761647156315797">Seleccionar tu idioma y teclado</translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
+<translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299337219131431707">Habilitar navegación como invitado</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Es posible que esta app evite que Chrome funcione correctamente.}other{Es posible que estas apps eviten que Chrome funcione correctamente.}}</translation>
 <translation id="7303281435234579599">Hubo un error cuando se intentaba configurar el modo de demostración.</translation>
@@ -6921,7 +6923,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8683081248374354009">Restablecer grupo</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="8690129572193755009">Permitir que los sitios soliciten permiso para procesar protocolos</translation>
-<translation id="8695139659682234808">Agrega los Controles parentales cuando finalices la configuración</translation>
+<translation id="8695139659682234808">Agrega los controles parentales cuando finalices la configuración</translation>
 <translation id="8695825812785969222">Abrir &amp;ubicación...</translation>
 <translation id="8698269656364382265">Si quieres regresar a la pantalla anterior, desliza el dedo desde el lado izquierdo.</translation>
 <translation id="869884720829132584">Menú Aplicaciones</translation>
@@ -7252,6 +7254,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9026852570893462412">Este proceso puede demorar unos minutos. Se está descargando la máquina virtual.</translation>
 <translation id="9027459031423301635">Abrir vínculo en la pes&amp;taña nueva</translation>
 <translation id="9030515284705930323">Tu organización no habilitó Google Play Store para tu cuenta. Comunícate con tu administrador para obtener más información.</translation>
+<translation id="9030754204056345429">Más rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Ya no se admite <ph name="PLUGIN_NAME" /></translation>
 <translation id="9031549947500880805">Crea una copia de seguridad en Google Drive. Restaura tus datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de apps.</translation>

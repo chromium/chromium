@@ -80,6 +80,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1516740043221086139">Režīms “Netraucēt” ir ieslēgts.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rādīt paziņojumu iestatījumus. Paziņojumi lietotnei ir izslēgti}zero{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}one{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnei}other{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}}</translation>
 <translation id="1525508553941733066">NERĀDĪT</translation>
+<translation id="1536604384701784949">Lai izmantotu kontu <ph name="USER_EMAIL_ADDRESS" />, jums vispirms ir jāizrakstās no visiem kontiem. Lai pārietu atpakaļ un izrakstītos, atlasiet “Atcelt”. Pēc tam atlasiet laiku, lai atvērtu statusa apgabalu, un atlasiet “Izrakstīties”. Vēlreiz pierakstieties kontā <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Liels peles kursors</translation>
 <translation id="1546492247443594934">2. galds</translation>
 <translation id="1550523713251050646">Noklikšķiniet, lai skatītu citas iespējas.</translation>
@@ -524,6 +525,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5033299697334913360">Noklikšķiniet jebkurā vietā, lai tvertu visu ekrānu.</translation>
 <translation id="5035236842988137213">Ierīce <ph name="DEVICE_NAME" /> ir savienota ar jaunu tālruni</translation>
 <translation id="5035389544768382859">Displeja konfigurācijas apstiprināšana</translation>
+<translation id="5039804452771397117">Atļaut</translation>
 <translation id="504465286040788597">Iepriekšējā rindkopa</translation>
 <translation id="5071064518267176975">Lietotne pieprasa atļauju izmantot mikrofonu</translation>
 <translation id="5075554201838155866">Ieslēgt subtitrus</translation>
@@ -801,6 +803,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7461924472993315131">Piespraust</translation>
 <translation id="746232733191930409">Ekrāna ierakstīšanas režīms</translation>
 <translation id="7466449121337984263">Lūdzu, pieskarieties sensoram.</translation>
+<translation id="7473891865547856676">Nē, paldies!</translation>
 <translation id="7477793887173910789">Pārvaldiet savu mūziku, videoklipus un citu saturu</translation>
 <translation id="7483025031359818980">Kā atlases apgabals ir iestatīts viss ekrāns</translation>
 <translation id="7486227320194954040">Sakļaut marķiera rīkus</translation>

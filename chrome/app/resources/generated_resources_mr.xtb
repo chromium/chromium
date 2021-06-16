@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">प्रॉक्सीशी कनेक्ट करू शकत नाही</translation>
 <translation id="1405779994569073824">क्रॅश झाले</translation>
 <translation id="1406500794671479665">सत्यापित करत आहे...</translation>
+<translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="140723521119632973">सेल्युलर अ‍ॅक्टिव्हेशन</translation>
 <translation id="1407489512183974736">मध्यभागी क्रॉप केला</translation>
@@ -5668,6 +5669,7 @@
 <translation id="729583233778673644">AES आणि RC4 एंक्रिप्‍शनला अनुमती द्या. हा पर्याय वापरल्याने तुमचा धोका वाढतो, कारण RC4 सायफर असुरक्षित आहेत.</translation>
 <translation id="729761647156315797">तुमची भाषा आणि कीबोर्ड निवडा</translation>
 <translation id="7297726121602187087">गडद हिरवा</translation>
+<translation id="7298195798382681320">शिफारस केलेले</translation>
 <translation id="7299337219131431707">अतिथी ब्राउझिंग सुरू करा</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{हे अ‍ॅप्लिकेशन Chrome ला योग्यरीत्या कार्य करण्यापासून रोखू शकते.}other{हे अ‍ॅप्लिकेशन Chrome ला योग्यरीत्या कार्य करण्यापासून रोखू शकते.}}</translation>
 <translation id="7303281435234579599">अरेरे! डेमो मोड सेट करताना काहीतरी चूक झाली.</translation>
@@ -7263,6 +7265,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9026852570893462412">या प्रक्रियेला काही मिनिटे लागू शकतात. व्हर्च्युअल मशीन डाउनलोड करत आहे.</translation>
 <translation id="9027459031423301635">नवीन &amp;टॅब मध्ये लिंक उघडा</translation>
 <translation id="9030515284705930323">तुमच्या संस्थेने तुमच्या खात्यासाठी Google Play स्टोअर सक्षम केले नाही. अधिक माहितीसाठी तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="9030754204056345429">अधिक जलद</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> ला यापुढे सपोर्ट असणार नाही</translation>
 <translation id="9031549947500880805">Google Drive वर बॅकअप घ्या. कधीही तुमचा डेटा सहजपणे रिस्टोअर करा किंवा डिव्हाइस स्विच करा. तुमच्या बॅकअपमध्ये अ‍ॅप डेटा समाविष्ट असतो.</translation>

@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Włączyć synchronizację?</translation>
 <translation id="123724288017357924">Ponowie załaduj stronę, bez pamięci podręcznej</translation>
 <translation id="1240288207750131269">Ładuję: <ph name="LANG" /></translation>
+<translation id="1242883863226959074">urządzeniu</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> – nie udało się udostępnić</translation>
@@ -920,6 +921,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6864459304226931083">Pobierz obraz</translation>
 <translation id="6865313869410766144">Autouzupełnianie danych formularzy</translation>
 <translation id="6867400383614725881">Nowa karta incognito</translation>
+<translation id="6869056123412990582">komputerze</translation>
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
 <translation id="688738109438487280">Dodaj istniejące dane do konta <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Odblokuj, by skopiować hasło</translation>
@@ -1156,6 +1158,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8410695015584479363">Monitoruj ceny</translation>
 <translation id="8413126021676339697">Wyświetl całą historię</translation>
+<translation id="8424781820952413435">Strona została wysłana. Aby ją zobaczyć, otwórz Chrome na swoim <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Karta podglądu jest otwarta w połowie</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8438566539970814960">Ulepsz wyszukiwanie i przeglądanie</translation>
@@ -1197,6 +1200,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="860282621117673749">Alerty o obniżkach cen</translation>
 <translation id="8616006591992756292">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Otworzyć sugerowany URL określony w pobranych materiałach?</translation>
+<translation id="8621068256433641644">telefonie</translation>
 <translation id="8636825310635137004">Aby korzystać z kart ze swoich innych urządzeń, włącz synchronizację</translation>
 <translation id="8641930654639604085">Próbuj blokować strony dla dorosłych</translation>
 <translation id="8655129584991699539">Dane możesz usunąć w Ustawieniach Chrome</translation>

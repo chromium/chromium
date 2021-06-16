@@ -494,9 +494,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="272451190272506600">Toʻlash uchun sensorga tegining</translation>
 <translation id="2728127805433021124">Server sertifikati kuchsiz imzo algoritmi yordamida imzolangan.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Aloqa diagnostikasini ishga tushiring<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Bu funksiyalar yoqilsa, brauzer tarixi, xavfsizlik 
-    va maxfiylik sozlamalari oʻchib ketishi mumkin. Bu funksiyalar brauzerning
-    barcha foydalanuvchilari uchun yoqiladi.</translation>
 <translation id="2738330467931008676">Olib ketish manzilini tanlang</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742870351467570537">Tanlangan elementlarni o‘chirish</translation>
@@ -2208,6 +2205,7 @@ Batafsil axborot:
 <translation id="9128870381267983090">Tarmoqqa ulanish</translation>
 <translation id="9137013805542155359">Asl tilda ko‘rsatish</translation>
 <translation id="9141013498910525015">Manzillarni boshqarish</translation>
+<translation id="9144951720726881238">Tugash muddati:</translation>
 <translation id="9148088599418889305">Yetkazib berish usulini tanlang</translation>
 <translation id="9148507642005240123">&amp;Tahrirni bekor qilish</translation>
 <translation id="9150045010208374699">Kameradan foydalanish</translation>

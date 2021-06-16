@@ -391,6 +391,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5062321486222145940">Cài đặt Google Drive</translation>
 <translation id="5083464117946352670">Không thể xác định kích thước tệp.</translation>
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Bạn có thể lưu các trang để đọc vào lúc khác hoặc khi không có kết nối mạng. Chrome sẽ hỏi xem bạn có muốn lưu các trang dài hay không.</translation>
 <translation id="5094827893301452931">Đã đăng lên Twitter.</translation>
 <translation id="5118764316110575523">Đang tắt</translation>
 <translation id="5127805178023152808">Tính năng đồng bộ hóa đang tắt</translation>
@@ -757,6 +758,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8548878600947630424">Tìm trong trang...</translation>
 <translation id="8574235780160508979">Điều khoản dịch vụ của Chrome sẽ thay đổi từ ngày 31 tháng 3. <ph name="BEGIN_LINK" />Vui lòng xem các điều khoản mới này<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Đang tắt</translation>
+<translation id="8590913940444621808">Đừng bao giờ hỏi</translation>
 <translation id="8591976964826315682">Chặn cookie của bên thứ ba ở chế độ ẩn danh</translation>
 <translation id="8605219856220328675">Đóng thẻ.</translation>
 <translation id="8620640915598389714">Chỉnh sửa</translation>

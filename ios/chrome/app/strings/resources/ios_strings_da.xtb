@@ -391,6 +391,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5062321486222145940">Installer Google Drev</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelse.</translation>
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Du kan gemme sider, som du vil læse senere, eller når du er offline. Chrome spørger dig, om du vil gemme lange sider.</translation>
 <translation id="5094827893301452931">Indlæg delt på Twitter.</translation>
 <translation id="5118764316110575523">Fra</translation>
 <translation id="5127805178023152808">Synkronisering er slået fra</translation>
@@ -757,6 +758,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8548878600947630424">Find på siden...</translation>
 <translation id="8574235780160508979">Servicevilkårene for Chrome ændres den 31. marts <ph name="BEGIN_LINK" />Gennemgå dem<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Fra</translation>
+<translation id="8590913940444621808">Spørg aldrig</translation>
 <translation id="8591976964826315682">Bloker tredjepartscookies i inkognito</translation>
 <translation id="8605219856220328675">Luk fane.</translation>
 <translation id="8620640915598389714">Rediger</translation>

@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">ติดตั้ง Google ไดรฟ์</translation>
 <translation id="5083464117946352670">ไม่สามารถระบุขนาดไฟล์ได้</translation>
 <translation id="5090832849094901128">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="WEBSITE" /></translation>
+<translation id="5092117651143801290">คุณบันทึกหน้าเว็บไว้อ่านภายหลังหรืออ่านขณะออฟไลน์ได้ Chrome จะถามว่าคุณต้องการบันทึกหน้าเว็บแบบยาวไหม</translation>
 <translation id="5094827893301452931">ทวีตแล้ว</translation>
 <translation id="5118764316110575523">ปิด</translation>
 <translation id="5127805178023152808">การซิงค์ปิดอยู่</translation>
@@ -757,6 +758,7 @@
 <translation id="8548878600947630424">ค้นหาในหน้าเว็บ...</translation>
 <translation id="8574235780160508979">ข้อกำหนดในการให้บริการของ Chrome จะมีการเปลี่ยนแปลงในวันที่ 31 มีนาคม <ph name="BEGIN_LINK" />โปรดตรวจดู<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">ปิด</translation>
+<translation id="8590913940444621808">อย่าถามอีก</translation>
 <translation id="8591976964826315682">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="8605219856220328675">ปิดแท็บ</translation>
 <translation id="8620640915598389714">แก้ไข</translation>

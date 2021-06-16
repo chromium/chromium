@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">Proksi-serverga ulanib boʻlmadi</translation>
 <translation id="1405779994569073824">Ishdan chiqdi.</translation>
 <translation id="1406500794671479665">Tekshirilmoqda...</translation>
+<translation id="1407069428457324124">Tungi mavzu</translation>
 <translation id="1407135791313364759">Barchasini ochish</translation>
 <translation id="140723521119632973">Mobil tarmoqni faollashtirish</translation>
 <translation id="1407489512183974736">Qirqish va o‘rtaga tekislash</translation>
@@ -5661,6 +5662,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="729583233778673644">AES va RC4 shifrlash usullaridan foydalanishga ruxsat berish. RC4 shifrlari himoyasizroq, shuning uchun bu usulni tanlash xavfliroq bo‘lishi mumkin.</translation>
 <translation id="729761647156315797">Til va klaviaturani tanlang</translation>
 <translation id="7297726121602187087">Toʻq yashil</translation>
+<translation id="7298195798382681320">Tavsiya etiladi</translation>
 <translation id="7299337219131431707">Mehmon rejimida ko‘rishga ruxsat berish</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Bu ilova Chrome brauzerining ishlashiga xalaqit berishi mumkin.}other{Bu ilovalar Chrome brauzerining ishlashiga xalaqit berishi mumkin.}}</translation>
 <translation id="7303281435234579599">Demo rejimni sozlashda notanish xatolik yuz berdi.</translation>
@@ -7257,6 +7259,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="9026852570893462412">Bu jarayon bir necha daqiqa olishi mumkin. Virtual mashina yuklab olinmoqda.</translation>
 <translation id="9027459031423301635">&amp;Havolani yangi ichki oynada ochish</translation>
 <translation id="9030515284705930323">Hisobingizda Google Play Market ta’minoti tashkilotingiz tomonidan yoqilmagan. Batafsil axborot uchun administratoringiz bilan bog‘laning.</translation>
+<translation id="9030754204056345429">Tezroq</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> endi ishlamaydi</translation>
 <translation id="9031549947500880805">Google Drive omboriga zaxiralash. Maʼlumotlaringizni osongina tiklang yoki qurilmani istalgan vaqt almashtiring. Zaxira ichida ilova maʼlumotlari ham bor.</translation>

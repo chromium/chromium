@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Želite li uključiti sinkronizaciju?</translation>
 <translation id="123724288017357924">Ponovno učitavanje trenutačne stranice uz zanemarivanje sadržaja iz predmemorije</translation>
 <translation id="1240288207750131269">Učitava se <ph name="LANG" /></translation>
+<translation id="1242883863226959074">uređaju</translation>
 <translation id="124678866338384709">Zatvaranje trenutačne kartice</translation>
 <translation id="1258753120186372309">Googleov doodle logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
@@ -919,6 +920,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6864459304226931083">Preuzmi sliku</translation>
 <translation id="6865313869410766144">Automatski ispuni podatke u obrascu</translation>
 <translation id="6867400383614725881">Nova anonimna kartica</translation>
+<translation id="6869056123412990582">računalu</translation>
 <translation id="6882836635272038266">Standardna zaštita od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasna.</translation>
 <translation id="688738109438487280">Dodavanje postojećih podataka na račun <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Otključajte za kopiranje zaporke</translation>
@@ -1155,6 +1157,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8410695015584479363">Prati cijene</translation>
 <translation id="8413126021676339697">Pokaži cijelu povijest</translation>
+<translation id="8424781820952413435">Stranica je poslana. Da biste je vidjeli, otvorite Chrome na svojem <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Kartica pregleda je poluotvorena</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8438566539970814960">Poboljšajte pretraživanje i pregledavanje</translation>
@@ -1196,6 +1199,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="860282621117673749">Obavijesti o padu cijena</translation>
 <translation id="8616006591992756292">Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Želite li otvoriti predloženi URL naveden u preuzetom sadržaju?</translation>
+<translation id="8621068256433641644">telefonu</translation>
 <translation id="8636825310635137004">Da bi se prikazale kartice s vaših ostalih uređaja, uključite sinkronizaciju.</translation>
 <translation id="8641930654639604085">Pokušaj blokirati web-lokacije za odrasle</translation>
 <translation id="8655129584991699539">Podatke možete izbrisati u postavkama Chromea</translation>

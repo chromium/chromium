@@ -363,6 +363,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1403222014593521787">Nije se moguće povezati s proksi serverom</translation>
 <translation id="1405779994569073824">Došlo je do pada kartice.</translation>
 <translation id="1406500794671479665">Potvrđivanje...</translation>
+<translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="140723521119632973">Aktiviranje mobilne mreže</translation>
 <translation id="1407489512183974736">Sredina s izrezanim rubovima</translation>
@@ -5671,6 +5672,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="729583233778673644">Dozvoli AES i RC4 šifriranje. Korištenjem ove opcije povećavate rizik, jer su RC4 šifre nesigurne.</translation>
 <translation id="729761647156315797">Odaberite jezik i tastaturu</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
+<translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299337219131431707">Omogući pretraživanje za goste</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ova aplikacija bi mogla spriječiti da Chrome ispravno funkcionira.}one{Ove aplikacije bi mogle spriječiti da Chrome ispravno funkcionira.}few{Ove aplikacije bi mogle spriječiti da Chrome ispravno funkcionira.}other{Ove aplikacije bi mogle spriječiti da Chrome ispravno funkcionira.}}</translation>
 <translation id="7303281435234579599">Ups! Došlo je do problema prilikom postavljanja načina rada za demonstraciju.</translation>
@@ -7271,6 +7273,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9026852570893462412">Ovo može potrajati nekoliko minuta. Preuzima se virtualni računar.</translation>
 <translation id="9027459031423301635">Otvori link u novoj kar&amp;tici</translation>
 <translation id="9030515284705930323">Vaša organizacija nije omogućila Trgovinu Google Play za vaš račun. Više informacija zatražite od administratora.</translation>
+<translation id="9030754204056345429">Brže</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Dodatak <ph name="PLUGIN_NAME" /> više nije podržan</translation>
 <translation id="9031549947500880805">Izradite sigurnosne kopije na Google disku. Jednostavno u svakom trenutku vratite svoje podatke ili promijenite uređaj. Vaša sigurnosna kopija obuhvata podatke o aplikacijama.</translation>

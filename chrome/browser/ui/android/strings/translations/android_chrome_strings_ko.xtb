@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
 <translation id="123724288017357924">캐시된 콘텐츠를 무시하고 현재 페이지 새로고침</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> 로드 중</translation>
+<translation id="1242883863226959074">기기</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
@@ -920,6 +921,7 @@
 <translation id="6864459304226931083">이미지 다운로드</translation>
 <translation id="6865313869410766144">양식 데이터 자동 완성</translation>
 <translation id="6867400383614725881">새 시크릿 탭</translation>
+<translation id="6869056123412990582">컴퓨터</translation>
 <translation id="6882836635272038266">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
 <translation id="688738109438487280"><ph name="TO_ACCOUNT" />에 기존 데이터 추가</translation>
 <translation id="6891726759199484455">비밀번호를 복사하려면 잠금 해제하세요</translation>
@@ -1156,6 +1158,7 @@
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8410695015584479363">가격 추적</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
+<translation id="8424781820952413435">페이지를 전송했습니다. <ph name="DEVICE_TYPE" /> 기기에서 Chrome을 열어서 확인하세요.</translation>
 <translation id="8427875596167638501">미리보기 탭이 절반 높이로 열림</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
@@ -1197,6 +1200,7 @@
 <translation id="860282621117673749">가격 인하 알림</translation>
 <translation id="8616006591992756292">Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 사용 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="8617240290563765734">다운로드한 콘텐츠에 지정된 추천 URL을 여시겠습니까?</translation>
+<translation id="8621068256433641644">스마트폰</translation>
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="8641930654639604085">성인용 사이트 차단 시도</translation>
 <translation id="8655129584991699539">Chrome 설정에서 데이터를 삭제할 수 있습니다.</translation>

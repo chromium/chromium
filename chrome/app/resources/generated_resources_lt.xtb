@@ -364,6 +364,7 @@
 <translation id="1403222014593521787">Nepavyko prisijungti prie tarpinio serverio</translation>
 <translation id="1405779994569073824">Užstrigo.</translation>
 <translation id="1406500794671479665">Patvirtinama...</translation>
+<translation id="1407069428457324124">Tamsioji tema</translation>
 <translation id="1407135791313364759">Atidaryti viską</translation>
 <translation id="140723521119632973">Mobiliojo ryšio aktyvinimas</translation>
 <translation id="1407489512183974736">Apkarpytas centre</translation>
@@ -5677,6 +5678,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="729583233778673644">Leisti AES ir RC4 šifruotes. Naudojant šią parinktį padidėja rizika, nes RC4 šifrai nesaugūs.</translation>
 <translation id="729761647156315797">Kalbos ir klaviatūros pasirinkimas</translation>
 <translation id="7297726121602187087">Tamsiai žalia</translation>
+<translation id="7298195798382681320">Rekomenduojama</translation>
 <translation id="7299337219131431707">Įgalinti svečio naršymą</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Gali būti, kad ši programa neleidžia „Chrome“ tinkamai veikti.}one{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}few{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}many{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}other{Gali būti, kad šios programos neleidžia „Chrome“ tinkamai veikti.}}</translation>
 <translation id="7303281435234579599">Oi, nustatant demonstracinį režimą įvyko klaida.</translation>
@@ -7278,6 +7280,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="9026852570893462412">Šis procesas gali užtrukti kelias minutes. Atsisiunčiamas virtualus įrenginys.</translation>
 <translation id="9027459031423301635">Atidaryti nuorodą naujame &amp;skirtuke</translation>
 <translation id="9030515284705930323">Organizacija jūsų paskyroje neįgalino „Google Play“ parduotuvės. Jei reikia daugiau informacijos, susisiekite su administratoriumi.</translation>
+<translation id="9030754204056345429">Greitesnis</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">„<ph name="PLUGIN_NAME" />“ nebepalaikomas</translation>
 <translation id="9031549947500880805">Sukurkite atsarginę kopiją „Google“ diske. Lengvai atkurkite duomenis arba perjunkite įrenginį bet kuriuo metu. Į atsarginę kopiją įtraukiami programų duomenys.</translation>

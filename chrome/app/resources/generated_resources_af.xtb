@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Kan nie aan die instaanbediener koppel nie.</translation>
 <translation id="1405779994569073824">Omgeval.</translation>
 <translation id="1406500794671479665">Verifieer tans …</translation>
+<translation id="1407069428457324124">Donkertema</translation>
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="140723521119632973">Sellulêre aktivering</translation>
 <translation id="1407489512183974736">Middel gesnoei</translation>
@@ -5674,6 +5675,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="729583233778673644">Laat AES- en RC4-enkripsie toe. As jy hierdie opsie gebruik, verhoog dit jou risiko aangesien die RC4-syfers onveilig is.</translation>
 <translation id="729761647156315797">Kies jou taal en sleutelbord</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
+<translation id="7298195798382681320">Aanbevole</translation>
 <translation id="7299337219131431707">Aktiveer Gasblaai</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Hierdie program kan verhoed dat Chrome behoorlik werk.}other{Hierdie programme kan verhoed dat Chrome behoorlik werk.}}</translation>
 <translation id="7303281435234579599">Oeps! Kon nie demonstrasiemodus opstel nie.</translation>
@@ -7271,6 +7273,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="9026852570893462412">Hierdie proses kan 'n paar minute neem. Laai tans die virtuele masjien af.</translation>
 <translation id="9027459031423301635">Maak skakel in nuwe oortjie oop</translation>
 <translation id="9030515284705930323">Jou organisasie het nie Google Play Winkel vir jou rekening geaktiveer nie. Kontak jou administrateur vir meer inligting.</translation>
+<translation id="9030754204056345429">Vinniger</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> word nie meer gesteun nie</translation>
 <translation id="9031549947500880805">Rugsteun in Google Drive. Laai jou data maklik terug of wissel enige tyd jou toestel. Jou rugsteun sluit programdata in.</translation>

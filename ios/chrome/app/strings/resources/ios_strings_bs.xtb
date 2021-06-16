@@ -391,6 +391,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5062321486222145940">Instaliraj Google Disk</translation>
 <translation id="5083464117946352670">Nije moguće utvrditi veličinu fajla.</translation>
 <translation id="5090832849094901128">Brisanjem ove lozinke se neće izbrisati vaš račun na web lokaciji <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Možete sačuvati stranice da ih čitate kasnije ili offline. Chrome će vas pitati želite li sačuvati duge stranice.</translation>
 <translation id="5094827893301452931">Tweet je završen.</translation>
 <translation id="5118764316110575523">Isključeno</translation>
 <translation id="5127805178023152808">Sinkronizacija je isključena</translation>
@@ -757,6 +758,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8548878600947630424">Pronađi na stranici…</translation>
 <translation id="8574235780160508979">Chromeovi Uslovi korištenja usluge će se promijeniti 31. marta. <ph name="BEGIN_LINK" />Pročitajte<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Isključeno</translation>
+<translation id="8590913940444621808">Nikada ne pitaj</translation>
 <translation id="8591976964826315682">Blokiraj kolačiće trećih strana u anonimnom načinu rada</translation>
 <translation id="8605219856220328675">Zatvaranje kartice.</translation>
 <translation id="8620640915598389714">Uredi</translation>

@@ -80,6 +80,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1516740043221086139">Režiim Mitte segada on sees.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Kuvab märguandeseaded. Märguanded on rakenduse jaoks välja lülitatud}other{Kuvab märguandeseaded. Märguanded on # rakenduse jaoks välja lülitatud}}</translation>
 <translation id="1525508553941733066">LOOBU</translation>
+<translation id="1536604384701784949">Konto <ph name="USER_EMAIL_ADDRESS" /> kasutamiseks peate kõigepealt kõikidelt kontodelt välja logima. Väljalogimiseks valige tagasiminekuks nupp Tühista. Seejärel valige aeg, et avada olekuala, ja seejärel valige käsk Logi välja. Lõpuks logige kontole <ph name="USER_EMAIL_ADDRESS_2" /> uuesti sisse.</translation>
 <translation id="15373452373711364">Suur hiirekursor</translation>
 <translation id="1546492247443594934">Töölaud 2</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
@@ -525,6 +526,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5033299697334913360">Täisekraani jäädvustamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ühendati uue telefoniga</translation>
 <translation id="5035389544768382859">Kuva seadistuse kinnitamine</translation>
+<translation id="5039804452771397117">Luba</translation>
 <translation id="504465286040788597">Eelmine lõik</translation>
 <translation id="5071064518267176975">Rakendus soovib mikrofoni kasutada</translation>
 <translation id="5075554201838155866">Alusta subtiitrite kasutamist</translation>
@@ -802,6 +804,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7461924472993315131">Kinnita</translation>
 <translation id="746232733191930409">Ekraanisalvestuse režiim</translation>
 <translation id="7466449121337984263">Puudutage andurit</translation>
+<translation id="7473891865547856676">Tänan, ei</translation>
 <translation id="7477793887173910789">Hallake oma muusikat, videoid ja muud</translation>
 <translation id="7483025031359818980">Valikualaks on määratud täisekraan</translation>
 <translation id="7486227320194954040">Ahenda markeerimistööristade loendit</translation>

@@ -495,9 +495,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="272451190272506600">Raak sensor om te betaal</translation>
 <translation id="2728127805433021124">Bediener se sertifikaat is met 'n swak handtekening-algoritme onderteken.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Voer tans konnektiwiteitdiagnostiek uit<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">As jy hierdie kenmerke aktiveer kan jy blaaierdata verloor of
-    jou sekuriteit of privaatheid kompromitteer. Geaktiveerde kenmerke geld vir alle
-    gebruikers van hierdie blaaier.</translation>
 <translation id="2738330467931008676">Kies oplaaiadres</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Verwyder geselekteerde items</translation>
@@ -2214,6 +2211,7 @@ Bykomende besonderhede:
 <translation id="9128870381267983090">Koppel aan netwerk</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
 <translation id="9141013498910525015">Bestuur adresse</translation>
+<translation id="9144951720726881238">Vervaldatum:</translation>
 <translation id="9148088599418889305">Kies versendingmetode</translation>
 <translation id="9148507642005240123">Ontdoen wysiging</translation>
 <translation id="9150045010208374699">Gebruik jou kamera</translation>

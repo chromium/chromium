@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Otetaanko synkronointi käyttöön?</translation>
 <translation id="123724288017357924">Päivitä nykyinen sivu, ohita välimuistin sisältö</translation>
 <translation id="1240288207750131269">Ladataan: <ph name="LANG" /></translation>
+<translation id="1242883863226959074">laitteella</translation>
 <translation id="124678866338384709">Sulje nykyinen välilehti</translation>
 <translation id="1258753120186372309">Google-piirros: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Jakaminen epäonnistui: <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6864459304226931083">Lataa kuva</translation>
 <translation id="6865313869410766144">Automaattisesti täydennetyt lomaketiedot</translation>
 <translation id="6867400383614725881">Uusi incognito-välilehti</translation>
+<translation id="6869056123412990582">tietokoneella</translation>
 <translation id="6882836635272038266">Perustason suojaus vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan.</translation>
 <translation id="688738109438487280">Lisää olemassa olevat tiedot tilille <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Avaa lukitus kopioidaksesi salasanan</translation>
@@ -1156,6 +1158,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8393700583063109961">Lähetä viesti</translation>
 <translation id="8410695015584479363">Seuraa hintoja</translation>
 <translation id="8413126021676339697">Näytä koko selaushistoria</translation>
+<translation id="8424781820952413435">Sivu lähetetty. Jos haluat nähdä sen, avaa Chrome <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Esikatseluvälilehti on puoliksi auki</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8438566539970814960">Paranna hakuja ja selausta</translation>
@@ -1197,6 +1200,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="860282621117673749">Ilmoitukset hinnanalennuksista</translation>
 <translation id="8616006591992756292">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Avataanko ladatussa sisällössä määritetty ehdotettu URL-osoite?</translation>
+<translation id="8621068256433641644">puhelimella</translation>
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
 <translation id="8641930654639604085">Pyri estämään aikuisille tarkoitetut sivustot</translation>
 <translation id="8655129584991699539">Voit tyhjentää datan Chromen asetuksissa</translation>

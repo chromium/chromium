@@ -80,6 +80,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1516740043221086139">Bezovta qilinmasin rejimi yoniq.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirishnoma sozlamalarini ochish. Ilova uchun bildirishnomalar yoqilmagan}other{Bildirishnoma sozlamalarini ochish. # ta ilova uchun bildirishnomalar yoqilmagan}}</translation>
 <translation id="1525508553941733066">YOPISH</translation>
+<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> hisobidan foydalanish uchun avval barcha hisoblardan chiqing. Hisobdan chiqish uchun Bekor qilish ustiga bosib, ortga qayting. Keyin soatni tanlab, holat panelini oching va Chiqish bandini tanlang. Keyin <ph name="USER_EMAIL_ADDRESS_2" /> hisobiga qaytadan kiring.</translation>
 <translation id="15373452373711364">Sichqonchaning katta kursori</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1550523713251050646">Qo‘shimcha parametrlarni ko‘rish</translation>
@@ -524,6 +525,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5033299697334913360">Butun ekranni tasvirga olish uchun istalgan joyga bosing</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yangi telefonga ulandi</translation>
 <translation id="5035389544768382859">Displey sozlamalarini tasdiqlash</translation>
+<translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="504465286040788597">Avvalgi xatboshi</translation>
 <translation id="5071064518267176975">Ilova mikrofondan foydalanmoqchi</translation>
 <translation id="5075554201838155866">Taglavhalarni chiqarish</translation>
@@ -801,6 +803,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7461924472993315131">Qadab qo‘yish</translation>
 <translation id="746232733191930409">Ekranni yozib olish rejimi</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
+<translation id="7473891865547856676">Yo‘q, rahmat</translation>
 <translation id="7477793887173910789">Multimedia boshqaruvi</translation>
 <translation id="7483025031359818980">Tanlash hududi sifatida butun ekran belgilandi</translation>
 <translation id="7486227320194954040">Marker vositalarini yigʻish</translation>

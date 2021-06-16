@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">क्या सिंक करना चालू करें?</translation>
 <translation id="123724288017357924">कैश सामग्री को अनदेखा कर, मौजूदा पेज फिर लोड करें</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> लोड हो रही है</translation>
+<translation id="1242883863226959074">डिवाइस</translation>
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
@@ -920,6 +921,7 @@
 <translation id="6864459304226931083">इमेज डाउनलोड करें</translation>
 <translation id="6865313869410766144">ऑटोमैटिक भरने वाले फ़ॉर्म का डेटा</translation>
 <translation id="6867400383614725881">नया गुप्त टैब</translation>
+<translation id="6869056123412990582">कंप्यूटर</translation>
 <translation id="6882836635272038266">उन वेबसाइटों, डाउनलोड, और एक्सटेंशन से मानक सुरक्षा जो नुकसान पहुंचा सकते हैं.</translation>
 <translation id="688738109438487280">मौजूदा डेटा <ph name="TO_ACCOUNT" /> में जोड़ें.</translation>
 <translation id="6891726759199484455">अपना पासवर्ड कॉपी करने के लिए अनलॉक करें</translation>
@@ -1156,6 +1158,7 @@
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8410695015584479363">कीमतें ट्रैक करें</translation>
 <translation id="8413126021676339697">पूरा इतिहास दिखाएं</translation>
+<translation id="8424781820952413435">पेज भेजा गया. इसे देखने के लिए, अपने <ph name="DEVICE_TYPE" /> पर Chrome खोलें</translation>
 <translation id="8427875596167638501">'झलक' टैब आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8438566539970814960">खोजों और ब्राउज़िंग को बेहतर बनाएं</translation>
@@ -1197,6 +1200,7 @@
 <translation id="860282621117673749">कीमत में कमी की सूचनाएं</translation>
 <translation id="8616006591992756292">आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="8617240290563765734">सुझाया गया वह URL खोलें जिसे डाउनलोड की गई सामग्री में बताया गया है?</translation>
+<translation id="8621068256433641644">फ़ोन</translation>
 <translation id="8636825310635137004">अपने अन्य डिवाइस से अपने टैब पाने के लिए, सिंक करना चालू करें.</translation>
 <translation id="8641930654639604085">वयस्क साइटें ब्लॉक करने की कोशिश करें</translation>
 <translation id="8655129584991699539">आप 'Chrome सेटिंग' में डेटा हटा सकते हैं</translation>

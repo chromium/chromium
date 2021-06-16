@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Välityspalvelimeen ei saada yhteyttä</translation>
 <translation id="1405779994569073824">Kaatui</translation>
 <translation id="1406500794671479665">Vahvistetaan...</translation>
+<translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1407135791313364759">Avaa kaikki</translation>
 <translation id="140723521119632973">Mobiiliyhteyden aktivointi</translation>
 <translation id="1407489512183974736">Rajaa keskelle</translation>
@@ -5669,6 +5670,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="729583233778673644">Salli AES- ja RC4-salaus. Tämä valinta lisää riskejä, koska RC4-salaustekniikat ovat suojaamattomia.</translation>
 <translation id="729761647156315797">Valitse näppäimistö ja kieli</translation>
 <translation id="7297726121602187087">Tummanvihreä</translation>
+<translation id="7298195798382681320">Suositus</translation>
 <translation id="7299337219131431707">Ota vierailijaselaus käyttöön</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Tämä sovellus saattaa estää Chromea toimimasta oikein}other{Nämä sovellukset saattavat estää Chromea toimimasta oikein}}</translation>
 <translation id="7303281435234579599">Hups, jotain meni vikaan esittelytilan määrityksessä.</translation>
@@ -7266,6 +7268,7 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="9026852570893462412">Tämä voi kestää muutaman minuutin. Ladataan virtuaalikonetta.</translation>
 <translation id="9027459031423301635">Avaa linkki uudessa &amp;välilehdessä</translation>
 <translation id="9030515284705930323">Organisaatiosi ei ole sallinut tilillesi Google Play Kaupan käyttöä. Kysy lisätietoja järjestelmänvalvojaltasi.</translation>
+<translation id="9030754204056345429">Nopeampi</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> ei ole enää tuettu</translation>
 <translation id="9031549947500880805">Varmuuskopioi Google Driveen. Palauta tietosi tai ota uusi laite käyttöön kätevästi milloin tahansa. Varmuuskopio sisältää sovellusdataa.</translation>

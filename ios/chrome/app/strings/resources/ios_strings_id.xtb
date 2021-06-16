@@ -391,6 +391,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5062321486222145940">Instal Google Drive</translation>
 <translation id="5083464117946352670">Tidak dapat menentukan ukuran file.</translation>
 <translation id="5090832849094901128">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Anda dapat menyimpan halaman untuk dibaca nanti atau saat offline. Chrome akan menanyakan apakah Anda ingin menyimpan halaman panjang.</translation>
 <translation id="5094827893301452931">Tweet selesai.</translation>
 <translation id="5118764316110575523">Nonaktif</translation>
 <translation id="5127805178023152808">Sinkronisasi nonaktif</translation>
@@ -757,6 +758,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8548878600947630424">Cari di halaman...</translation>
 <translation id="8574235780160508979">Persyaratan Layanan Chrome akan berubah pada 31 Maret. <ph name="BEGIN_LINK" />Harap tinjau<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Nonaktif</translation>
+<translation id="8590913940444621808">Jangan Tanya</translation>
 <translation id="8591976964826315682">Blokir Cookie Pihak Ketiga dalam Mode Samaran</translation>
 <translation id="8605219856220328675">Tutup tab.</translation>
 <translation id="8620640915598389714">Edit</translation>

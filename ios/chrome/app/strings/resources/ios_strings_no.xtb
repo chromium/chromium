@@ -391,6 +391,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5062321486222145940">Installer Google Disk</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelsen.</translation>
 <translation id="5090832849094901128">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Du kan lagre sider for å lese dem senere eller uten nett. Chrome kommer til å spørre om du vil lagre lange sider.</translation>
 <translation id="5094827893301452931">Twitter-meldingen er fullført.</translation>
 <translation id="5118764316110575523">Av</translation>
 <translation id="5127805178023152808">Synkronisering er slått av</translation>
@@ -757,6 +758,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8548878600947630424">Finn på siden</translation>
 <translation id="8574235780160508979">Vilkårene for bruk av Chrome endres 31. mars. <ph name="BEGIN_LINK" />Les gjennom dem<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Av</translation>
+<translation id="8590913940444621808">Spør aldri</translation>
 <translation id="8591976964826315682">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="8605219856220328675">Lukk fanen.</translation>
 <translation id="8620640915598389714">Endre</translation>

@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Bekapcsolja a szinkronizálást?</translation>
 <translation id="123724288017357924">Oldal újratöltése a gyorsítótárat figyelmen kívül hagyva</translation>
 <translation id="1240288207750131269">Betöltés: <ph name="LANG" /></translation>
+<translation id="1242883863226959074">eszközén</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1258753120186372309">Google ünnepi embléma: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
@@ -920,6 +921,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6864459304226931083">Kép letöltése</translation>
 <translation id="6865313869410766144">Automatikus kitöltési űrlapadatok</translation>
 <translation id="6867400383614725881">Új inkognitó lap</translation>
+<translation id="6869056123412990582">számítógépén</translation>
 <translation id="6882836635272038266">Normál védelem azon webhelyekkel, letöltésekkel és bővítményekkel szemben, amelyekről ismert, hogy veszélyesek.</translation>
 <translation id="688738109438487280">Meglévő adatok hozzáadása a(z) <ph name="TO_ACCOUNT" /> fiókhoz.</translation>
 <translation id="6891726759199484455">Oldja fel a képernyőzárat a jelszó másolásához</translation>
@@ -1156,6 +1158,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8393700583063109961">Üzenet küldése</translation>
 <translation id="8410695015584479363">Árak nyomon követése</translation>
 <translation id="8413126021676339697">Az összes előzmény</translation>
+<translation id="8424781820952413435">Oldal elküldve. Megtekintéséhez nyissa meg a Chrome-ot <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Félmagasságban megnyitott előnézeti ablak</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8438566539970814960">Keresések és böngészés javítása</translation>
@@ -1197,6 +1200,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="860282621117673749">Árcsökkenési értesítések</translation>
 <translation id="8616006591992756292">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen.</translation>
 <translation id="8617240290563765734">Megnyitja a letöltött tartalomban szereplő javasolt URL-t?</translation>
+<translation id="8621068256433641644">telefonján</translation>
 <translation id="8636825310635137004">Ha a többi eszközén is szeretné elérni lapjait, kapcsolja be a szinkronizálást</translation>
 <translation id="8641930654639604085">Felnőtteknek szóló webhelyek letiltásának megkísérlése</translation>
 <translation id="8655129584991699539">Az adatokat a Chrome beállításaiban módosíthatja</translation>

@@ -361,6 +361,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1403222014593521787">Nie udało się nawiązać połączenia z serwerem proxy</translation>
 <translation id="1405779994569073824">Awaria</translation>
 <translation id="1406500794671479665">Weryfikuję...</translation>
+<translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="140723521119632973">Aktywowanie sieci komórkowej</translation>
 <translation id="1407489512183974736">Wyśrodkuj i przytnij</translation>
@@ -5651,6 +5652,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="729583233778673644">Zezwala na szyfrowanie AES i RC4. Używanie tej opcji jest ryzykowne, ponieważ szyfrowanie RC4 nie zapewnia bezpieczeństwa.</translation>
 <translation id="729761647156315797">Wybierz język i klawiaturę</translation>
 <translation id="7297726121602187087">Ciemnozielony</translation>
+<translation id="7298195798382681320">Zalecane</translation>
 <translation id="7299337219131431707">Zezwalaj na logowanie jako gość</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ta aplikacja może uniemożliwiać prawidłowe działanie Chrome.}few{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}many{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}other{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}}</translation>
 <translation id="7303281435234579599">Ups! Podczas konfigurowania trybu demonstracyjnego coś poszło nie tak.</translation>
@@ -7251,6 +7253,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9026852570893462412">Może to potrwać kilka minut. Pobieram maszynę wirtualną.</translation>
 <translation id="9027459031423301635">Otwórz link w nowej &amp;karcie</translation>
 <translation id="9030515284705930323">Twoja organizacja nie włączyła Sklepu Google Play dla Twojego konta. Aby uzyskać więcej informacji, skontaktuj się z administratorem.</translation>
+<translation id="9030754204056345429">Szybciej</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Wtyczka <ph name="PLUGIN_NAME" /> nie jest już obsługiwana.</translation>
 <translation id="9031549947500880805">Twórz kopie zapasowe na Dysku Google. W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji.</translation>

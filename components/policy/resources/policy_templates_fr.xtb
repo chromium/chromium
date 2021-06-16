@@ -81,6 +81,7 @@
 <translation id="1082802595100075771">Laisser les utilisateurs choisir s'ils veulent employer un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="1087437665304381368">Cette règle permet de ne contrôler que le mode développeur <ph name="PRODUCT_OS_NAME" />. Si vous voulez bloquer l'accès aux options pour les développeurs Android, vous devez définir la règle <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La liste des règles Chrome Enterprise a changé d'adresse ! Pensez à mettre à jour vos favoris. Le lien correct est le suivant : <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
+<translation id="1089631008765417531">Autoriser les applis Web installées d'office à interroger les attributs des appareils.</translation>
 <translation id="1095209545735032039">Bloquer l'API Serial sur ces sites</translation>
 <translation id="1096105751829466145">Moteur de recherche par défaut</translation>
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
@@ -570,6 +571,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Remarque : La valeur de cette règle doit être comprise entre 0 et 100 %.</translation>
 <translation id="1736269219679256369">Autoriser la poursuite de la navigation depuis une page d'avertissement SSL</translation>
+<translation id="173993509627303617">Empêcher les applis Web installées d'office d'interroger les attributs des appareils.</translation>
 <translation id="174765717426930019">Autoriser tous les pop-ups avec une cible "<ph name="BLANK_PAGE_NAME" />" à interagir avec la page sur laquelle ils ont été ouverts, sauf si celle-ci interdit explicitement ce type d'interaction </translation>
 <translation id="1750315445671978749">Bloquer tous les téléchargements</translation>
 <translation id="1751429117283165017">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs un accès en écriture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte.
@@ -929,6 +931,17 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si vous définissez <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> sur "1", seules les variantes considérées comme des correctifs essentiels de sécurité ou de stabilité peuvent être appliquées à <ph name="PRODUCT_OS_NAME" />.
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur sur l'écran de connexion. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_OS_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
+<translation id="2216380260552785166">Cette règle contrôle la façon dont <ph name="PRODUCT_NAME" /> interprète les règles des listes grises/de sites pour la fonctionnalité Legacy Browser Support. Cela concerne ces règles : <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Si la valeur est définie sur "Par défaut" (0) ou n'est pas spécifiée, la correspondance d'URL est moins stricte. Les règles qui n'incluent pas "/" recherchent une sous-chaîne dans le nom d'hôte de l'URL.
+
+      Si la valeur est définie sur "Strict" (1), la correspondance d'URL est plus stricte. Les règles qui n'incluent pas "/" n'établissent une correspondance qu'avec la fin du nom d'hôte. Elles doivent être associées à la limite d'un nom de domaine. La compatibilité est meilleure avec <ph name="MS_IE_PRODUCT_NAME" /> et <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Par exemple, pour la règle "example.com" :
+
+      "http://example.com/" et "http://subdomain.example.com/" correspondent, quel que soit le mode d'analyse.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" et "http://example.comabc/" correspondent uniquement en mode "Par défaut".</translation>
 <translation id="2221850122314326571">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
       Lorsque ce paramètre est désactivé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme.
       Lorsque ce paramètre n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.
@@ -2165,6 +2178,13 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Pour en savoir plus sur les sessions <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, veuillez consulter la spécification <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Paramètres de gestion de l'alimentation en cas d'inactivité de l'utilisateur</translation>
+<translation id="3789468269499404556">Lorsqu'elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> envoie des en-têtes de requête précis qui fournissent des infos sur le navigateur et l'environnement de l'utilisateur.
+
+      Cette fonctionnalité est complémentaire. Toutefois, les nouveaux en-têtes peuvent entraîner un dysfonctionnement de certains sites qui appliquent des restrictions concernant les caractères que peuvent contenir les requêtes.
+
+      Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité <ph name="PRODUCT_NAME" /> est activée. Si cette règle est désactivée, la fonctionnalité n'est pas disponible.
+
+      Elle permet d'assurer la transition à court terme et sera supprimée de la version 94 de Chrome.</translation>
 <translation id="3790085888761753785">Si ce paramètre est activé, les utilisateurs seront autorisés à se connecter à leur compte avec Smart Lock. Ce paramètre est plus permissif que le comportement normal de Smart Lock qui permet seulement aux utilisateurs de déverrouiller leur écran.
 
       Si ce paramètre est désactivé, les utilisateurs ne seront pas autorisés à se connecter avec Smart Lock.
@@ -2520,6 +2540,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
 
       Sous <ph name="MS_WIN_NAME" />, cette fonctionnalité n'est disponible que sur les instances jointes à un domaine <ph name="MS_AD_NAME" />, s'exécutant sous Windows 10 Pro ou bénéficiant de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou jointes à un domaine via MCX.</translation>
+<translation id="4268586991084547853">Davantage compatible avec les listes des sites Microsoft IE/Edge en mode Entreprise.</translation>
 <translation id="4269859918103560644">Laisser l'utilisateur décider</translation>
 <translation id="4274691295133617461">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès en lecture aux fichiers et répertoires qui figurent dans le système de fichiers du système d'exploitation hôte via l'API File System. Si cette règle est définie sur "2", l'accès est refusé.
 
@@ -2750,6 +2771,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       * Lorsque le filtre <ph name="FILTER_PLACEHOLDER" /> est défini sur <ph name="EMPTY_DICTIONARY" />, la sélection de certificats client ne fait pas l'objet de restrictions supplémentaires. Notez que les filtres fournis par le serveur Web restent appliqués.
 
       Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
+<translation id="4615003180013429835">Mode d'analyse de la liste des sites</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="4625915093043961294">Configurer la liste blanche d'installation des extensions</translation>
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
@@ -3433,6 +3455,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5535973522252703021">Liste blanche des serveurs de délégation Kerberos</translation>
 <translation id="553806128266843748">Indicateur booléen spécifiant si la limitation est activée.</translation>
 <translation id="5540885720415375851">Autoriser la détection des appareils en local</translation>
+<translation id="5541621819310532773">La configuration de cette règle autorise les applis Web installées d'office à obtenir les attributs des appareils (par ex. : numéro de série, nom d'hôte) à l'aide de l'API Web des attributs d'appareils.
+
+      Si cette règle est définie sur "True" ou si elle n'est pas configurée, elle autorisera les applis Web installées d'office à utiliser l'API Web des attributs d'appareils.
+
+      Si cette règle est définie sur "False", elle les empêchera d'utiliser cette API.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Activer le contraste élevé sur l'écran de connexion</translation>
 <translation id="555077880566103058">Autoriser tous les sites à exécuter le plug-in "<ph name="FLASH_PLUGIN_NAME" />" automatiquement</translation>
@@ -4070,6 +4097,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottant ne sera jamais affiché.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" /> :</translation>
 <translation id="6424486395812679373">Procéder aux vérifications de la navigation sécurisée pour tous les fichiers téléchargés</translation>
+<translation id="6436052172226685535">Comportement par défaut de LBS.</translation>
 <translation id="6438364096042399634">Permet d'établir la liste des appareils USB que les utilisateurs peuvent dissocier de leur pilote de noyau pour s'en servir via l'API chrome.usb directement au sein d'une application Web. Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un code produit associé à un appareil spécifique.
 
       Si cette règle n'est pas configurée, la liste des appareils USB amovibles est vide.
@@ -4569,6 +4597,11 @@ Si vous sélectionnez les options suivantes :
 <translation id="69525503251220566">Paramètre qui active la fonctionnalité de recherche par image pour le moteur de recherche par défaut</translation>
 <translation id="6953102253399571439">Activer l'impression par code définie par défaut</translation>
 <translation id="6956272732789158625">Interdire à tous les sites d'utiliser la génération de clé</translation>
+<translation id="6959021201443139119">Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies définis sur les domaines correspondant à ces formats. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. De plus, ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Enfin, les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour une description complète, accédez à https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+
+          Pour les cookies sur des domaines autres que ceux représentés par les formats spécifiés ici, ou pour tous les cookies si cette règle n'est pas configurée, la valeur globale par défaut sera définie à partir de la configuration personnelle de l'utilisateur.
+
+          Les formats que vous répertoriez ici sont traités comme des domaines et non des URL. Vous ne devez donc pas spécifier de schéma ni de port.</translation>
 <translation id="6961602002757991199">Si cette règle est définie sur une URL valide, <ph name="PRODUCT_NAME" /> télécharge la liste des sites à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Ces instructions empêchent <ph name="PRODUCT_NAME" /> et le navigateur secondaire de s'ouvrir l'un l'autre.
 
       Si cette règle n'est pas configurée ou qu'elle est définie sur une URL non valide, <ph name="PRODUCT_NAME" /> n'utilise pas cette règle comme source d'instructions pour ne pas changer de navigateur.

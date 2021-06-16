@@ -362,6 +362,7 @@
 <translation id="1403222014593521787">প্রক্সিতে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="1405779994569073824">ক্র্যাশ করেছে।</translation>
 <translation id="1406500794671479665">যাচাই করা হচ্ছে...</translation>
+<translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="140723521119632973">সেলুলার চালু করা</translation>
 <translation id="1407489512183974736">মাঝ খান থেকে ক্রপ করা</translation>
@@ -5665,6 +5666,7 @@
 <translation id="729583233778673644">AES এবং RC4 এনক্রিপশন অনুমতি দিন। এই বিকল্পটির ব্যবহার ঝুঁকি বাড়ায় কারণ RC4 সাইফারটি নিরাপদ নয়।</translation>
 <translation id="729761647156315797">আপনার ভাষা ও কীবোর্ড বেছে নিন</translation>
 <translation id="7297726121602187087">গাঢ় সবুজ</translation>
+<translation id="7298195798382681320">প্রস্তাবিত</translation>
 <translation id="7299337219131431707">গেস্ট ব্রাউজিং চালু করুন</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{এই অ্যাপ্লিকেশনটি Chrome-কে সঠিকভাবে কাজ করতে বাধা দিতে পারে।}one{এই অ্যাপ্লিকেশনগুলি Chrome-কে সঠিকভাবে কাজ করতে বাধা দিতে পারে।}other{এই অ্যাপ্লিকেশনগুলি Chrome-কে সঠিকভাবে কাজ করতে বাধা দিতে পারে।}}</translation>
 <translation id="7303281435234579599">ডেমো মোড সেট-আপ করার সময় কোনও সমস্যা হয়েছে।</translation>
@@ -7258,6 +7260,7 @@
 <translation id="9026852570893462412">এতে কয়েক মিনিট সময় লাগতে পারে। ভার্চুয়াল মেশিন ডাউনলোড হচ্ছে।</translation>
 <translation id="9027459031423301635">নতুন ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="9030515284705930323">আপনার প্রতিষ্ঠান আপনার অ্যাকাউন্টের জন্য Google Play স্টোর চালু করেনি। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
+<translation id="9030754204056345429">আরও দ্রুত</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> আর কাজ করে না</translation>
 <translation id="9031549947500880805">Google Drive-এ ব্যাক-আপ নিন। যেকোনও সময় সহজেই ডেটা রিস্টোর করুন অথবা অন্য ডিভাইস ব্যবহার করুন। আপনার ব্যাক-আপে অ্যাপ ডেটা থাকে।</translation>

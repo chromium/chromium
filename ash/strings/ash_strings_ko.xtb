@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">방해 금지 모드가 사용 설정되어 있습니다.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{알림 설정을 표시합니다. 앱 1개의 알림이 사용 중지되어 있습니다.}other{알림 설정을 표시합니다. 앱 #개의 알림이 사용 중지되어 있습니다.}}</translation>
 <translation id="1525508553941733066">닫기</translation>
+<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> 계정을 사용하려면 모든 계정에서 로그아웃해야 합니다. 로그아웃하려면 취소를 선택하여 뒤로 돌아가세요. 그런 다음 시간을 선택하여 상태 영역을 열고 로그아웃을 선택합니다. 그리고 <ph name="USER_EMAIL_ADDRESS_2" /> 계정으로 로그인하면 됩니다.</translation>
 <translation id="15373452373711364">큰 마우스 커서</translation>
 <translation id="1546492247443594934">데스크 2</translation>
 <translation id="1550523713251050646">더 많은 옵션을 확인하려면 클릭하세요.</translation>
@@ -524,6 +525,7 @@
 <translation id="5033299697334913360">전체 화면을 캡처하려면 아무 곳이나 클릭하세요</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />이(가) 새 휴대전화에 연결되었습니다.</translation>
 <translation id="5035389544768382859">화면 구성 확인</translation>
+<translation id="5039804452771397117">허용</translation>
 <translation id="504465286040788597">이전 단락</translation>
 <translation id="5071064518267176975">앱에서 마이크를 사용하려고 함</translation>
 <translation id="5075554201838155866">자막 사용</translation>
@@ -801,6 +803,7 @@
 <translation id="7461924472993315131">고정</translation>
 <translation id="746232733191930409">화면 녹화 모드</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
+<translation id="7473891865547856676">건너뛰기</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
 <translation id="7483025031359818980">선택 영역이 전체 화면으로 설정됨</translation>
 <translation id="7486227320194954040">마커 도구 접기</translation>

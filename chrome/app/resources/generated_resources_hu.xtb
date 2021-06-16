@@ -361,6 +361,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1403222014593521787">A proxyhoz való kapcsolódás sikertelen</translation>
 <translation id="1405779994569073824">Összeomlott.</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
+<translation id="1407069428457324124">Sötét téma</translation>
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="140723521119632973">Mobilhálózati aktiválás</translation>
 <translation id="1407489512183974736">Középre, levágva</translation>
@@ -5672,6 +5673,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="729583233778673644">Az AES és RC4 titkosítás engedélyezése. A beállítás használata növeli a kockázatot, mivel az RC4-kódok nem biztonságosak.</translation>
 <translation id="729761647156315797">Nyelv és billentyűzet kiválasztása</translation>
 <translation id="7297726121602187087">Sötétzöld</translation>
+<translation id="7298195798382681320">Ajánlott</translation>
 <translation id="7299337219131431707">Vendégként való böngészés engedélyezése</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ez az alkalmazás megakadályozhatja a Chrome megfelelő működését.}other{Ezek az alkalmazások megakadályozhatják a Chrome megfelelő működését.}}</translation>
 <translation id="7303281435234579599">Hoppá! Valami nem sikerült a demó mód beállítása során.</translation>
@@ -7269,6 +7271,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9026852570893462412">Ez a folyamat néhány percet is igénybe vehet. A virtuális gép letöltése folyamatban van.</translation>
 <translation id="9027459031423301635">Link megnyitása új &amp;lapon</translation>
 <translation id="9030515284705930323">Szervezete még nem engedélyezte a Google Play Áruház szolgáltatást a fiókjánál. További tájékoztatásért forduljon rendszergazdájához.</translation>
+<translation id="9030754204056345429">Gyorsabb</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">A(z) <ph name="PLUGIN_NAME" /> érték már nem támogatott</translation>
 <translation id="9031549947500880805">Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági másolat tartalmazza az alkalmazásadatokat.</translation>

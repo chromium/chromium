@@ -391,6 +391,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5062321486222145940">Installer Google Disque</translation>
 <translation id="5083464117946352670">Imposs. déterm. taille fichier</translation>
 <translation id="5090832849094901128">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Vous pouvez enregistrer des pages afin de les lire plus tard ou de les lire hors ligne. Chrome vous demandera si vous voulez enregistrer les longues pages.</translation>
 <translation id="5094827893301452931">Gazouillis terminé.</translation>
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5127805178023152808">La synchronisation est désactivée</translation>
@@ -757,6 +758,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8548878600947630424">Rechercher sur la page…</translation>
 <translation id="8574235780160508979">Les conditions d'utilisation de Chrome changeront le 31 mars. <ph name="BEGIN_LINK" />Veuillez les consulter<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Désactivée</translation>
+<translation id="8590913940444621808">Ne jamais demander</translation>
 <translation id="8591976964826315682">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="8605219856220328675">Fermer l'onglet.</translation>
 <translation id="8620640915598389714">Modifier</translation>

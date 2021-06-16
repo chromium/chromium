@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Povezivanje sa proksijem nije uspelo</translation>
 <translation id="1405779994569073824">Kartica je otkazala.</translation>
 <translation id="1406500794671479665">Verifikovanje...</translation>
+<translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="140723521119632973">Mobilna aktivacija</translation>
 <translation id="1407489512183974736">Opseci centralno</translation>
@@ -5654,6 +5655,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="729583233778673644">Dozvoljava AES i RC4 šifrovanje. Korišćenje ove opcije vas izlaže većem riziku jer su RC4 šifre nebezbedne.</translation>
 <translation id="729761647156315797">Izaberite jezik i tastaturu</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
+<translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299337219131431707">Omogući režim gosta</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ova aplikacija bi mogla da ometa pravilno funkcionisanje Chrome-a.}one{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}few{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}other{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}}</translation>
 <translation id="7303281435234579599">Ups! Došlo je do problema pri podešavanju režima demonstracije.</translation>
@@ -7253,6 +7255,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="9026852570893462412">Ovo može da potraje par minuta. Preuzima se virtuelna mašina.</translation>
 <translation id="9027459031423301635">Otvori link u novoj &amp;kartici</translation>
 <translation id="9030515284705930323">Organizacija nije omogućila Google Play prodavnicu za nalog. Kontaktirajte administratora za više informacija.</translation>
+<translation id="9030754204056345429">Brže</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Dodatna komponenta <ph name="PLUGIN_NAME" /> više nije podržana.</translation>
 <translation id="9031549947500880805">Pravite rezervne kopije na Google disku. Lako vratite podatke ili pređite na drugi uređaj u bilo kom trenutku. Rezervna kopija obuhvata podatke aplikacija.</translation>

@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ 1 แอป}other{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ # แอป}}</translation>
 <translation id="1525508553941733066">ปิด</translation>
+<translation id="1536604384701784949">คุณจะต้องออกจากระบบบัญชีทั้งหมดก่อนเพื่อใช้ <ph name="USER_EMAIL_ADDRESS" /> หากต้องการออกจากระบบ ให้เลือก "ยกเลิก" เพื่อย้อนกลับ เลือกเวลาเพื่อเปิดพื้นที่แสดงสถานะ แล้วเลือก "ออกจากระบบ" จากนั้นลงชื่อเข้าใช้ <ph name="USER_EMAIL_ADDRESS_2" /> อีกครั้ง</translation>
 <translation id="15373452373711364">เคอร์เซอร์เมาส์ขนาดใหญ่</translation>
 <translation id="1546492247443594934">เดสก์ที่ 2</translation>
 <translation id="1550523713251050646">คลิกเพื่อดูตัวเลือกเพิ่มเติม</translation>
@@ -524,6 +525,7 @@
 <translation id="5033299697334913360">คลิกที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> เชื่อมต่อโทรศัพท์เครื่องใหม่แล้ว</translation>
 <translation id="5035389544768382859">ยืนยันการกำหนดค่าจอแสดงผล</translation>
+<translation id="5039804452771397117">อนุญาต</translation>
 <translation id="504465286040788597">ย่อหน้าก่อนหน้า</translation>
 <translation id="5071064518267176975">แอปหนึ่งต้องการใช้ไมโครโฟน</translation>
 <translation id="5075554201838155866">เริ่มคำอธิบายภาพ</translation>
@@ -801,6 +803,7 @@
 <translation id="7461924472993315131">ตรึง</translation>
 <translation id="746232733191930409">โหมดบันทึกหน้าจอ</translation>
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
+<translation id="7473891865547856676">ไม่ ขอบคุณ</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
 <translation id="7483025031359818980">กำหนดพื้นที่สำหรับการเลือกเป็นเต็มหน้าจอ</translation>
 <translation id="7486227320194954040">ยุบเครื่องมือทำเครื่องหมาย</translation>

@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">No se ha podido establecer conexión con el proxy</translation>
 <translation id="1405779994569073824">Error.</translation>
 <translation id="1406500794671479665">Verificando...</translation>
+<translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Activación de datos móviles</translation>
 <translation id="1407489512183974736">Centrar imagen recortada</translation>
@@ -5656,6 +5657,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="729583233778673644">Permite los cifrados AES y RC4. Esta opción aumenta el riesgo, ya que los algoritmos de cifrado de RC4 no son seguros.</translation>
 <translation id="729761647156315797">Selecciona el idioma y el teclado</translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
+<translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299337219131431707">Habilitar navegación como invitado</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Esta aplicación puede impedir que Chrome funcione correctamente.}other{Estas aplicaciones pueden impedir que Chrome funcione correctamente.}}</translation>
 <translation id="7303281435234579599">¡Vaya! Se ha producido un error inesperado al configurar el modo de demostración.</translation>
@@ -7254,6 +7256,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9026852570893462412">Descargando la máquina virtual. Este proceso puede tardar unos minutos.</translation>
 <translation id="9027459031423301635">Abrir enlace en una &amp;pestaña nueva</translation>
 <translation id="9030515284705930323">Tu organización no ha habilitado Google Play Store en tu cuenta. Ponte en contacto con el administrador para obtener más información.</translation>
+<translation id="9030754204056345429">Más rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> ya no está disponible</translation>
 <translation id="9031549947500880805">Crea copias de seguridad en Google Drive. Recupera tus datos de forma sencilla o cambia de dispositivo en cualquier momento. La copia de seguridad también incluye datos de las aplicaciones.</translation>

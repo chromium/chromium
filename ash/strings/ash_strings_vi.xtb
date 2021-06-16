@@ -80,6 +80,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1516740043221086139">Chế độ Không làm phiền đang bật.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho một ứng dụng}other{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho # ứng dụng}}</translation>
 <translation id="1525508553941733066">LOẠI BỎ</translation>
+<translation id="1536604384701784949">Để sử dụng <ph name="USER_EMAIL_ADDRESS" />, trước tiên bạn cần đăng xuất khỏi tất cả tài khoản. Để đăng xuất, hãy chọn Huỷ để quay lại. Tiếp theo, hãy chọn thời gian để mở khu vực trạng thái rồi chọn Đăng xuất. Sau đó, hãy đăng nhập lại vào <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Con trỏ chuột lớn</translation>
 <translation id="1546492247443594934">Không gian làm việc 2</translation>
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
@@ -524,6 +525,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5033299697334913360">Nhấp vào bất cứ đâu để chụp toàn màn hình</translation>
 <translation id="5035236842988137213">Đã kết nối <ph name="DEVICE_NAME" /> với một điện thoại mới</translation>
 <translation id="5035389544768382859">Xác nhận cấu hình của màn hình</translation>
+<translation id="5039804452771397117">Cho phép</translation>
 <translation id="504465286040788597">Đoạn trước</translation>
 <translation id="5071064518267176975">Một ứng dụng muốn dùng micrô</translation>
 <translation id="5075554201838155866">Bắt đầu phụ đề</translation>
@@ -801,6 +803,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7461924472993315131">Ghim</translation>
 <translation id="746232733191930409">Chế độ ghi màn hình</translation>
 <translation id="7466449121337984263">Vui lòng chạm vào cảm biến</translation>
+<translation id="7473891865547856676">Không, cảm ơn</translation>
 <translation id="7477793887173910789">Điều khiển nhạc, video và nhiều nội dung khác</translation>
 <translation id="7483025031359818980">Đã đặt vùng chọn thành toàn màn hình</translation>
 <translation id="7486227320194954040">Thu gọn công cụ đánh dấu</translation>

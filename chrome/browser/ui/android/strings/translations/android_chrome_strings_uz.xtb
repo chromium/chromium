@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Sinxronizatsiya yoqilsinmi?</translation>
 <translation id="123724288017357924">Keshga yuklangan ma’lumotlarsiz sahifani qayta yuklang.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yuklanmoqda</translation>
+<translation id="1242883863226959074">qurilma</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1258753120186372309">Google-dudl: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
@@ -920,6 +921,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6864459304226931083">Rasmni yuklab olish</translation>
 <translation id="6865313869410766144">Avtomatik to‘ldirish ma’lumotlari</translation>
 <translation id="6867400383614725881">Yangi inkognito varaq</translation>
+<translation id="6869056123412990582">kompyuter</translation>
 <translation id="6882836635272038266">Zararli deb hisoblangan sayt, yuklanma va kengaytmalarga qarshi standart himoya</translation>
 <translation id="688738109438487280">Mavjud ma’lumotlarni <ph name="TO_ACCOUNT" /> hisobiga qo‘shadi.</translation>
 <translation id="6891726759199484455">Paroldan nusxa olish uchun qulfni oching</translation>
@@ -1156,6 +1158,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8393700583063109961">Xabar yuborish</translation>
 <translation id="8410695015584479363">Narxlarni kuzatish</translation>
 <translation id="8413126021676339697">Barcha tarixni ko‘rsatish</translation>
+<translation id="8424781820952413435">Sahifa yuborildi. Uni koʻrish uchun <ph name="DEVICE_TYPE" />da Chrome brauzerini oching</translation>
 <translation id="8427875596167638501">Razm solish sahifasi yarim hajmda ochildi</translation>
 <translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="8438566539970814960">Sahifalarni kezish va qidiruvni yaxshilash</translation>
@@ -1197,6 +1200,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="860282621117673749">Narx tushishi signallari</translation>
 <translation id="8616006591992756292">Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
 <translation id="8617240290563765734">Yuklab olingan kontent taklif qilgan URL manzil ochilsinmi?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Boshqa qurilmalaringizdagi brauzer sahifalarini ko‘rish uchun sinxronizatsiyani yoqing.</translation>
 <translation id="8641930654639604085">Kattalar uchun mo‘ljallangan saytlar bloklansin</translation>
 <translation id="8655129584991699539">Maʼlumotlarni Chrome sozlamalaridan tozalashingiz mumkin</translation>

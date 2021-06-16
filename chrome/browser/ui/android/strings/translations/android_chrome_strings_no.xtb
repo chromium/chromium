@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Vil du slå på synkronisering?</translation>
 <translation id="123724288017357924">Last inn siden på nytt, men ignorer bufret innhold</translation>
 <translation id="1240288207750131269">Laster inn <ph name="LANG" /></translation>
+<translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Kunne ikke dele <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6864459304226931083">Last ned bildet</translation>
 <translation id="6865313869410766144">Skjemadata lagret med autofyll</translation>
 <translation id="6867400383614725881">Ny inkognitofane</translation>
+<translation id="6869056123412990582">datamaskin</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="688738109438487280">Legg til eksisterende data i <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Lås opp for å kopiere passordet ditt</translation>
@@ -1156,6 +1158,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8393700583063109961">Send melding</translation>
 <translation id="8410695015584479363">Spor priser</translation>
 <translation id="8413126021676339697">Vis fullstendig logg</translation>
+<translation id="8424781820952413435">Siden er sendt. For å se den, åpne Chrome på <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Fanen for forhåndsvisning er halvveis åpnet</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
@@ -1197,6 +1200,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="860282621117673749">Varsler om avslag</translation>
 <translation id="8616006591992756292">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Vil du åpne den foreslåtte nettadressen som er spesifisert i det nedlastede innholdet?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>
 <translation id="8641930654639604085">Prøv å blokkere nettsteder med voksent innhold</translation>
 <translation id="8655129584991699539">Du kan slette dataene i Chrome-innstillingene</translation>

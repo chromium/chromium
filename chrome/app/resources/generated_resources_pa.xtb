@@ -362,6 +362,7 @@
 <translation id="1403222014593521787">ਪ੍ਰੌਕਸੀ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1405779994569073824">ਕ੍ਰੈਸ਼ ਹੋਈ।</translation>
 <translation id="1406500794671479665">ਪ੍ਰਮਾਣਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
+<translation id="1407069428457324124">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="1407135791313364759">ਸਾਰੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="140723521119632973">ਸੈਲਿਊਲਰ ਕਿਰਿਆਸ਼ੀਲਤਾ</translation>
 <translation id="1407489512183974736">ਸੈਂਟਰ ਕੱਟਿਆ</translation>
@@ -1230,6 +1231,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਕੇ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="2300578660547687840">ਖੋਜ ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦਾਂ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="2301382460326681002">ਐਕਸਟੈਂਸ਼ਨ ਰੂਟ ਡਾਇਰੈਕਟਰੀ ਅਵੈਧ ਹੈ।</translation>
+<translation id="2301402091755573488">ਸਾਂਝਾ ਕੀਤਾ ਟੈਬ</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ਨੇ ਵਾਧੂ ਅਨੁਮਤੀਆਂ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ।</translation>
 <translation id="23055578400314116">ਕੋਈ ਵਰਤੋਂਕਾਰ ਨਾਮ ਚੁਣੋ</translation>
 <translation id="2307462900900812319">ਨੈੱਟਵਰਕ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
@@ -1507,6 +1509,7 @@
 <translation id="2612676031748830579">ਕਾਰਡ ਨੰਬਰ</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />, <ph name="FILENAME" /> ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕੇਗੀ</translation>
 <translation id="2616366145935564096">ਆਪਣਾ ਡਾਟਾ <ph name="WEBSITE_1" /> ਤੇ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
+<translation id="2618274688675613222">ਸੈੱਟਅੱਪ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਲਈ 'ਅੱਗੇ' ਬਟਨ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ ਜਾਂ ਅਸਾਈਨਮੈਂਟ ਸਵਿੱਚ "ਚੋਣ" ਨੂੰ ਬਦਲਣ ਲਈ ਪਿੱਛੇ ਬਟਨ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ।</translation>
 <translation id="2618797463720777311">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="2619761439309613843">ਰੋਜ਼ਾਨਾ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
@@ -2901,6 +2904,7 @@
 <translation id="4120817667028078560">ਪਾਥ ਬਹੁਤ ਲੰਮਾ ਹੈ</translation>
 <translation id="4124823734405044952">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
 <translation id="4124935795427217608">ਇੱਕ ਸਿੰਗ ਵਾਲਾ ਘੋੜਾ</translation>
+<translation id="4126916490446791914">ਸਵੈਚਲਿਤ-ਸਕੈਨ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">ਡੀਵਾਈਸ ਲੌਗ</translation>
 <translation id="4130207949184424187">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਬਦਲਿਆ ਗਿਆ ਹੈ ਕਿ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ ਜਦੋਂ ਤੁਸੀਂ Omnibox ਤੋਂ ਖੋਜ ਕਰਦੇ ਹੋ।</translation>
@@ -3284,6 +3288,7 @@
     ਜੇ ਤੁਹਾਡਾ ਬੱਚਾ ਸਕੂਲ ਵਿੱਚ Chromebook ਵਰਤਦਾ ਹੈ ਅਤੇ ਤੁਸੀਂ ਘਰ ਬੈਠੇ ਸਕੂਲੀ ਅਨੁਭਵ ਨੂੰ ਪ੍ਰਤਿਬਿੰਬਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਕਿ ਇਹ ਪੱਕਾ ਕੀਤਾ ਜਾ ਸਕੇ ਕਿ ਤੁਹਾਡੇ ਬੱਚੇ ਕੋਲ ਸਕੂਲ ਦੇ ਸਾਰੇ ਜ਼ਰੂਰੀ ਕੰਮਾਂ ਤੱਕ ਪਹੁੰਚ ਹੈ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਇਸ Family Link ਖਾਤੇ ਵਿੱਚੋਂ ਸਾਈਨ-ਆਊਟ ਕਰਕੇ 'Chrome OS ਖਾਤੇ' ਪੰਨੇ ਤੋਂ ਸਕੂਲੀ ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ (ਨੋਟ-ਕਰੋ: Family Link ਸੰਬੰਧੀ ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ ਲਾਗੂ ਨਹੀਂ ਹੋਣਗੇ)।&lt;br&gt;&lt;br&gt;
     ਜੇ ਤੁਹਾਡਾ ਬੱਚਾ ਸਕੂਲ ਵਿੱਚ Chromebook ਨਹੀਂ ਵਰਤਦਾ ਜਾਂ ਜੇ ਤੁਸੀਂ ਘਰ ਬੈਠੇ Family Link ਵਰਤ ਕੇ ਆਪਣੇ ਬੱਚੇ ਦੇ ਅਨੁਭਵ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਕੂਲੀ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ 'ਅੱਗੇ ਜਾਓ' ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="4576541033847873020">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਨੂੰ ਜੋੜਾਬੱਧ ਕਰੋ</translation>
+<translation id="4576763597586015380">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨੇ ਜਾਰੀ ਰੱਖਣ ਲਈ, ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਤੁਸੀਂ ਹੀ ਹੋ</translation>
 <translation id="4579453506923101210">ਕਨੈਕਟ ਕੀਤੇ ਫ਼ੋਨ ਨੂੰ ਭੁੱਲ ਜਾਓ</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> ਨੂੰ ਕਾਸਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।</translation>
 <translation id="4581774856936278355">Linux ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਈ</translation>
@@ -5002,6 +5007,7 @@
 <translation id="6538098297809675636">ਕੋਡ ਦਾ ਪਤਾ ਲਗਾਉਣ ਵੇਲੇ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="653920215766444089">ਪੁਆਇੰਟਰ ਵਾਲਾ ਡੀਵਾਈਸ ਖੋਜਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />ਨੋਟ:<ph name="END_BOLD" /> ਸਿਰਫ਼ ਤਾਂ ਹੀ ਚਾਲੂ ਕਰੋ ਜੇਕਰ ਤੁਹਾਨੂੰ ਪਤਾ ਹੈ ਕਿ ਤੁਸੀਂ ਕੀ ਕਰ ਰਹੇੇ ਹੋ ਜਾਂ ਜੇਕਰ ਤੁਹਾਨੂੰ ਅਜਿਹਾ ਕਰਨ ਲਈ ਕਿਹਾ ਗਿਆ ਹੈ, ਕਿਉਂਕਿ ਡਾਟਾ ਦਾ ਇਕੱਤਰੀਕਰਨ ਕਾਰਗੁਜ਼ਾਰੀ ਘਟਾ ਸਕਦਾ ਹੈ।</translation>
+<translation id="6540672086173674880">Google ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀ ਵਰਤੋਂ Search ਅਤੇ ਹੋਰ Google ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਕਰ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਕਿਸੇ ਵੇਲੇ ਵੀ myaccount.google.com/activitycontrols/search 'ਤੇ ਬਦਲ ਸਕਦੇ ਹੋ</translation>
 <translation id="6541638731489116978">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6545665334409411530">ਦੁਹਰਾਉਣ ਦੀ ਦਰ</translation>
 <translation id="6545864417968258051">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
@@ -5665,6 +5671,7 @@
 <translation id="729583233778673644">AES ਅਤੇ RC4 ਇਨਕ੍ਰਿਪਸ਼ਨ ਕਰਨ ਦਿਓ। ਇਸ ਵਿਕਲਪ ਦੀ ਵਰਤੋਂ ਕਰਨਾ, RC4 ciphers ਦੇ ਅਸੁਰੱਖਿਅਤ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡੇ ਜੋਖਮ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ।</translation>
 <translation id="729761647156315797">ਆਪਣੀ ਭਾਸ਼ਾ ਅਤੇ ਕੀ-ਬੋਰਡ ਚੁਣੋ</translation>
 <translation id="7297726121602187087">ਗੂੜ੍ਹਾ ਹਰਾ</translation>
+<translation id="7298195798382681320">ਸਿਫ਼ਾਰਿਸ਼ ਕੀਤਾ</translation>
 <translation id="7299337219131431707">ਮਹਿਮਾਨ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{ਇਹ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀ ਹੈ।}one{ਇਹ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀ ਹੈ।}other{ਇਹ ਐਪਲੀਕੇਸ਼ਨਾਂਂ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀਆਂ ਹਨ।}}</translation>
 <translation id="7303281435234579599">ਓਹੋ! ਡੈਮੋ ਮੋਡ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
@@ -5887,6 +5894,7 @@
 <translation id="754207240458482646">ਤੁਹਾਡੇ ਖਾਤੇ 'ਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਮਕਾਲੀਕਰਨ ਕੀਤਾ ਗਿਆ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">ਇਸ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ 'ਤੇ ਡੀਬੱਗਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7543525346216957623">ਆਪਣੇ ਮਾਤਾ-ਪਿਤਾ ਨੂੰ ਪੁੱਛੋ</translation>
+<translation id="7546012169463147344">ਸਵੈਚਲਿਤ-ਸਕੈਨ ਵਿਸ਼ੇਸ਼ਤਾ ਦੇ ਨਾਲ, ਸਕ੍ਰੀਨ 'ਤੇ ਆਈਟਮਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਫੋਕਸ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ। ਜਦੋਂ ਕਿਸੇ ਆਈਟਮ 'ਤੇ ਫ਼ੋਕਸ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਉਸ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਉਸੇ ਵੇਲੇ ਨਿਰਧਾਰਿਤ ਕੀਤੀ ਗਈ "ਚੁਣੋ" ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="7547317915858803630">ਚਿਤਾਵਨੀ: ਤੁਹਾਡੀਆਂ <ph name="PRODUCT_NAME" /> ਸੈਟਿੰਗਾਂ ਇੱਕ ਨੈੱਟਵਰਕ ਡਰਾਈਵ 'ਤੇ ਸਟੋਰ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਇਸਦੇ ਸਿੱਟੇ ਵਜੋਂ ਹੌਲੀ ਹੋਣਾ, ਕ੍ਰੈਸ਼ ਜਾਂ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7548856833046333824">Lemonade</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6855,6 +6863,7 @@
 <translation id="8621866727807194849">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵਿੱਚ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਹੈ। Chrome ਇਸਨੂੰ ਹਟਾ ਰਿਹਾ ਹੈ, ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰ ਰਿਹਾ ਹੈ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰ ਰਿਹਾ ਹੈ। ਇੰਝ ਕਰਨ ਨਾਲ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਰ ਦੁਬਾਰਾ ਆਮ ਵਾਂਗ ਕੰਮ ਕਰਨ ਲੱਗੇਗਾ।</translation>
 <translation id="8621979332865976405">ਆਪਣੀ ਪੂਰੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕਰੋ</translation>
 <translation id="8624354461147303341">ਛੋਟਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="8625663000550647058">ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8625916342247441948">ਸਾਈਟਾਂ ਨੂੰ HID ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
@@ -6918,6 +6927,7 @@
 <translation id="8677212948402625567">ਸਭ ਸਮੇਟੋ</translation>
 <translation id="867767487203716855">ਅਗਲਾ ਅੱਪਡੇਟ</translation>
 <translation id="8677859815076891398">ਕੋਈ ਐਲਬਮ ਨਹੀਂ ਹੈ। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ਵਿੱਚ ਐਲਬਮ ਬਣਾਓ।</translation>
+<translation id="8678538439778360739"><ph name="TIME" /> ਵਜੇ ਡਾਟਾ ਤੁਹਾਡੇ ਸਮਕਾਲੀਕਰਨ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਸੀ। ਇਸ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।</translation>
 <translation id="8678582529642151449">ਟੈਬਾਂ ਨਹੀਂ ਸੁੰਗੜਨਗੀਆਂ</translation>
 <translation id="8678933587484842200">ਤੁਸੀਂ ਇਸ ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਕਿਵੇਂ ਲਾਂਚ ਕਰਨਾ ਚਾਹੋਗੇ?</translation>
 <translation id="8680251145628383637">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੀਆਂ Google ਸੇਵਾਵਾਂ 'ਤੇ ਵੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਹੋ ਜਾਵੋਗੇ।</translation>
@@ -7257,6 +7267,7 @@
 <translation id="9026852570893462412">ਇਸ ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ। ਆਭਾਸੀ ਮਸ਼ੀਨ ਡਾਊਨਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="9027459031423301635">ਨਵੀਂ &amp;ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="9030515284705930323">ਤੁਹਾਡੇ ਸੰਗਠਨ ਨੇ ਤੁਹਾਡੇ ਖਾਤੇ ਲਈ 'Google Play ਸਟੋਰ' ਨੂੰ ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਵਧੇਰੇ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
+<translation id="9030754204056345429">ਵਧੇਰੇ ਤੇਜ਼</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="9031549947500880805">'Google ਡਰਾਈਵ' ਵਿੱਚ ਬੈਕਅੱਪ ਲਓ। ਕਿਸੇ ਵੇਲੇ ਵੀ ਅਸਾਨੀ ਨਾਲ ਆਪਣਾ ਡਾਟਾ ਮੁੜ-ਬਹਾਲ ਕਰੋ ਜਾਂ ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ। ਤੁਹਾਡੇ ਬੈਕਅੱਪ ਵਿੱਚ ਐਪ ਡਾਟਾ ਸ਼ਾਮਲ ਹੈ।</translation>

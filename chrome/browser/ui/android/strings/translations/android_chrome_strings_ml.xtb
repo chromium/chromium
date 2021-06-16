@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">സമന്വയിപ്പിക്കൽ ഓണാക്കണോ?</translation>
 <translation id="123724288017357924">കാഷെ ചെയ്‌ത ഉള്ളടക്കം ഒഴിവാക്കി കൊണ്ട്, നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ലോഡ് ചെയ്യുന്നു</translation>
+<translation id="1242883863226959074">ഉപകരണം</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="1258753120186372309">Google ഡൂഡിൽ: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> പങ്കിടാനായില്ല</translation>
@@ -52,6 +53,7 @@
 <translation id="1307205233980126133">ക്ഷമിക്കണം, നിങ്ങളുടെ ക്രെഡൻഷ്യലുകൾ സാധൂകരിക്കാൻ ഞങ്ങൾക്കായില്ല</translation>
 <translation id="1310482092992808703">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യൂ</translation>
 <translation id="1311657260431405215">ഈ QR കോഡ് ഒരു URL അല്ല: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">നാവിഗേഷൻ ചരിത്രം തുറന്നിരിക്കുന്നു</translation>
 <translation id="1331212799747679585">Chrome അപ്‌ഡേറ്റ് ചെയ്യാനാവില്ല. കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="1332501820983677155">Google Chrome ഫീച്ചർ കുറുക്കുവഴികൾ</translation>
@@ -919,6 +921,7 @@
 <translation id="6864459304226931083">ചിത്രം ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6865313869410766144">ഓട്ടോഫിൽ ഫോം ഡാറ്റ</translation>
 <translation id="6867400383614725881">പുതിയ അദൃശ്യ ടാബ്</translation>
+<translation id="6869056123412990582">കമ്പ്യൂട്ടർ</translation>
 <translation id="6882836635272038266">അപകടകരമെന്ന് അറിയപ്പെടുന്ന വെബ്സൈറ്റുകൾ, ഡൗൺലോഡുകള്‍, വിപുലീകരണങ്ങൾ എന്നിവയ്ക്ക് എതിരായ സ്‌റ്റാൻഡേർഡ് സുരക്ഷ.</translation>
 <translation id="688738109438487280">നിലവിലുള്ള വിവരങ്ങളെ <ph name="TO_ACCOUNT" /> അക്കൗണ്ടിലേക്ക് ചേർക്കുക</translation>
 <translation id="6891726759199484455">പാസ്‍വേഡ് പകർത്താൻ അൺലോക്ക് ചെയ്യുക</translation>
@@ -961,6 +964,7 @@
 <translation id="718926126787620637">മുഴുവൻ ഉയരത്തിൽ തുറന്ന ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="7191430249889272776">ടാബ് പശ്ചാത്തലത്തിൽ തുറന്നു.</translation>
 <translation id="7233236755231902816">നിങ്ങളുടെ ഭാഷയിൽ വെബ് കാണാൻ Chrome-ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പ് നേടൂ</translation>
+<translation id="7242755609445462077">പ്രത്യേക സ്റ്റൈലിൽ ആക്കിയ ഹൈലൈറ്റ് <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome-ൽ <ph name="TARGET_DEVICE_NAME" /> ഉപകരണത്തിലെ സമന്വയിപ്പിക്കൽ ഓണാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="7252076891734325316">നിങ്ങളുടെ ഫോൺ കമ്പ്യൂട്ടറിന്റെ അടുത്ത് വയ്ക്കുക</translation>
 <translation id="7274013316676448362">സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
@@ -1154,6 +1158,7 @@
 <translation id="8393700583063109961">സന്ദേശം അയയ്ക്കുക</translation>
 <translation id="8410695015584479363">നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8413126021676339697">മുഴുവന്‍ ചരിത്രവും കാണിക്കുക</translation>
+<translation id="8424781820952413435">പേജ് അയച്ചു. അത് കാണാൻ, നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Chrome തുറക്കുക</translation>
 <translation id="8427875596167638501">പ്രിവ്യു ടാബ് പാതി തുറന്നിരിക്കുന്നു</translation>
 <translation id="8428213095426709021">ക്രമീകരണങ്ങള്‍</translation>
 <translation id="8438566539970814960">തിരയലുകളും ബ്രൗസിംഗും മികച്ചതാക്കുക</translation>
@@ -1195,6 +1200,7 @@
 <translation id="860282621117673749">വിലയിടിവ് മുന്നറിയിപ്പുകൾ</translation>
 <translation id="8616006591992756292">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="8617240290563765734">ഡൗൺലോഡ് ചെയ്‌ത ഉള്ളടക്കത്തിൽ നിർദ്ദേശിച്ചിട്ടുള്ള URL തുറക്കണോ?</translation>
+<translation id="8621068256433641644">ഫോൺ</translation>
 <translation id="8636825310635137004">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
 <translation id="8641930654639604085">മുതിർന്നവർക്കുള്ള സൈറ്റുകൾ ബ്ലോക്കുചെയ്യുന്നത് പരീക്ഷിച്ചുനോക്കൂ</translation>
 <translation id="8655129584991699539">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഈ ഡാറ്റ മായ്‌ക്കാം</translation>

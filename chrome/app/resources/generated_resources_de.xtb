@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">Verbindung zum Proxy kann nicht hergestellt werden</translation>
 <translation id="1405779994569073824">Abgestürzt.</translation>
 <translation id="1406500794671479665">Überprüfung wird durchgeführt...</translation>
+<translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="140723521119632973">Mobilfunkaktivierung</translation>
 <translation id="1407489512183974736">Zugeschnitten zentrieren</translation>
@@ -5644,6 +5645,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="729583233778673644">AES- und RC4-Verschlüsselung erlauben. Mit dieser Option ist ein höheres Risiko verbunden, da RC4-Verschlüsselungen nicht sicher sind.</translation>
 <translation id="729761647156315797">Sprache und Tastatur wählen</translation>
 <translation id="7297726121602187087">Dunkelgrün</translation>
+<translation id="7298195798382681320">Empfohlen</translation>
 <translation id="7299337219131431707">Gastmodus aktivieren</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Diese Anwendung könnte verhindern, dass Chrome wie vorgesehen funktioniert.}other{Diese Anwendungen könnten verhindern, dass Chrome wie vorgesehen funktioniert.}}</translation>
 <translation id="7303281435234579599">Beim Einrichten des Demomodus ist ein Fehler aufgetreten.</translation>
@@ -7238,6 +7240,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9026852570893462412">Der Vorgang kann einige Minuten dauern. Virtuelle Maschine wird heruntergeladen.</translation>
 <translation id="9027459031423301635">Link in neuem Tab öffnen</translation>
 <translation id="9030515284705930323">Ihre Organisation hat den Google Play Store für Ihr Konto nicht aktiviert. Weitere Informationen erhalten Sie von Ihrem Administrator.</translation>
+<translation id="9030754204056345429">Schneller</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> wird nicht mehr unterstützt</translation>
 <translation id="9031549947500880805">In Google Drive sichern. Sie können Ihre Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. In Ihrer Sicherung sind auch App-Daten enthalten.</translation>

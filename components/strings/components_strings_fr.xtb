@@ -495,7 +495,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="272451190272506600">Appuyez sur le capteur pour payer</translation>
 <translation id="2728127805433021124">Le certificat du serveur a été signé avec un algorithme de signature faible.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Exécuter les diagnostics de connectivité<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">En activant ces fonctionnalités, vous risquez de perdre les données de navigation, ou de compromettre votre sécurité ou votre vie privée. Les fonctionnalités activées s'appliquent à tous les utilisateurs de ce navigateur.</translation>
 <translation id="2738330467931008676">Sélectionner une adresse d'enlèvement</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Supprimer les éléments sélectionnés</translation>
@@ -610,6 +609,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3212623355668894776">Fermez toutes les fenêtres en mode Invité pour que votre activité de navigation soit supprimée de cet appareil.</translation>
 <translation id="3215092763954878852">Impossible d'utiliser WebAuthn</translation>
 <translation id="3218181027817787318">Valeur relative</translation>
+<translation id="3223287115535306850">Indicateur de lancement de l'appli</translation>
 <translation id="3225919329040284222">Le serveur dispose d'un certificat qui ne répond pas aux exigences intégrées. Celles-ci sont incluses dans certains sites Web très sécurisés afin de vous protéger.</translation>
 <translation id="3226128629678568754">Veuillez appuyer sur le bouton d'actualisation pour renvoyer les données nécessaires au chargement de la page.</translation>
 <translation id="3226387218769101247">Vignettes</translation>
@@ -684,6 +684,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3447884698081792621">Afficher le certificat (émis par <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalle de récupération : </translation>
 <translation id="3453962258458347894">Nombre de nouvelles tentatives</translation>
+<translation id="3454555520521576458">Redimensionnable</translation>
 <translation id="3456231139987291353">Number-11 (enveloppe)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> souhaite voir le texte et les images copiés dans le presse-papiers</translation>
 <translation id="3461824795358126837">Surligneur</translation>
@@ -1017,6 +1018,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4677585247300749148"><ph name="URL" /> souhaite répondre aux événements d'accessibilité</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">Vous venez de saisir votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" />, ainsi que les autres sites pour lesquels vous utilisez ce mot de passe actuellement.</translation>
+<translation id="468314109939257734">Afficher votre numéro de carte virtuelle</translation>
 <translation id="4690462567478992370">Arrêter d'utiliser un certificat non valide</translation>
 <translation id="4691835149146451662">Architecture-A (enveloppe)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1926,6 +1928,7 @@ Informations supplémentaires :
 <translation id="8057711352706143257">Le logiciel "<ph name="SOFTWARE_NAME" />" n'est pas configuré correctement. En général, la désinstallation de "<ph name="SOFTWARE_NAME" />" permet de remédier à la situation. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Désolé, un problème est survenu.</translation>
 <translation id="8067872629359326442">Vous venez de saisir votre mot de passe sur un site trompeur. Chromium peut vous aider. Pour modifier votre mot de passe et informer Google que votre compte a peut-être été piraté, cliquez sur "Protéger le compte".</translation>
+<translation id="8070439594494267500">Icône de l'appli</translation>
 <translation id="8074253406171541171">10x13 (enveloppe)</translation>
 <translation id="8075898834294118863">Gérer les paramètres du site</translation>
 <translation id="8078141288243656252">Impossible d'ajouter des annotations si le document a pivoté</translation>

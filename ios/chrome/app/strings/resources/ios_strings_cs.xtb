@@ -391,6 +391,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5062321486222145940">Instalace Disku Google</translation>
 <translation id="5083464117946352670">Velikost souboru nelze zjistit.</translation>
 <translation id="5090832849094901128">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Stránky si můžete uložit a přečíst si je později nebo v režimu offline. U dlouhých stránek se vás Chrome zeptá.</translation>
 <translation id="5094827893301452931">Tweet byl odeslán.</translation>
 <translation id="5118764316110575523">Vypnuto</translation>
 <translation id="5127805178023152808">Synchronizace je vypnuta</translation>
@@ -757,6 +758,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8548878600947630424">Hledat na stránce...</translation>
 <translation id="8574235780160508979">Smluvní podmínky prohlížeče Chrome se 31. března změní. <ph name="BEGIN_LINK" />Prohlédnout nové smluvní podmínky<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Vypnuto</translation>
+<translation id="8590913940444621808">Nikdy se neptat</translation>
 <translation id="8591976964826315682">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="8605219856220328675">Zavřít kartu</translation>
 <translation id="8620640915598389714">Upravit</translation>

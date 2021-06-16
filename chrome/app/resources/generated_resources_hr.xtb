@@ -360,6 +360,7 @@
 <translation id="1403222014593521787">Povezivanje s proxyjem nije moguće</translation>
 <translation id="1405779994569073824">Srušilo se.</translation>
 <translation id="1406500794671479665">Potvrda u tijeku...</translation>
+<translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="140723521119632973">Mobilna aktivacija</translation>
 <translation id="1407489512183974736">Centriraj obrezano</translation>
@@ -5659,6 +5660,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="729583233778673644">Dopuštanje AES i RC4 šifriranja. Upotreba te opcije izlaže vas većoj opasnosti jer RC4 šifre nisu sigurne.</translation>
 <translation id="729761647156315797">Odaberite jezik i tipkovnicu</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
+<translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299337219131431707">Omogući gostujuće pregledavanje</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ova bi aplikacija mogla spriječiti Chrome da pravilno funkcionira.}one{Ova bi aplikacija (ili više njih) mogla spriječiti Chrome da pravilno funkcionira.}few{Ove bi aplikacije mogle spriječiti Chrome da pravilno funkcionira.}other{Ove bi aplikacije mogle spriječiti Chrome da pravilno funkcionira.}}</translation>
 <translation id="7303281435234579599">Ups! Došlo je do pogreške pri postavljanju demo načina.</translation>
@@ -7258,6 +7260,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="9026852570893462412">Taj postupak može potrajati nekoliko minuta. Preuzima se virtualno računalo.</translation>
 <translation id="9027459031423301635">Otvori vezu u novoj &amp;kartici</translation>
 <translation id="9030515284705930323">Vaša organizacija nije omogućila Trgovinu Google Play za vaš račun. Više informacija zatražite od administratora.</translation>
+<translation id="9030754204056345429">Brže</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Dodatak <ph name="PLUGIN_NAME" /> više nije podržan</translation>
 <translation id="9031549947500880805">Sigurnosno kopiranje na Google disku. Jednostavno vratite svoje podatke ili promijenite uređaj u bilo kojem trenutku. Sigurnosna kopija uključuje podatke aplikacija.</translation>

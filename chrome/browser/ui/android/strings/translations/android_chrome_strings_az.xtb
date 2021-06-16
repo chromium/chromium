@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Sinxronizasiya ktiv edilsin?</translation>
 <translation id="123724288017357924">Keş məzmununu iqnor edərək cari səhifəni yenidən yükləyin</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> yüklənir</translation>
+<translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Cari paneli bağlayın</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşmaq mümkün olmnadı</translation>
@@ -918,6 +919,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="6864459304226931083">Şəkli endirin</translation>
 <translation id="6865313869410766144">Avtomatik data doldurması</translation>
 <translation id="6867400383614725881">Yeni Anonim tab</translation>
+<translation id="6869056123412990582">kompüter</translation>
 <translation id="6882836635272038266">Təhlükəli hesab edilən veb saytlar, endirmələr və artırmalara qarşı standart qoruma.</translation>
 <translation id="688738109438487280">Mövcud datanı <ph name="TO_ACCOUNT" /> hesabına əlavə edin.</translation>
 <translation id="6891726759199484455">Parolu kopyalamaq üçün kiliddən çıxarın</translation>
@@ -1154,6 +1156,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8393700583063109961">Mesaj göndərin</translation>
 <translation id="8410695015584479363">Qiymətləri izləyin</translation>
 <translation id="8413126021676339697">Tam tarixçəni göstərin</translation>
+<translation id="8424781820952413435">Səhifə göndərildi. Onu görmək üçün bu cihazda Chrome'u açın: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Önbaxış tabının yarısı açılıb</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8438566539970814960">Axtarış və brauzer fəaliyyətini təkmilləşdirin</translation>
@@ -1195,6 +1198,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="860282621117673749">Qiymət endirimi siqnalları</translation>
 <translation id="8616006591992756292"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər.</translation>
 <translation id="8617240290563765734">Endirilmiş kontentdə təklif edilən link açılsın?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Panelləri digər cihazlarınızdan əldə etmək üçün sinxronizasiyanı aktiv edin.</translation>
 <translation id="8641930654639604085">Böyüklər üçün olan saytları blok edin</translation>
 <translation id="8655129584991699539">Datanı Chrome Ayarlarından silə bilərsiniz</translation>

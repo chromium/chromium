@@ -80,6 +80,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
 <translation id="1525508553941733066">IGNORA</translation>
+<translation id="1536604384701784949">Per usare l'account <ph name="USER_EMAIL_ADDRESS" />, devi prima uscire da tutti gli account. A tale scopo, seleziona Annulla per tornare indietro. Dopodiché seleziona l'ora per aprire l'area di stato e seleziona Esci, quindi accedi di nuovo all'account <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Puntatore del mouse grande</translation>
 <translation id="1546492247443594934">Scrivania 2</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
@@ -525,6 +526,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5033299697334913360">Fai clic su un punto qualsiasi per acquisire l'intera schermata</translation>
 <translation id="5035236842988137213">Il dispositivo <ph name="DEVICE_NAME" /> si è connesso a un nuovo telefono</translation>
 <translation id="5035389544768382859">Conferma la configurazione del display</translation>
+<translation id="5039804452771397117">Consenti</translation>
 <translation id="504465286040788597">Paragrafo precedente</translation>
 <translation id="5071064518267176975">Un'app vuole usare il microfono</translation>
 <translation id="5075554201838155866">Avvia sottotitoli</translation>
@@ -802,6 +804,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7461924472993315131">Blocca</translation>
 <translation id="746232733191930409">Modalità Registrazione dello schermo</translation>
 <translation id="7466449121337984263">Tocca il sensore</translation>
+<translation id="7473891865547856676">No grazie</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
 <translation id="7483025031359818980">Area di selezione impostata su Schermo intero</translation>
 <translation id="7486227320194954040">Comprimi strumenti indicatore</translation>

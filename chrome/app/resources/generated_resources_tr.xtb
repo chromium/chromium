@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">Proxy'ye bağlanılamıyor</translation>
 <translation id="1405779994569073824">Yüklenemedi.</translation>
 <translation id="1406500794671479665">Doğrulanıyor...</translation>
+<translation id="1407069428457324124">Koyu tema</translation>
 <translation id="1407135791313364759">Tümünü aç</translation>
 <translation id="140723521119632973">Hücresel Etkinleştirme</translation>
 <translation id="1407489512183974736">Ortala ve Kırp</translation>
@@ -5656,6 +5657,7 @@ Google'ın hangi verileri neden topladığıyla ilgili bilgi almak için <ph nam
 <translation id="729583233778673644">AES ve RC4 şifrelemesine izin ver. RC4 şifreleri güvenli olmadığından bu seçeneğin kullanılması, riskinizi artırır.</translation>
 <translation id="729761647156315797">Dilinizi ve klavyenizi seçin</translation>
 <translation id="7297726121602187087">Koyu yeşil</translation>
+<translation id="7298195798382681320">Önerilenler</translation>
 <translation id="7299337219131431707">Misafir olarak göz atmayı etkinleştir</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Bu uygulama Chrome'un düzgün çalışmasını engelleyebilir.}other{Bu uygulamalar Chrome'un düzgün çalışmasını engelleyebilir.}}</translation>
 <translation id="7303281435234579599">Hay aksi! Demo modu kurulurken bir hata oluştu.</translation>
@@ -7252,6 +7254,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="9026852570893462412">Bu işlem birkaç dakika sürebilir. Sanal makine indiriliyor.</translation>
 <translation id="9027459031423301635">Bağlantıyı Yeni &amp;Sekmede Aç</translation>
 <translation id="9030515284705930323">Kuruluşunuz, hesabınız için Google Play Store'u etkinleştirmedi. Daha fazla bilgi için yöneticinize başvurun.</translation>
+<translation id="9030754204056345429">Daha hızlı</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">"<ph name="PLUGIN_NAME" />" artık desteklenmiyor</translation>
 <translation id="9031549947500880805">Google Drive'a yedekle. Verilerinizi istediğiniz zaman kolayca geri yükleyin veya cihazlar arasında geçiş yapın. Yedeklemeniz, uygulama verilerini içerir.</translation>

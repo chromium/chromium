@@ -363,6 +363,7 @@
 <translation id="1403222014593521787">‏לא ניתן להתחבר לשרת ה-proxy</translation>
 <translation id="1405779994569073824">קריסה.</translation>
 <translation id="1406500794671479665">מאמת...</translation>
+<translation id="1407069428457324124">עיצוב כהה</translation>
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
 <translation id="140723521119632973">הפעלה סלולרית</translation>
 <translation id="1407489512183974736">חיתוך במרכז</translation>
@@ -5673,6 +5674,7 @@
 <translation id="729583233778673644">‏התרה של הצפנת AES ו-RC4. שימוש באפשרות הזו מגדיל את הסיכון, כי הצפנות RC4 אינן מאובטחות.</translation>
 <translation id="729761647156315797">בחירת שפה ומקלדת</translation>
 <translation id="7297726121602187087">ירוק כהה</translation>
+<translation id="7298195798382681320">מומלצים</translation>
 <translation id="7299337219131431707">הפעלה של גלישה כאורח</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{‏האפליקציה הזו עלולה למנוע מ-Chrome לפעול כמו שצריך.}two{‏האפליקציות האלה עלולות למנוע מ-Chrome לפעול כמו שצריך.}many{‏האפליקציות האלה עלולות למנוע מ-Chrome לפעול כמו שצריך.}other{‏האפליקציות האלה עלולות למנוע מ-Chrome לפעול כמו שצריך.}}</translation>
 <translation id="7303281435234579599">משהו השתבש במהלך הגדרת מצב ההדגמה.</translation>
@@ -7274,6 +7276,7 @@
 <translation id="9026852570893462412">הפעולה עשויה להימשך מספר דקות. מתבצעת הורדה של המכונה הווירטואלית.</translation>
 <translation id="9027459031423301635">פתיחת קישור בכרטיסייה &amp;חדשה</translation>
 <translation id="9030515284705930323">‏הארגון שלך לא הפעיל את חנות Google Play בחשבון שלך. למידע נוסף, יש לפנות למנהל המערכת.</translation>
+<translation id="9030754204056345429">מהיר יותר</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">אין יותר תמיכה בפלאגין <ph name="PLUGIN_NAME" /></translation>
 <translation id="9031549947500880805">‏גיבוי ב-Google Drive. ההגדרה הזו מאפשרת לאחזר נתונים בקלות או לעבור למכשיר אחר בכל שלב. הגיבוי כולל נתוני אפליקציות.</translation>

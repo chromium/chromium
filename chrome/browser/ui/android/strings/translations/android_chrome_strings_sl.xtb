@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Želite vklopiti sinhronizacijo?</translation>
 <translation id="123724288017357924">Vnov. nalag. tren. strani s prezrtjem predp. vseb.</translation>
 <translation id="1240288207750131269">Nalaganje: <ph name="LANG" /></translation>
+<translation id="1242883863226959074">napravi</translation>
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
 <translation id="1258753120186372309">Googlov priložnostni logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Ni bilo mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6864459304226931083">Prenos slike</translation>
 <translation id="6865313869410766144">Podatki za samodejno izpolnjevanje obrazcev</translation>
 <translation id="6867400383614725881">Nov anonimni zavihek</translation>
+<translation id="6869056123412990582">računalniku</translation>
 <translation id="6882836635272038266">Standardna zaščita proti spletnim mestom, prenosom in razširitvam, za katere vemo, da so nevarni.</translation>
 <translation id="688738109438487280">Dodajanje obstoječih podatkov v račun <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Odklenite, če želite kopirati geslo</translation>
@@ -1156,6 +1158,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
 <translation id="8410695015584479363">Spremljanje cen</translation>
 <translation id="8413126021676339697">Prikaži celotno zgodovino</translation>
+<translation id="8424781820952413435">Stran je bila poslana. Če si jo želite ogledati, odprite Chrome v <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Zavihek za predogled je napol odprt</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8438566539970814960">Izboljšanje iskanja in brskanja</translation>
@@ -1197,6 +1200,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="860282621117673749">Opozorila glede znižanja cen</translation>
 <translation id="8616006591992756292">V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Želite odpreti predlagani URL, naveden v preneseni vsebini?</translation>
+<translation id="8621068256433641644">telefonu</translation>
 <translation id="8636825310635137004">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo.</translation>
 <translation id="8641930654639604085">Poskusi blokirati spletna mesta za odrasle</translation>
 <translation id="8655129584991699539">Podatke lahko izbrišete v Chromovih nastavitvah</translation>

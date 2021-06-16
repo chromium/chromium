@@ -488,8 +488,6 @@
 <translation id="272451190272506600">ਭੁਗਤਾਨ ਕਰਨ ਲਈ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="2728127805433021124">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇੱਕ ਕਮਜ਼ੋਰ ਹਸਤਾਖਰ ਅਲਗੋਰਿਦਮ ਵਰਤਦੇ ਹੋਏ ਸਾਈਨ ਹੋਇਆ ਹੈ।</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />ਕਨੈਕਟੀਵਿਟੀ ਨਿਦਾਨ ਚਲਾਇਆ ਜਾ ਰਿਹਾ ਹੈ<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">ਇਹਨਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰਕੇ, ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ਰ ਡਾਟਾ ਗੁਆ ਸਕਦੇ ਹੋ ਜਾਂ
-    ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਜਾਂ ਪਰਦੇਦਾਰੀ ਨਾਲ ਛੇੜਛਾੜ ਹੋ ਸਕਦੀ ਹੈ। ਚਾਲੂ ਕੀਤੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਦੇ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ 'ਤੇ ਲਾਗੂ ਹੁੰਦੀਆਂ ਹਨ।</translation>
 <translation id="2738330467931008676">ਪਿਕਅੱਪ ਪਤਾ ਚੁਣੋ</translation>
 <translation id="2740531572673183784">ਠੀਕ</translation>
 <translation id="2742870351467570537">ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਹਟਾਓ</translation>
@@ -602,6 +600,7 @@
 <translation id="3212623355668894776">ਸਾਰੀਆਂ ਮਹਿਮਾਨ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ ਤਾਂ ਜੋ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾਇਆ ਜਾ ਸਕੇ।</translation>
 <translation id="3215092763954878852">WebAuthn ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਦੇ</translation>
 <translation id="3218181027817787318">ਸੰਬੰਧਿਤ</translation>
+<translation id="3223287115535306850">ਐਪ ਲਾਂਚਿੰਗ ਥਰੋਬਰ</translation>
 <translation id="3225919329040284222">ਸਰਵਰ ਨੇ ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪੇਸ਼ ਕੀਤਾ ਸੀ ਜੋ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਅਨੁਮਾਨਾਂ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ। ਇਹ ਅਨੁਮਾਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ ਹੈ ਤਾਂ ਕਿ ਉੱਚ-ਸੁਰੱਖਿਆ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਰੱਖਿਆ ਕੀਤੀ ਜਾਵੇ।</translation>
 <translation id="3226128629678568754">ਪੰਨਾ ਲੋਡ ਕਰਨ ਲਈ ਲੋੜੀਂਦਾ ਡਾਟਾ ਮੁੜ ਸਪੁਰਦ ਕਰਨ ਲਈ ਰੀਲੋਡ ਬਟਨ ਦਬਾਓ।</translation>
 <translation id="3226387218769101247">ਲਘੂ-ਚਿੱਤਰ</translation>
@@ -675,6 +674,7 @@
 <translation id="3447884698081792621">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦਿਖਾਓ (<ph name="ISSUER" /> ਵੱਲੋਂ ਜਾਰੀ ਕੀਤਾ ਗਿਆ)</translation>
 <translation id="3452404311384756672">ਅੰਤਰਾਲ ਪ੍ਰਾਪਤ ਕਰੋ:</translation>
 <translation id="3453962258458347894">ਮੁੜ-ਕੋਸ਼ਿਸ਼ਾਂ ਦੀ ਗਿਣਤੀ</translation>
+<translation id="3454555520521576458">ਆਕਾਰ ਬਦਲਣਯੋਗ</translation>
 <translation id="3456231139987291353">ਨੰਬਰ-11 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ਦੀ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਲਿਖਤ ਨੂੰ ਦੇਖਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="3461824795358126837">ਉਜਾਗਰਕਰਤਾ</translation>
@@ -1001,6 +1001,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> ਦੀ ਪਹੁੰਚਯੋਗਤਾ ਇਵੈਂਟਾਂ 'ਤੇ ਪ੍ਰਤਿਕਿਰਿਆ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਪੂਰਨ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chromium ਵੱਲੋਂ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ਅਤੇ ਉਹਨਾਂ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਆਪਣੇ ਰੱਖਿਅਤ ਪਾਸਵਰਡਾਂ ਨੂੰ ਜਾਂਚਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਜਿੱਥੇ ਹੁਣ ਤੁਸੀਂ ਇਹ ਪਾਸਵਰਡ ਵਰਤਦੇ ਹੋ।</translation>
+<translation id="468314109939257734">ਆਪਣਾ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਦੇਖੋ</translation>
 <translation id="4690462567478992370">ਅਵੈਧ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਰਤਣਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4691835149146451662">Architecture-A (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1904,6 +1905,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" ਦੀ ਸਹੀ ਢੰਗ ਨਾਲ ਰੂਪ-ਰੇਖਾ ਬਦਲੀ ਨਹੀਂ ਗਈ ਹੈ। ਆਮ ਤੌਰ 'ਤੇ "<ph name="SOFTWARE_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਸਮੱਸਿਆ ਠੀਕ ਹੋ ਜਾਂਦੀ ਹੈ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">ਮਾਫ਼ ਕਰਨਾ, ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="8067872629359326442">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਪੂਰਨ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chromium ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ। ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਣ ਅਤੇ ਆਪਣੇ ਖਾਤੇ ਦੇ ਜੋਖਮ ਵਿੱਚ ਹੋਣ ਬਾਰੇ Google ਨੂੰ ਸੂਚਿਤ ਕਰਨ ਲਈ, 'ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
+<translation id="8070439594494267500">ਐਪ ਪ੍ਰਤੀਕ</translation>
 <translation id="8074253406171541171">10x13 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="8075898834294118863">ਸਾਈਟ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8078141288243656252">ਘੁਮਾਉਣ 'ਤੇ ਐਨੋਟੇਟ ਨਹੀਂ ਕਰ ਸਕਦੇ</translation>

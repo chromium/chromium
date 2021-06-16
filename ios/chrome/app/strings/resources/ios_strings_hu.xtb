@@ -391,6 +391,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5062321486222145940">Google Drive telepítése</translation>
 <translation id="5083464117946352670">A fájlméret ismeretlen.</translation>
 <translation id="5090832849094901128">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Mentheti az oldalakat későbbi vagy offline állapotban való olvasásra. Hosszú oldalak esetén a Chrome rákérdez, hogy szeretné-e menteni őket.</translation>
 <translation id="5094827893301452931">A Tweet kész.</translation>
 <translation id="5118764316110575523">Ki</translation>
 <translation id="5127805178023152808">Szinkronizálás kikapcsolva</translation>
@@ -757,6 +758,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8548878600947630424">Keresés az oldalon...</translation>
 <translation id="8574235780160508979">A Chrome Általános Szerződési Feltételei március 31-én módosulnak. <ph name="BEGIN_LINK" />Kérjük, tekintse meg<ph name="END_LINK" />.</translation>
 <translation id="8588404856427128947">Kikapcsolva</translation>
+<translation id="8590913940444621808">Ne kérdezzen rá</translation>
 <translation id="8591976964826315682">Harmadik felektől származó cookie-k letiltása Inkognitó módban</translation>
 <translation id="8605219856220328675">Lap bezárása.</translation>
 <translation id="8620640915598389714">Szerkesztés</translation>

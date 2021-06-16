@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">«مزاحم نشوید» روشن است.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{نشان دادن تنظیمات اعلان. اعلان‌های یک برنامه خاموش است}one{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}other{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}}</translation>
 <translation id="1525508553941733066">رد کردن</translation>
+<translation id="1536604384701784949">برای استفاده از <ph name="USER_EMAIL_ADDRESS" />، باید ابتدا از سیستم همه حساب‌ها خارج شوید. برای خروج از سیستم، «لغو» را انتخاب کنید تا به عقب برگردید. سپس زمان را انتخاب کنید تا ناحیه نشانگر وضعیت باز شود و سپس «خروج از سیستم»را انتخاب کنید. سپس دوباره به سیستم <ph name="USER_EMAIL_ADDRESS_2" /> وارد شوید.</translation>
 <translation id="15373452373711364">نشانگر موشواره بزرگ</translation>
 <translation id="1546492247443594934">میز ۲</translation>
 <translation id="1550523713251050646">برای گزینه‌های بیشتر کلیک کنید</translation>
@@ -524,6 +525,7 @@
 <translation id="5033299697334913360">برای گرفتن عکس از کل صفحه، روی هرجایی که می‌خواهید کلیک کنید</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> به تلفن جدیدی متصل است</translation>
 <translation id="5035389544768382859">تأیید پیکربندی نمایشگر</translation>
+<translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="504465286040788597">پاراگراف قبلی</translation>
 <translation id="5071064518267176975">برنامه‌ای می‌خواهد از میکروفون شما استفاده کند</translation>
 <translation id="5075554201838155866">شروع زیرنویس ناشنوایان</translation>
@@ -801,6 +803,7 @@
 <translation id="7461924472993315131">پین</translation>
 <translation id="746232733191930409">حالت ضبط صفحه‌نمایش</translation>
 <translation id="7466449121337984263">لطفاً حسگر را لمس کنید</translation>
+<translation id="7473891865547856676">نه متشکرم</translation>
 <translation id="7477793887173910789">کنترل موسیقی، ویدیو و سایر موارد</translation>
 <translation id="7483025031359818980">ناحیه انتخاب روی تمام صفحه تنظیم شد</translation>
 <translation id="7486227320194954040">جمع کردن ابزارهای نشان‌گذاری</translation>

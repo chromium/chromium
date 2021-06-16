@@ -391,6 +391,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5062321486222145940">Installera Google Drive</translation>
 <translation id="5083464117946352670">Det gick inte att bestämma filstorleken.</translation>
 <translation id="5090832849094901128">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="WEBSITE" /> raderas.</translation>
+<translation id="5092117651143801290">Du kan spara sidor som du vill läsa senare eller offline. Du får frågan om du vill spara långa sidor i Chrome.</translation>
 <translation id="5094827893301452931">Tweet klart.</translation>
 <translation id="5118764316110575523">Av</translation>
 <translation id="5127805178023152808">Synkronisering är av</translation>
@@ -757,6 +758,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8548878600947630424">Hitta på sidan ...</translation>
 <translation id="8574235780160508979">Chromes användarvillkor ändras den 31 mars. <ph name="BEGIN_LINK" />Läs villkoren<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Av</translation>
+<translation id="8590913940444621808">Fråga aldrig</translation>
 <translation id="8591976964826315682">Blockera cookies från tredje part i inkognitoläge</translation>
 <translation id="8605219856220328675">Stäng fliken.</translation>
 <translation id="8620640915598389714">Redigera</translation>

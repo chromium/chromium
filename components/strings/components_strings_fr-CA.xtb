@@ -491,7 +491,6 @@
 <translation id="272451190272506600">Touchez le capteur pour payer</translation>
 <translation id="2728127805433021124">Le certificat du serveur a été signé avec un algorithme de signature faible.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />d'exécuter Connectivity Diagnostics<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">En activant ces fonctionnalités, vous risquez de perdre les données du navigateur ou de compromettre votre sécurité ou votre confidentialité. Les fonctionnalités activées s'appliquent à tous les utilisateurs de ce navigateur.</translation>
 <translation id="2738330467931008676">Choisir une adresse de ramassage</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Supprimer les éléments sélectionnés</translation>
@@ -2203,6 +2202,7 @@ Détails supplémentaires :
 <translation id="9128870381267983090">Connexion au réseau</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
+<translation id="9144951720726881238">Date d'expiration :</translation>
 <translation id="9148088599418889305">Choisir un mode d'expédition</translation>
 <translation id="9148507642005240123">&amp;Annuler la modification</translation>
 <translation id="9150045010208374699">Utiliser votre caméra</translation>

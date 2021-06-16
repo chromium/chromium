@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">አስምር ይብራ?</translation>
 <translation id="123724288017357924">የተሸጎጠ ይዘትን ችላ በማለት የአሁኑን ገጽ ዳግም ጫን</translation>
 <translation id="1240288207750131269"><ph name="LANG" />ን በመጫን ላይ</translation>
+<translation id="1242883863226959074">መሣሪያ</translation>
 <translation id="124678866338384709">የአሁኑን ትር ዝጋ</translation>
 <translation id="1258753120186372309">Google doodle፦ <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ን ማጋራት አልተቻለም።</translation>
@@ -920,6 +921,7 @@
 <translation id="6864459304226931083">ምስል አውርድ</translation>
 <translation id="6865313869410766144">የራስ-ሙላ ቅጽ ውሂብ</translation>
 <translation id="6867400383614725881">አዲስ ማንነት የማያሳውቅ ትር</translation>
+<translation id="6869056123412990582">ኮምፒውተር</translation>
 <translation id="6882836635272038266">አደገኛ መሆናቸው ከታወቁ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች መደበኛ ጥበቃ።</translation>
 <translation id="688738109438487280">ነባሩን ውሂብ ወደ <ph name="TO_ACCOUNT" /> ያክሉ።</translation>
 <translation id="6891726759199484455">የይለፍ ቃልዎን ለመቅዳት ይክፈቱ</translation>
@@ -1156,6 +1158,7 @@
 <translation id="8393700583063109961">መልዕክት ይላኩ</translation>
 <translation id="8410695015584479363">ዋጋዎችን ተከታተል</translation>
 <translation id="8413126021676339697">ሙሉ ታሪክ አሳይ</translation>
+<translation id="8424781820952413435">ገጽ ተልኳል። እሱን ለማየት፣ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ Chromeን ይክፈቱ</translation>
 <translation id="8427875596167638501">የቅድመ-እይታ ትር ግማሽ ተከፍቷል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8438566539970814960">ፍለጋዎችን እና አሰሳን የተሻለ አድርግ</translation>
@@ -1197,6 +1200,7 @@
 <translation id="860282621117673749">የዋጋ ቅነሳ ማንቂያዎች</translation>
 <translation id="8616006591992756292">የእርስዎ Google መለያ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="8617240290563765734">በወረደው ይዘት ላይ የተጠቆመው ዩአርኤል ይከፈት?</translation>
+<translation id="8621068256433641644">ስልክ</translation>
 <translation id="8636825310635137004">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት ስምረትን ያብሩ።</translation>
 <translation id="8641930654639604085">የአዋቂ ሰው ጣቢያዎችን ለማገድ ሞክር</translation>
 <translation id="8655129584991699539">ውሂቡን በChrome ቅንብሮች ውስጥ ማጽዳት ይችላሉ</translation>

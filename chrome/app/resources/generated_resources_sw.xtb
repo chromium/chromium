@@ -361,6 +361,7 @@
 <translation id="1403222014593521787">Imeshindwa kuunganisha kwenye seva mbadala</translation>
 <translation id="1405779994569073824">Kimeacha kufanya kazi.</translation>
 <translation id="1406500794671479665">Inathibitisha...</translation>
+<translation id="1407069428457324124">Mandhari meusi</translation>
 <translation id="1407135791313364759">Fungua zote</translation>
 <translation id="140723521119632973">Kuwasha Mtandao wa Simu</translation>
 <translation id="1407489512183974736">Imepogolewa Katikati</translation>
@@ -5667,6 +5668,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="729583233778673644">Ruhusu usimbaji wa AES na RC4. Kutumia chaguo hili huongeza uwezekano wa hatari, kwa kuwa misimbo ya RC45 si salama.</translation>
 <translation id="729761647156315797">Chagua lugha na kibodi yako</translation>
 <translation id="7297726121602187087">Kijani kilichokolea</translation>
+<translation id="7298195798382681320">Zinazopendekezwa</translation>
 <translation id="7299337219131431707">Washa kuvinjari kwa Mgeni</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Huenda programu hii ikazuia Chrome isifanye kazi inavyostahili.}other{Huenda programu hizi zikazuia Chrome isifanye kazi inavyostahili.}}</translation>
 <translation id="7303281435234579599">Lo! Hitilafu imetokea wakati wa kuweka hali ya onyesho.</translation>
@@ -7267,6 +7269,7 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="9026852570893462412">Huenda mchakato huu ukachukua dakika kadhaa. Inapakua kompyuta iliyo mbali.</translation>
 <translation id="9027459031423301635">Fungua Kiungo katika Kichupo &amp;Kipya</translation>
 <translation id="9030515284705930323">Shirika lako halijaruhusu Duka la Google Play kwa akaunti yako. Wasiliana na msimamizi wako kwa maelezo zaidi.</translation>
+<translation id="9030754204056345429">Haraka sana</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> haiwezi kutumika tena</translation>
 <translation id="9031549947500880805">Hifadhi nakala kwenye Hifadhi ya Google. Rejesha data au ubadilishe kifaa unachotumia kwa urahisi wakati wowote. Nakala unayohifadhi huwa na data ya programu.</translation>

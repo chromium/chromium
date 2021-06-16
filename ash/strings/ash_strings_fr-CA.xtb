@@ -80,6 +80,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1516740043221086139">Le mode Ne pas déranger est activé.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
 <translation id="1525508553941733066">IGNORER</translation>
+<translation id="1536604384701784949">Pour utiliser <ph name="USER_EMAIL_ADDRESS" />, vous devez d'abord vous déconnecter de tous les comptes. Pour vous déconnecter, sélectionnez Annuler afin de revenir en arrière. Sélectionnez ensuite l'heure pour ouvrir la zone de notifications, puis sélectionnez Se déconnecter. Puis connectez-vous de nouveau à <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1550523713251050646">Cliquez pour afficher plus d'options</translation>
@@ -524,6 +525,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5033299697334913360">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est connecté à un nouveau téléphone</translation>
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>
+<translation id="5039804452771397117">Autoriser</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5071064518267176975">Une application demande l'autorisation d'utiliser le microphone</translation>
 <translation id="5075554201838155866">Activer les sous-titres</translation>
@@ -801,6 +803,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7461924472993315131">NIP</translation>
 <translation id="746232733191930409">Mode d'enregistrement de l'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
+<translation id="7473891865547856676">Non merci</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
 <translation id="7483025031359818980">La zone de sélection est définie à l'écran au complet</translation>
 <translation id="7486227320194954040">Réduire les outils de marqueur</translation>

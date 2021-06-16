@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">ಸಿಂಕ್ ಆನ್ ಮಾಡುವುದೇ?</translation>
 <translation id="123724288017357924">ಸಂಗ್ರಹ ಮಾಡಿದ ವಿಷಯವನ್ನು ನಿರ್ಲಕ್ಷಿಸಿ, ಪ್ರಸ್ತುತ ಪುಟ ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="1242883863226959074">ಸಾಧನ</translation>
 <translation id="124678866338384709">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಮುಚ್ಚಿ</translation>
 <translation id="1258753120186372309">Google ಡೂಡಲ್‌: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -920,6 +921,7 @@
 <translation id="6864459304226931083">ಚಿತ್ರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6865313869410766144">ಸ್ವಯಂತುಂಬುವಿಕೆ ಫಾರ್ಮ್ ಡೇಟಾ</translation>
 <translation id="6867400383614725881">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
+<translation id="6869056123412990582">ಕಂಪ್ಯೂಟರ್‌</translation>
 <translation id="6882836635272038266">ಅಪಾಯಕಾರಿ ಎಂದು ತಿಳಿದಿರುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ.</translation>
 <translation id="688738109438487280">ಪ್ರಸ್ತುತ ಡೇಟಾವನ್ನು <ph name="TO_ACCOUNT" /> ಗೆ ಸೇರಿಸಿ.</translation>
 <translation id="6891726759199484455">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಕಲಿಸಲು ಅನ್‌ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1156,6 +1158,7 @@
 <translation id="8393700583063109961">ಸಂದೇಶ ಕಳುಹಿಸು</translation>
 <translation id="8410695015584479363">ದರಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="8413126021676339697">ಪೂರ್ತಿ ಇತಿಹಾಸವನ್ನು ತೋರಿಸಿ</translation>
+<translation id="8424781820952413435">ಪುಟವನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ. ಅದನ್ನು ನೋಡಲು, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Chrome ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8427875596167638501">ಪೂರ್ವವೀಕ್ಷಣೆ ಟ್ಯಾಬ್ ಅರ್ಧ ತೆರೆದಿದೆ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8438566539970814960">ಹುಡುಕಾಟಗಳನ್ನು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸುವಂತೆ ಮಾಡಿ</translation>
@@ -1197,6 +1200,7 @@
 <translation id="860282621117673749">ಬೆಲೆ ಕುಸಿತ ಎಚ್ಚರಿಕೆಗಳು</translation>
 <translation id="8616006591992756292">ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="8617240290563765734">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾದ ವಿಷಯದಲ್ಲಿ ಸೂಚಿಸಲಾದ ನಿರ್ದಿಷ್ಟ URL ತೆರೆಯುವುದೇ?</translation>
+<translation id="8621068256433641644">ಫೋನ್</translation>
 <translation id="8636825310635137004">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="8641930654639604085">ವಯಸ್ಕರ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8655129584991699539">ನೀವು ಡೇಟಾವನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ತೆರವುಗೊಳಿಸಬಹುದು</translation>

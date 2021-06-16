@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Kas lülitada sünkroonimine sisse?</translation>
 <translation id="123724288017357924">Praeguse lehe uuesti laadimine, eirates vahemälus olevat sisu</translation>
 <translation id="1240288207750131269">Keele laadimine: <ph name="LANG" /></translation>
+<translation id="1242883863226959074">seadmes</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1258753120186372309">Google'i Doodle'i vigurlogo: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Üksust <ph name="CONTENT_TYPE" /> ei õnnestunud jagada</translation>
@@ -920,6 +921,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6864459304226931083">Laadi kujutis alla</translation>
 <translation id="6865313869410766144">Automaattäitmise vormiandmed</translation>
 <translation id="6867400383614725881">Uus inkognito vaheleht</translation>
+<translation id="6869056123412990582">arvutis</translation>
 <translation id="6882836635272038266">Standardne kaitse teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu.</translation>
 <translation id="688738109438487280">Lisab olemasolevad andmed kontole <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Avage oma parooli kopeerimiseks</translation>
@@ -1156,6 +1158,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8393700583063109961">Saatke sõnum</translation>
 <translation id="8410695015584479363">Jälgi hindu</translation>
 <translation id="8413126021676339697">Kuva kogu ajalugu</translation>
+<translation id="8424781820952413435">Leht saadetud. Selle vaatamiseks avage Chrome oma <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Eelvaate vaheleht on pooleldi avatud</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8438566539970814960">Otsingute ja sirvimise paremaks muutmine</translation>
@@ -1197,6 +1200,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="860282621117673749">Hinnalanguse märguanded</translation>
 <translation id="8616006591992756292">Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="8617240290563765734">Kas avada allalaaditud sisus toodud soovitatud URL?</translation>
+<translation id="8621068256433641644">telefonis</translation>
 <translation id="8636825310635137004">Vahelehtede hankimiseks oma teistest seadmetest lülitage sünkroonimine sisse.</translation>
 <translation id="8641930654639604085">Proovi blokeerida täiskasvanutele mõeldud saidid</translation>
 <translation id="8655129584991699539">Andmeid saab kustutada Chrome’i seadetes.</translation>

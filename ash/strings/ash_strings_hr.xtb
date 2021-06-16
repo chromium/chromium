@@ -80,6 +80,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1516740043221086139">Način Ne uznemiravaj je uključen.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz postavki obavijesti. Obavijesti su isključene za jednu aplikaciju}one{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikaciju}few{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacije}other{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacija}}</translation>
 <translation id="1525508553941733066">ODBACI</translation>
+<translation id="1536604384701784949">Da biste koristili <ph name="USER_EMAIL_ADDRESS" />, najprije se trebate odjaviti sa svih računa. Da biste se odjavili, odaberite Odustani da biste se vratili. Zatim odaberite vrijeme da bi se otvorilo područje statusa i odaberite opciju Odjava. Nakon toga se ponovo prijavite na <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Veliki pokazivač miša</translation>
 <translation id="1546492247443594934">Radna površina 2</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
@@ -524,6 +525,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5033299697334913360">Kliknite bilo gdje da biste snimili cijeli zaslon</translation>
 <translation id="5035236842988137213">Uređaj <ph name="DEVICE_NAME" /> povezan je s novim telefonom</translation>
 <translation id="5035389544768382859">Potvrđivanje konfiguracije zaslona</translation>
+<translation id="5039804452771397117">Dopusti</translation>
 <translation id="504465286040788597">Prethodni odlomak</translation>
 <translation id="5071064518267176975">Aplikacija želi koristiti mikrofon</translation>
 <translation id="5075554201838155866">Pokreni titlove</translation>
@@ -801,6 +803,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7461924472993315131">Prikvači</translation>
 <translation id="746232733191930409">Način snimanja zaslona</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
+<translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Upravljate glazbom, videozapisima i drugim medijima</translation>
 <translation id="7483025031359818980">Za područje odabira postavljen je cijeli zaslon</translation>
 <translation id="7486227320194954040">Sažmi alate markera</translation>

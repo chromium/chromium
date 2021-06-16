@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Включить синхронизацию?</translation>
 <translation id="123724288017357924">Обновить страницу без учета кешированного контента</translation>
 <translation id="1240288207750131269">Выполняется загрузка пакета "<ph name="LANG" />"…</translation>
+<translation id="1242883863226959074">устройстве</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@
 <translation id="6864459304226931083">Скачать изображение</translation>
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
 <translation id="6867400383614725881">Новая вкладка инкогнито</translation>
+<translation id="6869056123412990582">компьютере</translation>
 <translation id="6882836635272038266">Стандартная защита от опасных сайтов, расширений и скачанных файлов.</translation>
 <translation id="688738109438487280">Объединить сохраненные данные с данными пользователя <ph name="TO_ACCOUNT" /></translation>
 <translation id="6891726759199484455">Чтобы скопировать пароль, разблокируйте экран</translation>
@@ -1156,6 +1158,7 @@
 <translation id="8393700583063109961">Отправить сообщение</translation>
 <translation id="8410695015584479363">Отслеживать цены</translation>
 <translation id="8413126021676339697">Показать всю историю</translation>
+<translation id="8424781820952413435">Страница отправлена. Чтобы ее открыть, запустите Chrome на своем <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Вкладка предпросмотра открыта на половину высоты</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8438566539970814960">Помогать улучшить просмотр страниц и поиск</translation>
@@ -1197,6 +1200,7 @@
 <translation id="860282621117673749">Оповещения о скидках</translation>
 <translation id="8616006591992756292">Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Открыть предложенный URL из скачанного контента?</translation>
+<translation id="8621068256433641644">телефоне</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="8641930654639604085">Блокировать сайты для взрослых</translation>
 <translation id="8655129584991699539">Удалить данные можно в настройках Chrome</translation>

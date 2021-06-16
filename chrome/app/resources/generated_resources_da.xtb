@@ -362,6 +362,7 @@
 <translation id="1403222014593521787">Der kunne ikke oprettes forbindelse til proxyserveren</translation>
 <translation id="1405779994569073824">Gået ned.</translation>
 <translation id="1406500794671479665">Bekræfter...</translation>
+<translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="140723521119632973">Aktivering af mobildata</translation>
 <translation id="1407489512183974736">Centrér, beskær</translation>
@@ -5674,6 +5675,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="729583233778673644">Tillad AES- og RC4-kryptering. Du løber en større risiko, hvis du vælger denne mulighed, da RC4-krypteringsalgoritmerne er usikre.</translation>
 <translation id="729761647156315797">Vælg dit sprog og tastatur</translation>
 <translation id="7297726121602187087">Mørkegrøn</translation>
+<translation id="7298195798382681320">Anbefalet</translation>
 <translation id="7299337219131431707">Aktivér gæstesession</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Denne app kan forhindre Chrome i at fungere korrekt.}one{Denne app kan forhindre Chrome i at fungere korrekt.}other{Disse apps kan forhindre Chrome i at fungere korrekt.}}</translation>
 <translation id="7303281435234579599">Ups! Noget gik galt under konfigurationen af demotilstand.</translation>
@@ -7273,6 +7275,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9026852570893462412">Denne proces kan tage et par minutter. Den virtuelle maskine downloades.</translation>
 <translation id="9027459031423301635">Åbn link på ny &amp;fane</translation>
 <translation id="9030515284705930323">Din organisation har ikke aktiveret Google Play Butik for din konto. Kontakt din administrator for at få yderligere oplysninger.</translation>
+<translation id="9030754204056345429">Hurtigere</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">"<ph name="PLUGIN_NAME" />" understøttes ikke længere</translation>
 <translation id="9031549947500880805">Sikkerhedskopiér i Google Drev. Gendan nemt dine data, eller skift enhed når som helst. Din backup omfatter appdata.</translation>

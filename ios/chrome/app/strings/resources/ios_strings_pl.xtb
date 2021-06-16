@@ -389,6 +389,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5062321486222145940">Zainstaluj Dysk Google</translation>
 <translation id="5083464117946352670">Nie można ustalić rozmiaru pliku.</translation>
 <translation id="5090832849094901128">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Możesz zapisywać strony do przeczytania później lub offline. Chrome zapyta, czy chcesz zapisać długie strony.</translation>
 <translation id="5094827893301452931">Tweet opublikowany.</translation>
 <translation id="5118764316110575523">Wyłączono</translation>
 <translation id="5127805178023152808">Synchronizacja jest wyłączona</translation>
@@ -755,6 +756,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8548878600947630424">Znajdź na stronie...</translation>
 <translation id="8574235780160508979">31 marca zmienią się Warunki korzystania z Chrome. <ph name="BEGIN_LINK" />Zapoznaj się z nimi<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Wyłączono</translation>
+<translation id="8590913940444621808">Nigdy nie pytaj</translation>
 <translation id="8591976964826315682">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="8605219856220328675">Zamknij kartę</translation>
 <translation id="8620640915598389714">Edytuj</translation>

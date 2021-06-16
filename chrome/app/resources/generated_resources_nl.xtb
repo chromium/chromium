@@ -359,6 +359,7 @@
 <translation id="1403222014593521787">Kan geen verbinding maken met de proxy</translation>
 <translation id="1405779994569073824">Gecrasht</translation>
 <translation id="1406500794671479665">Verifiëren...</translation>
+<translation id="1407069428457324124">Donker thema</translation>
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="140723521119632973">Mobiele activering</translation>
 <translation id="1407489512183974736">Midden bijsnijden</translation>
@@ -5654,6 +5655,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="729583233778673644">AES- en RC4-versleuteling toestaan. Als je deze optie gebruikt, loop je meer risico, aangezien RC4-codering onbeveiligd is.</translation>
 <translation id="729761647156315797">Kies je taal en toetsenbord</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
+<translation id="7298195798382681320">Aanbevolen</translation>
 <translation id="7299337219131431707">Gebruiken als gast toestaan</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Deze app kan ervoor zorgen dat Chrome niet goed functioneert.}other{Deze apps kunnen ervoor zorgen dat Chrome niet goed functioneert.}}</translation>
 <translation id="7303281435234579599">Er is een probleem opgetreden bij het instellen van de demomodus.</translation>
@@ -7251,6 +7253,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9026852570893462412">Dit proces kan enkele minuten duren. De virtuele machine wordt gedownload.</translation>
 <translation id="9027459031423301635">Link openen op nieuw &amp;tabblad</translation>
 <translation id="9030515284705930323">Je organisatie heeft de Google Play Store niet aangezet voor jouw account. Neem contact op met je beheerder voor meer informatie.</translation>
+<translation id="9030754204056345429">Sneller</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> wordt niet meer ondersteund</translation>
 <translation id="9031549947500880805">Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. De back-up bevat app-gegevens.</translation>

@@ -364,6 +364,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1403222014593521787">Povezave z omrežjem proxy ni mogoče vzpostaviti</translation>
 <translation id="1405779994569073824">Zrušitev.</translation>
 <translation id="1406500794671479665">Preverjanje ...</translation>
+<translation id="1407069428457324124">Temna tema</translation>
 <translation id="1407135791313364759">Odpri vse</translation>
 <translation id="140723521119632973">Aktiviranje mobilnega omrežja</translation>
 <translation id="1407489512183974736">Na sredino in obrezano</translation>
@@ -5678,6 +5679,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="729583233778673644">Dovoli šifriranje AES in RC4. Če uporabite to možnosti, je tveganje večje, saj šifriranje RC4 ni varno.</translation>
 <translation id="729761647156315797">Izbira jezika in tipkovnice</translation>
 <translation id="7297726121602187087">Temno zelena</translation>
+<translation id="7298195798382681320">Priporočeni</translation>
 <translation id="7299337219131431707">Omogoči brskanje za goste</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ta aplikacija bi lahko Chromu preprečila normalno delovanje.}one{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}two{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}few{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}other{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}}</translation>
 <translation id="7303281435234579599">Ojoj. Pri nastavljanju predstavitvenega načina je prišlo do napake.</translation>
@@ -7279,6 +7281,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9026852570893462412">To lahko traja nekaj minut. Prenašanje navideznega računalnika.</translation>
 <translation id="9027459031423301635">Povezavo odpri v novem &amp;zavihku</translation>
 <translation id="9030515284705930323">Organizacija za vaš račun ni omogočila Trgovine Google Play. Če želite več informacij, se obrnite na skrbnika.</translation>
+<translation id="9030754204056345429">Hitrejša</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Vtičnik <ph name="PLUGIN_NAME" /> ni več podprt.</translation>
 <translation id="9031549947500880805">Varnostno kopiranje v Google Drive. Kadar koli lahko preprosto obnovite podatke v napravi ali zamenjate napravo z drugo. Varnostne kopije vključujejo podatke aplikacij.</translation>

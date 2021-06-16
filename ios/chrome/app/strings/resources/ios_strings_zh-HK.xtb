@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>
 <translation id="5090832849094901128">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。</translation>
+<translation id="5092117651143801290">您可儲存網頁，以便稍後或離線閱讀。Chrome 將會詢問您是否要儲存長篇幅網頁。</translation>
 <translation id="5094827893301452931">已順利發布到 Twitter。</translation>
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5127805178023152808">同步處理已停用</translation>
@@ -755,6 +756,7 @@
 <translation id="8548878600947630424">從網頁中尋找…</translation>
 <translation id="8574235780160508979">Chrome 的《服務條款》將於 3 月 31 日變更。<ph name="BEGIN_LINK" />請查看詳情<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">閂</translation>
+<translation id="8590913940444621808">永不詢問</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8605219856220328675">關閉分頁</translation>
 <translation id="8620640915598389714">編輯</translation>

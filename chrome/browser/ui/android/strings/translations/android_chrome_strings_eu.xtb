@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Sinkronizazioa aktibatu nahi duzu?</translation>
 <translation id="123724288017357924">Kargatu orria, cacheko edukiari ez ikusi eginda</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> kargatzen</translation>
+<translation id="1242883863226959074">gailuan</translation>
 <translation id="124678866338384709">Itxi oraingo fitxa</translation>
 <translation id="1258753120186372309">Google doodle-a: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6864459304226931083">Deskargatu irudia</translation>
 <translation id="6865313869410766144">Bete inprimakiko datuak automatikoki</translation>
 <translation id="6867400383614725881">Sortu ezkutuko moduko fitxa bat</translation>
+<translation id="6869056123412990582">ordenagailuan</translation>
 <translation id="6882836635272038266">Kaltegarriak direla dakigun webgune, deskarga eta luzapenen aurkako babes estandarra.</translation>
 <translation id="688738109438487280">Gehitu lehendik dituzun datuak <ph name="TO_ACCOUNT" /> kontuan.</translation>
 <translation id="6891726759199484455">Desblokeatu pasahitza kopiatzeko</translation>
@@ -1156,6 +1158,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8393700583063109961">Bidali mezua</translation>
 <translation id="8410695015584479363">Egin prezioen jarraipena</translation>
 <translation id="8413126021676339697">Erakutsi historia osoa</translation>
+<translation id="8424781820952413435">Bidali da orria. Ikusteko, ireki Chrome <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Aurrebista-fitxa erdiirekita dago</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
@@ -1197,6 +1200,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="860282621117673749">Prezio-jaitsierei buruzko alertak</translation>
 <translation id="8616006591992756292">Google-ko kontuko historia arakatzeko beste modu batzuk aurki zenitzake <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="8617240290563765734">Deskargatutako edukian iradokitako URL helbidea ireki nahi duzu?</translation>
+<translation id="8621068256433641644">telefonoan</translation>
 <translation id="8636825310635137004">Beste gailuetako fitxak eskura izateko, aktibatu sinkronizazioa.</translation>
 <translation id="8641930654639604085">Blokeatu helduentzako webguneak</translation>
 <translation id="8655129584991699539">Chrome ezarpenetan garbi ditzakezu datuak</translation>

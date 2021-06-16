@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">አትረብሽ በርቷል።</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለአንድ መተግበሪያ ጠፍተዋል}one{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለ# መተግበሪያዎች ጠፍተዋል}other{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለ# መተግበሪያዎች ጠፍተዋል}}</translation>
 <translation id="1525508553941733066">አሰናብት</translation>
+<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" />ን ለመጠቀም በመጀመሪያ ከሁሉም መለያዎች ዘግተው መውጣት ይኖርብዎታል። ዘግቶ ለመውጣት ወደ ኋላ ለመመለስ ይቅር የሚለውን ይምረጡ። ከዚያ የሁኔታውን አከባቢ ለመክፈት ጊዜውን ይምረጡ እና ዘግተህ ውጣ የሚለውን ይምረጡ። ከዚያ እንደገና ወደ <ph name="USER_EMAIL_ADDRESS_2" /> በመለያ ይግቡ።</translation>
 <translation id="15373452373711364">ትልቅ የመዳፊት ጠቋሚ</translation>
 <translation id="1546492247443594934">ዴስክ 2</translation>
 <translation id="1550523713251050646">ለተጨማሪ አማራጮች ጠቅ ያድርጉ</translation>
@@ -524,6 +525,7 @@
 <translation id="5033299697334913360">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ከአዲስ ስልክ ጋር ተገናኝቷል</translation>
 <translation id="5035389544768382859">የማሳያ ውቅረትን ያረጋግጡ</translation>
+<translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="504465286040788597">ቀዳሚ አንቀጽ</translation>
 <translation id="5071064518267176975">አንድ መተግበሪያ ማይክሮፎኑን መጠቀም ይፈልጋል</translation>
 <translation id="5075554201838155866">ዝግ መግለጫ ፅሁፎችን ይጀምሩ</translation>
@@ -801,6 +803,7 @@
 <translation id="7461924472993315131">ሰካ</translation>
 <translation id="746232733191930409">የማያ ገጽ ቀረጻ ሁነታ</translation>
 <translation id="7466449121337984263">እባክዎ ዳሳሹን ይንኩ</translation>
+<translation id="7473891865547856676">አይ፣ አመሰግናለሁ</translation>
 <translation id="7477793887173910789">የእርስዎን ሙዚቃ፣ ቪዲዮዎች እና ተጨማሪ ነገሮች ይቆጣጠሩ</translation>
 <translation id="7483025031359818980">የምርጫ አካባቢ ወደ ሙሉ ማያ ገጽ ተቀናብሯል</translation>
 <translation id="7486227320194954040">የምልክት ማድረጊያ መሣሪያዎችን ሰብስብ</translation>

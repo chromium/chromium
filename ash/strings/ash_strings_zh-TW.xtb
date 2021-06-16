@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">零打擾模式已開啟。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉一個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
 <translation id="1525508553941733066">關閉</translation>
+<translation id="1536604384701784949">如要使用 <ph name="USER_EMAIL_ADDRESS" />，你必須先登出所有帳戶，做法是選擇 [取消] 返回上個頁面，然後選取時間來開啟狀態區，並且點選 [登出]。接著就能重新登入 <ph name="USER_EMAIL_ADDRESS_2" />。</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1550523713251050646">按一下即可查看更多選項</translation>
@@ -524,6 +525,7 @@
 <translation id="5033299697334913360">點擊任一處即可擷取全螢幕畫面</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> 已連結到新手機</translation>
 <translation id="5035389544768382859">確認螢幕設定</translation>
+<translation id="5039804452771397117">允許</translation>
 <translation id="504465286040788597">上一段</translation>
 <translation id="5071064518267176975">某個應用程式要求使用麥克風</translation>
 <translation id="5075554201838155866">啟用隱藏式輔助字幕</translation>
@@ -801,6 +803,7 @@
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">螢幕畫面錄製模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
+<translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
 <translation id="7483025031359818980">選取區域為全螢幕</translation>
 <translation id="7486227320194954040">收合標記工具</translation>

@@ -360,6 +360,7 @@
 <translation id="1403222014593521787">Nu se poate conecta la proxy</translation>
 <translation id="1405779994569073824">S-a blocat.</translation>
 <translation id="1406500794671479665">Se verifică...</translation>
+<translation id="1407069428457324124">Temă întunecată</translation>
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="140723521119632973">Activare celulară</translation>
 <translation id="1407489512183974736">Pe centru, decupat</translation>
@@ -5658,6 +5659,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="729583233778673644">Permite criptarea AES și RC4. Folosirea acestei opțiuni îți mărește riscul, deoarece suitele de codificare RC4 sunt nesecurizate.</translation>
 <translation id="729761647156315797">Alege limba și tastatura</translation>
 <translation id="7297726121602187087">Verde închis</translation>
+<translation id="7298195798382681320">Recomandate</translation>
 <translation id="7299337219131431707">Activați navigarea ca invitat</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Această aplicație poate împiedica funcționarea corectă a browserului Chrome.}few{Aceste aplicații pot împiedica funcționarea corectă a browserului Chrome.}other{Aceste aplicații pot împiedica funcționarea corectă a browserului Chrome.}}</translation>
 <translation id="7303281435234579599">Hopa! A apărut o eroare la configurarea modului demo.</translation>
@@ -7256,6 +7258,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="9026852570893462412">Poate dura câteva minute. Se descarcă mașina virtuală.</translation>
 <translation id="9027459031423301635">Deschide linkul într-o filă &amp;nouă</translation>
 <translation id="9030515284705930323">Organizația nu a activat Magazinul Google Play pentru contul tău. Contactează administratorul pentru mai multe informații.</translation>
+<translation id="9030754204056345429">Mai rapidă</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> nu mai este acceptat</translation>
 <translation id="9031549947500880805">Fă backup în Google Drive. Restabilește datele sau schimbă dispozitivul cu ușurință, în orice moment. Backupul include datele aplicațiilor.</translation>

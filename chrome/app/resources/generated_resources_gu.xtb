@@ -360,6 +360,7 @@
 <translation id="1403222014593521787">પ્રૉક્સી સાથે કનેક્ટ કરી શકાયું નથી</translation>
 <translation id="1405779994569073824">ક્રૅશ થયું</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
+<translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="140723521119632973">સેલ્યુલર સક્રિયકરણ</translation>
 <translation id="1407489512183974736">મધ્યમાં કાપેલું</translation>
@@ -1212,6 +1213,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" />ને કસ્ટમાઇઝ કરો અને નિયંત્રિત કરો</translation>
 <translation id="2300578660547687840">શોધ કીવર્ડ માટે કીબોર્ડ શૉર્ટકટ</translation>
 <translation id="2301382460326681002">એક્સ્ટેંશન રૂટ ડિરેક્ટરી અમાન્ય છે.</translation>
+<translation id="2301402091755573488">શેર કરેલી ટૅબ</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" એ અતિરિક્ત પરવાનગીઓની વિનંતી કરી છે.</translation>
 <translation id="23055578400314116">વપરાશકર્તાનું નામ પસંદ કરો</translation>
 <translation id="2307462900900812319">નેટવર્ક ગોઠવો</translation>
@@ -1489,6 +1491,7 @@
 <translation id="2612676031748830579">કાર્ડ નંબર</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> <ph name="FILENAME" />માં ફેરફાર કરી શકશે</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> પર તમારો ડેટા વાંચો અને બદલો</translation>
+<translation id="2618274688675613222">સેટઅપ ચાલુ રાખવા માટે, 'આગલું' બટન સક્રિય કરો અથવા "પસંદ કરો" સ્વિચની સોંપણી બદલવા માટે 'પાછલું' બટન સક્રિય કરો.</translation>
 <translation id="2618797463720777311">'નજીકના શેર'નું સેટઅપ કરો</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> સુરક્ષિતપણે ડાઉનલોડ કરી શકાતી નથી.</translation>
@@ -2884,6 +2887,7 @@
 <translation id="4120817667028078560">પાથ ખૂબ લાંબો છે</translation>
 <translation id="4124823734405044952">તમારો સુરક્ષા કોડ રીસેટ કરવામાં આવ્યો છે</translation>
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
+<translation id="4126916490446791914">ઑટો-સ્કૅનની સુવિધા ચાલુ કરી</translation>
 <translation id="412730574613779332">સ્પાંડેક્સ</translation>
 <translation id="4130199216115862831">ઉપકરણ લૉગ</translation>
 <translation id="4130207949184424187">જ્યારે તમે ઑમ્નિબૉક્સથી શોધ કરો છો ત્યારે જે પૃષ્ઠ દર્શાવવામાં આવે છે તે આ એક્સટેન્શને બદલ્યું છે.</translation>
@@ -3266,6 +3270,7 @@
     જો તમારું બાળક સ્કૂલમાં Chromebookનો ઉપયોગ કરતું હોય અને તમે તમારા બાળકને બધા જરૂરી સ્કૂલવર્કનો ઍક્સેસ મળતો હોવાની ખાતરી કરવા માટે ઘરે શાળા જેવો અનુભવ રચવા ઇચ્છતા હો, તો કૃપા કરીને આ Family Link એકાઉન્ટમાંથી સાઇન આઉટ કરીને Chrome OS એકાઉન્ટ પેજમાંથી સ્કૂલના એકાઉન્ટમાં સાઇન ઇન કરો (નોંધ: Family Linkના માતાપિતા યોગ્ય નિયંત્રણો લાગુ થશે નહીં).&lt;br&gt;&lt;br&gt;
     જો તમારું બાળક સ્કૂલમાં Chromebookનો ઉપયોગ કરતું ન હોય અથવા તમે ઘરે Family Linkનો ઉપયોગ કરીને બાળકના એકાઉન્ટને મેનેજ કરવા ઇચ્છતા હો, તો આ પ્રોફાઇલમાં સ્કૂલનું એકાઉન્ટ ઉમેરવા માટે કૃપા કરીને નીચે આપેલા આગળ બટન પર ક્લિક કરો.</translation>
 <translation id="4576541033847873020">Bluetooth ડિવાઇસની જોડી કરો</translation>
+<translation id="4576763597586015380">તમારા Google એકાઉન્ટમાં પાસવર્ડ સાચવવાનું ચાલુ રાખવા માટે, આ તમે જ હોવાની ચકાસણી કરો</translation>
 <translation id="4579453506923101210">કનેક્ટ કરેલા ફોનથી છૂટા પડો</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> કાસ્ટ કરવામાં અસમર્થ.</translation>
 <translation id="4581774856936278355">Linuxની પુનઃસ્થાપના કરતી વખતે ભૂલ આવી</translation>
@@ -4986,6 +4991,7 @@ USB ડિવાઇસ</translation>
 <translation id="6538098297809675636">કોડની ભાળ મેળવવામાં ભૂલ આવી</translation>
 <translation id="653920215766444089">પૉઇન્ટિંગ ડિવાઇસ શોધી રહ્યાં છીએ</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" /> નોંધ: <ph name="END_BOLD" /> જો તમે શું કરી રહ્યાં છો તે તમે જાણતા હો અથવા જો તમને તેવું કરવા માટે કહેવામાં આવ્યું હોય તો જ ચાલુ કરો, કારણ કે ડેટાનો સંગ્રહ પ્રદર્શન પર અસર કરી શકે છે.</translation>
+<translation id="6540672086173674880">Search અને Googleની અન્ય સેવાઓને મનપસંદ બનાવવા માટે, Google તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરી શકે છે. તમે આને કોઈપણ સમયે myaccount.google.com/activitycontrols/search પર બદલી શકો છો</translation>
 <translation id="6541638731489116978">આ સાઇટને તમારા મોશન સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="6545665334409411530">પુનરાવર્તન રેટ</translation>
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
@@ -5649,6 +5655,7 @@ USB ડિવાઇસ</translation>
 <translation id="729583233778673644">AES અને RC4 એન્ક્રિપ્શનની મંજૂરી આપો. આનાથી વિકલ્પનો ઉપયોગ કરવાનું તમારું જોખમ વધે છે, કારણ કે RC4 સાઇફર અસુરક્ષિત હોય છે.</translation>
 <translation id="729761647156315797">તમારી ભાષા અને કીબોર્ડ પસંદ કરો</translation>
 <translation id="7297726121602187087">ઘેરો લીલો</translation>
+<translation id="7298195798382681320">ભલામણ કરેલ</translation>
 <translation id="7299337219131431707">અતિથિ બ્રાઉઝિંગ ચાલુ કરો</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{આ ઍપ્લિકેશન Chromeને યોગ્ય રીતે કાર્ય કરવાથી અટકાવી શકે છે.}one{આ ઍપ્લિકેશનો Chromeને યોગ્ય રીતે કાર્ય કરવાથી અટકાવી શકે છે.}other{આ ઍપ્લિકેશનો Chromeને યોગ્ય રીતે કાર્ય કરવાથી અટકાવી શકે છે.}}</translation>
 <translation id="7303281435234579599">અરેરે! ડેમો મોડ સેટઅપ કરતી વખતે કંઈક ખોટું થયું હતું.</translation>
@@ -5871,6 +5878,7 @@ USB ડિવાઇસ</translation>
 <translation id="754207240458482646">તમારા એકાઉન્ટ પરના અન્ય ડિવાઇસ સાથે સિંક કરેલું. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">આ <ph name="IDS_SHORT_PRODUCT_NAME" /> ડિવાઇસ પર ડિબગીંગ સુવિધાઓ ચાલુ કરો</translation>
 <translation id="7543525346216957623">તમારા માતા-પિતાને કહો</translation>
+<translation id="7546012169463147344">ઑટો-સ્કૅનની સુવિધા સ્ક્રીન પરની બધી આઇટમ પર ઑટોમૅટિક રીતે વારાફરતી જશે અને તેના પર ફોકસ કરશે. જ્યારે કોઈ આઇટમ ફોકસ કરવામાં આવી હોય, ત્યારે તેને સક્રિય કરવા માટે તમે હમણાં જ જે "પસંદ કરો" કીની સોંપણી કરી, તેને દબાવો.</translation>
 <translation id="7547317915858803630">ચેતવણી: <ph name="PRODUCT_NAME" /> સેટિંગ્સ નેટવર્ક ડ્રાઇવ પર સ્ટોર કરી છે. આનું પરિણામ ધીમી ગતિ, ક્રેશેસ અથવા ડેટાનું નુકસાન પણ હોઈ શકે છે.</translation>
 <translation id="7548856833046333824">લેમોનેડ</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6835,6 +6843,7 @@ USB ડિવાઇસ</translation>
 <translation id="8621866727807194849">તમારા કમ્પ્યુટરમાં નુકસાનકારક સૉફ્ટવેર છે. Chrome તે કાઢી નાખે છે, તમારી સેટિંગ પાછી મેળવે છે અને એક્સ્ટેંશન બંધ કરે છે. તેને કારણે તમારું બ્રાઉઝર ફરી સામાન્ય રીતે કામ કરતું થઈ જશે.</translation>
 <translation id="8621979332865976405">તમારી સંપૂર્ણ સ્ક્રીન શેર કરો</translation>
 <translation id="8624354461147303341">છૂટ મેળવો</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;એક્સ્ટેન્શન્સ</translation>
 <translation id="8625663000550647058">તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="8625916342247441948">સાઇટને HID ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
@@ -6898,6 +6907,7 @@ USB ડિવાઇસ</translation>
 <translation id="8677212948402625567">બધાને સંકુચિત કરો...</translation>
 <translation id="867767487203716855">આગલી અપડેટ</translation>
 <translation id="8677859815076891398">કોઈ આલ્બમ નથી. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />માં કોઈ આલ્બમ બનાવો.</translation>
+<translation id="8678538439778360739"><ph name="TIME" /> વાગ્યે તમારા સિંક પાસફ્રેઝ વડે ડેટા એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. આમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસનો સમાવેશ હોતો નથી.</translation>
 <translation id="8678582529642151449">ટૅબ સંકોચાતી નથી</translation>
 <translation id="8678933587484842200">તમે આ ઍપ્લિકેશન કેવી રીતે લૉન્ચ કરવાનું પસંદ કરશો?</translation>
 <translation id="8680251145628383637">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવવા માટે સાઇન ઇન કરો. તમે તમારી Google સેવાઓ પર ઑટોમૅટિક રીતે સાઇન ઇન પણ થશો.</translation>
@@ -7237,6 +7247,7 @@ USB ડિવાઇસ</translation>
 <translation id="9026852570893462412">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. વર્ચ્યુઅલ મશીન ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
 <translation id="9027459031423301635">લિંક નવા &amp;ટૅબમાં ખોલો</translation>
 <translation id="9030515284705930323">તમારા એકાઉન્ટ માટે તમારી સંસ્થાએ Google Play સ્ટોર ચાલુ કરેલ નથી. વધુ માહિતી માટે તમારા એડમિનનો સંપર્ક કરો.</translation>
+<translation id="9030754204056345429">વધુ ઝડપી</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" />ને હવે સપોર્ટ કરવામાં આવતું નથી</translation>
 <translation id="9031549947500880805">Google ડ્રાઇવ પર બૅકઅપ લો. તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસને કોઈપણ સમયે સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ છે.</translation>

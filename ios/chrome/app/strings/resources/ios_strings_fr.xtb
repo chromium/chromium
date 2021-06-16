@@ -391,6 +391,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5062321486222145940">Installer Google Drive</translation>
 <translation id="5083464117946352670">Impos. déterm. taille fichier.</translation>
 <translation id="5090832849094901128">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">Vous pouvez enregistrer des pages pour les lire plus tard ou hors connexion. Chrome vous demandera si vous voulez enregistrer les longues pages.</translation>
 <translation id="5094827893301452931">Tweet publié.</translation>
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5127805178023152808">La synchronisation est désactivée.</translation>
@@ -758,6 +759,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8548878600947630424">Rechercher sur la page…</translation>
 <translation id="8574235780160508979">Les conditions d'utilisation de Chrome vont changer le 31 mars. <ph name="BEGIN_LINK" />Veuillez consulter les modifications<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Éteinte</translation>
+<translation id="8590913940444621808">Ne jamais demander</translation>
 <translation id="8591976964826315682">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="8605219856220328675">Fermer l'onglet</translation>
 <translation id="8620640915598389714">Modifier</translation>
@@ -805,6 +807,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9094033019050270033">Modifier le mot de passe</translation>
 <translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
+<translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Nouvelle connexion</translation>
 <translation id="9152539721251340337">Créer un code QR</translation>

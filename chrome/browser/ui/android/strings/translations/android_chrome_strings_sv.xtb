@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
 <translation id="123724288017357924">Läs in den aktuella sidan igen och ignorera cachelagrat innehåll</translation>
 <translation id="1240288207750131269">Läser in <ph name="LANG" /></translation>
+<translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
@@ -920,6 +921,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6864459304226931083">Ladda ned bild</translation>
 <translation id="6865313869410766144">Formuläruppgifter för Autofyll</translation>
 <translation id="6867400383614725881">Ny inkognitoflik</translation>
+<translation id="6869056123412990582">dator</translation>
 <translation id="6882836635272038266">Standardskydd mot kända skadliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="688738109438487280">Lägg till befintlig data i <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Lås upp om du vill kopiera lösenordet</translation>
@@ -1156,6 +1158,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8410695015584479363">Bevaka priser</translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>
+<translation id="8424781820952413435">Sidan har skickats. Öppna Chrome på <ph name="DEVICE_TYPE" /> för att se den</translation>
 <translation id="8427875596167638501">Fliken Förhandsgranskning visas på halva skärmen</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8438566539970814960">Förbättra sökningar och surfandet</translation>
@@ -1197,6 +1200,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="860282621117673749">Aviseringar om prissänkning</translation>
 <translation id="8616006591992756292">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Vill du öppna den föreslagna webbadressen i det nedladdade innehållet?</translation>
+<translation id="8621068256433641644">telefon</translation>
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="8641930654639604085">Försök blockera webbplatser med innehåll för vuxna</translation>
 <translation id="8655129584991699539">Du kan rensa data i Chrome-inställningarna</translation>

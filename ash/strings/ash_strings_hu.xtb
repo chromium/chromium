@@ -80,6 +80,7 @@
 <translation id="1516740043221086139">A Ne zavarjanak funkció be van kapcsolva.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Értesítési beállítások megjelenítése. Az értesítések egyetlen alkalmazásnál vannak kikapcsolva}other{Értesítési beállítások megjelenítése. Az értesítések # alkalmazásnál ki vannak kapcsolva}}</translation>
 <translation id="1525508553941733066">ELVETÉS</translation>
+<translation id="1536604384701784949">A(z) <ph name="USER_EMAIL_ADDRESS" /> használatához előbb ki kell jelentkeznie az összes fiókból. A kijelentkezéshez válassza a Mégse gombot. Ezzel visszalép az előző képernyőre. Ezután válassza az órát az állapotsor megnyitásához, majd válassza a Kijelentkezés lehetőséget. Végül jelentkezzen be újra a(z) <ph name="USER_EMAIL_ADDRESS_2" /> e-mail-címmel.</translation>
 <translation id="15373452373711364">Nagy egérmutató</translation>
 <translation id="1546492247443594934">2. asztal</translation>
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
@@ -525,6 +526,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5033299697334913360">Kattintson bárhová a teljes képernyő rögzítéséhez</translation>
 <translation id="5035236842988137213">A(z) <ph name="DEVICE_NAME" /> új telefonhoz csatlakozott</translation>
 <translation id="5035389544768382859">Képernyő-beállítás megerősítése</translation>
+<translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="504465286040788597">Előző bekezdés</translation>
 <translation id="5071064518267176975">Egy alkalmazás használni szeretné a mikrofont</translation>
 <translation id="5075554201838155866">Feliratok indítása</translation>
@@ -802,6 +804,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7461924472993315131">Rögzítés</translation>
 <translation id="746232733191930409">Képernyőfelvétel mód</translation>
 <translation id="7466449121337984263">Érintse meg az érzékelőt</translation>
+<translation id="7473891865547856676">Nem, köszönöm</translation>
 <translation id="7477793887173910789">Zeneszámok, videók és további tartalmak vezérlése</translation>
 <translation id="7483025031359818980">Kijelölési terület teljes képernyős nézetre állítva</translation>
 <translation id="7486227320194954040">Jelölőeszközök összecsukása</translation>

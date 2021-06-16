@@ -80,6 +80,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1516740043221086139">Moenie Steur Nie is aan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Wys kennisgewinginstellings. Kennisgewings is af vir 'n program}other{Wys kennisgewinginstellings. Kennisgewings is af vir # programme}}</translation>
 <translation id="1525508553941733066">MAAK TOE</translation>
+<translation id="1536604384701784949">Om <ph name="USER_EMAIL_ADDRESS" /> te gebruik, moet jy eers uit alle rekeninge afmeld. Om af te meld, moet jy Kanselleer kies om terug te gaan. Kies dan die tyd om die statusarea oop te maak en kies Meld af. Meld dan weer by <ph name="USER_EMAIL_ADDRESS_2" /> aan.</translation>
 <translation id="15373452373711364">Groot muismerker</translation>
 <translation id="1546492247443594934">Lessenaar 2</translation>
 <translation id="1550523713251050646">Klik vir meer opsies</translation>
@@ -525,6 +526,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5033299697334913360">Klik enige plek om volskerm vas te vang</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> het aan 'n nuwe foon gekoppel</translation>
 <translation id="5035389544768382859">Bevestig vertoonskermopstelling</translation>
+<translation id="5039804452771397117">Laat toe</translation>
 <translation id="504465286040788597">Vorige paragraaf</translation>
 <translation id="5071064518267176975">'n Program wil die mikrofoon gebruik</translation>
 <translation id="5075554201838155866">Begin onderskrifte</translation>
@@ -802,6 +804,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Skermopnamemodus</translation>
 <translation id="7466449121337984263">Raak asseblief die sensor</translation>
+<translation id="7473891865547856676">Nee, dankie</translation>
 <translation id="7477793887173910789">Beheer jou musiek, video's en meer</translation>
 <translation id="7483025031359818980">Seleksiearea is gestel op volskerm</translation>
 <translation id="7486227320194954040">Vou merkernutsgoed in</translation>

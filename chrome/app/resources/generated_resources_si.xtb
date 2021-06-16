@@ -362,6 +362,7 @@
 <translation id="1403222014593521787">ප්‍රොක්සි වෙත සබැඳීමට නොහැකිය</translation>
 <translation id="1405779994569073824">බිඳ වැටුණා.</translation>
 <translation id="1406500794671479665">තහවුරු කෙරෙමින්...</translation>
+<translation id="1407069428457324124">අඳුරු තේමාව</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="140723521119632973">සෙලියුලර් ක්‍රියාත්මක කිරීම</translation>
 <translation id="1407489512183974736">මධ්‍යස්ථානය ක්‍රොප් කරන ලදි</translation>
@@ -5660,6 +5661,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="729583233778673644">AES සහ RC4 සංකේතනයට ඉඩ දෙන්න. RC4 කේතාංක ආරක්ෂිත නොවන නිසා, මෙම විකල්පය භාවිතය ඔබගේ අවදානම වැඩි කරයි.</translation>
 <translation id="729761647156315797">ඔබේ භාෂාව සහ යතුරු පුවරුව තෝරාගන්න</translation>
 <translation id="7297726121602187087">තද කොළ</translation>
+<translation id="7298195798382681320">නිර්දේශිතයි</translation>
 <translation id="7299337219131431707">ආරාධිත පිරික්සීම සබල කරන්න</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{මෙම යෙදුම Chrome නිසියාකාරව වැඩ කිරීම වැළැක්විය හැකිය.}one{මෙම යෙදුම් Chrome නිසියාකාරව වැඩ කිරීම වැළැක්විය හැකිය.}other{මෙම යෙදුම් Chrome නිසියාකාරව වැඩ කිරීම වැළැක්විය හැකිය.}}</translation>
 <translation id="7303281435234579599">අපොයි! ආදර්ශන ප්‍රකාරය සැකසීමේදී යම් දෙයක් වැරදිණි.</translation>
@@ -7256,6 +7258,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9026852570893462412">මෙම ක්‍රියාවලියට විනාඩි කිහිපයක් ගත විය හැක. අතථ්‍ය යන්ත්‍රය බාගනිමින්.</translation>
 <translation id="9027459031423301635">සබැඳිය නව පටිත්තක විවෘත &amp;කරන්න</translation>
 <translation id="9030515284705930323">ඔබගේ සංවිධානය ඔබගේ ගිණුම සඳහා Google Play Store සබල කර නැත. වැඩිදුර තොරතුරු සඳහා ඔබගේ පරිපාලක අමතන්න.</translation>
+<translation id="9030754204056345429">වඩාත් වේගවත්</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> තවදුරටත් සහාය නොදක්වයි</translation>
 <translation id="9031549947500880805">Google Drive වෙත උපස්ථ කරන්න. ඕනෑම වේලාවක ඔබගේ දත්ත පහසුවෙන් ප්‍රතිසාධන කරන්න හෝ උපාංග අතර මාරු වන්න. ඔබගේ උපස්ථයට යෙදුම් දත්ත අන්තර්ගතයි.</translation>

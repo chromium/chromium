@@ -80,6 +80,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
+<translation id="1536604384701784949">Jeśli chcesz użyć adresu <ph name="USER_EMAIL_ADDRESS" />, musisz najpierw wylogować się ze wszystkich kont. Aby to zrobić, kliknij Anuluj i wróć na poprzednią stronę. Kliknij na niej godzinę, aby otworzyć pasek stanu, i kliknij Wyloguj się. Następnie zaloguj się ponownie na konto <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
 <translation id="1546492247443594934">Biurko 2</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
@@ -524,6 +525,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5033299697334913360">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="5035236842988137213">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone z nowym telefonem</translation>
 <translation id="5035389544768382859">Potwierdź konfigurację wyświetlacza</translation>
+<translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="504465286040788597">Poprzedni akapit</translation>
 <translation id="5071064518267176975">Aplikacja chce używać mikrofonu</translation>
 <translation id="5075554201838155866">Włącz napisy</translation>
@@ -801,6 +803,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
+<translation id="7473891865547856676">Nie, dziękuję</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
 <translation id="7483025031359818980">Jako obszar ustawiono cały ekran</translation>
 <translation id="7486227320194954040">Zwiń narzędzia pisaka</translation>

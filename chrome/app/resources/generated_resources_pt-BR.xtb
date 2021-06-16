@@ -362,6 +362,7 @@
 <translation id="1403222014593521787">Não foi possível se conectar ao proxy</translation>
 <translation id="1405779994569073824">Falha.</translation>
 <translation id="1406500794671479665">Verificando...</translation>
+<translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="140723521119632973">Ativação da rede celular</translation>
 <translation id="1407489512183974736">Cortar para centralizar</translation>
@@ -5676,6 +5677,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="729583233778673644">Permitir a codificação AES e RC4. O uso dessa opção é mais arriscado, porque as criptografias RC4 não são seguras.</translation>
 <translation id="729761647156315797">Escolher idioma e teclado</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
+<translation id="7298195798382681320">Recomendada</translation>
 <translation id="7299337219131431707">Ativar a navegação como visitante</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Este aplicativo pode impedir que o Chrome funcione adequadamente.}one{Este aplicativo pode impedir que o Chrome funcione adequadamente.}other{Estes aplicativos podem impedir que o Chrome funcione adequadamente.}}</translation>
 <translation id="7303281435234579599">Algo deu errado ao configurar o modo de demonstração.</translation>
@@ -7275,6 +7277,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9026852570893462412">O processo pode levar alguns minutos. Fazendo o download da máquina virtual.</translation>
 <translation id="9027459031423301635">Abrir link em uma nova &amp;guia</translation>
 <translation id="9030515284705930323">Sua organização não ativou a Google Play Store para sua conta. Entre em contato com seu administrador para receber mais informações.</translation>
+<translation id="9030754204056345429">Mais rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">O plug-in <ph name="PLUGIN_NAME" /> não é mais compatível</translation>
 <translation id="9031549947500880805">Fazer backup no Google Drive Restaure seus dados ou troque de dispositivo a qualquer momento com facilidade. Seu backup inclui dados do app.</translation>

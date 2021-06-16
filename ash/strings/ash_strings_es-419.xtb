@@ -80,6 +80,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1516740043221086139">No interrumpir está activado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar la configuración de las notificaciones: Están desactivadas para una app}other{Mostrar la configuración de las notificaciones: Están desactivadas para # apps}}</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
+<translation id="1536604384701784949">Para usar <ph name="USER_EMAIL_ADDRESS" />, primero deberás salir de todas tus cuentas. Si deseas salir, selecciona Cancelar para regresar. Luego, selecciona el reloj para abrir el área de estado y selecciona Salir. Luego, accede de nuevo en <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor del mouse grande</translation>
 <translation id="1546492247443594934">Escritorio 2</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
@@ -525,6 +526,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte para capturar la pantalla completa</translation>
 <translation id="5035236842988137213">Se conectó el dispositivo <ph name="DEVICE_NAME" /> a un teléfono nuevo</translation>
 <translation id="5035389544768382859">Confirma la configuración de la pantalla</translation>
+<translation id="5039804452771397117">Permitir</translation>
 <translation id="504465286040788597">Párrafo anterior</translation>
 <translation id="5071064518267176975">Una app quiere usar el micrófono</translation>
 <translation id="5075554201838155866">Activar subtítulos</translation>
@@ -802,6 +804,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
+<translation id="7473891865547856676">No, gracias</translation>
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
 <translation id="7483025031359818980">Se estableció la pantalla completa como área de selección</translation>
 <translation id="7486227320194954040">Contraer las herramientas de marcado</translation>
