@@ -897,6 +897,9 @@
       'headless_python_unittests': {
         'script': 'headless_python_unittests.py',
       },
+      'metrics_python_tests': {
+        'script': 'metrics_python_tests.py',
+      },
       'webkit_lint': {
         'script': 'blink_lint_expectations.py',
       },
@@ -905,6 +908,9 @@
     'chromium_mac_scripts': {
       'check_static_initializers': {
         'script': 'check_static_initializers.py',
+      },
+      'metrics_python_tests': {
+        'script': 'metrics_python_tests.py',
       },
       'webkit_lint': {
         'script': 'blink_lint_expectations.py',
@@ -1097,6 +1103,9 @@
     'chromium_win_scripts': {
       'check_network_annotations': {
         'script': 'check_network_annotations.py',
+      },
+      'metrics_python_tests': {
+        'script': 'metrics_python_tests.py',
       },
       'webkit_lint': {
         'script': 'blink_lint_expectations.py',
@@ -1299,11 +1308,6 @@
         }
       },
       'grit_python_unittests': {
-        'resultdb': {
-          'enable': True,
-        },
-      },
-      'metrics_python_tests': {
         'resultdb': {
           'enable': True,
         },
