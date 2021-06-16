@@ -136,7 +136,8 @@ void TestMessagesAreEqual(Channel::Message* message1,
 TEST(ChannelTest, LegacyMessageDeserialization) {
   Channel::MessagePtr message = CreateDefaultMessage(true /* legacy_message */);
   Channel::MessagePtr deserialized_message =
-      Channel::Message::Deserialize(message->data(), message->data_num_bytes());
+      Channel::Message::Deserialize(message->data(), message->data_num_bytes(),
+                                    Channel::HandlePolicy::kAcceptHandles);
   TestMessagesAreEqual(message.get(), deserialized_message.get(),
                        true /* legacy_message */);
 }
@@ -145,7 +146,8 @@ TEST(ChannelTest, NonLegacyMessageDeserialization) {
   Channel::MessagePtr message =
       CreateDefaultMessage(false /* legacy_message */);
   Channel::MessagePtr deserialized_message =
-      Channel::Message::Deserialize(message->data(), message->data_num_bytes());
+      Channel::Message::Deserialize(message->data(), message->data_num_bytes(),
+                                    Channel::HandlePolicy::kAcceptHandles);
   TestMessagesAreEqual(message.get(), deserialized_message.get(),
                        false /* legacy_message */);
 }
@@ -370,8 +372,10 @@ TEST(ChannelTest, DeserializeMessage_BadExtraHeaderSize) {
   header->num_header_bytes = kTotalHeaderSize;
   header->message_type = Channel::Message::MessageType::NORMAL;
   header->num_handles = 0;
-  EXPECT_EQ(nullptr, Channel::Message::Deserialize(&message[0], kMessageSize,
-                                                   base::kNullProcessHandle));
+  EXPECT_EQ(nullptr,
+            Channel::Message::Deserialize(&message[0], kMessageSize,
+                                          Channel::HandlePolicy::kAcceptHandles,
+                                          base::kNullProcessHandle));
 }
 
 #if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_FUCHSIA)
@@ -391,8 +395,10 @@ TEST(ChannelTest, DeserializeMessage_NonZeroExtraHeaderSize) {
   header->num_header_bytes = kTotalHeaderSize;
   header->message_type = Channel::Message::MessageType::NORMAL;
   header->num_handles = 0;
-  EXPECT_EQ(nullptr, Channel::Message::Deserialize(&message[0], kMessageSize,
-                                                   base::kNullProcessHandle));
+  EXPECT_EQ(nullptr,
+            Channel::Message::Deserialize(&message[0], kMessageSize,
+                                          Channel::HandlePolicy::kAcceptHandles,
+                                          base::kNullProcessHandle));
 }
 #endif
 

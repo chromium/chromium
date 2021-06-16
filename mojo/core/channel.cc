@@ -229,6 +229,7 @@ Channel::MessagePtr Channel::Message::CreateRawForFuzzing(
 Channel::MessagePtr Channel::Message::Deserialize(
     const void* data,
     size_t data_num_bytes,
+    HandlePolicy handle_policy,
     base::ProcessHandle from_process) {
   if (data_num_bytes < sizeof(LegacyHeader))
     return nullptr;
@@ -302,6 +303,11 @@ Channel::MessagePtr Channel::Message::Deserialize(
   if (num_handles > max_handles || max_handles > kMaxAttachedHandles) {
     DLOG(ERROR) << "Decoding invalid message: " << num_handles << " > "
                 << max_handles;
+    return nullptr;
+  }
+
+  if (num_handles > 0 && handle_policy == HandlePolicy::kRejectHandles) {
+    DLOG(ERROR) << "Rejecting message with unexpected handle attachments.";
     return nullptr;
   }
 

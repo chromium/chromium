@@ -58,7 +58,8 @@ Channel::MessagePtr WaitForBrokerMessage(HANDLE pipe_handle,
   }
 
   Channel::MessagePtr message =
-      Channel::Message::Deserialize(buffer, static_cast<size_t>(bytes_read));
+      Channel::Message::Deserialize(buffer, static_cast<size_t>(bytes_read),
+                                    Channel::HandlePolicy::kAcceptHandles);
   if (!message || message->payload_size() < sizeof(BrokerMessageHeader)) {
     LOG(ERROR) << "Invalid broker message";
 

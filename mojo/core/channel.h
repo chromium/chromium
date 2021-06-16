@@ -188,6 +188,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     static MessagePtr Deserialize(
         const void* data,
         size_t data_num_bytes,
+        HandlePolicy handle_policy,
         base::ProcessHandle from_process = base::kNullProcessHandle);
 
     virtual const void* data() const = 0;

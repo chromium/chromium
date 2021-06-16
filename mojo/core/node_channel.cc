@@ -734,6 +734,11 @@ void NodeChannel::OnChannelMessage(const void* payload,
         // through the extent of this call because |this| is kept alive and
         // |remote_process_handle_| is never reset once set.
         from_process = remote_process_handle_.Handle();
+
+        // If we don't have a handle to the remote process, we should not be
+        // receiving relay requests from them because we're not the broker.
+        if (from_process == base::kNullProcessHandle)
+          break;
       }
       RelayEventMessageData data;
       if (GetMessagePayload(payload, payload_size, &data)) {
@@ -745,7 +750,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
                                     sizeof(Header) + sizeof(data);
         Channel::MessagePtr message = Channel::Message::Deserialize(
             message_start, payload_size - sizeof(Header) - sizeof(data),
-            from_process);
+            Channel::HandlePolicy::kAcceptHandles, from_process);
         if (!message) {
           DLOG(ERROR) << "Dropping invalid relay message.";
           break;
@@ -764,8 +769,9 @@ void NodeChannel::OnChannelMessage(const void* payload,
       const void* data = static_cast<const void*>(
           reinterpret_cast<const Header*>(payload) + 1);
       Channel::MessagePtr message =
-          Channel::Message::Deserialize(data, payload_size - sizeof(Header));
-      if (!message || message->has_handles()) {
+          Channel::Message::Deserialize(data, payload_size - sizeof(Header),
+                                        Channel::HandlePolicy::kRejectHandles);
+      if (!message) {
         DLOG(ERROR) << "Dropping invalid broadcast message.";
         break;
       }
