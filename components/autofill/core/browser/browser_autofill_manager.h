@@ -469,7 +469,7 @@ class BrowserAutofillManager
 
   // CreditCardAccessManager::Accessor
   void OnCreditCardFetched(
-      bool did_succeed,
+      CreditCardFetchResult result,
       const CreditCard* credit_card = nullptr,
       const std::u16string& cvc = std::u16string()) override;
 

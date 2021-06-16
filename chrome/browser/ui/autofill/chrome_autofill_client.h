@@ -150,7 +150,8 @@ class ChromeAutofillClient
   void HideAutofillPopup(PopupHidingReason reason) override;
   void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer) override;
-  void OnVirtualCardFetched(const CreditCard* card,
+  void OnVirtualCardFetched(CreditCardFetchResult result,
+                            const CreditCard* credit_card,
                             const std::u16string& cvc,
                             const gfx::Image& card_image) override;
   bool IsAutofillAssistantShowing() override;

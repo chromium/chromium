@@ -254,10 +254,10 @@ void CreditCardAccessoryControllerImpl::OnPersonalDataChanged() {
 }
 
 void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
-    bool did_succeed,
+    CreditCardFetchResult result,
     const CreditCard* credit_card,
     const std::u16string& cvc) {
-  if (!did_succeed)
+  if (result != CreditCardFetchResult::kSuccess)
     return;
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
   if (!rfh || !last_focused_field_id_ ||

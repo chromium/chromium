@@ -111,11 +111,11 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void OnCreditCardFetched(bool did_succeed,
+  void OnCreditCardFetched(CreditCardFetchResult result,
                            const CreditCard* card,
                            const std::u16string& cvc) override {
-    did_succeed_ = did_succeed;
-    if (did_succeed_) {
+    result_ = result;
+    if (result == CreditCardFetchResult::kSuccess) {
       DCHECK(card);
       number_ = card->number();
       cvc_ = cvc;
@@ -124,12 +124,11 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
 
   std::u16string number() { return number_; }
   std::u16string cvc() { return cvc_; }
-
-  bool did_succeed() { return did_succeed_; }
+  CreditCardFetchResult result() { return result_; }
 
  private:
-  // Is set to true if authentication was successful.
-  bool did_succeed_ = false;
+  // The result of the credit card fetching.
+  CreditCardFetchResult result_ = CreditCardFetchResult::kNone;
   // The card number returned from OnCreditCardFetched().
   std::u16string number_;
   // The returned CVC, if any.
@@ -498,7 +497,7 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 
   credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
 
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
 }
 
@@ -511,7 +510,7 @@ TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
 
   credit_card_access_manager_->FetchCreditCard(nullptr,
                                                accessor_->GetWeakPtr());
-  EXPECT_FALSE(accessor_->did_succeed());
+  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 }
 
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
@@ -531,7 +530,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
@@ -553,7 +552,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCNetworkError) {
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(AutofillClient::NETWORK_ERROR, std::string()));
-  EXPECT_FALSE(accessor_->did_succeed());
+  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 }
 
 // Ensures that FetchCreditCard() returns a failure upon a negative response
@@ -569,7 +568,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCPermanentFailure) {
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(AutofillClient::PERMANENT_FAILURE, std::string()));
-  EXPECT_FALSE(accessor_->did_succeed());
+  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 }
 
 // Ensures that a "try again" response from payments does not end the flow.
@@ -581,10 +580,10 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCTryAgainFailure) {
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(AutofillClient::TRY_AGAIN_FAILURE, std::string()));
-  EXPECT_FALSE(accessor_->did_succeed());
+  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
@@ -706,7 +705,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
   TestCreditCardFIDOAuthenticator::GetAssertion(GetFIDOAuthenticator(),
                                                 /*did_succeed=*/true);
   EXPECT_TRUE(GetRealPanForFIDOAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   EXPECT_EQ(kCredentialId,
             BytesToBase64(GetFIDOAuthenticator()->GetCredentialId()));
@@ -761,7 +760,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccessWithDcvv) {
       GetRealPanForFIDOAuth(AutofillClient::SUCCESS, kTestNumber, kTestCvc));
 
   // Expect accessor to successfully retrieve the DCVV.
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
@@ -804,13 +803,13 @@ TEST_F(CreditCardAccessManagerTest,
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 
   EXPECT_FALSE(GetRealPanForFIDOAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_FALSE(accessor_->did_succeed());
+  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   // Followed by a fallback to CVC.
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::NONE_FLOW,
             GetFIDOAuthenticator()->current_flow());
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
@@ -853,13 +852,13 @@ TEST_F(CreditCardAccessManagerTest,
                                                 /*did_succeed=*/true);
   EXPECT_TRUE(
       GetRealPanForFIDOAuth(AutofillClient::PERMANENT_FAILURE, kTestNumber));
-  EXPECT_FALSE(accessor_->did_succeed());
+  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   // Followed by a fallback to CVC.
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::NONE_FLOW,
             GetFIDOAuthenticator()->current_flow());
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
@@ -891,11 +890,11 @@ TEST_F(CreditCardAccessManagerTest,
 
   // FIDO Failure.
   EXPECT_FALSE(GetRealPanForFIDOAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_FALSE(accessor_->did_succeed());
+  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   // Followed by a fallback to CVC.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
@@ -913,9 +912,51 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOTimeoutCVCFallback) {
   WaitForCallbacks();
 
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::SUCCESS, kTestNumber));
-  EXPECT_TRUE(accessor_->did_succeed());
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
+}
+
+// Ensures that CVC prompt is not invoked after payments returns an error from
+// GetRealPan via FIDO for a virtual card.
+TEST_F(CreditCardAccessManagerTest, FetchVirtualCardFIDOFailureNoCVCFallback) {
+  base::HistogramTester histogram_tester;
+
+  CreateServerCard(kTestGUID, kTestNumber);
+  CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
+  GetFIDOAuthenticator()->SetUserVerifiable(true);
+  SetUserOptedIn(true);
+  payments_client_->AddFidoEligibleCard(card->server_id(), kCredentialId,
+                                        kGooglePaymentsRpid);
+
+  credit_card_access_manager_->PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  card->set_record_type(CreditCard::VIRTUAL_CARD);
+  credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
+  WaitForCallbacks();
+
+  // FIDO Failure.
+  EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::AUTHENTICATION_FLOW,
+            GetFIDOAuthenticator()->current_flow());
+  TestCreditCardFIDOAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/true);
+  EXPECT_TRUE(GetRealPanForFIDOAuth(
+      AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, kTestNumber,
+      std::string(), /*is_virtual_card=*/true));
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kPermanentError);
+  EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::NONE_FLOW,
+            GetFIDOAuthenticator()->current_flow());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.WebauthnResult.ImmediateAuthentication",
+      AutofillMetrics::WebauthnResultMetric::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.BetterAuth.CardUnmaskDuration.Fido", 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.BetterAuth.CardUnmaskDuration.Fido.VirtualCard."
+      "VcnRetrievalFailure",
+      1);
 }
 
 // Ensures the existence of user-perceived latency during the preflight call is

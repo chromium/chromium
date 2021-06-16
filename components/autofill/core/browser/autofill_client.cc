@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
 
@@ -65,7 +66,8 @@ void AutofillClient::ShowOfferNotificationIfApplicable(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
-void AutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
+void AutofillClient::OnVirtualCardFetched(CreditCardFetchResult result,
+                                          const CreditCard* credit_card,
                                           const std::u16string& cvc,
                                           const gfx::Image& card_image) {
   // This is overridden by platform subclasses. Currently only

@@ -1264,9 +1264,11 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
     case AutofillClient::NETWORK_ERROR:
       result_suffix = "NetworkError";
       break;
-    case AutofillClient::NONE:
     case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
     case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+      result_suffix = "VcnRetrievalFailure";
+      break;
+    case AutofillClient::NONE:
       NOTREACHED();
       return;
   }
@@ -1276,6 +1278,8 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
       card_type_suffix = "ServerCard";
       break;
     case AutofillClient::VIRTUAL_CARD:
+      card_type_suffix = "VirtualCard";
+      break;
     case AutofillClient::UNKNOWN_TYPE:
       NOTREACHED();
       return;

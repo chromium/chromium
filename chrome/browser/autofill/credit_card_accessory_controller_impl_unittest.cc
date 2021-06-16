@@ -97,7 +97,7 @@ class TestAccessManager : public CreditCardAccessManager {
       const CreditCard* card,
       base::WeakPtr<Accessor> accessor,
       const base::TimeTicks& timestamp = base::TimeTicks()) override {
-    accessor->OnCreditCardFetched(/*did_succeed=*/true, &card_);
+    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card_);
   }
 
   CreditCard card_;

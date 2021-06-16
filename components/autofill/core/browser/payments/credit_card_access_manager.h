@@ -45,6 +45,18 @@ enum class UnmaskAuthFlowType {
   kCvcFallbackFromFido = 4,
 };
 
+// The result of the attempt to fetch full information for a credit card.
+enum class CreditCardFetchResult {
+  kNone = 0,
+  // The attempt succeeded retrieving the full information of a credit card.
+  kSuccess = 1,
+  // The attempt failed due to a transient error.
+  kTransientError = 2,
+  // The attempt failed due to a permanent error.
+  kPermanentError = 3,
+  kMaxValue = kPermanentError,
+};
+
 struct CachedServerCardInfo {
  public:
   // An unmasked CreditCard.
@@ -69,7 +81,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
    public:
     virtual ~Accessor() {}
     virtual void OnCreditCardFetched(
-        bool did_succeed,
+        CreditCardFetchResult result,
         const CreditCard* credit_card = nullptr,
         const std::u16string& cvc = std::u16string()) = 0;
   };
@@ -203,9 +215,8 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
 #if !defined(OS_IOS)
   // CreditCardFIDOAuthenticator::Requester:
   void OnFIDOAuthenticationComplete(
-      bool did_succeed,
-      const CreditCard* card = nullptr,
-      const std::u16string& cvc = std::u16string()) override;
+      const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response)
+      override;
   void OnFidoAuthorizationComplete(bool did_succeed) override;
 #endif
 

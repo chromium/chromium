@@ -84,7 +84,8 @@ void CreditCardFIDOAuthenticator::Authenticate(
     current_flow_ = AUTHENTICATION_FLOW;
     GetAssertion(ParseRequestOptions(std::move(request_options)));
   } else {
-    requester_->OnFIDOAuthenticationComplete(/*did_succeed=*/false);
+    FidoAuthenticationResponse response{.did_succeed = false};
+    requester_->OnFIDOAuthenticationComplete(response);
   }
 }
 
@@ -387,8 +388,10 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
   // End the flow if there was an authentication error.
   if (status != AuthenticatorStatus::SUCCESS) {
     // Report failure to |requester_| if card unmasking was requested.
-    if (current_flow_ == AUTHENTICATION_FLOW)
-      requester_->OnFIDOAuthenticationComplete(/*did_succeed=*/false);
+    if (current_flow_ == AUTHENTICATION_FLOW) {
+      FidoAuthenticationResponse response{.did_succeed = false};
+      requester_->OnFIDOAuthenticationComplete(response);
+    }
     if (current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW)
       requester_->OnFidoAuthorizationComplete(/*did_succeed=*/false);
 
@@ -523,14 +526,18 @@ void CreditCardFIDOAuthenticator::OnFullCardRequestSucceeded(
     const std::u16string& cvc) {
   DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
   current_flow_ = NONE_FLOW;
-  requester_->OnFIDOAuthenticationComplete(/*did_succeed=*/true, &card, cvc);
+  FidoAuthenticationResponse response{
+      .did_succeed = true, .card = &card, .cvc = cvc};
+  requester_->OnFIDOAuthenticationComplete(response);
 }
 
 void CreditCardFIDOAuthenticator::OnFullCardRequestFailed(
     payments::FullCardRequest::FailureType failure_type) {
   DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
   current_flow_ = NONE_FLOW;
-  requester_->OnFIDOAuthenticationComplete(/*did_succeed=*/false);
+  FidoAuthenticationResponse response{.did_succeed = false,
+                                      .failure_type = failure_type};
+  requester_->OnFIDOAuthenticationComplete(response);
 }
 
 PublicKeyCredentialRequestOptionsPtr

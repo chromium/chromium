@@ -65,6 +65,7 @@ class AutofillOfferManager;
 class AutofillPopupDelegate;
 class CardUnmaskDelegate;
 class CreditCard;
+enum class CreditCardFetchResult;
 class FormDataImporter;
 class FormStructure;
 class LogManager;
@@ -562,12 +563,15 @@ class AutofillClient : public RiskDataLoader {
   virtual void ShowOfferNotificationIfApplicable(
       const AutofillOfferData* offer);
 
-  // Indicates that the virtual card was fetched in order to allow the user to
-  // manually fill payment form with the fetched |credit_card| and |cvc|.
-  // |card_image| is used for manual fallback bubble.
-  virtual void OnVirtualCardFetched(const CreditCard* credit_card,
-                                    const std::u16string& cvc,
-                                    const gfx::Image& card_image);
+  // Called when the result of fetching a virtual card from the server returns.
+  // |result| indicates whether the fetching was successful. |credit_card| and
+  // |cvc| include the information that allow the user to manually fill payment
+  // form. |card_image| is used for manual fallback bubble.
+  virtual void OnVirtualCardFetched(
+      CreditCardFetchResult result,
+      const CreditCard* credit_card = nullptr,
+      const std::u16string& cvc = std::u16string(),
+      const gfx::Image& card_image = gfx::Image());
 
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();

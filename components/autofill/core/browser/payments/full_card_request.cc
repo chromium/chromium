@@ -260,11 +260,18 @@ void FullCardRequest::OnDidGetRealPan(
       Reset();
       break;
     }
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE: {
+      if (result_delegate_) {
+        result_delegate_->OnFullCardRequestFailed(
+            FailureType::VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE);
+      }
+      Reset();
+      break;
+    }
     case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE: {
       if (result_delegate_) {
         result_delegate_->OnFullCardRequestFailed(
-            FailureType::VIRTUAL_CARD_RETRIEVAL_FAILURE);
+            FailureType::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);
       }
       Reset();
       break;

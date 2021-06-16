@@ -550,8 +550,8 @@ TEST_F(FullCardRequestTest, PermanentFailure) {
 TEST_F(FullCardRequestTest, VcnRetrievalTryAgainFailure) {
   EXPECT_CALL(
       *result_delegate(),
-      OnFullCardRequestFailed(
-          FullCardRequest::FailureType::VIRTUAL_CARD_RETRIEVAL_FAILURE));
+      OnFullCardRequestFailed(FullCardRequest::FailureType::
+                                  VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
   EXPECT_CALL(*ui_delegate(),
               OnUnmaskVerificationResult(
@@ -576,8 +576,8 @@ TEST_F(FullCardRequestTest, VcnRetrievalTryAgainFailure) {
 TEST_F(FullCardRequestTest, VcnRetrievalPermanentFailure) {
   EXPECT_CALL(
       *result_delegate(),
-      OnFullCardRequestFailed(
-          FullCardRequest::FailureType::VIRTUAL_CARD_RETRIEVAL_FAILURE));
+      OnFullCardRequestFailed(FullCardRequest::FailureType::
+                                  VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
   EXPECT_CALL(*ui_delegate(),
               OnUnmaskVerificationResult(

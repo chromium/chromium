@@ -715,9 +715,15 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
 #endif
 }
 
-void ChromeAutofillClient::OnVirtualCardFetched(const CreditCard* credit_card,
+void ChromeAutofillClient::OnVirtualCardFetched(CreditCardFetchResult result,
+                                                const CreditCard* credit_card,
                                                 const std::u16string& cvc,
                                                 const gfx::Image& card_image) {
+  if (result != CreditCardFetchResult::kSuccess) {
+    // TODO(crbug.com/1196021): Shows the error dialog.
+    return;
+  }
+
   GetFormDataImporter()->CacheFetchedVirtualCard(credit_card->LastFourDigits());
 #if defined(OS_ANDROID)
   (new AutofillSnackbarControllerImpl(web_contents()))->Show();

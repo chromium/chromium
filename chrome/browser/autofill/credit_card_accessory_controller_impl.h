@@ -39,7 +39,7 @@ class CreditCardAccessoryControllerImpl
   void OnPersonalDataChanged() override;
 
   // CreditCardAccessManager::Accessor:
-  void OnCreditCardFetched(bool did_succeed,
+  void OnCreditCardFetched(CreditCardFetchResult result,
                            const CreditCard* credit_card,
                            const std::u16string& cvc) override;
 

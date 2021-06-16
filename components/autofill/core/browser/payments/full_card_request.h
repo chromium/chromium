@@ -33,6 +33,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
  public:
   // The type of failure.
   enum FailureType {
+    UNKNOWN,
+
     // The user closed the prompt. The following scenarios are possible:
     // 1) The user declined to enter their CVC and closed the prompt.
     // 2) The user provided their CVC, got auth declined and then closed the
@@ -44,8 +46,13 @@ class FullCardRequest final : public CardUnmaskDelegate {
     // The card could not be looked up due to card auth declined or failed.
     VERIFICATION_DECLINED,
 
-    // The request failed when retrieving virtual card information.
-    VIRTUAL_CARD_RETRIEVAL_FAILURE,
+    // The request failed due to transient failures when retrieving virtual card
+    // information.
+    VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE,
+
+    // The request failed due to permanent failures when retrieving virtual card
+    // information.
+    VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE,
 
     // The request failed for technical reasons, such as a closing page or lack
     // of network connection.

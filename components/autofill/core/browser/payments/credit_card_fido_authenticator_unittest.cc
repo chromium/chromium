@@ -445,6 +445,29 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   EXPECT_FALSE(requester_->did_succeed());
 }
 
+TEST_F(CreditCardFIDOAuthenticatorTest,
+       AuthenticateCard_PaymentsResponseVcnRetrievalError) {
+  CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
+
+  fido_authenticator_->Authenticate(
+      &card, requester_->GetWeakPtr(), AutofillTickClock::NowTicks(),
+      GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
+                            kTestCredentialId));
+  EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::AUTHENTICATION_FLOW,
+            fido_authenticator_->current_flow());
+
+  // Mock user verification.
+  TestCreditCardFIDOAuthenticator::GetAssertion(fido_authenticator_.get(),
+                                                /*did_succeed=*/true);
+  GetRealPan(AutofillClient::PaymentsRpcResult::VCN_RETRIEVAL_PERMANENT_FAILURE,
+             "", /*is_virtual_card=*/true);
+
+  EXPECT_FALSE(requester_->did_succeed());
+  EXPECT_EQ(
+      requester_->failure_type(),
+      payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);
+}
+
 TEST_F(CreditCardFIDOAuthenticatorTest, AuthenticateCard_Success) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 

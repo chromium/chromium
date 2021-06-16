@@ -42,7 +42,9 @@ class MockCreditCardAccessoryController
   MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
   MOCK_METHOD(void,
               OnCreditCardFetched,
-              (bool, const autofill::CreditCard*, const std::u16string&),
+              (autofill::CreditCardFetchResult,
+               const autofill::CreditCard*,
+               const std::u16string&),
               (override));
 };
 
