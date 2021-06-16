@@ -443,9 +443,9 @@ void SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
     gfx::Size* swap_chain_size,
     gfx::Transform* transform,
     gfx::Rect* clip_rect) {
-  gfx::Rect onscreen_rect = overlay_onscreen_rect;
-  if (params.clip_rect)
-    onscreen_rect.Intersect(*clip_rect);
+  gfx::Rect clipped_onscreen_rect = overlay_onscreen_rect;
+  if (params.clip_rect.has_value())
+    clipped_onscreen_rect.Intersect(*clip_rect);
 
   // Because of the rounding when converting between pixels and DIPs, a
   // fullscreen video can become slightly larger than the monitor - e.g. on
@@ -458,8 +458,8 @@ void SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
   constexpr int kFullScreenMargin = 5;
 
   // The overlay must be positioned at (0, 0) in fullscreen mode.
-  if (std::abs(onscreen_rect.x()) >= kFullScreenMargin ||
-      std::abs(onscreen_rect.y()) >= kFullScreenMargin) {
+  if (std::abs(clipped_onscreen_rect.x()) >= kFullScreenMargin ||
+      std::abs(clipped_onscreen_rect.y()) >= kFullScreenMargin) {
     // Not fullscreen mode.
     return;
   }
@@ -474,22 +474,40 @@ void SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
   // dynamic refresh rates (24hz/48hz). Note: The DWM optimizations works for
   // both hardware and software overlays.
   // If no, do nothing.
-  if (std::abs(onscreen_rect.width() - monitor_size.width()) >=
+  if (std::abs(clipped_onscreen_rect.width() - monitor_size.width()) >=
           kFullScreenMargin ||
-      std::abs(onscreen_rect.height() - monitor_size.height()) >=
+      std::abs(clipped_onscreen_rect.height() - monitor_size.height()) >=
           kFullScreenMargin) {
     // Not fullscreen mode.
     return;
   }
 
+  // For most video playbacks, |clip_rect| is the same as
+  // |overlay_onscreen_rect| or close to it. If |clipped_onscreen_rect| has the
+  // size of the monitor but |overlay_onscreen_rect| is much bigger than the
+  // monitor size, we don't get the benefit of this optimization in this case.
+  // We should do nothing here. e.g. |overlay_onscreen_rect| is ~7680 x 4320 and
+  // it's clipped to ~3840 x 2160 to fit the monitor. Check
+  // |overlay_onscreen_rect| only if it's different from |clipped_onscreen_rect|
+  // when clipping is enabled. https://crbug.com/1213035
+  if (params.clip_rect.has_value()) {
+    if (std::abs(overlay_onscreen_rect.width() - monitor_size.width()) >=
+            kFullScreenMargin ||
+        std::abs(overlay_onscreen_rect.height() - monitor_size.height()) >=
+            kFullScreenMargin) {
+      return;
+    }
+  }
+
   // Adjust the clip rect.
-  if (params.clip_rect) {
+  if (params.clip_rect.has_value()) {
     *clip_rect = gfx::Rect(monitor_size);
   }
 
   // Adjust the swap chain size.
-  // The swap chain is either the size of onscreen_rect or min(onscreen_rect,
-  // content_rect). It might not need to update if it has the content size.
+  // The swap chain is either the size of overlay_onscreen_rect or
+  // min(overlay_onscreen_rect, content_rect). It might not need to update if it
+  // has the content size.
   if (std::abs(swap_chain_size->width() - monitor_size.width()) <
           kFullScreenMargin &&
       std::abs(swap_chain_size->height() - monitor_size.height()) <
@@ -499,8 +517,8 @@ void SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
 
   // Adjust the transform matrix.
   auto& transform_matrix = transform->matrix();
-  float dx = -onscreen_rect.x();
-  float dy = -onscreen_rect.y();
+  float dx = -clipped_onscreen_rect.x();
+  float dy = -clipped_onscreen_rect.y();
   transform_matrix.postTranslate(dx, dy, 0);
 
   float scale_x = monitor_size.width() * 1.0f / swap_chain_size->width();
@@ -610,14 +628,14 @@ void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
 
   if (visual_info_.clip_rect.has_value() != params.clip_rect.has_value() ||
       visual_info_.clip_rect != clip_rect) {
-    if (params.clip_rect) {
+    if (params.clip_rect.has_value()) {
       visual_info_.clip_rect = clip_rect;
     }
     layer_tree_->SetNeedsRebuildVisualTree();
     // DirectComposition clips happen in the pre-transform visual space, while
     // cc/ clips happen post-transform. So the clip needs to go on a separate
     // parent visual that's untransformed.
-    if (params.clip_rect) {
+    if (params.clip_rect.has_value()) {
       Microsoft::WRL::ComPtr<IDCompositionRectangleClip> clip;
       dcomp_device_->CreateRectangleClip(&clip);
       DCHECK(clip);
