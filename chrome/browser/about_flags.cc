@@ -6234,6 +6234,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnhancedClipboardNudgeSessionResetDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kClipboardHistoryNudgeSessionReset)},
+    {"enhanced_clipboard_screenshot_nudge",
+     flag_descriptions::kEnhancedClipboardScreenshotNudgeName,
+     flag_descriptions::kEnhancedClipboardScreenshotNudgeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistoryScreenshotNudge)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)

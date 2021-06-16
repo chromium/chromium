@@ -4235,6 +4235,12 @@ const char kEnhancedClipboardNudgeSessionResetDescription[] =
     "When enabled, this will reset the clipboard nudge shown data on every new "
     "user session, allowing the nudge to be shown again.";
 
+const char kEnhancedClipboardScreenshotNudgeName[] =
+    "Enable clipboard history screenshot nudge";
+const char kEnhancedClipboardScreenshotNudgeDescription[] =
+    "When enabled, the keyboard shortcut for clipboard history will show in "
+    "the screenshot notification banner in clamshell mode.";
+
 const char kEnableCrOSActionRecorderName[] = "Enable CrOS action recorder";
 const char kEnableCrOSActionRecorderDescription[] =
     "When enabled, each app launching, file opening, setting change, and url "

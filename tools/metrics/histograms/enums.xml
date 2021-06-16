@@ -46847,6 +46847,7 @@ from previous Chrome versions.
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
+  <int value="-650388312" label="ClipboardHistoryScreenshotNudge:enabled"/>
   <int value="-650213879" label="OmniboxZeroSuggestionsOnNTP:disabled"/>
   <int value="-650176557" label="OfflinePagesSvelteConcurrentLoading:enabled"/>
   <int value="-649956990" label="enable-harfbuzz-rendertext"/>
@@ -47974,6 +47975,7 @@ from previous Chrome versions.
   <int value="351005753" label="enable-experimental-accessibility-autoclick"/>
   <int value="352191859" label="disabled-new-style-notification"/>
   <int value="352937987" label="OverflowIconsForMediaControls:disabled"/>
+  <int value="353898777" label="ClipboardHistoryScreenshotNudge:disabled"/>
   <int value="354631905" label="RecoverFromNeverSaveAndroid:disabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>
