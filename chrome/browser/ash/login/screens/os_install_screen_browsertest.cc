@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {
@@ -22,6 +23,10 @@ const test::UIPath kOsInstallIntroNextButton = {"os-install",
                                                 "osInstallIntroNextButton"};
 const test::UIPath kOsInstallConfirmNextButton = {"os-install",
                                                   "osInstallConfirmNextButton"};
+const test::UIPath kOsInstallErrorShutdownButton = {
+    "os-install", "osInstallErrorShutdownButton"};
+const test::UIPath kOsInstallSuccessShutdownButton = {
+    "os-install", "osInstallSuccessShutdownButton"};
 
 const test::UIPath kOsInstallDialogIntro = {"os-install",
                                             "osInstallDialogIntro"};
@@ -131,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallNoDestinationDevice) {
   test::OobeJS().ExpectVisiblePath(kOsInstallDialogError);
 }
 
-// Check that a generic install error shows the error step.
+// Check that a generic install error shows the error step and clicking
+// the shutdown button powers off.
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
   auto* ti = OsInstallClient::Get()->GetTestInterface();
 
@@ -141,9 +147,15 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
 
   ti->UpdateStatus(OsInstallClient::Status::Failed);
   test::OobeJS().ExpectVisiblePath(kOsInstallDialogError);
+
+  auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
+  EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
+  test::OobeJS().TapOnPath(kOsInstallErrorShutdownButton);
+  EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }
 
-// Check that a successful install shows the success step.
+// Check that a successful install shows the success step and clicking
+// the shutdown button powers off.
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccess) {
   auto* ti = OsInstallClient::Get()->GetTestInterface();
 
@@ -153,6 +165,11 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccess) {
 
   ti->UpdateStatus(OsInstallClient::Status::Succeeded);
   test::OobeJS().ExpectVisiblePath(kOsInstallDialogSuccess);
+
+  auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
+  EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
+  test::OobeJS().TapOnPath(kOsInstallSuccessShutdownButton);
+  EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }
 
 }  // namespace chromeos

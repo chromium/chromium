@@ -71,6 +71,14 @@ Polymer({
     this.userActed('os-install-confirm-next');
   },
 
+  onErrorShutdownButtonPressed_() {
+    this.userActed('os-install-error-shutdown');
+  },
+
+  onSuccessShutdownButtonPressed_() {
+    this.userActed('os-install-success-shutdown');
+  },
+
   /**
    * @param {string} locale
    * @return {string}

@@ -1042,6 +1042,9 @@
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
     Installation complete
   </message>
+  <message name="IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON" desc="Text of the shutdown button on the OS install screen">
+    Shut down
+  </message>
 
   <!-- Strings for parental handoff login screen -->
   <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE" desc="Title of screen which tells user that the parent can handoff the device to supervised user.">

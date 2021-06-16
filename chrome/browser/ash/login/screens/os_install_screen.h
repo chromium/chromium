@@ -28,6 +28,8 @@ class OsInstallScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
 
+  void Shutdown();
+
   OsInstallScreenView* view_ = nullptr;
 };
 

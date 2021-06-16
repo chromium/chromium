@@ -61,6 +61,8 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
   builder->Add("osInstallDialogErrorTitle", IDS_OS_INSTALL_SCREEN_ERROR_TITLE);
   builder->Add("osInstallDialogSuccessTitle",
                IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
+  builder->Add("osInstallDialogShutdownButton",
+               IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON);
 }
 
 void OsInstallScreenHandler::Initialize() {}
