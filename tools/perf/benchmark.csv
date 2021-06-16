@@ -24,9 +24,9 @@ blink_perf.shadow_dom,masonf@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/bli
 blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webaudio,"hongchan@chromium.org, rtoy@chromium.org",Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webgl,"kbr@chromium.org, enga@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
-blink_perf.webgl_fast_call,"kbr@chromium.org, enga@chromium.org, mslekova@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
+blink_perf.webgl_fast_call,"kbr@chromium.org, enga@chromium.org, mslekova@chromium.org, junov@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
 blink_perf.webgpu,"enga@chromium.org, cwallez@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
-blink_perf.webgpu_fast_call,"enga@chromium.org, cwallez@chromium.org, mslekova@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
+blink_perf.webgpu_fast_call,"enga@chromium.org, cwallez@chromium.org, mslekova@chromium.org, junov@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
 chrome_sizes,"heiserya@chromium.org, johnchen@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 components_perftests,csharrison@chromium.org,,,
 dawn_perf_tests,"enga@chromium.org, chrome-gpu-perf-owners@chromium.org",Internals>GPU>Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,

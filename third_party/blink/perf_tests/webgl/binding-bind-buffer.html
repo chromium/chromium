@@ -17,7 +17,7 @@
     const vertexBuffer1 = gl.createBuffer();
     const vertexBuffer2 = gl.createBuffer();
 
-    const iterations = 10000;
+    const iterations = 100000;
     PerfTestRunner.measureInnerRAFTime({
       description: `CPU time for ${iterations*3} calls to WebGLRenderingContext.bindBuffer`,
       warmUpCount: 10,

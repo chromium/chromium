@@ -725,10 +725,13 @@ class BlinkPerfWebGL(_BlinkPerfBenchmark):
   def Name(cls):
     return 'blink_perf.webgl'
 
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs(['--disable-features=V8TurboFastApiCalls'])
+
 
 @benchmark.Info(emails=[
     'kbr@chromium.org', 'enga@chromium.org', 'mslekova@chromium.org',
-    'webgl-team@google.com'
+    'junov@chromium.org', 'webgl-team@google.com'
 ],
                 component='Blink>WebGL',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
@@ -741,7 +744,7 @@ class BlinkPerfWebGLFastCall(_BlinkPerfBenchmark):
     return 'blink_perf.webgl_fast_call'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--enable-unsafe-fast-js-calls'])
+    options.AppendExtraBrowserArgs(['--enable-features=V8TurboFastApiCalls'])
 
 
 @benchmark.Info(emails=[
@@ -758,12 +761,13 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
     return 'blink_perf.webgpu'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--enable-unsafe-webgpu'])
+    options.AppendExtraBrowserArgs(
+        ['--enable-unsafe-webgpu', '--disable-features=V8TurboFastApiCalls'])
 
 
 @benchmark.Info(emails=[
     'enga@chromium.org', 'cwallez@chromium.org', 'mslekova@chromium.org',
-    'webgpu-developers@google.com'
+    'junov@chromium.org', 'webgpu-developers@google.com'
 ],
                 component='Blink>WebGPU',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
@@ -777,4 +781,4 @@ class BlinkPerfWebGPUFastCall(_BlinkPerfBenchmark):
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(
-        ['--enable-unsafe-webgpu', '--enable-unsafe-fast-js-calls'])
+        ['--enable-unsafe-webgpu', '--enable-features=V8TurboFastApiCalls'])
