@@ -12,6 +12,6 @@
     const GLenum TEXTURE_VIDEO_IMAGE = 0x9248;
     const GLenum SAMPLER_VIDEO_IMAGE = 0x9249;
 
-    [CallWith=ExecutionContext, RaisesException] VideoFrameMetadata shareVideoImageWEBGL(GLenum target, HTMLVideoElement video);
+    [CallWith=ExecutionContext, RaisesException] VideoFrameMetadata? shareVideoImageWEBGL(GLenum target, HTMLVideoElement video);
     [CallWith=ExecutionContext, RaisesException] boolean releaseVideoImageWEBGL(GLenum target);
 };
