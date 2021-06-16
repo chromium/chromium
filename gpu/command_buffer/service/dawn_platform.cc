@@ -4,11 +4,79 @@
 
 #include "gpu/command_buffer/service/dawn_platform.h"
 
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 
 namespace gpu {
 namespace webgpu {
+
+namespace {
+
+class AsyncWaitableEventImpl
+    : public base::RefCountedThreadSafe<AsyncWaitableEventImpl> {
+ public:
+  explicit AsyncWaitableEventImpl()
+      : waitable_event_(base::WaitableEvent::ResetPolicy::MANUAL,
+                        base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+
+  void Wait() { waitable_event_.Wait(); }
+
+  bool IsComplete() { return waitable_event_.IsSignaled(); }
+
+  void MarkAsComplete() { waitable_event_.Signal(); }
+
+ private:
+  friend class base::RefCountedThreadSafe<AsyncWaitableEventImpl>;
+  ~AsyncWaitableEventImpl() = default;
+
+  base::WaitableEvent waitable_event_;
+};
+
+class AsyncWaitableEvent : public dawn_platform::WaitableEvent {
+ public:
+  explicit AsyncWaitableEvent()
+      : waitable_event_impl_(base::MakeRefCounted<AsyncWaitableEventImpl>()) {}
+
+  void Wait() override { waitable_event_impl_->Wait(); }
+
+  bool IsComplete() override { return waitable_event_impl_->IsComplete(); }
+
+  scoped_refptr<AsyncWaitableEventImpl> GetWaitableEventImpl() const {
+    return waitable_event_impl_;
+  }
+
+ private:
+  scoped_refptr<AsyncWaitableEventImpl> waitable_event_impl_;
+};
+
+class AsyncWorkerTaskPool : public dawn_platform::WorkerTaskPool {
+ public:
+  std::unique_ptr<dawn_platform::WaitableEvent> PostWorkerTask(
+      dawn_platform::PostWorkerTaskCallback callback,
+      void* user_data) override {
+    std::unique_ptr<AsyncWaitableEvent> waitable_event =
+        std::make_unique<AsyncWaitableEvent>();
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&RunWorkerTask, callback, user_data,
+                       waitable_event->GetWaitableEventImpl()));
+    return waitable_event;
+  }
+
+ private:
+  static void RunWorkerTask(
+      dawn_platform::PostWorkerTaskCallback callback,
+      void* user_data,
+      scoped_refptr<AsyncWaitableEventImpl> waitable_event_impl) {
+    TRACE_EVENT0("toplevel", "DawnPlatformImpl::RunWorkerTask");
+    callback(user_data);
+    waitable_event_impl->MarkAsComplete();
+  }
+};
+
+}  // anonymous namespace
 
 DawnPlatform::DawnPlatform() = default;
 
@@ -56,6 +124,11 @@ uint64_t DawnPlatform::AddTraceEvent(
                 "TraceEventHandle must be memcpy'able");
   memcpy(&result, &handle, sizeof(base::trace_event::TraceEventHandle));
   return result;
+}
+
+std::unique_ptr<dawn_platform::WorkerTaskPool>
+DawnPlatform::CreateWorkerTaskPool() {
+  return std::make_unique<AsyncWorkerTaskPool>();
 }
 
 }  // namespace webgpu
