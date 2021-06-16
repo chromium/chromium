@@ -103,6 +103,8 @@
           </intent-filter>
         </activity>
 
+        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider"/>
+
         <service android:name="org.chromium.components.background_task_scheduler.BackgroundTaskJobService"
                  android:exported="false"
                  android:permission="android.permission.BIND_JOB_SERVICE"/>

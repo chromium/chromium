@@ -8,4 +8,5 @@
     <string name="app_name" translatable="false">Chromium</string>
     <string name="bookmark_widget_title" translatable="false">Chromium bookmarks</string>
     <string name="search_widget_title" translatable="false">Chromium search</string>
+    <string name="quick_action_search_widget_title" translatable="false">Chromium quick action search</string>
 </resources>

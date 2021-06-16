@@ -923,6 +923,21 @@ by a child template that "extends" this file.
             android:exported="false">
         </service>
 
+        {% if channel in ['canary', 'default'] %}
+        <!-- Quick Action Search widget -->
+        <receiver
+            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider"
+            android:label="@string/quick_action_search_widget_title"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quick_action_search_widget_info" />
+        </receiver>
+        {% endif %}
+
         <!-- Bookmarks widget -->
         <receiver android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
             android:label="@string/bookmark_widget_title"

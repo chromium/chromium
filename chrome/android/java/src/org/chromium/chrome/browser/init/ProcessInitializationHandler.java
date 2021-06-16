@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
+import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.share.clipboard.ClipboardImageFileProvider;
@@ -88,6 +89,8 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.version_info.Channel;
+import org.chromium.components.version_info.VersionConstants;
 import org.chromium.components.viz.common.VizSwitches;
 import org.chromium.components.viz.common.display.DeJellyUtils;
 import org.chromium.components.webapps.AppBannerManager;
@@ -243,6 +246,12 @@ public class ProcessInitializationHandler {
                 });
 
         SearchWidgetProvider.initialize();
+
+        if (VersionConstants.CHANNEL == Channel.CANARY
+                || VersionConstants.CHANNEL == Channel.DEFAULT) {
+            QuickActionSearchWidgetProvider.initialize();
+        }
+
         HistoryDeletionBridge.getInstance().addObserver(new ContentCaptureHistoryDeletionObserver(
                 () -> PlatformContentCaptureController.getInstance()));
     }
