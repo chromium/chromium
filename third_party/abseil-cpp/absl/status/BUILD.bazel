@@ -40,6 +40,7 @@ cc_library(
         "status_payload_printer.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     deps = [
         "//absl/base:atomic_hook",
         "//absl/base:config",
@@ -76,6 +77,7 @@ cc_library(
         "statusor.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     deps = [
         ":status",
         "//absl/base:core_headers",

@@ -36,8 +36,11 @@ for link_type in ${LINK_TYPE}; do
     --tmpfs=/abseil-cpp:exec \
     --workdir=/abseil-cpp \
     --cap-add=SYS_PTRACE \
+    -e "ABSL_GOOGLETEST_COMMIT=${ABSL_GOOGLETEST_COMMIT}" \
+    -e "ABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL}" \
     -e "LINK_TYPE=${link_type}" \
     --rm \
+    ${DOCKER_EXTRA_ARGS:-} \
     ${DOCKER_CONTAINER} \
     /bin/bash -c "cp -r /abseil-cpp-ro/* . && CMake/install_test_project/test.sh"
 done

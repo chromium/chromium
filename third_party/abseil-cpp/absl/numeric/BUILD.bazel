@@ -62,6 +62,7 @@ cc_library(
     ],
     hdrs = ["int128.h"],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":bits",

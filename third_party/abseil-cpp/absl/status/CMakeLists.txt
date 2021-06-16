@@ -50,7 +50,7 @@ absl_cc_test(
   DEPS
     absl::status
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -84,5 +84,5 @@ absl_cc_test(
   DEPS
     absl::status
     absl::statusor
-    gmock_main
+    GTest::gmock_main
 )

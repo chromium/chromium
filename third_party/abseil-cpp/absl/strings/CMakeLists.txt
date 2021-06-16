@@ -101,7 +101,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::base
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -115,7 +115,7 @@ absl_cc_test(
     absl::strings
     absl::core_headers
     absl::fixed_array
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -128,7 +128,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -142,7 +142,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -156,7 +156,7 @@ absl_cc_test(
     absl::strings_internal
     absl::base
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -169,7 +169,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::type_traits
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -184,7 +184,7 @@ absl_cc_test(
     absl::config
     absl::core_headers
     absl::dynamic_annotations
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -197,7 +197,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -209,7 +209,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -226,7 +226,7 @@ absl_cc_test(
     absl::btree
     absl::flat_hash_map
     absl::node_hash_map
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -238,7 +238,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::strings_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -253,7 +253,7 @@ absl_cc_test(
     absl::base
     absl::core_headers
     absl::type_traits
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -268,7 +268,7 @@ absl_cc_test(
     absl::base
     absl::core_headers
     absl::memory
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -281,7 +281,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -301,7 +301,7 @@ absl_cc_test(
     absl::random_random
     absl::random_distributions
     absl::strings_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -314,7 +314,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::base
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -326,7 +326,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::strings_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -340,7 +340,7 @@ absl_cc_test(
     absl::strings
     absl::str_format
     absl::pow10_helper
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -355,7 +355,7 @@ absl_cc_test(
     absl::strings
     absl::config
     absl::raw_logging_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -370,7 +370,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::config
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -428,7 +428,7 @@ absl_cc_test(
     absl::cord
     absl::strings
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -442,7 +442,7 @@ absl_cc_test(
     absl::str_format
     absl::str_format_internal
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -455,7 +455,7 @@ absl_cc_test(
   DEPS
     absl::str_format
     absl::str_format_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -467,7 +467,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::str_format_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -479,7 +479,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::str_format
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -494,7 +494,7 @@ absl_cc_test(
     absl::str_format_internal
     absl::raw_logging_internal
     absl::int128
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -507,7 +507,7 @@ absl_cc_test(
   DEPS
     absl::str_format_internal
     absl::cord
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -520,7 +520,7 @@ absl_cc_test(
   DEPS
     absl::str_format_internal
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -547,7 +547,7 @@ absl_cc_test(
   DEPS
     absl::pow10_helper
     absl::str_format
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -600,7 +600,7 @@ absl_cc_test(
     absl::cordz_update_tracker
     absl::core_headers
     absl::synchronization
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -628,7 +628,7 @@ absl_cc_test(
     absl::config
     absl::cordz_functions
     absl::cordz_test_helpers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -675,7 +675,7 @@ absl_cc_test(
     absl::random_distributions
     absl::synchronization
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -722,7 +722,7 @@ absl_cc_test(
     absl::span
     absl::stacktrace
     absl::symbolize
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -742,7 +742,7 @@ absl_cc_test(
     absl::cordz_update_scope
     absl::cordz_update_tracker
     absl::thread_pool
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -780,7 +780,7 @@ absl_cc_test(
     absl::synchronization
     absl::thread_pool
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -813,7 +813,7 @@ absl_cc_test(
     absl::cordz_update_scope
     absl::cordz_update_tracker
     absl::core_headers
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -899,7 +899,7 @@ absl_cc_test(
     absl::endian
     absl::raw_logging_internal
     absl::fixed_array
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -916,7 +916,7 @@ absl_cc_test(
     absl::core_headers
     absl::raw_logging_internal
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -931,7 +931,7 @@ absl_cc_test(
     absl::cord_internal
     absl::core_headers
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -955,5 +955,5 @@ absl_cc_test(
     absl::core_headers
     absl::raw_logging_internal
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )

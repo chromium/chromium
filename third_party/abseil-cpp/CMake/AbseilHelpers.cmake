@@ -336,8 +336,8 @@ endfunction()
 #     "awesome_test.cc"
 #   DEPS
 #     absl::awesome
-#     gmock
-#     gtest_main
+#     GTest::gmock
+#     GTest::gtest_main
 # )
 function(absl_cc_test)
   if(NOT BUILD_TESTING)

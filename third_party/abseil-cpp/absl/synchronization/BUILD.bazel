@@ -36,6 +36,7 @@ cc_library(
         "internal/graphcycles.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",
@@ -87,6 +88,7 @@ cc_library(
         "notification.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     linkopts = select({
         "//absl:msvc_compiler": [],
         "//absl:clang-cl_compiler": [],

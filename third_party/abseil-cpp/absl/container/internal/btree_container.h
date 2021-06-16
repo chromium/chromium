@@ -20,6 +20,7 @@
 #include <iterator>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/container/internal/btree.h"  // IWYU pragma: export
 #include "absl/container/internal/common.h"
@@ -176,7 +177,7 @@ class btree_container {
   }
 
   // Utility routines.
-  void clear() { tree_.clear(); }
+  ABSL_ATTRIBUTE_REINITIALIZES void clear() { tree_.clear(); }
   void swap(btree_container &other) { tree_.swap(other.tree_); }
   void verify() const { tree_.verify(); }
 

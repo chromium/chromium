@@ -310,7 +310,7 @@ absl_cc_test(
     absl::flags_reflection
     absl::memory
     absl::strings
-    gtest_main
+    GTest::gtest_main
 )
 
 absl_cc_test(
@@ -322,7 +322,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::flags_config
-    gtest_main
+    GTest::gtest_main
 )
 
 absl_cc_test(
@@ -342,7 +342,7 @@ absl_cc_test(
     absl::flags_reflection
     absl::strings
     absl::time
-    gtest_main
+    GTest::gtest_main
 )
 
 absl_cc_test(
@@ -354,7 +354,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::flags_marshalling
-    gtest_main
+    GTest::gtest_main
 )
 
 absl_cc_test(
@@ -373,7 +373,7 @@ absl_cc_test(
     absl::scoped_set_env
     absl::span
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -385,7 +385,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::flags_path_util
-    gtest_main
+    GTest::gtest_main
 )
 
 absl_cc_test(
@@ -398,7 +398,7 @@ absl_cc_test(
   DEPS
     absl::flags_program_name
     absl::strings
-    gtest_main
+    GTest::gtest_main
 )
 
 absl_cc_test(
@@ -415,7 +415,7 @@ absl_cc_test(
     absl::flags_usage
     absl::memory
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -429,7 +429,7 @@ absl_cc_test(
     absl::base
     absl::flags_internal
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -444,7 +444,7 @@ absl_cc_test(
     absl::flags_path_util
     absl::flags_program_name
     absl::strings
-    gtest_main
+    GTest::gtest_main
 )
 
 absl_cc_test(
@@ -463,5 +463,5 @@ absl_cc_test(
     absl::flags_reflection
     absl::flags_usage
     absl::strings
-    gtest
+    GTest::gtest
 )

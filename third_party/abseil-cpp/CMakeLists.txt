@@ -102,8 +102,17 @@ endif()
 ## pthread
 find_package(Threads REQUIRED)
 
+include(CMakeDependentOption)
+
 option(ABSL_USE_EXTERNAL_GOOGLETEST
   "If ON, Abseil will assume that the targets for GoogleTest are already provided by the including project. This makes sense when Abseil is used with add_subproject." OFF)
+
+cmake_dependent_option(ABSL_FIND_GOOGLETEST
+  "If ON, Abseil will use find_package(GTest) rather than assuming that GoogleTest is already provided by the including project."
+  ON
+  "ABSL_USE_EXTERNAL_GOOGLETEST"
+  OFF)
+
 
 option(ABSL_USE_GOOGLETEST_HEAD
   "If ON, abseil will download HEAD from GoogleTest at config time." OFF)
@@ -116,7 +125,15 @@ set(ABSL_LOCAL_GOOGLETEST_DIR "/usr/src/googletest" CACHE PATH
 
 if(BUILD_TESTING)
   ## check targets
-  if (NOT ABSL_USE_EXTERNAL_GOOGLETEST)
+  if (ABSL_USE_EXTERNAL_GOOGLETEST)
+    if (ABSL_FIND_GOOGLETEST)
+      find_package(GTest REQUIRED)
+    else()
+      if (NOT TARGET gtest AND NOT TARGET GTest::gtest)
+        message(FATAL_ERROR "ABSL_USE_EXTERNAL_GOOGLETEST is ON and ABSL_FIND_GOOGLETEST is OFF, which means that the top-level project must build the Google Test project. However, the target gtest was not found.")
+      endif()
+    endif()
+  else()
     set(absl_gtest_build_dir ${CMAKE_BINARY_DIR}/googletest-build)
     if(ABSL_USE_GOOGLETEST_HEAD AND ABSL_GOOGLETEST_DOWNLOAD_URL)
       message(FATAL_ERROR "Do not set both ABSL_USE_GOOGLETEST_HEAD and ABSL_GOOGLETEST_DOWNLOAD_URL")
@@ -134,14 +151,22 @@ if(BUILD_TESTING)
     include(CMake/Googletest/DownloadGTest.cmake)
   endif()
 
-  check_target(gtest)
-  check_target(gtest_main)
-  check_target(gmock)
+  if (NOT ABSL_FIND_GOOGLETEST)
+    # When Google Test is included directly rather than through find_package, the aliases are missing.
+    add_library(GTest::gtest_main ALIAS gtest_main)
+    add_library(GTest::gtest ALIAS gtest)
+    add_library(GTest::gmock ALIAS gmock)
+  endif()
+
+  check_target(GTest::gtest)
+  check_target(GTest::gtest_main)
+  check_target(GTest::gmock)
+  check_target(GTest::gmock_main)
 
   list(APPEND ABSL_TEST_COMMON_LIBRARIES
-    gtest_main
-    gtest
-    gmock
+    GTest::gtest_main
+    GTest::gtest
+    GTest::gmock
     ${CMAKE_THREAD_LIBS_INIT}
   )
 endif()

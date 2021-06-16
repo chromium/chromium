@@ -39,7 +39,7 @@ absl_cc_test(
   DEPS
     absl::bind_front
     absl::memory
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -68,5 +68,5 @@ absl_cc_test(
     absl::function_ref
     absl::memory
     absl::test_instance_tracker
-    gmock_main
+    GTest::gmock_main
 )

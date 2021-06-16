@@ -66,6 +66,7 @@ cc_library(
         "substitute.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     deps = [
         ":internal",
         "//absl/base",
@@ -96,6 +97,7 @@ cc_library(
         "internal/utf8.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -278,6 +280,7 @@ cc_library(
         "internal/cord_rep_ring_reader.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     visibility = [
         "//visibility:private",
     ],
@@ -327,6 +330,7 @@ cc_library(
         "cord.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     deps = [
         ":cord_internal",
         ":cordz_functions",
@@ -355,6 +359,7 @@ cc_library(
     srcs = ["internal/cordz_handle.cc"],
     hdrs = ["internal/cordz_handle.h"],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     visibility = [
         "//absl:__subpackages__",
     ],
@@ -371,6 +376,7 @@ cc_library(
     srcs = ["internal/cordz_info.cc"],
     hdrs = ["internal/cordz_info.h"],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     visibility = [
         "//absl:__subpackages__",
     ],
@@ -995,6 +1001,7 @@ cc_library(
         "internal/str_format/parser.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    features = ["-no_undefined"],
     visibility = ["//visibility:private"],
     deps = [
         ":strings",

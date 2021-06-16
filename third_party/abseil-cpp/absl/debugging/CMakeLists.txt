@@ -87,7 +87,7 @@ absl_cc_test(
     absl::memory
     absl::raw_logging_internal
     absl::strings
-    gmock
+    GTest::gmock
 )
 
 absl_cc_library(
@@ -141,7 +141,7 @@ absl_cc_test(
     absl::strings
     absl::raw_logging_internal
     Threads::Threads
-    gmock
+    GTest::gmock
 )
 
 absl_cc_library(
@@ -194,7 +194,7 @@ absl_cc_test(
     absl::core_headers
     absl::memory
     absl::raw_logging_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -261,7 +261,7 @@ absl_cc_test(
   DEPS
     absl::leak_check_api_enabled_for_testing
     absl::base
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -275,7 +275,7 @@ absl_cc_test(
   DEPS
     absl::leak_check_api_disabled_for_testing
     absl::base
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -292,7 +292,7 @@ absl_cc_test(
     absl::leak_check_disable
     absl::base
     absl::raw_logging_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -322,7 +322,7 @@ absl_cc_test(
     absl::stack_consumption
     absl::core_headers
     absl::raw_logging_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 # component target

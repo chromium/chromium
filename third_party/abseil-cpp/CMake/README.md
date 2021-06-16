@@ -99,3 +99,48 @@ absl::synchronization
 absl::time
 absl::utility
 ```
+
+## Traditional CMake Set-Up
+
+For larger projects, it may make sense to use the traditional CMake set-up where you build and install projects separately.
+
+First, you'd need to build and install Google Test:
+```
+cmake -S /source/googletest -B /build/googletest -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/installation/dir -DBUILD_GMOCK=ON
+cmake --build /build/googletest --target install
+```
+
+Then you need to configure and build Abseil. Make sure you enable `ABSL_USE_EXTERNAL_GOOGLETEST` and `ABSL_FIND_GOOGLETEST`. You also need to enable `ABSL_ENABLE_INSTALL` so that you can install Abseil itself.
+```
+cmake -S /source/abseil-cpp -B /build/abseil-cpp -DCMAKE_PREFIX_PATH=/installation/dir -DCMAKE_INSTALL_PREFIX=/installation/dir -DABSL_ENABLE_INSTALL=ON -DABSL_USE_EXTERNAL_GOOGLETEST=ON -DABSL_FIND_GOOGLETEST=ON
+cmake --build /temporary/build/abseil-cpp
+```
+
+(`CMAKE_PREFIX_PATH` is where you already have Google Test installed; `CMAKE_INSTALL_PREFIX` is where you want to have Abseil installed; they can be different.)
+
+Run the tests:
+```
+ctest --test-dir /temporary/build/abseil-cpp
+```
+
+And finally install:
+```
+cmake --build /temporary/build/abseil-cpp --target install
+```
+
+# CMake Option Synposis
+
+## Enable Standard CMake Installation
+
+`-DABSL_ENABLE_INSTALL=ON`
+
+## Google Test Options
+
+`-DBUILD_TESTING=ON` must be set to enable testing
+
+- Have Abseil download and build Google Test for you: `-DABSL_USE_EXTERNAL_GOOGLETEST=OFF` (default)
+  - Download and build latest Google Test: `-DABSL_USE_GOOGLETEST_HEAD=ON`
+  - Download specific Google Test version (ZIP archive): `-DABSL_GOOGLETEST_DOWNLOAD_URL=https://.../version.zip`
+  - Use Google Test from specific local directory: `-DABSL_LOCAL_GOOGLETEST_DIR=/path/to/googletest`
+- Use Google Test included elsewhere in your project: `-DABSL_USE_EXTERNAL_GOOGLETEST=ON`
+- Use standard CMake `find_package(CTest)` to find installed Google Test: `-DABSL_USE_EXTERNAL_GOOGLETEST=ON -DABSL_FIND_GOOGLETEST=ON`

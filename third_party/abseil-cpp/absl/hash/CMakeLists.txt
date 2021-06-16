@@ -52,7 +52,7 @@ absl_cc_library(
     absl::meta
     absl::strings
     absl::variant
-    gmock
+    GTest::gmock
   TESTONLY
 )
 
@@ -72,7 +72,7 @@ absl_cc_test(
     absl::spy_hash_state
     absl::meta
     absl::int128
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -113,7 +113,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::city
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -141,5 +141,5 @@ absl_cc_test(
   DEPS
     absl::wyhash
     absl::strings
-    gmock_main
+    GTest::gmock_main
 )
