@@ -4,7 +4,7 @@
 
 #include "ash/wm/overview/overview_highlight_controller.h"
 
-#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -269,7 +269,7 @@ void OverviewHighlightController::UpdateHighlight(
   // Note that both magnifiers are mutually exclusive. The overview "focus"
   // works differently from regular focusing so we need to update the magnifier
   // manually here.
-  DockedMagnifierControllerImpl* docked_magnifier =
+  DockedMagnifierController* docked_magnifier =
       Shell::Get()->docked_magnifier_controller();
   FullScreenMagnifierController* fullscreen_magnifier =
       Shell::Get()->full_screen_magnifier_controller();

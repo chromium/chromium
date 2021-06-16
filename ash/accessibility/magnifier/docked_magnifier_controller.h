@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_MAGNIFIER_DOCKED_MAGNIFIER_CONTROLLER_IMPL_H_
-#define ASH_ACCESSIBILITY_MAGNIFIER_DOCKED_MAGNIFIER_CONTROLLER_IMPL_H_
+#ifndef ASH_ACCESSIBILITY_MAGNIFIER_DOCKED_MAGNIFIER_CONTROLLER_H_
+#define ASH_ACCESSIBILITY_MAGNIFIER_DOCKED_MAGNIFIER_CONTROLLER_H_
 
 #include <memory>
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/cpp/docked_magnifier_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ui/base/ime/chromeos/ime_bridge_observer.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -41,17 +40,16 @@ namespace ash {
 // (which follows the cursor location, text input caret location, or focus
 // changes). In a multiple display scenario, the magnifier viewport is located
 // on the same display as that of the point of interest.
-class ASH_EXPORT DockedMagnifierControllerImpl
-    : public DockedMagnifierController,
-      public SessionObserver,
+class ASH_EXPORT DockedMagnifierController
+    : public SessionObserver,
       public ui::EventHandler,
       public ui::IMEBridgeObserver,
       public ui::InputMethodObserver,
       public views::WidgetObserver,
       public WindowTreeHostManager::Observer {
  public:
-  DockedMagnifierControllerImpl();
-  ~DockedMagnifierControllerImpl() override;
+  DockedMagnifierController();
+  ~DockedMagnifierController() override;
 
   // The height of the black separator layer between the magnifier viewport and
   // the rest of the screen.
@@ -76,10 +74,9 @@ class ASH_EXPORT DockedMagnifierControllerImpl
   // value of |delta_index|.
   void StepToNextScaleValue(int delta_index);
 
-  // DockedMagnifierController:
-  void CenterOnPoint(const gfx::Point& point_in_screen) override;
-  void MoveMagnifierToRect(const gfx::Rect& rect_in_screen) override;
-  int GetMagnifierHeightForTesting() const override;
+  void CenterOnPoint(const gfx::Point& point_in_screen);
+  void MoveMagnifierToRect(const gfx::Rect& rect_in_screen);
+  int GetMagnifierHeightForTesting() const;
 
   // ash::SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -221,9 +218,9 @@ class ASH_EXPORT DockedMagnifierControllerImpl
   // few milliseconds after the last move magnifier to rect call.
   base::TimeTicks last_move_magnifier_to_rect_;
 
-  DISALLOW_COPY_AND_ASSIGN(DockedMagnifierControllerImpl);
+  DISALLOW_COPY_AND_ASSIGN(DockedMagnifierController);
 };
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_MAGNIFIER_DOCKED_MAGNIFIER_CONTROLLER_IMPL_H_
+#endif  // ASH_ACCESSIBILITY_MAGNIFIER_docked_magnifier_controller_H_

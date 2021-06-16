@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/docked_magnifier_controller.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -52,7 +53,7 @@ class DockedMagnifierVirtualKeyboardTest
   }
 
   int GetMagnifierHeight() {
-    return ash::DockedMagnifierController::Get()
+    return ash::Shell::Get()->docked_magnifier_controller()
         ->GetMagnifierHeightForTesting();
   }
 

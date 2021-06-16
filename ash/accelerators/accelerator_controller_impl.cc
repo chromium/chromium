@@ -12,7 +12,7 @@
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ambient/ambient_controller.h"
@@ -1436,7 +1436,7 @@ void HandleToggleDockedMagnifier() {
     return;
   }
 
-  DockedMagnifierControllerImpl* docked_magnifier_controller =
+  DockedMagnifierController* docked_magnifier_controller =
       shell->docked_magnifier_controller();
   AccessibilityControllerImpl* accessibility_controller =
       shell->accessibility_controller();

@@ -115,7 +115,7 @@ class DisplayHighlightController;
 class DisplayPrefs;
 class DisplayShutdownObserver;
 class DisplaySpeakerController;
-class DockedMagnifierControllerImpl;
+class DockedMagnifierController;
 class DragDropController;
 class EventClientImpl;
 class EventRewriterControllerImpl;
@@ -379,7 +379,9 @@ class ASH_EXPORT Shell : public SessionObserver,
     return display_highlight_controller_.get();
   }
 
-  DockedMagnifierControllerImpl* docked_magnifier_controller();
+  DockedMagnifierController* docked_magnifier_controller() {
+    return docked_magnifier_controller_.get();
+  }
   ::wm::CompoundEventFilter* env_filter() { return env_filter_.get(); }
   EventRewriterControllerImpl* event_rewriter_controller() {
     return event_rewriter_controller_.get();
@@ -852,7 +854,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PartialMagnifierController> partial_magnifier_controller_;
   std::unique_ptr<HighlighterController> highlighter_controller_;
 
-  std::unique_ptr<DockedMagnifierControllerImpl> docked_magnifier_controller_;
+  std::unique_ptr<DockedMagnifierController> docked_magnifier_controller_;
 
   std::unique_ptr<chromeos::SnapController> snap_controller_;
 

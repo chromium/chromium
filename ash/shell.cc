@@ -19,7 +19,7 @@
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/chromevox/key_accessibility_enabler.h"
-#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -439,10 +439,6 @@ bool Shell::ShouldSaveDisplaySettings() {
       !display_configuration_observer_->save_preference());
 }
 
-DockedMagnifierControllerImpl* Shell::docked_magnifier_controller() {
-  return docked_magnifier_controller_.get();
-}
-
 ::wm::ActivationClient* Shell::activation_client() {
   return focus_controller_.get();
 }
@@ -812,7 +808,7 @@ Shell::~Shell() {
   // NightLightControllerImpl depends on the PrefService as well as the window
   // tree host manager, and must be destructed before them. crbug.com/724231.
   night_light_controller_ = nullptr;
-  // Similarly for DockedMagnifierControllerImpl.
+  // Similarly for DockedMagnifierController.
   docked_magnifier_controller_ = nullptr;
   // Similarly for PrivacyScreenController.
   privacy_screen_controller_ = nullptr;
@@ -1178,7 +1174,7 @@ void Shell::Init(
   high_contrast_controller_ = std::make_unique<HighContrastController>();
 
   docked_magnifier_controller_ =
-      std::make_unique<DockedMagnifierControllerImpl>();
+      std::make_unique<DockedMagnifierController>();
 
   video_detector_ = std::make_unique<VideoDetector>();
 

@@ -62,8 +62,8 @@ html {
 
   /* This size fits 675px screen with docked magnifier and shelf. Basically this
    * is calc(675px * (1 - 1 / 3) - 10px - var(--shelf-area-height-base)) where
-   * 3 is DockedMagnifierControllerImpl::kScreenHeightDivisor
-   * 10 is DockedMagnifierControllerImpl::kSeparatorHeight */
+   * 3 is DockedMagnifierController::kScreenHeightDivisor
+   * 10 is DockedMagnifierController::kSeparatorHeight */
   --oobe-dialog-min-height: 384px;
 
   --oobe-dialog-side-margin: 48px;

@@ -7,9 +7,9 @@
 #include <limits>
 #include <memory>
 
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/cpp/docked_magnifier_controller.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -110,7 +110,7 @@ void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
     return;
   }
   if (IsDockedMagnifierEnabled()) {
-    DockedMagnifierController::Get()->MoveMagnifierToRect(rect);
+    Shell::Get()->docked_magnifier_controller()->MoveMagnifierToRect(rect);
   }
 }
 
