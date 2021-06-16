@@ -39,7 +39,7 @@ BinaryUploadService::ContentAnalysisCallback DoNothingConnector() {
 // one of multiple values.
 bool IsDocMimeType(const std::string& mime_type) {
   static std::set<std::string> set = {
-      "application/msword",
+      "application/msword", "text/plain",
       // Large files can result in no mimetype being found.
       ""};
   return set.count(mime_type);
@@ -199,7 +199,8 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
-  EXPECT_TRUE(IsDocMimeType(data.mime_type));
+  EXPECT_TRUE(IsDocMimeType(data.mime_type))
+      << data.mime_type << " is not an expected mimetype";
 
   std::string long_contents =
       std::string(BinaryUploadService::kMaxUploadSizeBytes, 'a');
@@ -210,7 +211,8 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "4F0E9C6A1A9A90F35B884D0F0E7343459C21060EEFEC6C0F2FA9DC1118DBE5BE");
-  EXPECT_TRUE(IsDocMimeType(data.mime_type));
+  EXPECT_TRUE(IsDocMimeType(data.mime_type))
+      << data.mime_type << " is not an expected mimetype";
 }
 
 TEST_F(FileAnalysisRequestTest, LargeFiles) {
@@ -229,7 +231,8 @@ TEST_F(FileAnalysisRequestTest, LargeFiles) {
   // '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "9EB56DB30C49E131459FE735BA6B9D38327376224EC8D5A1233F43A5B4A25942");
-  EXPECT_TRUE(IsDocMimeType(data.mime_type));
+  EXPECT_TRUE(IsDocMimeType(data.mime_type))
+      << data.mime_type << " is not an expected mimetype";
 
   std::string very_large_file_contents(
       2 * BinaryUploadService::kMaxUploadSizeBytes, 'a');
@@ -241,7 +244,8 @@ TEST_F(FileAnalysisRequestTest, LargeFiles) {
   // '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "CEE41E98D0A6AD65CC0EC77A2BA50BF26D64DC9007F7F1C7D7DF68B8B71291A6");
-  EXPECT_TRUE(IsDocMimeType(data.mime_type));
+  EXPECT_TRUE(IsDocMimeType(data.mime_type))
+      << data.mime_type << " is not an expected mimetype";
 }
 
 TEST_F(FileAnalysisRequestTest, PopulatesDigest) {
@@ -429,7 +433,8 @@ TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeBlock) {
   EXPECT_EQ(data.hash,
             "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
   EXPECT_EQ(request->digest(), data.hash);
-  EXPECT_TRUE(data.mime_type.empty());
+  EXPECT_EQ("text/plain", data.mime_type)
+      << data.mime_type << " is not an expected mimetype";
 }
 
 TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeNoBlock) {
@@ -474,7 +479,8 @@ TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeNoBlock) {
   EXPECT_EQ(data.hash,
             "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
   EXPECT_EQ(request->digest(), data.hash);
-  EXPECT_TRUE(data.mime_type.empty());
+  EXPECT_EQ("text/plain", data.mime_type)
+      << data.mime_type << " is not an expected mimetype";
 }
 
 }  // namespace safe_browsing

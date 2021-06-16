@@ -6,6 +6,7 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
@@ -16,25 +17,47 @@
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "net/base/filename_util.h"
+#include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
 
 namespace safe_browsing {
 
 namespace {
 
-std::string GetFileMimeType(const base::FilePath& path) {
-  // TODO(crbug.com/1013252): Obtain a more accurate MimeType by parsing the
-  // file content.
+std::string GetFileMimeType(const base::FilePath& path,
+                            const base::MemoryMappedFile& file) {
+  std::string sniffed_mime_type;
+  bool sniff_found = net::SniffMimeType(
+      base::StringPiece(
+          reinterpret_cast<const char*>(file.data()),
+          std::min(file.length(), static_cast<size_t>(net::kMaxBytesToSniff))),
+      net::FilePathToFileURL(path),
+      /*type_hint*/ std::string(), net::ForceSniffFileUrlsForHtml::kDisabled,
+      &sniffed_mime_type);
+
+  if (sniff_found && !sniffed_mime_type.empty() &&
+      sniffed_mime_type != "text/*" &&
+      sniffed_mime_type != "application/octet-stream") {
+    return sniffed_mime_type;
+  }
+
+  // If the file got a trivial or empty mime type sniff, fall back to using its
+  // extension if possible.
   base::FilePath::StringType ext = path.FinalExtension();
   if (ext.empty())
-    return "";
+    return sniffed_mime_type;
 
   if (ext[0] == FILE_PATH_LITERAL('.'))
     ext = ext.substr(1);
 
-  std::string mime_type;
-  net::GetMimeTypeFromExtension(ext, &mime_type);
-  return mime_type;
+  std::string ext_mime_type;
+  bool ext_found = net::GetMimeTypeFromExtension(ext, &ext_mime_type);
+
+  if (!ext_found || ext_mime_type.empty())
+    return sniffed_mime_type;
+
+  return ext_mime_type;
 }
 
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
@@ -62,7 +85,7 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   file_data.size = file_size;
   file_data.path = path;
   if (detect_mime_type)
-    file_data.mime_type = GetFileMimeType(path);
+    file_data.mime_type = GetFileMimeType(path, mm_file);
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);

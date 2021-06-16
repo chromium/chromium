@@ -127,7 +127,7 @@ FakeBinaryUploadService* FakeBinaryUploadServiceStorage() {
 
 const std::set<std::string>* DocMimeTypes() {
   static std::set<std::string> set = {
-      "application/msword",
+      "application/msword", "text/plain",
       // The 50 MB file can result in no mimetype being found.
       ""};
   return &set;
