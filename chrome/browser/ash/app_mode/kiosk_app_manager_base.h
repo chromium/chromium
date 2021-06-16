@@ -73,6 +73,11 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
     return auto_launched_with_zero_delay_;
   }
 
+  void set_current_app_was_auto_launched_with_zero_delay_for_testing(
+      bool value) {
+    auto_launched_with_zero_delay_ = value;
+  }
+
   // Session of the app that is currently running.
   AppSession* app_session() { return app_session_.get(); }
 

@@ -15,10 +15,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,6 +35,8 @@ namespace policy {
 namespace {
 
 using ::testing::HasSubstr;
+
+const char* kTestAccountEmail = "test.account.email@example.com";
 
 std::string FindStringKey(const base::Value& dictionary,
                           const std::string& key) {
@@ -363,6 +367,9 @@ class CRDHostDelegateTest : public ash::DeviceSettingsTestBase {
         test_url_loader_factory_.GetSafeWeakWrapper(), &local_state_);
     RegisterLocalState(local_state_.registry());
 
+    arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
+    web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
+
     // We can only create the delegate after the
     // OAuth2TokenServiceFactory has been set up.
     delegate_ = std::make_unique<CRDHostDelegate>(
@@ -370,6 +377,10 @@ class CRDHostDelegateTest : public ash::DeviceSettingsTestBase {
   }
 
   void TearDown() override {
+    delegate_.reset();
+    web_kiosk_app_manager_.reset();
+    arc_kiosk_app_manager_.reset();
+
     DeviceOAuth2TokenServiceFactory::Shutdown();
     chromeos::SystemSaltGetter::Shutdown();
 
@@ -383,6 +394,34 @@ class CRDHostDelegateTest : public ash::DeviceSettingsTestBase {
                                       response_.GetErrorCallback());
   }
 
+  void LoginAsPublicAccountUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
+
+    user_manager().AddPublicAccountUser(account_id);
+    user_manager().LoginUser(account_id);
+  }
+
+  void LoginAsKioskAppUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
+
+    user_manager().AddKioskAppUser(account_id);
+    user_manager().LoginUser(account_id);
+  }
+
+  void LoginAsArcKioskAppUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
+
+    user_manager().AddArcKioskAppUser(account_id);
+    user_manager().LoginUser(account_id);
+  }
+
+  void LoginAsWebKioskAppUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
+
+    user_manager().AddWebKioskAppUser(account_id);
+    user_manager().LoginUser(account_id);
+  }
+
   // Helper object representing the response, which is either the access code
   // or an error message.
   Response& response() { return response_; }
@@ -393,8 +432,13 @@ class CRDHostDelegateTest : public ash::DeviceSettingsTestBase {
   NativeMessageHostStub& host() { return host_; }
 
  private:
+  ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
+
   NativeMessageHostStub host_;
   std::unique_ptr<CRDHostDelegate> delegate_;
+
+  std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
+  std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple local_state_;
@@ -604,6 +648,63 @@ TEST_F(CRDHostDelegateTest, ShouldIgnoreOtherStateValues) {
     EXPECT_FALSE(host().is_destroyed())
         << "Unexpected shutdown due to state " << state;
   }
+}
+
+TEST_F(CRDHostDelegateTest, IsRunningKioskShouldBeFalseForNonKioskAppUser) {
+  LoginAsPublicAccountUser();
+
+  EXPECT_FALSE(delegate().IsRunningKiosk());
+}
+
+TEST_F(CRDHostDelegateTest,
+       IsRunningKioskShouldBeFalseForKioskAppUserWithoutAutoLaunch) {
+  LoginAsKioskAppUser();
+
+  EXPECT_FALSE(delegate().IsRunningKiosk());
+}
+
+TEST_F(CRDHostDelegateTest,
+       IsRunningKioskShouldBeTrueForKioskAppUserWithZeroDelayAutoLaunch) {
+  LoginAsKioskAppUser();
+
+  ash::KioskAppManager::Get()
+      ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
+
+  EXPECT_TRUE(delegate().IsRunningKiosk());
+}
+
+TEST_F(CRDHostDelegateTest,
+       IsRunningKioskShouldBeFalseForArcKioskAppUserWithoutAutoLaunch) {
+  LoginAsArcKioskAppUser();
+
+  EXPECT_FALSE(delegate().IsRunningKiosk());
+}
+
+TEST_F(CRDHostDelegateTest,
+       IsRunningKioskShouldBeTrueForArcKioskAppUserWithZeroDelayAutoLaunch) {
+  LoginAsArcKioskAppUser();
+
+  ash::ArcKioskAppManager::Get()
+      ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
+
+  EXPECT_TRUE(delegate().IsRunningKiosk());
+}
+
+TEST_F(CRDHostDelegateTest,
+       IsRunningKioskShouldBeFalseForWebKioskAppUserWithoutAutoLaunch) {
+  LoginAsWebKioskAppUser();
+
+  EXPECT_FALSE(delegate().IsRunningKiosk());
+}
+
+TEST_F(CRDHostDelegateTest,
+       IsRunningKioskShouldBeTrueForWebKioskAppUserWithZeroDelayAutoLaunch) {
+  LoginAsWebKioskAppUser();
+
+  ash::WebKioskAppManager::Get()
+      ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
+
+  EXPECT_TRUE(delegate().IsRunningKiosk());
 }
 
 }  // namespace policy

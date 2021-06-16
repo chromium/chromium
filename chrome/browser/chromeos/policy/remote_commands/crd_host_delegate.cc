@@ -7,21 +7,18 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "net/base/load_flags.h"
-#include "net/http/http_request_headers.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -73,6 +70,21 @@ std::string FormatErrorMessage(const std::string& error_state,
     else
       return "Unknown Error";
   }
+}
+
+ash::KioskAppManagerBase* GetKioskAppManager(
+    const user_manager::UserManager* user_manager) {
+  DCHECK(user_manager->IsLoggedInAsAnyKioskApp());
+
+  if (user_manager->IsLoggedInAsKioskApp())
+    return ash::KioskAppManager::Get();
+  else if (user_manager->IsLoggedInAsArcKioskApp())
+    return chromeos::ArcKioskAppManager::Get();
+  else if (user_manager->IsLoggedInAsWebKioskApp())
+    return ash::WebKioskAppManager::Get();
+
+  NOTREACHED();
+  return nullptr;
 }
 
 }  // namespace
@@ -156,34 +168,16 @@ void CRDHostDelegate::TerminateSession(base::OnceClosure callback) {
 bool CRDHostDelegate::AreServicesReady() const {
   return user_manager::UserManager::IsInitialized() &&
          ui::UserActivityDetector::Get() != nullptr &&
-         chromeos::ProfileHelper::Get() != nullptr &&
          oauth_service() != nullptr;
 }
 
 bool CRDHostDelegate::IsRunningKiosk() const {
   auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager->IsLoggedInAsAnyKioskApp()) {
-    return false;
-  }
-  if (!GetKioskProfile())
+  if (!user_manager->IsLoggedInAsAnyKioskApp())
     return false;
 
-  if (user_manager->IsLoggedInAsKioskApp()) {
-    ash::KioskAppManager* manager = ash::KioskAppManager::Get();
-    if (manager->GetAutoLaunchApp().empty())
-      return false;
-    ash::KioskAppManager::App app;
-    CHECK(manager->GetApp(manager->GetAutoLaunchApp(), &app));
-    return app.was_auto_launched_with_zero_delay;
-  } else if (user_manager->IsLoggedInAsArcKioskApp()) {
-    return chromeos::ArcKioskAppManager::Get()
-        ->current_app_was_auto_launched_with_zero_delay();
-  } else if (user_manager->IsLoggedInAsWebKioskApp()) {
-    return ash::WebKioskAppManager::Get()
-        ->current_app_was_auto_launched_with_zero_delay();
-  }
-  NOTREACHED();
-  return false;
+  return GetKioskAppManager(user_manager)
+      ->current_app_was_auto_launched_with_zero_delay();
 }
 
 base::TimeDelta CRDHostDelegate::GetIdlenessPeriod() const {
@@ -433,12 +427,6 @@ void CRDHostDelegate::ShutdownHost() {
 
 void CRDHostDelegate::DoShutdownHost() {
   host_.reset();
-}
-
-Profile* CRDHostDelegate::GetKioskProfile() const {
-  auto* user_manager = user_manager::UserManager::Get();
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(
-      user_manager->GetActiveUser());
 }
 
 DeviceOAuth2TokenService* CRDHostDelegate::oauth_service() const {

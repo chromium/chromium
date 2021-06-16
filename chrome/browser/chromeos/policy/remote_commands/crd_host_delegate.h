@@ -16,7 +16,6 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 
 class DeviceOAuth2TokenService;
-class Profile;
 
 namespace policy {
 
@@ -77,8 +76,6 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   void OnStateRemoteConnected(const base::Value& message);
   void OnStateRemoteDisconnected();
   void OnStateReceivedAccessCode(const base::Value& message);
-
-  Profile* GetKioskProfile() const;
 
   DeviceOAuth2TokenService* oauth_service() const;
 
