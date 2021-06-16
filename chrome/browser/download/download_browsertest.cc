@@ -2811,12 +2811,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
   // Simulate saving the PDF from the UI.
   pdf::PDFWebContentsHelper* pdf_helper =
       pdf::PDFWebContentsHelper::FromWebContents(inner_web_contents);
-  blink::mojom::ReferrerPtr referrer = blink::mojom::Referrer::New();
-  referrer->url = subframe_url;
-  referrer->policy =
-      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
   static_cast<pdf::mojom::PdfService*>(pdf_helper)
-      ->SaveUrlAs(subframe_url, std::move(referrer));
+      ->SaveUrlAs(subframe_url,
+                  network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
 
   request_waiter.Run();
 

@@ -46,7 +46,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
-#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
@@ -601,10 +600,8 @@ void PdfViewWebPlugin::SendMessage(base::Value message) {
 }
 
 void PdfViewWebPlugin::SaveAs() {
-  GURL gurl(GetURL().c_str());
-  blink::mojom::ReferrerPtr referrer = blink::mojom::Referrer::New(
-      gurl, network::mojom::ReferrerPolicy::kDefault);
-  GetPdfService()->SaveUrlAs(gurl, std::move(referrer));
+  GetPdfService()->SaveUrlAs(GURL(GetURL().c_str()),
+                             network::mojom::ReferrerPolicy::kDefault);
 }
 
 void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {

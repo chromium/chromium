@@ -4,7 +4,7 @@
 
 module pdf.mojom;
 
-import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -30,7 +30,7 @@ interface PdfService {
   HasUnsupportedFeature();
 
   // Brings up SaveAs... dialog to save specified URL.
-  SaveUrlAs(url.mojom.Url url, blink.mojom.Referrer referrer);
+  SaveUrlAs(url.mojom.Url url, network.mojom.ReferrerPolicy policy);
 
   // Notifies the embedder of the top-left and bottom-right coordinates of the
   // current selection.

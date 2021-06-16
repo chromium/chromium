@@ -253,7 +253,6 @@ source_set("platform_export") {
 component("platform") {
   visibility = []  # Allow re-assignment of list.
   visibility = [
-    "//components/pdf/common:interfaces_blink",
     "//services/device/public/mojom:mojom_blink",
     "//services/media_session/public/mojom:mojom_blink",
     "//third_party/blink/*",

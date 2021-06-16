@@ -9,16 +9,10 @@ mojom("interfaces") {
   sources = [ "pdf.mojom" ]
 
   public_deps = [
-    "//third_party/blink/public/mojom:mojom_platform",
+    "//services/network/public/mojom:url_loader_base",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
-  component_deps = [ "//content/public/common" ]
-
-  overridden_deps_blink = [ "//third_party/blink/public/mojom:mojom_platform" ]
-  component_deps_blink = [ "//third_party/blink/renderer/platform" ]
 
   cpp_only = true
 }

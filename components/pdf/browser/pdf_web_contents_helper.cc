@@ -260,13 +260,16 @@ void PDFWebContentsHelper::HasUnsupportedFeature() {
 }
 
 void PDFWebContentsHelper::SaveUrlAs(const GURL& url,
-                                     blink::mojom::ReferrerPtr referrer) {
+                                     network::mojom::ReferrerPolicy policy) {
   client_->OnSaveURL(web_contents());
 
-  if (content::RenderFrameHost* rfh =
-          web_contents()->GetOuterWebContentsFrame()) {
-    web_contents()->SaveFrame(url, referrer.To<content::Referrer>(), rfh);
-  }
+  content::RenderFrameHost* rfh = web_contents()->GetOuterWebContentsFrame();
+  if (!rfh)
+    return;
+
+  content::Referrer referrer(url, policy);
+  referrer = content::Referrer::SanitizeForRequest(url, referrer);
+  web_contents()->SaveFrame(url, referrer, rfh);
 }
 
 void PDFWebContentsHelper::UpdateContentRestrictions(
