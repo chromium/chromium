@@ -38,6 +38,7 @@ class TestUpgradeDetectorChromeos : public UpgradeDetectorChromeos {
 
   // Exposed for testing.
   using UpgradeDetector::AdjustDeadline;
+  using UpgradeDetector::GetDefaultRelaunchWindow;
   using UpgradeDetectorChromeos::UPGRADE_AVAILABLE_REGULAR;
 
   DISALLOW_COPY_AND_ASSIGN(TestUpgradeDetectorChromeos);
@@ -439,7 +440,9 @@ TEST_F(UpgradeDetectorChromeosTest, DeadlineAdjustmentDefaultWindow) {
       base::Time::FromString("9 Jan 2018 02:00", &deadline_lower_border));
   ASSERT_TRUE(
       base::Time::FromString("9 Jan 2018 04:00", &deadline_upper_border));
-  deadline = upgrade_detector.AdjustDeadline(detect_time + delta);
+  const auto relaunch_window = upgrade_detector.GetDefaultRelaunchWindow();
+  deadline =
+      upgrade_detector.AdjustDeadline(detect_time + delta, relaunch_window);
   EXPECT_GE(deadline, deadline_lower_border);
   EXPECT_LE(deadline, deadline_upper_border);
 

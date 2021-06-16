@@ -58,8 +58,8 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
 
   // Calculates |elevated_deadline_| and |high_deadline_| using either
   // |high_deadline_override_| if it is not null or the threshold values
-  // computed based on the RelaunchNotificationPeriod and RelaunchHeadsUpPeriod
-  // policy settings.
+  // computed based on the RelaunchNotificationPeriod, RelaunchHeadsUpPeriod and
+  // RelaunchWindow policy settings.
   void CalculateDeadlines();
 
   // UpgradeDetector:

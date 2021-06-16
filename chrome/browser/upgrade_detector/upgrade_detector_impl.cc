@@ -172,9 +172,13 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
     if (notification_period.is_zero())
       effective_notification_period = kDefaultHighThreshold;
 
+    const RelaunchWindow effective_relaunch_window =
+        relaunch_window.value_or(GetDefaultRelaunchWindow());
+
     DCHECK(!upgrade_detected_time().is_null());
     const base::Time adjusted_deadline =
-        AdjustDeadline(upgrade_detected_time() + effective_notification_period);
+        AdjustDeadline(upgrade_detected_time() + effective_notification_period,
+                       effective_relaunch_window);
     effective_notification_period = adjusted_deadline - upgrade_detected_time();
 
     stages_[kStagesIndexHigh] = effective_notification_period;

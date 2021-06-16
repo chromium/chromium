@@ -24,6 +24,7 @@
 #include "chromeos/settings/timezone_settings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 using chromeos::DBusThreadManager;
@@ -155,8 +156,11 @@ void UpgradeDetectorChromeos::CalculateDeadlines() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
   if (notification_period.is_zero())
     notification_period = kDefaultHighThreshold;
-  high_deadline_ =
-      AdjustDeadline(upgrade_detected_time() + notification_period);
+
+  const RelaunchWindow relaunch_window =
+      GetRelaunchWindowPolicyValue().value_or(GetDefaultRelaunchWindow());
+  high_deadline_ = AdjustDeadline(upgrade_detected_time() + notification_period,
+                                  relaunch_window);
 
   base::TimeDelta heads_up_period = GetRelaunchHeadsUpPeriod();
   if (heads_up_period.is_zero())

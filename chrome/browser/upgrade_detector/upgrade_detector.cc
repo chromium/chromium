@@ -200,8 +200,8 @@ bool UpgradeDetector::IsRelaunchNotificationPolicyEnabled() {
 }
 
 // static
-base::Time UpgradeDetector::AdjustDeadline(base::Time deadline) {
-  const RelaunchWindow window = GetRelaunchWindow();
+base::Time UpgradeDetector::AdjustDeadline(base::Time deadline,
+                                           const RelaunchWindow& window) {
   DCHECK(window.IsValid());
   const base::TimeDelta duration = window.duration;
 
@@ -263,12 +263,6 @@ base::Time UpgradeDetector::AdjustDeadline(base::Time deadline) {
   // The deadline is after previous day's window. Push the deadline forward into
   // a random interval in the day's window.
   return window_start + GenRandomTimeDelta(duration);
-}
-
-// static
-UpgradeDetector::RelaunchWindow UpgradeDetector::GetRelaunchWindow() {
-  const absl::optional<RelaunchWindow> window = GetRelaunchWindowPolicyValue();
-  return window.has_value() ? window.value() : GetDefaultRelaunchWindow();
 }
 
 // static

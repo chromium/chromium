@@ -212,16 +212,12 @@ class UpgradeDetector {
   static base::TimeDelta GetRelaunchNotificationPeriod();
   static bool IsRelaunchNotificationPolicyEnabled();
 
-  // Returns the adjusted deadline as per the relaunch window from
-  // `UpgradeDetector::GetRelaunchWindow()`. If the deadline has already passed
-  // the window for the day, it is prolonged for the next day within the window.
-  // If the `deadline` already falls within the window, no change is made.
-  static base::Time AdjustDeadline(base::Time deadline);
-
-  // Returns the relaunch window specified via the RelaunchWindow policy
-  // setting, or the default one via
-  // 'UpgradeDetector::GetDefaultRelaunchWindow()` if unset or set incorrectly.
-  static RelaunchWindow GetRelaunchWindow();
+  // Returns the adjusted deadline to fall within `window`. If the
+  // `deadline` has already passed the window for the day, it is prolonged for
+  // the next day within the window. If the `deadline` already falls within the
+  // window, no change is made.
+  static base::Time AdjustDeadline(base::Time deadline,
+                                   const RelaunchWindow& window);
 
   // Returns the relaunch window specified via the RelaunchWindow policy
   // setting, or nullopt if unset or set incorrectly.
