@@ -11,6 +11,7 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
+import {setExpertMode} from '../expert.js';
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -141,6 +142,46 @@ export class PrimarySettings extends BaseSettings {
       },
       'settings-help': () => util.openHelp(),
     });
+
+    /**
+     * @type {number}
+     * @private
+     */
+    this.headerClickedCount_ = 0;
+
+    /**
+     * @type {number|null}
+     * @private
+     */
+    this.headerClickedLastTime_ = null;
+
+    const header = dom.get('#settings-header', HTMLElement);
+    header.addEventListener('click', () => this.onHeaderClicked_());
+  }
+
+  /**
+   * Handle click on primary settings header (used to trigger expert mode).
+   * @private
+   */
+  onHeaderClicked_() {
+    const reset = () => {
+      this.headerClickedCount_ = 0;
+      this.headerClickedLastTime_ = null;
+    };
+
+    // Reset the counter if last click is more than 1 second ago.
+    if (this.headerClickedLastTime_ !== null &&
+        (Date.now() - this.headerClickedLastTime_) > 1000) {
+      reset();
+    }
+
+    this.headerClickedCount_++;
+    this.headerClickedLastTime_ = Date.now();
+
+    if (this.headerClickedCount_ === 5) {
+      setExpertMode(true);
+      reset();
+    }
   }
 }
 
