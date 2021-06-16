@@ -14,6 +14,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -99,6 +100,16 @@ void AuthenticationService::Initialize(
   CHECK(!initialized());
   delegate_ = std::move(delegate);
   initialized_ = true;
+
+  // The preference |kSigninAllowed| is not available for pre-MICE users. Except
+  // for policy exceptions pre-MICE users cannot choose to be in a permanently
+  // not signed-in state (ie. kSigninAllowed = false).
+  // If a user sets the preference in MICE and then is rolled back to a pre-MICE
+  // state, they will be returned to the default state (ie. kSigninAllowed =
+  // true).
+  if (!signin::IsMobileIdentityConsistencyEnabled()) {
+    pref_service_->ClearPref(prefs::kSigninAllowed);
+  }
 
   MigrateAccountsStoredInPrefsIfNeeded();
 

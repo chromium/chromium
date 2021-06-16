@@ -328,7 +328,7 @@ using chrome_test_util::SyncSettingsConfirmButton;
 - (void)testSigninDisabledByPolicy {
   // Disable browser sign-in.
   [self setUpSigninDisabledEnterprisePolicy];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowedByPolicy];
 
   // Open Google services settings and verify the sign-in cell shows the
   // "sign-in disabled" text.
@@ -354,7 +354,7 @@ using chrome_test_util::SyncSettingsConfirmButton;
       assertWithMatcher:grey_nil()];
 
   // Prefs clean-up.
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowed];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowedByPolicy];
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }

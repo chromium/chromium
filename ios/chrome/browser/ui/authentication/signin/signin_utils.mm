@@ -162,6 +162,8 @@ void RecordVersionSeen(PrefService* pref_service,
 }
 
 bool IsSigninAllowed(const PrefService* prefs) {
+  DCHECK(signin::IsMobileIdentityConsistencyEnabled() ||
+         prefs->GetBoolean(prefs::kSigninAllowed));
   return prefs->GetBoolean(prefs::kSigninAllowed) &&
          prefs->GetBoolean(prefs::kSigninAllowedByPolicy);
 }

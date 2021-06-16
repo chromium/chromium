@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -228,23 +229,4 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
               l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE));
   ASSERT_NSEQ(signin_item.detailText,
               l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED));
-}
-
-// Verifies that the sign-in setting item is replaced by the managed sign-in
-// item if sign-in is disabled through the "Allow Chrome Sign-in" option.
-TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
-  CreateController();
-  CheckController();
-
-  NSArray* signin_items = [controller().tableViewModel
-      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
-                                       SettingsSectionIdentifierSignIn];
-  ASSERT_EQ(1U, signin_items.count);
-
-  TableViewImageItem* signin_item =
-      static_cast<TableViewImageItem*>(signin_items[0]);
-  ASSERT_NSEQ(signin_item.title,
-              l10n_util::GetNSString(IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE));
-  ASSERT_NE(signin_item.image, nil);
 }

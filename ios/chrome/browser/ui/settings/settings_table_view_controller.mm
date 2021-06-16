@@ -547,6 +547,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   // If sign-in is disabled there should not be a sign-in promo.
   if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
+    // Ensure that the user sign-in state always reflects the sign-in allowed
+    // preference.
+    DCHECK(!authService->IsAuthenticated());
     item = signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())
                ? [self signinDisabledTextItem]
                : [self signinDisabledByPolicyTextItem];

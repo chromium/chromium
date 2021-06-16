@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/driver/mock_sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -266,6 +268,25 @@ TEST_F(SettingsTableViewControllerMICETest,
   ASSERT_NSEQ(l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE),
               sync_item.text);
   ASSERT_EQ(nil, sync_item.detailText);
+}
+
+// Verifies that the sign-in setting item is replaced by the managed sign-in
+// item if sign-in is disabled through the "Allow Chrome Sign-in" option.
+TEST_F(SettingsTableViewControllerMICETest, SigninDisabled) {
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  CreateController();
+  CheckController();
+
+  NSArray* signin_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierSignIn];
+  ASSERT_EQ(1U, signin_items.count);
+
+  TableViewImageItem* signin_item =
+      static_cast<TableViewImageItem*>(signin_items[0]);
+  ASSERT_NSEQ(signin_item.title,
+              l10n_util::GetNSString(IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE));
+  ASSERT_NE(signin_item.image, nil);
 }
 
 // Verifies that the Sync icon displays the off state (with OFF in detail text)

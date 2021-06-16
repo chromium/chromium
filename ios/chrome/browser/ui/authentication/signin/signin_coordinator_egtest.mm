@@ -603,12 +603,13 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the sign-in coordinator isn't started when sign-in is disabled.
-- (void)testSigninDisabled {
+// Tests that the sign-in coordinator isn't started when sign-in is disabled by
+// policy.
+- (void)testSigninDisabledByPolicy {
   // Disable browser sign-in only after the "Sign in to Chrome" button is
   // visible.
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowedByPolicy];
 
   // Verify the sign-in view isn't showing.
   id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
@@ -617,7 +618,7 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       assertWithMatcher:grey_notVisible()];
 
   // Prefs clean-up.
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowed];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowedByPolicy];
 }
 
 @end
