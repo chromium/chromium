@@ -439,7 +439,8 @@ Polymer({
    * @private
    */
   focusAdditionalTermsLink_() {
-    this.$.additionalTerms.focus();
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$.additionalTerms.focus());
   },
 
   /**
