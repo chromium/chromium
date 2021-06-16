@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 class Profile;
@@ -27,6 +29,7 @@ class ExternallyManagedAppManager;
 class SystemWebAppManager;
 class WebAppInstallManager;
 class WebAppPolicyManager;
+class WebAppIconManager;
 
 class TestWebAppProvider : public WebAppProvider {
  public:
@@ -67,6 +70,14 @@ class TestWebAppProvider : public WebAppProvider {
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
   void SkipAwaitingExtensionSystem();
+
+  // These getters can be called at any time: no
+  // WebAppProvider::CheckIsConnected() check performed. See
+  // WebAppProvider::ConnectSubsystems().
+  //
+  // A mutable view must be accessible only in tests.
+  WebAppRegistrarMutable& GetRegistrarMutable() const;
+  WebAppIconManager& GetIconManager() const;
 
  private:
   void CheckNotStarted() const;

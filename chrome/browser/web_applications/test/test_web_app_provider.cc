@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 
@@ -118,6 +119,17 @@ void TestWebAppProvider::SetOsIntegrationManager(
 void TestWebAppProvider::SkipAwaitingExtensionSystem() {
   CheckNotStarted();
   skip_awaiting_extension_system_ = true;
+}
+
+WebAppRegistrarMutable& TestWebAppProvider::GetRegistrarMutable() const {
+  DCHECK(registrar_);
+  return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
+}
+
+WebAppIconManager& TestWebAppProvider::GetIconManager() const {
+  DCHECK(icon_manager_);
+  DCHECK(icon_manager_->AsWebAppIconManager());
+  return *icon_manager_->AsWebAppIconManager();
 }
 
 void TestWebAppProvider::CheckNotStarted() const {

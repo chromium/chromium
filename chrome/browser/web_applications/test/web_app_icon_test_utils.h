@@ -27,6 +27,7 @@ class ImageSkia;
 namespace web_app {
 
 class FileUtilsWrapper;
+class WebAppIconManager;
 
 SkBitmap CreateSquareIcon(int size_px, SkColor solid_color);
 
@@ -71,6 +72,34 @@ blink::Manifest::ImageResource CreateSquareImageResource(
 std::map<SquareSizePx, SkBitmap> ReadPngsFromDirectory(
     FileUtilsWrapper* file_utils,
     const base::FilePath& icons_dir);
+
+struct GeneratedIconsInfo {
+  GeneratedIconsInfo();
+  GeneratedIconsInfo(const GeneratedIconsInfo&);
+  GeneratedIconsInfo(IconPurpose purpose,
+                     std::vector<SquareSizePx> sizes_px,
+                     std::vector<SkColor> colors);
+  ~GeneratedIconsInfo();
+
+  IconPurpose purpose;
+  std::vector<SquareSizePx> sizes_px;
+  std::vector<SkColor> colors;
+};
+
+void IconManagerWriteGeneratedIcons(
+    WebAppIconManager& icon_manager,
+    const AppId& app_id,
+    const std::vector<GeneratedIconsInfo>& icons_info);
+
+// Favicons are read on WebAppIconManager startup, awaits
+// WebAppIconManager::favicon_read_callback_ synchronously.
+void IconManagerStartAndAwaitFaviconAny(WebAppIconManager& icon_manager,
+                                        const AppId& app_id);
+
+// Monochrome favicons are read on WebAppIconManager startup, awaits
+// WebAppIconManager::favicon_monochrome_read_callback_ synchronously.
+void IconManagerStartAndAwaitFaviconMonochrome(WebAppIconManager& icon_manager,
+                                               const AppId& app_id);
 
 }  // namespace web_app
 
