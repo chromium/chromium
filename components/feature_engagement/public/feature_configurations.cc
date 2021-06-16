@@ -216,13 +216,13 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHWebFeedPostFollowDialogFeature.name == feature->name) {
     // A config that allows one of the WebFeed post follow dialogs to be
-    // presented once.
+    // presented 3 times.
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->trigger = EventConfig("web_feed_post_follow_dialog_trigger",
-                                  Comparator(LESS_THAN, 1), 360, 360);
+                                  Comparator(LESS_THAN, 3), 360, 360);
     config->used = EventConfig("web_feed_post_follow_dialog_shown",
                                Comparator(ANY, 0), 360, 360);
     return config;
