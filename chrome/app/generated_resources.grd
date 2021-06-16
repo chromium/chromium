@@ -11369,6 +11369,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Click to view the extension}
           other {Click to view these extensions}}
       </message>
+      <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION" desc="Text describing the extension request justificaion textfield.">
+        Justification for requesting this extension:
+      </message>
+      <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_PLACEHOLDER" desc="Placeholder text which appears inside the extension request justification textfield.">
+        Enter justification...
+      </message>
     </if>
 
     <message name="IDS_NAME_WINDOW_PROMPT_TITLE"

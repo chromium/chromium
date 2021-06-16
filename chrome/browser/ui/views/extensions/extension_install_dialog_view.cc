@@ -44,6 +44,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
@@ -203,6 +204,51 @@ void AddPermissions(ExtensionInstallPrompt::Prompt* prompt,
 }
 
 }  // namespace
+
+// A custom view for the justification section of the extension info. It
+// contains a text field into which users can enter their justification for
+// requesting an extension.
+class ExtensionInstallDialogView::ExtensionJustificationView
+    : public views::View {
+ public:
+  ExtensionJustificationView() {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
+    auto header_label = std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION),
+        views::style::CONTEXT_DIALOG_BODY_TEXT);
+    header_label->SetMultiLine(true);
+    header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    AddChildView(std::move(header_label));
+
+    auto justification_field = std::make_unique<views::Textarea>();
+    justification_field->SetPreferredSize(gfx::Size(0, 60));
+    justification_field->SetPlaceholderText(l10n_util::GetStringUTF16(
+        IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_PLACEHOLDER));
+    justification_field_ = AddChildView(std::move(justification_field));
+  }
+  ExtensionJustificationView(const ExtensionJustificationView&) = delete;
+  ExtensionJustificationView& operator=(const ExtensionJustificationView&) =
+      delete;
+  ~ExtensionJustificationView() override = default;
+
+  // Get the text currently present in the justification text field.
+  std::u16string GetJustificationText() {
+    DCHECK(justification_field_);
+    return justification_field_->GetText();
+  }
+
+  void ChildPreferredSizeChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
+
+ private:
+  views::Textfield* justification_field_;
+};
 
 ExtensionInstallDialogView::ExtensionInstallDialogView(
     std::unique_ptr<ExtensionInstallPromptShowParams> show_params,

@@ -21,6 +21,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/view.h"
 
+// Forward-declarations
 class Profile;
 
 // Modal dialog that shows when the user attempts to install an extension. Also
@@ -63,6 +64,9 @@ class ExtensionInstallDialogView
   void ClickLinkForTesting();
 
  private:
+  // Forward-declaration.
+  class ExtensionJustificationView;
+
   void CloseDialog();
 
   // extensions::ExtensionRegistryObserver:
