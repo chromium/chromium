@@ -17,6 +17,8 @@ import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BluetoothPageBrowserProxy, BluetoothPageBrowserProxyImpl} from './bluetooth_page_browser_proxy.js';
+
 Polymer({
   _template: html`{__html_template__}`,
   is: 'bluetooth-device-list-item',
@@ -30,6 +32,7 @@ Polymer({
      */
     device: {
       type: Object,
+      observer: 'onDeviceChanged_',
     },
 
     /**
@@ -41,9 +44,25 @@ Polymer({
       notify: true,
       computed: 'getAriaLabel_(device)',
     },
+
+    // TODO(crbug.com/1208155) Add managed policy icon that is shown when this
+    // flag is true.
+    /** @private */
+    shouldShowManagedIcon_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   hostAttributes: {role: 'button'},
+
+  /** @private {?BluetoothPageBrowserProxy} */
+  browserProxy_: null,
+
+  /** @override */
+  ready() {
+    this.browserProxy_ = BluetoothPageBrowserProxyImpl.getInstance();
+  },
 
   /**
    * @param {!Event} event
@@ -229,5 +248,22 @@ Polymer({
         return device.connected ? 'os-settings:bluetooth-connected' :
                                   'cr:bluetooth';
     }
+  },
+
+  /**
+   * @param {?chrome.bluetooth.Device} newValue
+   * @param {?chrome.bluetooth.Device} oldValue
+   * @private
+   */
+  onDeviceChanged_(newValue, oldValue) {
+    if (!newValue) {
+      this.shouldShowManagedIcon_ = false;
+      return;
+    }
+
+    this.browserProxy_.isDeviceBlockedByPolicy(newValue.address)
+        .then((isBlocked) => {
+          this.shouldShowManagedIcon_ = isBlocked;
+        });
   },
 });

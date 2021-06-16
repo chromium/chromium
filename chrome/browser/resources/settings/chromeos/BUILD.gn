@@ -213,6 +213,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_printing_page/cups_printer_types.js",
     "chromeos/os_printing_page/cups_printers_browser_proxy.js",
     "chromeos/os_printing_page/cups_printers_entry_manager.js",
+    "chromeos/bluetooth_page/bluetooth_page_browser_proxy.js",
     "chromeos/os_reset_page/os_reset_browser_proxy.js",
     "chromeos/os_settings.js",
     "chromeos/personalization_page/change_picture_browser_proxy.js",

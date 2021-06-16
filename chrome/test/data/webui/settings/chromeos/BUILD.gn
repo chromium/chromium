@@ -143,6 +143,7 @@ js_modulizer("modulize") {
     "switch_access_setup_guide_dialog_test.js",
     "switch_access_subpage_tests.js",
     "test_about_page_browser_proxy_chromeos.js",
+    "test_bluetooth_page_browser_proxy.js",
     "test_crostini_browser_proxy.js",
     "test_android_apps_browser_proxy.js",
     "test_cups_printers_browser_proxy.js",

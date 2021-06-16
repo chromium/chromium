@@ -97,6 +97,7 @@ export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_shar
 export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_browser_proxy.js';
 export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.js';
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.js';
+export {BluetoothPageBrowserProxyImpl} from './bluetooth_page/bluetooth_page_browser_proxy.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.m.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.js';

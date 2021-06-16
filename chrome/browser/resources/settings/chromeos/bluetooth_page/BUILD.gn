@@ -12,12 +12,14 @@ js_type_check("closure_compile_module") {
   deps = [
     ":bluetooth_device_list_item",
     ":bluetooth_page",
+    ":bluetooth_page_browser_proxy",
     ":bluetooth_subpage",
   ]
 }
 
 js_library("bluetooth_device_list_item") {
   deps = [
+    ":bluetooth_page_browser_proxy",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -62,6 +64,13 @@ js_library("bluetooth_subpage") {
   externs_list = [
     "$externs_path/bluetooth.js",
     "$externs_path/bluetooth_private.js",
+  ]
+}
+
+js_library("bluetooth_page_browser_proxy") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
