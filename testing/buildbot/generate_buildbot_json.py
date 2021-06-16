@@ -321,6 +321,11 @@ class BBJSONGenerator(object):
             "  List all bots running 'test1' " +
             "(make sure you have quotes):\n" + "    --query test/'test1'/bots"))
     parser.add_argument(
+        '--disable-builder-existence-check',
+        action='store_true',
+        help='Disable the check that builders in waterfalls.pyl '
+        'actually exist in the infra/config files')
+    parser.add_argument(
         '-n',
         '--new-files',
         action='store_true',
@@ -1472,10 +1477,18 @@ class BBJSONGenerator(object):
     # their presubmit to run `generate_buildbot_json.py -c`, so that the tree
     # never ends up in an invalid state.
 
-    # Get the generated project.pyl so we can check if we should be enforcing
-    # that the specs are for builders that actually exist
-    # If not, return None to indicate that we won't enforce that builders in
-    # waterfalls.pyl are defined in LUCI
+    # We may not want to enforce that the builders in waterfalls.pyl are
+    # actually defined in LUCI: when we set up branch projects we don't want to
+    # have to make changes to the testing/buildbot *.pyl files to remove the
+    # builders that are not defined on the branch
+    if self.args.disable_builder_existence_check:
+      return None
+
+    # If the --disable-builder-existence-check flag isn't set, the builder
+    # existence check might be disabled by the project.pyl file in the
+    # infra/config directory
+    # TODO(https://crbug.com1220089) Remove the project.pyl code once all
+    # presubmits are correctly passing the --disable-builder-existence-check
     project_pyl_path = os.path.join(self.args.infra_config_dir, 'generated',
                                     'project.pyl')
     if os.path.exists(project_pyl_path):

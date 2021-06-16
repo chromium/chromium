@@ -13,12 +13,16 @@ USE_PYTHON3 = True
 
 
 def CheckSourceSideSpecs(input_api, output_api):
+  cmd = [
+      input_api.python3_executable, 'generate_buildbot_json.py', '--check',
+      '--verbose'
+  ]
+  if input_api.change.UpstreamBranch() not in ('refs/heads/main',
+                                               'refs/heads/master'):
+    cmd.append('--disable-builder-existence-check')
   return input_api.RunTests([
       input_api.Command(name='check source side specs',
-                        cmd=[
-                            input_api.python3_executable,
-                            'generate_buildbot_json.py', '--check', '--verbose'
-                        ],
+                        cmd=cmd,
                         kwargs={},
                         message=output_api.PresubmitError),
   ])
