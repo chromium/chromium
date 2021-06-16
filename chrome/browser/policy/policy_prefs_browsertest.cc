@@ -17,13 +17,15 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_pref_mapping_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -45,21 +47,23 @@ namespace policy {
 namespace {
 
 base::FilePath GetTestCasePath() {
-  return ui_test_utils::GetTestFilePath(
-      base::FilePath(FILE_PATH_LITERAL("policy")),
-      base::FilePath(FILE_PATH_LITERAL("policy_test_cases.json")));
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath path;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &path);
+  return path.Append(FILE_PATH_LITERAL("policy"))
+      .Append(FILE_PATH_LITERAL("policy_test_cases.json"));
 }
 
 }  // namespace
 
-typedef InProcessBrowserTest PolicyPrefsTestCoverageTest;
+typedef PlatformBrowserTest PolicyPrefsTestCoverageTest;
 
 IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest, AllPoliciesHaveATestCase) {
   VerifyAllPoliciesHaveATestCase(GetTestCasePath());
 }
 
 // Base class for tests that change policy.
-class PolicyPrefsTest : public InProcessBrowserTest {
+class PolicyPrefsTest : public PlatformBrowserTest {
  public:
   PolicyPrefsTest() = default;
   PolicyPrefsTest(const PolicyPrefsTest&) = delete;
@@ -68,21 +72,43 @@ class PolicyPrefsTest : public InProcessBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
+    EXPECT_CALL(*GetMockPolicyProvider(), IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+    EXPECT_CALL(*GetMockPolicyProvider(), IsFirstPolicyLoadComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
-    BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+    BrowserPolicyConnector::SetPolicyProviderForTesting(
+        GetMockPolicyProvider());
   }
 
   void TearDownOnMainThread() override { ClearProviderPolicy(); }
 
   void ClearProviderPolicy() {
-    provider_.UpdateChromePolicy(PolicyMap());
+    GetMockPolicyProvider()->UpdateChromePolicy(PolicyMap());
     base::RunLoop().RunUntilIdle();
   }
 
+  MockConfigurationPolicyProvider* GetMockPolicyProvider() {
+#if defined(OS_ANDROID)
+    // Trying to delete the mock provider on Android leads to a cascade of
+    // crashes due to ChromeBrowserPolicyConnector and ProfileImpl not being
+    // deleted. Those crashes are caused by checks that ensure that observer
+    // lists of ConfigurationPolicyProvider are always empty on destruction.
+    // On Desktop, removal of observers from those lists is triggered by the
+    // destructors of the classes above, but those same destructors are never
+    // invoked on Android.
+    static base::NoDestructor<MockConfigurationPolicyProvider> provider;
+    return provider.get();
+#else
+    // On non-Android platforms, the mock provider cleanup will be triggered
+    // by ChromeBrowserPolicyConnector and ProfileImpl destructors. Thus it's
+    // safe to define a provider object that is deleted on scope destruction.
+    return &provider_;
+#endif  // defined(OS_ANDROID)
+  }
+
+#if !defined(OS_ANDROID)
   MockConfigurationPolicyProvider provider_;
+#endif  // !defined(OS_ANDROID)
 };
 
 // Verifies that policies make their corresponding preferences become managed,
@@ -92,11 +118,14 @@ IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   PrefService* local_state = g_browser_process->local_state();
-  PrefService* user_prefs = browser()->profile()->GetPrefs();
+  PrefService* user_prefs =
+      ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
 
   VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
-                             /* signin_profile_prefs= */ nullptr, &provider_);
+                             /* signin_profile_prefs= */ nullptr,
+                             GetMockPolicyProvider());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -127,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
   // checked by PolicyPrefsTest.PolicyToPrefsMapping test.
   VerifyPolicyToPrefMappings(GetTestCasePath(), /* local_state= */ nullptr,
                              /* user_prefs= */ nullptr, signin_profile_prefs,
-                             &provider_);
+                             GetMockPolicyProvider());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

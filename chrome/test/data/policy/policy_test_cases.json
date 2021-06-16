@@ -127,6 +127,7 @@
   },
 
   "AlternateErrorPagesEnabled": {
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -138,7 +139,7 @@
   },
 
   "SearchSuggestEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -176,7 +177,7 @@
   },
 
   "NetworkPredictionOptions": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -208,7 +209,7 @@
   "Http09OnNonDefaultPortsEnabled": {},
 
   "JavascriptEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "JavascriptEnabled": false },
@@ -218,7 +219,7 @@
   },
 
   "IncognitoEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "IncognitoEnabled": false },
@@ -228,7 +229,7 @@
   },
 
   "IncognitoModeAvailability": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "IncognitoModeAvailability": 1 },
@@ -238,7 +239,7 @@
   },
 
   "SavingBrowserHistoryDisabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "SavingBrowserHistoryDisabled": true },
@@ -304,7 +305,7 @@
   "RemoteAccessHostMaximumSessionDurationMinutes": {},
 
   "PrintingEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingEnabled": false },
@@ -822,7 +823,8 @@
   },
 
   "ForceYouTubeRestrict": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ForceYouTubeRestrict": 1 },
@@ -844,7 +846,7 @@
   },
 
   "PasswordManagerEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -876,7 +878,7 @@
   },
 
   "AutoFillEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -887,7 +889,7 @@
   },
 
   "AutofillAddressEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -898,7 +900,7 @@
   },
 
   "AutofillCreditCardEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -975,6 +977,7 @@
   },
 
   "SigninAllowed": {
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
@@ -1101,7 +1104,7 @@
   },
 
   "ProxyMode": {
-    "os": ["win", "mac", "linux"],
+    "os": ["win", "mac", "linux", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "direct" },
@@ -1111,7 +1114,7 @@
   },
 
   "ProxyServerMode": {
-    "os": ["win", "mac", "linux"],
+    "os": ["win", "mac", "linux", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyServerMode": 0 },
@@ -1121,7 +1124,7 @@
   },
 
   "ProxyServer": {
-    "os": ["win", "mac", "linux"],
+    "os": ["win", "mac", "linux", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "fixed_servers", "ProxyServer": "http://localhost:8080" },
@@ -1131,7 +1134,7 @@
   },
 
   "ProxyPacUrl": {
-    "os": ["win", "mac", "linux"],
+    "os": ["win", "mac", "linux", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "pac_script", "ProxyPacUrl": "http://localhost:8080/proxy.pac" },
@@ -1141,7 +1144,7 @@
   },
 
   "ProxyBypassList": {
-    "os": ["win", "mac", "linux"],
+    "os": ["win", "mac", "linux", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "fixed_servers", "ProxyServer": "http://localhost:8080", "ProxyBypassList": "localhost" },
@@ -1151,7 +1154,7 @@
   },
 
   "ProxySettings": {
-    "os": ["linux", "win"],
+    "os": ["linux", "win", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxySettings": { "ProxyMode": "direct" } },
@@ -1243,7 +1246,7 @@
   },
 
   "BasicAuthOverHttpEnabled": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "BasicAuthOverHttpEnabled": false },
@@ -1402,7 +1405,7 @@
   },
 
   "PromptForDownloadLocation": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "PromptForDownloadLocation": false },
@@ -1999,7 +2002,7 @@
   },
 
   "DefaultCookiesSetting": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2048,7 +2051,7 @@
   },
 
   "DefaultJavaScriptSetting": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2071,7 +2074,7 @@
   },
 
   "LegacySameSiteCookieBehaviorEnabledForDomainList": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "LegacySameSiteCookieBehaviorEnabledForDomainList": ["[*.]google.com"] },
@@ -2081,7 +2084,7 @@
   },
 
   "InsecurePrivateNetworkRequestsAllowed": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": {},
@@ -2099,7 +2102,7 @@
   },
 
   "InsecurePrivateNetworkRequestsAllowedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "InsecurePrivateNetworkRequestsAllowedForUrls": ["[*.]google.com", "http://example.com:1234"] },
@@ -2117,7 +2120,7 @@
   },
 
   "DefaultPopupsSetting": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2151,7 +2154,7 @@
   },
 
   "DefaultGeolocationSetting": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2222,7 +2225,7 @@
   },
 
   "DefaultSensorsSetting": {
-    "os": ["win", "linux", "mac"],
+    "os": ["win", "linux", "mac", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2287,7 +2290,7 @@
   },
 
   "DefaultWebBluetoothGuardSetting": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultWebBluetoothGuardSetting": 2 },
@@ -2337,7 +2340,7 @@
   },
 
   "CookiesAllowedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2348,7 +2351,7 @@
   },
 
   "CookiesBlockedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2359,7 +2362,7 @@
   },
 
   "CookiesSessionOnlyForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2418,7 +2421,7 @@
   },
 
   "JavaScriptAllowedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2431,7 +2434,7 @@
   },
 
   "JavaScriptBlockedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2458,7 +2461,7 @@
   },
 
   "PopupsAllowedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2469,7 +2472,7 @@
   },
 
   "PopupsBlockedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2502,7 +2505,7 @@
   },
 
   "SensorsAllowedForUrls": {
-    "os": ["win", "linux", "mac"],
+    "os": ["win", "linux", "mac", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2513,7 +2516,7 @@
   },
 
   "SensorsBlockedForUrls": {
-    "os": ["win", "linux", "mac"],
+    "os": ["win", "linux", "mac", "android"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2661,7 +2664,7 @@
   "InstantEnabled": {},
 
   "TranslateEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -2707,7 +2710,7 @@
   },
 
   "EditBookmarksEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": {"EditBookmarksEnabled": false},
@@ -2954,7 +2957,7 @@
   },
 
   "DisableSafeBrowsingProceedAnyway": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": {"DisableSafeBrowsingProceedAnyway": true},
@@ -2990,7 +2993,7 @@
   },
 
   "BuiltInDnsClientEnabled": {
-    "os": ["win", "linux", "mac"],
+    "os": ["win", "linux", "mac", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3061,6 +3064,7 @@
   },
 
   "VariationsRestrictParameter": {
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3164,7 +3168,7 @@
   },
 
   "ForceBrowserSignin": {
-    "os": ["win"],
+    "os": ["win", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3254,7 +3258,7 @@
   },
 
   "SSLVersionMin": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "SSLVersionMin": "tls1.1" },
@@ -3373,16 +3377,10 @@
   "AllowedDomainsForApps": {
     "policy_pref_mapping_tests": [
       {
+        "os": ["win", "linux", "mac", "chromeos", "android"],
         "policies": {
           "AllowedDomainsForApps": "google.com,mit.edu"
         },
-        "os": [
-          "win",
-          "linux",
-          "mac",
-          "chromeos",
-          "android"
-        ],
         "prefs": { "settings.allowed_domains_for_apps": {} }
       }
     ]
@@ -3710,7 +3708,7 @@
   },
 
   "GloballyScopeHTTPAuthCacheEnabled": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -4743,7 +4741,7 @@
   },
 
   "SSLErrorOverrideAllowed": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "SSLErrorOverrideAllowed": true },
@@ -4753,7 +4751,7 @@
   },
 
   "SSLErrorOverrideAllowedForOrigins": {
-    "os": ["win", "mac", "linux", "chromeos"],
+    "os": ["win", "mac", "linux", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "SSLErrorOverrideAllowedForOrigins": ["google.com"] },
@@ -5195,7 +5193,7 @@
   },
 
   "AmbientAuthenticationInPrivateModesEnabled":{
-    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -5329,7 +5327,7 @@
   },
 
   "SignedHTTPExchangeEnabled": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -5399,7 +5397,8 @@
   },
 
   "SharedClipboardEnabled": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -7285,6 +7284,7 @@
   },
 
   "CloudReportingEnabled": {
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -7912,7 +7912,7 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "BackForwardCacheEnabled": {
-    "os": ["android"],
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "policy_pref_mapping_tests": [
       {
         "policies": { "BackForwardCacheEnabled": true },
@@ -8126,7 +8126,8 @@
     ]
   },
   "BrowsingDataLifetime": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "BrowsingDataLifetime": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}], "SyncDisabled": true },
@@ -8157,6 +8158,7 @@
     ]
   },
   "ClearBrowsingDataOnExitList": {
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -8195,7 +8197,7 @@
     ]
   },
   "WebXRImmersiveArEnabled": {
-    "os": ["android"],
+    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "policy_pref_mapping_tests": [
       {
         "policies": {

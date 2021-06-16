@@ -96,7 +96,7 @@ static_library("test_support") {
     "configuration_policy_pref_store_test.h",
   ]
 
-  if (!is_android && !is_fuchsia) {
+  if (!is_fuchsia) {
     sources += [
       "policy_pref_mapping_test.cc",
       "policy_pref_mapping_test.h",

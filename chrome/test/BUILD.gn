@@ -702,6 +702,7 @@ if (is_android) {
       "../browser/metrics/ukm_browsertest.cc",
       "../browser/net/cert_verify_proc_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_android_browsertest.cc",
+      "../browser/policy/policy_prefs_browsertest.cc",
       "../browser/profiles/profile_browsertest_android.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.h",
@@ -722,6 +723,8 @@ if (is_android) {
 
     deps += [
       "//components/autofill/content/renderer:test_support",
+      "//components/enterprise:test_support",
+      "//components/policy/core/browser:test_support",
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       "//components/safe_browsing/core:client_model_proto",
       "//components/safe_browsing/core/fbs:client_model",
@@ -781,6 +784,7 @@ if (is_android) {
       "//components/test/data/payments/",
       "//chrome/test/data/android/customtabs/",
       "//chrome/test/data/banners/",
+      "//chrome/test/data/policy/",
       "//chrome/test/data/ssl/",
       "//content/test/data/",
     ]

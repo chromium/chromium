@@ -275,16 +275,18 @@ class PolicyTestCase {
   bool can_be_recommended() const { return can_be_recommended_; }
 
   bool IsOsSupported() const {
-#if defined(OS_WIN)
-    const std::string os("win");
-#elif defined(OS_IOS)
-    const std::string os("ios");
-#elif defined(OS_MAC)
-    const std::string os("mac");
+#if defined(OS_ANDROID)
+    const std::string os("android");
 #elif defined(OS_CHROMEOS)
     const std::string os("chromeos");
+#elif defined(OS_IOS)
+    const std::string os("ios");
 #elif defined(OS_LINUX)
     const std::string os("linux");
+#elif defined(OS_MAC)
+    const std::string os("mac");
+#elif defined(OS_WIN)
+    const std::string os("win");
 #else
 #error "Unknown platform"
 #endif
@@ -324,7 +326,7 @@ class PolicyTestCases {
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string json;
     if (!base::ReadFileToString(test_case_path, &json)) {
-      ADD_FAILURE();
+      ADD_FAILURE() << "Error reading: " << test_case_path;
       return;
     }
     base::DictionaryValue* dict = nullptr;
