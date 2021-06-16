@@ -16030,7 +16030,7 @@
       'owners': ['treib@chromium.org', 'carlosk@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['android:54-'],
+      'supported_on': ['android:54-','ios:93-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -16045,7 +16045,6 @@
           'caption': 'Do not show content suggestions on the New Tab page',
         },
       ],
-      'future_on': [ 'ios' ],
       'example_value': True,
       'default': True,
       'id': 338,

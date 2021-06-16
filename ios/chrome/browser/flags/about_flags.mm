@@ -817,7 +817,6 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     // allowed, otherwise they will be ignored in Beta and Stable. Add them to
     // the |allowed_experimental_policies| array.
     [allowed_experimental_policies addObjectsFromArray:@[
-      base::SysUTF8ToNSString(policy::key::kNTPContentSuggestionsEnabled),
     ]];
 
     [testing_policies addEntriesFromDictionary:@{
