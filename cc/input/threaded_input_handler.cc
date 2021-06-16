@@ -1294,7 +1294,7 @@ InputHandler::ScrollStatus ThreadedInputHandler::TryScroll(
                  "LayerImpl::tryScroll: Failed due to no scrolling layer");
     scroll_status.thread = InputHandler::ScrollThread::SCROLL_ON_MAIN_THREAD;
     scroll_status.main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kNonFastScrollableRegion;
+        MainThreadScrollingReason::kNoScrollingLayer;
     return scroll_status;
   }
 

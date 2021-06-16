@@ -3252,7 +3252,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollNodeWithoutScrollLayer) {
     EXPECT_FALSE(status.needs_main_thread_hit_test);
   } else {
     EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    EXPECT_EQ(MainThreadScrollingReason::kNoScrollingLayer,
               status.main_thread_scrolling_reasons);
   }
 }
