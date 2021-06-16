@@ -188,15 +188,23 @@ Widget::Widget(InitParams params) {
 Widget::~Widget() {
   if (widget_delegate_)
     widget_delegate_->WidgetDestroying();
-  DestroyRootView();
   if (ownership_ == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
     delete native_widget_;
+    DCHECK(native_widget_destroyed_);
   } else {
     // TODO(crbug.com/937381): Revert to DCHECK once we figure out the reason.
     CHECK(native_widget_destroyed_)
         << "Destroying a widget with a live native widget. "
         << "Widget probably should use WIDGET_OWNS_NATIVE_WIDGET ownership.";
   }
+  // Destroy RootView after the native widget, so in case the WidgetDelegate is
+  // a View in the RootView hierarchy it gets destroyed as a WidgetDelegate
+  // first.
+  // This makes destruction order for WidgetDelegate consistent between
+  // different Widget/NativeWidget ownership models (WidgetDelegate is always
+  // deleted before here, which may have removed it as a View from the
+  // View hierarchy).
+  DestroyRootView();
 }
 
 // static
@@ -427,10 +435,14 @@ void Widget::ShowEmojiPanel() {
 // Unconverted methods (see header) --------------------------------------------
 
 gfx::NativeView Widget::GetNativeView() const {
+  if (native_widget_destroyed_)
+    return gfx::kNullNativeView;
   return native_widget_->GetNativeView();
 }
 
 gfx::NativeWindow Widget::GetNativeWindow() const {
+  if (native_widget_destroyed_)
+    return gfx::kNullNativeWindow;
   return native_widget_->GetNativeWindow();
 }
 
@@ -471,7 +483,8 @@ void Widget::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
     FocusManager* focus_manager = GetFocusManager();
     if (focus_manager)
       focus_manager->ViewRemoved(details.child);
-    native_widget_->ViewRemoved(details.child);
+    if (!native_widget_destroyed_)
+      native_widget_->ViewRemoved(details.child);
   }
 }
 
@@ -507,7 +520,10 @@ const Widget* Widget::GetTopLevelWidget() const {
   // property is gone after gobject gets deleted. Short circuit here
   // for toplevel so that InputMethod can remove itself from
   // focus manager.
-  return is_top_level() ? this : native_widget_->GetTopLevelWidget();
+  if (is_top_level())
+    return this;
+  return native_widget_destroyed_ ? nullptr
+                                  : native_widget_->GetTopLevelWidget();
 }
 
 Widget* Widget::GetPrimaryWindowWidget() {
@@ -897,6 +913,11 @@ void Widget::RunShellDrag(View* view,
 }
 
 void Widget::SchedulePaintInRect(const gfx::Rect& rect) {
+  // This happens when DestroyRootView removes all children from the
+  // RootView which triggers a SchedulePaint that ends up here. This happens
+  // after in ~Widget after native_widget_ is destroyed.
+  if (native_widget_destroyed_)
+    return;
   native_widget_->SchedulePaintInRect(rect);
 }
 
@@ -1014,14 +1035,20 @@ void Widget::FrameTypeChanged() {
 }
 
 const ui::Compositor* Widget::GetCompositor() const {
+  if (native_widget_destroyed_)
+    return nullptr;
   return native_widget_->GetCompositor();
 }
 
 const ui::Layer* Widget::GetLayer() const {
+  if (native_widget_destroyed_)
+    return nullptr;
   return native_widget_->GetLayer();
 }
 
 void Widget::ReorderNativeViews() {
+  if (native_widget_destroyed_)
+    return;
   native_widget_->ReorderNativeViews();
 }
 
@@ -1064,6 +1091,8 @@ bool Widget::HasCapture() {
 }
 
 TooltipManager* Widget::GetTooltipManager() {
+  if (native_widget_destroyed_)
+    return nullptr;
   return native_widget_->GetTooltipManager();
 }
 
@@ -1302,6 +1331,9 @@ void Widget::OnNativeWidgetDestroyed() {
   widget_delegate_->can_delete_this_ = true;
   widget_delegate_->DeleteDelegate();
   widget_delegate_ = nullptr;
+  // TODO(pbos): Replace this with native_widget_ = nullptr; and nullptr
+  // checking. This currently breaks on reentrant calls to CloseNow() that I'm
+  // too scared to fix right now.
   native_widget_destroyed_ = true;
 }
 

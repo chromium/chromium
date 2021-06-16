@@ -48,6 +48,9 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   void OnStatusAreaCollapseStateChanged(
       StatusAreaWidget::CollapseState new_collapse_state);
 
+  // Clears most of the Widget to prevent destruction problems before ~Widget.
+  void Shutdown();
+
   // views::AccessiblePaneView:
   View* GetDefaultFocusableChild() override;
   const char* GetClassName() const override;

@@ -114,6 +114,19 @@ void StatusAreaWidgetDelegate::OnStatusAreaCollapseStateChanged(
   }
 }
 
+void StatusAreaWidgetDelegate::Shutdown() {
+  // TODO(pbos): Investigate if this is necessary. This is a bit defensive but
+  // it's done to make sure that StatusAreaWidget isn't accessed by the View
+  // hierarchy during its destruction.
+  RemoveAllChildViews(/*delete=*/true);
+  // StatusAreaWidgetDelegate uses a GridLayout which unfortunately doesn't
+  // handle child add/removal. Remove the LayoutManager early to prevent UAFs
+  // during Widget destruction.
+  // TODO(pbos): This really shouldn't be necessary. It's a deficiency in
+  // GridLayout.
+  SetLayoutManager(nullptr);
+}
+
 views::View* StatusAreaWidgetDelegate::GetDefaultFocusableChild() {
   return default_last_focusable_child_ ? GetLastFocusableChild()
                                        : GetFirstFocusableChild();

@@ -753,6 +753,9 @@ TEST_F(WidgetOwnsNativeWidgetTest, WidgetDelegateView) {
 using WidgetWithDestroyedNativeViewTest = ViewsTestBaseWithNativeWidgetType;
 
 TEST_P(WidgetWithDestroyedNativeViewTest, Test) {
+  // TODO(pbos): Add a version of this that tests with params that use
+  // NATIVE_WIDGET_OWNS_WIDGET. A lot of these implementations look like they
+  // call `native_widget_->` which should be illegal after CloseNow().
   std::unique_ptr<Widget> widget = CreateTestWidget();
   widget->Show();
 

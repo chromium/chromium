@@ -12,7 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/compositor_observer.h"
-#include "ui/views/view_observer.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 struct PresentationFeedback;
@@ -28,7 +28,7 @@ class Grid;
 // of the graph. Every time UpdateData() is called, legend values are updated.
 class FPSGraphPageView : public GraphPageViewBase,
                          public ui::CompositorObserver,
-                         public views::ViewObserver,
+                         public views::WidgetObserver,
                          public aura::WindowObserver {
  public:
   METADATA_HEADER(FPSGraphPageView);
@@ -39,6 +39,8 @@ class FPSGraphPageView : public GraphPageViewBase,
   ~FPSGraphPageView() override;
 
   // GraphPageViewBase:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void OnPaint(gfx::Canvas* canvas) override;
   void UpdateData(const DataSource::Snapshot& snapshot) override;
 
@@ -47,8 +49,8 @@ class FPSGraphPageView : public GraphPageViewBase,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
 
-  // views::ViewObserver:
-  void OnViewRemovedFromWidget(views::View* observed_view) override;
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // aura::WindowObserver:
   void OnWindowAddedToRootWindow(aura::Window* window) override;

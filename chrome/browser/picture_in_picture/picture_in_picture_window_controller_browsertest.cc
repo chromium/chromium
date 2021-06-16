@@ -1178,8 +1178,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_NE(GetOverlayWindow(), nullptr);
   ASSERT_TRUE(GetOverlayWindow()->IsVisible());
 
-  // Simulate closing from the system.
-  GetOverlayWindow()->OnNativeWidgetDestroyed();
+  GetOverlayWindow()->CloseNow();
 
   ExpectLeavePictureInPicture(active_web_contents);
 }

@@ -663,6 +663,11 @@ HotseatWidget::~HotseatWidget() {
   ShelfConfig::Get()->RemoveObserver(this);
   shelf_->shelf_widget()->hotseat_transition_animator()->RemoveObserver(
       delegate_view_);
+  // Remove ScrollableShelfView to avoid any children accessing NativeWidget
+  // after its destruction in ~Widget() before RootView clears.
+  // TODO(pbos): This is defensive, consider having children observe
+  // destruction and/or check the result of GetNativeWidget() and others.
+  GetContentsView()->RemoveChildViewT(scrollable_shelf_view_);
 }
 
 bool HotseatWidget::ShouldShowHotseatBackground() {

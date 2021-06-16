@@ -989,6 +989,7 @@ void OverlayWindowViews::OnNativeBlur() {
 }
 
 void OverlayWindowViews::OnNativeWidgetDestroyed() {
+  views::Widget::OnNativeWidgetDestroyed();
   controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 

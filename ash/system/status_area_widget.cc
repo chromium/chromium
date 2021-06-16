@@ -186,10 +186,7 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  // TODO(pbos): Investigate if this is necessary. This is a bit defensive but
-  // it's done to make sure that StatusAreaWidget isn't accessed by the View
-  // hierarchy during destruction.
-  status_area_widget_delegate_->RemoveAllChildViews(/*delete=*/true);
+  status_area_widget_delegate_->Shutdown();
 }
 
 // static

@@ -368,7 +368,6 @@ Widget* BubbleDialogDelegate::CreateBubble(
 
 Widget* BubbleDialogDelegateView::CreateBubble(
     std::unique_ptr<BubbleDialogDelegateView> delegate) {
-  DCHECK(delegate->owned_by_client());
   return BubbleDialogDelegate::CreateBubble(std::move(delegate));
 }
 
@@ -383,7 +382,6 @@ BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
                                                    BubbleBorder::Arrow arrow,
                                                    BubbleBorder::Shadow shadow)
     : BubbleDialogDelegate(anchor_view, arrow, shadow) {
-  set_owned_by_client();
   UMA_HISTOGRAM_BOOLEAN("Dialog.BubbleDialogDelegateView.Create", true);
 }
 
