@@ -26,6 +26,7 @@ static_library("renderer") {
     "//content/public/common",
     "//gin",
     "//ipc",
+    "//pdf:buildflags",
     "//pdf:features",
     "//ppapi/host",
     "//ppapi/proxy",

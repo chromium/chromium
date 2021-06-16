@@ -3,6 +3,7 @@ include_rules = [
   "+content/public/test",
   "+components/strings/grit/components_strings.h",
   "+mojo/public/cpp/bindings",
+  "+pdf/buildflags.h",
   "+pdf/pdf_features.h",
   "+ppapi",
   "+skia/ext",

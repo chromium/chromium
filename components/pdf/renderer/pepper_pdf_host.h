@@ -17,11 +17,16 @@
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "pdf/buildflags.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/serialized_structs.h"
 #include "ppapi/shared_impl/pdf_accessibility_shared.h"
+
+#if !BUILDFLAG(ENABLE_PDF)
+#error "PDF must be enabled"
+#endif
 
 namespace blink {
 class WebLocalFrame;
