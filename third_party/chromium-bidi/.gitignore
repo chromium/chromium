@@ -3,4 +3,3 @@ src/bidiMapper/.build/
 tests/__pycache__/
 package-lock.json
 src/.build/
-.vscode
