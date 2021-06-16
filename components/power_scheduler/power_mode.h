@@ -22,6 +22,22 @@ enum class PowerMode {
   // The vsync signal is observed, but no frames are produced/submitted.
   kNopAnimation,
 
+  // Like kMainThreadAnimation, but the animation affects only a small screen
+  // area (see FrameProductionPowerModeVoter).
+  kSmallMainThreadAnimation,
+
+  // Like kAnimation, but the animation affects only a small screen area (see
+  // FrameProductionPowerModeVoter).
+  kSmallAnimation,
+
+  // Like kMainThreadAnimation, but the animation affects only a medium screen
+  // area (see FrameProductionPowerModeVoter).
+  kMediumMainThreadAnimation,
+
+  // Like kAnimation, but the animation affects only a medium screen area (see
+  // FrameProductionPowerModeVoter).
+  kMediumAnimation,
+
   // The process is playing audio.
   kAudible,
 

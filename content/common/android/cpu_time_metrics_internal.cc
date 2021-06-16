@@ -113,6 +113,14 @@ PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
       return PowerModeForUma::kIdle;
     case power_scheduler::PowerMode::kNopAnimation:
       return PowerModeForUma::kNopAnimation;
+    case power_scheduler::PowerMode::kSmallMainThreadAnimation:
+      return PowerModeForUma::kSmallMainThreadAnimation;
+    case power_scheduler::PowerMode::kSmallAnimation:
+      return PowerModeForUma::kSmallAnimation;
+    case power_scheduler::PowerMode::kMediumMainThreadAnimation:
+      return PowerModeForUma::kMediumMainThreadAnimation;
+    case power_scheduler::PowerMode::kMediumAnimation:
+      return PowerModeForUma::kMediumAnimation;
     case power_scheduler::PowerMode::kAudible:
       return PowerModeForUma::kAudible;
     case power_scheduler::PowerMode::kVideoPlayback:

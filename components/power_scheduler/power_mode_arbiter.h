@@ -117,6 +117,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
       GUARDED_BY(lock_);
   base::TimeTicks next_pending_vote_update_time_ GUARDED_BY(lock_);
   TracedPowerMode active_mode_ GUARDED_BY(lock_);
+  base::TimeTicks active_mode_changed_timestamp_ GUARDED_BY(lock_);
   int update_task_sequence_number_ GUARDED_BY(lock_) = 0;
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_
       GUARDED_BY(lock_);

@@ -23,7 +23,10 @@ component("power_scheduler") {
 
   defines = [ "IS_POWER_SCHEDULER_IMPL" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
 }
 
 source_set("unit_tests") {

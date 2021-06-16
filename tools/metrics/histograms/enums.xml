@@ -63964,6 +63964,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="kVideoPlayback"/>
   <int value="10" label="kLoadingAnimation"/>
   <int value="11" label="kMainThreadAnimation"/>
+  <int value="12" label="kSmallAnimation"/>
+  <int value="13" label="kMediumAnimation"/>
+  <int value="14" label="kSmallMainThreadAnimation"/>
+  <int value="15" label="kMediumMainThreadAnimation"/>
 </enum>
 
 <enum name="PowerSupplyType">

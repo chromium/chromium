@@ -66,6 +66,14 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
   vote_and_expect(PowerMode::kCharging, PowerMode::kIdle, PowerMode::kCharging);
   vote_and_expect(PowerMode::kCharging, PowerMode::kNopAnimation,
                   PowerMode::kCharging);
+  vote_and_expect(PowerMode::kCharging, PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kCharging);
+  vote_and_expect(PowerMode::kCharging, PowerMode::kSmallAnimation,
+                  PowerMode::kCharging);
+  vote_and_expect(PowerMode::kCharging, PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kCharging);
+  vote_and_expect(PowerMode::kCharging, PowerMode::kMediumAnimation,
+                  PowerMode::kCharging);
   vote_and_expect(PowerMode::kCharging, PowerMode::kAudible,
                   PowerMode::kCharging);
   vote_and_expect(PowerMode::kCharging, PowerMode::kVideoPlayback,
@@ -90,6 +98,14 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kBackground);
   vote_and_expect(PowerMode::kBackground, PowerMode::kNopAnimation,
                   PowerMode::kBackground);
+  vote_and_expect(PowerMode::kBackground, PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kBackground);
+  vote_and_expect(PowerMode::kBackground, PowerMode::kSmallAnimation,
+                  PowerMode::kBackground);
+  vote_and_expect(PowerMode::kBackground, PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kBackground);
+  vote_and_expect(PowerMode::kBackground, PowerMode::kMediumAnimation,
+                  PowerMode::kBackground);
   vote_and_expect(PowerMode::kBackground, PowerMode::kAudible,
                   PowerMode::kAudible);
   vote_and_expect(PowerMode::kBackground, PowerMode::kVideoPlayback,
@@ -112,6 +128,16 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kNonWebActivity);
   vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kNopAnimation,
                   PowerMode::kNonWebActivity);
+  vote_and_expect(PowerMode::kNonWebActivity,
+                  PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kNonWebActivity);
+  vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kSmallAnimation,
+                  PowerMode::kNonWebActivity);
+  vote_and_expect(PowerMode::kNonWebActivity,
+                  PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kNonWebActivity);
+  vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kMediumAnimation,
+                  PowerMode::kNonWebActivity);
   vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kAudible,
                   PowerMode::kNonWebActivity);
   vote_and_expect(PowerMode::kNonWebActivity, PowerMode::kVideoPlayback,
@@ -131,6 +157,14 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
   vote_and_expect(PowerMode::kResponse, PowerMode::kIdle, PowerMode::kResponse);
   vote_and_expect(PowerMode::kResponse, PowerMode::kNopAnimation,
                   PowerMode::kResponse);
+  vote_and_expect(PowerMode::kResponse, PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kResponse);
+  vote_and_expect(PowerMode::kResponse, PowerMode::kSmallAnimation,
+                  PowerMode::kResponse);
+  vote_and_expect(PowerMode::kResponse, PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kResponse);
+  vote_and_expect(PowerMode::kResponse, PowerMode::kMediumAnimation,
+                  PowerMode::kResponse);
   vote_and_expect(PowerMode::kResponse, PowerMode::kAudible,
                   PowerMode::kResponse);
   vote_and_expect(PowerMode::kResponse, PowerMode::kVideoPlayback,
@@ -149,6 +183,16 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kLoadingAnimation);
   vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kNopAnimation,
                   PowerMode::kLoadingAnimation);
+  vote_and_expect(PowerMode::kLoadingAnimation,
+                  PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kLoadingAnimation);
+  vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kSmallAnimation,
+                  PowerMode::kLoadingAnimation);
+  vote_and_expect(PowerMode::kLoadingAnimation,
+                  PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kLoadingAnimation);
+  vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kMediumAnimation,
+                  PowerMode::kLoadingAnimation);
   vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kAudible,
                   PowerMode::kLoadingAnimation);
   vote_and_expect(PowerMode::kLoadingAnimation, PowerMode::kVideoPlayback,
@@ -165,6 +209,14 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kAnimation);
   vote_and_expect(PowerMode::kAnimation, PowerMode::kNopAnimation,
                   PowerMode::kAnimation);
+  vote_and_expect(PowerMode::kAnimation, PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kAnimation);
+  vote_and_expect(PowerMode::kAnimation, PowerMode::kSmallAnimation,
+                  PowerMode::kAnimation);
+  vote_and_expect(PowerMode::kAnimation, PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kAnimation);
+  vote_and_expect(PowerMode::kAnimation, PowerMode::kMediumAnimation,
+                  PowerMode::kAnimation);
   vote_and_expect(PowerMode::kAnimation, PowerMode::kAudible,
                   PowerMode::kAnimation);
   vote_and_expect(PowerMode::kAnimation, PowerMode::kVideoPlayback,
@@ -175,10 +227,19 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
   vote_and_expect(PowerMode::kAnimation, PowerMode::kLoading,
                   PowerMode::kLoadingAnimation);
 
-  // Loading trumps remaining modes.
+  // Loading trumps remaining modes, but loading while small/medium animations
+  // breaks out into LoadingAnimation.
   vote_and_expect(PowerMode::kLoading, PowerMode::kIdle, PowerMode::kLoading);
   vote_and_expect(PowerMode::kLoading, PowerMode::kNopAnimation,
                   PowerMode::kLoading);
+  vote_and_expect(PowerMode::kLoading, PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kLoading);
+  vote_and_expect(PowerMode::kLoading, PowerMode::kSmallAnimation,
+                  PowerMode::kLoadingAnimation);
+  vote_and_expect(PowerMode::kLoading, PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kLoading);
+  vote_and_expect(PowerMode::kLoading, PowerMode::kMediumAnimation,
+                  PowerMode::kLoadingAnimation);
   vote_and_expect(PowerMode::kLoading, PowerMode::kAudible,
                   PowerMode::kLoading);
   vote_and_expect(PowerMode::kLoading, PowerMode::kVideoPlayback,
@@ -186,11 +247,22 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
   vote_and_expect(PowerMode::kLoading, PowerMode::kMainThreadAnimation,
                   PowerMode::kLoading);
 
-  // MainThreadAnimation trumps remaining modes.
+  // MainThreadAnimation trumps remaining modes, except for other animation
+  // modes (NopAnimation, SmallAnimation, MediumAnimation), which affect it.
   vote_and_expect(PowerMode::kMainThreadAnimation, PowerMode::kIdle,
                   PowerMode::kMainThreadAnimation);
   vote_and_expect(PowerMode::kMainThreadAnimation, PowerMode::kNopAnimation,
+                  PowerMode::kNopAnimation);
+  vote_and_expect(PowerMode::kMainThreadAnimation,
+                  PowerMode::kSmallMainThreadAnimation,
                   PowerMode::kMainThreadAnimation);
+  vote_and_expect(PowerMode::kMainThreadAnimation, PowerMode::kSmallAnimation,
+                  PowerMode::kSmallMainThreadAnimation);
+  vote_and_expect(PowerMode::kMainThreadAnimation,
+                  PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kMainThreadAnimation);
+  vote_and_expect(PowerMode::kMainThreadAnimation, PowerMode::kMediumAnimation,
+                  PowerMode::kMediumMainThreadAnimation);
   vote_and_expect(PowerMode::kMainThreadAnimation, PowerMode::kAudible,
                   PowerMode::kMainThreadAnimation);
   vote_and_expect(PowerMode::kMainThreadAnimation, PowerMode::kVideoPlayback,
@@ -201,13 +273,74 @@ TEST(PowerModeArbiterTest, MultipleVotes) {
                   PowerMode::kVideoPlayback);
   vote_and_expect(PowerMode::kVideoPlayback, PowerMode::kNopAnimation,
                   PowerMode::kVideoPlayback);
+  vote_and_expect(PowerMode::kVideoPlayback,
+                  PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kVideoPlayback);
+  vote_and_expect(PowerMode::kVideoPlayback, PowerMode::kSmallAnimation,
+                  PowerMode::kVideoPlayback);
+  vote_and_expect(PowerMode::kVideoPlayback,
+                  PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kVideoPlayback);
+  vote_and_expect(PowerMode::kVideoPlayback, PowerMode::kMediumAnimation,
+                  PowerMode::kVideoPlayback);
   vote_and_expect(PowerMode::kVideoPlayback, PowerMode::kAudible,
                   PowerMode::kVideoPlayback);
 
-  // Audible trumps idle and no-op animation.
+  // Audible trumps remaining modes.
   vote_and_expect(PowerMode::kAudible, PowerMode::kIdle, PowerMode::kAudible);
   vote_and_expect(PowerMode::kAudible, PowerMode::kNopAnimation,
                   PowerMode::kAudible);
+  vote_and_expect(PowerMode::kAudible, PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kAudible);
+  vote_and_expect(PowerMode::kAudible, PowerMode::kSmallAnimation,
+                  PowerMode::kAudible);
+  vote_and_expect(PowerMode::kAudible, PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kAudible);
+  vote_and_expect(PowerMode::kAudible, PowerMode::kMediumAnimation,
+                  PowerMode::kAudible);
+
+  // MediumAnimation trumps remaining modes.
+  vote_and_expect(PowerMode::kMediumAnimation, PowerMode::kIdle,
+                  PowerMode::kMediumAnimation);
+  vote_and_expect(PowerMode::kMediumAnimation, PowerMode::kNopAnimation,
+                  PowerMode::kMediumAnimation);
+  vote_and_expect(PowerMode::kMediumAnimation,
+                  PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kMediumAnimation);
+  vote_and_expect(PowerMode::kMediumAnimation, PowerMode::kSmallAnimation,
+                  PowerMode::kMediumAnimation);
+  vote_and_expect(PowerMode::kMediumAnimation,
+                  PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kMediumAnimation);
+
+  // MediumMainThreadAnimation trumps remaining modes.
+  vote_and_expect(PowerMode::kMediumMainThreadAnimation, PowerMode::kIdle,
+                  PowerMode::kMediumMainThreadAnimation);
+  vote_and_expect(PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kNopAnimation,
+                  PowerMode::kMediumMainThreadAnimation);
+  vote_and_expect(PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kMediumMainThreadAnimation);
+  vote_and_expect(PowerMode::kMediumMainThreadAnimation,
+                  PowerMode::kSmallAnimation,
+                  PowerMode::kMediumMainThreadAnimation);
+
+  // SmallAnimation trumps remaining modes.
+  vote_and_expect(PowerMode::kSmallAnimation, PowerMode::kIdle,
+                  PowerMode::kSmallAnimation);
+  vote_and_expect(PowerMode::kSmallAnimation, PowerMode::kNopAnimation,
+                  PowerMode::kSmallAnimation);
+  vote_and_expect(PowerMode::kSmallAnimation,
+                  PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kSmallAnimation);
+
+  // SmallMainThreadAnimation trumps remaining modes.
+  vote_and_expect(PowerMode::kSmallMainThreadAnimation, PowerMode::kIdle,
+                  PowerMode::kSmallMainThreadAnimation);
+  vote_and_expect(PowerMode::kSmallMainThreadAnimation,
+                  PowerMode::kNopAnimation,
+                  PowerMode::kSmallMainThreadAnimation);
 
   // NopAnimation trumps idle.
   vote_and_expect(PowerMode::kNopAnimation, PowerMode::kIdle,
@@ -424,6 +557,217 @@ TEST(PowerModeArbiterTest, ObserverEnablesResetTasks) {
     // After removing the observer, resets are no longer serviced.
     arbiter.RemoveObserver(&observer);
   }
+}
+
+class PowerModeArbiterFrameProductionTest : public testing::Test {
+ public:
+  PowerModeArbiterFrameProductionTest()
+      : env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        voter_("voter1", &arbiter_) {
+    // Align the mock clock with the phase of the reset tasks.
+    base::TimeTicks target_time = env_.NowTicks().SnappedToNextTick(
+        base::TimeTicks(), PowerModeArbiter::kResetVoteTimeResolution);
+    env_.AdvanceClock(target_time - env_.NowTicks());
+
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kCharging);
+
+    // Clear the initial kCharging vote.
+    arbiter_.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kIdle);
+
+    arbiter_.AddObserver(&observer_);
+    arbiter_.OnThreadPoolAvailable();
+
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kIdle);
+  }
+
+ protected:
+  static constexpr int kNumDamageAreas =
+      FrameProductionPowerModeVoter::kNumDamageAreas;
+  static constexpr int kMinFramesSkippedForIdleAnimation =
+      FrameProductionPowerModeVoter::kMinFramesSkippedForIdleAnimation;
+  static constexpr float kDeviceScaleFactor = 1.0f;
+
+  base::test::TaskEnvironment env_;
+  PowerModeArbiter arbiter_;
+  FakeObserver observer_;
+  FrameProductionPowerModeVoter voter_;
+};
+
+TEST_F(PowerModeArbiterFrameProductionTest, NeedsBeginFrames) {
+  // Enter kAnimation when BeginFrames are newly needed.
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // Return to kIdle after a timeout when BeginFrames are no longer needed.
+  voter_.OnNeedsBeginFramesChanged(false);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+  env_.FastForwardBy(PowerModeVoter::kAnimationTimeout);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kIdle);
+}
+
+TEST_F(PowerModeArbiterFrameProductionTest, SmallAnimation) {
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // After 9 frames with small damage, move into kSmallAnimation mode.
+  for (int i = 0; i < kNumDamageAreas - 1; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+
+  // Just one larger frame doesn't move us out of the mode.
+  voter_.OnFrameProduced(gfx::Rect(640, 640), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+
+  // But a second one does.
+  voter_.OnFrameProduced(gfx::Rect(640, 640), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+}
+
+TEST_F(PowerModeArbiterFrameProductionTest, MediumAnimation) {
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // After 9 frames with medium damage, move into kMediumAnimation mode.
+  for (int i = 0; i < kNumDamageAreas - 1; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameProduced(gfx::Rect(320, 320), kDeviceScaleFactor);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kMediumAnimation);
+
+  // Just one larger frame doesn't move us out of the mode.
+  voter_.OnFrameProduced(gfx::Rect(640, 640), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kMediumAnimation);
+
+  // But a second one does.
+  voter_.OnFrameProduced(gfx::Rect(640, 640), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+}
+
+TEST_F(PowerModeArbiterFrameProductionTest,
+       SwitchBetweenSmallAndMediumAnimation) {
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // Move into kSmallAnimation.
+  for (int i = 0; i < kNumDamageAreas - 1; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+
+  // Switch to kMediumAnimation from kSmallAnimation works too.
+  voter_.OnFrameProduced(gfx::Rect(320, 320), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+  voter_.OnFrameProduced(gfx::Rect(320, 320), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kMediumAnimation);
+
+  // And switching back to kSmallAnimation also works.
+  for (int i = 0; i < kNumDamageAreas - 1; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kMediumAnimation);
+    voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+}
+
+TEST_F(PowerModeArbiterFrameProductionTest, NopAnimation) {
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // Switching to no-op animation requires 10 consecutive no-op frames.
+  for (int i = 0; i < kMinFramesSkippedForIdleAnimation; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameSkipped(/*frame_completed=*/true, /*waiting_on_main=*/false);
+  }
+
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kNopAnimation);
+
+  // A single produced frame doesn't switch us out of no-op.
+  voter_.OnFrameProduced(gfx::Rect(640, 640), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kNopAnimation);
+
+  // But a second one does.
+  voter_.OnFrameProduced(gfx::Rect(640, 640), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+}
+
+TEST_F(PowerModeArbiterFrameProductionTest,
+       NopAnimationPreservesDamageHistory) {
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // Move into kSmallAnimation.
+  for (int i = 0; i < kNumDamageAreas - 1; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+
+  // Switching to no-op animation requires 10 consecutive no-op frames.
+  for (int i = 0; i < kMinFramesSkippedForIdleAnimation; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+    voter_.OnFrameSkipped(/*frame_completed=*/true, /*waiting_on_main=*/false);
+  }
+
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kNopAnimation);
+
+  // A single produced frame doesn't switch us out of no-op.
+  voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kNopAnimation);
+
+  // But a second one does, and re-uses the existing damage history.
+  voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+}
+
+TEST_F(PowerModeArbiterFrameProductionTest, SingleFrameResetsNopCounter) {
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // A single frame in between some no-op frames resets the no-op frame counter.
+  for (int i = 0; i < kMinFramesSkippedForIdleAnimation / 2; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameSkipped(/*frame_completed=*/true, /*waiting_on_main=*/false);
+  }
+  voter_.OnFrameProduced(gfx::Rect(320, 320), kDeviceScaleFactor);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+  // We still need another 10 skipped frames.
+  for (int i = 0; i < kMinFramesSkippedForIdleAnimation; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    // waiting_on_main=true also counts for no-op frames.
+    voter_.OnFrameSkipped(/*frame_completed=*/true, /*waiting_on_main=*/true);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kNopAnimation);
+}
+
+TEST_F(PowerModeArbiterFrameProductionTest,
+       BeginFrameSignalResetsDamageHistory) {
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // Move into kSmallAnimation.
+  for (int i = 0; i < kNumDamageAreas - 1; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+
+  // Clearing the BeginFrame signal also clears the damage history.
+  voter_.OnNeedsBeginFramesChanged(false);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
+  env_.FastForwardBy(PowerModeVoter::kAnimationTimeout);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kIdle);
+  voter_.OnNeedsBeginFramesChanged(true);
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+  // We need another 9 frames to get back into small animation.
+  for (int i = 0; i < kNumDamageAreas - 1; i++) {
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter_.OnFrameProduced(gfx::Rect(160, 160), kDeviceScaleFactor);
+  }
+  EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kSmallAnimation);
 }
 
 }  // namespace power_scheduler

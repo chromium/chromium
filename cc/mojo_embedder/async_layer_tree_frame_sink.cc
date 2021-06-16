@@ -199,7 +199,9 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                          "Event.Pipeline", TRACE_ID_GLOBAL(trace_id),
                          TRACE_EVENT_FLAG_FLOW_OUT, "step",
                          "SubmitHitTestData");
-  power_mode_voter_.OnFrameProduced();
+
+  power_mode_voter_.OnFrameProduced(frame.render_pass_list.back()->damage_rect,
+                                    frame.device_scale_factor());
 
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);

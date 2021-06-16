@@ -298,6 +298,13 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     device_scale_factor_ = frame.metadata.device_scale_factor;
   }
 
+  power_mode_voter_.OnFrameProduced(frame.render_pass_list.back()->damage_rect,
+                                    frame.device_scale_factor());
+
+  // Reset the timestamp to null so that the next BeginFrame marks the time when
+  // it is called.
+  nop_animation_timeout_start_ = base::TimeTicks();
+
   if (in_software_draw_) {
     // The frame we send to the client is actually just the metadata. Preserve
     // the |frame| for the software path below.
@@ -397,12 +404,6 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
       submit_frame = std::move(frame);
     }
   }
-
-  power_mode_voter_.OnFrameProduced();
-
-  // Reset the timestamp to null so that the next BeginFrame marks the time when
-  // it is called.
-  nop_animation_timeout_start_ = base::TimeTicks();
 
   // NOTE: submit_frame will be empty if viz_frame_submission_enabled_ enabled,
   // but it won't be used upstream

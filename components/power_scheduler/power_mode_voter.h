@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_POWER_SCHEDULER_POWER_MODE_VOTER_H_
 #define COMPONENTS_POWER_SCHEDULER_POWER_MODE_VOTER_H_
 
+#include <array>
+#include <limits>
 #include <memory>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "components/power_scheduler/power_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace power_scheduler {
 
@@ -88,7 +91,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) FrameProductionPowerModeVoter {
   // Should be called when starting or stoping observing BeginFrames.
   void OnNeedsBeginFramesChanged(bool needs_begin_frames);
   // Should be called when a frame is produced.
-  void OnFrameProduced();
+  void OnFrameProduced(const gfx::Rect& damage_rect, float device_scale_factor);
   // Should be called when a frame is skipped. |frame_completed| should be true
   // if the frame production resulted in no visible updates and was completed on
   // time. In other cases (e.g. if the deadline was missed and frame production
@@ -101,15 +104,24 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) FrameProductionPowerModeVoter {
   void OnFrameTimeout();
 
  private:
+  friend class PowerModeArbiterFrameProductionTest;
+
+  // For testing.
+  FrameProductionPowerModeVoter(const char* name, PowerModeArbiter*);
+
   // 10 Frames: 166ms on 60fps, 111ms on 90fps, 83ms on 120fps. This should be a
   // reasonable compromise to avoid frequent flip-flopping between different
   // animation modes.
+  static constexpr int kNumDamageAreas = 10;
   static constexpr int kMinFramesSkippedForIdleAnimation = 10;
 
   std::unique_ptr<PowerModeVoter> voter_;
+  bool in_nop_animation_ = false;
   int consecutive_frames_skipped_ = 0;
   base::TimeTicks last_frame_produced_timestamp_;
   bool needs_begin_frames_ = false;
+  std::array<int, kNumDamageAreas> last_damage_areas_ = {
+      std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
 };
 
 // PowerModeVoter that requires two consecutive votes for the same PowerMode

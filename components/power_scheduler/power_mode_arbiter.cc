@@ -332,6 +332,7 @@ void PowerModeArbiter::OnVotesUpdated() {
 
 PowerMode PowerModeArbiter::ComputeActiveModeLocked() {
   PowerMode mode = PowerMode::kIdle;
+  PowerMode max_animation_mode = PowerMode::kIdle;
   bool is_audible = false;
   bool is_loading = false;
 
@@ -343,6 +344,13 @@ PowerMode PowerModeArbiter::ComputeActiveModeLocked() {
       is_audible = true;
     if (vote == PowerMode::kLoading)
       is_loading = true;
+
+    if ((vote == PowerMode::kAnimation || vote == PowerMode::kNopAnimation ||
+         vote == PowerMode::kSmallAnimation ||
+         vote == PowerMode::kMediumAnimation) &&
+        vote > max_animation_mode) {
+      max_animation_mode = vote;
+    }
   }
 
   // In background, audible overrides.
@@ -350,8 +358,29 @@ PowerMode PowerModeArbiter::ComputeActiveModeLocked() {
     return PowerMode::kAudible;
 
   // Break out loading while concurrently animating into a separate mode.
-  if (mode == PowerMode::kAnimation && is_loading)
+  if ((mode == PowerMode::kAnimation && is_loading) ||
+      (mode == PowerMode::kLoading &&
+       max_animation_mode > PowerMode::kNopAnimation)) {
     return PowerMode::kLoadingAnimation;
+  }
+
+  // Break out specific animation modes for main thread animations, too.
+  if (mode == PowerMode::kMainThreadAnimation) {
+    if (max_animation_mode == PowerMode::kNopAnimation) {
+      // The main thread seems to be taking a long time to produce a frame. Fold
+      // this into no-op animation mode. Note that this depends on kLoading mode
+      // overriding kMainThreadAnimation mode - otherwise we may incorrectly
+      // classify loading work as no-op animations.
+      static_assert(PowerMode::kLoading > PowerMode::kMainThreadAnimation,
+                    "Can't fold kMainThreadAnimation into kNopAnimation if the "
+                    "former preempts kLoading");
+      mode = PowerMode::kNopAnimation;
+    } else if (max_animation_mode == PowerMode::kSmallAnimation) {
+      mode = PowerMode::kSmallMainThreadAnimation;
+    } else if (max_animation_mode == PowerMode::kMediumAnimation) {
+      mode = PowerMode::kMediumMainThreadAnimation;
+    }
+  }
 
   return mode;
 }

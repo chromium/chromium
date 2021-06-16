@@ -59,7 +59,11 @@ enum class PowerModeForUma {
   kVideoPlayback = 9,
   kLoadingAnimation = 10,
   kMainThreadAnimation = 11,
-  kMaxValue = kMainThreadAnimation,
+  kSmallAnimation = 12,
+  kMediumAnimation = 13,
+  kSmallMainThreadAnimation = 14,
+  kMediumMainThreadAnimation = 15,
+  kMaxValue = kMediumMainThreadAnimation,
 };
 
 // Samples the process's CPU time after a specific number of task were executed

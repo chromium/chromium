@@ -14,6 +14,14 @@ const char* PowerModeToString(PowerMode mode) {
       return "Idle";
     case PowerMode::kNopAnimation:
       return "NopAnimation";
+    case PowerMode::kSmallMainThreadAnimation:
+      return "SmallMainThreadAnimation";
+    case PowerMode::kSmallAnimation:
+      return "SmallAnimation";
+    case PowerMode::kMediumMainThreadAnimation:
+      return "MediumMainThreadAnimation";
+    case PowerMode::kMediumAnimation:
+      return "MediumAnimation";
     case PowerMode::kAudible:
       return "Audible";
     case PowerMode::kVideoPlayback:

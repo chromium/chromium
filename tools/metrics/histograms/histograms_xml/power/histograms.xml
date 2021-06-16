@@ -22,8 +22,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="UsageScenario">
-<!-- 
-Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml 
+<!--
+Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   When changing this variant changes need to verified against histograms there.
 -->
 
@@ -694,6 +694,34 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   <token key="NetworkType">
     <variant name="Cell"/>
     <variant name="Wifi"/>
+  </token>
+</histogram>
+
+<histogram name="Power.FrameDamageAreaInDip.{ProcessType}" units="dip"
+    expires_after="M98">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Damaged area of a LayerTree's CompositorFrame in device-independent pixels.
+    Recorded every time a new frame is produced.
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser"/>
+    <variant name="Renderer"/>
+  </token>
+</histogram>
+
+<histogram name="Power.FrameDamageDiagonalInDip.{ProcessType}" units="dip"
+    expires_after="M98">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Diagonal length of the damaged area of a LayerTree's CompositorFrame in
+    device-independent pixels. Recorded every time a new frame is produced.
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser"/>
+    <variant name="Renderer"/>
   </token>
 </histogram>
 
