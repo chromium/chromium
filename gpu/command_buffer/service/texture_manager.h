@@ -106,7 +106,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
 
   friend class base::RefCounted<TexturePassthrough>;
 
-  GLuint owned_service_id_ = 0;
+  const GLuint owned_service_id_ = 0;
 
   bool have_context_;
   bool is_bind_pending_ = false;
@@ -280,13 +280,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   uint32_t estimated_size() const { return estimated_size_; }
 
   bool CanRenderTo(const FeatureInfo* feature_info, GLint level) const;
-
-  void SetServiceId(GLuint service_id) {
-    DCHECK(service_id);
-    DCHECK_EQ(owned_service_id_, service_id_);
-    service_id_ = service_id;
-    owned_service_id_ = service_id;
-  }
 
   bool SafeToRenderFrom() const {
     return cleared_;
