@@ -745,16 +745,6 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetBgColor("");
     case ui::kColorDialogForeground:
       return GetFgColor("GtkLabel#label");
-
-    // Guest and Incognito Avatar
-    case ui::kColorAvatarIconIncognito:
-      return GetFgColor("GtkLabel#label");
-    case ui::kColorAvatarIconGuest:
-      return color_utils::DeriveDefaultIconColor(GetFgColor("GtkLabel#label"));
-    case ui::kColorAvatarHeaderArt:
-      return color_utils::AlphaBlend(GetFgColor("GtkLabel#label"),
-                                     GetBgColor(""), gfx::kGoogleGreyAlpha300);
-
     case ui::kColorBubbleFooterBackground:
     case ui::kColorSyncInfoBackground:
       return GetBgColor("#statusbar");
@@ -1056,6 +1046,15 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetFgColor("GtkSpinner#spinner");
     case ui::kColorThrobberPreconnect:
       return GetFgColor("GtkSpinner#spinner:disabled");
+
+      // Guest and Incognito Avatar
+    case ui::kColorAvatarIconIncognito:
+      return GetFgColor("GtkLabel#label");
+    case ui::kColorAvatarIconGuest:
+      return color_utils::DeriveDefaultIconColor(GetFgColor("GtkLabel#label"));
+    case ui::kColorAvatarHeaderArt:
+      return color_utils::AlphaBlend(GetFgColor("GtkLabel#label"),
+                                     GetBgColor(""), gfx::kGoogleGreyAlpha300);
 
     // Alert icons
     // Fallback to the same colors as Aura.
