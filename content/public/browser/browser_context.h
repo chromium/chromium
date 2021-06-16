@@ -25,7 +25,6 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-forward.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #if !defined(OS_ANDROID)
@@ -63,6 +62,9 @@ class VariationsClient;
 }  // namespace variations
 
 namespace perfetto {
+template <typename>
+class TracedProto;
+
 namespace protos {
 namespace pbzero {
 class ChromeBrowserContext;
