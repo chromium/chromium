@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
@@ -51,6 +50,8 @@ class RenderFrameHost;
 class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
  public:
   explicit MediaInterfaceProxy(RenderFrameHost* render_frame_host);
+  MediaInterfaceProxy(const MediaInterfaceProxy&) = delete;
+  MediaInterfaceProxy operator=(const MediaInterfaceProxy&) = delete;
   ~MediaInterfaceProxy() final;
 
   void Bind(mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
@@ -178,8 +179,6 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
   mojo::ReceiverSet<media::mojom::InterfaceFactory> receivers_;
 
   base::WeakPtrFactory<MediaInterfaceProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInterfaceProxy);
 };
 
 }  // namespace content

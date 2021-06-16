@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
@@ -23,9 +22,76 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 
+#if defined(OS_MAC)
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "sandbox/mac/seatbelt_extension.h"
+#endif  // defined(OS_MAC)
+
 namespace content {
 
 namespace {
+
+#if defined(OS_MAC)
+#if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+// TODO(xhwang): Move this to a common place.
+const base::FilePath::CharType kSignatureFileExtension[] =
+    FILE_PATH_LITERAL(".sig");
+
+// Returns the signature file path given the |file_path|. This function should
+// only be used when the signature file and the file are located in the same
+// directory, which is the case for the CDM and CDM adapter.
+base::FilePath GetSigFilePath(const base::FilePath& file_path) {
+  return file_path.AddExtension(kSignatureFileExtension);
+}
+#endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+
+class SeatbeltExtensionTokenProviderImpl
+    : public media::mojom::SeatbeltExtensionTokenProvider {
+ public:
+  explicit SeatbeltExtensionTokenProviderImpl(const base::FilePath& cdm_path)
+      : cdm_path_(cdm_path) {}
+  SeatbeltExtensionTokenProviderImpl(
+      const SeatbeltExtensionTokenProviderImpl&) = delete;
+  SeatbeltExtensionTokenProviderImpl operator=(
+      const SeatbeltExtensionTokenProviderImpl&) = delete;
+  ~SeatbeltExtensionTokenProviderImpl() final = default;
+
+  void GetTokens(GetTokensCallback callback) final {
+    DVLOG(1) << __func__;
+
+    std::vector<sandbox::SeatbeltExtensionToken> tokens;
+
+    // Allow the CDM to be loaded in the CDM service process.
+    auto cdm_token = sandbox::SeatbeltExtension::Issue(
+        sandbox::SeatbeltExtension::FILE_READ, cdm_path_.value());
+    if (cdm_token) {
+      tokens.push_back(std::move(*cdm_token));
+    } else {
+      std::move(callback).Run({});
+      return;
+    }
+
+#if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+    // If CDM host verification is enabled, also allow to open the CDM signature
+    // file.
+    auto cdm_sig_token =
+        sandbox::SeatbeltExtension::Issue(sandbox::SeatbeltExtension::FILE_READ,
+                                          GetSigFilePath(cdm_path_).value());
+    if (cdm_sig_token) {
+      tokens.push_back(std::move(*cdm_sig_token));
+    } else {
+      std::move(callback).Run({});
+      return;
+    }
+#endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+
+    std::move(callback).Run(std::move(tokens));
+  }
+
+ private:
+  base::FilePath cdm_path_;
+};
+#endif  // defined(OS_MAC)
 
 // How long an instance of the service is allowed to sit idle before we
 // disconnect and effectively kill it.
@@ -106,10 +172,6 @@ T& GetService(const base::Token& guid,
               BrowserContext* browser_context,
               const GURL& site,
               const std::string& service_name,
-#if defined(OS_MAC)
-              mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
-                  token_provider,
-#endif  // defined(OS_MAC)
               const base::FilePath& cdm_path) {
   ServiceKey key;
   std::string display_name = service_name;
@@ -134,11 +196,19 @@ T& GetService(const base::Token& guid,
     options.WithDisplayName(display_name);
     ServiceProcessHost::Launch(broker_remote.BindNewPipeAndPassReceiver(),
                                options.Pass());
-    broker_remote->GetService(cdm_path,
+
 #if defined(OS_MAC)
-                              std::move(token_provider),
-#endif
+    mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
+        token_provider_remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SeatbeltExtensionTokenProviderImpl>(cdm_path),
+        token_provider_remote.InitWithNewPipeAndPassReceiver());
+    broker_remote->GetService(cdm_path, std::move(token_provider_remote),
                               remote.BindNewPipeAndPassReceiver());
+#else
+    broker_remote->GetService(cdm_path, remote.BindNewPipeAndPassReceiver());
+#endif  // defined(OS_MAC)
+
     // The idle handler must be set on the `remote` because the `broker_remote`
     // will never idle when the `remote` is bound.
     remote.set_disconnect_handler(base::BindOnce(&EraseCdmService<T>, key));
@@ -151,21 +221,12 @@ T& GetService(const base::Token& guid,
 
 }  // namespace
 
-media::mojom::CdmService& GetCdmService(
-    const base::Token& guid,
-    BrowserContext* browser_context,
-    const GURL& site,
-#if defined(OS_MAC)
-    mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
-        token_provider,
-#endif  // defined(OS_MAC)
-    const CdmInfo& cdm_info) {
+media::mojom::CdmService& GetCdmService(const base::Token& guid,
+                                        BrowserContext* browser_context,
+                                        const GURL& site,
+                                        const CdmInfo& cdm_info) {
   return GetService<media::mojom::CdmService>(guid, browser_context, site,
-                                              cdm_info.name,
-#if defined(OS_MAC)
-                                              std::move(token_provider),
-#endif
-                                              cdm_info.path);
+                                              cdm_info.name, cdm_info.path);
 }
 
 #if defined(OS_WIN)

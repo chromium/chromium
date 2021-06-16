@@ -22,16 +22,10 @@ class BrowserContext;
 // Gets an instance of the CdmService for the `guid`, `browser_context` and
 // the `site`. Instances are started lazily as needed. The CDM located at
 // `cdm_path` is loaded in the sandboxed process to be used by the service.
-// On Mac, `token_provider` is needed for the loading of the CDM in the sandbox.
-media::mojom::CdmService& GetCdmService(
-    const base::Token& guid,
-    BrowserContext* browser_context,
-    const GURL& site,
-#if defined(OS_MAC)
-    mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
-        token_provider,
-#endif  // defined(OS_MAC)
-    const CdmInfo& cdm_info);
+media::mojom::CdmService& GetCdmService(const base::Token& guid,
+                                        BrowserContext* browser_context,
+                                        const GURL& site,
+                                        const CdmInfo& cdm_info);
 
 #if defined(OS_WIN)
 // Gets an instance of the MediaFoundationService for the `browser_context` and
