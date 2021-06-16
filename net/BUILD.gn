@@ -931,7 +931,6 @@ component("net") {
     "spdy/multiplexed_http_stream.h",
     "spdy/multiplexed_session.cc",
     "spdy/multiplexed_session.h",
-    "spdy/platform/impl/spdy_containers_impl.h",
     "spdy/platform/impl/spdy_string_utils_impl.cc",
     "spdy/platform/impl/spdy_string_utils_impl.h",
     "spdy/server_push_delegate.h",

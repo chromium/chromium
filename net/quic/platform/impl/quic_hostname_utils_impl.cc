@@ -23,9 +23,7 @@ bool QuicHostnameUtilsImpl::IsValidSNI(absl::string_view sni) {
   std::string canonicalized_host(
       net::CanonicalizeHost(base::StringViewToStringPiece(sni), &host_info));
   return !host_info.IsIPAddress() &&
-         net::IsCanonicalizedHostCompliant(canonicalized_host) &&
-         (GetQuicReloadableFlag(quic_and_tls_allow_sni_without_dots) ||
-          sni.find_last_of('.') != std::string::npos);
+         net::IsCanonicalizedHostCompliant(canonicalized_host);
 }
 
 // static

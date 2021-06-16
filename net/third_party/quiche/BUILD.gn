@@ -629,7 +629,6 @@ source_set("quiche") {
     "src/spdy/core/spdy_simple_arena.cc",
     "src/spdy/core/spdy_simple_arena.h",
     "src/spdy/core/zero_copy_output_buffer.h",
-    "src/spdy/platform/api/spdy_containers.h",
   ]
 
   deps = [ "//net:net_deps" ]
