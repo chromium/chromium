@@ -78,14 +78,18 @@ class PrintBackendServiceManager {
   // callback that can be discarded once a service call succeeds normally.
 
   // Key is a callback ID.
-  using SavedFetchCapabilitiesCallbacks =
+  template <class T>
+  using SavedCallbacks =
       base::flat_map<base::UnguessableToken,
-                     mojom::PrintBackendService::FetchCapabilitiesCallback>;
+                     base::OnceCallback<void(mojo::StructPtr<T>)>>;
 
   // Key is the remote ID that enables finding the correct remote.  Note that
   // the remote ID does not necessarily mean the printer name.
+  template <class T>
+  using RemoteSavedCallbacks = base::flat_map<std::string, SavedCallbacks<T>>;
+
   using RemoteSavedFetchCapabilitiesCallbacks =
-      base::flat_map<std::string, SavedFetchCapabilitiesCallbacks>;
+      RemoteSavedCallbacks<mojom::PrinterCapsAndInfoResult>;
 
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
@@ -108,10 +112,18 @@ class PrintBackendServiceManager {
   GetRemoteSavedFetchCapabilitiesCallbacks(bool sandboxed);
 
   // Helper function to save outstanding callbacks.
-  void SaveFetchCapabilitiesCallback(
-      const std::string& remote_id,
-      const base::UnguessableToken& saved_callback_id,
-      mojom::PrintBackendService::FetchCapabilitiesCallback callback);
+  template <class T>
+  void SaveCallback(RemoteSavedCallbacks<T>& saved_callbacks,
+                    const std::string& remote_id,
+                    const base::UnguessableToken& saved_callback_id,
+                    base::OnceCallback<void(mojo::StructPtr<T>)> callback);
+
+  // Helper function for local callback wrappers for mojom calls.
+  template <class T>
+  void ServiceCallbackDone(RemoteSavedCallbacks<T>& saved_callbacks,
+                           const std::string& remote_id,
+                           const base::UnguessableToken& saved_callback_id,
+                           mojo::StructPtr<T> data);
 
   // Local callback wrapper for mojom calls.
   void FetchCapabilitiesDone(
@@ -122,8 +134,10 @@ class PrintBackendServiceManager {
 
   // Helper function to run outstanding callbacks when a remote has become
   // disconnected.
-  void RunSavedFetchCapabilitiesCallbacks(bool sandboxed,
-                                          const std::string& remote_id);
+  template <class T>
+  void RunSavedCallbacks(RemoteSavedCallbacks<T>& saved_callbacks,
+                         const std::string& remote_id,
+                         mojo::StructPtr<T> result_to_clone);
 
   using RemotesMap =
       base::flat_map<std::string,
