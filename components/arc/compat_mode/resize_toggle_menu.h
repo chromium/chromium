@@ -83,6 +83,8 @@ class ResizeToggleMenu : public views::WidgetObserver {
       gfx::Rect anchor_rect,
       base::RepeatingCallback<void(ResizeCompatMode)> command_handler);
 
+  void CloseBubble();
+
   views::Widget* widget_;
 
   ArcResizeLockPrefDelegate* pref_delegate_;
@@ -95,6 +97,8 @@ class ResizeToggleMenu : public views::WidgetObserver {
   MenuButtonView* phone_button_{nullptr};
   MenuButtonView* tablet_button_{nullptr};
   MenuButtonView* resizable_button_{nullptr};
+
+  base::WeakPtrFactory<ResizeToggleMenu> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

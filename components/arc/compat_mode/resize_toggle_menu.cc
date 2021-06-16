@@ -149,7 +149,9 @@ ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
   bubble_widget_->Show();
 }
 
-ResizeToggleMenu::~ResizeToggleMenu() = default;
+ResizeToggleMenu::~ResizeToggleMenu() {
+  CloseBubble();
+}
 
 void ResizeToggleMenu::OnWidgetClosing(views::Widget* widget) {
   widget_observations_.RemoveAllObservations();
@@ -258,6 +260,20 @@ void ResizeToggleMenu::ExecuteCommand(ResizeCompatMode command_id) {
       UpdateSelectedButton();
       break;
   }
+
+  constexpr auto kAutoCloseDelay = base::TimeDelta::FromSeconds(2);
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ResizeToggleMenu::CloseBubble,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kAutoCloseDelay);
+}
+
+void ResizeToggleMenu::CloseBubble() {
+  if (!bubble_widget_ || bubble_widget_->IsClosed())
+    return;
+
+  bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
 }  // namespace arc
