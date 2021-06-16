@@ -31,9 +31,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case NaClMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL;
       break;
-    case MediaMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_MEDIA;
-      break;
     case PpapiMsgStart:
       message_class = ChromeLegacyIpc::CLASS_PPAPI;
       break;
@@ -58,9 +55,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
       break;
     case GuestViewMsgStart:
       message_class = ChromeLegacyIpc::CLASS_GUEST_VIEW;
-      break;
-    case MediaPlayerDelegateMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_MEDIA_PLAYER_DELEGATE;
       break;
     case ExtensionWorkerMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION_WORKER;

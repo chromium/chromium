@@ -16,7 +16,6 @@ enum IPCMessageStart {
   TestMsgStart,
   WorkerMsgStart,
   NaClMsgStart,
-  MediaMsgStart,
   PpapiMsgStart,
   ExtensionMsgStart,
   ChromotingMsgStart,
@@ -25,7 +24,6 @@ enum IPCMessageStart {
   GinJavaBridgeMsgStart,
   ExtensionsGuestViewMsgStart,
   GuestViewMsgStart,
-  MediaPlayerDelegateMsgStart,
   ExtensionWorkerMsgStart,
   LastIPCMsgStart  // Must come last.
 };
