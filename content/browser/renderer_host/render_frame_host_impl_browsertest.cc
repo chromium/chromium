@@ -4214,8 +4214,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FileReloadAfterCrash) {
       main_document->child_at(0)->current_frame_host();
   EXPECT_EQ(main_frame_url, main_document->GetLastCommittedURL());
   EXPECT_EQ(subframe_url, sub_document->GetLastCommittedURL());
-  EXPECT_EQ("\n  \n  This page has an iframe. Yay for iframes!\n  \n\n",
-            EvalJs(main_document, "document.body.textContent"));
+  EXPECT_THAT(
+      EvalJs(main_document, "document.body.textContent").ExtractString(),
+      ::testing::HasSubstr("This page has an iframe. Yay for iframes!"));
   EXPECT_EQ("This page has no title.\n\n",
             EvalJs(sub_document, "document.body.textContent"));
 }
