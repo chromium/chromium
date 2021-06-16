@@ -207,7 +207,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::HELP).get_default_bounds =
         base::BindRepeating(&GetDefaultBoundsForHelpApp);
     if (base::FeatureList::IsEnabled(
-            chromeos::features::kHelpAppLauncherSearch)) {
+            chromeos::features::kHelpAppBackgroundPage)) {
       infos.at(SystemAppType::HELP).timer_info = SystemAppBackgroundTaskInfo(
           absl::nullopt, GURL("chrome://help-app/background"),
           /*open_immediately=*/true);

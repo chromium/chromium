@@ -422,6 +422,10 @@ const base::Feature kGesturePropertiesDBusService{
 const base::Feature kHandwritingGestureEditing{
     "HandwritingGestureEditing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Background Page in the help app.
+const base::Feature kHelpAppBackgroundPage{"HelpAppBackgroundPage",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables the Discover Tab in the help app.
 const base::Feature kHelpAppDiscoverTab{"HelpAppDiscoverTab",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
