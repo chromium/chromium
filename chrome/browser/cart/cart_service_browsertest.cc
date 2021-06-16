@@ -9,11 +9,14 @@
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
@@ -34,6 +37,9 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
+const char kFakeMerchantA[] = "foo.com";
+const char kFakeMerchantURLA[] = "https://www.foo.com/cart.html";
+const char kFakeMerchantURLB[] = "https://www.bar.com/cart.html";
 const char kMockMerchant[] = "walmart.com";
 const char kMockMerchantURL[] = "https://www.walmart.com";
 using ShoppingCarts =
@@ -170,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNotShowSkippedMerchants) {
 
 IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNavigationUKMCollection) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  GURL foo_url("https://www.foo.com/cart.html");
-  GURL bar_url("https://www.bar.com/cart.html");
+  GURL foo_url(kFakeMerchantURLA);
+  GURL bar_url(kFakeMerchantURLB);
   foo_url = https_server_.GetURL(foo_url.host(), foo_url.path());
   bar_url = https_server_.GetURL(bar_url.host(), bar_url.path());
 
@@ -182,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNavigationUKMCollection) {
   EXPECT_EQ(0u, entries.size());
 
   // Not record UKM when prepared URL is different from navigation URL.
-  service_->PrepareForNavigation(foo_url);
+  service_->PrepareForNavigation(foo_url, true);
   NavigateToURL(bar_url);
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Shopping_ChromeCart::kEntryName);
@@ -193,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNavigationUKMCollection) {
   EXPECT_EQ(0u, entries.size());
 
   // Record UKM when prepared URL matches with navigation URL.
-  service_->PrepareForNavigation(foo_url);
+  service_->PrepareForNavigation(foo_url, true);
   NavigateToURL(foo_url);
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Shopping_ChromeCart::kEntryName);
@@ -201,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNavigationUKMCollection) {
   ukm_recorder.ExpectEntrySourceHasUrl(entries.back(), foo_url);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  service_->PrepareForNavigation(bar_url);
+  service_->PrepareForNavigation(bar_url, true);
   NavigateToURL(bar_url, WindowOpenDisposition::NEW_BACKGROUND_TAB);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   entries = ukm_recorder.GetEntriesByName(
@@ -211,11 +217,80 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserTest, TestNavigationUKMCollection) {
 
   BrowserList* active_browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1u, active_browser_list->size());
-  service_->PrepareForNavigation(foo_url);
+  service_->PrepareForNavigation(foo_url, true);
   NavigateToURL(foo_url, WindowOpenDisposition::NEW_WINDOW);
   EXPECT_EQ(2u, active_browser_list->size());
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Shopping_ChromeCart::kEntryName);
   EXPECT_EQ(3u, entries.size());
   ukm_recorder.ExpectEntrySourceHasUrl(entries.back(), foo_url);
+}
+
+class FakeCartDiscountLinkFetcher : public CartDiscountLinkFetcher {
+ public:
+  using CartDiscountLinkFetcherCallback = base::OnceCallback<void(const GURL&)>;
+
+  explicit FakeCartDiscountLinkFetcher(const GURL& discount_url)
+      : discount_url_(discount_url) {}
+
+  void Fetch(
+      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+      cart_db::ChromeCartContentProto cart_content_proto,
+      CartDiscountLinkFetcherCallback callback) override {
+    std::move(callback).Run(discount_url_);
+  }
+
+ private:
+  const GURL& discount_url_;
+};
+
+class CartServiceBrowserDiscountTest : public CartServiceBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
+         {"partner-merchant-pattern", "(foo.com)"}});
+  }
+
+  void SetUpOnMainThread() override {
+    CartServiceBrowserTest::SetUpOnMainThread();
+    // Enable the discount feature by default.
+    profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  }
+
+  void SetCartDiscountURLForTesting(const GURL& discount_url) {
+    std::unique_ptr<FakeCartDiscountLinkFetcher> fake_fetcher =
+        std::make_unique<FakeCartDiscountLinkFetcher>(discount_url);
+    service_->SetCartDiscountLinkFetcherForTesting(std::move(fake_fetcher));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/1218979): Similar to TestNavigationUKMCollection, add tests
+// that open tab with different WindowOpenDisposition for this test. Figure out
+// a proper way to wait for the second load of the discount URL.
+IN_PROC_BROWSER_TEST_F(CartServiceBrowserDiscountTest,
+                       LoadDiscountInCurrentTab) {
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kFakeMerchantA, kFakeMerchantURLA);
+  cart_db::DiscountInfoProto* added_discount =
+      merchant_proto.mutable_discount_info()->add_discount_info();
+  added_discount->set_rule_id("fake_id");
+  added_discount->set_percent_off(5);
+  added_discount->set_raw_merchant_offer_id("fake_offer_id");
+  service_->AddCart(kFakeMerchantA, absl::nullopt, merchant_proto);
+
+  GURL foo_url("https://www.foo.com/cart.html");
+  GURL bar_url("https://www.bar.com/cart.html");
+  foo_url = https_server_.GetURL(foo_url.host(), foo_url.path());
+  bar_url = https_server_.GetURL(bar_url.host(), bar_url.path());
+  CartServiceBrowserDiscountTest::SetCartDiscountURLForTesting(bar_url);
+
+  service_->PrepareForNavigation(foo_url, false);
+  TabStripModel* model = browser()->tab_strip_model();
+  NavigateToURL(foo_url);
+  ASSERT_EQ(bar_url, model->GetActiveWebContents()->GetVisibleURL());
 }

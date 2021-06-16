@@ -37,7 +37,7 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
   void OnDiscountConsentAcknowledged(bool accept) override;
   void GetDiscountEnabled(GetDiscountEnabledCallback callback) override;
   void SetDiscountEnabled(bool enabled) override;
-  void PrepareForNavigation(const GURL& cart_url) override;
+  void PrepareForNavigation(const GURL& cart_url, bool is_navigating) override;
 
  private:
   void GetCartDataCallback(GetMerchantCartsCallback callback,

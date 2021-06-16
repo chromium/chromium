@@ -391,7 +391,7 @@ class ChromeCartModuleElement extends mixinBehaviors
       return;
     }
     ChromeCartProxy.getInstance().handler.prepareForNavigation(
-        this.cartItems[index].cartUrl);
+        this.cartItems[index].cartUrl, /*isNavigating=*/ true);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
     chrome.metricsPrivate.recordSmallCount('NewTabPage.Carts.ClickCart', index);
   }
@@ -423,7 +423,7 @@ class ChromeCartModuleElement extends mixinBehaviors
   onCartItemContextMenuClick_(e) {
     const index = this.$.cartItemRepeat.indexForElement(e.target);
     ChromeCartProxy.getInstance().handler.prepareForNavigation(
-        this.cartItems[index].cartUrl);
+        this.cartItems[index].cartUrl, /*isNavigating=*/ false);
   }
 }
 

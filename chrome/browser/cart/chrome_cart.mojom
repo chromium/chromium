@@ -54,6 +54,8 @@ interface CartHandler {
   SetDiscountEnabled(bool enabled);
   // Passes the |cart_url| that user is navigating or about to navigate
   // towards to browser process, in order to help identify navigations
-  // originated from cart module.
-  PrepareForNavigation(url.mojom.Url cart_url);
+  // originated from cart module. |is_navigating| indicates whether
+  // the navigation is happening now (e.g. left click on cart item)
+  // or not.
+  PrepareForNavigation(url.mojom.Url cart_url, bool is_navigating);
 };
