@@ -4439,7 +4439,8 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     ui::PageTransition transition,
     const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
-    const absl::optional<base::UnguessableToken>& embedding_token) {
+    const absl::optional<base::UnguessableToken>& embedding_token,
+    bool is_same_document_navigation) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   const WebURLResponse& response = document_loader->GetResponse();
 
@@ -4525,8 +4526,10 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->app_history_key = item.GetAppHistoryKey().Utf8();
 
   // If the page contained a client redirect (meta refresh, document.loc...),
-  // set the referrer appropriately.
-  if (document_loader->IsClientRedirect()) {
+  // set the referrer appropriately, except for same-document navigations where
+  // the referrer that was initially used to load the document should be used,
+  // same as all other same-document navigations.
+  if (document_loader->IsClientRedirect() && !is_same_document_navigation) {
     // TODO(https://crbug.com/1131832): Remove referrer from
     // DidCommitProvisionalLoadParams, which also removes the need to save the
     // redirect chain in the renderer.
@@ -4721,7 +4724,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   // load committing.
   auto params = MakeDidCommitProvisionalLoadParams(
       commit_type, transition, permissions_policy_header,
-      document_policy_header, embedding_token);
+      document_policy_header, embedding_token, !!same_document_params);
 
   if (same_document_params) {
     GetFrameHost()->DidCommitSameDocumentNavigation(

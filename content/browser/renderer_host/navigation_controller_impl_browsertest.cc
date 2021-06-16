@@ -7273,9 +7273,9 @@ IN_PROC_BROWSER_TEST_P(
     // which is the URL that initiated the client redirect.
     EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
 
-    // The referrer is |start_url| (the previous URL) since the fragment
-    // navigation is considered a client-side redirect.
-    ExpectReferrerWithDefaultPolicy(entry, start_url);
+    // No referrer (same as the referrer used for loading the document) since
+    // the refererrer doesn't change on same-document navigations.
+    ExpectReferrerWithDefaultPolicy(entry, GURL());
   }
 
   {
@@ -7306,9 +7306,9 @@ IN_PROC_BROWSER_TEST_P(
     // which is the URL that initiated the client redirect.
     EXPECT_EQ(entry->GetOriginalRequestURL(), fragment_url);
 
-    // The referrer is |fragment_url| (the previous URL) since the fragment
-    // navigation is considered a client-side redirect.
-    ExpectReferrerWithDefaultPolicy(entry, fragment_url);
+    // No referrer (same as the referrer used for loading the document) since
+    // the refererrer doesn't change on same-document navigations.
+    ExpectReferrerWithDefaultPolicy(entry, GURL());
   }
 
   {
@@ -7334,9 +7334,8 @@ IN_PROC_BROWSER_TEST_P(
     // is also the final URL.
     EXPECT_EQ(entry->GetOriginalRequestURL(), fragment_url_2);
 
-    // No referrer since for same-document navigations that aren't categorized
-    // as client redirects, the original referrer that loaded the document
-    // is used.
+    // No referrer (same as the referrer used for loading the document) since
+    // the refererrer doesn't change on same-document navigations.
     ExpectReferrerWithDefaultPolicy(entry, GURL());
   }
 
@@ -7368,9 +7367,8 @@ IN_PROC_BROWSER_TEST_P(
     // is also the final URL.
     EXPECT_EQ(entry->GetOriginalRequestURL(), fragment_url_3);
 
-    // No referrer since for same-document navigations that aren't categorized
-    // as client redirects, the original referrer that loaded the document
-    // is used.
+    // No referrer (same as the referrer used for loading the document) since
+    // the refererrer doesn't change on same-document navigations.
     ExpectReferrerWithDefaultPolicy(entry, GURL());
   }
 }
@@ -7441,9 +7439,10 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(frame_entry->redirect_chain()[0], iframe_url);
     EXPECT_EQ(frame_entry->redirect_chain()[1], fragment_url);
 
-    // The referrer is |iframe_url| (the previous URL) since the fragment
-    // navigation is considered a client-side redirect.
-    ExpectReferrerWithDefaultPolicy(frame_entry.get(), iframe_url);
+    // The referrer is the main frame's URL (same as the referrer used for
+    // loading the document) since the refererrer doesn't change on
+    // same-document navigations.
+    ExpectReferrerWithDefaultPolicy(frame_entry.get(), start_url);
   }
 
   GURL fragment_url_2(embedded_test_server()->GetURL("/title1.html#bar"));
@@ -7469,8 +7468,9 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(frame_entry->redirect_chain().size(), 1u);
     EXPECT_EQ(frame_entry->redirect_chain()[0], fragment_url_2);
 
-    // The referrer is the main frame's URL since the fragment navigation is
-    // started by a link click in the main frame.
+    // The referrer is the main frame's URL (same as the referrer used for
+    // loading the document) since the refererrer doesn't change on
+    // same-document navigations.
     ExpectReferrerWithDefaultPolicy(frame_entry.get(), start_url);
   }
 
@@ -8518,9 +8518,10 @@ IN_PROC_BROWSER_TEST_P(
     // which is the URL that initiated the client redirect.
     EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirect_target_url);
 
-    // The referrer is |client_redirect_target_url| (the previous URL) since the
-    // fragment navigation is considered a client-side redirect.
-    ExpectReferrerWithDefaultPolicy(entry, client_redirect_target_url);
+    // The referrer is |client_redirecting_url| (same as the referrer used for
+    // loading the document) since the referrer doesn't change on same-document
+    // navigations.
+    ExpectReferrerWithDefaultPolicy(entry, client_redirecting_url);
   }
 }
 
@@ -8569,9 +8570,10 @@ IN_PROC_BROWSER_TEST_P(
     // which is the URL that initiated the client redirect.
     EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirecting_url);
 
-    // The referrer is |client_redirecting_url| since the navigation is a
-    // client-side redirect.
-    ExpectReferrerWithDefaultPolicy(entry, client_redirecting_url);
+    // No referrer since the navigation started as a browser-initiated
+    // navigation, and the client redirect that happened afterwards is a
+    // same-document navigation, which won't change the referrer.
+    ExpectReferrerWithDefaultPolicy(entry, GURL());
   }
 
   {
@@ -8601,9 +8603,9 @@ IN_PROC_BROWSER_TEST_P(
     // which is the URL that initiated the client redirect.
     EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirect_target_url);
 
-    // The referrer is |client_redirect_target_url| (the previous URL) since the
-    // fragment navigation is considered a client-side redirect.
-    ExpectReferrerWithDefaultPolicy(entry, client_redirect_target_url);
+    // No referrer (same as the referrer used for loading the document) since
+    // the refererrer doesn't change on same-document navigations.
+    ExpectReferrerWithDefaultPolicy(entry, GURL());
   }
 }
 
