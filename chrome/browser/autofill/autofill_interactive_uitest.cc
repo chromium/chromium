@@ -92,36 +92,43 @@ namespace autofill {
 
 namespace {
 
-static const char kTestShippingFormString[] =
-    "An example of a shipping address form."
-    "<form action=\"https://www.example.com/\" method=\"POST\">"
-    "<label for=\"firstname\">First name:</label>"
-    " <input type=\"text\" id=\"firstname\"><br>"
-    "<label for=\"lastname\">Last name:</label>"
-    " <input type=\"text\" id=\"lastname\"><br>"
-    "<label for=\"address1\">Address line 1:</label>"
-    " <input type=\"text\" id=\"address1\"><br>"
-    "<label for=\"address2\">Address line 2:</label>"
-    " <input type=\"text\" id=\"address2\"><br>"
-    "<label for=\"city\">City:</label>"
-    " <input type=\"text\" id=\"city\"><br>"
-    "<label for=\"state\">State:</label>"
-    " <select id=\"state\">"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">California</option>"
-    " <option value=\"TX\">Texas</option>"
-    " </select><br>"
-    "<label for=\"zip\">ZIP code:</label>"
-    " <input type=\"text\" id=\"zip\"><br>"
-    "<label for=\"country\">Country:</label>"
-    " <select id=\"country\">"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">Canada</option>"
-    " <option value=\"US\">United States</option>"
-    " </select><br>"
-    "<label for=\"phone\">Phone number:</label>"
-    " <input type=\"text\" id=\"phone\"><br>"
-    "</form>";
+static const char kTestShippingFormString[] = R"(
+  <html>
+  <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+  </head>
+  <body>
+    An example of a shipping address form.
+    <form action="https://www.example.com/" method="POST">
+    <label for="firstname">First name:</label>
+     <input type="text" id="firstname"><br>
+    <label for="lastname">Last name:</label>
+     <input type="text" id="lastname"><br>
+    <label for="address1">Address line 1:</label>
+     <input type="text" id="address1"><br>
+    <label for="address2">Address line 2:</label>
+     <input type="text" id="address2"><br>
+    <label for="city">City:</label>
+     <input type="text" id="city"><br>
+    <label for="state">State:</label>
+     <select id="state">
+     <option value="" selected="yes">--</option>
+     <option value="CA">California</option>
+     <option value="TX">Texas</option>
+     </select><br>
+    <label for="zip">ZIP code:</label>
+     <input type="text" id="zip"><br>
+    <label for="country">Country:</label>
+     <select id="country">
+     <option value="" selected="yes">--</option>
+     <option value="CA">Canada</option>
+     <option value="US">United States</option>
+     </select><br>
+    <label for="phone">Phone number:</label>
+     <input type="text" id="phone"><br>
+    </form>
+    )";
 
 static const char kTestBillingFormString[] =
     "An example of a billing address form."
@@ -496,9 +503,9 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         "        },"
         "        translatePage : function(sourceLang, targetLang,"
         "                                 onTranslateProgress) {"
-        "          document.getElementsByTagName(\"body\")[0].innerHTML = '" +
+        "          document.getElementsByTagName(\"body\")[0].innerHTML = `" +
         std::string(kTestShippingFormString) +
-        "              ';"
+        "              `;"
         "          onTranslateProgress(100, true, false);"
         "        }"
         "      };"
@@ -825,6 +832,12 @@ class AutofillInteractiveTestWithHistogramTester
   void TearDownOnMainThread() override {
     url_loader_interceptor_.reset();
     AutofillInteractiveTest::TearDownOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AutofillInteractiveTest::SetUpCommandLine(command_line);
+    // Prevents proxy.pac requests.
+    command_line->AppendSwitch(switches::kNoProxyServer);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
