@@ -55,23 +55,21 @@ def tryjob(
         for certain directories that would have no impact when building chromium
         with the patch applied (docs, config files that don't take effect until
         landing, etc., see DEFAULT_EXCLUDE_REGEXPS).
+      enable_for_quick_run - A bool indicating whether to enable the builder for
+        cq.MODE_QUICK_DRY_RUN.
 
     Returns:
       A struct that can be passed to the `tryjob` argument of `try_.builder` to
       enable the builder for CQ.
     """
-    if add_default_excludes:
-        location_regexp_exclude = DEFAULT_EXCLUDE_REGEXPS + (location_regexp_exclude or [])
-    mode_allowlist = [cq.MODE_FULL_RUN, cq.MODE_DRY_RUN]
-    if enable_for_quick_run:
-        mode_allowlist.append(cq.MODE_QUICK_DRY_RUN)
     return struct(
         disable_reuse = disable_reuse,
         experiment_percentage = experiment_percentage,
+        add_default_excludes = add_default_excludes,
         location_regexp = location_regexp,
         location_regexp_exclude = location_regexp_exclude,
         cancel_stale = cancel_stale,
-        mode_allowlist = mode_allowlist,
+        enable_for_quick_run = enable_for_quick_run,
     )
 
 def try_builder(
@@ -187,15 +185,23 @@ def try_builder(
     builder = "{}/{}".format(bucket, name)
     cq_group = defaults.get_value("cq_group", cq_group)
     if tryjob != None:
+        location_regexp_exclude = tryjob.location_regexp_exclude
+        if tryjob.add_default_excludes:
+            location_regexp_exclude = DEFAULT_EXCLUDE_REGEXPS + (location_regexp_exclude or [])
+
+        mode_allowlist = [cq.MODE_FULL_RUN, cq.MODE_DRY_RUN]
+        if tryjob.enable_for_quick_run:
+            mode_allowlist.append(cq.MODE_QUICK_DRY_RUN)
+
         luci.cq_tryjob_verifier(
             builder = builder,
             cq_group = cq_group,
             disable_reuse = tryjob.disable_reuse,
             experiment_percentage = tryjob.experiment_percentage,
             location_regexp = tryjob.location_regexp,
-            location_regexp_exclude = tryjob.location_regexp_exclude,
+            location_regexp_exclude = location_regexp_exclude,
             cancel_stale = tryjob.cancel_stale,
-            mode_allowlist = tryjob.mode_allowlist,
+            mode_allowlist = mode_allowlist,
         )
     else:
         # Allow CQ to trigger this builder if user opts in via CQ-Include-Trybots.
@@ -504,6 +510,33 @@ def gpu_chromium_win_builder(*, name, os = builders.os.WINDOWS_ANY, **kwargs):
         **kwargs
     )
 
+def presubmit_builder(*, name, tryjob, os = builders.os.LINUX_BIONIC_SWITCH_TO_DEFAULT, **kwargs):
+    """Define a presubmit builder.
+
+    Presubmit builders are builders that run fast checks that don't require
+    building. Their results aren't re-used because they tend to provide guards
+    against generated files being out of date, so they MUST run quickly so that
+    the submit after a CQ dry run doesn't take long.
+    """
+    tryjob_args = {a: getattr(tryjob, a) for a in dir(tryjob)}
+    tryjob_args["disable_reuse"] = True
+    tryjob_args["add_default_excludes"] = False
+    tryjob = try_.job(**tryjob_args)
+
+    return try_builder(
+        name = name,
+        list_view = "presubmit",
+        main_list_view = "try",
+        os = os,
+        # Default priority for buildbucket is 30, see
+        # https://chromium.googlesource.com/infra/infra/+/bb68e62b4380ede486f65cd32d9ff3f1bbe288e4/appengine/cr-buildbucket/creation.py#42
+        # This will improve our turnaround time for landing infra/config changes
+        # when addressing outages
+        priority = 25,
+        tryjob = tryjob,
+        **kwargs
+    )
+
 try_ = struct(
     # Module-level defaults for try functions
     defaults = defaults,
@@ -537,4 +570,5 @@ try_ = struct(
     gpu_chromium_linux_builder = gpu_chromium_linux_builder,
     gpu_chromium_mac_builder = gpu_chromium_mac_builder,
     gpu_chromium_win_builder = gpu_chromium_win_builder,
+    presubmit_builder = presubmit_builder,
 )

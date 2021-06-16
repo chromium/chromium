@@ -102,6 +102,12 @@ luci.cq_group(
 # Automatically maintained consoles
 
 consoles.list_view(
+    name = "presubmit",
+    branch_selector = branches.ALL_BRANCHES,
+    title = "presubmit builders",
+)
+
+consoles.list_view(
     name = "try",
     branch_selector = branches.ALL_BRANCHES,
     title = "{} CQ Console".format(settings.project_title),
@@ -170,38 +176,6 @@ consoles.list_view(
 
 # Builders are sorted first lexicographically by the function used to define
 # them, then lexicographically by their name
-
-try_.builder(
-    name = "branch-config-verifier",
-    executable = "recipe:branch_configuration/tester",
-    main_list_view = "try",
-    os = os.LINUX_BIONIC_REMOVE,
-    properties = {
-        "branch_script": "infra/config/scripts/branch.py",
-        "branch_configs": [
-            {
-                "name": "standard",
-                "branch_types": ["standard"],
-            },
-            {
-                "name": "lts",
-                "branch_types": ["lts"],
-            },
-        ],
-        "verification_scripts": ["infra/config/main.star", "infra/config/dev.star"],
-    },
-    tryjob = try_.job(
-        # Errors that this builder would catch would go unnoticed until a
-        # project is set up on a branch day or even worse when a branch was
-        # turned into an LTS branch, long after the change has been made, so
-        # disable reuse to ensure it's checked with current code. The builder
-        # runs in a few minutes and only for infra/config changes, so it won't
-        # impose a heavy burden on our capacity.
-        disable_reuse = True,
-        add_default_excludes = False,
-        location_regexp = [r".+/[+]/infra/config/.+"],
-    ),
-)
 
 try_.blink_builder(
     name = "linux-blink-optional-highdpi-rel",
@@ -1054,31 +1028,6 @@ try_.chromium_linux_builder(
             ],
         },
     },
-)
-
-try_.chromium_linux_builder(
-    name = "chromium_presubmit",
-    branch_selector = branches.ALL_BRANCHES,
-    executable = "recipe:presubmit",
-    goma_backend = None,
-    main_list_view = "try",
-    # Default priority for buildbucket is 30, see
-    # https://chromium.googlesource.com/infra/infra/+/bb68e62b4380ede486f65cd32d9ff3f1bbe288e4/appengine/cr-buildbucket/creation.py#42
-    # This will improve our turnaround time for landing infra/config changes
-    # when addressing outages
-    priority = 25,
-    properties = {
-        "$depot_tools/presubmit": {
-            "runhooks": True,
-            "timeout_s": 480,
-        },
-        "repo_name": "chromium",
-    },
-    tryjob = try_.job(
-        disable_reuse = True,
-        add_default_excludes = False,
-    ),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -2145,6 +2094,47 @@ try_.chromium_mac_ios_builder(
     tryjob = try_.job(
         experiment_percentage = 1,
     ),
+)
+
+# Errors that this builder would catch would go unnoticed until a project is set
+# up on a branch day or even worse when a branch was turned into an LTS branch,
+# long after the change has been made, so make it a presubmit builder to ensure
+# it's checked with current code. The builder runs in a few minutes and only for
+# infra/config changes, so it won't impose a heavy burden on our capacity.
+try_.presubmit_builder(
+    name = "branch-config-verifier",
+    executable = "recipe:branch_configuration/tester",
+    properties = {
+        "branch_script": "infra/config/scripts/branch.py",
+        "branch_configs": [
+            {
+                "name": "standard",
+                "branch_types": ["standard"],
+            },
+            {
+                "name": "lts",
+                "branch_types": ["lts"],
+            },
+        ],
+        "verification_scripts": ["infra/config/main.star", "infra/config/dev.star"],
+    },
+    tryjob = try_.job(
+        location_regexp = [r".+/[+]/infra/config/.+"],
+    ),
+)
+
+try_.presubmit_builder(
+    name = "chromium_presubmit",
+    branch_selector = branches.ALL_BRANCHES,
+    executable = "recipe:presubmit",
+    properties = {
+        "$depot_tools/presubmit": {
+            "runhooks": True,
+            "timeout_s": 480,
+        },
+        "repo_name": "chromium",
+    },
+    tryjob = try_.job(),
 )
 
 # Used for listing chrome trybots in chromium's commit-queue.cfg without also
