@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+USE_PYTHON3 = True
+
 import os
 
 def RunOtherPresubmit(function_name, input_api, output_api):
