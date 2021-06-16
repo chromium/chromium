@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -179,10 +180,9 @@ public class PseudoTab {
      * Get the URL of the {@link PseudoTab}.
      * @return The URL
      */
-    public String getUrl() {
-        // TODO(crbug/783819): Return the GURL directly.
+    public GURL getUrl() {
         if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
-            return mTab.get().getUrl() != null ? mTab.get().getUrl().getSpec() : null;
+            return mTab.get().getUrl();
         }
         assert mTabId != null;
         return TabAttributeCache.getUrl(mTabId);

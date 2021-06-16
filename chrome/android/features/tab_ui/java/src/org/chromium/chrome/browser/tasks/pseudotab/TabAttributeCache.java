@@ -65,8 +65,7 @@ public class TabAttributeCache {
             @Override
             public void onUrlUpdated(Tab tab) {
                 if (tab.isIncognito()) return;
-                String url = tab.getUrl().getSpec();
-                cacheUrl(tab.getId(), url);
+                cacheUrl(tab.getId(), tab.getUrl());
             }
 
             @Override
@@ -107,6 +106,7 @@ public class TabAttributeCache {
                 int id = tab.getId();
                 getSharedPreferences()
                         .edit()
+                        .remove(getDeprecatedUrlKey(id))
                         .remove(getUrlKey(id))
                         .remove(getTitleKey(id))
                         .remove(getRootIdKey(id))
@@ -126,7 +126,7 @@ public class TabAttributeCache {
                         mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
                 for (int i = 0; i < filter.getCount(); i++) {
                     Tab tab = filter.getTabAt(i);
-                    cacheUrl(tab.getId(), tab.getUrl().getSpec());
+                    cacheUrl(tab.getId(), tab.getUrl());
                     cacheTitle(tab.getId(), tab.getTitle());
                     cacheRootId(tab.getId(), CriticalPersistedTabData.from(tab).getRootId());
                     cacheTimestampMillis(
@@ -168,6 +168,11 @@ public class TabAttributeCache {
     }
 
     private static String getUrlKey(int id) {
+        return id + "_gurl";
+    }
+
+    // Legacy from when URL was serialized as raw string.
+    private static String getDeprecatedUrlKey(int id) {
         return id + "_url";
     }
 
@@ -176,13 +181,16 @@ public class TabAttributeCache {
      * @param id The ID of the {@link PseudoTab}.
      * @return The URL
      */
-    public static String getUrl(int id) {
-        return getSharedPreferences().getString(getUrlKey(id), "");
+    public static GURL getUrl(int id) {
+        String url = getSharedPreferences().getString(getUrlKey(id), "");
+        if (!url.isEmpty()) {
+            return GURL.deserialize(url);
+        }
+        return new GURL(getSharedPreferences().getString(getDeprecatedUrlKey(id), ""));
     }
 
-    private static void cacheUrl(int id, String url) {
-        // TODO(crbug/783819): Use GURL directly.
-        getSharedPreferences().edit().putString(getUrlKey(id), url).apply();
+    private static void cacheUrl(int id, GURL url) {
+        getSharedPreferences().edit().putString(getUrlKey(id), url.serialize()).apply();
     }
 
     /**
@@ -190,7 +198,7 @@ public class TabAttributeCache {
      * @param id The ID of the {@link PseudoTab}.
      * @param url The URL
      */
-    static void setUrlForTesting(int id, String url) {
+    static void setUrlForTesting(int id, GURL url) {
         cacheUrl(id, url);
     }
 

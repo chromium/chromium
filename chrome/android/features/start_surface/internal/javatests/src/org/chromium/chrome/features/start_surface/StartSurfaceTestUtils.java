@@ -62,6 +62,7 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -360,14 +361,18 @@ public class StartSurfaceTestUtils {
      */
     public static List<SiteSuggestion> createFakeSiteSuggestions() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES", new GURL("https://www.bar.com"),
-                "", TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED,
-                new Date()));
+        siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES",
+                // Use pre-serialized GURL to avoid loading native.
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), "", TileTitleSource.UNKNOWN,
+                TileSource.EXPLORE, TileSectionType.PERSONALIZED, new Date()));
 
+        String urlTemplate = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_NUMERAL).serialize();
         for (int i = 0; i < 7; i++) {
             siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
-                    new GURL("https://www." + i + ".com"), "", TileTitleSource.TITLE_TAG,
-                    TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
+                    // Use pre-serialized GURL to avoid loading native.
+                    GURL.deserialize(urlTemplate.replace("www.1.com", "www." + i + ".com")), "",
+                    TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                    new Date()));
         }
 
         return siteSuggestions;

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -153,7 +154,7 @@ public class TabListFaviconProvider {
      * @param faviconCallback The callback that requests for favicon.
      */
     public void getFaviconForUrlAsync(
-            String url, boolean isIncognito, Callback<Drawable> faviconCallback) {
+            GURL url, boolean isIncognito, Callback<Drawable> faviconCallback) {
         if (mFaviconHelper == null || UrlUtilities.isNTPUrl(url)) {
             faviconCallback.onResult(getRoundedChromeDrawable(isIncognito));
         } else {
@@ -175,7 +176,7 @@ public class TabListFaviconProvider {
      * @param icon The favicon that was received.
      * @return The processed favicon.
      */
-    public Drawable getFaviconForUrlSync(String url, boolean isIncognito, Bitmap icon) {
+    public Drawable getFaviconForUrlSync(GURL url, boolean isIncognito, Bitmap icon) {
         if (icon == null) {
             boolean isNativeUrl = NativePage.isNativePageUrl(url, isIncognito);
             return isNativeUrl ? getRoundedChromeDrawable(isIncognito)
@@ -192,7 +193,7 @@ public class TabListFaviconProvider {
      * @param faviconCallback The callback that requests for the composed favicon.
      */
     public void getComposedFaviconImageAsync(
-            List<String> urls, boolean isIncognito, Callback<Drawable> faviconCallback) {
+            List<GURL> urls, boolean isIncognito, Callback<Drawable> faviconCallback) {
         assert urls != null && urls.size() > 1 && urls.size() <= 4;
 
         mFaviconHelper.getComposedFaviconImage(mProfile, urls, mFaviconSize, (image, iconUrl) -> {

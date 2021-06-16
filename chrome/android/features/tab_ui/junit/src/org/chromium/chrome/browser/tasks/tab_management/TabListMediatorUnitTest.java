@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
@@ -177,9 +178,9 @@ public class TabListMediatorUnitTest {
     private static final String NEW_TITLE = "New title";
     private static final String CUSTOMIZED_DIALOG_TITLE1 = "Cool Tabs";
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
-    private static final String TAB1_URL = JUnitTestGURLs.URL_1;
-    private static final String TAB2_URL = JUnitTestGURLs.URL_2;
-    private static final String TAB3_URL = JUnitTestGURLs.URL_3;
+    private static final GURL TAB1_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL TAB2_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL TAB3_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
     private static final String NEW_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -315,9 +316,9 @@ public class TabListMediatorUnitTest {
         // Ensure native pointer is initialized
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
 
-        mTab1Domain = JUnitTestGURLs.getGURL(TAB1_URL).getHost().replace("www.", "");
-        mTab2Domain = JUnitTestGURLs.getGURL(TAB2_URL).getHost().replace("www.", "");
-        mTab3Domain = JUnitTestGURLs.getGURL(TAB3_URL).getHost().replace("www.", "");
+        mTab1Domain = TAB1_URL.getHost().replace("www.", "");
+        mTab2Domain = TAB2_URL.getHost().replace("www.", "");
+        mTab3Domain = TAB3_URL.getHost().replace("www.", "");
         mNewDomain = JUnitTestGURLs.getGURL(NEW_URL).getHost().replace("www.", "");
 
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
@@ -356,10 +357,10 @@ public class TabListMediatorUnitTest {
         doReturn(2).when(mTabModel).getCount();
         doNothing()
                 .when(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(anyString(), anyBoolean(), mCallbackCaptor.capture());
+                .getFaviconForUrlAsync(anyObject(), anyBoolean(), mCallbackCaptor.capture());
         doReturn(mFaviconDrawable)
                 .when(mTabListFaviconProvider)
-                .getFaviconForUrlSync(anyString(), anyBoolean(), any(Bitmap.class));
+                .getFaviconForUrlSync(anyObject(), anyBoolean(), any(Bitmap.class));
         doReturn(mTab1).when(mTabModelSelector).getTabById(TAB1_ID);
         doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
@@ -379,13 +380,13 @@ public class TabListMediatorUnitTest {
         doReturn(mSpanSizeLookup).when(mGridLayoutManager).getSpanSizeLookup();
         doReturn(mTab1Domain)
                 .when(mUrlUtilitiesJniMock)
-                .getDomainAndRegistry(eq(TAB1_URL), anyBoolean());
+                .getDomainAndRegistry(eq(TAB1_URL.getSpec()), anyBoolean());
         doReturn(mTab2Domain)
                 .when(mUrlUtilitiesJniMock)
-                .getDomainAndRegistry(eq(TAB2_URL), anyBoolean());
+                .getDomainAndRegistry(eq(TAB2_URL.getSpec()), anyBoolean());
         doReturn(mTab3Domain)
                 .when(mUrlUtilitiesJniMock)
-                .getDomainAndRegistry(eq(TAB3_URL), anyBoolean());
+                .getDomainAndRegistry(eq(TAB3_URL.getSpec()), anyBoolean());
         doNothing().when(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
 
@@ -1919,10 +1920,8 @@ public class TabListMediatorUnitTest {
                             PriceTrackingUtilities.TRACK_PRICES_ON_TABS, priceTrackingEnabled);
                     Profile.setLastUsedProfileForTesting(mProfile);
                     Map<GURL, Any> responses = new HashMap<>();
-                    GURL gurl1 = JUnitTestGURLs.getGURL(TAB1_URL);
-                    GURL gurl2 = JUnitTestGURLs.getGURL(TAB2_URL);
-                    responses.put(gurl1, ANY_BUYABLE_PRODUCT_INITIAL);
-                    responses.put(gurl2, ANY_EMPTY);
+                    responses.put(TAB1_URL, ANY_BUYABLE_PRODUCT_INITIAL);
+                    responses.put(TAB2_URL, ANY_EMPTY);
                     mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, responses);
                     PersistedTabDataConfiguration.setUseTestConfig(true);
                     initAndAssertAllProperties(mMediatorSpy);
@@ -2436,7 +2435,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
         createTabGroup(tabs, TAB1_ID);
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap);
-        List<String> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
+        List<GURL> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
         verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
         mCallbackCaptor.getValue().onResult(mFaviconDrawable);
         assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFaviconDrawable));
@@ -2444,11 +2443,12 @@ public class TabListMediatorUnitTest {
         // Test a group of five.
         mModel.get(1).model.set(TabProperties.FAVICON, null);
         TabImpl tab4 = prepareTab(0, "tab 4", TAB2_URL);
-        TabImpl tab5 = prepareTab(1, "tab 5", "www.tab5.com");
+        TabImpl tab5 = prepareTab(1, "tab 5", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
         tabs.addAll(Arrays.asList(tab4, tab5));
         createTabGroup(tabs, TAB2_ID);
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap);
         urls = new ArrayList<>(Arrays.asList(TAB2_URL, TAB1_URL, TAB3_URL, TAB2_URL));
+
         verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
         mCallbackCaptor.getValue().onResult(mFaviconDrawable);
         assertThat(mModel.get(1).model.get(TabProperties.FAVICON), equalTo(mFaviconDrawable));
@@ -2704,7 +2704,7 @@ public class TabListMediatorUnitTest {
                 instanceOf(TabListMediator.TabActionListener.class));
     }
 
-    private TabImpl prepareTab(int id, String title, String url) {
+    private TabImpl prepareTab(int id, String title, GURL url) {
         TabImpl tab = TabUiUnitTestUtils.prepareTab(id, title, url);
         when(tab.getView()).thenReturn(mock(View.class));
         doReturn(true).when(tab).isIncognito();

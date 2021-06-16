@@ -58,7 +58,7 @@ class FaviconHelper::Job {
  public:
   Job(FaviconHelper* favicon_helper,
       favicon::FaviconService* favicon_service,
-      std::vector<std::string> urls,
+      std::vector<GURL> urls,
       int desire_size_in_pixel,
       JobFinishedCallback job_finished_callback,
       favicon_base::FaviconResultsCallback result_callback);
@@ -73,7 +73,7 @@ class FaviconHelper::Job {
                           const favicon_base::FaviconRawBitmapResult& result);
   FaviconHelper* favicon_helper_;
   favicon::FaviconService* favicon_service_;
-  std::vector<std::string> urls_;
+  std::vector<GURL> urls_;
   int desire_size_in_pixel_;
   JobFinishedCallback job_finished_callback_;
   favicon_base::FaviconResultsCallback result_callback_;
@@ -86,7 +86,7 @@ class FaviconHelper::Job {
 
 FaviconHelper::Job::Job(FaviconHelper* favicon_helper,
                         favicon::FaviconService* favicon_service,
-                        std::vector<std::string> urls,
+                        std::vector<GURL> urls,
                         int desire_size_in_pixel,
                         JobFinishedCallback job_finished_callback,
                         favicon_base::FaviconResultsCallback result_callback)
@@ -113,7 +113,7 @@ void FaviconHelper::Job::Start() {
                        weak_ptr_factory_.GetWeakPtr(), i);
 
     favicon_helper_->GetLocalFaviconImageForURLInternal(
-        favicon_service_, GURL(urls_.at(i)), desire_size_in_pixel_,
+        favicon_service_, urls_.at(i), desire_size_in_pixel_,
         std::move(callback));
   }
 }
@@ -180,8 +180,8 @@ jboolean FaviconHelper::GetComposedFaviconImage(
                      ScopedJavaGlobalRef<jobject>(j_favicon_image_callback),
                      desired_size_in_pixel);
 
-  std::vector<std::string> urls;
-  base::android::AppendJavaStringArrayToStringVector(env, j_urls, &urls);
+  std::vector<GURL> urls;
+  url::GURLAndroid::JavaGURLArrayToGURLVector(env, j_urls, &urls);
 
   GetComposedFaviconImageInternal(favicon_service, urls,
                                   static_cast<int>(j_desired_size_in_pixel),
@@ -192,7 +192,7 @@ jboolean FaviconHelper::GetComposedFaviconImage(
 
 void FaviconHelper::GetComposedFaviconImageInternal(
     favicon::FaviconService* favicon_service,
-    std::vector<std::string> urls,
+    std::vector<GURL> urls,
     int desired_size_in_pixel,
     favicon_base::FaviconResultsCallback callback_runner) {
   DCHECK(favicon_service);

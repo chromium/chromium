@@ -89,10 +89,9 @@ TEST_F(FaviconHelperTest, GetLargestSizeIndex) {
 
 TEST_F(FaviconHelperTest, GetComposedFaviconImage) {
   raw_bitmap_results_.clear();
-  std::vector<std::string> urls = {"http://www.tab1.com",
-                                   "http://www.tab2.com"};
-  GURL url1 = GURL(urls[0]);
-  GURL url2 = GURL(urls[1]);
+  GURL url1 = GURL("http://www.tab1.com");
+  GURL url2 = GURL("http://www.tab2.com");
+  std::vector<GURL> urls = {url1, url2};
 
   EXPECT_CALL(mock_favicon_service_,
               GetRawFaviconForPageURL(url1, _, _, 16, _, _))
@@ -112,11 +111,10 @@ TEST_F(FaviconHelperTest, GetComposedFaviconImage) {
 
 TEST_F(FaviconHelperTest, GetComposedFaviconImageWithOneFaviconFailed) {
   raw_bitmap_results_.clear();
-  std::vector<std::string> urls = {"http://www.tab1.com", "http://www.tab2.com",
-                                   "http://www.tab3.com"};
-  GURL url1 = GURL(urls[0]);
-  GURL url2 = GURL(urls[1]);
-  GURL url3 = GURL(urls[2]);
+  GURL url1 = GURL("http://www.tab1.com");
+  GURL url2 = GURL("http://www.tab2.com");
+  GURL url3 = GURL("http://www.tab3.com");
+  std::vector<GURL> urls = {url1, url2, url3};
 
   EXPECT_CALL(mock_favicon_service_,
               GetRawFaviconForPageURL(url1, _, _, 16, _, _))
@@ -144,11 +142,10 @@ TEST_F(FaviconHelperTest, GetComposedFaviconImageWithOneFaviconFailed) {
 
 TEST_F(FaviconHelperTest, GetComposedFaviconImageOrderMatchesInput) {
   raw_bitmap_results_.clear();
-  std::vector<std::string> urls = {"http://www.tab1.com", "http://www.tab2.com",
-                                   "http://www.tab3.com"};
-  GURL url1 = GURL(urls[0]);
-  GURL url2 = GURL(urls[1]);
-  GURL url3 = GURL(urls[2]);
+  GURL url1 = GURL("http://www.tab1.com");
+  GURL url2 = GURL("http://www.tab2.com");
+  GURL url3 = GURL("http://www.tab3.com");
+  std::vector<GURL> urls = {url1, url2, url3};
 
   EXPECT_CALL(mock_favicon_service_,
               GetRawFaviconForPageURL(url1, _, _, 16, _, _))

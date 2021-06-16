@@ -191,7 +191,7 @@ public class FaviconHelper {
      *         that this callback is not called if this method returns false.
      * @return True if GetLocalFaviconImageForURL is successfully called.
      */
-    public boolean getComposedFaviconImage(Profile profile, @NonNull List<String> urls,
+    public boolean getComposedFaviconImage(Profile profile, @NonNull List<GURL> urls,
             int desiredSizeInPixel, FaviconImageCallback faviconImageCallback) {
         assert mNativeFaviconHelper != 0;
 
@@ -201,14 +201,14 @@ public class FaviconHelper {
         }
 
         return FaviconHelperJni.get().getComposedFaviconImage(mNativeFaviconHelper, profile,
-                urls.toArray(new String[0]), desiredSizeInPixel, faviconImageCallback);
+                urls.toArray(new GURL[0]), desiredSizeInPixel, faviconImageCallback);
     }
 
     @NativeMethods
     interface Natives {
         long init();
         void destroy(long nativeFaviconHelper);
-        boolean getComposedFaviconImage(long nativeFaviconHelper, Profile profile, String[] urls,
+        boolean getComposedFaviconImage(long nativeFaviconHelper, Profile profile, GURL[] urls,
                 int desiredSizeInDip, FaviconImageCallback faviconImageCallback);
         boolean getLocalFaviconImageForURL(long nativeFaviconHelper, Profile profile,
                 String pageUrl, int desiredSizeInDip, FaviconImageCallback faviconImageCallback);

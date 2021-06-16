@@ -64,6 +64,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -1072,7 +1073,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     private TabImpl prepareTab(int id, String title) {
-        TabImpl tab = TabUiUnitTestUtils.prepareTab(id, title, "");
+        TabImpl tab = TabUiUnitTestUtils.prepareTab(id, title, GURL.emptyGURL());
         doReturn(true).when(tab).isIncognito();
         return tab;
     }
