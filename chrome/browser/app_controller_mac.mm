@@ -139,6 +139,11 @@ static const int kWorkspaceChangeTimeoutMs = 500;
 // make a new window while there are no other active windows.
 bool g_is_opening_new_window = false;
 
+// Open the urls in the last used browser from a regular profile.
+void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
+                                  Profile* profile,
+                                  Profile::CreateStatus status);
+
 // Activates a browser window having the given profile (the last one active) if
 // possible and returns a pointer to the activate |Browser| or NULL if this was
 // not possible. If the last active browser is minimized (in particular, if
@@ -309,45 +314,25 @@ base::FilePath GetStartupProfilePathMac() {
                                /*ignore_profile_picker=*/true);
 }
 
-// Open the urls in the last used browser from a regular profile.
+// Open the urls in the last used browser. Loads the profile asynchronously if
+// needed.
 void OpenUrlsInBrowser(const std::vector<GURL>& urls) {
-  // TODO(https://crbug.com/1176734): This may create the profile synchronously,
-  // replace this by an asynchronous call.
-  Profile* profile =
-      g_browser_process->profile_manager()->GetLastUsedProfileAllowedByPolicy();
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  int startupIndex = TabStripModel::kNoTab;
-  content::WebContents* startupContent = nullptr;
-  if (browser && browser->tab_strip_model()->count() == 1) {
-    // If there's only 1 tab and the tab is NTP, close this NTP tab and open all
-    // startup urls in new tabs, because the omnibox will stay focused if we
-    // load url in NTP tab.
-    startupIndex = browser->tab_strip_model()->active_index();
-    startupContent = browser->tab_strip_model()->GetActiveWebContents();
-  } else if (!browser) {
-    // if no browser window exists then create one with no tabs to be filled in.
-    browser = Browser::Create(Browser::CreateParams(profile, true));
-    browser->window()->Show();
+  AppController* controller =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  if (!controller)
+    return;
+
+  if (Profile* profile = [controller lastProfileIfLoaded]) {
+    OpenUrlsInBrowserWithProfile(urls, profile,
+                                 Profile::CREATE_STATUS_INITIALIZED);
+    return;
   }
 
-  // Various methods to open URLs that we get in a native fashion. We use
-  // StartupBrowserCreator here because on the other platforms, URLs to open
-  // come through the ProcessSingleton, and it calls StartupBrowserCreator. It's
-  // best to bottleneck the openings through that for uniform handling.
-  base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.OpenURLsInBrowser(browser, false, urls);
-
-  // This NTP check should be replaced once https://crbug.com/624410 is fixed.
-  if (startupIndex != TabStripModel::kNoTab &&
-      (startupContent->GetVisibleURL() == chrome::kChromeUINewTabURL ||
-       startupContent->GetVisibleURL() == chrome::kChromeUINewTabPageURL)) {
-    browser->tab_strip_model()->CloseWebContentsAt(startupIndex,
-                                                   TabStripModel::CLOSE_NONE);
-  }
+  // Asynchronously load the profile and open the URLs once it's loaded.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  profile_manager->CreateProfileAsync(
+      GetStartupProfilePathMac(),
+      base::BindRepeating(&OpenUrlsInBrowserWithProfile, urls));
 }
 
 }  // namespace
@@ -1993,6 +1978,52 @@ void UpdateProfileInUse(Profile* profile, Profile::CreateStatus status) {
     AppController* controller =
         base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
     [controller windowChangedToProfile:profile];
+  }
+}
+
+void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
+                                  Profile* profile,
+                                  Profile::CreateStatus status) {
+  if (status != Profile::CREATE_STATUS_INITIALIZED)
+    return;
+  AppController* controller =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  if (!controller)
+    return;
+  DCHECK(profile);
+  profile = [controller safeProfileForNewWindows:profile];
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  int startupIndex = TabStripModel::kNoTab;
+  content::WebContents* startupContent = nullptr;
+  if (browser && browser->tab_strip_model()->count() == 1) {
+    // If there's only 1 tab and the tab is NTP, close this NTP tab and open all
+    // startup urls in new tabs, because the omnibox will stay focused if we
+    // load url in NTP tab.
+    startupIndex = browser->tab_strip_model()->active_index();
+    startupContent = browser->tab_strip_model()->GetActiveWebContents();
+  } else if (!browser) {
+    // if no browser window exists then create one with no tabs to be filled in.
+    browser = Browser::Create(Browser::CreateParams(profile, true));
+    browser->window()->Show();
+  }
+
+  // Various methods to open URLs that we get in a native fashion. We use
+  // StartupBrowserCreator here because on the other platforms, URLs to open
+  // come through the ProcessSingleton, and it calls StartupBrowserCreator. It's
+  // best to bottleneck the openings through that for uniform handling.
+  base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
+  chrome::startup::IsFirstRun first_run =
+      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
+                                    : chrome::startup::IS_NOT_FIRST_RUN;
+  StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
+  launch.OpenURLsInBrowser(browser, false, urls);
+
+  // This NTP check should be replaced once https://crbug.com/624410 is fixed.
+  if (startupIndex != TabStripModel::kNoTab &&
+      (startupContent->GetVisibleURL() == chrome::kChromeUINewTabURL ||
+       startupContent->GetVisibleURL() == chrome::kChromeUINewTabPageURL)) {
+    browser->tab_strip_model()->CloseWebContentsAt(startupIndex,
+                                                   TabStripModel::CLOSE_NONE);
   }
 }
 

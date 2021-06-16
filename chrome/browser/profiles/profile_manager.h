@@ -79,6 +79,8 @@ class ProfileManager : public Profile::Delegate {
   // Same as GetLastUsedProfile() but returns the incognito Profile if
   // incognito mode is forced. This should be used if the last used Profile
   // will be used to open new browser windows.
+  // WARNING: if the profile does not exist, this function creates it
+  // synchronously, causing blocking file I/O.
   static Profile* GetLastUsedProfileAllowedByPolicy();
 
   // Helper function that returns true if OffTheRecord mode is forced for
