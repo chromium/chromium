@@ -21,7 +21,6 @@ class SampleSystemAppDelegate : public web_app::SystemWebAppDelegate {
 
   // web_app::SystemWebAppDelegate overrides:
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
-  web_app::OriginTrialsMap GetEnabledOriginTrials() const override;
   bool ShouldCaptureNavigations() const override;
   absl::optional<web_app::SystemAppBackgroundTaskInfo> GetTimerInfo()
       const override;

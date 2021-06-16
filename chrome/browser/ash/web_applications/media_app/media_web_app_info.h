@@ -19,7 +19,6 @@ class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldIncludeLaunchDirectory() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
-  web_app::OriginTrialsMap GetEnabledOriginTrials() const override;
 };
 
 // Return a WebApplicationInfo used to install the app.

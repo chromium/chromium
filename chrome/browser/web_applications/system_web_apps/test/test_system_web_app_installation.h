@@ -8,12 +8,83 @@
 #include <memory>
 
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
+
+class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
+ public:
+  UnittestingSystemAppDelegate(SystemAppType type,
+                               const std::string& name,
+                               const GURL& url,
+                               WebApplicationInfoFactory info_factory);
+  UnittestingSystemAppDelegate(const UnittestingSystemAppDelegate&) = delete;
+  UnittestingSystemAppDelegate& operator=(const UnittestingSystemAppDelegate&) =
+      delete;
+  ~UnittestingSystemAppDelegate() override;
+
+  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+
+  std::vector<AppId> GetAppIdsToUninstallAndReplace() const override;
+  gfx::Size GetMinimumWindowSize() const override;
+  bool ShouldBeSingleWindow() const override;
+  bool ShouldIncludeLaunchDirectory() const override;
+  std::vector<int> GetAdditionalSearchTerms() const override;
+  bool ShouldShowInLauncher() const override;
+  bool ShouldShowInSearch() const override;
+  bool ShouldCaptureNavigations() const override;
+  bool ShouldAllowResize() const override;
+  bool ShouldAllowMaximize() const override;
+  bool ShouldHaveTabStrip() const override;
+  bool ShouldHaveReloadButtonInMinimalUi() const override;
+  bool ShouldAllowScriptsToCloseWindows() const override;
+  absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const override;
+  gfx::Rect GetDefaultBounds(Browser* browser) const override;
+  bool IsAppEnabled() const override;
+
+  void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
+  void SetMinimumWindowSize(const gfx::Size&);
+  void SetShouldBeSingleWindow(bool);
+  void SetShouldIncludeLaunchDirectory(bool);
+  void SetEnabledOriginTrials(const OriginTrialsMap&);
+  void SetAdditionalSearchTerms(const std::vector<int>&);
+  void SetShouldShowInLauncher(bool);
+  void SetShouldShowInSearch(bool);
+  void SetShouldCaptureNavigations(bool);
+  void SetShouldAllowResize(bool);
+  void SetShouldAllowMaximize(bool);
+  void SetShouldHaveTabStrip(bool);
+  void SetShouldHaveReloadButtonInMinimalUi(bool);
+  void SetShouldAllowScriptsToCloseWindows(bool);
+  void SetTimerInfo(const SystemAppBackgroundTaskInfo&);
+  void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
+
+ private:
+  WebApplicationInfoFactory info_factory_;
+
+  std::vector<AppId> uninstall_and_replace_;
+  gfx::Size minimum_window_size_;
+  bool single_window_ = true;
+  bool include_launch_directory_ = false;
+  std::vector<int> additional_search_terms_;
+  bool show_in_launcher_ = true;
+  bool show_in_search_ = true;
+  bool capture_navigations_ = false;
+  bool is_resizeable_ = true;
+  bool is_maximizable_ = true;
+  bool has_tab_strip_ = false;
+  bool should_have_reload_button_in_minimal_ui_ = true;
+  bool allow_scripts_to_close_windows_ = false;
+
+  base::RepeatingCallback<gfx::Rect(Browser*)> get_default_bounds_ =
+      base::NullCallback();
+
+  absl::optional<SystemAppBackgroundTaskInfo> timer_info_;
+};
 
 // Class to setup the installation of a test System Web App.
 //
@@ -87,11 +158,14 @@ class TestSystemWebAppInstallation {
   }
 
  private:
-  TestSystemWebAppInstallation(SystemAppType type, SystemAppInfo info);
+  TestSystemWebAppInstallation(
+      SystemAppType type,
+      std::unique_ptr<UnittestingSystemAppDelegate> system_app_delegate);
   TestSystemWebAppInstallation();
 
-  std::unique_ptr<KeyedService> CreateWebAppProvider(SystemAppInfo info,
-                                                     Profile* profile);
+  std::unique_ptr<KeyedService> CreateWebAppProvider(
+      UnittestingSystemAppDelegate* system_app_delegate,
+      Profile* profile);
   std::unique_ptr<KeyedService> CreateWebAppProviderWithNoSystemWebApps(
       Profile* profile);
 
@@ -107,7 +181,8 @@ class TestSystemWebAppInstallation {
   std::vector<std::unique_ptr<TestSystemWebAppWebUIControllerFactory>>
       web_ui_controller_factories_;
   std::set<ContentSettingsType> auto_granted_permissions_;
-  base::flat_map<SystemAppType, SystemAppInfo> extra_apps_;
+  base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>
+      system_app_delegates_;
 };
 
 }  // namespace web_app

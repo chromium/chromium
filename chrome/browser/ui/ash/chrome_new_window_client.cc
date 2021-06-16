@@ -58,6 +58,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -788,14 +789,15 @@ void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
   apps::RecordAppLaunch(extension_misc::kCameraAppId,
                         apps::mojom::LaunchSource::kFromArc);
 
-  if (web_app::SystemWebAppManager::IsAppEnabled(
-          web_app::SystemAppType::CAMERA)) {
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
+  if (provider && provider->system_web_app_manager().IsAppEnabled(
+                      web_app::SystemAppType::CAMERA)) {
     ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
         queries, arc::GetArcWindow(task_id));
     return;
   }
 
-  Profile* const profile = ProfileManager::GetActiveUserProfile();
   const extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
   const extensions::Extension* extension =
@@ -826,10 +828,14 @@ void ChromeNewWindowClient::CloseCameraApp() {
 }
 
 bool ChromeNewWindowClient::IsCameraAppEnabled() {
-  return extensions::ExtensionRegistry::Get(
-             ProfileManager::GetActiveUserProfile())
-                 ->enabled_extensions()
-                 .GetByID(extension_misc::kCameraAppId) != nullptr ||
-         web_app::SystemWebAppManager::IsAppEnabled(
-             web_app::SystemAppType::CAMERA);
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+
+  if (extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          extension_misc::kCameraAppId) != nullptr)
+    return true;
+
+  auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
+
+  return provider && provider->system_web_app_manager().IsAppEnabled(
+                         web_app::SystemAppType::CAMERA);
 }

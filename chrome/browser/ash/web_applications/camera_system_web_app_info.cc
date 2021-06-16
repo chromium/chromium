@@ -55,10 +55,13 @@ gfx::Rect GetDefaultBoundsForCameraApp(Browser*) {
 }
 
 CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::CAMERA,
-                                    "Camera",
-                                    GURL("chrome://camera-app/views/main.html"),
-                                    profile) {}
+    : web_app::SystemWebAppDelegate(
+          web_app::SystemAppType::CAMERA,
+          "Camera",
+          GURL("chrome://camera-app/views/main.html"),
+          profile,
+          web_app::OriginTrialsMap({{web_app::GetOrigin("chrome://camera-app"),
+                                     {"FileHandling", "IdleDetection"}}})) {}
 
 std::unique_ptr<WebApplicationInfo> CameraSystemAppDelegate::GetWebAppInfo()
     const {
@@ -76,12 +79,6 @@ CameraSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
 
 bool CameraSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
-}
-
-web_app::OriginTrialsMap CameraSystemAppDelegate::GetEnabledOriginTrials()
-    const {
-  return web_app::OriginTrialsMap({{web_app::GetOrigin("chrome://camera-app"),
-                                    {"FileHandling", "IdleDetection"}}});
 }
 
 gfx::Size CameraSystemAppDelegate::GetMinimumWindowSize() const {

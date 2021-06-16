@@ -4,14 +4,17 @@
 
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 
+#include <memory>
 #include <string>
 #include <utility>
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 
 namespace web_app {
 
 TestSystemWebAppManager::TestSystemWebAppManager(Profile* profile)
     : SystemWebAppManager(profile) {
-  SetSystemAppsForTesting(base::flat_map<SystemAppType, SystemAppInfo>());
+  SetSystemAppsForTesting(
+      base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>());
 }
 
 TestSystemWebAppManager::~TestSystemWebAppManager() = default;

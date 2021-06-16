@@ -1863,9 +1863,9 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
   for (const auto& type_and_info :
        provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
     api::autotest_private::SystemApp system_app;
-    web_app::SystemAppInfo info = type_and_info.second;
-    system_app.internal_name = info.internal_name;
-    system_app.url = info.install_url.GetOrigin().spec();
+    web_app::SystemWebAppDelegate* delegate = type_and_info.second.get();
+    system_app.internal_name = delegate->GetInternalName();
+    system_app.url = delegate->GetInstallUrl().GetOrigin().spec();
     result.push_back(std::move(system_app));
   }
 
@@ -1976,7 +1976,7 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
   absl::optional<web_app::SystemAppType> app_type;
   for (const auto& type_and_info :
        provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
-    if (type_and_info.second.internal_name == params->app_name) {
+    if (type_and_info.second->GetInternalName() == params->app_name) {
       app_type = type_and_info.first;
       break;
     }

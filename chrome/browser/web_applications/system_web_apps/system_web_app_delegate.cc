@@ -16,14 +16,17 @@ url::Origin GetOrigin(const char* url) {
   return origin;
 }
 
-SystemWebAppDelegate::SystemWebAppDelegate(const SystemAppType type,
-                                           const std::string& internal_name,
-                                           const GURL& install_url,
-                                           Profile* profile)
+SystemWebAppDelegate::SystemWebAppDelegate(
+    const SystemAppType type,
+    const std::string& internal_name,
+    const GURL& install_url,
+    Profile* profile,
+    const OriginTrialsMap& origin_trials_map)
     : type_(type),
       internal_name_(internal_name),
       install_url_(install_url),
-      profile_(profile) {}
+      profile_(profile),
+      origin_trials_map_(origin_trials_map) {}
 
 SystemWebAppDelegate::~SystemWebAppDelegate() = default;
 
@@ -44,8 +47,8 @@ bool SystemWebAppDelegate::ShouldIncludeLaunchDirectory() const {
   return false;
 }
 
-OriginTrialsMap SystemWebAppDelegate::GetEnabledOriginTrials() const {
-  return {};
+const OriginTrialsMap& SystemWebAppDelegate::GetEnabledOriginTrials() const {
+  return origin_trials_map_;
 }
 
 std::vector<int> SystemWebAppDelegate::GetAdditionalSearchTerms() const {

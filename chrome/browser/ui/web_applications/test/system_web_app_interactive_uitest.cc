@@ -507,12 +507,14 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
   void WaitForSystemWebAppInstall(Profile* profile) {
     base::RunLoop run_loop;
+
     web_app::WebAppProvider::GetForSystemWebApps(profile)
         ->system_web_app_manager()
         .on_apps_synchronized()
         .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
-                // Wait one execution loop for on_apps_synchronized() to be
-                // called on all listeners.
+                // Wait one execution loop for
+                // on_apps_synchronized() to be called on all
+                // listeners.
                 base::ThreadTaskRunnerHandle::Get()->PostTask(
                     FROM_HERE, run_loop.QuitClosure());
               }));
@@ -523,7 +525,6 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     SystemWebAppManager& manager =
         web_app::WebAppProvider::GetForSystemWebApps(profile)
             ->system_web_app_manager();
-
     absl::optional<AppId> app_id =
         manager.GetAppIdForSystemApp(installation_->GetType());
     CHECK(app_id.has_value());
@@ -573,19 +574,21 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   // Login two users.
   LoginUser(account_id1_);
   base::RunLoop().RunUntilIdle();
-  chromeos::UserAddingScreen::Get()->Start();
-  AddUser(account_id2_);
-  base::RunLoop().RunUntilIdle();
 
   // Wait for System Apps to be installed on both user profiles.
   auto* user_manager = user_manager::UserManager::Get();
   Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id1_));
+  WaitForSystemWebAppInstall(profile1);
+
+  installation_ =
+      TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+  chromeos::UserAddingScreen::Get()->Start();
+  AddUser(account_id2_);
+  base::RunLoop().RunUntilIdle();
   Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2_));
-  WaitForSystemWebAppInstall(profile1);
   WaitForSystemWebAppInstall(profile2);
-
   // Set user 1 to be active.
   user_manager->SwitchActiveUser(account_id1_);
   EXPECT_TRUE(multi_user_util::IsProfileFromActiveUser(profile1));
@@ -625,17 +628,20 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   // Login two users.
   LoginUser(account_id1_);
   base::RunLoop().RunUntilIdle();
-  chromeos::UserAddingScreen::Get()->Start();
-  AddUser(account_id2_);
-  base::RunLoop().RunUntilIdle();
 
   // Wait for System Apps to be installed on both user profiles.
   auto* user_manager = user_manager::UserManager::Get();
   Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id1_));
+  WaitForSystemWebAppInstall(profile1);
+
+  installation_ =
+      TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+  chromeos::UserAddingScreen::Get()->Start();
+  AddUser(account_id2_);
+  base::RunLoop().RunUntilIdle();
   Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2_));
-  WaitForSystemWebAppInstall(profile1);
   WaitForSystemWebAppInstall(profile2);
 
   g_browser_process->profile_manager()->ScheduleProfileForDeletion(

@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(b/174811949): Hide behind ChromeOS build flag.
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
@@ -107,8 +108,7 @@ const char kFileHandlingOriginTrial[] = "FileHandling";
 // bailing out.
 const int kInstallFailureAttempts = 3;
 
-base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
-    Profile* profile) {
+SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
   std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1051229): Currently unused, will be hooked up
@@ -144,273 +144,17 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
   info_vec.emplace_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)
 
-  base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>> info_map;
+  SystemAppDelegateMap delegate_map;
   for (auto& info : info_vec) {
     if (info->IsAppEnabled() ||
         base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
-      info_map.emplace(info->GetType(), std::move(info));
+      delegate_map.emplace(info->GetType(), std::move(info));
     }
   }
-  // return info_map;
+  return delegate_map;
 #else
-  // return {};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  base::flat_map<SystemAppType, SystemAppInfo> infos;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // SystemAppInfo's |name| field should be defined. These names are persisted
-  // to logs and should not be renamed.
-  // If new names are added, update tool/metrics/histograms/histograms.xml:
-  // "SystemWebAppName"
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::CAMERA)) {
-    infos.emplace(
-        SystemAppType::CAMERA,
-        SystemAppInfo(
-            "Camera", GURL("chrome://camera-app/views/main.html"),
-            base::BindRepeating(&CreateWebAppInfoForCameraSystemWebApp)));
-    if (!profile->GetPrefs()->GetBoolean(
-            chromeos::prefs::kHasCameraAppMigratedToSWA)) {
-      infos.at(SystemAppType::CAMERA).uninstall_and_replace = {
-          extension_misc::kCameraAppId};
-    }
-    // We need "FileHandling" to use File Handling API to set launch directory.
-    infos.at(SystemAppType::CAMERA).enabled_origin_trials =
-        OriginTrialsMap({{GetOrigin("chrome://camera-app"),
-                          {"FileHandling", "IdleDetection"}}});
-    infos.at(SystemAppType::CAMERA).capture_navigations = true;
-
-    // Minimum height +32 for top bar height.
-    infos.at(SystemAppType::CAMERA).minimum_window_size = {
-        kChromeCameraAppMinimumWidth, kChromeCameraAppMinimumHeight + 32};
-
-    infos.at(SystemAppType::CAMERA).get_default_bounds =
-        base::BindRepeating(&GetDefaultBoundsForCameraApp);
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::DIAGNOSTICS)) {
-    infos.emplace(
-        SystemAppType::DIAGNOSTICS,
-        SystemAppInfo(
-            "Diagnostics", GURL("chrome://diagnostics"),
-            base::BindRepeating(&CreateWebAppInfoForDiagnosticsSystemWebApp)));
-    infos.at(SystemAppType::DIAGNOSTICS).minimum_window_size = {600, 390};
-    infos.at(SystemAppType::DIAGNOSTICS).show_in_launcher = false;
-  }
-
-  infos.emplace(
-      SystemAppType::SETTINGS,
-      SystemAppInfo(
-          "OSSettings", GURL(chrome::kChromeUIOSSettingsURL),
-          base::BindRepeating(&CreateWebAppInfoForOSSettingsSystemWebApp)));
-  infos.at(SystemAppType::SETTINGS).uninstall_and_replace = {
-      kSettingsAppId, ash::kInternalAppIdSettings};
-  // Large enough to see the heading text "Settings" in the top-left.
-  infos.at(SystemAppType::SETTINGS).minimum_window_size = {300, 100};
-  infos.at(SystemAppType::SETTINGS).capture_navigations = true;
-
-  infos.emplace(SystemAppType::CROSH,
-                SystemAppInfo("Crosh", GURL(chrome::kChromeUIUntrustedCroshURL),
-                              base::BindRepeating(
-                                  &CreateWebAppInfoForCroshSystemWebApp)));
-  infos.at(SystemAppType::CROSH).single_window = false;
-  infos.at(SystemAppType::CROSH).show_in_launcher = false;
-  infos.at(SystemAppType::CROSH).show_in_search = false;
-  infos.at(SystemAppType::CROSH).has_tab_strip = true;
-
-  infos.emplace(
-      SystemAppType::TERMINAL,
-      SystemAppInfo(
-          "Terminal", GURL(chrome::kChromeUIUntrustedTerminalURL),
-          base::BindRepeating(&CreateWebAppInfoForTerminalSystemWebApp)));
-  infos.at(SystemAppType::TERMINAL).single_window = false;
-  infos.at(SystemAppType::TERMINAL).has_tab_strip = true;
-  infos.at(SystemAppType::TERMINAL).get_default_bounds =
-      base::BindRepeating(&GetDefaultBoundsForTerminal);
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::HELP)) {
-    infos.emplace(
-        SystemAppType::HELP,
-        SystemAppInfo("Help", GURL("chrome://help-app/pwa.html"),
-                      base::BindRepeating(&CreateWebAppInfoForHelpWebApp)));
-    infos.at(SystemAppType::HELP).additional_search_terms = {
-        IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
-    infos.at(SystemAppType::HELP).minimum_window_size = {600, 320};
-    infos.at(SystemAppType::HELP).capture_navigations = true;
-    infos.at(SystemAppType::HELP).get_default_bounds =
-        base::BindRepeating(&GetDefaultBoundsForHelpApp);
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kHelpAppBackgroundPage)) {
-      infos.at(SystemAppType::HELP).timer_info = SystemAppBackgroundTaskInfo(
-          absl::nullopt, GURL("chrome://help-app/background"),
-          /*open_immediately=*/true);
-    }
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::MEDIA)) {
-    infos.emplace(
-        SystemAppType::MEDIA,
-        SystemAppInfo("Media", GURL("chrome://media-app/pwa.html"),
-                      base::BindRepeating(&CreateWebAppInfoForMediaWebApp)));
-    infos.at(SystemAppType::MEDIA).include_launch_directory = true;
-    infos.at(SystemAppType::MEDIA).show_in_launcher = false;
-    infos.at(SystemAppType::MEDIA).show_in_search = false;
-    infos.at(SystemAppType::MEDIA).capture_navigations = true;
-    infos.at(SystemAppType::MEDIA).enabled_origin_trials =
-        OriginTrialsMap({{GetOrigin("chrome://media-app"), {"FileHandling"}}});
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::PRINT_MANAGEMENT)) {
-    infos.emplace(
-        SystemAppType::PRINT_MANAGEMENT,
-        SystemAppInfo(
-            "PrintManagement", GURL("chrome://print-management/pwa.html"),
-            base::BindRepeating(&CreateWebAppInfoForPrintManagementApp)));
-    infos.at(SystemAppType::PRINT_MANAGEMENT).show_in_launcher = false;
-    infos.at(SystemAppType::PRINT_MANAGEMENT).minimum_window_size = {600, 320};
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::SCANNING)) {
-    infos.emplace(SystemAppType::SCANNING,
-                  SystemAppInfo("Scanning", GURL("chrome://scanning"),
-                                base::BindRepeating(
-                                    &CreateWebAppInfoForScanningSystemWebApp)));
-    infos.at(SystemAppType::SCANNING).minimum_window_size = {600, 420};
-    infos.at(SystemAppType::SCANNING).capture_navigations = true;
-    infos.at(SystemAppType::SCANNING).show_in_launcher = false;
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::SHIMLESS_RMA)) {
-    infos.emplace(
-        SystemAppType::SHIMLESS_RMA,
-        SystemAppInfo(
-            "ShimlessRMA", GURL(ash::kChromeUIShimlessRMAUrl),
-            base::BindRepeating(&CreateWebAppInfoForShimlessRMASystemWebApp)));
-    infos.at(SystemAppType::SHIMLESS_RMA).capture_navigations = true;
-    infos.at(SystemAppType::SHIMLESS_RMA).show_in_launcher = false;
-    infos.at(SystemAppType::SHIMLESS_RMA).show_in_search = false;
-    infos.at(SystemAppType::SHIMLESS_RMA).is_resizeable = false;
-    infos.at(SystemAppType::SHIMLESS_RMA).allow_scripts_to_close_windows = true;
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(
-          SystemAppType::CONNECTIVITY_DIAGNOSTICS)) {
-    infos.emplace(
-        SystemAppType::CONNECTIVITY_DIAGNOSTICS,
-        SystemAppInfo(
-            "ConnectivityDiagnostics",
-            GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl),
-            base::BindRepeating(
-                &CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp)));
-    infos.at(SystemAppType::CONNECTIVITY_DIAGNOSTICS).show_in_launcher = false;
-    infos.at(SystemAppType::CONNECTIVITY_DIAGNOSTICS).show_in_search = false;
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::ECHE)) {
-    infos.emplace(
-        SystemAppType::ECHE,
-        SystemAppInfo("Eche", GURL("chrome://eche-app"),
-                      base::BindRepeating(&CreateWebAppInfoForEcheApp)));
-    infos.at(SystemAppType::ECHE).capture_navigations = true;
-    infos.at(SystemAppType::ECHE).show_in_launcher = false;
-    infos.at(SystemAppType::ECHE).show_in_search = false;
-
-    if (base::FeatureList::IsEnabled(chromeos::features::kEcheSWAResizing)) {
-      infos.at(SystemAppType::ECHE).is_resizeable = true;
-    } else {
-      infos.at(SystemAppType::ECHE).is_resizeable = false;
-    }
-
-    infos.at(SystemAppType::ECHE).is_maximizable = false;
-    infos.at(SystemAppType::ECHE).should_have_reload_button_in_minimal_ui =
-        false;
-    infos.at(SystemAppType::ECHE).allow_scripts_to_close_windows = true;
-    infos.at(SystemAppType::ECHE).get_default_bounds =
-        base::BindRepeating(&GetDefaultBoundsForEche);
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::OS_FEEDBACK)) {
-    infos.emplace(
-        SystemAppType::OS_FEEDBACK,
-        SystemAppInfo(
-            "OSFeedback", GURL(ash::kChromeUIOSFeedbackUrl),
-            base::BindRepeating(&CreateWebAppInfoForOSFeedbackSystemWebApp)));
-    auto& config = infos.at(SystemAppType::OS_FEEDBACK);
-
-    config.allow_scripts_to_close_windows = true;
-    config.capture_navigations = true;
-    // Only allow users to minimize or close the App.
-    config.is_maximizable = false;
-    config.is_resizeable = false;
-    config.get_default_bounds =
-        base::BindRepeating(&GetDefaultBoundsForOSFeedbackApp);
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::PERSONALIZATION)) {
-    infos.emplace(
-        SystemAppType::PERSONALIZATION,
-        SystemAppInfo(
-            "Personalization", GURL(chromeos::kChromeUIPersonalizationAppURL),
-            base::BindRepeating(&CreateWebAppInfoForPersonalizationApp)));
-    auto& personalization_info = infos.at(SystemAppType::PERSONALIZATION);
-    personalization_info.capture_navigations = true;
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(
-          SystemAppType::SHORTCUT_CUSTOMIZATION)) {
-    infos.emplace(
-        SystemAppType::SHORTCUT_CUSTOMIZATION,
-        SystemAppInfo(
-            "ShortcutCustomization",
-            GURL(ash::kChromeUIShortcutCustomizationAppURL),
-            base::BindRepeating(
-                &CreateWebAppInfoForShortcutCustomizationSystemWebApp)));
-  }
-
-#if !defined(OFFICIAL_BUILD)
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::TELEMETRY)) {
-    infos.emplace(
-        SystemAppType::TELEMETRY,
-        SystemAppInfo(
-            "Telemetry", GURL("chrome://telemetry-extension"),
-            base::BindRepeating(&CreateWebAppInfoForTelemetryExtension)));
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::FILE_MANAGER)) {
-    infos.emplace(
-        SystemAppType::FILE_MANAGER,
-        SystemAppInfo("File Manager", GURL("chrome://file-manager"),
-                      base::BindRepeating(&CreateWebAppInfoForFileManager)));
-    infos.at(SystemAppType::FILE_MANAGER).capture_navigations = true;
-    infos.at(SystemAppType::FILE_MANAGER).single_window = false;
-  }
-
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::DEMO_MODE)) {
-    infos.emplace(
-        SystemAppType::DEMO_MODE,
-        SystemAppInfo("DemoMode", GURL("chrome://demo-mode-app"),
-                      base::BindRepeating(&CreateWebAppInfoForDemoModeApp)));
-    infos.at(SystemAppType::DEMO_MODE).capture_navigations = true;
-  }
-
-  infos.emplace(
-      SystemAppType::SAMPLE,
-      SystemAppInfo(
-          "Sample", GURL("chrome://sample-system-web-app/pwa.html"),
-          base::BindRepeating(&CreateWebAppInfoForSampleSystemWebApp)));
-  // Frobulate is the name for Sample Origin Trial API, and has no impact on the
-  // Web App's functionality. Here we use it to demonstrate how to enable origin
-  // trials for a System Web App.
-  infos.at(SystemAppType::SAMPLE).enabled_origin_trials = OriginTrialsMap(
-      {{GetOrigin("chrome://sample-system-web-app"), {"Frobulate"}},
-       {GetOrigin("chrome-untrusted://sample-system-web-app"), {"Frobulate"}}});
-  infos.at(SystemAppType::SAMPLE).capture_navigations = true;
-  infos.at(SystemAppType::SAMPLE).timer_info = SystemAppBackgroundTaskInfo(
-      base::TimeDelta::FromSeconds(30),
-      GURL("chrome://sample-system-web-app/timer.html"));
-#endif  // !defined(OFFICIAL_BUILD)
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  return infos;
+  return {};
+#endif
 }
 
 bool HasSystemWebAppScheme(const GURL& url) {
@@ -420,29 +164,37 @@ bool HasSystemWebAppScheme(const GURL& url) {
 
 ExternalInstallOptions CreateInstallOptionsForSystemApp(
     const SystemAppType app_type,
-    const SystemAppInfo& info,
+
+    const SystemWebAppDelegate& delegate,
     bool force_update,
+
     bool is_disabled) {
-  DCHECK(info.install_url.scheme() == content::kChromeUIScheme ||
-         info.install_url.scheme() == content::kChromeUIUntrustedScheme);
+  DCHECK(delegate.GetInstallUrl().scheme() == content::kChromeUIScheme ||
+         delegate.GetInstallUrl().scheme() ==
+             content::kChromeUIUntrustedScheme);
 
   ExternalInstallOptions install_options(
-      info.install_url, DisplayMode::kStandalone,
+      delegate.GetInstallUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kSystemInstalled);
-  install_options.only_use_app_info_factory = !!info.app_info_factory;
-  install_options.app_info_factory = info.app_info_factory;
-  install_options.add_to_applications_menu = info.show_in_launcher;
+  install_options.only_use_app_info_factory = true;
+  // This can be Unretained because it's referring to the delegate owning this
+  // factory method. The lifetime of that is the same as the
+  // SystemWebAppManager.
+  install_options.app_info_factory = base::BindRepeating(
+      &SystemWebAppDelegate::GetWebAppInfo, base::Unretained(&delegate));
+  install_options.add_to_applications_menu = delegate.ShouldShowInLauncher();
   install_options.add_to_desktop = false;
   install_options.add_to_quick_launch_bar = false;
-  install_options.add_to_search = info.show_in_search;
+  install_options.add_to_search = delegate.ShouldShowInSearch();
   install_options.add_to_management = false;
   install_options.is_disabled = is_disabled;
   install_options.bypass_service_worker_check = true;
   install_options.force_reinstall = force_update;
-  install_options.uninstall_and_replace = info.uninstall_and_replace;
+  install_options.uninstall_and_replace =
+      delegate.GetAppIdsToUninstallAndReplace();
   install_options.system_app_type = app_type;
 
-  const auto& search_terms = info.additional_search_terms;
+  const auto& search_terms = delegate.GetAdditionalSearchTerms();
   std::transform(search_terms.begin(), search_terms.end(),
                  std::back_inserter(install_options.additional_search_terms),
                  [](int term) { return l10n_util::GetStringUTF8(term); });
@@ -451,83 +203,9 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
 
 }  // namespace
 
-SystemAppInfo::SystemAppInfo(const std::string& internal_name,
-                             const GURL& install_url,
-                             const WebApplicationInfoFactory& app_info_factory)
-    : internal_name(internal_name),
-      install_url(install_url),
-      app_info_factory(app_info_factory) {}
-
-SystemAppInfo::SystemAppInfo(const SystemAppInfo& other) = default;
-
-SystemAppInfo::~SystemAppInfo() = default;
-
 // static
 const char SystemWebAppManager::kInstallResultHistogramName[];
 const char SystemWebAppManager::kInstallDurationHistogramName[];
-
-// static
-bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
-  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
-    return true;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !defined(OFFICIAL_BUILD)
-  bool install_experimental_apps = true;
-#else
-  bool install_experimental_apps = false;
-#endif
-
-  switch (type) {
-    case SystemAppType::SETTINGS:
-      return true;
-    case SystemAppType::CAMERA:
-      return true;
-    case SystemAppType::CROSH:
-      return true;
-    case SystemAppType::TERMINAL:
-      return true;
-    case SystemAppType::MEDIA:
-      return true;
-    case SystemAppType::HELP:
-      return true;
-    case SystemAppType::PRINT_MANAGEMENT:
-      return true;
-    case SystemAppType::SCANNING:
-      return true;
-    case SystemAppType::SHIMLESS_RMA:
-      return ash::features::IsShimlessRMAFlowEnabled();
-    case SystemAppType::DIAGNOSTICS:
-      return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
-    case SystemAppType::CONNECTIVITY_DIAGNOSTICS:
-      return true;
-    case SystemAppType::TELEMETRY:
-      return install_experimental_apps &&
-             base::FeatureList::IsEnabled(
-                 chromeos::features::kTelemetryExtension);
-    case SystemAppType::FILE_MANAGER:
-      return install_experimental_apps &&
-             base::FeatureList::IsEnabled(chromeos::features::kFilesSWA);
-    case SystemAppType::SAMPLE:
-      if (install_experimental_apps)
-        NOTREACHED();
-      return false;
-    case SystemAppType::ECHE:
-      return base::FeatureList::IsEnabled(chromeos::features::kEcheSWA);
-    case SystemAppType::PERSONALIZATION:
-      return chromeos::features::IsWallpaperWebUIEnabled();
-    case SystemAppType::SHORTCUT_CUSTOMIZATION:
-      return features::IsShortcutCustomizationAppEnabled();
-    case SystemAppType::DEMO_MODE:
-      return chromeos::features::IsDemoModeSWAEnabled();
-    case SystemAppType::OS_FEEDBACK:
-      return base::FeatureList::IsEnabled(ash::features::kOsFeedback);
-  }
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
 
 SystemWebAppManager::SystemWebAppManager(Profile* profile)
     : profile_(profile),
@@ -543,7 +221,7 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
 
     // Populate with real system apps if the test asks for it.
     if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
-      system_app_infos_ = CreateSystemWebApps(profile_);
+      system_app_delegates_ = CreateSystemWebApps(profile_);
 
     return;
   }
@@ -556,7 +234,7 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
   update_policy_ = UpdatePolicy::kAlwaysUpdate;
 #endif
 
-  system_app_infos_ = CreateSystemWebApps(profile_);
+  system_app_delegates_ = CreateSystemWebApps(profile_);
 }
 
 SystemWebAppManager::~SystemWebAppManager() = default;
@@ -565,6 +243,17 @@ void SystemWebAppManager::StopBackgroundTasks() {
   for (auto& task : tasks_) {
     task->StopTask();
   }
+}
+
+bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
+  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
+    return true;
+
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
+    return false;
+
+  return it->second->IsAppEnabled();
 }
 
 void SystemWebAppManager::Shutdown() {
@@ -591,10 +280,10 @@ void SystemWebAppManager::Start() {
   const base::TimeTicks install_start_time = base::TimeTicks::Now();
 
 #if DCHECK_IS_ON()
-  for (const auto& type_and_app_info : system_app_infos_) {
-    // Check Origin Trials are defined correctly.
+  // Check Origin Trials are defined correctly.
+  for (const auto& type_and_app_info : system_app_delegates_) {
     for (const auto& origin_to_trial_names :
-         type_and_app_info.second.enabled_origin_trials) {
+         type_and_app_info.second->GetEnabledOriginTrials()) {
       // Only allow force enabled origin trials on chrome:// and
       // chrome-untrusted:// URLs.
       const auto& scheme = origin_to_trial_names.first.scheme();
@@ -607,8 +296,8 @@ void SystemWebAppManager::Start() {
 
     // App's install_url and start_url should share the same origin.
     DCHECK(url::IsSameOriginWith(
-        type_and_app_info.second.install_url,
-        type_and_app_info.second.app_info_factory.Run()->start_url));
+        type_and_app_info.second->GetInstallUrl(),
+        type_and_app_info.second->GetWebAppInfo()->start_url));
   }
 #endif  // DCHECK_IS_ON()
 
@@ -621,9 +310,9 @@ void SystemWebAppManager::Start() {
   const auto& disabled_system_apps =
       web_app_policy_manager_->GetDisabledSystemWebApps();
 
-  for (const auto& app : system_app_infos_) {
+  for (const auto& app : system_app_delegates_) {
     install_options_list.push_back(CreateInstallOptionsForSystemApp(
-        app.first, app.second, should_force_install_apps,
+        app.first, *app.second, should_force_install_apps,
         base::Contains(disabled_system_apps, app.first)));
   }
 
@@ -641,7 +330,7 @@ void SystemWebAppManager::Start() {
 void SystemWebAppManager::InstallSystemAppsForTesting() {
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
   on_tasks_started_ = std::make_unique<base::OneShotEvent>();
-  system_app_infos_ = CreateSystemWebApps(profile_);
+  system_app_delegates_ = CreateSystemWebApps(profile_);
   Start();
 
   // Wait for the System Web Apps to install.
@@ -650,19 +339,18 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   run_loop.Run();
 }
 
-const base::flat_map<SystemAppType, SystemAppInfo>&
+const base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>&
 SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
-  return system_app_infos_;
+  return system_app_delegates_;
 }
 
 absl::optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemAppType id) const {
-  auto app_url_it = system_app_infos_.find(id);
-
-  if (app_url_it == system_app_infos_.end())
+  auto app_url_it = system_app_delegates_.find(id);
+  if (app_url_it == system_app_delegates_.end())
     return absl::optional<AppId>();
 
-  return registrar_->LookupExternalAppId(app_url_it->second.install_url);
+  return registrar_->LookupExternalAppId(app_url_it->second->GetInstallUrl());
 }
 
 absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
@@ -686,7 +374,7 @@ absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
   // crashing when looking up that type).
   SystemAppType proto_type =
       web_app->client_data().system_web_app_data->system_app_type;
-  if (system_app_infos_.contains(proto_type)) {
+  if (system_app_delegates_.contains(proto_type)) {
     return proto_type;
   }
 
@@ -695,7 +383,7 @@ absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
 
 std::vector<AppId> SystemWebAppManager::GetAppIds() const {
   std::vector<AppId> app_ids;
-  for (const auto& app_type_to_app_info : system_app_infos_) {
+  for (const auto& app_type_to_app_info : system_app_delegates_) {
     absl::optional<AppId> app_id =
         GetAppIdForSystemApp(app_type_to_app_info.first);
     if (app_id.has_value()) {
@@ -710,27 +398,28 @@ bool SystemWebAppManager::IsSystemWebApp(const AppId& app_id) const {
 }
 
 bool SystemWebAppManager::IsSingleWindow(SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
 
-  return it->second.single_window;
+  return it->second->ShouldBeSingleWindow();
 }
 
 bool SystemWebAppManager::AppShouldReceiveLaunchDirectory(
     SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
-  return it->second.include_launch_directory;
+  return it->second->ShouldIncludeLaunchDirectory();
 }
 
 const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
     const SystemAppType type,
-    const GURL& url) {
+    const GURL& url) const {
   const auto& origin_to_origin_trials =
-      system_app_infos_.at(type).enabled_origin_trials;
+      system_app_delegates_.at(type)->GetEnabledOriginTrials();
   auto iter_trials = origin_to_origin_trials.find(url::Origin::Create(url));
+
   if (iter_trials == origin_to_origin_trials.end())
     return nullptr;
 
@@ -738,9 +427,9 @@ const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
 }
 
 bool SystemWebAppManager::AppHasFileHandlingOriginTrial(SystemAppType type) {
-  const auto& info = system_app_infos_.at(type);
+  const auto& info = system_app_delegates_.at(type);
   const std::vector<std::string>* trials =
-      GetEnabledOriginTrials(type, info.install_url);
+      GetEnabledOriginTrials(type, info->GetInstallUrl());
   return trials && base::Contains(*trials, kFileHandlingOriginTrial);
 }
 
@@ -759,17 +448,18 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
 
   const std::vector<std::string>* trials =
       GetEnabledOriginTrials(type.value(), navigation_handle->GetURL());
-  if (trials)
+  if (trials) {
     navigation_handle->ForceEnableOriginTrials(*trials);
+  }
 }
 
 std::vector<std::string> SystemWebAppManager::GetAdditionalSearchTerms(
     SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return {};
 
-  const auto& search_terms = it->second.additional_search_terms;
+  const auto& search_terms = it->second->GetAdditionalSearchTerms();
 
   std::vector<std::string> search_terms_strings;
   std::transform(search_terms.begin(), search_terms.end(),
@@ -779,58 +469,58 @@ std::vector<std::string> SystemWebAppManager::GetAdditionalSearchTerms(
 }
 
 bool SystemWebAppManager::ShouldShowInLauncher(SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
-  return it->second.show_in_launcher;
+  return it->second->ShouldShowInLauncher();
 }
 
 bool SystemWebAppManager::ShouldShowInSearch(SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
-  return it->second.show_in_search;
+  return it->second->ShouldShowInSearch();
 }
 
 bool SystemWebAppManager::IsResizeableWindow(SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
 
-  return it->second.is_resizeable;
+  return it->second->ShouldAllowResize();
 }
 
 bool SystemWebAppManager::IsMaximizableWindow(SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
 
-  return it->second.is_maximizable;
+  return it->second->ShouldAllowMaximize();
 }
 
 bool SystemWebAppManager::ShouldHaveReloadButtonInMinimalUi(
     SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
 
-  return it->second.should_have_reload_button_in_minimal_ui;
+  return it->second->ShouldHaveReloadButtonInMinimalUi();
 }
 
 bool SystemWebAppManager::AllowScriptsToCloseWindows(SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
 
-  return it->second.allow_scripts_to_close_windows;
+  return it->second->ShouldAllowScriptsToCloseWindows();
 }
 
 bool SystemWebAppManager::ShouldHaveTabStrip(SystemAppType type) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return false;
 
-  return it->second.has_tab_strip;
+  return it->second->ShouldHaveTabStrip();
 }
 
 absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
@@ -846,13 +536,15 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
   if (!type.has_value())
     return absl::nullopt;
 
-  const auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end())
+  const auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
     return absl::nullopt;
 
-  if (!it->second.capture_navigations)
+  if (!it->second->ShouldCaptureNavigations())
     return absl::nullopt;
 
+    // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
+    // move this into the camera one.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (type == SystemAppType::CAMERA &&
       url.spec() != chromeos::kChromeUICameraAppMainURL)
@@ -864,13 +556,12 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
 
 gfx::Rect SystemWebAppManager::GetDefaultBounds(SystemAppType type,
                                                 Browser* browser) const {
-  auto it = system_app_infos_.find(type);
-  if (it == system_app_infos_.end() ||
-      it->second.get_default_bounds.is_null()) {
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end()) {
     return gfx::Rect();
   }
 
-  return it->second.get_default_bounds.Run(browser);
+  return it->second->GetDefaultBounds(browser);
 }
 
 gfx::Size SystemWebAppManager::GetMinimumWindowSize(const AppId& app_id) const {
@@ -878,18 +569,19 @@ gfx::Size SystemWebAppManager::GetMinimumWindowSize(const AppId& app_id) const {
 
   if (!app_type.has_value())
     return gfx::Size();
-  auto app_type_to_app_info = system_app_infos_.find(app_type.value());
+  auto app_type_to_app_info = system_app_delegates_.find(app_type.value());
 
-  if (app_type_to_app_info == system_app_infos_.end()) {
+  if (app_type_to_app_info == system_app_delegates_.end()) {
     return gfx::Size();
   }
 
-  return app_type_to_app_info->second.minimum_window_size;
+  return app_type_to_app_info->second->GetMinimumWindowSize();
 }
 
 void SystemWebAppManager::SetSystemAppsForTesting(
-    base::flat_map<SystemAppType, SystemAppInfo> system_apps) {
-  system_app_infos_ = std::move(system_apps);
+    base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>
+        system_apps) {
+  system_app_delegates_ = std::move(system_apps);
 }
 
 const std::vector<std::unique_ptr<SystemAppBackgroundTask>>&
@@ -967,13 +659,13 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
   }
 
   // Record per-app result.
-  for (const auto& type_and_app_info : system_app_infos_) {
-    const GURL& install_url = type_and_app_info.second.install_url;
+  for (const auto& type_and_app_info : system_app_delegates_) {
+    const GURL& install_url = type_and_app_info.second->GetInstallUrl();
     const auto url_and_result = results_to_report.find(install_url);
     if (url_and_result != results_to_report.cend()) {
       const std::string app_histogram_name =
           std::string(kInstallResultHistogramName) + ".Apps." +
-          type_and_app_info.second.internal_name;
+          type_and_app_info.second->GetInternalName();
       base::UmaHistogramEnumeration(
           app_histogram_name,
           shutting_down_
@@ -991,7 +683,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   // TODO(crbug.com/1053371): Clean up File Handler install. We install SWA file
   // handlers here, because the code that registers file handlers for regular
   // Web Apps, does not run when for apps installed in the background.
-  for (const auto& it : system_app_infos_) {
+  for (const auto& it : system_app_delegates_) {
     const SystemAppType& type = it.first;
     absl::optional<AppId> app_id = GetAppIdForSystemApp(type);
     if (!app_id)
@@ -1024,12 +716,12 @@ void SystemWebAppManager::OnAppsSynchronized(
 
   RecordSystemWebAppInstallResults(install_results);
 
-  for (const auto& it : system_app_infos_) {
-    const SystemAppInfo& app_info = it.second;
-
-    if (app_info.timer_info) {
+  for (const auto& it : system_app_delegates_) {
+    absl::optional<SystemAppBackgroundTaskInfo> background_info =
+        it.second->GetTimerInfo();
+    if (background_info) {
       tasks_.push_back(std::make_unique<SystemAppBackgroundTask>(
-          profile_, app_info.timer_info.value()));
+          profile_, background_info.value()));
     }
   }
   // May be called more than once in tests.
@@ -1048,7 +740,8 @@ void SystemWebAppManager::OnAppsSynchronized(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_camera_app_installed =
-      system_app_infos_.find(SystemAppType::CAMERA) != system_app_infos_.end();
+      system_app_delegates_.find(SystemAppType::CAMERA) !=
+      system_app_delegates_.end();
   profile_->GetPrefs()->SetBoolean(chromeos::prefs::kHasCameraAppMigratedToSWA,
                                    is_camera_app_installed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -854,10 +855,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SysInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIAssistantOptInHost)
     return &NewWebUI<chromeos::AssistantOptInUI>;
-  if (url.host_piece() == chromeos::kChromeUICameraAppHost &&
-      web_app::SystemWebAppManager::IsAppEnabled(
-          web_app::SystemAppType::CAMERA)) {
-    return &NewComponentUI<chromeos::CameraAppUI, ChromeCameraAppUIDelegate>;
+  if (url.host_piece() == chromeos::kChromeUICameraAppHost) {
+    auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
+    if (provider && provider->system_web_app_manager().IsAppEnabled(
+                        web_app::SystemAppType::CAMERA)) {
+      return &NewComponentUI<chromeos::CameraAppUI, ChromeCameraAppUIDelegate>;
+    }
   }
   if (url.host_piece() == chrome::kChromeUINearbyInternalsHost)
     return &NewWebUI<NearbyInternalsUI>;

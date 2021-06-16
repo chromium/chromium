@@ -52,6 +52,9 @@ class OsIntegrationManager;
 class AppRegistryController;
 class WebAppPolicyManager;
 
+using SystemAppDelegateMap =
+    base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>;
+
 // Installs, uninstalls, and updates System Web Apps.
 // System Web Apps are built-in, highly-privileged Web Apps for Chrome OS. They
 // have access to more APIs and are part of the Chrome OS image.
@@ -71,7 +74,7 @@ class SystemWebAppManager {
       "Webapp.SystemApps.FreshInstallDuration";
 
   // Returns whether the given app type is enabled.
-  static bool IsAppEnabled(SystemAppType type);
+  bool IsAppEnabled(SystemAppType type);
 
   explicit SystemWebAppManager(Profile* profile);
   SystemWebAppManager(const SystemWebAppManager&) = delete;
@@ -162,8 +165,7 @@ class SystemWebAppManager {
 
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
-  const base::flat_map<SystemAppType, SystemAppInfo>&
-  GetRegisteredSystemAppsForTesting() const;
+  const SystemAppDelegateMap& GetRegisteredSystemAppsForTesting() const;
 
   const base::OneShotEvent& on_apps_synchronized() const {
     return *on_apps_synchronized_;
@@ -177,8 +179,7 @@ class SystemWebAppManager {
 
   // This call will override default System Apps configuration. You should call
   // Start() after this call to install |system_apps|.
-  void SetSystemAppsForTesting(
-      base::flat_map<SystemAppType, SystemAppInfo> system_apps);
+  void SetSystemAppsForTesting(SystemAppDelegateMap system_apps);
 
   // Overrides the update policy. If AlwaysReinstallSystemWebApps feature is
   // enabled, this method does nothing, and system apps will be reinstalled.
@@ -192,16 +193,18 @@ class SystemWebAppManager {
   const std::vector<std::unique_ptr<SystemAppBackgroundTask>>&
   GetBackgroundTasksForTesting();
 
+  const Profile* profile() const { return profile_; }
+
  protected:
   virtual const base::Version& CurrentVersion() const;
   virtual const std::string& CurrentLocale() const;
 
  private:
-  // Returns the list of origin trials to enable for |url| loaded in System App
-  // |type|. Returns nullptr if the App does not specify origin trials for
-  // |url|.
+  // Returns the list of origin trials to enable for |url| loaded in System
+  // App |type|. Returns an empty vector if the App does not specify origin
+  // trials for |url|.
   const std::vector<std::string>* GetEnabledOriginTrials(SystemAppType type,
-                                                         const GURL& url);
+                                                         const GURL& url) const;
 
   bool AppHasFileHandlingOriginTrial(SystemAppType type);
 
@@ -239,7 +242,7 @@ class SystemWebAppManager {
 
   UpdatePolicy update_policy_;
 
-  base::flat_map<SystemAppType, SystemAppInfo> system_app_infos_;
+  SystemAppDelegateMap system_app_delegates_;
 
   PrefService* const pref_service_;
 
