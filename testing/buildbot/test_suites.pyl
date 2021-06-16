@@ -7245,6 +7245,7 @@
       'lacros_smoke_tast_tests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
+          'LACROS_EVE',
         ]
       },
       'lacros_device_or_vm_gtests': {
