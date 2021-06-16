@@ -75,6 +75,28 @@ const gfx::ShadowDetails& GetShadowDetails() {
   return gfx::ShadowDetails::Get(kElevation, radius);
 }
 
+// Adjust the specified `origin` for shadow margins.
+void AdjustOriginForShadowMargins(gfx::Point& origin, const Shelf* shelf) {
+  const gfx::ShadowValues& values(GetShadowDetails().values);
+  const gfx::Insets margins(gfx::ShadowValue::GetMargin(values));
+  if (shelf->IsHorizontalAlignment()) {
+    // When the `shelf` is horizontally aligned the `origin` will already have
+    // been offset to center the preview `layer()` vertically within its parent
+    // container so no further vertical offset  is needed.
+    const int offset = margins.width() / 2;
+    origin.Offset(base::i18n::IsRTL() ? -offset : offset, 0);
+  } else {
+    origin.Offset(margins.width() / 2, margins.height() / 2);
+  }
+}
+
+// Enlarges the specified `size` for shadow margins.
+void EnlargeForShadowMargins(gfx::Size& size) {
+  const gfx::ShadowValues& values(GetShadowDetails().values);
+  const gfx::Insets margins(gfx::ShadowValue::GetMargin(values));
+  size.Enlarge(-margins.width(), -margins.height());
+}
+
 // Returns whether the specified `shelf_alignment` is horizontal.
 bool IsHorizontal(ShelfAlignment shelf_alignment) {
   switch (shelf_alignment) {
@@ -398,10 +420,13 @@ void HoldingSpaceTrayIconPreview::OnThemeChanged() {
 
 void HoldingSpaceTrayIconPreview::OnPaintLayer(
     const ui::PaintContext& context) {
-  const gfx::Rect contents_bounds = gfx::Rect(GetPreviewSize());
-
-  ui::PaintRecorder recorder(context, contents_bounds.size());
+  ui::PaintRecorder recorder(context, layer()->size());
   gfx::Canvas* canvas = recorder.canvas();
+
+  // The `layer()` was enlarged so that the shadow would be painted outside of
+  // desired preview bounds. Content bounds should be clamped to preview size.
+  gfx::Rect contents_bounds = gfx::Rect(layer()->size());
+  contents_bounds.ClampToCenteredSize(GetPreviewSize());
 
   // Background.
   // NOTE: The background radius is shrunk by a single pixel to avoid being
@@ -417,7 +442,7 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
   canvas->DrawCircle(
       gfx::PointF(contents_bounds.CenterPoint()),
-      std::min(contents_bounds.width(), contents_bounds.height()) / 2 - 0.5,
+      std::min(contents_bounds.width(), contents_bounds.height()) / 2.f - 0.5f,
       flags);
 
   // Contents.
@@ -519,11 +544,15 @@ void HoldingSpaceTrayIconPreview::AdjustForShelfAlignmentAndTextDirection(
 
 void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   DCHECK(layer());
+
+  // The shadow for `layer()` should be painted outside desired preview bounds.
+  gfx::Size size = GetPreviewSize();
+  EnlargeForShadowMargins(size);
+
   // With a horizontal shelf in RTL, `layer()` is aligned with its parent
   // layer's right bound and translated with a negative offset. In all other
   // cases, `layer()` is aligned with its parent layer's left/top bound and
   // translated with a positive offset.
-  const gfx::Size size = GetPreviewSize();
   gfx::Point origin;
   if (shelf_->IsHorizontalAlignment()) {
     gfx::Rect container_bounds = container_->GetLocalBounds();
@@ -531,6 +560,7 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
       origin = container_bounds.top_right() - gfx::Vector2d(size.width(), 0);
     origin.Offset(0, (container_bounds.height() - size.height()) / 2);
   }
+  AdjustOriginForShadowMargins(origin, shelf_);
   gfx::Rect bounds(origin, size);
   if (bounds != layer()->bounds())
     layer()->SetBounds(bounds);
