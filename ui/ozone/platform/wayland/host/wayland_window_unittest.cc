@@ -22,6 +22,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1796,6 +1797,64 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
     wl_surface_send_leave(surface->resource(), entered_output->resource());
     Sync();
   }
+}
+
+// Same as above except that it verifies that the bounds are also translated if
+// forced scale factor is set.
+TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScaleForcedScale) {
+  VerifyAndClearExpectations();
+
+  display::Display::SetForceDeviceScaleFactor(1.2);
+
+  // Creating an output with scale 1.
+  wl::TestOutput* main_output = server_.CreateAndInitializeOutput();
+  main_output->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  main_output->SetScale(1);
+  Sync();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* secondary_output = server_.CreateAndInitializeOutput();
+  secondary_output->SetRect(gfx::Rect(1921, 0, 1920, 1080));
+  secondary_output->SetScale(2);
+  Sync();
+
+  // Send the window to |output1|.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+
+  wl_surface_send_enter(surface->resource(), secondary_output->resource());
+  Sync();
+
+  gfx::Rect bounds_dip(15, 15, 10, 10);
+  // DesktopWindowTreeHostPlatform has always to use a primary display's
+  // scale to translate initial bounds to pixels. However, the primary display
+  // will use forced device scale factor and ignore wl_output's scale. Thus, use
+  // primary output's scale to make initial bounds. This code snippet is a copy
+  // of DesktopWindowTreeHostPlatform::ToPixelRect.
+  gfx::Transform transform;
+  transform.Scale(display::Display::GetForcedDeviceScaleFactor(),
+                  display::Display::GetForcedDeviceScaleFactor());
+  gfx::RectF rect_in_pixels = gfx::RectF(bounds_dip);
+  transform.TransformRect(&rect_in_pixels);
+  gfx::Rect wayland_popup_bounds = gfx::ToEnclosingRect(rect_in_pixels);
+
+  std::unique_ptr<WaylandWindow> wayland_popup = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, window_->GetWidget(), wayland_popup_bounds,
+      &delegate_);
+  EXPECT_TRUE(wayland_popup);
+
+  wayland_popup->Show(false);
+
+  gfx::Rect expected_bounds = gfx::ScaleToRoundedRect(
+      wayland_popup_bounds,
+      1.f / display::Display::GetForcedDeviceScaleFactor());
+  expected_bounds = gfx::ScaleToRoundedRect(expected_bounds,
+                                            2 /*secondary display's scale */);
+
+  EXPECT_EQ(expected_bounds, wayland_popup->GetBounds());
+  wl_surface_send_leave(surface->resource(), secondary_output->resource());
+  Sync();
 }
 
 // Tests that a WaylandWindow uses the entered output with largest scale

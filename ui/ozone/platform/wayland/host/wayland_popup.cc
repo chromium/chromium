@@ -6,6 +6,8 @@
 
 #include <aura-shell-client-protocol.h>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -180,39 +182,47 @@ bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
   shadow_type_ = properties.shadow_type;
 
   // Fix initial bounds. The client initially doesn't know the display where the
-  // WaylandPopup will be located and uses a primary display to convert dip
+  // WaylandPopup will be located and uses a primary display to convert DIP
   // bounds to pixels. However, Ozone/Wayland does know where it is going to
   // locate WaylandPopup as it is going to use parent's entered outputs. Thus,
-  // if the primary display's scale is different from parents' scale (and this'
-  // scale), fix bounds accordingly. Otherwise, popup is located using wrong
-  // bounds in DIP.
-  if (auto* primary_output =
-          connection()->wayland_output_manager()->GetPrimaryOutput()) {
-    const auto primary_display_scale_factor = primary_output->scale_factor();
+  // if the primary display's scale (or forced scale factor) is different from
+  // parents' output scale (and this' scale), fix bounds accordingly. Otherwise,
+  // popup is located using wrong bounds in DIP.
+  absl::optional<float> used_scale;
+  if (display::Display::HasForceDeviceScaleFactor()) {
+    used_scale = display::Display::GetForcedDeviceScaleFactor();
+  } else if (auto* primary_output =
+                 connection()->wayland_output_manager()->GetPrimaryOutput()) {
+    used_scale = primary_output->scale_factor();
+  }
 
-    gfx::RectF float_rect = gfx::RectF(GetBounds());
-    gfx::Transform transform;
-    float scale = primary_display_scale_factor;
-    // The bounds are initially given in the scale of the primary display, so we
-    // have to upscale or downscale the rect to the scale of the target display,
-    // if that scale is different.
-    if (primary_display_scale_factor < window_scale()) {
-      scale = static_cast<float>(window_scale()) /
-              static_cast<float>(primary_display_scale_factor);
-      transform.Scale(scale, scale);
-      transform.TransformRect(&float_rect);
-    } else if (primary_display_scale_factor > window_scale()) {
-      scale = static_cast<float>(primary_display_scale_factor) /
-              static_cast<float>(window_scale());
-      transform.Scale(scale, scale);
-      transform.TransformRectReverse(&float_rect);
-    }
+  if (!used_scale.has_value())
+    return true;
+
+  const auto client_initial_scale = used_scale.value();
+
+  gfx::RectF float_rect = gfx::RectF(GetBounds());
+  gfx::Transform transform;
+  float scale = client_initial_scale;
+  // The bounds are initially given in the scale of the primary display (or
+  // forced scale), so we have to upscale or downscale the rect to the scale
+  // of the target display, if that scale is different.
+  if (client_initial_scale < window_scale()) {
+    scale = static_cast<float>(window_scale()) /
+            static_cast<float>(client_initial_scale);
+    transform.Scale(scale, scale);
+    transform.TransformRect(&float_rect);
+  } else if (client_initial_scale > window_scale()) {
+    scale = static_cast<float>(client_initial_scale) /
+            static_cast<float>(window_scale());
+    transform.Scale(scale, scale);
+    transform.TransformRectReverse(&float_rect);
+  }
 
     // delegate()->OnBoundsChanged cannot be called at this point. Thus, set
     // pending internal bounds and call SetBounds later when CreateShellPopup is
     // called.
     pending_initial_bounds_px_ = gfx::ToEnclosingRect(float_rect);
-  }
   return true;
 }
 
