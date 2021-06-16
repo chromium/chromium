@@ -120,7 +120,7 @@ absl::optional<SyncTrustedVaultKeys> GetSyncTrustedVaultKeysForUserContext(
     const base::DictionaryValue* js_object,
     const std::string& gaia_id) {
   if (!base::FeatureList::IsEnabled(
-          ::switches::kSyncSupportTrustedVaultPassphraseRecovery)) {
+          ::switches::kSyncTrustedVaultPassphraseRecovery)) {
     return absl::nullopt;
   }
 

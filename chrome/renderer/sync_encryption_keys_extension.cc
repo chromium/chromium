@@ -112,7 +112,7 @@ void SyncEncryptionKeysExtension::Install() {
       .Check();
 
   if (!base::FeatureList::IsEnabled(
-          switches::kSyncSupportTrustedVaultPassphraseRecovery)) {
+          switches::kSyncTrustedVaultPassphraseRecovery)) {
     return;
   }
 

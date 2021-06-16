@@ -797,7 +797,7 @@ TEST_F(SyncServiceCryptoTest,
        ShouldNotReportDegradedRecoverabilityUponInitialization) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
-      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+      switches::kSyncTrustedVaultPassphraseRecovery);
 
   trusted_vault_client_.SetIsRecoverabilityDegraded(false);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
@@ -815,7 +815,7 @@ TEST_F(SyncServiceCryptoTest,
        ShouldReportDegradedRecoverabilityUponInitialization) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
-      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+      switches::kSyncTrustedVaultPassphraseRecovery);
 
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
@@ -832,7 +832,7 @@ TEST_F(SyncServiceCryptoTest,
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
-      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+      switches::kSyncTrustedVaultPassphraseRecovery);
 
   trusted_vault_client_.SetIsRecoverabilityDegraded(false);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
@@ -855,7 +855,7 @@ TEST_F(SyncServiceCryptoTest,
        ShouldStopReportingDegradedRecoverabilityUponChange) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
-      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+      switches::kSyncTrustedVaultPassphraseRecovery);
 
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
@@ -877,7 +877,7 @@ TEST_F(SyncServiceCryptoTest,
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
-      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+      switches::kSyncTrustedVaultPassphraseRecovery);
 
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
 
@@ -917,7 +917,7 @@ TEST_F(SyncServiceCryptoTest,
 
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
-      switches::kSyncSupportTrustedVaultPassphraseRecovery);
+      switches::kSyncTrustedVaultPassphraseRecovery);
 
   // Mimic a browser startup in |kTrustedVaultPassphrase| with no additional
   // keys required and degraded recoverability state.

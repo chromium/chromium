@@ -67,13 +67,12 @@ const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout{
     &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout",
     base::TimeDelta::FromSeconds(10)};
 
-const base::Feature kSyncSupportTrustedVaultPassphraseRecovery{
-    "SyncSupportTrustedVaultPassphraseRecovery",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncTrustedVaultPassphraseRecovery{
+    "SyncTrustedVaultPassphraseRecovery", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Whether the entry point to opt in to trusted vault in settings should be
 // shown.
-const base::Feature kSyncOfferTrustedVaultOptIn{
-    "SyncOfferTrustedVaultOptIn", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncTrustedVaultPassphrasePromo{
+    "SyncTrustedVaultPassphrasePromo", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace switches

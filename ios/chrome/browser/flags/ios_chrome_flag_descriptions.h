@@ -384,6 +384,16 @@ extern const char kStartSurfaceDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
+// Title and description for the flag to control if Chrome Sync should support
+// trusted vault passphrase promos.
+extern const char kSyncTrustedVaultPassphrasePromoName[];
+extern const char kSyncTrustedVaultPassphrasePromoDescription[];
+
+// Title and description for the flag to control if Chrome Sync should support
+// trusted vault passphrase type with improved recovery.
+extern const char kSyncTrustedVaultPassphraseRecoveryName[];
+extern const char kSyncTrustedVaultPassphraseRecoveryDescription[];
+
 // Title and description for the flag to enable context menu in the Tab grid.
 extern const char kTabGridContextMenuName[];
 extern const char kTabGridContextMenuDescription[];

@@ -35,9 +35,9 @@ extern const base::Feature kDecoupleSyncFromAndroidMasterSync;
 extern const base::Feature kSyncRequiresPoliciesLoaded;
 extern const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout;
 
-extern const base::Feature kSyncSupportTrustedVaultPassphraseRecovery;
+extern const base::Feature kSyncTrustedVaultPassphraseRecovery;
 
-extern const base::Feature kSyncOfferTrustedVaultOptIn;
+extern const base::Feature kSyncTrustedVaultPassphrasePromo;
 
 }  // namespace switches
 

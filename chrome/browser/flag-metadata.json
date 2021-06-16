@@ -4982,6 +4982,16 @@
     "expiry_milestone": 84
   },
   {
+    "name": "sync-trusted-vault-passphrase-promo",
+    "owners": [ "mastiz", "mmoskvitin" ],
+    "expiry_milestone": 100
+  },
+  {
+    "name": "sync-trusted-vault-passphrase-recovery",
+    "owners": [ "mastiz", "mmoskvitin" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "system-keyboard-lock",
     "owners": [ "joedow", "garykac", "jamiewalch" ],
     "expiry_milestone": 95

@@ -1097,7 +1097,7 @@ class SingleClientNigoriWithRecoverySyncTest
  public:
   SingleClientNigoriWithRecoverySyncTest() {
     override_features_.InitAndEnableFeature(
-        switches::kSyncSupportTrustedVaultPassphraseRecovery);
+        switches::kSyncTrustedVaultPassphraseRecovery);
   }
 
   ~SingleClientNigoriWithRecoverySyncTest() override = default;

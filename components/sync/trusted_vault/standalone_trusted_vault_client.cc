@@ -159,7 +159,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   GURL trusted_vault_service_gurl =
       ExtractTrustedVaultServiceURLFromCommandLine();
   if (base::FeatureList::IsEnabled(
-          switches::kSyncSupportTrustedVaultPassphraseRecovery) &&
+          switches::kSyncTrustedVaultPassphraseRecovery) &&
       trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
         trusted_vault_service_gurl, url_loader_factory->Clone(),

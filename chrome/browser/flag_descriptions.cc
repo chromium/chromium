@@ -2336,6 +2336,19 @@ const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
+const char kSyncTrustedVaultPassphrasePromoName[] =
+    "Enable promos for sync trusted vault passphrase.";
+const char kSyncTrustedVaultPassphrasePromoDescription[] =
+    "Enables promos for an experimental sync passphrase type, referred to as "
+    "trusted vault.";
+
+const char kSyncTrustedVaultPassphraseRecoveryName[] =
+    "Enable sync trusted vault passphrase with improved recovery.";
+const char kSyncTrustedVaultPassphraseRecoveryDescription[] =
+    "Enables support for an experimental sync passphrase type, referred to as "
+    "trusted vault, including logic and APIs for improved account recovery "
+    "flows.";
+
 const char kSystemKeyboardLockName[] = "Experimental system keyboard lock";
 const char kSystemKeyboardLockDescription[] =
     "Enables websites to use the keyboard.lock() API to intercept system "
