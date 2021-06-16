@@ -296,7 +296,7 @@ void MediaSessionImpl::DidFinishNavigation(
   image_cache_.clear();
 
   auto new_origin = url::Origin::Create(navigation_handle->GetURL());
-  if (navigation_handle->IsInMainFrame() &&
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       !new_origin.IsSameOriginWith(origin_)) {
     audio_device_id_for_origin_.reset();
     origin_ = new_origin;
