@@ -636,7 +636,7 @@ void ThreatDetails::StartCollection() {
     // OnReceivedThreatDOMDetails will be called when the renderer replies.
     // TODO(mattm): In theory, if the user proceeds through the warning DOM
     // detail collection could be started once the page loads.
-    web_contents()->ForEachFrame(base::BindRepeating(
+    web_contents()->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
         &ThreatDetails::RequestThreatDOMDetails, GetWeakPtr()));
   }
 }

@@ -95,6 +95,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -3018,6 +3019,103 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   ui_test_utils::NavigateToURL(browser(), url);
   ASSERT_FALSE(IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
+}
+
+class SafeBrowsingPrerenderBrowserTest
+    : public SafeBrowsingBlockingPageBrowserTest {
+ public:
+  SafeBrowsingPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &SafeBrowsingPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~SafeBrowsingPrerenderBrowserTest() override = default;
+  SafeBrowsingPrerenderBrowserTest(const SafeBrowsingPrerenderBrowserTest&) =
+      delete;
+  SafeBrowsingPrerenderBrowserTest& operator=(
+      const SafeBrowsingPrerenderBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    SafeBrowsingBlockingPageBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeBrowsingPrerenderBrowserTest,
+    // We simulate a SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE to trigger DOM
+    // detail collection.
+    testing::Combine(testing::Values(SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE),
+                     testing::Bool()));  // If isolate all sites for testing.
+
+// Test that the prerendering doesn't affect on the primary's threat report.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
+                       DontContainPrerenderingInfoInThreatReport) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  const bool expect_threat_details =
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
+          testing::get<0>(GetParam()));
+
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  if (expect_threat_details)
+    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+
+  // Navigate to a safe page which contains multiple potential DOM details
+  // on the primary page. (Despite the name, kMaliciousPage is not the page
+  // flagged as bad in this test.)
+  GURL primary_url = embedded_test_server()->GetURL(kMaliciousPage);
+  ui_test_utils::NavigateToURL(browser(), primary_url);
+  EXPECT_EQ(nullptr, details_factory_.get_details());
+
+  // Navigate to a different page on the prerendering page.
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_render_frame_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_render_frame_host, nullptr);
+  EXPECT_EQ(prerender_url, prerender_render_frame_host->GetLastCommittedURL());
+
+  // Start navigation to bad page (kEmptyPage), which will be blocked before it
+  // is committed.
+  SetupWarningAndNavigate(browser());
+
+  ThreatDetails* threat_details = details_factory_.get_details();
+  EXPECT_EQ(expect_threat_details, threat_details != nullptr);
+
+  // Proceed through the warning.
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+  AssertNoInterstitial(true);  // Assert the interstitial is gone
+
+  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
+  EXPECT_EQ(primary_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+
+  if (expect_threat_details) {
+    threat_report_sent_runner->Run();
+    std::string serialized = GetReportSent();
+    ClientSafeBrowsingReportRequest report;
+    ASSERT_TRUE(report.ParseFromString(serialized));
+    // Verify the report is complete.
+    EXPECT_TRUE(report.complete());
+
+    // The threat report should not contain the prerender information.
+    EXPECT_NE(prerender_url.spec(), report.page_url());
+    EXPECT_NE(prerender_url.spec(), report.url());
+    ASSERT_EQ(3, report.resources_size());
+    for (const auto& resource : report.resources())
+      EXPECT_NE(prerender_url.spec(), resource.url());
+  }
 }
 
 }  // namespace safe_browsing
