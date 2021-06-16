@@ -259,11 +259,15 @@ class BaseGenerator:
         opacity_names = set(opacities.keys())
 
         def CheckColorReference(name, referrer):
+            if name == referrer:
+                raise ValueError(f"{name} refers to itself")
             if name not in color_names:
                 raise ValueError("Cannot find color %s referenced by %s" %
                                  (name, referrer))
 
         def CheckOpacityReference(name, referrer):
+            if name == referrer:
+                raise ValueError(f"{name} refers to itself")
             if name not in opacity_names:
                 raise ValueError("Cannot find opacity %s referenced by %s" %
                                  (name, referrer))

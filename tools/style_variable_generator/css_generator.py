@@ -43,8 +43,8 @@ class CSSStyleGenerator(BaseGenerator):
 
     def GetGlobals(self):
         return {
-            'css_color_from_rgb_var':
-            self.CSSColorFromRGBVar,
+            'css_color_var':
+            self.CSSColorVar,
             'in_files':
             sorted(self.in_file_to_context.keys()),
             'dark_mode_selector':
@@ -107,8 +107,10 @@ class CSSStyleGenerator(BaseGenerator):
 
         return '%d, %d, %d' % (c.r, c.g, c.b)
 
-    def CSSColorFromRGBVar(self, model_name, color):
+    def CSSColorVar(self, model_name, color):
         '''Returns the CSS color representation given a color name and color'''
+        if color.var:
+            return 'var(%s)' % self.ToCSSVarName(color.var)
         if color.opacity and color.opacity.a != 1:
             return 'rgba(var(%s-rgb), %s)' % (self.ToCSSVarName(model_name),
                                               self._CSSOpacity(color.opacity))

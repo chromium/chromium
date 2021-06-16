@@ -42,7 +42,7 @@ class ViewsStyleGenerator(CSSStyleGenerator):
             'out_file_path': None,
             'namespace_name': None,
             'in_files': sorted(self.in_file_to_context.keys()),
-            'css_color_from_rgb_var': self.CSSColorFromRGBVar,
+            'css_color_var': self.CSSColorVar,
         }
         if self.out_file_path:
             globals['out_file_path'] = self.out_file_path
