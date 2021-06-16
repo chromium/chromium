@@ -55,6 +55,7 @@ class PaymentRequest : public mojom::PaymentRequest,
     virtual void OnHasEnrolledInstrumentReturned() = 0;
     virtual void OnAppListReady(base::WeakPtr<PaymentRequest> payment_request) {
     }
+    virtual void OnErrorDisplayed() {}
     virtual void OnNotSupportedError() = 0;
     virtual void OnConnectionTerminated() = 0;
     virtual void OnAbortCalled() = 0;
@@ -108,13 +109,13 @@ class PaymentRequest : public mojom::PaymentRequest,
   // TerminateConnection).
   void OnUserCancelled();
 
-  // Called when the main frame attached to this PaymentRequest is navigating to
-  // another document, but before the PaymentRequest is destroyed.
+  // Called when the main frame attached to this PaymentRequest is navigating
+  // to another document, but before the PaymentRequest is destroyed.
   void DidStartMainFrameNavigationToDifferentDocument(bool is_user_initiated);
 
   // Called when the frame attached to this PaymentRequest is about to be
-  // destroyed. This is used to clean up before the RenderFrameHost is actually
-  // destroyed because some objects held by the PaymentRequest (e.g.
+  // destroyed. This is used to clean up before the RenderFrameHost is
+  // actually destroyed because some objects held by the PaymentRequest (e.g.
   // InternalAuthenticator) must be out-lived by the RenderFrameHost.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host);
 
@@ -132,7 +133,8 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   bool IsOffTheRecord() const;
 
-  // Called when the payment handler requests to open a payment handler window.
+  // Called when the payment handler requests to open a payment handler
+  // window.
   void OnPaymentHandlerOpenWindowCalled();
 
   content::WebContents* web_contents();
@@ -158,13 +160,13 @@ class PaymentRequest : public mojom::PaymentRequest,
   // InitializationTask::Observer.
   void OnInitialized(InitializationTask* initialization_task) override;
 
-  // Returns true after init() has been called and the mojo connection has been
-  // established. If the mojo connection gets later disconnected, this will
-  // returns false.
+  // Returns true after init() has been called and the mojo connection has
+  // been established. If the mojo connection gets later disconnected, this
+  // will returns false.
   bool IsInitialized() const;
 
-  // Returns true after show() has been called and the payment sheet is showing.
-  // If the payment sheet is later hidden, this will return false.
+  // Returns true after show() has been called and the payment sheet is
+  // showing. If the payment sheet is later hidden, this will return false.
   bool IsThisPaymentRequestShowing() const;
 
   // Returns true when there is exactly one available payment app which can
@@ -177,9 +179,9 @@ class PaymentRequest : public mojom::PaymentRequest,
   // information.
   bool SatisfiesSkipUIConstraints();
 
-  // Only records the abort reason if it's the first completion for this Payment
-  // Request. This is necessary since the aborts cascade into one another with
-  // the first one being the most precise.
+  // Only records the abort reason if it's the first completion for this
+  // Payment Request. This is necessary since the aborts cascade into one
+  // another with the first one being the most precise.
   void RecordFirstAbortReason(JourneyLogger::AbortReason completion_status);
 
   // The callback for PaymentRequestState::CanMakePayment.
@@ -229,17 +231,17 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   // The scheme, host, and port of the top level frame that has invoked
   // PaymentRequest API as formatted by
-  // url_formatter::FormatUrlForSecurityDisplay(). This is what the user sees in
-  // the address bar.
+  // url_formatter::FormatUrlForSecurityDisplay(). This is what the user sees
+  // in the address bar.
   const GURL top_level_origin_;
 
-  // The scheme, host, and port of the frame that has invoked PaymentRequest API
-  // as formatted by url_formatter::FormatUrlForSecurityDisplay(). This can be
-  // either the main frame or an iframe.
+  // The scheme, host, and port of the frame that has invoked PaymentRequest
+  // API as formatted by url_formatter::FormatUrlForSecurityDisplay(). This
+  // can be either the main frame or an iframe.
   const GURL frame_origin_;
 
-  // The security origin of the frame that has invoked PaymentRequest API. This
-  // can be opaque. Used by security features like 'Sec-Fetch-Site' and
+  // The security origin of the frame that has invoked PaymentRequest API.
+  // This can be opaque. Used by security features like 'Sec-Fetch-Site' and
   // 'Cross-Origin-Resource-Policy'.
   const url::Origin frame_security_origin_;
 

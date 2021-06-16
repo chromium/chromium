@@ -1046,6 +1046,14 @@ public class PaymentUiService
         return true;
     }
 
+    // Implements PaymentUiServiceTestInterface:
+    @Override
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean closeDialogForTest() {
+        if (!mHasClosed) close();
+        return true;
+    }
+
     /** Provide PaymentInformation to the PaymentRequest UI. */
     public void providePaymentInformationToPaymentRequestUI() {
         // Do not display service worker payment apps summary in single line so as to display its

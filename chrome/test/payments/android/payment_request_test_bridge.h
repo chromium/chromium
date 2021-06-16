@@ -41,6 +41,9 @@ bool ClickPaymentHandlerSecurityIconForTest();
 // Click the close button on the Payment Handler UI. Returns true on success.
 bool ClickPaymentHandlerCloseButtonForTest();
 
+// Closes the payment dialog, if any. Returns true on success.
+bool CloseDialogForTest();
+
 // Confirms payment in minimal UI. Returns true on success.
 bool ConfirmMinimalUIForTest();
 
@@ -59,6 +62,7 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
     base::RepeatingClosure on_has_enrolled_instrument_returned,
     base::RepeatingClosure on_show_instruments_ready,
     SetAppDescriptionsCallback set_app_descriptions,
+    base::RepeatingClosure on_error_displayed,
     base::RepeatingClosure on_not_supported_error,
     base::RepeatingClosure on_connection_terminated,
     base::RepeatingClosure on_abort_called,

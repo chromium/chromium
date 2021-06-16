@@ -137,6 +137,7 @@ class PaymentRequestTestController::ObserverConverter
 
     controller_->OnAppListReady();
   }
+  void OnErrorDisplayed() override { controller_->OnErrorDisplayed(); }
   void OnNotSupportedError() override { controller_->OnNotSupportedError(); }
   void OnConnectionTerminated() override {
     controller_->OnConnectionTerminated();
@@ -176,6 +177,10 @@ bool PaymentRequestTestController::ConfirmPayment() {
 }
 
 bool PaymentRequestTestController::ClickPaymentHandlerCloseButton() {
+  return CloseDialog();
+}
+
+bool PaymentRequestTestController::CloseDialog() {
   if (!delegate_)
     return false;
 
@@ -306,6 +311,11 @@ void PaymentRequestTestController::OnHasEnrolledInstrumentReturned() {
 void PaymentRequestTestController::OnAppListReady() {
   if (observer_)
     observer_->OnAppListReady();
+}
+
+void PaymentRequestTestController::OnErrorDisplayed() {
+  if (observer_)
+    observer_->OnErrorDisplayed();
 }
 
 void PaymentRequestTestController::OnCompleteCalled() {

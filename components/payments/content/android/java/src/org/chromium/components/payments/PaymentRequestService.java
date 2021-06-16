@@ -164,6 +164,7 @@ public class PaymentRequestService
         void onHasEnrolledInstrumentCalled();
         void onHasEnrolledInstrumentReturned();
         void onAppListReady(@Nullable List<PaymentApp> paymentApps, PaymentItem total);
+        void onErrorDisplayed();
         void onNotSupportedError();
         void onConnectionTerminated();
         void onAbortCalled();
@@ -1740,5 +1741,6 @@ public class PaymentRequestService
         if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.onInstrumentDetailsError(errorMessage);
         PaymentDetailsUpdateServiceHelper.getInstance().reset();
+        if (sNativeObserverForTest != null) sNativeObserverForTest.onErrorDisplayed();
     }
 }

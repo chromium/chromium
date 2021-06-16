@@ -82,6 +82,7 @@ class PaymentRequestPlatformBrowserTestBase
   void OnNotSupportedError() override;
   void OnAbortCalled() override;
   void OnAppListReady() override;
+  void OnErrorDisplayed() override;
   void OnCompleteCalled() override;
   void OnMinimalUIReady() override;
   void OnUIDisplayed() override;

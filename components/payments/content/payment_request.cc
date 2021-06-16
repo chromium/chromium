@@ -994,6 +994,8 @@ void PaymentRequest::ShowErrorMessageAndAbortPayment() {
     // Will invoke OnUserCancelled() asynchronously when the user closes the
     // error message UI.
     delegate_->ShowErrorMessage();
+    if (observer_for_testing_)
+      observer_for_testing_->OnErrorDisplayed();
   } else {
     // Only app store billing apps do not display any browser payment UI.
     DCHECK(spec_->IsAppStoreBillingAlsoRequested());

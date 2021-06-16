@@ -31,6 +31,13 @@ public interface PaymentUiServiceTestInterface {
     boolean clickPaymentHandlerCloseButtonForTest();
 
     /**
+     * Closes the payment UI.
+     *
+     * @return Whether the closing was successful.
+     */
+    boolean closeDialogForTest();
+
+    /**
      * Confirms payment in minimal UI.
      *
      * @return Whether the payment was confirmed successfully.

@@ -28,6 +28,10 @@ bool PaymentRequestTestController::ClickPaymentHandlerCloseButton() {
   return ClickPaymentHandlerCloseButtonForTest();
 }
 
+bool PaymentRequestTestController::CloseDialog() {
+  return CloseDialogForTest();
+}
+
 bool PaymentRequestTestController::ConfirmPayment() {
   NOTIMPLEMENTED();
   return false;
@@ -65,6 +69,8 @@ void PaymentRequestTestController::SetUpOnMainThread() {
       base::BindRepeating(&PaymentRequestTestController::OnAppListReady,
                           base::Unretained(this)),
       base::BindRepeating(&PaymentRequestTestController::set_app_descriptions,
+                          base::Unretained(this)),
+      base::BindRepeating(&PaymentRequestTestController::OnErrorDisplayed,
                           base::Unretained(this)),
       base::BindRepeating(&PaymentRequestTestController::OnNotSupportedError,
                           base::Unretained(this)),
@@ -158,6 +164,10 @@ void PaymentRequestTestController::OnHasEnrolledInstrumentReturned() {
 void PaymentRequestTestController::OnAppListReady() {
   if (observer_)
     observer_->OnAppListReady();
+}
+void PaymentRequestTestController::OnErrorDisplayed() {
+  if (observer_)
+    observer_->OnErrorDisplayed();
 }
 void PaymentRequestTestController::OnNotSupportedError() {
   if (observer_)
