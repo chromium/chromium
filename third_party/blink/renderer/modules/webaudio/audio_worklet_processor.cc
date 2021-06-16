@@ -180,11 +180,14 @@ bool AudioWorkletProcessor::PortTopologyMatches(
   if (audio_port_2.IsEmpty())
     return false;
 
-  // Two AudioPorts are supposed to have the same length because the number of
-  // inputs and outputs of AudioNode cannot change after construction.
   v8::Local<v8::Array> port_2_local = audio_port_2.NewLocal(isolate);
   DCHECK(port_2_local->IsArray());
-  DCHECK_EQ(audio_port_1.size(), port_2_local->Length());
+
+  // Two audio ports may have a different number of inputs or outputs. See
+  // crbug.com/1202060
+  if (audio_port_1.size() != port_2_local->Length()) {
+    return false;
+  }
 
   v8::TryCatch try_catch(isolate);
 
