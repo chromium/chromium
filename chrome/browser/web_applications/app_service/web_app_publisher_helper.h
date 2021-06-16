@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -21,6 +22,15 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/apps/app_service/app_notifications.h"
+#include "chrome/browser/badging/badge_manager.h"
+#include "chrome/browser/badging/badge_manager_delegate.h"
+#include "chrome/browser/notifications/notification_common.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "ui/message_center/public/cpp/notification.h"
+#endif
 
 class Profile;
 
@@ -36,6 +46,9 @@ class WebAppRegistrar;
 class WebAppLaunchManager;
 
 class WebAppPublisherHelper : public AppRegistrarObserver,
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+                              public NotificationDisplayService::Observer,
+#endif
                               public content_settings::Observer {
  public:
   class Delegate {
@@ -178,6 +191,21 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   WebAppRegistrar& registrar() const;
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  class BadgeManagerDelegate : public badging::BadgeManagerDelegate {
+   public:
+    explicit BadgeManagerDelegate(
+        const base::WeakPtr<WebAppPublisherHelper>& publisher_helper);
+
+    ~BadgeManagerDelegate() override;
+
+    void OnAppBadgeUpdated(const AppId& app_id) override;
+
+   private:
+    base::WeakPtr<WebAppPublisherHelper> publisher_helper_;
+  };
+#endif
+
   // AppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
   void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
@@ -193,6 +221,14 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
+
+  // NotificationDisplayService::Observer overrides.
+  void OnNotificationDisplayed(
+      const message_center::Notification& notification,
+      const NotificationCommon::Metadata* const metadata) override;
+  void OnNotificationClosed(const std::string& notification_id) override;
+  void OnNotificationDisplayServiceDestroyed(
+      NotificationDisplayService* service) override;
 #endif
 
   // content_settings::Observer:
@@ -217,6 +253,17 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
+
+  bool MaybeAddNotification(const std::string& app_id,
+                            const std::string& notification_id);
+  void MaybeAddWebPageNotifications(
+      const message_center::Notification& notification,
+      const NotificationCommon::Metadata* const metadata);
+
+  // Returns whether the app should show a badge.
+  apps::mojom::OptionalBool ShouldShowBadge(
+      const std::string& app_id,
+      apps::mojom::OptionalBool has_notification_indicator);
 #endif
 
   Profile* const profile_;
@@ -235,11 +282,23 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::ScopedObservation<NotificationDisplayService,
+                          NotificationDisplayService::Observer>
+      notification_display_service_{this};
+
+  apps::AppNotifications app_notifications_;
+
+  badging::BadgeManager* badge_manager_ = nullptr;
+#endif
+
   std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   apps::PausedApps paused_apps_;
+
+  base::WeakPtrFactory<WebAppPublisherHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

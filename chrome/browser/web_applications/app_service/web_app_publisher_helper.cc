@@ -40,6 +40,13 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/apps/app_service/app_service_metrics.h"
+#include "chrome/browser/badging/badge_manager_factory.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/common/chrome_switches.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -85,6 +92,28 @@ apps::mojom::InstallSource GetHighestPriorityInstallSource(
 WebAppPublisherHelper::Delegate::Delegate() = default;
 
 WebAppPublisherHelper::Delegate::~Delegate() = default;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+WebAppPublisherHelper::BadgeManagerDelegate::BadgeManagerDelegate(
+    const base::WeakPtr<WebAppPublisherHelper>& publisher_helper)
+    : badging::BadgeManagerDelegate(publisher_helper->profile(),
+                                    publisher_helper->badge_manager_),
+      publisher_helper_(publisher_helper) {}
+
+WebAppPublisherHelper::BadgeManagerDelegate::~BadgeManagerDelegate() = default;
+
+void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
+    const AppId& app_id) {
+  if (!publisher_helper_) {
+    return;
+  }
+  apps::mojom::AppPtr app =
+      publisher_helper_->app_notifications_.GetAppWithHasBadgeStatus(
+          publisher_helper_->app_type(), app_id);
+  app->has_badge = publisher_helper_->ShouldShowBadge(app_id, app->has_badge);
+  publisher_helper_->delegate_->PublishWebApp(std::move(app));
+}
+#endif
 
 WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
                                              apps::mojom::AppType app_type,
@@ -232,6 +261,12 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   // Get the intent filters for PWAs.
   apps_util::PopulateWebAppIntentFilters(*web_app, app->intent_filters);
 
+  app->icon_key = MakeIconKey(web_app);
+
+  bool paused = IsPaused(web_app->app_id());
+  app->paused = paused ? apps::mojom::OptionalBool::kTrue
+                       : apps::mojom::OptionalBool::kFalse;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (web_app->chromeos_data().has_value()) {
     bool is_disabled = web_app->chromeos_data()->is_disabled;
@@ -239,6 +274,14 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
       UpdateAppDisabledMode(app);
     }
   }
+
+  apps::mojom::OptionalBool has_notification =
+      app_notifications_.HasNotification(web_app->app_id())
+          ? apps::mojom::OptionalBool::kTrue
+          : apps::mojom::OptionalBool::kFalse;
+  app->has_badge = ShouldShowBadge(web_app->app_id(), has_notification);
+#else
+  app->has_badge = apps::mojom::OptionalBool::kFalse;
 #endif
 
   return app;
@@ -356,6 +399,9 @@ bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
 }
 
 void WebAppPublisherHelper::MaybeRemovePausedApp(const std::string& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  app_notifications_.RemoveNotificationsForApp(app_id);
+#endif
   paused_apps_.MaybeRemoveApp(app_id);
 }
 
@@ -728,6 +774,41 @@ void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void WebAppPublisherHelper::OnNotificationDisplayed(
+    const message_center::Notification& notification,
+    const NotificationCommon::Metadata* const metadata) {
+  if (notification.notifier_id().type !=
+      message_center::NotifierType::WEB_PAGE) {
+    return;
+  }
+  MaybeAddWebPageNotifications(notification, metadata);
+}
+
+void WebAppPublisherHelper::OnNotificationClosed(
+    const std::string& notification_id) {
+  auto app_ids = app_notifications_.GetAppIdsForNotification(notification_id);
+  if (app_ids.empty()) {
+    return;
+  }
+
+  app_notifications_.RemoveNotification(notification_id);
+
+  for (const auto& app_id : app_ids) {
+    apps::mojom::AppPtr app =
+        app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
+    app->has_badge = ShouldShowBadge(app_id, app->has_badge);
+    delegate_->PublishWebApp(std::move(app));
+  }
+}
+
+void WebAppPublisherHelper::OnNotificationDisplayServiceDestroyed(
+    NotificationDisplayService* service) {
+  DCHECK(notification_display_service_.IsObservingSource(service));
+  notification_display_service_.Reset();
+}
+#endif
+
 void WebAppPublisherHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -760,6 +841,20 @@ void WebAppPublisherHelper::Init() {
   registrar_observation_.Observe(&registrar());
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  notification_display_service_.Observe(
+      NotificationDisplayServiceFactory::GetForProfile(profile()));
+
+  badge_manager_ = badging::BadgeManagerFactory::GetForProfile(profile());
+  // badge_manager_ is nullptr in guest and incognito profiles.
+  if (badge_manager_) {
+    badge_manager_->SetDelegate(
+        std::make_unique<WebAppPublisherHelper::BadgeManagerDelegate>(
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif
+
   web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
 }
 
@@ -873,6 +968,96 @@ bool WebAppPublisherHelper::IsWebAppInDisabledList(
     const std::string& app_id) const {
   return base::Contains(provider_->policy_manager().GetDisabledWebAppsIds(),
                         app_id);
+}
+
+bool WebAppPublisherHelper::MaybeAddNotification(
+    const std::string& app_id,
+    const std::string& notification_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return false;
+  }
+
+  app_notifications_.AddNotification(app_id, notification_id);
+  apps::mojom::AppPtr app =
+      app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
+  app->has_badge = ShouldShowBadge(app_id, app->has_badge);
+  delegate_->PublishWebApp(std::move(app));
+  return true;
+}
+
+void WebAppPublisherHelper::MaybeAddWebPageNotifications(
+    const message_center::Notification& notification,
+    const NotificationCommon::Metadata* const metadata) {
+  const PersistentNotificationMetadata* persistent_metadata =
+      PersistentNotificationMetadata::From(metadata);
+
+  const NonPersistentNotificationMetadata* non_persistent_metadata =
+      NonPersistentNotificationMetadata::From(metadata);
+
+  if (persistent_metadata) {
+    // For persistent notifications, find the web app with the SW scope url.
+    absl::optional<AppId> app_id = FindInstalledAppWithUrlInScope(
+        profile(), persistent_metadata->service_worker_scope,
+        /*window_only=*/false);
+    if (app_id.has_value()) {
+      MaybeAddNotification(app_id.value(), notification.id());
+    }
+  } else {
+    // For non-persistent notifications, find all web apps that are installed
+    // under the origin url.
+
+    const GURL& url = non_persistent_metadata &&
+                              !non_persistent_metadata->document_url.is_empty()
+                          ? non_persistent_metadata->document_url
+                          : notification.origin_url();
+
+    auto app_ids = registrar().FindAppsInScope(url);
+    int count = 0;
+    for (const auto& app_id : app_ids) {
+      if (MaybeAddNotification(app_id, notification.id())) {
+        ++count;
+      }
+    }
+    apps::RecordAppsPerNotification(count);
+  }
+}
+
+apps::mojom::OptionalBool WebAppPublisherHelper::ShouldShowBadge(
+    const std::string& app_id,
+    apps::mojom::OptionalBool has_notification) {
+  bool enabled =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsAttentionBadgingCrOS);
+  std::string flag =
+      enabled ? features::kDesktopPWAsAttentionBadgingCrOSParam.Get() : "";
+  if (flag == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly) {
+    // Show a badge based only on the Web Badging API.
+    return badge_manager_ && badge_manager_->GetBadgeValue(app_id).has_value()
+               ? apps::mojom::OptionalBool::kTrue
+               : apps::mojom::OptionalBool::kFalse;
+  } else if (flag ==
+             switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications) {
+    // When the flag is set to "api-and-notifications" we show a badge if either
+    // a notification is showing or the Web Badging API has a badge set.
+    return badge_manager_ && badge_manager_->GetBadgeValue(app_id).has_value()
+               ? apps::mojom::OptionalBool::kTrue
+               : has_notification;
+  } else if (flag ==
+             switches::
+                 kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
+    // When the flag is set to "api-overrides-notifications" we show a badge if
+    // either the Web Badging API recently has a badge set, or the Badging API
+    // has not been recently used by the app and a notification is showing.
+    if (!badge_manager_ || !badge_manager_->HasRecentApiUsage(app_id))
+      return has_notification;
+
+    return badge_manager_->GetBadgeValue(app_id).has_value()
+               ? apps::mojom::OptionalBool::kTrue
+               : apps::mojom::OptionalBool::kFalse;
+  } else {
+    // Show a badge only if a notification is showing.
+    return has_notification;
+  }
 }
 #endif
 

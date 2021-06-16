@@ -7,18 +7,12 @@
 
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/badging/badge_manager.h"
-#include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/notifications/notification_common.h"
-#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/app_service/web_apps_base.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -37,7 +31,6 @@ class WebApp;
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsChromeOs : public WebAppsBase,
                         public ArcAppListPrefs::Observer,
-                        public NotificationDisplayService::Observer,
                         public MediaCaptureDevicesDispatcher::Observer,
                         public apps::AppWebContentsData::Client {
  public:
@@ -52,24 +45,7 @@ class WebAppsChromeOs : public WebAppsBase,
 
   void ObserveArc();
 
-  base::WeakPtr<WebAppsChromeOs> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
  private:
-  class BadgeManagerDelegate : public badging::BadgeManagerDelegate {
-   public:
-    explicit BadgeManagerDelegate(
-        const base::WeakPtr<WebAppsChromeOs>& web_apps_chrome_os_);
-
-    ~BadgeManagerDelegate() override;
-
-    void OnAppBadgeUpdated(const AppId& app_id) override;
-
-   private:
-    base::WeakPtr<WebAppsChromeOs> web_apps_chrome_os_;
-  };
-
   void Initialize();
 
   // apps::mojom::Publisher overrides.
@@ -116,26 +92,12 @@ class WebAppsChromeOs : public WebAppsBase,
   // apps::AppWebContentsData::Observer:
   void OnWebContentsDestroyed(content::WebContents* contents) override;
 
-  // NotificationDisplayService::Observer overrides.
-  void OnNotificationDisplayed(
-      const message_center::Notification& notification,
-      const NotificationCommon::Metadata* const metadata) override;
-  void OnNotificationClosed(const std::string& notification_id) override;
-  void OnNotificationDisplayServiceDestroyed(
-      NotificationDisplayService* service) override;
-
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
       apps::mojom::MenuType menu_type,
       apps::mojom::MenuItemsPtr menu_items,
       GetMenuModelCallback callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
-
-  bool MaybeAddNotification(const std::string& app_id,
-                            const std::string& notification_id);
-  void MaybeAddWebPageNotifications(
-      const message_center::Notification& notification,
-      const NotificationCommon::Metadata* const metadata);
 
   apps::mojom::AppPtr Convert(const WebApp* web_app,
                               apps::mojom::Readiness readiness) override;
@@ -150,11 +112,6 @@ class WebAppsChromeOs : public WebAppsBase,
   // remove the Chrome app badge.
   void ApplyChromeBadge(const std::string& arc_package_name);
 
-  // Returns whether the app should show a badge.
-  apps::mojom::OptionalBool ShouldShowBadge(
-      const std::string& app_id,
-      apps::mojom::OptionalBool has_notification_indicator);
-
   apps::InstanceRegistry* instance_registry_;
 
   ArcAppListPrefs* arc_prefs_ = nullptr;
@@ -164,16 +121,6 @@ class WebAppsChromeOs : public WebAppsBase,
       media_dispatcher_{this};
 
   apps::MediaRequests media_requests_;
-
-  base::ScopedObservation<NotificationDisplayService,
-                          NotificationDisplayService::Observer>
-      notification_display_service_{this};
-
-  apps::AppNotifications app_notifications_;
-
-  badging::BadgeManager* badge_manager_ = nullptr;
-
-  base::WeakPtrFactory<WebAppsChromeOs> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

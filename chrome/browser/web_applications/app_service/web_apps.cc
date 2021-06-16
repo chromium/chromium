@@ -44,15 +44,7 @@ void WebApps::UninstallImpl(Profile* profile,
 
 apps::mojom::AppPtr WebApps::Convert(const WebApp* web_app,
                                      apps::mojom::Readiness readiness) {
-  apps::mojom::AppPtr app =
-      publisher_helper().ConvertWebApp(web_app, readiness);
-
-  app->icon_key = publisher_helper().MakeIconKey(web_app);
-
-  app->has_badge = apps::mojom::OptionalBool::kFalse;
-  app->paused = apps::mojom::OptionalBool::kFalse;
-
-  return app;
+  return publisher_helper().ConvertWebApp(web_app, readiness);
 }
 
 }  // namespace web_app

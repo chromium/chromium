@@ -244,7 +244,9 @@ const base::Feature kDesktopPWAsAppIconShortcutsMenu{
 // UI surfaces.
 const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
     "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enables attention badging for PWA icons in the shelf and launcher.
 const base::Feature kDesktopPWAsAttentionBadgingCrOS{
     "DesktopPWAsAttentionBadgingCrOS", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -4305,8 +4305,6 @@ static_library("browser") {
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
     sources += [
-      "apps/app_service/app_notifications.cc",
-      "apps/app_service/app_notifications.h",
       "apps/app_service/app_platform_metrics.cc",
       "apps/app_service/app_platform_metrics.h",
       "apps/app_service/app_platform_metrics_service.cc",
@@ -4795,6 +4793,8 @@ static_library("browser") {
 
   if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
+      "apps/app_service/app_notifications.cc",
+      "apps/app_service/app_notifications.h",
       "apps/app_service/app_web_contents_data.cc",
       "apps/app_service/app_web_contents_data.h",
       "apps/app_service/media_requests.cc",

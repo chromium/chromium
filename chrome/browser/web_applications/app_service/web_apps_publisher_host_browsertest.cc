@@ -22,6 +22,8 @@
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/notifications/notification_common.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -49,6 +51,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
 using apps::IconEffects;
@@ -471,6 +476,40 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, WindowMode) {
   EXPECT_GE(mock_app_publisher.get_deltas().size(), 2U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->window_mode,
             apps::mojom::WindowMode::kBrowser);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, Notification) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->has_badge,
+            apps::mojom::OptionalBool::kFalse);
+
+  const GURL origin = app_url.GetOrigin();
+  const std::string notification_id = "notification-id";
+  auto notification = std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      std::u16string(), std::u16string(), gfx::Image(),
+      base::UTF8ToUTF16(origin.host()), origin,
+      message_center::NotifierId(origin),
+      message_center::RichNotificationData(), nullptr);
+  auto metadata = std::make_unique<PersistentNotificationMetadata>();
+  metadata->service_worker_scope = app_url.GetWithoutFilename();
+
+  NotificationDisplayService::GetForProfile(profile())->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, *notification,
+      std::move(metadata));
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 2U);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->has_badge,
+            apps::mojom::OptionalBool::kTrue);
 }
 
 }  // namespace web_app
