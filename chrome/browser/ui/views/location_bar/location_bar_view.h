@@ -464,9 +464,6 @@ class LocationBarView : public LocationBar,
   // bar is read-only.
   const bool is_popup_mode_;
 
-  // The focus ring, if one is in use.
-  views::FocusRing* focus_ring_ = nullptr;
-
   bool is_initialized_ = false;
 
   base::CallbackListSubscription subscription_ =

@@ -8,6 +8,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
@@ -34,7 +35,7 @@ void TrayToggleButton::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kSwitchTrackColorActive));
   SetTrackOffColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 

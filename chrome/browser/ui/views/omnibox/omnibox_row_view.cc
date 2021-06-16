@@ -67,12 +67,12 @@ class OmniboxRowView::HeaderView : public views::View {
     views::InstallCircleHighlightPathGenerator(header_toggle_button_);
     header_toggle_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-    header_toggle_button_focus_ring_ =
-        views::FocusRing::Install(header_toggle_button_);
-    header_toggle_button_focus_ring_->SetHasFocusPredicate([&](View* view) {
-      return view->GetVisible() &&
-             row_view_->popup_model_->selection() == GetHeaderSelection();
-    });
+    views::FocusRing::Install(header_toggle_button_);
+    views::FocusRing::Get(header_toggle_button_)
+        ->SetHasFocusPredicate([&](View* view) {
+          return view->GetVisible() &&
+                 row_view_->popup_model_->selection() == GetHeaderSelection();
+        });
 
     if (row_view_->pref_service_) {
       pref_change_registrar_.Init(row_view_->pref_service_);
@@ -185,7 +185,7 @@ class OmniboxRowView::HeaderView : public views::View {
     header_toggle_button_->SetToggledAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON, header_text_));
 
-    header_toggle_button_focus_ring_->SchedulePaint();
+    views::FocusRing::Get(header_toggle_button_)->SchedulePaint();
 
     // It's a little hokey that we're stealing the logic for the background
     // color from OmniboxResultView. If we start doing this is more than just
@@ -238,7 +238,6 @@ class OmniboxRowView::HeaderView : public views::View {
 
   // The button used to toggle hiding suggestions with this header.
   views::ToggleImageButton* header_toggle_button_;
-  views::FocusRing* header_toggle_button_focus_ring_ = nullptr;
 
   // The group ID associated with this header.
   int suggestion_group_id_ = 0;

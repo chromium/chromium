@@ -101,7 +101,7 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
 
   // Enable keyboard focus.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  focus_ring_ = views::FocusRing::Install(this);
+  views::FocusRing::Install(this);
   views::HighlightPathGenerator::Install(
       this,
       std::make_unique<TabGroupHighlightPathGenerator>(title_chip_, title_));
@@ -445,8 +445,8 @@ void TabGroupHeader::VisualsChanged() {
                       text_height);
   }
 
-  if (focus_ring_)
-    focus_ring_->Layout();
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->Layout();
 }
 
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {

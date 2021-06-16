@@ -12,6 +12,7 @@
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
@@ -44,7 +45,7 @@ void RoundedLabelButton::OnThemeChanged() {
   views::LabelButton::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
   color_provider->DecoratePillButton(this, /*icon=*/nullptr);
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
   background()->SetNativeControlColor(GetBackgroundColor());
 }

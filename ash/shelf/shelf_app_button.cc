@@ -41,6 +41,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
 #include "ui/views/controls/dot_indicator.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/painter.h"
@@ -328,10 +329,11 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   views::InstallEmptyHighlightPathGenerator(this);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
-  focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+  views::FocusRing::Get(this)->SetColor(
+      ShelfConfig::Get()->shelf_focus_border_color());
   // The focus ring should have an inset of half the focus border thickness, so
   // the parent view won't clip it.
-  focus_ring()->SetPathGenerator(
+  views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
           gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2, 0), 0));
 }
@@ -725,7 +727,7 @@ void ShelfAppButton::Layout() {
   indicator_->SetBoundsRect(indicator_bounds);
 
   UpdateState();
-  focus_ring()->Layout();
+  views::FocusRing::Get(this)->Layout();
 }
 
 void ShelfAppButton::ChildPreferredSizeChanged(views::View* child) {

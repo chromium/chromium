@@ -11,6 +11,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 namespace {
@@ -51,7 +52,7 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
   // `PaintButtonContents()`.
   views::InkDrop::UseInkDropForFloodFillRipple(
       views::InkDrop::Get(this), /*highlight_on_hover=*/false,
-      /*highlight_on_focus=*/!focus_ring());
+      /*highlight_on_focus=*/!views::FocusRing::Get(this));
 }
 
 ClipboardHistoryMainButton::~ClipboardHistoryMainButton() = default;

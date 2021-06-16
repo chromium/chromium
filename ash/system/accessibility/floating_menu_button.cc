@@ -17,6 +17,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
@@ -139,8 +140,9 @@ void FloatingMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void FloatingMenuButton::OnThemeChanged() {
   ImageButton::OnThemeChanged();
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
   UpdateImage();
   SchedulePaint();
 }

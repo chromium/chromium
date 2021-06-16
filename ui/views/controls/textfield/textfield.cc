@@ -240,8 +240,7 @@ Textfield::Textfield()
   UpdateBorder();
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  if (use_focus_ring_)
-    focus_ring_ = FocusRing::Install(this);
+  FocusRing::Install(this);
 
 #if !defined(OS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom
@@ -566,8 +565,8 @@ void Textfield::SetInvalid(bool invalid) {
     return;
   invalid_ = invalid;
   UpdateBorder();
-  if (focus_ring_)
-    focus_ring_->SetInvalid(invalid);
+  if (FocusRing::Get(this))
+    FocusRing::Get(this)->SetInvalid(invalid);
   OnPropertyChanged(&invalid_, kPropertyEffectsNone);
 }
 
@@ -643,11 +642,7 @@ gfx::Size Textfield::GetMinimumSize() const {
 }
 
 void Textfield::SetBorder(std::unique_ptr<Border> b) {
-  use_focus_ring_ = false;
-  if (focus_ring_) {
-    RemoveChildViewT(focus_ring_);
-    focus_ring_ = nullptr;
-  }
+  FocusRing::Remove(this);
   View::SetBorder(std::move(b));
 }
 

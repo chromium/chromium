@@ -31,6 +31,7 @@
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
@@ -89,7 +90,7 @@ void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
   // When using focus rings are visible we should hide the separator instantly
   // when the IconLabelBubbleView is focused. Otherwise we should follow the
   // inkdrop.
-  if (owner_->focus_ring() && owner_->HasFocus()) {
+  if (views::FocusRing::Get(owner_) && owner_->HasFocus()) {
     layer()->SetOpacity(0.0f);
     return;
   }
@@ -156,7 +157,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
         std::unique_ptr<views::InkDrop> ink_drop =
             views::InkDrop::CreateInkDropForFloodFillRipple(
                 views::InkDrop::Get(host), /*highlight_on_hover=*/true,
-                /*highlight_on_focus=*/!host->focus_ring());
+                /*highlight_on_focus=*/!views::FocusRing::Get(host));
         ink_drop->AddObserver(host);
         return ink_drop;
       },
@@ -320,9 +321,9 @@ void IconLabelBubbleView::Layout() {
   separator_view_->SetBounds(separator_x, separator_bounds.y(), separator_width,
                              separator_height);
 
-  if (focus_ring()) {
-    focus_ring()->Layout();
-    focus_ring()->SchedulePaint();
+  if (views::FocusRing::Get(this)) {
+    views::FocusRing::Get(this)->Layout();
+    views::FocusRing::Get(this)->SchedulePaint();
   }
 }
 
@@ -382,7 +383,7 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
 
   views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(true);
   views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnFocus(
-      !focus_ring());
+      !views::FocusRing::Get(this));
 }
 
 void IconLabelBubbleView::AnimationProgressed(const gfx::Animation* animation) {

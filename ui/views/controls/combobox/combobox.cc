@@ -254,7 +254,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  focus_ring_ = FocusRing::Install(this);
+  FocusRing::Install(this);
 }
 
 Combobox::~Combobox() {
@@ -339,8 +339,8 @@ void Combobox::SetInvalid(bool invalid) {
 
   invalid_ = invalid;
 
-  if (focus_ring_)
-    focus_ring_->SetInvalid(invalid);
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->SetInvalid(invalid);
 
   UpdateBorder();
   OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);

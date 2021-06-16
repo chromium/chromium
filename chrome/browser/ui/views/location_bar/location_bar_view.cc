@@ -163,8 +163,8 @@ LocationBarView::LocationBarView(Browser* browser,
       delegate_(delegate),
       is_popup_mode_(is_popup_mode) {
   if (!is_popup_mode_) {
-    focus_ring_ = views::FocusRing::Install(this);
-    focus_ring_->SetHasFocusPredicate([](View* view) -> bool {
+    views::FocusRing::Install(this);
+    views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {
       DCHECK(views::IsViewClass<LocationBarView>(view));
       auto* v = static_cast<LocationBarView*>(view);
 
@@ -174,7 +174,7 @@ LocationBarView::LocationBarView(Browser* browser,
              !v->GetOmniboxPopupView()->IsOpen();
     });
 
-    focus_ring_->SetPathGenerator(
+    views::FocusRing::Get(this)->SetPathGenerator(
         std::make_unique<views::PillHighlightPathGenerator>());
 
 #if defined(OS_MAC)
@@ -1277,8 +1277,8 @@ void LocationBarView::OnPopupVisibilityChanged() {
   UpdateWithoutTabRestore();
 
   // The focus ring may be hidden or shown when the popup visibility changes.
-  if (focus_ring_)
-    focus_ring_->SchedulePaint();
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->SchedulePaint();
 
   // We indent the textfield when the popup is open to align to suggestions.
   omnibox_view_->NotifyAccessibilityEvent(ax::mojom::Event::kControlsChanged,
@@ -1290,8 +1290,8 @@ const LocationBarModel* LocationBarView::GetLocationBarModel() const {
 }
 
 void LocationBarView::OnOmniboxFocused() {
-  if (focus_ring_)
-    focus_ring_->SchedulePaint();
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->SchedulePaint();
 
   // Only show hover animation in unfocused steady state.  Since focusing
   // the omnibox is intentional, snapping is better than transitioning here.
@@ -1303,8 +1303,8 @@ void LocationBarView::OnOmniboxFocused() {
 }
 
 void LocationBarView::OnOmniboxBlurred() {
-  if (focus_ring_)
-    focus_ring_->SchedulePaint();
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->SchedulePaint();
   UpdateSendTabToSelfIcon();
   UpdateQRCodeGeneratorIcon();
   RefreshBackground();

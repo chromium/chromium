@@ -27,6 +27,7 @@
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -62,7 +63,8 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
                           base::Unretained(this)));
 
   SetInstallFocusRingOnFocus(true);
-  focus_ring()->SetColor(AppListColorProvider::Get()->GetFocusRingColor());
+  views::FocusRing::Get(this)->SetColor(
+      AppListColorProvider::Get()->GetFocusRingColor());
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InstallPillHighlightPathGenerator(this);
@@ -145,11 +147,12 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(bounds, height() / 2, flags);
 
   // Focus Ring should only be visible when keyboard traversal is occurring.
-  if (view_delegate_->KeyboardTraversalEngaged())
-    focus_ring()->SetColor(AppListColorProvider::Get()->GetFocusRingColor());
-  else
-    focus_ring()->SetColor(
-        SkColorSetA(AppListColorProvider::Get()->GetFocusRingColor(), 0));
+  const auto focus_ring_color =
+      AppListColorProvider::Get()->GetFocusRingColor();
+  views::FocusRing::Get(this)->SetColor(
+      view_delegate_->KeyboardTraversalEngaged()
+          ? focus_ring_color
+          : SkColorSetA(focus_ring_color, 0));
 }
 
 void SearchResultSuggestionChipView::OnFocus() {

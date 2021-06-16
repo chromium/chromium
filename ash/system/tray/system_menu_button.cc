@@ -13,6 +13,7 @@
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
@@ -37,8 +38,9 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
       this, TrayPopupInkDropStyle::HOST_CENTERED);
   TrayPopupUtils::InstallHighlightPathGenerator(
       this, TrayPopupInkDropStyle::HOST_CENTERED);
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 SystemMenuButton::SystemMenuButton(PressedCallback callback,

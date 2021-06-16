@@ -739,9 +739,6 @@ class VIEWS_EXPORT Textfield : public View,
   // scrolling. If |true|, handles are shown after scrolling ends.
   bool touch_handles_hidden_due_to_scroll_ = false;
 
-  // True if this textfield should use a focus ring to indicate focus.
-  bool use_focus_ring_ = true;
-
   // Whether the user should be notified if the clipboard is restricted.
   bool show_rejection_ui_if_any_ = false;
 
@@ -764,9 +761,6 @@ class VIEWS_EXPORT Textfield : public View,
   // How this textfield was focused.
   ui::TextInputClient::FocusReason focus_reason_ =
       ui::TextInputClient::FOCUS_REASON_NONE;
-
-  // The focus ring for this TextField.
-  FocusRing* focus_ring_ = nullptr;
 
   // The password char reveal index, for testing only.
   int password_char_reveal_index_ = -1;

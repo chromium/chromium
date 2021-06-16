@@ -18,6 +18,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
@@ -49,7 +50,7 @@ class TrayRadioButton : public views::RadioButton {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     TrayPopupUtils::SetLabelFontList(label(),
                                      TrayPopupUtils::FontStyle::kSmallTitle);
-    focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+    views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 };

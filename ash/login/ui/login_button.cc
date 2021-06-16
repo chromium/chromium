@@ -11,6 +11,7 @@
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
@@ -52,8 +53,8 @@ LoginButton::LoginButton(PressedCallback callback)
       this));
 
   SetInstallFocusRingOnFocus(true);
-  login_views_utils::ConfigureRectFocusRingCircleInkDrop(this, focus_ring(),
-                                                         absl::nullopt);
+  login_views_utils::ConfigureRectFocusRingCircleInkDrop(
+      this, views::FocusRing::Get(this), absl::nullopt);
 }
 
 LoginButton::~LoginButton() = default;

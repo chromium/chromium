@@ -15,6 +15,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -129,7 +130,7 @@ void AssistantOnboardingSuggestionView::InitLayout(
 
   // Focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  focus_ring()->SetColor(gfx::kGoogleBlue300);
+  views::FocusRing::Get(this)->SetColor(gfx::kGoogleBlue300);
 
   // Ink Drop.
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -160,7 +161,7 @@ void AssistantOnboardingSuggestionView::InitLayout(
 
   // NOTE: Our |layout| ignores the view for drawing focus as it is a special
   // view which lays out itself. Removing this would cause it *not* to paint.
-  layout.SetChildViewIgnoredByLayout(focus_ring(), true);
+  layout.SetChildViewIgnoredByLayout(views::FocusRing::Get(this), true);
 
   // NOTE: Our |ink_drop_container_| serves only to hold reference to ink drop
   // layers for painting purposes. It can be completely ignored by our |layout|.

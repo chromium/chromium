@@ -42,7 +42,6 @@ struct AXNodeData;
 namespace views {
 
 class AXVirtualView;
-class FocusRing;
 struct GroupRange;
 class ScrollView;
 class TableGrouper;
@@ -450,9 +449,6 @@ class VIEWS_EXPORT TableView : public views::View,
   // The active visible column. Used for keyboard access to functionality such
   // as sorting and resizing. -1 if no visible column is active.
   int active_visible_column_index_ = -1;
-
-  // Used to draw a focus indicator around the active cell.
-  FocusRing* focus_ring_ = nullptr;
 
   // The header. This is only created if more than one column is specified or
   // the first column has a non-empty title.

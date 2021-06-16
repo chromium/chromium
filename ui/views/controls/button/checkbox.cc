@@ -80,7 +80,7 @@ Checkbox::Checkbox(const std::u16string& label, PressedCallback callback)
   // Checkboxes always have a focus ring, even when the platform otherwise
   // doesn't generally use them for buttons.
   SetInstallFocusRingOnFocus(true);
-  focus_ring()->SetPathGenerator(
+  FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
 
   // Avoid the default ink-drop mask to allow the ripple effect to extend beyond

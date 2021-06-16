@@ -230,8 +230,8 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
     more_content_bottom_->SetPaintToLayer();
   }
 
-  focus_ring_ = FocusRing::Install(this);
-  focus_ring_->SetHasFocusPredicate([](View* view) -> bool {
+  FocusRing::Install(this);
+  views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {
     auto* v = static_cast<ScrollView*>(view);
     return v->draw_focus_indicator_;
   });
@@ -449,7 +449,7 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
     return;
   draw_focus_indicator_ = has_focus_indicator;
 
-  focus_ring_->SchedulePaint();
+  views::FocusRing::Get(this)->SchedulePaint();
   SchedulePaint();
   OnPropertyChanged(&draw_focus_indicator_, kPropertyEffectsPaint);
 }
@@ -498,8 +498,8 @@ void ScrollView::Layout() {
     DCHECK_EQ(horiz_sb_->OverlapsContent(), vert_sb_->OverlapsContent());
   }
 
-  if (focus_ring_)
-    focus_ring_->Layout();
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->Layout();
 
   gfx::Rect available_rect = GetContentsBounds();
   if (is_bounded()) {

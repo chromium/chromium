@@ -24,6 +24,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
 
@@ -153,9 +154,9 @@ ToggleButton::ToggleButton(PressedCallback callback)
       this));
 
   SetInstallFocusRingOnFocus(true);
-  focus_ring()->SetPathGenerator(
+  FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
-  focus_ring()->SetShouldPaintFocusAura(true);
+  FocusRing::Get(this)->SetShouldPaintFocusAura(true);
 }
 
 ToggleButton::~ToggleButton() {
@@ -272,11 +273,11 @@ gfx::Rect ToggleButton::GetThumbBounds() const {
 void ToggleButton::UpdateThumb() {
   thumb_view_->Update(GetThumbBounds(),
                       static_cast<float>(slide_animation_.GetCurrentValue()));
-  if (focus_ring()) {
+  if (FocusRing::Get(this)) {
     // Updating the thumb changes the result of GetFocusRingPath(), make sure
     // the focus ring gets updated to match this new state.
-    focus_ring()->InvalidateLayout();
-    focus_ring()->SchedulePaint();
+    FocusRing::Get(this)->InvalidateLayout();
+    FocusRing::Get(this)->SchedulePaint();
   }
 }
 

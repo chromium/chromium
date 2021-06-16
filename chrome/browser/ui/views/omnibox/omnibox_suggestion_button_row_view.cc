@@ -65,7 +65,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         },
         this));
 
-    focus_ring()->SetHasFocusPredicate([=](View* view) {
+    views::FocusRing::Get(this)->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&
              popup_contents_view_->model()->selection() == selection_;
     });
@@ -78,7 +78,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   ~OmniboxSuggestionRowButton() override = default;
 
   void OnOmniboxBackgroundChange(SkColor omnibox_bg_color) {
-    focus_ring()->SchedulePaint();
+    views::FocusRing::Get(this)->SchedulePaint();
     omnibox_bg_color_ = omnibox_bg_color;
     UpdateBackgroundColor();
   }

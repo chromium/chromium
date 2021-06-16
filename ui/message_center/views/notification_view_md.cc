@@ -51,6 +51,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -675,8 +676,8 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   views::HighlightPathGenerator::Install(this,
                                          std::move(highlight_path_generator));
 
-  DCHECK(focus_ring());
-  focus_ring()->SetPathGenerator(
+  DCHECK(views::FocusRing::Get(this));
+  views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<MessageView::HighlightPathGenerator>());
 
   UpdateCornerRadius(kNotificationCornerRadius, kNotificationCornerRadius);

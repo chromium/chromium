@@ -36,6 +36,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
@@ -112,7 +113,7 @@ void DateView::OnThemeChanged() {
   auto* color_provider = AshColorProvider::Get();
   label_->SetEnabledColor(color_provider->GetContentLayerColor(
       ContentLayerType::kTextColorPrimary));
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
@@ -266,7 +267,7 @@ void ManagedStateView::OnThemeChanged() {
   image_->SetImage(
       gfx::CreateVectorIcon(icon_, color_provider->GetContentLayerColor(
                                        ContentLayerType::kIconColorSecondary)));
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 

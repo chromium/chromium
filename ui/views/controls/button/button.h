@@ -282,8 +282,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
     return hover_animation_;
   }
 
-  FocusRing* focus_ring() { return focus_ring_; }
-
   // Getter used by metadata only.
   const PressedCallback& GetCallback() const { return callback_; }
 
@@ -333,9 +331,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // When true, the ink drop ripple will be shown when setting state to hot
   // tracked with SetHotTracked().
   bool show_ink_drop_when_hot_tracked_ = false;
-
-  // The focus ring for this Button.
-  FocusRing* focus_ring_ = nullptr;
 
   std::unique_ptr<Painter> focus_painter_;
 

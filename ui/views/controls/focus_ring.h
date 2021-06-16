@@ -33,9 +33,15 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
 
   using ViewPredicate = std::function<bool(View* view)>;
 
-  // Create a FocusRing and adds it to |parent|. The returned focus ring is
-  // owned by the |parent|.
-  static FocusRing* Install(View* parent);
+  // Creates a FocusRing and adds it to `host`.
+  static void Install(View* host);
+
+  // Gets the FocusRing, if present, from `host`.
+  static FocusRing* Get(View* host);
+  static const FocusRing* Get(const View* host);
+
+  // Removes the FocusRing, if present, from `host`.
+  static void Remove(View* host);
 
   // Configures `view` so that FocusRings under it are aware of the background
   // they are painted against. Unless the color of the FocusRing has been

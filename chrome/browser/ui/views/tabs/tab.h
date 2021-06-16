@@ -287,9 +287,6 @@ class Tab : public gfx::AnimationDelegate,
 
   std::unique_ptr<TabCloseButtonObserver> tab_close_button_observer_;
 
-  // Focus ring for accessibility.
-  views::FocusRing* focus_ring_;
-
   // Freezing token held while the tab is collapsed.
   std::unique_ptr<performance_manager::freezing::FreezingVoteToken>
       freezing_token_;

@@ -32,7 +32,6 @@ namespace test {
 class ComboboxTestApi;
 }
 
-class FocusRing;
 class MenuRunner;
 class PrefixSelector;
 
@@ -222,9 +221,6 @@ class VIEWS_EXPORT Combobox : public View,
   // Otherwise, it's defined by the widest label in the menu. If this is set to
   // true, the parent view must relayout in ChildPreferredSizeChanged().
   bool size_to_largest_label_ = true;
-
-  // The focus ring for this Combobox.
-  FocusRing* focus_ring_ = nullptr;
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};

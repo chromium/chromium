@@ -93,7 +93,8 @@ class PinRequestView::FocusableLabelButton : public views::LabelButton {
   FocusableLabelButton(PressedCallback callback, const std::u16string& text)
       : views::LabelButton(std::move(callback), text) {
     SetInstallFocusRingOnFocus(true);
-    focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+    views::FocusRing::Get(this)->SetColor(
+        ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 

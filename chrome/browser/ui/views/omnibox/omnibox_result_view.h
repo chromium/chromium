@@ -38,7 +38,6 @@ class Image;
 
 namespace views {
 class Button;
-class FocusRing;
 class ImageButton;
 }  // namespace views
 
@@ -153,7 +152,6 @@ class OmniboxResultView : public views::View,
 
   // The "X" button at the end of the match cell, used to remove suggestions.
   views::ImageButton* remove_suggestion_button_;
-  views::FocusRing* remove_suggestion_focus_ring_ = nullptr;
 
   // The row of buttons that appears when actions such as tab switch or Pedals
   // are on the suggestion. It is owned by the base view, not this raw pointer.

@@ -21,6 +21,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -65,7 +66,7 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
   // Focus ring is around the whole view's bounds, but the ink drop should be
   // the same size as the content.
   TrayPopupUtils::ConfigureTrayPopupButton(this);
-  focus_ring()->SetPathGenerator(
+  views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           kUnifiedFeaturePodHoverPadding));
   views::InstallCircleHighlightPathGenerator(this,
@@ -135,8 +136,9 @@ const char* FeaturePodIconButton::GetClassName() const {
 
 void FeaturePodIconButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          ControlsLayerType::kFocusRingColor));
   UpdateVectorIcon();
   SchedulePaint();
 }
@@ -178,8 +180,9 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          ControlsLayerType::kFocusRingColor));
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kUnifiedFeaturePodHoverCornerRadius);
 }
@@ -187,8 +190,8 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
 FeaturePodLabelButton::~FeaturePodLabelButton() = default;
 
 void FeaturePodLabelButton::Layout() {
-  DCHECK(focus_ring());
-  focus_ring()->Layout();
+  DCHECK(views::FocusRing::Get(this));
+  views::FocusRing::Get(this)->Layout();
   LayoutInCenter(label_, GetContentsBounds().y());
   LayoutInCenter(sub_label_, GetContentsBounds().CenterPoint().y() +
                                  kUnifiedFeaturePodInterLabelPadding);

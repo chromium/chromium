@@ -50,6 +50,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/painter.h"
@@ -257,9 +258,10 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetInstallFocusRingOnFocus(true);
 
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+  views::FocusRing* const focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
-  focus_ring()->SetPathGenerator(std::make_unique<HighlightPathGenerator>(
+  focus_ring->SetPathGenerator(std::make_unique<HighlightPathGenerator>(
       this, kTrayBackgroundFocusPadding));
   SetFocusPainter(nullptr);
 

@@ -29,6 +29,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/painter.h"
@@ -134,9 +135,9 @@ class BasePinButton : public views::View {
         },
         this));
 
-    views::FocusRing* focus_ring = views::FocusRing::Install(this);
+    views::FocusRing::Install(this);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
-        this, focus_ring, kInkDropCornerRadiusDp);
+        this, views::FocusRing::Get(this), kInkDropCornerRadiusDp);
   }
 
   ~BasePinButton() override = default;

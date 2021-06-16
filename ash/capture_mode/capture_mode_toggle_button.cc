@@ -12,6 +12,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
@@ -20,7 +21,7 @@ CaptureModeToggleButton::CaptureModeToggleButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon)
     : views::ToggleImageButton(callback) {
-  CaptureModeButton::ConfigureButton(this, focus_ring());
+  CaptureModeButton::ConfigureButton(this, views::FocusRing::Get(this));
 
   SetIcon(icon);
   toggled_background_color_ = AshColorProvider::Get()->GetControlsLayerColor(

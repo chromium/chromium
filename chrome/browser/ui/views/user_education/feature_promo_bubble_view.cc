@@ -33,6 +33,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/dot_indicator.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/box_layout.h"
@@ -94,7 +95,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
     // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
     // inactive style when the bubble loses focus.
     SetTextColor(ButtonState::STATE_DISABLED, kBubbleButtonTextColor);
-    focus_ring()->SetColor(kBubbleButtonFocusRingColor);
+    views::FocusRing::Get(this)->SetColor(kBubbleButtonFocusRingColor);
     GetViewAccessibility().OverrideIsLeaf(true);
   }
   MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;

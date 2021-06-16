@@ -25,6 +25,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/rect_based_targeting_utils.h"
@@ -75,7 +76,7 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   auto ring_highlight_path =
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets());
   ring_highlight_path->set_use_contents_bounds(true);
-  focus_ring()->SetPathGenerator(std::move(ring_highlight_path));
+  views::FocusRing::Get(this)->SetPathGenerator(std::move(ring_highlight_path));
 
   // Always have a value on this property so we can modify it directly without
   // a heap allocation.

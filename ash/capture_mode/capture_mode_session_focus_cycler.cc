@@ -50,8 +50,12 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   views::View* view = GetView();
   DCHECK(view);
 
+  // This is lazy initialization of the FocusRing effectively. This is only used
+  // for children of HighlightableView, so it will not replace any other style
+  // of FocusRing.
   if (!focus_ring_) {
-    focus_ring_ = views::FocusRing::Install(view);
+    views::FocusRing::Install(view);
+    focus_ring_ = views::FocusRing::Get(view);
     focus_ring_->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kFocusRingColor));
     // Use a custom focus predicate as the default one checks if |view| actually

@@ -13,6 +13,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_class_properties.h"
 
@@ -57,7 +58,7 @@ void TopShortcutButton::OnThemeChanged() {
   color_provider->DecorateIconButton(this, icon_,
                                      /*toggled_=*/false,
                                      kTrayTopShortcutButtonIconSize);
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
   SchedulePaint();
 }

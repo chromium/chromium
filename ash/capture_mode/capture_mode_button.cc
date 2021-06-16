@@ -14,6 +14,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
@@ -21,7 +22,7 @@ namespace ash {
 CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
                                      const gfx::VectorIcon& icon)
     : views::ImageButton(callback) {
-  ConfigureButton(this, focus_ring());
+  ConfigureButton(this, views::FocusRing::Get(this));
   const SkColor normal_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
   SetImage(views::Button::STATE_NORMAL,

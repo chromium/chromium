@@ -76,6 +76,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/rect_based_targeting_utils.h"
@@ -240,7 +241,7 @@ Tab::Tab(TabController* controller)
 
   // Enable keyboard focus.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  focus_ring_ = views::FocusRing::Install(this);
+  views::FocusRing::Install(this);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<TabStyleHighlightPathGenerator>(tab_style_.get()));
 }
@@ -409,8 +410,8 @@ void Tab::Layout() {
   }
   title_->SetVisible(show_title);
 
-  if (focus_ring_)
-    focus_ring_->Layout();
+  if (views::FocusRing::Get(this))
+    views::FocusRing::Get(this)->Layout();
 }
 
 bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
@@ -720,13 +721,12 @@ void Tab::SetClosing(bool closing) {
   closing_ = closing;
   ActiveStateChanged();
 
-  if (closing && focus_ring_) {
+  if (closing && views::FocusRing::Get(this)) {
     // When closing, sometimes DCHECK fails because
     // cc::Layer::IsPropertyChangeAllowed() returns false. Deleting
     // the focus ring fixes this. TODO(collinbaker): investigate why
     // this happens.
-    RemoveChildViewT(focus_ring_);
-    focus_ring_ = nullptr;
+    views::FocusRing::Remove(this);
   }
 }
 

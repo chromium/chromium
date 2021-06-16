@@ -200,13 +200,13 @@ OmniboxResultView::OmniboxResultView(
   views::InstallCircleHighlightPathGenerator(remove_suggestion_button_);
   remove_suggestion_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
-  remove_suggestion_focus_ring_ =
-      views::FocusRing::Install(remove_suggestion_button_);
-  remove_suggestion_focus_ring_->SetHasFocusPredicate([&](View* view) {
-    return view->GetVisible() && GetMatchSelected() &&
-           (popup_contents_view_->model()->selected_line_state() ==
-            OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION);
-  });
+  views::FocusRing::Install(remove_suggestion_button_);
+  views::FocusRing::Get(remove_suggestion_button_)
+      ->SetHasFocusPredicate([&](View* view) {
+        return view->GetVisible() && GetMatchSelected() &&
+               (popup_contents_view_->model()->selected_line_state() ==
+                OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION);
+      });
 
   button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
       popup_contents_view_, model_index));
@@ -305,7 +305,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       OmniboxPart::RESULTS_TEXT_DIMMED);
   keyword_view_->separator()->ApplyTextColor(OmniboxPart::RESULTS_TEXT_DIMMED);
   if (remove_suggestion_button_->GetVisible())
-    remove_suggestion_focus_ring_->SchedulePaint();
+    views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
 
   // Recreate the icons in case the color needs to change.
   // Note: if this is an extension icon or favicon then this can be done in

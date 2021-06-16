@@ -39,6 +39,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -181,8 +182,8 @@ class MediaActionButton : public views::ImageButton {
     SetAction(action, accessible_name);
 
     SetInstallFocusRingOnFocus(true);
-    login_views_utils::ConfigureRectFocusRingCircleInkDrop(this, focus_ring(),
-                                                           absl::nullopt);
+    login_views_utils::ConfigureRectFocusRingCircleInkDrop(
+        this, views::FocusRing::Get(this), absl::nullopt);
   }
 
   ~MediaActionButton() override = default;

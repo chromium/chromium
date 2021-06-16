@@ -21,6 +21,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -79,7 +80,7 @@ class Header : public views::Button {
     // Focus ring.
     // Though the entirety of the header is focusable and behaves as a single
     // button, the focus ring is drawn as a circle around just the `chevron_`.
-    focus_ring()->SetPathGenerator(
+    views::FocusRing::Get(this)->SetPathGenerator(
         std::make_unique<CallbackPathGenerator>(base::BindRepeating(
             [](const views::View* chevron) {
               const float radius = chevron->width() / 2.f;
@@ -107,8 +108,9 @@ class Header : public views::Button {
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
 
     // Focus ring.
-    focus_ring()->SetColor(ash_color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor));
+    views::FocusRing::Get(this)->SetColor(
+        ash_color_provider->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
   void OnPressed() {

@@ -78,9 +78,6 @@ class TabGroupHeader : public TabSlotView,
   views::View* title_chip_;
   views::Label* title_;
 
-  // Focus ring for accessibility.
-  views::FocusRing* focus_ring_ = nullptr;
-
   // Time used for logging the last time the group was collapsed or expanded.
   base::TimeTicks last_modified_expansion_;
 

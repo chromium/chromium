@@ -13,6 +13,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/widget/widget.h"
 
@@ -57,7 +58,8 @@ ShelfControlButton::ShelfControlButton(
   SetInstallFocusRingOnFocus(true);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<ShelfControlButtonHighlightPathGenerator>());
-  focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+  views::FocusRing::Get(this)->SetColor(
+      ShelfConfig::Get()->shelf_focus_border_color());
   SetFocusPainter(nullptr);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

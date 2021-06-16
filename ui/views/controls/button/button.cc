@@ -308,17 +308,15 @@ bool Button::GetHasInkDropActionOnClick() const {
 void Button::SetInstallFocusRingOnFocus(bool install) {
   if (install == GetInstallFocusRingOnFocus())
     return;
-  if (focus_ring_ && !install) {
-    RemoveChildViewT(focus_ring_);
-    focus_ring_ = nullptr;
-  } else if (!focus_ring_ && install) {
-    focus_ring_ = FocusRing::Install(this);
+  if (install) {
+    FocusRing::Install(this);
+  } else {
+    FocusRing::Remove(this);
   }
-  OnPropertyChanged(&focus_ring_, kPropertyEffectsPaint);
 }
 
 bool Button::GetInstallFocusRingOnFocus() const {
-  return !!focus_ring_;
+  return FocusRing::Get(this) != nullptr;
 }
 
 void Button::SetHotTracked(bool is_hot_tracked) {
@@ -602,7 +600,7 @@ Button::Button(PressedCallback callback)
       [](Button* button) {
         std::unique_ptr<InkDrop> ink_drop =
             InkDrop::CreateInkDropForFloodFillRipple(InkDrop::Get(button));
-        ink_drop->SetShowHighlightOnFocus(!button->focus_ring());
+        ink_drop->SetShowHighlightOnFocus(!FocusRing::Get(button));
         return ink_drop;
       },
       base::Unretained(this)));

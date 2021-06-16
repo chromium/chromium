@@ -25,11 +25,14 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(views::FocusRing*)
+
 namespace views {
 
 namespace {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kFocusRingBackgroundColorId, -1)
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kFocusRingBackgroundColorIdKey, -1)
+DEFINE_UI_CLASS_PROPERTY_KEY(FocusRing*, kFocusRingIdKey, nullptr)
 
 bool IsPathUsable(const SkPath& path) {
   return !path.isEmpty() && (path.isRect(nullptr) || path.isOval(nullptr) ||
@@ -42,7 +45,7 @@ ui::NativeTheme::ColorId ColorIdForValidity(bool valid) {
 }
 
 int GetBackgroundColorId(View* view) {
-  int color_id_property = view->GetProperty(kFocusRingBackgroundColorId);
+  int color_id_property = view->GetProperty(kFocusRingBackgroundColorIdKey);
   if (color_id_property != -1)
     return color_id_property;
   if (!view->parent())
@@ -94,22 +97,35 @@ SkPath GetHighlightPathInternal(const View* view) {
 }  // namespace
 
 // static
-FocusRing* FocusRing::Install(View* parent) {
-  if (IsViewClass<Button>(parent)) {
-    // Ensure we don't install dual focus rings on a button.
-    Button* button = static_cast<Button*>(parent);
-    if (button->GetInstallFocusRingOnFocus())
-      button->SetInstallFocusRingOnFocus(false);
-  }
+void FocusRing::Install(View* host) {
+  FocusRing::Remove(host);
   auto ring = base::WrapUnique<FocusRing>(new FocusRing());
   ring->InvalidateLayout();
   ring->SchedulePaint();
-  return parent->AddChildView(std::move(ring));
+  host->SetProperty(kFocusRingIdKey, host->AddChildView(std::move(ring)));
+}
+
+FocusRing* FocusRing::Get(View* host) {
+  return host->GetProperty(kFocusRingIdKey);
+}
+
+const FocusRing* FocusRing::Get(const View* host) {
+  return host->GetProperty(kFocusRingIdKey);
+}
+
+void FocusRing::Remove(View* host) {
+  // Note that the FocusRing is owned by the View hierarchy, so we can't just
+  // clear the key.
+  FocusRing* const focus_ring = FocusRing::Get(host);
+  if (!focus_ring)
+    return;
+  host->RemoveChildViewT(focus_ring);
+  host->ClearProperty(kFocusRingIdKey);
 }
 
 void FocusRing::SetBackgroundColorIdForSubtree(View* view,
                                                int background_color_id) {
-  view->SetProperty(kFocusRingBackgroundColorId, background_color_id);
+  view->SetProperty(kFocusRingBackgroundColorIdKey, background_color_id);
 }
 
 FocusRing::~FocusRing() = default;

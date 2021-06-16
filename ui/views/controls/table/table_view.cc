@@ -173,7 +173,7 @@ TableView::TableView() : weak_factory_(this) {
   views::HighlightPathGenerator::Install(
       this, std::make_unique<TableView::HighlightPathGenerator>());
 
-  focus_ring_ = FocusRing::Install(this);
+  FocusRing::Install(this);
 }
 
 TableView::TableView(ui::TableModel* model,
@@ -462,7 +462,7 @@ void TableView::Layout() {
                   gfx::Size(width, header_->GetPreferredSize().height())));
   }
 
-  focus_ring_->Layout();
+  views::FocusRing::Get(this)->Layout();
 }
 
 gfx::Size TableView::CalculatePreferredSize() const {
@@ -540,7 +540,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
           if (active_visible_column_index_ != -1 && header_) {
             header_->ResizeColumnViaKeyboard(active_visible_column_index_,
                                              direction);
-            focus_ring_->SchedulePaint();
+            views::FocusRing::Get(this)->SchedulePaint();
           }
         } else {
           AdvanceActiveVisibleColumn(direction);
@@ -558,7 +558,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
           if (active_visible_column_index_ != -1 && header_) {
             header_->ResizeColumnViaKeyboard(active_visible_column_index_,
                                              direction);
-            focus_ring_->SchedulePaint();
+            views::FocusRing::Get(this)->SchedulePaint();
           }
         } else {
           AdvanceActiveVisibleColumn(direction);
@@ -825,13 +825,13 @@ gfx::Point TableView::GetKeyboardContextMenuLocation() {
 
 void TableView::OnFocus() {
   SchedulePaintForSelection();
-  focus_ring_->SchedulePaint();
+  views::FocusRing::Get(this)->SchedulePaint();
   ScheduleUpdateAccessibilityFocusIfNeeded();
 }
 
 void TableView::OnBlur() {
   SchedulePaintForSelection();
-  focus_ring_->SchedulePaint();
+  views::FocusRing::Get(this)->SchedulePaint();
   ScheduleUpdateAccessibilityFocusIfNeeded();
 }
 
@@ -1177,7 +1177,7 @@ void TableView::SetActiveVisibleColumnIndex(int index) {
                                       active_visible_column_index_));
   }
 
-  focus_ring_->SchedulePaint();
+  views::FocusRing::Get(this)->SchedulePaint();
   ScheduleUpdateAccessibilityFocusIfNeeded();
   OnPropertyChanged(&active_visible_column_index_, kPropertyEffectsNone);
 }
@@ -1218,7 +1218,7 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
     SetActiveVisibleColumnIndex(-1);
   }
 
-  focus_ring_->SchedulePaint();
+  views::FocusRing::Get(this)->SchedulePaint();
   ScheduleUpdateAccessibilityFocusIfNeeded();
   if (observer_)
     observer_->OnSelectionChanged();
