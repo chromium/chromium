@@ -22,6 +22,8 @@ source_set("common") {
     "aw_resource_bundle.h",
     "aw_switches.cc",
     "aw_switches.h",
+    "components/aw_apps_package_names_allowlist_component_utils.cc",
+    "components/aw_apps_package_names_allowlist_component_utils.h",
     "crash_reporter/aw_crash_reporter_client.cc",
     "crash_reporter/aw_crash_reporter_client.h",
     "crash_reporter/crash_keys.cc",

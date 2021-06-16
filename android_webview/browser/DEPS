@@ -26,6 +26,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/minidump_uploader",
   "+components/navigation_interception",
+  "+components/optimization_guide/core/bloom_filter.h",
   "+components/page_load_metrics/browser",
   "+components/policy/core/browser",
   "+components/policy/core/common",

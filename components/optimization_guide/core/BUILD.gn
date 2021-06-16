@@ -7,10 +7,19 @@ if (is_android) {
 }
 import("//components/optimization_guide/features.gni")
 
-static_library("core") {
+static_library("bloomfilter") {
   sources = [
     "bloom_filter.cc",
     "bloom_filter.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/smhasher:murmurhash3",
+  ]
+}
+
+static_library("core") {
+  sources = [
     "command_line_top_host_provider.cc",
     "command_line_top_host_provider.h",
     "decision_tree_prediction_model.cc",
@@ -96,6 +105,7 @@ static_library("core") {
   }
 
   deps = [
+    ":bloomfilter",
     "//base",
     "//components/data_reduction_proxy/core/browser",
     "//components/leveldb_proto",
@@ -109,7 +119,6 @@ static_library("core") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
-    "//third_party/smhasher:murmurhash3",
     "//url:url",
   ]
 }
@@ -140,6 +149,7 @@ static_library("test_support") {
     "test_optimization_guide_model_provider.h",
   ]
   deps = [
+    ":bloomfilter",
     ":core",
     "//base",
     "//components/leveldb_proto",
@@ -182,6 +192,7 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":bloomfilter",
     ":core",
     ":test_support",
     "//base",
