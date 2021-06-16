@@ -540,21 +540,6 @@ class CoverageReportPostProcessor(object):
                           src_root_html_report_path)
     logging.debug('Finished generating directory view html index file.')
 
-  def RenameDefaultCoverageDirectory(self):
-    """Rename the default coverage directory into platform specific name."""
-    # llvm-cov creates "coverage" subdir in the output dir. We would like to use
-    # the platform name instead, as it simplifies the report dir structure when
-    # the same report is generated for different platforms.
-    default_report_subdir_path = os.path.join(self.output_dir, 'coverage')
-    if not os.path.exists(default_report_subdir_path):
-      logging.error('Default coverage report dir does not exist: %s.',
-                    default_report_subdir_path)
-
-    if not os.path.exists(self.report_root_dir):
-      os.mkdir(self.report_root_dir)
-
-    MergeTwoDirectories(default_report_subdir_path, self.report_root_dir)
-
   def OverwriteHtmlReportsIndexFile(self):
     """Overwrites the root index file to redirect to the default view."""
     html_index_file_path = self.html_index_path
@@ -569,8 +554,6 @@ class CoverageReportPostProcessor(object):
       os.remove(index_path)
 
   def PrepareHtmlReport(self):
-    self.RenameDefaultCoverageDirectory()
-
     per_file_coverage_summary = self.GeneratePerFileCoverageSummary()
 
     if not self.no_file_view:
@@ -720,16 +703,6 @@ def GetSharedLibraries(binary_paths, build_dir, otool_path):
                 shared_libraries)
   logging.info('Finished finding shared libraries for targets.')
   return shared_libraries
-
-
-def MergeTwoDirectories(src_dir_path, dst_dir_path):
-  """Merge src_dir_path directory into dst_path directory."""
-  for filename in os.listdir(src_dir_path):
-    dst_path = os.path.join(dst_dir_path, filename)
-    if os.path.exists(dst_path):
-      shutil.rmtree(dst_path)
-    os.rename(os.path.join(src_dir_path, filename), dst_path)
-  shutil.rmtree(src_dir_path)
 
 
 def WriteRedirectHtmlFile(from_html_path, to_html_path):
