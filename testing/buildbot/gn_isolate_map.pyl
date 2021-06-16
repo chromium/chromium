@@ -1182,10 +1182,6 @@
     "label": "//media/base/android:media_base_junit_tests",
     "type": "junit_test",
   },
-  "media_blink_unittests": {
-    "label": "//media/blink:media_blink_unittests",
-    "type": "windowed_test_launcher",
-  },
   "media_perftests": {
     "args": [
       "media_perftests",

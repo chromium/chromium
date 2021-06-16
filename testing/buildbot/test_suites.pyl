@@ -793,7 +793,6 @@
       'latency_unittests': {},
       'libjingle_xmpp_unittests': {},
       'liburlpattern_unittests': {},
-      'media_blink_unittests': {},
       'media_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},
@@ -1137,7 +1136,6 @@
       'headless_unittests': {},
       'interactive_ui_tests': {},
       'jingle_unittests': {},
-      'media_blink_unittests': {},
       'nacl_loader_unittests': {},
       'net_unittests': {},
       'pdf_unittests': {},
@@ -1522,9 +1520,6 @@
         'mixins': ['fuchsia_runner_logs'],
       },
       'latency_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'media_blink_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
       'media_unittests': {
@@ -4572,7 +4567,6 @@
       'latency_unittests': {},
       'libjingle_xmpp_unittests': {},
       'liburlpattern_unittests': {},
-      'media_blink_unittests': {},
       'media_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},

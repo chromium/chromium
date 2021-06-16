@@ -197,7 +197,6 @@ group("gn_all") {
       "//gpu:gpu_unittests",
       "//ipc:ipc_tests",
       "//media:media_unittests",
-      "//media/blink:media_blink_unittests",
       "//media/midi:midi_unittests",
       "//media/mojo:media_mojo_unittests",
       "//mojo",

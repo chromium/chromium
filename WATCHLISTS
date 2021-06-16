@@ -1271,7 +1271,6 @@
     },
     'media_remoting': {
       'filepath': 'chrome/browser/media/cast_remoting'\
-                  '|media/blink/webmediaplayer_'\
                   '|media/mojo/mojom/remoting.mojom'\
                   '|media/remoting/'\
                   '|third_party/blink/public/platform/media/web_media_player_'\

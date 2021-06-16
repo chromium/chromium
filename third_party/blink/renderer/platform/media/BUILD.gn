@@ -8,9 +8,6 @@ import("//media/media_options.gni")
 # ported to Blink code conventions.
 component("media") {
   visibility = [
-    # TODO(https://crbug.com/1198341): remove once
-    # webmediaplayer_impl_unittest.cc is moved to Blink.
-    "//media/blink:*",
     "//third_party/blink/public/platform/media",
     "//third_party/blink/renderer/platform/*",
   ]
@@ -148,12 +145,7 @@ source_set("unit_tests") {
 }
 
 source_set("test_support") {
-  visibility = [
-    # TODO(https://crbug.com/1198341): remove once
-    # webmediaplayer_impl_unittest.cc is moved to Blink.
-    "//media/blink:*",
-    "//third_party/blink/renderer/platform:test_support",
-  ]
+  visibility = [ "//third_party/blink/renderer/platform:test_support" ]
   testonly = true
   configs += [
     "//third_party/blink/renderer:non_test_config",

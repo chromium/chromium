@@ -30,7 +30,6 @@ include_rules = [
   "+ui/ozone",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
   "-ipc",
-  "-media/blink",
   "-media/webrtc",
 ]
 

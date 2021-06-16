@@ -74,8 +74,9 @@
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
-#include "url/gurl.h"
 
 using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
@@ -515,13 +516,15 @@ class WebMediaPlayerImplTest
     wmpi_->pipeline_metadata_.has_audio = has_audio;
     wmpi_->pipeline_metadata_.has_video = has_video;
 
-    if (has_video)
+    if (has_video) {
       wmpi_->pipeline_metadata_.video_decoder_config =
           TestVideoConfig::Normal();
+    }
 
-    if (has_audio)
+    if (has_audio) {
       wmpi_->pipeline_metadata_.audio_decoder_config =
           TestAudioConfig::Normal();
+    }
   }
 
   void SetError(PipelineStatus status = PIPELINE_ERROR_DECODE) {
@@ -692,8 +695,9 @@ class WebMediaPlayerImplTest
     // the resource is fully buffered locally. We can use a fake one here since
     // we're injecting the response artificially. It's value is unknown to the
     // underlying demuxer.
-    const GURL kTestURL(std::string(is_streaming ? "http" : "file") +
-                        "://example.com/sample.webm");
+    const blink::KURL kTestURL(
+        String::FromUTF8(std::string(is_streaming ? "http" : "file") +
+                         "://example.com/sample.webm"));
 
     // This block sets up a fetch context which ultimately provides us a pointer
     // to the WebAssociatedURLLoaderClient handed out by the DataSource after it
@@ -920,7 +924,7 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroyDataUrl) {
   EXPECT_FALSE(IsSuspended());
   wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadAuto);
 
-  const GURL kMp3DataUrl(
+  const blink::KURL kMp3DataUrl(
       "data://audio/mp3;base64,SUQzAwAAAAAAFlRFTkMAAAAMAAAAQW1hZGV1cyBQcm//"
       "+5DEAAAAAAAAAAAAAAAAAAAAAABYaW5nAAAADwAAAAwAAAftABwcHBwcHBwcMTExMTExMTFG"
       "RkZGRkZGRlpaWlpaWlpaWm9vb29vb29vhISEhISEhISYmJiYmJiYmJitra2tra2trcLCwsLC"
@@ -1106,7 +1110,7 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoVideoMemoryUsage) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
   wmpi_->SetPreload(blink::WebMediaPlayer::kPreloadMetaData);
-  wmpi_->SetPoster(blink::WebURL(GURL("file://example.com/sample.jpg")));
+  wmpi_->SetPoster(blink::WebURL(blink::KURL("file://example.com/sample.jpg")));
 
   LoadAndWaitForReadyState(kVideoOnlyTestFile,
                            blink::WebMediaPlayer::kReadyStateHaveMetadata);
@@ -2175,10 +2179,11 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
   InitializeWebMediaPlayerImplInternal(std::move(demuxer));
 
   EXPECT_FALSE(IsSuspended());
-  wmpi_->Load(blink::WebMediaPlayer::kLoadTypeURL,
-              blink::WebMediaPlayerSource(blink::WebURL(GURL("data://test"))),
-              blink::WebMediaPlayer::kCorsModeUnspecified,
-              /*is_cache_disabled=*/false);
+  wmpi_->Load(
+      blink::WebMediaPlayer::kLoadTypeURL,
+      blink::WebMediaPlayerSource(blink::WebURL(blink::KURL("data://test"))),
+      blink::WebMediaPlayer::kCorsModeUnspecified,
+      /*is_cache_disabled=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsSuspended());
 }

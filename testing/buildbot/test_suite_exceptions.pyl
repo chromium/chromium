@@ -1919,15 +1919,6 @@
       },
     },
   },
-  'media_blink_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
   'media_unittests': {
     'modifications': {
       'android-11-x86-fyi-rel': {
