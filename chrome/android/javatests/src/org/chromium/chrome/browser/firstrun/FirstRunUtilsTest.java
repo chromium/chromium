@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
@@ -72,6 +73,7 @@ public class FirstRunUtilsTest {
     @Test
     @SmallTest
     @Feature({"GoogleAccounts"})
+    @DisabledTest(message = "crbug.com/1219667")
     public void testHasGoogleAccountCorrectlyDetected() {
         // Set up an account manager mock that returns Google account types
         // when queried.
