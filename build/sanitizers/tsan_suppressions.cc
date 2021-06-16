@@ -121,9 +121,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/927330
     "race:net::(anonymous namespace)::g_network_change_notifier\n"
 
-    // https://crbug.com/965722
-    "race:content::(anonymous namespace)::CorruptDBRequestHandler\n"
-
     // https://crbug.com/977085
     "race:vp3_update_thread_context\n"
 
