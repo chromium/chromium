@@ -319,7 +319,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       worker_process_host_->GetStoragePartition(), final_response_url,
       worker_cross_origin_embedder_policy_->reporting_endpoint,
       worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,
-      isolation_info_.network_isolation_key());
+      reporting_source_, isolation_info_.network_isolation_key());
   // TODO(crbug.com/1197041): Bind the receiver of ReportingObserver to the
   // worker in the renderer process.
 

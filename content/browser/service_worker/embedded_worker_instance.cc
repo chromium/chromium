@@ -333,6 +333,7 @@ void EmbeddedWorkerInstance::Start(
           owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
           owner_version_->cross_origin_embedder_policy()
               ->report_only_reporting_endpoint,
+          owner_version_->reporting_source(),
           // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of
           // a top-level browsing context, which shouldn't be use for
           // ServiceWorkers used in iframes.
@@ -893,6 +894,7 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
         owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
         owner_version_->cross_origin_embedder_policy()
             ->report_only_reporting_endpoint,
+        owner_version_->reporting_source(),
         // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
         // top-level browsing context, which shouldn't be use for ServiceWorkers
         // used in iframes.

@@ -2029,6 +2029,7 @@ void NavigationRequest::CreateCoepReporter(
       storage_partition, common_params_->url,
       cross_origin_embedder_policy_.reporting_endpoint,
       cross_origin_embedder_policy_.report_only_reporting_endpoint,
+      render_frame_host_->GetFrameToken().value(),
       isolation_info_for_subresources_.network_isolation_key());
 }
 

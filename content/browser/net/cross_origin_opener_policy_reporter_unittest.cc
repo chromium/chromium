@@ -73,6 +73,9 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
   const TestNetworkContext& network_context() const { return network_context_; }
   const GURL& context_url() const { return context_url_; }
   const network::CrossOriginOpenerPolicy& coop() const { return coop_; }
+  const base::UnguessableToken& reporting_source() const {
+    return reporting_source_;
+  }
   const net::NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
   }
@@ -81,7 +84,7 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
   std::unique_ptr<CrossOriginOpenerPolicyReporter> GetReporter() {
     return std::make_unique<CrossOriginOpenerPolicyReporter>(
         storage_partition(), context_url(), GURL("https://referrer.com/?a#b"),
-        coop(), network_isolation_key_);
+        coop(), reporting_source(), network_isolation_key_);
   }
 
  private:
@@ -90,6 +93,8 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
   TestStoragePartition storage_partition_;
   GURL context_url_;
   network::CrossOriginOpenerPolicy coop_;
+  const base::UnguessableToken reporting_source_ =
+      base::UnguessableToken::Create();
   const net::NetworkIsolationKey network_isolation_key_ =
       net::NetworkIsolationKey::CreateTransient();
 };

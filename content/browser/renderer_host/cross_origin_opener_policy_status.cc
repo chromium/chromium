@@ -165,9 +165,13 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
   StoragePartition* storage_partition = frame_tree_node_->current_frame_host()
                                             ->GetProcess()
                                             ->GetStoragePartition();
+  // TODO(crbug.com/1209057): This should not create a new reporting source
+  // token. The navigation request should have a token which is used here, and
+  // is either migrated to the document when it loads, or updated in the COOP
+  // reporter to the document's source token instead.
   auto response_reporter = std::make_unique<CrossOriginOpenerPolicyReporter>(
       storage_partition, response_url, response_referrer_url, response_coop,
-      network_isolation_key);
+      base::UnguessableToken::Create(), network_isolation_key);
   CrossOriginOpenerPolicyReporter* previous_reporter =
       use_current_document_coop_reporter_
           ? frame_tree_node_->current_frame_host()->coop_reporter()

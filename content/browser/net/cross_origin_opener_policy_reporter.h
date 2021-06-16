@@ -37,6 +37,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
       const GURL& context_url,
       const GURL& context_referrer_url,
       const network::CrossOriginOpenerPolicy& coop,
+      const base::UnguessableToken& reporting_source,
       const net::NetworkIsolationKey& network_isolation_key);
   ~CrossOriginOpenerPolicyReporter();
   CrossOriginOpenerPolicyReporter(const CrossOriginOpenerPolicyReporter&) =
@@ -89,6 +90,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
   const GURL context_url_;
   const std::string context_referrer_url_;
   const network::CrossOriginOpenerPolicy coop_;
+  const base::UnguessableToken reporting_source_;
   const net::NetworkIsolationKey network_isolation_key_;
 
   mojo::UniqueReceiverSet<network::mojom::CrossOriginOpenerPolicyReporter>

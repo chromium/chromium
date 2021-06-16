@@ -30,13 +30,16 @@ CrossOriginEmbedderPolicyReporter::CrossOriginEmbedderPolicyReporter(
     const GURL& context_url,
     const absl::optional<std::string>& endpoint,
     const absl::optional<std::string>& report_only_endpoint,
+    const base::UnguessableToken& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key)
     : storage_partition_(storage_partition),
       context_url_(context_url),
       endpoint_(endpoint),
       report_only_endpoint_(report_only_endpoint),
+      reporting_source_(reporting_source),
       network_isolation_key_(network_isolation_key) {
   DCHECK(storage_partition_);
+  DCHECK(!reporting_source_.is_empty());
 }
 
 CrossOriginEmbedderPolicyReporter::~CrossOriginEmbedderPolicyReporter() =

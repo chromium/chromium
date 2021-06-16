@@ -42,6 +42,7 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
       const GURL& context_url,
       const absl::optional<std::string>& endpoint,
       const absl::optional<std::string>& report_only_endpoint,
+      const base::UnguessableToken& reporting_source,
       const net::NetworkIsolationKey& network_isolation_key);
   ~CrossOriginEmbedderPolicyReporter() override;
   CrossOriginEmbedderPolicyReporter(const CrossOriginEmbedderPolicyReporter&) =
@@ -85,6 +86,7 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   const GURL context_url_;
   const absl::optional<std::string> endpoint_;
   const absl::optional<std::string> report_only_endpoint_;
+  const base::UnguessableToken reporting_source_;
   const net::NetworkIsolationKey network_isolation_key_;
 
   mojo::ReceiverSet<network::mojom::CrossOriginEmbedderPolicyReporter>

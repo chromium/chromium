@@ -6148,7 +6148,7 @@ void RenderFrameHostImpl::CreateNewWindow(
         std::make_unique<CrossOriginOpenerPolicyReporter>(
             GetProcess()->GetStoragePartition(), GetLastCommittedURL(),
             params->referrer->url, main_frame->cross_origin_opener_policy(),
-            isolation_info_.network_isolation_key()));
+            frame_token_.value(), isolation_info_.network_isolation_key()));
   }
 
   mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
@@ -9093,7 +9093,7 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
         GetProcess()->GetStoragePartition(), url,
         cross_origin_embedder_policy_.reporting_endpoint,
         cross_origin_embedder_policy_.report_only_reporting_endpoint,
-        isolation_info.network_isolation_key());
+        frame_token_.value(), isolation_info.network_isolation_key());
   }
   std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info;
   if (is_same_document && web_bundle_handle_ &&

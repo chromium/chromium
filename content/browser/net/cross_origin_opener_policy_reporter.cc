@@ -139,12 +139,16 @@ CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
     const GURL& context_url,
     const GURL& context_referrer_url,
     const network::CrossOriginOpenerPolicy& coop,
+    const base::UnguessableToken& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key)
     : storage_partition_(storage_partition),
       context_url_(context_url),
       context_referrer_url_(SanitizedURL(context_referrer_url)),
       coop_(coop),
-      network_isolation_key_(network_isolation_key) {}
+      reporting_source_(reporting_source),
+      network_isolation_key_(network_isolation_key) {
+  DCHECK(!reporting_source_.is_empty());
+}
 
 CrossOriginOpenerPolicyReporter::~CrossOriginOpenerPolicyReporter() = default;
 

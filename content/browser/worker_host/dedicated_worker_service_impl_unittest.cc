@@ -43,7 +43,8 @@ class MockDedicatedWorker
     auto coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
         RenderFrameHostImpl::FromID(render_frame_host_id)
             ->GetStoragePartition(),
-        GURL(), absl::nullopt, absl::nullopt, net::NetworkIsolationKey());
+        GURL(), absl::nullopt, absl::nullopt, base::UnguessableToken::Create(),
+        net::NetworkIsolationKey());
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
