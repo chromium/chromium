@@ -428,14 +428,6 @@ PhysicalRect NGFragmentItem::SelfInkOverflow() const {
   return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
-PhysicalRect NGFragmentItem::ContentsInkOverflow() const {
-  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
-    return box_fragment->ContentsInkOverflow();
-  if (!HasInkOverflow())
-    return PhysicalRect();
-  return ink_overflow_.Contents(InkOverflowType(), Size());
-}
-
 PhysicalRect NGFragmentItem::InkOverflow() const {
   if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
     return box_fragment->InkOverflow();

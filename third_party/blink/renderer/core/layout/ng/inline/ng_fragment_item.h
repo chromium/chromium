@@ -200,7 +200,6 @@ class CORE_EXPORT NGFragmentItem {
 
   PhysicalRect InkOverflow() const;
   PhysicalRect SelfInkOverflow() const;
-  PhysicalRect ContentsInkOverflow() const;
 
   // Count of following items that are descendants of this item in the box tree,
   // including this item. 1 means this is a box (box or line box) without
