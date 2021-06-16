@@ -12,4 +12,4 @@
   void setConsumer(LaunchConsumer consumer);
 };
 
-callback LaunchConsumer = any (LaunchParams params);
+callback LaunchConsumer = void(LaunchParams params);
