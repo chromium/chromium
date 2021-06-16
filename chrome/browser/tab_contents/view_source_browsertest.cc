@@ -5,6 +5,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -27,6 +28,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -762,3 +764,59 @@ IN_PROC_BROWSER_TEST_F(ViewSourcePermissionsPolicyTest,
       &response));
   EXPECT_EQ("vertical-scroll", response);
 }
+
+namespace {
+
+class ViewSourcePrerenderTest : public ViewSourceTest {
+ protected:
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* target() const { return target_; }
+  void set_target(content::WebContents* target) { target_ = target; }
+
+  void SetUpOnMainThread() override {
+    ViewSourceTest::SetUpOnMainThread();
+    prerender_test_helper().SetUpOnMainThread(embedded_test_server());
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_{
+      base::BindRepeating(&ViewSourcePrerenderTest::target,
+                          base::Unretained(this))};
+
+  // The WebContents which is expected to request prerendering.
+  content::WebContents* target_ = nullptr;
+};
+
+// A frame in a prerendered page should be able to have its source viewed, like
+// any other. There is currently no UI for this, but in principle it should
+// work.
+IN_PROC_BROWSER_TEST_F(ViewSourcePrerenderTest, ViewSourceForPrerender) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL referrer_url = embedded_test_server()->GetURL("/title1.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  content::RenderFrameHost* referrer_frame =
+      ui_test_utils::NavigateToURL(browser(), referrer_url);
+  set_target(content::WebContents::FromRenderFrameHost(referrer_frame));
+
+  prerender_test_helper().AddPrerender(prerender_url);
+  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::RenderFrameHost* prerender_frame =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(prerender_frame);
+
+  content::WebContentsAddedObserver view_source_contents_observer;
+  prerender_frame->ViewSource();
+  content::WebContents* view_source_contents =
+      view_source_contents_observer.GetWebContents();
+  EXPECT_TRUE(WaitForLoadStop(view_source_contents));
+  EXPECT_EQ(view_source_contents->GetLastCommittedURL(),
+            GURL(base::StrCat(
+                {content::kViewSourceScheme, ":", prerender_url.spec()})));
+  EXPECT_THAT(base::UTF16ToUTF8(view_source_contents->GetTitle()),
+              HasSubstr(content::kViewSourceScheme));
+}
+
+}  // namespace

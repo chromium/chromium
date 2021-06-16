@@ -5747,7 +5747,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // Use the last committed entry, since the pending entry hasn't loaded yet and
   // won't be copied into the cloned tab.
   NavigationEntryImpl* last_committed_entry =
-      GetController().GetLastCommittedEntry();
+      frame->frame_tree()->controller().GetLastCommittedEntry();
   if (!last_committed_entry)
     return;
 
