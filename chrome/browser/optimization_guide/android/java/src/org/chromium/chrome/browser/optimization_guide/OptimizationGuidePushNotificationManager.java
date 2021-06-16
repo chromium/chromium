@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.optimization_guide;
 
 import android.util.Base64;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
@@ -18,6 +21,8 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +37,26 @@ import java.util.Set;
 public class OptimizationGuidePushNotificationManager {
     private static Boolean sNativeIsInitialized;
     private static OptimizationGuideBridgeFactory sBridgeFactory;
+
+    private static final String TAG = "OGPNotificationMngr";
+
+    private static final String READ_CACHE_RESULT_HISTOGRAM =
+            "OptimizationGuide.PushNotifications.ReadCacheResult";
+
+    // Should be in sync with the enum "OptimizationGuideReadCacheResult" in
+    // tools/metrics/histograms/enums.xml.
+    @SuppressWarnings("unused")
+    @IntDef({ReadCacheResult.UNKNOWN, ReadCacheResult.SUCCESS, ReadCacheResult.INVALID_PROTO_ERROR,
+            ReadCacheResult.BASE64_ERROR})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ReadCacheResult {
+        int UNKNOWN = 0;
+        int SUCCESS = 1;
+        int INVALID_PROTO_ERROR = 2;
+        int BASE64_ERROR = 3;
+
+        int NUM_ENTRIES = 4;
+    }
 
     // All logic here is static, so no instances of this class are needed.
     private OptimizationGuidePushNotificationManager() {}
@@ -94,9 +119,7 @@ public class OptimizationGuidePushNotificationManager {
 
     /**
      * Returns all cached notifications for the given Optimization Type. A null return value is
-     * returned for overflowed caches. An empty array means that no notifications were cached. Care
-     * should be taken when iterating through elements of the returned array since null elements may
-     * be present when a persisted value was not parsed successfully.
+     * returned for overflowed caches. An empty array means that no notifications were cached.
      * @param optimizationType the optimization type to get cached notifications for
      * @return a possibly null array of persisted notifications
      */
@@ -108,21 +131,29 @@ public class OptimizationGuidePushNotificationManager {
 
         Iterator<String> cache_iter = cache.iterator();
 
-        HintNotificationPayload[] notifications = new HintNotificationPayload[cache.size()];
-        for (int i = 0; i < notifications.length; i++) {
-            HintNotificationPayload payload = null;
+        List<HintNotificationPayload> notifications = new ArrayList<HintNotificationPayload>();
+        for (int i = 0; i < cache.size(); i++) {
             try {
-                payload = HintNotificationPayload.parseFrom(
+                HintNotificationPayload payload = HintNotificationPayload.parseFrom(
                         Base64.decode(cache_iter.next(), Base64.DEFAULT));
+                notifications.add(payload);
+                RecordHistogram.recordEnumeratedHistogram(READ_CACHE_RESULT_HISTOGRAM,
+                        ReadCacheResult.SUCCESS, ReadCacheResult.NUM_ENTRIES);
             } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                RecordHistogram.recordEnumeratedHistogram(READ_CACHE_RESULT_HISTOGRAM,
+                        ReadCacheResult.INVALID_PROTO_ERROR, ReadCacheResult.NUM_ENTRIES);
+                Log.e(TAG, Log.getStackTraceString(e));
             } catch (IllegalArgumentException e) {
-                // TODO(crbug/1199123): Add metrics for both exceptions to track if they actually
-                // occur in the wild.
+                RecordHistogram.recordEnumeratedHistogram(READ_CACHE_RESULT_HISTOGRAM,
+                        ReadCacheResult.BASE64_ERROR, ReadCacheResult.NUM_ENTRIES);
+                Log.e(TAG, Log.getStackTraceString(e));
             }
-            notifications[i] = payload;
         }
 
-        return notifications;
+        HintNotificationPayload[] notificationsArray =
+                new HintNotificationPayload[notifications.size()];
+        notifications.toArray(notificationsArray);
+        return notificationsArray;
     }
 
     private static Set<String> getStringCacheForOptimizationType(
@@ -143,7 +174,8 @@ public class OptimizationGuidePushNotificationManager {
         return overflows;
     }
 
-    private static String cacheKey(OptimizationType optimizationType) {
+    @VisibleForTesting
+    public static String cacheKey(OptimizationType optimizationType) {
         return ChromePreferenceKeys.OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.createKey(
                 optimizationType.toString());
     }

@@ -59490,6 +59490,13 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuideReadCacheResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Invalid protobuf"/>
+  <int value="3" label="Base64 decoding error"/>
+</enum>
+
 <enum name="OptOutBlacklistReason">
   <int value="0" label="Not loaded">
     The Blacklist was not loaded from disk when the page load committed and
