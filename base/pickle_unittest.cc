@@ -178,6 +178,7 @@ TEST(PickleTest, BigSize) {
   int buffer[] = { 0x56035200, 25, 40, 50 };
 
   Pickle pickle(reinterpret_cast<char*>(buffer), sizeof(buffer));
+  EXPECT_EQ(0U, pickle.size());
 
   PickleIterator iter(pickle);
   int data;

@@ -170,7 +170,9 @@ class BASE_EXPORT Pickle {
   Pickle& operator=(const Pickle& other);
 
   // Returns the number of bytes written in the Pickle, including the header.
-  size_t size() const { return header_size_ + header_->payload_size; }
+  size_t size() const {
+    return header_ ? header_size_ + header_->payload_size : 0;
+  }
 
   // Returns the data for this Pickle.
   const void* data() const { return header_; }
