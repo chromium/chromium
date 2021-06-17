@@ -199,11 +199,11 @@ Polymer({
 
   /**
    * Opens external link in Chrome.
-   * @param {!{model: !{option: !{url: string}}}} e
+   * @param {!{model: !{option: !{url: !settings.Route}}}} e
    * @private
    */
-  onExternalLinkClick_(e) {
-    window.open(e.model.option.url);
+  navigateToOtherPageInSettings_(e) {
+    settings.Router.getInstance().navigateTo(e.model.option.url);
   },
 
   /**

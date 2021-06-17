@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+// #import {routes} from '../os_route.m.js';
 import {inputMethodSettings, SettingsType} from './input_method_settings.js';
+// #import {Route} from '../../router.js';
 
 /**
  * @fileoverview constants related to input method options.
@@ -414,12 +416,12 @@ cr.define('settings.input_method_util', function() {
 
   /**
    * @param {!settings.input_method_util.OptionType} option The option type.
-   * @return {string|undefined} The url to open for |option|, returns undefined
-   *     if |option| does not have a url.
+   * @return {settings.Route|undefined} The url to open for |option|, returns
+   *     undefined if |option| does not have a url.
    */
   /* #export */ function getOptionUrl(option) {
     if (option === OptionType.EDIT_USER_DICT) {
-      return 'chrome://settings/editDictionary';
+      return settings.routes.OS_LANGUAGES_EDIT_DICTIONARY;
     }
     return undefined;
   }

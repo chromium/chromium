@@ -63,6 +63,8 @@ js_library("input_method_util.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.m.js" ]
   deps = [
     ":input_method_settings",
+    "..:os_route.m",
+    "../..:router",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":modulize" ]

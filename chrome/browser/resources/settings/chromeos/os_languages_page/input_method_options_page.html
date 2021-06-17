@@ -49,9 +49,9 @@
                 </select>
               </template>
               <template is="dom-if" if="[[isLink_(option.uiType)]]">
-                <cr-icon-button class="icon-external"
-                    on-click="onExternalLinkClick_"
-                    aria-labelledby="option-label">
+                <cr-icon-button iron-icon="cr:arrow-right"
+                    on-click="navigateToOtherPageInSettings_"
+                    aria-labelledby="option-label" role="link">
                 </cr-icon-button>
               </template>
             </div>
