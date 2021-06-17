@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -29,6 +28,8 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
   USING_PRE_FINALIZER(Worklet, Dispose);
 
  public:
+  Worklet(const Worklet&) = delete;
+  Worklet& operator=(const Worklet&) = delete;
   ~Worklet() override;
 
   void Dispose();
@@ -94,8 +95,6 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
 
   // Keeps track of pending tasks from addModule() call.
   HeapHashSet<Member<WorkletPendingTasks>> pending_tasks_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(Worklet);
 };
 
 }  // namespace blink

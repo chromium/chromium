@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_GLOBAL_SCOPE_CREATION_PARAMS_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -72,6 +71,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
           absl::nullopt,
       bool parent_cross_origin_isolated_capability = false,
       bool parent_direct_socket_capability = false);
+  GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
+  GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
+      delete;
 
   ~GlobalScopeCreationParams() = default;
 
@@ -186,8 +188,6 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   //
   // TODO(mkwst): We need a specification for this capability.
   const bool parent_direct_socket_capability;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalScopeCreationParams);
 };
 
 }  // namespace blink

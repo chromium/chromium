@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_OBJECT_PROXY_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_OBJECT_PROXY_BASE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
@@ -24,6 +23,8 @@ class ThreadedMessagingProxyBase;
 class CORE_EXPORT ThreadedObjectProxyBase : public WorkerReportingProxy {
   USING_FAST_MALLOC(ThreadedObjectProxyBase);
  public:
+  ThreadedObjectProxyBase(const ThreadedObjectProxyBase&) = delete;
+  ThreadedObjectProxyBase& operator=(const ThreadedObjectProxyBase&) = delete;
   ~ThreadedObjectProxyBase() override = default;
 
   void ReportPendingActivity(bool has_pending_activity);
@@ -48,7 +49,6 @@ class CORE_EXPORT ThreadedObjectProxyBase : public WorkerReportingProxy {
   // thread.
   CrossThreadPersistent<ParentExecutionContextTaskRunners>
       parent_execution_context_task_runners_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadedObjectProxyBase);
 };
 
 }  // namespace blink

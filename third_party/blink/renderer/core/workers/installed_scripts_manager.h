@@ -33,6 +33,8 @@ class InstalledScriptsManager {
                String source_text,
                std::unique_ptr<Vector<uint8_t>> meta_data,
                std::unique_ptr<CrossThreadHTTPHeaderMapData>);
+    ScriptData(const ScriptData&) = delete;
+    ScriptData& operator=(const ScriptData&) = delete;
     ScriptData(ScriptData&& other) = default;
     ScriptData& operator=(ScriptData&& other) = default;
 
@@ -56,8 +58,6 @@ class InstalledScriptsManager {
     std::unique_ptr<Vector<uint8_t>> meta_data_;
     HTTPHeaderMap headers_;
     network::mojom::IPAddressSpace response_address_space_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScriptData);
   };
 
   // Used on the main or worker thread. Returns true if the script has been

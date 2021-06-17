@@ -115,6 +115,9 @@ class WorkerThread::RefCountedWaitableEvent
     return base::AdoptRef<RefCountedWaitableEvent>(new RefCountedWaitableEvent);
   }
 
+  RefCountedWaitableEvent(const RefCountedWaitableEvent&) = delete;
+  RefCountedWaitableEvent& operator=(const RefCountedWaitableEvent&) = delete;
+
   void Wait() { event_.Wait(); }
   void Signal() { event_.Signal(); }
 
@@ -122,8 +125,6 @@ class WorkerThread::RefCountedWaitableEvent
   RefCountedWaitableEvent() = default;
 
   base::WaitableEvent event_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedWaitableEvent);
 };
 
 // A class that is passed into V8 Interrupt and via a PostTask. Once both have
@@ -134,6 +135,8 @@ class WorkerThread::InterruptData {
  public:
   InterruptData(WorkerThread* worker_thread, mojom::FrameLifecycleState state)
       : worker_thread_(worker_thread), state_(state) {}
+  InterruptData(const InterruptData&) = delete;
+  InterruptData& operator=(const InterruptData&) = delete;
 
   bool ShouldRemoveFromList() { return seen_interrupt_ && seen_post_task_; }
   void MarkPostTaskCalled() { seen_post_task_ = true; }
@@ -147,8 +150,6 @@ class WorkerThread::InterruptData {
   mojom::FrameLifecycleState state_;
   bool seen_interrupt_ = false;
   bool seen_post_task_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InterruptData);
 };
 
 WorkerThread::~WorkerThread() {

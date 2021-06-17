@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_DEDICATED_WORKER_OBJECT_PROXY_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -59,6 +58,9 @@ class CORE_EXPORT DedicatedWorkerObjectProxy : public ThreadedObjectProxyBase {
   DedicatedWorkerObjectProxy(DedicatedWorkerMessagingProxy*,
                              ParentExecutionContextTaskRunners*,
                              const DedicatedWorkerToken&);
+  DedicatedWorkerObjectProxy(const DedicatedWorkerObjectProxy&) = delete;
+  DedicatedWorkerObjectProxy& operator=(const DedicatedWorkerObjectProxy&) =
+      delete;
   ~DedicatedWorkerObjectProxy() override;
 
   void PostMessageToWorkerObject(BlinkTransferableMessage);
@@ -89,8 +91,6 @@ class CORE_EXPORT DedicatedWorkerObjectProxy : public ThreadedObjectProxyBase {
   // the tasks.
   CrossThreadWeakPersistent<DedicatedWorkerMessagingProxy>
       messaging_proxy_weak_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(DedicatedWorkerObjectProxy);
 };
 
 }  // namespace blink
