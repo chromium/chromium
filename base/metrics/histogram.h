@@ -218,7 +218,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
   void AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
-  base::DictionaryValue ToGraphDict() const override;
+  base::Value ToGraphDict() const override;
 
   // Validates the histogram contents and CHECKs on errors.
   // TODO(bcwhite): Remove this after https://crbug/836875.

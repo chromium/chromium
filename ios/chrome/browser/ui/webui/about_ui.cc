@@ -131,7 +131,7 @@ void AboutUIHTMLSource::StartDataRequest(
     // chrome://histograms, this code could likely be moved to //io/web.
     for (base::HistogramBase* histogram : base::StatisticsRecorder::Sort(
              base::StatisticsRecorder::GetHistograms())) {
-      base::DictionaryValue histogram_dict = histogram->ToGraphDict();
+      base::Value histogram_dict = histogram->ToGraphDict();
       std::string* header = histogram_dict.FindStringKey("header");
       std::string* body = histogram_dict.FindStringKey("body");
 

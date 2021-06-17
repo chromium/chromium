@@ -458,7 +458,7 @@ TEST_P(SparseHistogramTest, ToGraphDict) {
   histogram->AddCount(/*sample=*/4, /*count=*/5);
   histogram->AddCount(/*sample=*/10, /*count=*/15);
 
-  base::DictionaryValue output = histogram->ToGraphDict();
+  base::Value output = histogram->ToGraphDict();
   std::string* header = output.FindStringKey("header");
   std::string* body = output.FindStringKey("body");
 

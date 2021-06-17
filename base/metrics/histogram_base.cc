@@ -227,7 +227,7 @@ void HistogramBase::WriteAsciiBucketValue(Count current,
 }
 
 void HistogramBase::WriteAscii(std::string* output) const {
-  base::DictionaryValue graph_dict = ToGraphDict();
+  base::Value graph_dict = ToGraphDict();
   output->append(*graph_dict.FindStringKey("header"));
   output->append("\n");
   output->append(*graph_dict.FindStringKey("body"));

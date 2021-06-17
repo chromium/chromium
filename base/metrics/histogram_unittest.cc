@@ -979,9 +979,9 @@ TEST_P(HistogramTest, ToGraphDict) {
                                   /*bucket_count=*/5, HistogramBase::kNoFlags);
   histogram->AddCount(/*sample=*/4, /*value=*/5);
 
-  base::DictionaryValue output = histogram->ToGraphDict();
-  std::string* header = output.FindStringKey("header");
-  std::string* body = output.FindStringKey("body");
+  base::Value output = histogram->ToGraphDict();
+  const std::string* header = output.FindStringKey("header");
+  const std::string* body = output.FindStringKey("body");
 
   const char kOutputHeaderFormatRe[] =
       R"(Histogram: HTMLOut recorded 5 samples, mean = 4\.0.*)";
@@ -1007,7 +1007,7 @@ TEST_P(HistogramTest, ToGraphDictNormalize) {
   histogram->AddCount(/*value=*/value_bucket_1, /*count=*/count_bucket_1);
   histogram->AddCount(/*value=*/value_bucket_2, /*count=*/count_bucket_2);
 
-  base::DictionaryValue output = histogram->ToGraphDict();
+  base::Value output = histogram->ToGraphDict();
   std::string* header = output.FindStringKey("header");
   std::string* body = output.FindStringKey("body");
 

@@ -55,7 +55,7 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   std::unique_ptr<HistogramSamples> SnapshotSamples() const override;
   std::unique_ptr<HistogramSamples> SnapshotDelta() override;
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
-  base::DictionaryValue ToGraphDict() const override;
+  base::Value ToGraphDict() const override;
 
  protected:
   // HistogramBase implementation:

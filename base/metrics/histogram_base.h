@@ -255,7 +255,7 @@ class BASE_EXPORT HistogramBase {
   // with the following format:
   // {"header": "Name of the histogram with samples, mean, and/or flags",
   // "body": "ASCII histogram representation"}
-  virtual base::DictionaryValue ToGraphDict() const = 0;
+  virtual base::Value ToGraphDict() const = 0;
 
   // TODO(bcwhite): Remove this after https://crbug/836875.
   virtual void ValidateHistogramContents() const;

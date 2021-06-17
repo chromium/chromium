@@ -95,7 +95,7 @@ void HistogramsMessageHandler::HandleRequestHistograms(
   for (base::HistogramBase* histogram :
        base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
            base::StatisticsRecorder::GetHistograms(), params.query))) {
-    base::DictionaryValue histogram_dict = histogram->ToGraphDict();
+    base::Value histogram_dict = histogram->ToGraphDict();
     if (!histogram_dict.DictEmpty())
       histograms_list.Append(std::move(histogram_dict));
   }

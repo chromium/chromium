@@ -165,7 +165,7 @@ bool SparseHistogram::AddSamplesFromPickle(PickleIterator* iter) {
   return unlogged_samples_->AddFromPickle(iter);
 }
 
-base::DictionaryValue SparseHistogram::ToGraphDict() const {
+base::Value SparseHistogram::ToGraphDict() const {
   std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
   return snapshot->ToGraphDict(histogram_name(), flags());
 }
