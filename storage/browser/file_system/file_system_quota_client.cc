@@ -81,6 +81,7 @@ void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
 FileSystemQuotaClient::FileSystemQuotaClient(
     FileSystemContext* file_system_context)
     : file_system_context_(file_system_context) {
+  DCHECK(file_system_context_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

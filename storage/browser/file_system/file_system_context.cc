@@ -20,6 +20,11 @@
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/url_request/url_request.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -172,6 +177,10 @@ FileSystemContext::FileSystemContext(
       io_task_runner_(std::move(io_task_runner)),
       default_file_task_runner_(std::move(file_task_runner)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
+      quota_client_(std::make_unique<FileSystemQuotaClient>(this)),
+      quota_client_wrapper_(
+          std::make_unique<storage::QuotaClientCallbackWrapper>(
+              quota_client_.get())),
       sandbox_delegate_(std::make_unique<SandboxFileSystemBackendDelegate>(
           quota_manager_proxy_.get(),
           default_file_task_runner_.get(),
@@ -194,7 +203,10 @@ FileSystemContext::FileSystemContext(
       is_incognito_(options.is_incognito()),
       operation_runner_(std::make_unique<FileSystemOperationRunner>(
           base::PassKey<FileSystemContext>(),
-          this)) {
+          this)),
+      quota_client_receiver_(
+          std::make_unique<mojo::Receiver<mojom::QuotaClient>>(
+              quota_client_wrapper_.get())) {
   RegisterBackend(sandbox_backend_.get());
   RegisterBackend(plugin_private_backend_.get());
 
@@ -213,14 +225,6 @@ FileSystemContext::FileSystemContext(
 }
 
 void FileSystemContext::Initialize() {
-  if (quota_manager_proxy_) {
-    // Quota client assumes all backends have registered.
-    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
-    quota_manager_proxy_->RegisterLegacyClient(
-        base::MakeRefCounted<FileSystemQuotaClient>(this),
-        QuotaClientType::kFileSystem, QuotaManagedStorageTypes());
-  }
-
   sandbox_backend_->Initialize(this);
   isolated_backend_->Initialize(this);
   plugin_private_backend_->Initialize(this);
@@ -233,6 +237,33 @@ void FileSystemContext::Initialize() {
     url_crackers_.push_back(external_mount_points_.get());
   url_crackers_.push_back(ExternalMountPoints::GetSystemInstance());
   url_crackers_.push_back(IsolatedContext::GetInstance());
+
+  if (!quota_manager_proxy_)
+    return;
+
+  // QuotaManagerProxy::RegisterClient() must be called synchronously during
+  // DatabaseTracker creation until crbug.com/1182630 is fixed.
+  mojo::PendingRemote<storage::mojom::QuotaClient> quota_client_remote;
+  mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
+      quota_client_remote.InitWithNewPipeAndPassReceiver();
+  quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
+                                       storage::QuotaClientType::kFileSystem,
+                                       QuotaManagedStorageTypes());
+
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<FileSystemContext> self,
+             mojo::PendingReceiver<storage::mojom::QuotaClient> receiver) {
+            if (!self->quota_client_receiver_) {
+              // Shutdown() may be called directly on the IO sequence. If that
+              // happens, `quota_client_receiver_` may get reset before this
+              // task runs.
+              return;
+            }
+            self->quota_client_receiver_->Bind(std::move(receiver));
+          },
+          base::RetainedRef(this), std::move(quota_client_receiver)));
 }
 
 bool FileSystemContext::DeleteDataForOriginOnFileTaskRunner(
@@ -275,6 +306,13 @@ void FileSystemContext::Shutdown() {
                                              base::WrapRefCounted(this)));
     return;
   }
+
+  // The mojo receiver must be destroyed before the instance it calls into is
+  // destroyed.
+  quota_client_receiver_.reset();
+  quota_client_wrapper_.reset();
+  quota_client_.reset();
+
   operation_runner_->Shutdown();
 }
 

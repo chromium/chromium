@@ -22,6 +22,8 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
 #include "storage/browser/file_system/plugin_private_file_system_backend.h"
@@ -54,10 +56,12 @@ class FileSystemBackend;
 class FileSystemOperation;
 class FileSystemOperationRunner;
 class FileSystemOptions;
+class FileSystemQuotaClient;
 class FileSystemQuotaUtil;
 class FileSystemURL;
 class IsolatedFileSystemBackend;
 class MountPoints;
+class QuotaClientCallbackWrapper;
 class QuotaManagerProxy;
 class QuotaReservation;
 class SandboxFileSystemBackend;
@@ -395,6 +399,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   const scoped_refptr<base::SequencedTaskRunner> default_file_task_runner_;
 
   const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
+  std::unique_ptr<FileSystemQuotaClient> quota_client_;
+  std::unique_ptr<storage::QuotaClientCallbackWrapper> quota_client_wrapper_;
 
   const std::unique_ptr<SandboxFileSystemBackendDelegate> sandbox_delegate_;
 
@@ -430,6 +436,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   const bool is_incognito_;
 
   const std::unique_ptr<FileSystemOperationRunner> operation_runner_;
+
+  std::unique_ptr<mojo::Receiver<mojom::QuotaClient>> quota_client_receiver_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(FileSystemContext);
 };
