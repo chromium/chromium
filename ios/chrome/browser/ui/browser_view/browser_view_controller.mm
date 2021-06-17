@@ -1346,6 +1346,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.browserViewHiderCoordinator stop];
   self.browserViewHiderCoordinator = nil;
 
+  [_sadTabCoordinator stop];
+  _sadTabCoordinator = nil;
+
   [self.commandDispatcher stopDispatchingToTarget:self.bubblePresenter];
   self.bubblePresenter = nil;
 
