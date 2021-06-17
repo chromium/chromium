@@ -95,6 +95,9 @@ class DoublyLinkedList {
   void Remove(T*);
 
   struct AddResult {
+    STACK_ALLOCATED();
+
+   public:
     T* node;
     bool is_new_entry;
 
