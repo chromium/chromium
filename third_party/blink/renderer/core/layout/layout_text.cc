@@ -2151,6 +2151,21 @@ void LayoutText::ForceSetText(scoped_refptr<StringImpl> text) {
   TextDidChange();
 }
 
+void LayoutText::SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+    LayoutInvalidationReasonForTracing reason) {
+  auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
+  if (UNLIKELY(text_combine)) {
+    // Number of characters in text may change compressed font or scaling of
+    // text combine. So, we should invalidate |LayoutNGTextCombine| to repaint.
+    text_combine
+        ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+            reason);
+    return;
+  }
+  LayoutObject::SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+      reason);
+}
+
 void LayoutText::TextDidChange() {
   NOT_DESTROYED();
   // If preferredLogicalWidthsDirty() of an orphan child is true,
