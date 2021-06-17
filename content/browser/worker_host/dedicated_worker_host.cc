@@ -756,6 +756,14 @@ void DedicatedWorkerHost::ContinueOnMaybeCountWebFeature(
   // enabled.
   ancestor_container_host->CountFeature(
       blink::mojom::WebFeature::kControlledWorkerWillBeUncontrolled);
+
+  // Exclude the cases that `script_url` is a blob URL from
+  // kControlledWorkerWillBeUncontrolled.
+  if (!script_url.SchemeIsBlob()) {
+    ancestor_container_host->CountFeature(
+        blink::mojom::WebFeature::
+            kControlledNonBlobURLWorkerWillBeUncontrolled);
+  }
 }
 
 base::WeakPtr<CrossOriginEmbedderPolicyReporter>

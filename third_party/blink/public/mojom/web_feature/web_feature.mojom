@@ -3255,6 +3255,7 @@ enum WebFeature {
   kXRFrameFillPoses = 3940,
   kWindowOpenNewPopupBehaviorMismatch = 3941,
   kExplicitPointerCaptureClickTargetDiff = 3942,
+  kControlledNonBlobURLWorkerWillBeUncontrolled = 3943,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -32975,6 +32975,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3940" label="XRFrameFillPoses"/>
   <int value="3941" label="WindowOpenNewPopupBehaviorMismatch"/>
   <int value="3942" label="ExplicitPointerCaptureClickTargetDiff"/>
+  <int value="3943" label="ControlledNonBlobURLWorkerWillBeUncontrolled"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
