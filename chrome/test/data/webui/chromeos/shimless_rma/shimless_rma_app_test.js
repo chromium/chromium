@@ -92,11 +92,10 @@ export function shimlessRMAAppTest() {
 
     await clickNext();
 
-    // TODO(joonbug): enable when page is ready.
-    // const selectComponentPage =
-    //     component.shadowRoot.querySelector('onboarding-select-components');
-    // assertTrue(!!selectComponentPage);
-    // assertFalse(selectComponentPage.hidden);
+    const selectNetworkPage =
+        component.shadowRoot.querySelector('onboarding-network-page');
+    assertTrue(!!selectNetworkPage);
+    assertFalse(selectNetworkPage.hidden);
     assertTrue(!!initialPage);
     assertTrue(initialPage.hidden);
 
@@ -105,8 +104,8 @@ export function shimlessRMAAppTest() {
     await flushTasks();
 
     // components page should not be destroyed.
-    // assertTrue(!!selectComponentPage);
-    // assertTrue(selectComponentPage.hidden);
+    assertTrue(!!selectNetworkPage);
+    assertTrue(selectNetworkPage.hidden);
     assertFalse(initialPage.hidden);
   });
 
