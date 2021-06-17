@@ -9310,7 +9310,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MachineLearningService.CpuTimeMicrosec"
-    units="microseconds" expires_after="2021-07-01">
+    units="microseconds" expires_after="2022-01-15">
 <!-- Name completed by histogram_suffixes
      name="MachineLearningServiceRequests" -->
 
@@ -9324,7 +9324,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.CpuUsageMilliPercent"
-    units="1/1000ths of %" expires_after="2021-10-24">
+    units="1/1000ths of %" expires_after="2022-01-15">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -9336,7 +9336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="MachineLearningService.CreateGraphExecutorResult.Event"
     enum="MachineLearningServiceCreateGraphExecutorResultEvent"
-    expires_after="2021-11-14">
+    expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -9345,7 +9345,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MachineLearningService.ExecuteResult.Event"
-    enum="MachineLearningServiceExecuteResultEvent" expires_after="2021-11-14">
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -9374,7 +9374,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2021-10-31">
+    expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -9386,7 +9386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.HandwritingModel.Recognize.Event"
-    enum="Boolean" expires_after="2021-11-21">
+    enum="Boolean" expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -9398,7 +9398,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MachineLearningService.LoadModelResult"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2021-11-07">
+    expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -9410,7 +9410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="MachineLearningService.LoadModelResult.Event"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2021-11-14">
+    expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -9419,7 +9419,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.MojoConnectionEvent"
-    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2021-12-05">
+    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2022-01-15">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -9440,7 +9440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.PeakTotalMemoryKb" units="KB"
-    expires_after="2021-10-24">
+    expires_after="2022-01-15">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -9451,7 +9451,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.ProcessError"
-    enum="MachineLearningServiceProcessError" expires_after="2021-11-07">
+    enum="MachineLearningServiceProcessError" expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -9464,7 +9464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MachineLearningService.ReapWorkerProcessErrno"
     enum="MachineLearningServiceReapWorkerProcessErrno"
-    expires_after="2021-11-07">
+    expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -9489,7 +9489,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MachineLearningService.TotalMemoryDeltaKb"
-    units="KB" expires_after="2021-07-01">
+    units="KB" expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -9499,7 +9499,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.TotalMemoryKb" units="KB"
-    expires_after="2021-10-24">
+    expires_after="2022-01-15">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -9511,7 +9511,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MachineLearningService.WebPlatformHandwritingModel.GetPrediction.Event"
-    enum="Boolean" expires_after="2021-09-19">
+    enum="Boolean" expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -9524,7 +9524,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="MachineLearningService.WebPlatformHandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2021-10-31">
+    expires_after="2022-01-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -9536,7 +9536,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessAcceptMojoConnectionTime"
-    units="microseconds" expires_after="2021-10-24">
+    units="microseconds" expires_after="2022-01-15">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -9547,7 +9547,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessCleanUpTime"
-    units="microseconds" expires_after="2021-10-24">
+    units="microseconds" expires_after="2022-01-15">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -9558,7 +9558,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessExitStatus"
-    units="exit status" expires_after="2021-10-24">
+    units="exit status" expires_after="2022-01-15">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
