@@ -4,71 +4,74 @@
 
 #include "components/metrics/component_metrics_provider.h"
 
-#include <map>
-#include <string>
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "components/component_updater/component_updater_service.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+
+#include <string>
 
 namespace metrics {
 
 namespace {
 
 SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
-  const static std::map<std::string, SystemProfileProto_ComponentId>
-      component_map = {
-          {"khaoiebndkojlmppeemjhbpbandiljpe",
-           SystemProfileProto_ComponentId_FILE_TYPE_POLICIES},
-          {"kfoklmclfodeliojeaekpoflbkkhojea",
-           SystemProfileProto_ComponentId_ORIGIN_TRIALS},
-          {"llkgjffcdpffmhiakmfcdcblohccpfmo",
-           SystemProfileProto_ComponentId_ORIGIN_TRIALS},  // Alternate ID
-          {"mimojjlkmoijpicakmndhoigimigcmbb",
-           SystemProfileProto_ComponentId_PEPPER_FLASH},
-          {"ckjlcfmdbdglblbjglepgnoekdnkoklc",
-           SystemProfileProto_ComponentId_PEPPER_FLASH_CHROMEOS},
-          {"hnimpnehoodheedghdeeijklkeaacbdc",
-           SystemProfileProto_ComponentId_PNACL},
-          {"npdjjkjlcidkjlamlmmdelcjbcpdjocm",
-           SystemProfileProto_ComponentId_RECOVERY},
-          {"giekcmmlnklenlaomppkphknjmnnpneh",
-           SystemProfileProto_ComponentId_SSL_ERROR_ASSISTANT},
-          {"ojjgnpkioondelmggbekfhllhdaimnho",
-           SystemProfileProto_ComponentId_STH_SET},
-          {"hfnkpimlhhgieaddgfemjhofmfblmnib",
-           SystemProfileProto_ComponentId_CRL_SET},
-          {"gcmjkmgdlgnkkcocmoeiminaijmmjnii",
-           SystemProfileProto_ComponentId_SUBRESOURCE_FILTER},
-          {"gkmgaooipdjhmangpemjhigmamcehddo",
-           SystemProfileProto_ComponentId_SW_REPORTER},
-          {"oimompecagnajdejgnnjijobebaeigek",
-           SystemProfileProto_ComponentId_WIDEVINE_CDM},
-          {"bjbdkfoakgmkndalgpadobhgbhhoanho",
-           SystemProfileProto_ComponentId_EPSON_INKJET_PRINTER_ESCPR},
-          {"ojnjgapiepgciobpecnafnoeaegllfld",
-           SystemProfileProto_ComponentId_CROS_TERMINA},
-          {"gncenodapghbnkfkoognegdnjoeegmkp",
-           SystemProfileProto_ComponentId_STAR_CUPS_DRIVER},
-          {"gelhpeofhffbaeegmemklllhfdifagmb",
-           SystemProfileProto_ComponentId_SPEECH_SYNTHESIS_SV_SE},
-          {"lmelglejhemejginpboagddgdfbepgmp",
-           SystemProfileProto_ComponentId_OPTIMIZATION_HINTS},
-          {"fookoiellkocclipolgaceabajejjcnp",
-           SystemProfileProto_ComponentId_DOWNLOADABLE_STRINGS},
-          {"cjfkbpdpjpdldhclahpfgnlhpodlpnba",
-           SystemProfileProto_ComponentId_VR_ASSETS},
-          {"gjpajnddmedjmcklfflllocelehklffm",
-           SystemProfileProto_ComponentId_RTANALYTICS_LIGHT},
-          {"mjdmdobabdmfcbaakcaadileafkmifen",
-           SystemProfileProto_ComponentId_RTANALYTICS_FULL},
-          {"fhbeibbmaepakgdkkmjgldjajgpkkhfj",
-           SystemProfileProto_ComponentId_CELLULAR},
-          {"ojhpjlocmbogdgmfpkhlaaeamibhnphh",
-           SystemProfileProto_ComponentId_ZXCVBN_DATA},
-      };
+  static constexpr auto kComponentMap =
+      base::MakeFixedFlatMap<base::StringPiece, SystemProfileProto_ComponentId>(
+          {
+              {"khaoiebndkojlmppeemjhbpbandiljpe",
+               SystemProfileProto_ComponentId_FILE_TYPE_POLICIES},
+              {"kfoklmclfodeliojeaekpoflbkkhojea",
+               SystemProfileProto_ComponentId_ORIGIN_TRIALS},
+              {"llkgjffcdpffmhiakmfcdcblohccpfmo",
+               SystemProfileProto_ComponentId_ORIGIN_TRIALS},  // Alternate ID
+              {"mimojjlkmoijpicakmndhoigimigcmbb",
+               SystemProfileProto_ComponentId_PEPPER_FLASH},
+              {"ckjlcfmdbdglblbjglepgnoekdnkoklc",
+               SystemProfileProto_ComponentId_PEPPER_FLASH_CHROMEOS},
+              {"hnimpnehoodheedghdeeijklkeaacbdc",
+               SystemProfileProto_ComponentId_PNACL},
+              {"npdjjkjlcidkjlamlmmdelcjbcpdjocm",
+               SystemProfileProto_ComponentId_RECOVERY},
+              {"giekcmmlnklenlaomppkphknjmnnpneh",
+               SystemProfileProto_ComponentId_SSL_ERROR_ASSISTANT},
+              {"ojjgnpkioondelmggbekfhllhdaimnho",
+               SystemProfileProto_ComponentId_STH_SET},
+              {"hfnkpimlhhgieaddgfemjhofmfblmnib",
+               SystemProfileProto_ComponentId_CRL_SET},
+              {"gcmjkmgdlgnkkcocmoeiminaijmmjnii",
+               SystemProfileProto_ComponentId_SUBRESOURCE_FILTER},
+              {"gkmgaooipdjhmangpemjhigmamcehddo",
+               SystemProfileProto_ComponentId_SW_REPORTER},
+              {"oimompecagnajdejgnnjijobebaeigek",
+               SystemProfileProto_ComponentId_WIDEVINE_CDM},
+              {"bjbdkfoakgmkndalgpadobhgbhhoanho",
+               SystemProfileProto_ComponentId_EPSON_INKJET_PRINTER_ESCPR},
+              {"ojnjgapiepgciobpecnafnoeaegllfld",
+               SystemProfileProto_ComponentId_CROS_TERMINA},
+              {"gncenodapghbnkfkoognegdnjoeegmkp",
+               SystemProfileProto_ComponentId_STAR_CUPS_DRIVER},
+              {"gelhpeofhffbaeegmemklllhfdifagmb",
+               SystemProfileProto_ComponentId_SPEECH_SYNTHESIS_SV_SE},
+              {"lmelglejhemejginpboagddgdfbepgmp",
+               SystemProfileProto_ComponentId_OPTIMIZATION_HINTS},
+              {"fookoiellkocclipolgaceabajejjcnp",
+               SystemProfileProto_ComponentId_DOWNLOADABLE_STRINGS},
+              {"cjfkbpdpjpdldhclahpfgnlhpodlpnba",
+               SystemProfileProto_ComponentId_VR_ASSETS},
+              {"gjpajnddmedjmcklfflllocelehklffm",
+               SystemProfileProto_ComponentId_RTANALYTICS_LIGHT},
+              {"mjdmdobabdmfcbaakcaadileafkmifen",
+               SystemProfileProto_ComponentId_RTANALYTICS_FULL},
+              {"fhbeibbmaepakgdkkmjgldjajgpkkhfj",
+               SystemProfileProto_ComponentId_CELLULAR},
+              {"ojhpjlocmbogdgmfpkhlaaeamibhnphh",
+               SystemProfileProto_ComponentId_ZXCVBN_DATA},
+          });
 
-  const auto result = component_map.find(app_id);
-  if (result == component_map.end())
+  const auto* result = kComponentMap.find(app_id);
+  if (result == kComponentMap.end())
     return SystemProfileProto_ComponentId_UNKNOWN;
   return result->second;
 }
