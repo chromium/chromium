@@ -93,7 +93,7 @@ public class OptimizationGuideBridge {
      */
     public void canApplyOptimizationAsync(NavigationHandle navigationHandle,
             OptimizationType optimizationType, OptimizationGuideCallback callback) {
-        assert navigationHandle.isInMainFrame();
+        assert navigationHandle.isInPrimaryMainFrame();
 
         if (mNativeOptimizationGuideBridge == 0) {
             callback.onOptimizationGuideDecision(OptimizationGuideDecision.UNKNOWN, null);

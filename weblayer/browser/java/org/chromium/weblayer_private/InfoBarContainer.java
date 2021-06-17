@@ -95,7 +95,7 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
     private final WebContentsObserver mWebContentsObserver = new WebContentsObserver() {
         @Override
         public void didFinishNavigation(NavigationHandle navigation) {
-            if (navigation.hasCommitted() && navigation.isInMainFrame()) {
+            if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()) {
                 setHidden(false);
             }
         }

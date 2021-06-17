@@ -186,7 +186,7 @@ public class CustomTabObserver extends EmptyTabObserver {
     public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
         boolean firstNavigation = mFirstCommitTimestamp == 0;
         boolean isFirstMainFrameCommit = firstNavigation && navigation.hasCommitted()
-                && !navigation.isErrorPage() && navigation.isInMainFrame()
+                && !navigation.isErrorPage() && navigation.isInPrimaryMainFrame()
                 && !navigation.isSameDocument() && !navigation.isFragmentNavigation();
         if (isFirstMainFrameCommit) mFirstCommitTimestamp = SystemClock.elapsedRealtime();
     }

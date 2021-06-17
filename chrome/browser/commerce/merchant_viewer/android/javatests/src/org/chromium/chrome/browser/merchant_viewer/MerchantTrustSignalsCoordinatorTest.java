@@ -155,7 +155,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .when(mMockMerchantTrustStorageFactory)
                 .getForLastUsedProfile();
         doReturn(mMockGurl).when(mNavigationHandle).getUrl();
-        doReturn(true).when(mNavigationHandle).isInMainFrame();
+        doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
     }
 
     @SmallTest

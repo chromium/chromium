@@ -326,7 +326,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
             // Ignore navigations from subframes. We should only remove the paint preview
             // player when the user navigates to a new page.
-            if (!navigationHandle.isInMainFrame()) return;
+            if (!navigationHandle.isInPrimaryMainFrame()) return;
 
             // If we haven't started to restore, this is the navigation call to start the
             // restoration. We shouldn't remove the paint preview player.

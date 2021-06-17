@@ -93,7 +93,7 @@ public class TabAttributeCache {
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
                 if (tab.isIncognito()) return;
-                if (!navigationHandle.isInMainFrame()) return;
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
                 if (tab.getWebContents() == null) return;
                 // TODO(crbug.com/1048255): skip cacheLastSearchTerm() according to
                 //  isValidSearchFormUrl() and PageTransition.GENERATED for optimization.

@@ -111,7 +111,9 @@ public class JourneyManager implements DestroyObserver {
 
             @Override
             public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInMainFrame() || navigationHandle.isSameDocument()) return;
+                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
+                    return;
+                }
 
                 mDidFirstPaintPerTab.put(tab.getId(), false);
             }

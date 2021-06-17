@@ -235,7 +235,7 @@ public class TabAttributeCacheUnitTest {
         LastSearchTermProvider lastSearchTermProvider = mock(LastSearchTermProvider.class);
         TabAttributeCache.setLastSearchTermMockForTesting(lastSearchTermProvider);
         NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        doReturn(true).when(navigationHandle).isInMainFrame();
+        doReturn(true).when(navigationHandle).isInPrimaryMainFrame();
 
         Assert.assertNull(TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
@@ -248,10 +248,10 @@ public class TabAttributeCacheUnitTest {
 
         // Non-main frame should not propagate.
         doReturn("another").when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        doReturn(false).when(navigationHandle).isInMainFrame();
+        doReturn(false).when(navigationHandle).isInPrimaryMainFrame();
         mTabObserverCaptor.getValue().onDidFinishNavigation(mTab1, navigationHandle);
         Assert.assertEquals(searchTerm, TabAttributeCache.getLastSearchTerm(TAB1_ID));
-        doReturn(true).when(navigationHandle).isInMainFrame();
+        doReturn(true).when(navigationHandle).isInPrimaryMainFrame();
 
         // Empty strings should propagate.
         doReturn("").when(lastSearchTermProvider).getLastSearchTerm(mTab1);

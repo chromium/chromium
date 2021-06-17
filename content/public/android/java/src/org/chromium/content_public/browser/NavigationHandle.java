@@ -18,7 +18,6 @@ import org.chromium.url.GURL;
 @JNINamespace("content")
 public class NavigationHandle {
     private long mNativeNavigationHandleProxy;
-    private final boolean mIsInMainFrame;
     private final boolean mIsInPrimaryMainFrame;
     private final boolean mIsRendererInitiated;
     private final boolean mIsSameDocument;
@@ -33,11 +32,10 @@ public class NavigationHandle {
     private int mHttpStatusCode;
 
     @CalledByNative
-    public NavigationHandle(long nativeNavigationHandleProxy, GURL url, boolean isInMainFrame,
+    public NavigationHandle(long nativeNavigationHandleProxy, GURL url,
             boolean isInPrimaryMaimFrame, boolean isSameDocument, boolean isRendererInitiated) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
-        mIsInMainFrame = isInMainFrame;
         mIsInPrimaryMainFrame = isInPrimaryMaimFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
@@ -88,17 +86,6 @@ public class NavigationHandle {
      */
     public GURL getUrl() {
         return mUrl;
-    }
-
-    /**
-     * Whether the navigation is taking place in a main frame or in a subframe.
-     * This can also return true for navigations in the root of a non-primary
-     * page, so consider whether you want to call IsInPrimaryMainFrame() instead.
-     * See the documentation below for details. This remains constant over the
-     * navigation lifetime.
-     */
-    public boolean isInMainFrame() {
-        return mIsInMainFrame;
     }
 
     /**

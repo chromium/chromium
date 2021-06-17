@@ -53,7 +53,8 @@ public class AutofillSessionLifetimeController implements DestroyObserver {
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
             @Override
             public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (navigationHandle.isInMainFrame() && !navigationHandle.isRendererInitiated()) {
+                if (navigationHandle.isInPrimaryMainFrame()
+                        && !navigationHandle.isRendererInitiated()) {
                     ApiHelperForO.cancelAutofillSession(mActivity);
                 }
             }

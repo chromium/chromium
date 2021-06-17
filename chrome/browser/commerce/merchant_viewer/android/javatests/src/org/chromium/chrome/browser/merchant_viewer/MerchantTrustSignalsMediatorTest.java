@@ -74,7 +74,7 @@ public class MerchantTrustSignalsMediatorTest {
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
         doReturn(false).when(mMockTab).isIncognito();
         doReturn(true).when(mMockNavigationHandle).hasCommitted();
-        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(false).when(mMockNavigationHandle).isSameDocument();
         doReturn(mMockUrl).when(mMockNavigationHandle).getUrl();
         doReturn("fake_host").when(mMockUrl).getHost();
@@ -124,7 +124,7 @@ public class MerchantTrustSignalsMediatorTest {
 
     @Test
     public void testTabObserverOnDidFinishNavigation_NonMainFrame() {
-        doReturn(false).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(false).when(mMockNavigationHandle).isInPrimaryMainFrame();
 
         mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));

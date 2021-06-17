@@ -127,7 +127,7 @@ public class DemoPaintPreview implements PlayerManager.Listener {
 
             // Ignore navigations from subframes. We should only remove the paint preview
             // player when the user navigates to a new page.
-            if (!navigationHandle.isInMainFrame()) return;
+            if (!navigationHandle.isInPrimaryMainFrame()) return;
 
             removePaintPreviewDemo();
         }

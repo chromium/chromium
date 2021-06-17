@@ -228,22 +228,22 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Test
     public void testWebContentsObserverDidFinishNavigation() {
-        doReturn(false).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(false).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(false).when(mMockNavigationHandle).hasCommitted();
         mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
         assertEquals(null, mToolbarModel.get(BottomSheetToolbarProperties.URL));
 
-        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(false).when(mMockNavigationHandle).hasCommitted();
         mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
         assertEquals(null, mToolbarModel.get(BottomSheetToolbarProperties.URL));
 
-        doReturn(false).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(false).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(true).when(mMockNavigationHandle).hasCommitted();
         mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
         assertEquals(null, mToolbarModel.get(BottomSheetToolbarProperties.URL));
 
-        doReturn(true).when(mMockNavigationHandle).isInMainFrame();
+        doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(true).when(mMockNavigationHandle).hasCommitted();
         mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
         assertEquals(mMockDestinationGurl, mToolbarModel.get(BottomSheetToolbarProperties.URL));

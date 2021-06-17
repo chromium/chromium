@@ -82,7 +82,7 @@ public class MerchantTrustSignalsDataProviderTest {
         doReturn(false).when(mMockProfile).isOffTheRecord();
         Profile.setLastUsedProfileForTesting(mMockProfile);
         doReturn(mMockDestinationGurl).when(mNavigationHandle).getUrl();
-        doReturn(true).when(mNavigationHandle).isInMainFrame();
+        doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
     }
 
     @Test

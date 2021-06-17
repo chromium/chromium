@@ -195,11 +195,11 @@ public class AwWebContentsObserverTest {
         Assert.assertEquals(true, doUpdateVisitedHistoryHelper.getIsReload());
     }
 
-    private void simulateNavigation(GURL gurl, boolean isInMainFrame, boolean isErrorPage,
+    private void simulateNavigation(GURL gurl, boolean isInPrimaryMainFrame, boolean isErrorPage,
             boolean isSameDocument, boolean isFragmentNavigation, boolean isRendererInitiated,
             int transition) {
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
-                isInMainFrame, isInMainFrame, isSameDocument, isRendererInitiated);
+                isInPrimaryMainFrame, isSameDocument, isRendererInitiated);
         mWebContentsObserver.didStartNavigation(navigation);
 
         navigation.didFinish(gurl, isErrorPage, true /* hasCommitted */, isFragmentNavigation,

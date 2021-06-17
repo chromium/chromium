@@ -43,7 +43,7 @@ public class LoadProgressMediator {
         mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onDidStartNavigation(Tab tab, NavigationHandle navigation) {
-                if (navigation.isSameDocument() || !navigation.isInMainFrame()) {
+                if (navigation.isSameDocument() || !navigation.isInPrimaryMainFrame()) {
                     return;
                 }
 

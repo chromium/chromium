@@ -68,7 +68,7 @@ public class QualityEnforcer {
     private final CustomTabTabObserver mTabObserver = new CustomTabTabObserver() {
         @Override
         public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (!navigation.hasCommitted() || !navigation.isInMainFrame()
+            if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
                     || navigation.isSameDocument()) {
                 return;
             }

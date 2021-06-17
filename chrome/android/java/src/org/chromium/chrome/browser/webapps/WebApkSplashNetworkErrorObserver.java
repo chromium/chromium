@@ -41,7 +41,7 @@ public class WebApkSplashNetworkErrorObserver extends EmptyTabObserver {
 
     @Override
     public void onDidFinishNavigation(final Tab tab, NavigationHandle navigation) {
-        if (!navigation.isInMainFrame()) return;
+        if (!navigation.isInPrimaryMainFrame()) return;
 
         switch (navigation.errorCode()) {
             case NetError.OK:

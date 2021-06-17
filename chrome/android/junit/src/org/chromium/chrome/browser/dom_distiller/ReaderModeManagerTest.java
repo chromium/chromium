@@ -180,7 +180,7 @@ public class ReaderModeManagerTest {
 
         // Simulate a navigation from a distilled page.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInMainFrame()).thenReturn(true);
+        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
@@ -200,7 +200,7 @@ public class ReaderModeManagerTest {
 
         // Simulate a navigation to a distilled page.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInMainFrame()).thenReturn(true);
+        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_DISTILLER_URL);
 
@@ -218,7 +218,7 @@ public class ReaderModeManagerTest {
 
         // Simulate an same-document navigation.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInMainFrame()).thenReturn(true);
+        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
 

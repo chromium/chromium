@@ -97,7 +97,7 @@ public class TabStateBrowserControlsVisibilityDelegate
 
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (!navigation.hasCommitted() || !navigation.isInMainFrame()) return;
+                if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) return;
                 mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
                 mHandler.sendEmptyMessageDelayed(
                         MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD, getLoadDelayMs());

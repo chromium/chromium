@@ -57,7 +57,7 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
     // Invoked by the client when a navigation has finished in the context in which this object is
     // operating.
     public void onNavigationFinished(NavigationHandle navigation) {
-        if (!navigation.hasCommitted() || !navigation.isInMainFrame()) return;
+        if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) return;
         maybeUpdateNavigationHistory();
     }
 

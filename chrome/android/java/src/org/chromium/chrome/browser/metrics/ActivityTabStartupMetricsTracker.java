@@ -62,7 +62,7 @@ public class ActivityTabStartupMetricsTracker {
                     @Override
                     public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
                         boolean isTrackedPage = navigation.hasCommitted()
-                                && navigation.isInMainFrame() && !navigation.isErrorPage()
+                                && navigation.isInPrimaryMainFrame() && !navigation.isErrorPage()
                                 && !navigation.isSameDocument()
                                 && !navigation.isFragmentNavigation()
                                 && UrlUtilities.isHttpOrHttps(navigation.getUrl());

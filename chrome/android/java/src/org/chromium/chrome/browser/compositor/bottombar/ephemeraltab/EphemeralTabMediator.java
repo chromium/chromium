@@ -101,7 +101,7 @@ public class EphemeralTabMediator {
             @Override
             public void didStartNavigation(NavigationHandle navigation) {
                 mMetrics.recordNavigateLink();
-                if (navigation.isInMainFrame() && !navigation.isSameDocument()) {
+                if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
                     GURL url = navigation.getUrl();
                     if (url.equals(mCurrentUrl)) return;
 
@@ -127,7 +127,7 @@ public class EphemeralTabMediator {
 
             @Override
             public void didFinishNavigation(NavigationHandle navigation) {
-                if (navigation.isInMainFrame()) {
+                if (navigation.isInPrimaryMainFrame()) {
                     if (navigation.hasCommitted()) {
                         mIsOnErrorPage = navigation.isErrorPage();
                         mSheetContent.updateURL(mWebContents.get().getVisibleUrl());

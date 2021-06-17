@@ -315,7 +315,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
             @Override
             public void didStartNavigation(NavigationHandle navigation) {
-                if (!navigation.isInMainFrame() || navigation.isSameDocument()) return;
+                if (!navigation.isInPrimaryMainFrame() || navigation.isSameDocument()) return;
 
                 // Reader Mode should not pollute the navigation stack. To avoid this, watch for
                 // navigations and prepare to remove any that are "chrome-distiller" urls.
@@ -341,7 +341,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             public void didFinishNavigation(NavigationHandle navigation) {
                 // TODO(cjhopman): This should possibly ignore navigations that replace the entry
                 // (like those from history.replaceState()).
-                if (!navigation.hasCommitted() || !navigation.isInMainFrame()
+                if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
                         || navigation.isSameDocument()) {
                     return;
                 }

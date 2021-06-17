@@ -108,7 +108,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInMainFrame()) return;
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
 
                 // At this point, we might have switched renderer processes, so push the existing
                 // constraints to the new renderer (has the potential to be slightly spammy, but

@@ -38,7 +38,7 @@ public class WebappActiveTabUmaTracker extends ActivityTabTabObserver {
 
     @Override
     public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-        if (navigation.hasCommitted() && navigation.isInMainFrame()
+        if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()
                 && !navigation.isSameDocument()) {
             RecordHistogram.recordBooleanHistogram(
                     HISTOGRAM_NAVIGATION_STATUS, !navigation.isErrorPage());

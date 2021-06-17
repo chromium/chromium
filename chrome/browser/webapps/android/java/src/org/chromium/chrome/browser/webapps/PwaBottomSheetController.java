@@ -168,7 +168,7 @@ public class PwaBottomSheetController
         mWebContentsObserver = new WebContentsObserver(webContents) {
             @Override
             public void didFinishNavigation(NavigationHandle navigation) {
-                if (navigation.isInMainFrame() && navigation.hasCommitted()) {
+                if (navigation.isInPrimaryMainFrame() && navigation.hasCommitted()) {
                     mBottomSheetController.hideContent(mPwaBottomSheetContent, /* animate= */ true);
                 }
             }

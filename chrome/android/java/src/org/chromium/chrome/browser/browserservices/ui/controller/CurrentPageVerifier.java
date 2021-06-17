@@ -65,7 +65,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
     private final CustomTabTabObserver mVerifyOnPageLoadObserver = new CustomTabTabObserver() {
         @Override
         public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (!navigation.hasCommitted() || !navigation.isInMainFrame()
+            if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
                     || navigation.isSameDocument()) {
                 return;
             }

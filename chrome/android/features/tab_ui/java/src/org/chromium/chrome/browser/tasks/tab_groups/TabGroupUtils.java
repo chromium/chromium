@@ -138,7 +138,7 @@ public class TabGroupUtils {
         sTabModelSelectorTabObserver = new TabModelSelectorTabObserver(selector) {
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInMainFrame()) return;
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
                 if (tab.isIncognito()) return;
                 Integer transition = navigationHandle.pageTransition();
                 // Searching from omnibox results in PageTransition.GENERATED.

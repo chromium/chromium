@@ -269,7 +269,7 @@ public final class TabImpl extends ITab.Stub {
         mWebContentsObserver = new WebContentsObserver() {
             @Override
             public void didStartNavigation(NavigationHandle navigationHandle) {
-                if (navigationHandle.isInMainFrame() && !navigationHandle.isSameDocument()) {
+                if (navigationHandle.isInPrimaryMainFrame() && !navigationHandle.isSameDocument()) {
                     hideFindInPageUiAndNotifyClient();
                 }
             }

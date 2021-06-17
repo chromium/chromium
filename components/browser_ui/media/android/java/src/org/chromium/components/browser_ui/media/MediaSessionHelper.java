@@ -279,7 +279,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         mWebContentsObserver = new WebContentsObserver(webContents) {
             @Override
             public void didFinishNavigation(NavigationHandle navigation) {
-                if (!navigation.hasCommitted() || !navigation.isInMainFrame()
+                if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
                         || navigation.isSameDocument()) {
                     return;
                 }
