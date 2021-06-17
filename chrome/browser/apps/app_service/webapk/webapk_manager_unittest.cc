@@ -13,8 +13,6 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -58,18 +56,11 @@ class WebApkManagerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    extensions::TestExtensionSystem* extension_system(
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(&profile_)));
-    extension_service_ = extension_system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extension_service_->Init();
-
     arc_test_.SetUp(&profile_);
 
-    auto* const provider = web_app::TestWebAppProvider::Get(profile());
-    provider->SetRunSubsystemStartupTasks(true);
-    provider->Start();
+    auto* const provider = web_app::TestWebAppProvider::Get(&profile_);
+    provider->SkipAwaitingExtensionSystem();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override { arc_test_.TearDown(); }
@@ -106,7 +97,6 @@ class WebApkManagerTest : public testing::Test {
   TestingProfile profile_;
   ArcAppTest arc_test_;
   apps::AppServiceTest app_service_test_;
-  extensions::ExtensionService* extension_service_ = nullptr;
 
   std::unique_ptr<apps::WebApkManager> webapk_manager_;
 };

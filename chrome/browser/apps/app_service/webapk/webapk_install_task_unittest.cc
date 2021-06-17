@@ -10,8 +10,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
@@ -24,6 +22,7 @@
 #include "components/arc/test/fake_webapk_instance.h"
 #include "components/webapk/webapk.pb.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -111,18 +110,11 @@ class WebApkInstallTaskTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    extensions::TestExtensionSystem* extension_system(
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(&profile_)));
-    extension_service_ = extension_system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extension_service_->Init();
-
     app_service_test_.SetUp(&profile_);
 
     auto* const provider = web_app::TestWebAppProvider::Get(&profile_);
-    provider->SetRunSubsystemStartupTasks(true);
-    provider->Start();
+    provider->SkipAwaitingExtensionSystem();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     arc_test_.SetUp(&profile_);
     auto* arc_bridge_service =
@@ -134,6 +126,7 @@ class WebApkInstallTaskTest : public testing::Test {
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &WebApkInstallTaskTest::HandleWebApkRequest, base::Unretained(this)));
+    net::test_server::RegisterDefaultHandlers(&test_server_);
     ASSERT_TRUE(test_server_.Start());
 
     GURL server_url = test_server_.GetURL(kServerPath);
@@ -166,9 +159,13 @@ class WebApkInstallTaskTest : public testing::Test {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleWebApkRequest(
       const net::test_server::HttpRequest& request) {
-    last_webapk_request_ = std::make_unique<webapk::WebApk>();
-    last_webapk_request_->ParseFromString(request.content);
-    return webapk_response_builder_.Run();
+    if (request.relative_url == kServerPath) {
+      last_webapk_request_ = std::make_unique<webapk::WebApk>();
+      last_webapk_request_->ParseFromString(request.content);
+      return webapk_response_builder_.Run();
+    }
+
+    return nullptr;
   }
 
   TestingProfile* profile() { return &profile_; }
@@ -181,12 +178,13 @@ class WebApkInstallTaskTest : public testing::Test {
 
   webapk::WebApk* last_webapk_request() { return last_webapk_request_.get(); }
 
+  net::EmbeddedTestServer* test_server() { return &test_server_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_test_;
-  extensions::ExtensionService* extension_service_ = nullptr;
 
   net::EmbeddedTestServer test_server_;
 
@@ -303,4 +301,23 @@ TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
   ASSERT_EQ(fake_webapk_instance()->handled_packages()[0],
             "org.chromium.webapk.some_package");
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
+}
+
+TEST_F(WebApkInstallTaskTest, MinterTimeout) {
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kWebApkServerUrl, test_server()->GetURL("/slow?1000").spec());
+
+  bool install_success;
+  apps::WebApkInstallTask install_task(profile(), app_id);
+  install_task.SetTimeoutForTesting(base::TimeDelta::FromMilliseconds(100));
+  base::RunLoop run_loop;
+  install_task.Start(base::BindLambdaForTesting([&](bool success) {
+    install_success = success;
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+
+  ASSERT_FALSE(install_success);
 }
