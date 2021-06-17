@@ -36,8 +36,10 @@ constexpr int kPlayIconSizeDip = 24;
 constexpr int kPlayIconBackgroundCornerRadiusDip = 20;
 constexpr gfx::Size kPlayIconViewSize{40, 40};
 
-// The size of the keyboard shortcut icon.
+// Constants related to the clipboard keyboard shortcut icon.
 constexpr int kKeyboardShortcutIconSize = 14;
+constexpr int kShortcutIconTopPaddingSearch = 4;
+constexpr int kShortcutIconTopPaddingLauncher = 3;
 
 bool IsAssistantAvailable() {
   AssistantStateBase* state = AssistantState::Get();
@@ -91,6 +93,14 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
           IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE)));
   shortcut_label->SetBackgroundColor(background_color);
   shortcut_label->SetEnabledColor(text_icon_color);
+
+  // Center vertically keyboard shortcut icon depending on whether search button
+  // or launcher button is being used.
+  keyboard_shortcut_icon->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+      (ui::DeviceUsesKeyboardLayout2() ? kShortcutIconTopPaddingLauncher
+                                       : kShortcutIconTopPaddingSearch),
+      0, 0, 0)));
+
   return clipboard_shortcut_view;
 }
 
