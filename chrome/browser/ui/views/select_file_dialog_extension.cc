@@ -452,16 +452,22 @@ bool SelectFileDialogExtension::IsResizeable() const {
 void SelectFileDialogExtension::NotifyListener() {
   if (!listener_)
     return;
+
+  // The selected files are passed by reference to the listener. Ensure they
+  // outlive the dialog if it is immediately deleted by the listener.
+  std::vector<ui::SelectedFileInfo> selection_files =
+      std::move(selection_files_);
+
   switch (selection_type_) {
     case CANCEL:
       listener_->FileSelectionCanceled(params_);
       break;
     case SINGLE_FILE:
-      listener_->FileSelectedWithExtraInfo(selection_files_[0],
-                                           selection_index_, params_);
+      listener_->FileSelectedWithExtraInfo(selection_files[0], selection_index_,
+                                           params_);
       break;
     case MULTIPLE_FILES:
-      listener_->MultiFilesSelectedWithExtraInfo(selection_files_, params_);
+      listener_->MultiFilesSelectedWithExtraInfo(selection_files, params_);
       break;
     default:
       NOTREACHED();
