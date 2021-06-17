@@ -10,12 +10,17 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
+#include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/metrics/arc_metrics_service.h"
+#include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/test/fake_arc_session.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,6 +38,8 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     base::CommandLine::ForCurrentProcess()->InitFromArgv(
         {"", "--enable-arcvm"});
+    arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+    arc::StabilityMetricsManager::Initialize(&local_state_);
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
@@ -42,6 +49,11 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
     testing_profile_ = std::make_unique<TestingProfile>();
     policy_ =
         WorkingSetTrimmerPolicyArcVm::CreateForTesting(testing_profile_.get());
+
+    arc::ArcBootPhaseMonitorBridge::GetForBrowserContextForTesting(
+        testing_profile_.get());
+    arc::ArcMetricsService::GetForBrowserContextForTesting(
+        testing_profile_.get());
 
     // Set the state to "logged in".
     session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
@@ -55,6 +67,7 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
 
     // All other object must be destroyed before shutting down ConciergeClient.
     chromeos::ConciergeClient::Shutdown();
+    arc::StabilityMetricsManager::Shutdown();
   }
 
   WorkingSetTrimmerPolicyArcVmTest(const WorkingSetTrimmerPolicyArcVmTest&) =
@@ -71,6 +84,7 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
@@ -167,6 +181,17 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
   FastForwardBy(GetInterval());
   FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_TRUE(trimmer()->IsEligibleForReclaim(GetInterval()));
+}
+
+// Tests that OnUserSessionStarted() does not crash. This is mainly for better
+// test coverage.
+TEST_F(WorkingSetTrimmerPolicyArcVmTest, OnUserSessionStarted) {
+  trimmer()->OnUserSessionStarted(/*is_primary_user=*/true);
+}
+
+// Tests the same but with is_primary_user=false.
+TEST_F(WorkingSetTrimmerPolicyArcVmTest, OnUserSessionStarted_NonPrimary) {
+  trimmer()->OnUserSessionStarted(/*is_primary_user=*/false);
 }
 
 }  // namespace
