@@ -5,13 +5,18 @@
      found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 2021 color palette -->
+    <color name="modern_blue_200">#A8C7FA</color>
+    <color name="modern_blue_600">#0B57D0</color>
+    <color name="modern_grey_100_alpha_12">#1EE3E3E3</color>
+    <color name="modern_grey_900_alpha_12">#1E1F1F1F</color>
+
     <!-- Modern color palette -->
     <color name="modern_white">@android:color/white</color>
     <color name="modern_blue_300">#8AB4F8</color>
     <color name="modern_blue_300_alpha_10" tools:ignore="UnusedResources">#198AB4F8</color>
     <color name="modern_blue_300_alpha_50">#808AB4F8</color>
     <color name="modern_blue_300_alpha_55" tools:ignore="UnusedResources">#5A7198</color>
-    <color name="modern_blue_600">#1A73E8</color>
     <color name="modern_blue_600_alpha_6">#0F1A73E8</color>
     <color name="modern_blue_600_alpha_10">#191A73E8</color>
     <color name="modern_blue_600_alpha_12">#1F1A73E8</color>

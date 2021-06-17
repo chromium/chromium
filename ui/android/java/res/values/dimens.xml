@@ -31,7 +31,7 @@
 
     <!-- Button default measures -->
     <dimen name="button_min_width">88dp</dimen>
-    <dimen name="button_bg_vertical_inset">6dp</dimen>
+    <dimen name="button_bg_vertical_inset">4dp</dimen>
 
     <!-- Chips default measures -->
     <item name="chip_background_selected_alpha_light" format="float" type="dimen">0.06</item>
@@ -72,7 +72,10 @@
     <dimen name="dropdown_vertical_margin">4dp</dimen>
     <dimen name="dropdown_elevation">2dp</dimen>
 
-    <dimen name="button_compat_corner_radius">4dp</dimen>
+    <!-- Use arbitrary high number so that if the button text spans multiple
+     lines with XL text, the corners will still look fully rounded
+     TODO(crbug/1217139): Determine the corner radius based on button height-->
+    <dimen name="button_compat_corner_radius">500dp</dimen>
 
     <dimen name="chrome_bullet_gap">12dp</dimen>
     <dimen name="chrome_bullet_leading_offset">1dp</dimen>
