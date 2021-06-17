@@ -979,7 +979,8 @@ Response InspectorAccessibilityAgent::queryAXTree(
   while (!reachable.IsEmpty()) {
     AXObject* ax_object = reachable.back();
     reachable.pop_back();
-    const AXObject::AXObjectVector& children = ax_object->UnignoredChildren();
+    const AXObject::AXObjectVector& children =
+        ax_object->ChildrenIncludingIgnored();
     reachable.AppendRange(children.rbegin(), children.rend());
 
     // if querying by name: skip if name of current object does not match.
