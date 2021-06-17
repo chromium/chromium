@@ -398,8 +398,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
             base::SequencedTaskRunnerHandle::Get());
 
         idb_context_->ForceCloseSync(
-            // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-            storage_key.origin(),
+            storage_key,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
         loop.Run();
         // There is a possible race in |leveldb_close_event| where the signaling

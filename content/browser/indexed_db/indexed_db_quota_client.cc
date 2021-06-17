@@ -16,6 +16,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/database/database_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
@@ -42,7 +43,10 @@ void IndexedDBQuotaClient::GetOriginUsage(const url::Origin& origin,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
 
-  std::move(callback).Run(indexed_db_context_.GetOriginDiskUsage(origin));
+  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+  // is migrated to use StorageKey instead of Origin.
+  std::move(callback).Run(
+      indexed_db_context_.GetOriginDiskUsage(blink::StorageKey(origin)));
 }
 
 void IndexedDBQuotaClient::GetOriginsForType(
@@ -50,8 +54,16 @@ void IndexedDBQuotaClient::GetOriginsForType(
     GetOriginsForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-
-  std::move(callback).Run(indexed_db_context_.GetAllOrigins());
+  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+  // is migrated to use StorageKey instead of Origin.
+  std::vector<blink::StorageKey> storage_keys =
+      indexed_db_context_.GetAllOrigins();
+  std::vector<url::Origin> origins;
+  origins.reserve(storage_keys.size());
+  for (const auto& storage_key : storage_keys) {
+    origins.push_back(std::move(storage_key.origin()));
+  }
+  std::move(callback).Run(std::move(origins));
 }
 
 void IndexedDBQuotaClient::GetOriginsForHost(
@@ -61,14 +73,16 @@ void IndexedDBQuotaClient::GetOriginsForHost(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
 
+  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+  // is migrated to use StorageKey instead of Origin.
   std::vector<url::Origin> host_origins;
   // In the vast majority of cases, this vector will end up with exactly one
   // origin. The origin will be https://host or http://host.
   host_origins.reserve(1);
 
-  for (auto& origin : indexed_db_context_.GetAllOrigins()) {
-    if (host == origin.host())
-      host_origins.push_back(std::move(origin));
+  for (auto& storage_key : indexed_db_context_.GetAllOrigins()) {
+    if (host == storage_key.origin().host())
+      host_origins.push_back(std::move(storage_key.origin()));
   }
   std::move(callback).Run(std::move(host_origins));
 }
@@ -80,15 +94,18 @@ void IndexedDBQuotaClient::DeleteOriginData(const url::Origin& origin,
   DCHECK_EQ(type, StorageType::kTemporary);
   DCHECK(!callback.is_null());
 
+  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+  // is migrated to use StorageKey instead of Origin.
   indexed_db_context_.DeleteForOrigin(
-      origin, base::BindOnce(
-                  [](DeleteOriginDataCallback callback, bool success) {
-                    blink::mojom::QuotaStatusCode status =
-                        success ? blink::mojom::QuotaStatusCode::kOk
-                                : blink::mojom::QuotaStatusCode::kUnknown;
-                    std::move(callback).Run(status);
-                  },
-                  std::move(callback)));
+      blink::StorageKey(origin),
+      base::BindOnce(
+          [](DeleteOriginDataCallback callback, bool success) {
+            blink::mojom::QuotaStatusCode status =
+                success ? blink::mojom::QuotaStatusCode::kOk
+                        : blink::mojom::QuotaStatusCode::kUnknown;
+            std::move(callback).Run(status);
+          },
+          std::move(callback)));
 }
 
 void IndexedDBQuotaClient::PerformStorageCleanup(

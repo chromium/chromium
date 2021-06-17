@@ -7,7 +7,7 @@ module storage.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
 enum V2SchemaCorruptionStatus {
   CORRUPTION_UNKNOWN,
@@ -44,38 +44,40 @@ interface IndexedDBControlTest {
   // Gets the root data path for storage.
   GetBaseDataPathForTesting() => (mojo_base.mojom.FilePath path);
 
-  // Gets the file name of the local storage file for the given origin.
-  GetFilePathForTesting(url.mojom.Origin origin) =>
+  // Gets the file name of the local storage file for the given `storage_key`.
+  GetFilePathForTesting(blink.mojom.StorageKey storage_key) =>
       (mojo_base.mojom.FilePath path);
 
-  // Forgets the origins/sizes read from disk.
+  // Forgets the storage keys and sizes read from disk.
   ResetCachesForTesting() => ();
 
   // Downgrades databases to V2.
-  ForceSchemaDowngradeForTesting(url.mojom.Origin origin) => (bool downgraded);
+  ForceSchemaDowngradeForTesting(blink.mojom.StorageKey storage_key) =>
+    (bool downgraded);
 
   // Returns the corruption status for a given database.
-  HasV2SchemaCorruptionForTesting(url.mojom.Origin origin) =>
+  HasV2SchemaCorruptionForTesting(blink.mojom.StorageKey storage_key) =>
       (V2SchemaCorruptionStatus status);
 
   // Does a direct write to a database with a given key/value pair.
-  WriteToIndexedDBForTesting(url.mojom.Origin origin, string key,
+  WriteToIndexedDBForTesting(blink.mojom.StorageKey storage_key, string key,
                              string value) => ();
 
-  // Returns the number of blobs for a given origin.
-  GetBlobCountForTesting(url.mojom.Origin origin) => (int64 num_blobs);
+  // Returns the number of blobs for a given `storage_key`.
+  GetBlobCountForTesting(blink.mojom.StorageKey storage_key) =>
+    (int64 num_blobs);
 
-  // Returns the next blob id for a given origin.
-  GetNextBlobNumberForTesting(url.mojom.Origin origin, int64 database_id) =>
-      (int64 next_blob_number);
+  // Returns the next blob id for a given `storage_key`.
+  GetNextBlobNumberForTesting(blink.mojom.StorageKey storage_key,
+                              int64 database_id) => (int64 next_blob_number);
 
-  // Returns the path for a given origin/database/blob.
-  GetPathForBlobForTesting(url.mojom.Origin origin, int64 database_id,
-                           int64 blob_number) =>
+  // Returns the path for a given key/database/blob.
+  GetPathForBlobForTesting(blink.mojom.StorageKey storage_key,
+                           int64 database_id, int64 blob_number) =>
       (mojo_base.mojom.FilePath path);
 
-  // Compacts the backing store for a given origin.
-  CompactBackingStoreForTesting(url.mojom.Origin origin) => ();
+  // Compacts the backing store for a given `storage_key`.
+  CompactBackingStoreForTesting(blink.mojom.StorageKey storage_key) => ();
 
   // Overrides IndexedDB with a mock class factory that can inject failures
   // at specific points.  For now, because this is static, there can only

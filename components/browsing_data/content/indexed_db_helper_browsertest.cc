@@ -18,6 +18,8 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace browsing_data {
 namespace {
@@ -35,13 +37,15 @@ class IndexedDBHelperTest : public content::ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedAddIndexedDB) {
-  const GURL origin1("http://host1:1/");
-  const GURL origin2("http://host2:1/");
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   scoped_refptr<CannedIndexedDBHelper> helper(
       new CannedIndexedDBHelper(StoragePartition()));
-  helper->Add(url::Origin::Create(origin1));
-  helper->Add(url::Origin::Create(origin2));
+  helper->Add(storage_key1);
+  helper->Add(storage_key2);
 
   TestCompletionCallback callback;
   helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
@@ -51,18 +55,19 @@ IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedAddIndexedDB) {
 
   ASSERT_EQ(2U, result.size());
   auto info = result.begin();
-  EXPECT_EQ(origin1, info->origin.GetURL());
+  EXPECT_EQ(storage_key1.origin().GetURL(), info->origin.GetURL());
   info++;
-  EXPECT_EQ(origin2, info->origin.GetURL());
+  EXPECT_EQ(storage_key2.origin().GetURL(), info->origin.GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedUnique) {
-  const GURL origin("http://host1:1/");
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
   scoped_refptr<CannedIndexedDBHelper> helper(
       new CannedIndexedDBHelper(StoragePartition()));
-  helper->Add(url::Origin::Create(origin));
-  helper->Add(url::Origin::Create(origin));
+  helper->Add(storage_key);
+  helper->Add(storage_key);
 
   TestCompletionCallback callback;
   helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
@@ -71,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBHelperTest, CannedUnique) {
   std::list<content::StorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(1U, result.size());
-  EXPECT_EQ(origin, result.begin()->origin.GetURL());
+  EXPECT_EQ(storage_key.origin().GetURL(), result.begin()->origin.GetURL());
 }
 }  // namespace
 }  // namespace browsing_data

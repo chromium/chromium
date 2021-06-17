@@ -26,7 +26,9 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace browsing_data {
 namespace {
@@ -121,9 +123,10 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
       ++count;
   }
 
-  // Count indexed dbs for the domain of the given |origin|.
-  for (const auto& storage_origin : indexed_dbs()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
+  // Count indexed dbs for the domain of the given `storage_key`.
+  for (const auto& storage_key : indexed_dbs()->GetOrigins()) {
+    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+    if (SameDomainOrHost(origin, storage_key.origin().GetURL()))
       ++count;
   }
 
@@ -184,8 +187,10 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
   for (const auto& origin : session_storages()->GetOrigins())
     hosts.insert(origin.host());
 
-  for (const auto& origin : indexed_dbs()->GetOrigins())
-    hosts.insert(origin.host());
+  for (const auto& storage_key : indexed_dbs()->GetOrigins()) {
+    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+    hosts.insert(storage_key.origin().host());
+  }
 
   for (const auto& origin : service_workers()->GetOrigins())
     hosts.insert(origin.host());

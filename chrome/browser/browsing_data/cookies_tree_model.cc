@@ -49,6 +49,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
@@ -564,8 +565,10 @@ class CookieTreeIndexedDBNode : public CookieTreeNode {
           usage_info_->origin,
           AccessContextAuditDatabase::StorageAPIType::kIndexedDB);
 
-      container->indexed_db_helper_->DeleteIndexedDB(usage_info_->origin,
-                                                     base::DoNothing());
+      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+      // function directly.
+      container->indexed_db_helper_->DeleteIndexedDB(
+          blink::StorageKey(usage_info_->origin), base::DoNothing());
       container->indexed_db_info_list_.erase(usage_info_);
     }
   }

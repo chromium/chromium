@@ -39,6 +39,7 @@
 #include "content/public/common/content_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -583,10 +584,16 @@ void PageSpecificContentSettings::OnCookiesAccessed(
 void PageSpecificContentSettings::OnIndexedDBAccessed(const GURL& url,
                                                       bool blocked_by_policy) {
   if (blocked_by_policy) {
-    blocked_local_shared_objects_.indexed_dbs()->Add(url::Origin::Create(url));
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+    // function directly.
+    blocked_local_shared_objects_.indexed_dbs()->Add(
+        blink::StorageKey(url::Origin::Create(url)));
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
-    allowed_local_shared_objects_.indexed_dbs()->Add(url::Origin::Create(url));
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+    // function directly.
+    allowed_local_shared_objects_.indexed_dbs()->Add(
+        blink::StorageKey(url::Origin::Create(url)));
     NotifyDelegate(&Delegate::OnIndexedDBAccessAllowed,
                    url::Origin::Create(url));
     OnContentAllowed(ContentSettingsType::COOKIES);

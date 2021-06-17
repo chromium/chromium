@@ -10,7 +10,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace browsing_data {
 
@@ -27,26 +27,28 @@ void MockIndexedDBHelper::StartFetching(FetchCallback callback) {
 }
 
 void MockIndexedDBHelper::DeleteIndexedDB(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     base::OnceCallback<void(bool)> callback) {
-  ASSERT_TRUE(base::Contains(origins_, origin));
-  origins_[origin] = false;
+  ASSERT_TRUE(base::Contains(storage_keys_, storage_key));
+  storage_keys_[storage_key] = false;
 
   bool success = true;
   std::move(callback).Run(success);
 }
 
 void MockIndexedDBHelper::AddIndexedDBSamples() {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://idbhost1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://idbhost2:2/"));
+  const blink::StorageKey kStorageKey1 =
+      blink::StorageKey::CreateFromStringForTesting("http://idbhost1:1/");
+  const blink::StorageKey kStorageKey2 =
+      blink::StorageKey::CreateFromStringForTesting("http://idbhost2:2/");
 
-  content::StorageUsageInfo info1(kOrigin1, 1, base::Time());
+  content::StorageUsageInfo info1(kStorageKey1.origin(), 1, base::Time());
   response_.push_back(info1);
-  origins_[kOrigin1] = true;
+  storage_keys_[kStorageKey1] = true;
 
-  content::StorageUsageInfo info2(kOrigin2, 2, base::Time());
+  content::StorageUsageInfo info2(kStorageKey2.origin(), 2, base::Time());
   response_.push_back(info2);
-  origins_[kOrigin2] = true;
+  storage_keys_[kStorageKey2] = true;
 }
 
 void MockIndexedDBHelper::Notify() {
@@ -54,12 +56,12 @@ void MockIndexedDBHelper::Notify() {
 }
 
 void MockIndexedDBHelper::Reset() {
-  for (auto& pair : origins_)
+  for (auto& pair : storage_keys_)
     pair.second = true;
 }
 
 bool MockIndexedDBHelper::AllDeleted() {
-  for (const auto& pair : origins_) {
+  for (const auto& pair : storage_keys_) {
     if (pair.second)
       return false;
   }

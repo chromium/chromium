@@ -11,6 +11,10 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/quota/storage_policy_observer.h"
 
+namespace blink {
+class StorageKey;
+}
+
 namespace content {
 
 // All functions should be called on the UI thread.
@@ -32,17 +36,17 @@ class CONTENT_EXPORT IndexedDBControlWrapper
 
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
-  void DeleteForOrigin(const url::Origin& origin,
+  void DeleteForOrigin(const blink::StorageKey& storage_key,
                        DeleteForOriginCallback callback) override;
-  void ForceClose(const url::Origin& origin,
+  void ForceClose(const blink::StorageKey& storage_key,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
-  void GetConnectionCount(const url::Origin& origin,
+  void GetConnectionCount(const blink::StorageKey& storage_key,
                           GetConnectionCountCallback callback) override;
-  void DownloadOriginData(const url::Origin& origin,
+  void DownloadOriginData(const blink::StorageKey& storage_key,
                           DownloadOriginDataCallback callback) override;
   void GetAllOriginsDetails(GetAllOriginsDetailsCallback callback) override;
   void SetForceKeepSessionState() override;

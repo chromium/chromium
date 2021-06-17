@@ -27,6 +27,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -176,7 +177,7 @@ class StorageHandler::CacheStorageObserver
 };
 
 // Observer that listens on the IDB thread for IndexedDB notifications and
-// informs the StorageHandler on the UI thread for origins of interest.
+// informs the StorageHandler on the UI thread for storage_keys of interest.
 // Created on the UI thread but predominantly used and deleted on the IDB
 // thread.
 class StorageHandler::IndexedDBObserver
@@ -192,40 +193,44 @@ class StorageHandler::IndexedDBObserver
 
   ~IndexedDBObserver() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
-  void TrackOrigin(const url::Origin& origin) {
+  void TrackOrigin(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (origins_.find(origin) != origins_.end())
+    if (storage_keys_.find(storage_key) != storage_keys_.end())
       return;
-    origins_.insert(origin);
+    storage_keys_.insert(storage_key);
   }
 
-  void UntrackOrigin(const url::Origin& origin) {
+  void UntrackOrigin(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    origins_.erase(origin);
+    storage_keys_.erase(storage_key);
   }
 
-  void OnIndexedDBListChanged(const url::Origin& origin) override {
+  void OnIndexedDBListChanged(const blink::StorageKey& storage_key) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (!owner_)
       return;
-    auto found = origins_.find(origin);
-    if (found == origins_.end())
+    auto found = storage_keys_.find(storage_key);
+    if (found == storage_keys_.end())
       return;
-    owner_->NotifyIndexedDBListChanged(origin.Serialize());
+    // TODO(https://crbug.com/1199077): Pass storage key instead once
+    // Chrome DevTools Protocol (CDP) supports it.
+    owner_->NotifyIndexedDBListChanged(storage_key.origin().Serialize());
   }
 
   void OnIndexedDBContentChanged(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::u16string& database_name,
       const std::u16string& object_store_name) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (!owner_)
       return;
-    auto found = origins_.find(origin);
-    if (found == origins_.end())
+    auto found = storage_keys_.find(storage_key);
+    if (found == storage_keys_.end())
       return;
-    owner_->NotifyIndexedDBContentChanged(origin.Serialize(), database_name,
-                                          object_store_name);
+    // TODO(https://crbug.com/1199077): Pass storage key instead once
+    // Chrome DevTools Protocol (CDP) supports it.
+    owner_->NotifyIndexedDBContentChanged(storage_key.origin().Serialize(),
+                                          database_name, object_store_name);
   }
 
  private:
@@ -247,7 +252,7 @@ class StorageHandler::IndexedDBObserver
     control.AddObserver(std::move(remote));
   }
 
-  base::flat_set<url::Origin> origins_;
+  base::flat_set<blink::StorageKey> storage_keys_;
   base::WeakPtr<StorageHandler> owner_;
   mojo::Receiver<storage::mojom::IndexedDBObserver> receiver_;
 
@@ -481,7 +486,10 @@ Response StorageHandler::TrackIndexedDBForOrigin(const std::string& origin) {
   if (!origin_url.is_valid())
     return Response::InvalidParams(origin + " is not a valid URL");
 
-  GetIndexedDBObserver()->TrackOrigin(url::Origin::Create(origin_url));
+  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+  // function once the Chrome DevTools Protocol (CDP) supports StorageKey.
+  GetIndexedDBObserver()->TrackOrigin(
+      blink::StorageKey(url::Origin::Create(origin_url)));
   return Response::Success();
 }
 
@@ -493,7 +501,10 @@ Response StorageHandler::UntrackIndexedDBForOrigin(const std::string& origin) {
   if (!origin_url.is_valid())
     return Response::InvalidParams(origin + " is not a valid URL");
 
-  GetIndexedDBObserver()->UntrackOrigin(url::Origin::Create(origin_url));
+  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+  // function once the Chrome DevTools Protocol (CDP) supports StorageKey.
+  GetIndexedDBObserver()->UntrackOrigin(
+      blink::StorageKey(url::Origin::Create(origin_url)));
   return Response::Success();
 }
 

@@ -83,8 +83,7 @@ void IndexedDBDatabaseCallbacks::OnComplete(
     return;
 
   indexed_db_context_->TransactionComplete(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      transaction.database()->storage_key().origin());
+      transaction.database()->storage_key());
   if (callbacks_)
     callbacks_->Complete(transaction.id());
 }

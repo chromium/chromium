@@ -453,8 +453,9 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
               mojo_token.InitWithNewPipeAndPassReceiver());
         } else {
           DCHECK(!blob_info.file_system_access_token().empty());
+          // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+          // FileSystemAccessContext is converted.
           file_system_access_context()->DeserializeHandle(
-              // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
               storage_key.origin(), blob_info.file_system_access_token(),
               mojo_token.InitWithNewPipeAndPassReceiver());
         }

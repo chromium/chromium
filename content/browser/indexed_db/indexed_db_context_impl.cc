@@ -59,7 +59,6 @@
 using base::DictionaryValue;
 using base::ListValue;
 using storage::DatabaseUtil;
-using url::Origin;
 
 namespace content {
 const base::FilePath::CharType IndexedDBContextImpl::kIndexedDBDirectory[] =
@@ -88,7 +87,7 @@ bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
 
 // This may be called after the IndexedDBContext is destroyed.
 void GetAllOriginsAndPaths(const base::FilePath& indexeddb_path,
-                           std::vector<Origin>* origins,
+                           std::vector<blink::StorageKey>* storage_keys,
                            std::vector<base::FilePath>* file_paths) {
   // TODO(jsbell): DCHECK that this is running on an IndexedDB sequence,
   // if a global handle to it is ever available.
@@ -101,11 +100,12 @@ void GetAllOriginsAndPaths(const base::FilePath& indexeddb_path,
     if (file_path.Extension() == indexed_db::kLevelDBExtension &&
         file_path.RemoveExtension().Extension() ==
             indexed_db::kIndexedDBExtension) {
-      std::string origin_id = file_path.BaseName()
-                                  .RemoveExtension()
-                                  .RemoveExtension()
-                                  .MaybeAsASCII();
-      origins->push_back(storage::GetOriginFromIdentifier(origin_id));
+      std::string storage_key_id = file_path.BaseName()
+                                       .RemoveExtension()
+                                       .RemoveExtension()
+                                       .MaybeAsASCII();
+      storage_keys->push_back(
+          blink::StorageKey(storage::GetOriginFromIdentifier(storage_key_id)));
       if (file_paths)
         file_paths->push_back(file_path);
     }
@@ -205,19 +205,21 @@ void IndexedDBContextImpl::Bind(
 }
 
 void IndexedDBContextImpl::BindIndexedDB(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  dispatcher_host_.AddReceiver(blink::StorageKey(origin), std::move(receiver));
+  dispatcher_host_.AddReceiver(storage_key, std::move(receiver));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  std::vector<Origin> origins = GetAllOrigins();
+  std::vector<blink::StorageKey> storage_keys = GetAllOrigins();
   std::vector<storage::mojom::StorageUsageInfoPtr> result;
-  for (const auto& origin : origins) {
+  for (const auto& storage_key : storage_keys) {
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+    // StorageUsageInfo is converted.
     result.emplace_back(storage::mojom::StorageUsageInfo::New(
-        origin, GetOriginDiskUsage(origin), GetOriginLastModified(origin)));
+        storage_key.origin(), GetOriginDiskUsage(storage_key),
+        GetOriginLastModified(storage_key)));
   }
   std::move(usage_callback).Run(std::move(result));
 }
@@ -225,25 +227,25 @@ void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
 // Note - this is being kept async (instead of having a 'sync' version) to allow
 // ForceClose to become asynchronous.  This is required for
 // https://crbug.com/965142.
-void IndexedDBContextImpl::DeleteForOrigin(const Origin& origin,
+void IndexedDBContextImpl::DeleteForOrigin(const blink::StorageKey& storage_key,
                                            DeleteForOriginCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  ForceCloseSync(origin,
+  ForceCloseSync(storage_key,
                  storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
-  if (!HasOrigin(origin)) {
+  if (!HasOrigin(storage_key)) {
     std::move(callback).Run(true);
     return;
   }
 
   if (is_incognito()) {
-    GetOriginSet()->erase(origin);
-    origin_size_map_.erase(origin);
+    GetOriginSet()->erase(storage_key);
+    storage_key_size_map_.erase(storage_key);
     std::move(callback).Run(true);
     return;
   }
 
-  base::FilePath idb_directory = GetLevelDBPath(origin);
-  EnsureDiskUsageCacheInitialized(origin);
+  base::FilePath idb_directory = GetLevelDBPath(storage_key);
+  EnsureDiskUsageCacheInitialized(storage_key);
 
   leveldb::Status s =
       IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(
@@ -251,22 +253,22 @@ void IndexedDBContextImpl::DeleteForOrigin(const Origin& origin,
   bool success = s.ok();
   if (success)
     success =
-        filesystem_proxy_->DeletePathRecursively(GetBlobStorePath(origin));
-  QueryDiskAndUpdateQuotaUsage(origin);
+        filesystem_proxy_->DeletePathRecursively(GetBlobStorePath(storage_key));
+  QueryDiskAndUpdateQuotaUsage(storage_key);
   if (success) {
-    GetOriginSet()->erase(origin);
-    origin_size_map_.erase(origin);
+    GetOriginSet()->erase(storage_key);
+    storage_key_size_map_.erase(storage_key);
   }
   std::move(callback).Run(success);
 }
 
-void IndexedDBContextImpl::ForceClose(const Origin& origin,
+void IndexedDBContextImpl::ForceClose(const blink::StorageKey& storage_key,
                                       storage::mojom::ForceCloseReason reason,
                                       base::OnceClosure closure) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   base::UmaHistogramEnumeration("WebCore.IndexedDB.Context.ForceCloseReason",
                                 reason);
-  if (!HasOrigin(origin)) {
+  if (!HasOrigin(storage_key)) {
     std::move(closure).Run();
     return;
   }
@@ -276,38 +278,37 @@ void IndexedDBContextImpl::ForceClose(const Origin& origin,
     return;
   }
 
-  // Make a copy of origin, as the ref might go away here during the close.
-  auto origin_copy = origin;
+  // Make a copy of storage_key, as the ref might go away here during the close.
+  auto storage_key_copy = storage_key;
   indexeddb_factory_->ForceClose(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      blink::StorageKey(origin_copy),
+      storage_key_copy,
       reason == storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
-  DCHECK_EQ(0UL, GetConnectionCountSync(origin_copy));
+  DCHECK_EQ(0UL, GetConnectionCountSync(storage_key_copy));
   std::move(closure).Run();
 }
 
 void IndexedDBContextImpl::GetConnectionCount(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     GetConnectionCountCallback callback) {
-  std::move(callback).Run(GetConnectionCountSync(origin));
+  std::move(callback).Run(GetConnectionCountSync(storage_key));
 }
 
 void IndexedDBContextImpl::DownloadOriginData(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     DownloadOriginDataCallback callback) {
   // All of this must run on the IndexedDB task runner to prevent script from
-  // reopening the origin while we are zipping.
+  // reopening the storage_key while we are zipping.
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
   bool success = false;
 
   // Make sure the database hasn't been deleted.
-  if (!HasOrigin(origin)) {
+  if (!HasOrigin(storage_key)) {
     std::move(callback).Run(success, base::FilePath(), base::FilePath());
     return;
   }
 
-  ForceCloseSync(origin,
+  ForceCloseSync(storage_key,
                  storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE);
 
   base::ScopedTempDir temp_dir;
@@ -319,11 +320,12 @@ void IndexedDBContextImpl::DownloadOriginData(
   // This will need to get cleaned up after the download has completed.
   base::FilePath temp_path = temp_dir.Take();
 
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin);
-  base::FilePath zip_path =
-      temp_path.AppendASCII(origin_id).AddExtension(FILE_PATH_LITERAL("zip"));
+  std::string storage_key_id =
+      storage::GetIdentifierFromOrigin(storage_key.origin());
+  base::FilePath zip_path = temp_path.AppendASCII(storage_key_id)
+                                .AddExtension(FILE_PATH_LITERAL("zip"));
 
-  std::vector<base::FilePath> paths = GetStoragePaths(origin);
+  std::vector<base::FilePath> paths = GetStoragePaths(storage_key);
   zip::ZipWithFilterCallback(data_path(), zip_path,
                              base::BindRepeating(IsAllowedPath, paths));
 
@@ -334,40 +336,42 @@ void IndexedDBContextImpl::DownloadOriginData(
 void IndexedDBContextImpl::GetAllOriginsDetails(
     GetAllOriginsDetailsCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  std::vector<Origin> origins = GetAllOrigins();
+  std::vector<blink::StorageKey> storage_keys = GetAllOrigins();
 
-  std::sort(origins.begin(), origins.end());
+  std::sort(storage_keys.begin(), storage_keys.end());
 
   base::ListValue list;
-  for (const auto& origin : origins) {
+  for (const auto& storage_key : storage_keys) {
     std::unique_ptr<base::DictionaryValue> info(
         std::make_unique<base::DictionaryValue>());
-    info->SetString("url", origin.Serialize());
-    info->SetDouble("size", static_cast<double>(GetOriginDiskUsage(origin)));
-    info->SetDouble("last_modified", GetOriginLastModified(origin).ToJsTime());
+    // TODO(https://crbug.com/1199077): Serialize storage key directly
+    // once supported by OriginDetails.
+    info->SetString("url", storage_key.origin().Serialize());
+    info->SetDouble("size",
+                    static_cast<double>(GetOriginDiskUsage(storage_key)));
+    info->SetDouble("last_modified",
+                    GetOriginLastModified(storage_key).ToJsTime());
 
     auto paths = std::make_unique<base::ListValue>();
     if (!is_incognito()) {
-      for (const base::FilePath& path : GetStoragePaths(origin))
+      for (const base::FilePath& path : GetStoragePaths(storage_key))
         paths->AppendString(path.AsUTF8Unsafe());
     } else {
       paths->AppendString("N/A");
     }
     info->Set("paths", std::move(paths));
-    info->SetDouble("connection_count", GetConnectionCountSync(origin));
+    info->SetDouble("connection_count", GetConnectionCountSync(storage_key));
 
     // This ends up being O(NlogN), where N = number of open databases. We
-    // iterate over all open databases to extract just those in the origin, and
-    // we're iterating over all origins in the outer loop.
+    // iterate over all open databases to extract just those in the storage_key,
+    // and we're iterating over all storage_keys in the outer loop.
 
     if (!indexeddb_factory_.get()) {
       list.Append(std::move(info));
       continue;
     }
     std::vector<IndexedDBDatabase*> databases =
-        indexeddb_factory_->GetOpenDatabasesForOrigin(
-            // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-            blink::StorageKey(origin));
+        indexeddb_factory_->GetOpenDatabasesForOrigin(storage_key);
     // TODO(jsbell): Sort by name?
     std::unique_ptr<base::ListValue> database_list(
         std::make_unique<base::ListValue>());
@@ -477,11 +481,17 @@ void IndexedDBContextImpl::ApplyPolicyUpdates(
              std::vector<storage::mojom::StoragePolicyUpdatePtr>
                  policy_updates) {
             for (const auto& update : policy_updates) {
-              if (!update->purge_on_shutdown)
-                context->origins_to_purge_on_shutdown_.erase(update->origin);
-              else
-                context->origins_to_purge_on_shutdown_.insert(
-                    std::move(update->origin));
+              if (!update->purge_on_shutdown) {
+                // TODO(https://crbug.com/1199077): Use the real StorageKey when
+                // available.
+                context->storage_keys_to_purge_on_shutdown_.erase(
+                    blink::StorageKey(update->origin));
+              } else {
+                // TODO(https://crbug.com/1199077): Use the real StorageKey when
+                // available.
+                context->storage_keys_to_purge_on_shutdown_.insert(
+                    blink::StorageKey(update->origin));
+              }
             }
           },
           // As |this| is destroyed on the IDBTaskRunner it is safe to post raw.
@@ -513,45 +523,44 @@ void IndexedDBContextImpl::GetBaseDataPathForTesting(
 }
 
 void IndexedDBContextImpl::GetFilePathForTesting(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     GetFilePathForTestingCallback callback) {
-  std::move(callback).Run(GetLevelDBPath(origin));
+  std::move(callback).Run(GetLevelDBPath(storage_key));
 }
 
 void IndexedDBContextImpl::ResetCachesForTesting(base::OnceClosure callback) {
-  origin_set_.reset();
-  origin_size_map_.clear();
+  storage_key_set_.reset();
+  storage_key_size_map_.clear();
   std::move(callback).Run();
 }
 
 void IndexedDBContextImpl::ForceSchemaDowngradeForTesting(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     ForceSchemaDowngradeForTestingCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (is_incognito() || !HasOrigin(origin)) {
+  if (is_incognito() || !HasOrigin(storage_key)) {
     std::move(callback).Run(false);
     return;
   }
 
   if (indexeddb_factory_.get()) {
-    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-    indexeddb_factory_->ForceSchemaDowngrade(blink::StorageKey(origin));
+    indexeddb_factory_->ForceSchemaDowngrade(storage_key);
     std::move(callback).Run(true);
     return;
   }
   ForceCloseSync(
-      origin,
+      storage_key,
       storage::mojom::ForceCloseReason::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE);
   std::move(callback).Run(false);
 }
 
 void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     HasV2SchemaCorruptionForTestingCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (is_incognito() || !HasOrigin(origin)) {
+  if (is_incognito() || !HasOrigin(storage_key)) {
     std::move(callback).Run(
         storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_UNKNOWN);
     return;
@@ -560,9 +569,7 @@ void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
   if (indexeddb_factory_.get()) {
     std::move(callback).Run(
         static_cast<storage::mojom::V2SchemaCorruptionStatus>(
-            indexeddb_factory_->HasV2SchemaCorruption(
-                // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-                blink::StorageKey(origin))));
+            indexeddb_factory_->HasV2SchemaCorruption(storage_key)));
     return;
   }
   return std::move(callback).Run(
@@ -570,16 +577,14 @@ void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
 }
 
 void IndexedDBContextImpl::WriteToIndexedDBForTesting(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::string& key,
     const std::string& value,
     base::OnceClosure callback) {
   IndexedDBOriginStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      GetIDBFactory()->GetOrOpenOriginFactory(blink::StorageKey(origin),
-                                              data_path(),
+      GetIDBFactory()->GetOrOpenOriginFactory(storage_key, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -590,27 +595,24 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   s = db->Put(key, &value_copy);
   CHECK(s.ok()) << s.ToString();
   handle.Release();
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  GetIDBFactory()->ForceClose(blink::StorageKey(origin), true);
+  GetIDBFactory()->ForceClose(storage_key, true);
   std::move(callback).Run();
 }
 
 void IndexedDBContextImpl::GetBlobCountForTesting(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     GetBlobCountForTestingCallback callback) {
-  std::move(callback).Run(GetOriginBlobFileCount(origin));
+  std::move(callback).Run(GetOriginBlobFileCount(storage_key));
 }
 
 void IndexedDBContextImpl::GetNextBlobNumberForTesting(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     int64_t database_id,
     GetNextBlobNumberForTestingCallback callback) {
   IndexedDBOriginStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      GetIDBFactory()->GetOrOpenOriginFactory(blink::StorageKey(origin),
-                                              data_path(),
+      GetIDBFactory()->GetOrOpenOriginFactory(storage_key, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -634,16 +636,14 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
 }
 
 void IndexedDBContextImpl::GetPathForBlobForTesting(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     int64_t database_id,
     int64_t blob_number,
     GetPathForBlobForTestingCallback callback) {
   IndexedDBOriginStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      GetIDBFactory()->GetOrOpenOriginFactory(blink::StorageKey(origin),
-                                              data_path(),
+      GetIDBFactory()->GetOrOpenOriginFactory(storage_key, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -655,13 +655,12 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
 }
 
 void IndexedDBContextImpl::CompactBackingStoreForTesting(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     base::OnceClosure callback) {
   IndexedDBFactoryImpl* factory = GetIDBFactory();
 
   std::vector<IndexedDBDatabase*> databases =
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      factory->GetOpenDatabasesForOrigin(blink::StorageKey(origin));
+      factory->GetOpenDatabasesForOrigin(storage_key);
 
   if (!databases.empty()) {
     // Compact the first db's backing store since all the db's are in the same
@@ -696,15 +695,15 @@ void IndexedDBContextImpl::GetDatabaseKeysForTesting(
 }
 
 void IndexedDBContextImpl::ForceCloseSync(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::mojom::ForceCloseReason reason) {
-  ForceClose(origin, reason, base::DoNothing());
+  ForceClose(storage_key, reason, base::DoNothing());
 }
 
 IndexedDBFactoryImpl* IndexedDBContextImpl::GetIDBFactory() {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   if (!indexeddb_factory_.get()) {
-    // Prime our cache of origins with existing databases so we can
+    // Prime our cache of storage_keys with existing databases so we can
     // detect when dbs are newly created.
     GetOriginSet();
     indexeddb_factory_ = std::make_unique<IndexedDBFactoryImpl>(
@@ -713,22 +712,24 @@ IndexedDBFactoryImpl* IndexedDBContextImpl::GetIDBFactory() {
   return indexeddb_factory_.get();
 }
 
-std::vector<Origin> IndexedDBContextImpl::GetAllOrigins() {
+std::vector<blink::StorageKey> IndexedDBContextImpl::GetAllOrigins() {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  std::set<Origin>* origins_set = GetOriginSet();
-  return std::vector<Origin>(origins_set->begin(), origins_set->end());
+  std::set<blink::StorageKey>* storage_keys_set = GetOriginSet();
+  return std::vector<blink::StorageKey>(storage_keys_set->begin(),
+                                        storage_keys_set->end());
 }
 
-bool IndexedDBContextImpl::HasOrigin(const Origin& origin) {
+bool IndexedDBContextImpl::HasOrigin(const blink::StorageKey& storage_key) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  std::set<Origin>* set = GetOriginSet();
-  return set->find(origin) != set->end();
+  std::set<blink::StorageKey>* set = GetOriginSet();
+  return set->find(storage_key) != set->end();
 }
 
-int IndexedDBContextImpl::GetOriginBlobFileCount(const Origin& origin) {
+int IndexedDBContextImpl::GetOriginBlobFileCount(
+    const blink::StorageKey& storage_key) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   int count = 0;
-  base::FileEnumerator file_enumerator(GetBlobStorePath(origin), true,
+  base::FileEnumerator file_enumerator(GetBlobStorePath(storage_key), true,
                                        base::FileEnumerator::FILES);
   for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
        file_path = file_enumerator.Next()) {
@@ -737,28 +738,29 @@ int IndexedDBContextImpl::GetOriginBlobFileCount(const Origin& origin) {
   return count;
 }
 
-int64_t IndexedDBContextImpl::GetOriginDiskUsage(const Origin& origin) {
+int64_t IndexedDBContextImpl::GetOriginDiskUsage(
+    const blink::StorageKey& storage_key) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  if (!HasOrigin(origin))
+  if (!HasOrigin(storage_key))
     return 0;
 
-  EnsureDiskUsageCacheInitialized(origin);
-  return origin_size_map_[origin];
+  EnsureDiskUsageCacheInitialized(storage_key);
+  return storage_key_size_map_[storage_key];
 }
 
-base::Time IndexedDBContextImpl::GetOriginLastModified(const Origin& origin) {
+base::Time IndexedDBContextImpl::GetOriginLastModified(
+    const blink::StorageKey& storage_key) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  if (!HasOrigin(origin))
+  if (!HasOrigin(storage_key))
     return base::Time();
 
   if (is_incognito()) {
     if (!indexeddb_factory_)
       return base::Time();
-    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-    return indexeddb_factory_->GetLastModified(blink::StorageKey(origin));
+    return indexeddb_factory_->GetLastModified(storage_key);
   }
 
-  base::FilePath idb_directory = GetLevelDBPath(origin);
+  base::FilePath idb_directory = GetLevelDBPath(storage_key);
   absl::optional<base::File::Info> info =
       filesystem_proxy_->GetFileInfo(idb_directory);
   if (!info.has_value())
@@ -766,85 +768,95 @@ base::Time IndexedDBContextImpl::GetOriginLastModified(const Origin& origin) {
   return info->last_modified;
 }
 
-size_t IndexedDBContextImpl::GetConnectionCountSync(const Origin& origin) {
+size_t IndexedDBContextImpl::GetConnectionCountSync(
+    const blink::StorageKey& storage_key) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  if (!HasOrigin(origin))
+  if (!HasOrigin(storage_key))
     return 0;
 
   if (!indexeddb_factory_.get())
     return 0;
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  return indexeddb_factory_->GetConnectionCount(blink::StorageKey(origin));
+  return indexeddb_factory_->GetConnectionCount(storage_key);
 }
 
 std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(
-    const Origin& origin) const {
-  std::vector<base::FilePath> paths = {GetLevelDBPath(origin),
-                                       GetBlobStorePath(origin)};
+    const blink::StorageKey& storage_key) const {
+  std::vector<base::FilePath> paths = {GetLevelDBPath(storage_key),
+                                       GetBlobStorePath(storage_key)};
   return paths;
 }
 
-void IndexedDBContextImpl::FactoryOpened(const Origin& origin) {
+void IndexedDBContextImpl::FactoryOpened(const blink::StorageKey& storage_key) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  if (GetOriginSet()->insert(origin).second) {
+  if (GetOriginSet()->insert(storage_key).second) {
     // A newly created db, notify the quota system.
-    QueryDiskAndUpdateQuotaUsage(origin);
+    QueryDiskAndUpdateQuotaUsage(storage_key);
   } else {
-    EnsureDiskUsageCacheInitialized(origin);
+    EnsureDiskUsageCacheInitialized(storage_key);
   }
 }
 
-void IndexedDBContextImpl::ConnectionOpened(const Origin& origin,
-                                            IndexedDBConnection* connection) {
+void IndexedDBContextImpl::ConnectionOpened(
+    const blink::StorageKey& storage_key,
+    IndexedDBConnection* connection) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+  // is migrated to use StorageKey instead of Origin.
   quota_manager_proxy()->NotifyStorageAccessed(
-      origin, blink::mojom::StorageType::kTemporary, base::Time::Now());
-  if (GetOriginSet()->insert(origin).second) {
+      storage_key.origin(), blink::mojom::StorageType::kTemporary,
+      base::Time::Now());
+  if (GetOriginSet()->insert(storage_key).second) {
     // A newly created db, notify the quota system.
-    QueryDiskAndUpdateQuotaUsage(origin);
+    QueryDiskAndUpdateQuotaUsage(storage_key);
   } else {
-    EnsureDiskUsageCacheInitialized(origin);
+    EnsureDiskUsageCacheInitialized(storage_key);
   }
 }
 
-void IndexedDBContextImpl::ConnectionClosed(const Origin& origin,
-                                            IndexedDBConnection* connection) {
+void IndexedDBContextImpl::ConnectionClosed(
+    const blink::StorageKey& storage_key,
+    IndexedDBConnection* connection) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+  // is migrated to use StorageKey instead of Origin.
   quota_manager_proxy()->NotifyStorageAccessed(
-      origin, blink::mojom::StorageType::kTemporary, base::Time::Now());
+      storage_key.origin(), blink::mojom::StorageType::kTemporary,
+      base::Time::Now());
   if (indexeddb_factory_.get() &&
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      indexeddb_factory_->GetConnectionCount(blink::StorageKey(origin)) == 0)
-    QueryDiskAndUpdateQuotaUsage(origin);
+      indexeddb_factory_->GetConnectionCount(storage_key) == 0)
+    QueryDiskAndUpdateQuotaUsage(storage_key);
 }
 
-void IndexedDBContextImpl::TransactionComplete(const Origin& origin) {
+void IndexedDBContextImpl::TransactionComplete(
+    const blink::StorageKey& storage_key) {
   DCHECK(!indexeddb_factory_.get() ||
-         // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-         indexeddb_factory_->GetConnectionCount(blink::StorageKey(origin)) > 0);
-  QueryDiskAndUpdateQuotaUsage(origin);
+         indexeddb_factory_->GetConnectionCount(storage_key) > 0);
+  QueryDiskAndUpdateQuotaUsage(storage_key);
 }
 
-void IndexedDBContextImpl::DatabaseDeleted(const Origin& origin) {
-  GetOriginSet()->insert(origin);
-  QueryDiskAndUpdateQuotaUsage(origin);
+void IndexedDBContextImpl::DatabaseDeleted(
+    const blink::StorageKey& storage_key) {
+  GetOriginSet()->insert(storage_key);
+  QueryDiskAndUpdateQuotaUsage(storage_key);
 }
 
-void IndexedDBContextImpl::BlobFilesCleaned(const url::Origin& origin) {
-  QueryDiskAndUpdateQuotaUsage(origin);
+void IndexedDBContextImpl::BlobFilesCleaned(
+    const blink::StorageKey& storage_key) {
+  QueryDiskAndUpdateQuotaUsage(storage_key);
 }
 
-void IndexedDBContextImpl::NotifyIndexedDBListChanged(const Origin& origin) {
+void IndexedDBContextImpl::NotifyIndexedDBListChanged(
+    const blink::StorageKey& storage_key) {
   for (auto& observer : observers_)
-    observer->OnIndexedDBListChanged(origin);
+    observer->OnIndexedDBListChanged(storage_key);
 }
 
 void IndexedDBContextImpl::NotifyIndexedDBContentChanged(
-    const Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::u16string& database_name,
     const std::u16string& object_store_name) {
   for (auto& observer : observers_) {
-    observer->OnIndexedDBContentChanged(origin, database_name,
+    observer->OnIndexedDBContentChanged(storage_key, database_name,
                                         object_store_name);
   }
 }
@@ -862,23 +874,22 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
     return;
 
   // Clear session-only databases.
-  if (origins_to_purge_on_shutdown_.empty())
+  if (storage_keys_to_purge_on_shutdown_.empty())
     return;
 
-  std::vector<Origin> origins;
+  std::vector<blink::StorageKey> storage_keys;
   std::vector<base::FilePath> file_paths;
   IndexedDBFactoryImpl* factory = GetIDBFactory();
-  GetAllOriginsAndPaths(data_path_, &origins, &file_paths);
-  DCHECK_EQ(origins.size(), file_paths.size());
+  GetAllOriginsAndPaths(data_path_, &storage_keys, &file_paths);
+  DCHECK_EQ(storage_keys.size(), file_paths.size());
 
   auto file_path = file_paths.cbegin();
-  auto origin = origins.cbegin();
-  for (; origin != origins.cend(); ++origin, ++file_path) {
-    if (origins_to_purge_on_shutdown_.find(*origin) ==
-        origins_to_purge_on_shutdown_.end())
+  auto storage_key = storage_keys.cbegin();
+  for (; storage_key != storage_keys.cend(); ++storage_key, ++file_path) {
+    if (storage_keys_to_purge_on_shutdown_.find(*storage_key) ==
+        storage_keys_to_purge_on_shutdown_.end())
       continue;
-    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-    factory->ForceClose(blink::StorageKey(*origin), false);
+    factory->ForceClose(*storage_key, false);
     filesystem_proxy_->DeletePathRecursively(*file_path);
   }
 }
@@ -895,62 +906,61 @@ void IndexedDBContextImpl::Shutdown() {
 }
 
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(
-    const Origin& origin) const {
+    const blink::StorageKey& storage_key) const {
   DCHECK(!is_incognito());
-  return data_path_.Append(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      indexed_db::GetBlobStoreFileName(blink::StorageKey(origin)));
+  return data_path_.Append(indexed_db::GetBlobStoreFileName(storage_key));
 }
 
 base::FilePath IndexedDBContextImpl::GetLevelDBPath(
-    const Origin& origin) const {
+    const blink::StorageKey& storage_key) const {
   DCHECK(!is_incognito());
-  return data_path_.Append(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      indexed_db::GetLevelDBFileName(blink::StorageKey(origin)));
+  return data_path_.Append(indexed_db::GetLevelDBFileName(storage_key));
 }
 
-int64_t IndexedDBContextImpl::ReadUsageFromDisk(const Origin& origin) const {
+int64_t IndexedDBContextImpl::ReadUsageFromDisk(
+    const blink::StorageKey& storage_key) const {
   if (is_incognito()) {
     if (!indexeddb_factory_)
       return 0;
-    // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-    return indexeddb_factory_->GetInMemoryDBSize(blink::StorageKey(origin));
+    return indexeddb_factory_->GetInMemoryDBSize(storage_key);
   }
 
   int64_t total_size = 0;
-  for (const base::FilePath& path : GetStoragePaths(origin))
+  for (const base::FilePath& path : GetStoragePaths(storage_key))
     total_size += filesystem_proxy_->ComputeDirectorySize(path);
   return total_size;
 }
 
 void IndexedDBContextImpl::EnsureDiskUsageCacheInitialized(
-    const Origin& origin) {
-  if (origin_size_map_.find(origin) == origin_size_map_.end())
-    origin_size_map_[origin] = ReadUsageFromDisk(origin);
+    const blink::StorageKey& storage_key) {
+  if (storage_key_size_map_.find(storage_key) == storage_key_size_map_.end())
+    storage_key_size_map_[storage_key] = ReadUsageFromDisk(storage_key);
 }
 
-void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(const Origin& origin) {
-  int64_t former_disk_usage = origin_size_map_[origin];
-  int64_t current_disk_usage = ReadUsageFromDisk(origin);
+void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(
+    const blink::StorageKey& storage_key) {
+  int64_t former_disk_usage = storage_key_size_map_[storage_key];
+  int64_t current_disk_usage = ReadUsageFromDisk(storage_key);
   int64_t difference = current_disk_usage - former_disk_usage;
   if (difference) {
-    origin_size_map_[origin] = current_disk_usage;
+    storage_key_size_map_[storage_key] = current_disk_usage;
+    // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+    // is migrated to use StorageKey instead of Origin.
     quota_manager_proxy()->NotifyStorageModified(
-        storage::QuotaClientType::kIndexedDatabase, origin,
+        storage::QuotaClientType::kIndexedDatabase, storage_key.origin(),
         blink::mojom::StorageType::kTemporary, difference, base::Time::Now());
-    NotifyIndexedDBListChanged(origin);
+    NotifyIndexedDBListChanged(storage_key);
   }
 }
 
-std::set<Origin>* IndexedDBContextImpl::GetOriginSet() {
-  if (!origin_set_) {
-    std::vector<Origin> origins;
-    GetAllOriginsAndPaths(data_path_, &origins, nullptr);
-    origin_set_ =
-        std::make_unique<std::set<Origin>>(origins.begin(), origins.end());
+std::set<blink::StorageKey>* IndexedDBContextImpl::GetOriginSet() {
+  if (!storage_key_set_) {
+    std::vector<blink::StorageKey> storage_keys;
+    GetAllOriginsAndPaths(data_path_, &storage_keys, nullptr);
+    storage_key_set_ = std::make_unique<std::set<blink::StorageKey>>(
+        storage_keys.begin(), storage_keys.end());
   }
-  return origin_set_.get();
+  return storage_key_set_.get();
 }
 
 }  // namespace content

@@ -71,15 +71,14 @@ namespace {
 std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
     std::vector<IndexedDBReturnValue>& found_values,
     IndexedDBDispatcherHost* dispatcher_host,
-    const url::Origin& origin) {
+    const blink::StorageKey& storage_key) {
   std::vector<blink::mojom::IDBReturnValuePtr> mojo_values;
   mojo_values.reserve(found_values.size());
   for (size_t i = 0; i < found_values.size(); ++i) {
     mojo_values.push_back(
         IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
     dispatcher_host->CreateAllExternalObjects(
-        // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-        blink::StorageKey(origin), found_values[i].external_objects,
+        storage_key, found_values[i].external_objects,
         &mojo_values[i]->value->external_objects);
   }
   return mojo_values;
@@ -1062,9 +1061,7 @@ Status IndexedDBDatabase::GetAllOperation(
     } else {
       if (found_values.size() >= max_values_before_sending) {
         result_sink->ReceiveValues(CreateMojoValues(
-            found_values, dispatcher_host.get(),
-            // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-            storage_key().origin()));
+            found_values, dispatcher_host.get(), storage_key()));
         found_values.clear();
       }
     }
@@ -1076,10 +1073,8 @@ Status IndexedDBDatabase::GetAllOperation(
     }
   } else {
     if (!found_values.empty()) {
-      result_sink->ReceiveValues(CreateMojoValues(
-          found_values, dispatcher_host.get(),
-          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-          storage_key().origin()));
+      result_sink->ReceiveValues(
+          CreateMojoValues(found_values, dispatcher_host.get(), storage_key()));
     }
   }
   return s;

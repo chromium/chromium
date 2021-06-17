@@ -11,7 +11,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/browsing_data/content/indexed_db_helper.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}
 
 namespace content {
 class BrowserContext;
@@ -41,14 +44,14 @@ class MockIndexedDBHelper : public IndexedDBHelper {
 
   // IndexedDBHelper.
   void StartFetching(FetchCallback callback) override;
-  void DeleteIndexedDB(const url::Origin& origin,
+  void DeleteIndexedDB(const blink::StorageKey& storage_key,
                        base::OnceCallback<void(bool)> callback) override;
 
  private:
   ~MockIndexedDBHelper() override;
 
   FetchCallback callback_;
-  std::map<url::Origin, bool> origins_;
+  std::map<blink::StorageKey, bool> storage_keys_;
   std::list<content::StorageUsageInfo> response_;
 
   DISALLOW_COPY_AND_ASSIGN(MockIndexedDBHelper);

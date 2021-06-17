@@ -89,7 +89,7 @@ class IndexedDBFactoryTest : public testing::Test {
       auto open_factory_storage_keys = factory->GetOpenOrigins();
       for (const auto& storage_key : open_factory_storage_keys) {
         context_->ForceCloseSync(
-            storage_key.origin(),
+            storage_key,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.

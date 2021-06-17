@@ -207,6 +207,7 @@
 #include "storage/browser/file_system/sandbox_file_system_backend.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom.h"
@@ -2158,8 +2159,10 @@ void RenderProcessHostImpl::BindIndexedDB(
     // freed, we expect the pipe on the client will be closed.
     return;
   }
+  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+  // function directly.
   storage_partition_impl_->GetIndexedDBControl().BindIndexedDB(
-      origin, std::move(receiver));
+      blink::StorageKey(origin), std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindBucketManagerHost(

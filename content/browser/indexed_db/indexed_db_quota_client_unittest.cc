@@ -26,6 +26,7 @@
 #include "storage/browser/test/mock_quota_manager.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -151,7 +152,8 @@ class IndexedDBQuotaClientTest : public testing::Test {
     {
       base::RunLoop run_loop;
       idb_context()->GetFilePathForTesting(
-          origin, base::BindLambdaForTesting([&](const base::FilePath& path) {
+          blink::StorageKey(origin),
+          base::BindLambdaForTesting([&](const base::FilePath& path) {
             file_path_origin = path;
             run_loop.Quit();
           }));

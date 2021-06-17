@@ -52,9 +52,7 @@ DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection_);
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  indexed_db_context_->ConnectionOpened(storage_key_.origin(),
-                                        connection_.get());
+  indexed_db_context_->ConnectionOpened(storage_key_, connection_.get());
 }
 
 DatabaseImpl::~DatabaseImpl() {
@@ -64,9 +62,7 @@ DatabaseImpl::~DatabaseImpl() {
     status = connection_->AbortTransactionsAndClose(
         IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
   }
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  indexed_db_context_->ConnectionClosed(storage_key_.origin(),
-                                        connection_.get());
+  indexed_db_context_->ConnectionClosed(storage_key_, connection_.get());
   if (!status.ok()) {
     indexed_db_context_->GetIDBFactory()->OnDatabaseError(
         storage_key_, status, "Error during rollbacks.");

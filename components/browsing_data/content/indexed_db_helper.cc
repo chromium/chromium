@@ -18,6 +18,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 using content::StorageUsageInfo;
@@ -39,11 +41,11 @@ void IndexedDBHelper::StartFetching(FetchCallback callback) {
                      base::WrapRefCounted(this), std::move(callback)));
 }
 
-void IndexedDBHelper::DeleteIndexedDB(const url::Origin& origin,
+void IndexedDBHelper::DeleteIndexedDB(const blink::StorageKey& storage_key,
                                       base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   storage_partition_->GetIndexedDBControl().DeleteForOrigin(
-      origin, std::move(callback));
+      storage_key, std::move(callback));
 }
 
 void IndexedDBHelper::IndexedDBUsageInfoReceived(
@@ -67,27 +69,27 @@ CannedIndexedDBHelper::CannedIndexedDBHelper(
 
 CannedIndexedDBHelper::~CannedIndexedDBHelper() {}
 
-void CannedIndexedDBHelper::Add(const url::Origin& origin) {
-  if (!HasWebScheme(origin.GetURL()))
+void CannedIndexedDBHelper::Add(const blink::StorageKey& storage_key) {
+  if (!HasWebScheme(storage_key.origin().GetURL()))
     return;  // Non-websafe state is not considered browsing data.
 
-  pending_origins_.insert(origin);
+  pending_storage_keys_.insert(storage_key);
 }
 
 void CannedIndexedDBHelper::Reset() {
-  pending_origins_.clear();
+  pending_storage_keys_.clear();
 }
 
 bool CannedIndexedDBHelper::empty() const {
-  return pending_origins_.empty();
+  return pending_storage_keys_.empty();
 }
 
 size_t CannedIndexedDBHelper::GetCount() const {
-  return pending_origins_.size();
+  return pending_storage_keys_.size();
 }
 
-const std::set<url::Origin>& CannedIndexedDBHelper::GetOrigins() const {
-  return pending_origins_;
+const std::set<blink::StorageKey>& CannedIndexedDBHelper::GetOrigins() const {
+  return pending_storage_keys_;
 }
 
 void CannedIndexedDBHelper::StartFetching(FetchCallback callback) {
@@ -95,18 +97,20 @@ void CannedIndexedDBHelper::StartFetching(FetchCallback callback) {
   DCHECK(!callback.is_null());
 
   std::list<StorageUsageInfo> result;
-  for (const auto& origin : pending_origins_)
-    result.emplace_back(origin, 0, base::Time());
+  for (const auto& storage_key : pending_storage_keys_) {
+    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+    result.emplace_back(storage_key.origin(), 0, base::Time());
+  }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void CannedIndexedDBHelper::DeleteIndexedDB(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     base::OnceCallback<void(bool)> callback) {
-  pending_origins_.erase(origin);
-  IndexedDBHelper::DeleteIndexedDB(origin, std::move(callback));
+  pending_storage_keys_.erase(storage_key);
+  IndexedDBHelper::DeleteIndexedDB(storage_key, std::move(callback));
 }
 
 }  // namespace browsing_data

@@ -40,6 +40,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "url/origin.h"
 
@@ -153,12 +154,12 @@ class TestIndexedDBObserver : public storage::mojom::IndexedDBObserver {
       mojo::PendingReceiver<storage::mojom::IndexedDBObserver> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  void OnIndexedDBListChanged(const url::Origin& origin) override {
+  void OnIndexedDBListChanged(const blink::StorageKey& storage_key) override {
     ++notify_list_changed_count;
   }
 
   void OnIndexedDBContentChanged(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::u16string& database_name,
       const std::u16string& object_store_name) override {
     ++notify_content_changed_count;
@@ -197,7 +198,7 @@ class IndexedDBDispatcherHostTest : public testing::Test {
     context_impl_->IDBTaskRunner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
           context_impl_->BindIndexedDB(
-              url::Origin::Create(GURL(kOrigin)),
+              blink::StorageKey::CreateFromStringForTesting(kOrigin),
               idb_mojo_factory_.BindNewPipeAndPassReceiver());
           loop.Quit();
         }));

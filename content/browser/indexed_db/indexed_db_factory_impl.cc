@@ -235,8 +235,7 @@ void IndexedDBFactoryImpl::Open(
     const base::FilePath& data_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE("IndexedDBFactoryImpl::Open");
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  IndexedDBDatabase::Identifier unique_identifier(storage_key.origin(), name);
+  IndexedDBDatabase::Identifier unique_identifier(storage_key, name);
   IndexedDBOriginStateHandle origin_state_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
@@ -291,8 +290,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE("IndexedDBFactoryImpl::DeleteDatabase");
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  IndexedDBDatabase::Identifier unique_identifier(storage_key.origin(), name);
+  IndexedDBDatabase::Identifier unique_identifier(storage_key, name);
   IndexedDBOriginStateHandle origin_state_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
@@ -415,8 +413,7 @@ void IndexedDBFactoryImpl::HandleBackingStoreFailure(
   if (!context_)
     return;
   context_->ForceCloseSync(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      storage_key.origin(),
+      storage_key,
       storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE);
 }
 
@@ -545,8 +542,7 @@ void IndexedDBFactoryImpl::BlobFilesCleaned(
   // nullptr after ContextDestroyed() called, and in some unit tests.
   if (!context_)
     return;
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  context_->BlobFilesCleaned(storage_key.origin());
+  context_->BlobFilesCleaned(storage_key);
 }
 
 size_t IndexedDBFactoryImpl::GetConnectionCount(
@@ -570,8 +566,7 @@ void IndexedDBFactoryImpl::NotifyIndexedDBContentChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!context_)
     return;
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  context_->NotifyIndexedDBContentChanged(storage_key.origin(), database_name,
+  context_->NotifyIndexedDBContentChanged(storage_key, database_name,
                                           object_store_name);
 }
 
@@ -726,7 +721,8 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
                      storage_key);
 
     if (disk_full) {
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+      // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+      // is migrated to use StorageKey instead of Origin.
       context_->quota_manager_proxy()->NotifyWriteFailed(storage_key.origin());
       return {IndexedDBOriginStateHandle(), s,
               IndexedDBDatabaseError(blink::mojom::IDBException::kQuotaError,
@@ -780,8 +776,7 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
 
   it = factories_per_storage_key_.emplace(storage_key, std::move(origin_state))
            .first;
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  context_->FactoryOpened(storage_key.origin());
+  context_->FactoryOpened(storage_key);
   return {it->second->CreateHandle(), s, IndexedDBDatabaseError(),
           data_loss_info, /*was_cold_open=*/true};
 }
@@ -969,9 +964,11 @@ void IndexedDBFactoryImpl::OnDatabaseError(const blink::StorageKey& storage_key,
                                      base::ASCIIToUTF16(status.ToString()));
     HandleBackingStoreCorruption(storage_key, error);
   } else {
-    if (status.IsIOError())
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
+    if (status.IsIOError()) {
+      // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
+      // is migrated to use StorageKey instead of Origin.
       context_->quota_manager_proxy()->NotifyWriteFailed(storage_key.origin());
+    }
     HandleBackingStoreFailure(storage_key);
   }
 }
@@ -984,8 +981,7 @@ void IndexedDBFactoryImpl::OnDatabaseDeleted(
 
   if (!context_)
     return;
-  // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-  context_->DatabaseDeleted(storage_key.origin());
+  context_->DatabaseDeleted(storage_key);
 }
 
 void IndexedDBFactoryImpl::MaybeRunTasksForOrigin(

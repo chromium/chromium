@@ -190,20 +190,19 @@ void IndexedDBInternalsHandler::DownloadOriginData(
   AllowJavascript();
   DCHECK(control);
   control->ForceClose(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      storage_key.origin(),
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      storage_key, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
           [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-             url::Origin origin, storage::mojom::IndexedDBControl* control,
+             blink::StorageKey storage_key,
+             storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             // Is the connection count always zero after closing,
             // such that this can be simplified?
             control->GetConnectionCount(
-                origin,
+                storage_key,
                 base::BindOnce(
                     [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-                       url::Origin origin,
+                       blink::StorageKey storage_key,
                        storage::mojom::IndexedDBControl* control,
                        const std::string& callback_id,
                        uint64_t connection_count) {
@@ -211,16 +210,14 @@ void IndexedDBInternalsHandler::DownloadOriginData(
                         return;
 
                       control->DownloadOriginData(
-                          origin,
+                          storage_key,
                           base::BindOnce(
                               &IndexedDBInternalsHandler::OnDownloadDataReady,
                               handler, callback_id, connection_count));
                     },
-                    handler, origin, control, callback_id));
+                    handler, storage_key, control, callback_id));
           },
-          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-          weak_factory_.GetWeakPtr(), storage_key.origin(), control,
-          callback_id));
+          weak_factory_.GetWeakPtr(), storage_key, control, callback_id));
 }
 
 void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
@@ -236,23 +233,20 @@ void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
 
   AllowJavascript();
   control->ForceClose(
-      // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-      storage_key.origin(),
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      storage_key, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
           [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-             url::Origin origin, storage::mojom::IndexedDBControl* control,
+             blink::StorageKey storage_key,
+             storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             if (!handler)
               return;
             control->GetConnectionCount(
-                origin,
+                storage_key,
                 base::BindOnce(&IndexedDBInternalsHandler::OnForcedClose,
                                handler, callback_id));
           },
-          // TODO(crbug.com/1210555): Propagate StorageKey up the chain.
-          weak_factory_.GetWeakPtr(), storage_key.origin(), control,
-          callback_id));
+          weak_factory_.GetWeakPtr(), storage_key, control, callback_id));
 }
 
 void IndexedDBInternalsHandler::OnForcedClose(const std::string& callback_id,

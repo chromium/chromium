@@ -163,6 +163,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -5134,8 +5135,10 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   base::FilePath idb_path;
   {
     base::RunLoop run_loop;
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+    // function directly.
     idb_control_test->GetFilePathForTesting(
-        url::Origin::Create(ext_url),
+        blink::StorageKey(url::Origin::Create(ext_url)),
         base::BindLambdaForTesting([&](const base::FilePath& path) {
           idb_path = path;
           EXPECT_TRUE(base::CreateDirectory(idb_path));
@@ -5309,8 +5312,10 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   base::FilePath idb_path;
   {
     base::RunLoop run_loop;
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+    // function directly.
     idb_control_test->GetFilePathForTesting(
-        url::Origin::Create(origin1),
+        blink::StorageKey(url::Origin::Create(origin1)),
         base::BindLambdaForTesting([&](const base::FilePath& path) {
           idb_path = path;
           EXPECT_TRUE(base::CreateDirectory(idb_path));
