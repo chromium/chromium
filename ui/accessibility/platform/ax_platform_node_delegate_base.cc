@@ -210,11 +210,22 @@ std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {
 
 const AXTree::Selection AXPlatformNodeDelegateBase::GetUnignoredSelection()
     const {
+  NOTIMPLEMENTED();
   return AXTree::Selection{false, -1, -1, ax::mojom::TextAffinity::kDownstream};
 }
 
+AXNodePosition::AXPositionInstance AXPlatformNodeDelegateBase::CreatePositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  NOTIMPLEMENTED();
+  return AXNodePosition::CreateNullPosition();
+}
+
 AXNodePosition::AXPositionInstance
-AXPlatformNodeDelegateBase::CreateTextPositionAt(int offset) const {
+AXPlatformNodeDelegateBase::CreateTextPositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  NOTIMPLEMENTED();
   return AXNodePosition::CreateNullPosition();
 }
 

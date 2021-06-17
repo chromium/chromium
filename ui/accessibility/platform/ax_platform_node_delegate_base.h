@@ -74,9 +74,13 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   std::u16string GetValueForControl() const override;
   const AXTree::Selection GetUnignoredSelection() const override;
 
-  // Creates a text position rooted at this object.
+  AXNodePosition::AXPositionInstance CreatePositionAt(
+      int offset,
+      ax::mojom::TextAffinity affinity) const override;
+
   AXNodePosition::AXPositionInstance CreateTextPositionAt(
-      int offset) const override;
+      int offset,
+      ax::mojom::TextAffinity affinity) const override;
 
   // See comments in AXPlatformNodeDelegate.
   gfx::NativeViewAccessible GetNSWindow() override;

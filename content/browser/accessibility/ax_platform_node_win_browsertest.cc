@@ -702,26 +702,26 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
   ASSERT_NE(nullptr, after_iframe_node);
   ASSERT_EQ(ax::mojom::Role::kInlineTextBox, after_iframe_node->GetRole());
 
-  EXPECT_LT(*before_iframe_node->CreatePositionAt(0),
-            *inside_iframe_node->CreatePositionAt(0));
+  EXPECT_LT(*before_iframe_node->CreateTextPositionAt(0),
+            *inside_iframe_node->CreateTextPositionAt(0));
   // The following positions should not be equivalent because they are on two
   // separate lines in the accessibility tree's text representation, i.e. the
   // first has an upstream affinity while the second has a downstream affinity.
   // Note that an iframe boundary is also a line boundary.
-  EXPECT_LT(*before_iframe_node->CreatePositionAt(13),
-            *inside_iframe_node->CreatePositionAt(0));
-  EXPECT_LT(*inside_iframe_node->CreatePositionAt(0),
-            *after_iframe_node->CreatePositionAt(0));
+  EXPECT_LT(*before_iframe_node->CreateTextPositionAt(13),
+            *inside_iframe_node->CreateTextPositionAt(0));
+  EXPECT_LT(*inside_iframe_node->CreateTextPositionAt(0),
+            *after_iframe_node->CreateTextPositionAt(0));
   // The following positions should not be equivalent because they are on two
   // separate lines in the accessibility tree's text representation, i.e. the
   // first has an upstream affinity while the second has a downstream affinity.
   // Note that an iframe boundary is also a line boundary.
-  EXPECT_LT(*inside_iframe_node->CreatePositionAt(14),
-            *after_iframe_node->CreatePositionAt(0));
+  EXPECT_LT(*inside_iframe_node->CreateTextPositionAt(14),
+            *after_iframe_node->CreateTextPositionAt(0));
 
   // Traverse the leaves of the AXTree forwards.
   BrowserAccessibility::AXPosition tree_position =
-      root_node->CreatePositionAt(0)->CreateNextLeafTreePosition();
+      root_node->CreateTextPositionAt(0)->CreateNextLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());
   EXPECT_EQ(before_iframe_node->node(), tree_position->GetAnchor());
   tree_position = tree_position->CreateNextLeafTreePosition();
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
   EXPECT_TRUE(tree_position->IsNullPosition());
 
   // Traverse the leaves of the AXTree backwards.
-  tree_position = after_iframe_node->CreatePositionAt(0)
+  tree_position = after_iframe_node->CreateTextPositionAt(0)
                       ->CreatePositionAtEndOfAnchor()
                       ->AsLeafTreePosition();
   EXPECT_TRUE(tree_position->IsTreePosition());

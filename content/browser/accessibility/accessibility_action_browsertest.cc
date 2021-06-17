@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
 #if !defined(OS_ANDROID)
   // Check that it really does contain two lines.
   BrowserAccessibility::AXPosition start_position =
-      target->CreatePositionAt(0, ax::mojom::TextAffinity::kDownstream);
+      target->CreateTextPositionAt(0);
   BrowserAccessibility::AXPosition end_of_line_1 =
       start_position->CreateNextLineEndPosition(
           ui::AXBoundaryBehavior::CrossBoundary);
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 #if !defined(OS_ANDROID)
   // Check that it really does contain two lines.
   BrowserAccessibility::AXPosition start_position =
-      target->CreatePositionAt(0, ax::mojom::TextAffinity::kDownstream);
+      target->CreateTextPositionAt(0);
   BrowserAccessibility::AXPosition end_of_line_1 =
       start_position->CreateNextLineEndPosition(
           ui::AXBoundaryBehavior::CrossBoundary);

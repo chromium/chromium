@@ -973,8 +973,12 @@ BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
   DCHECK(manager_);
-  return ui::AXNodePosition::CreateTextPosition(manager_->ax_tree_id(), GetId(),
-                                                offset, affinity);
+  if (node()->IsLeaf()) {
+    return ui::AXNodePosition::CreateTextPosition(manager_->ax_tree_id(),
+                                                  GetId(), offset, affinity);
+  }
+  return ui::AXNodePosition::CreateTreePosition(manager_->ax_tree_id(), GetId(),
+                                                offset);
 }
 
 // |offset| could either be a text character or a child index in case of
@@ -985,9 +989,7 @@ BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(
 // thoroughly tested and convert to tree positions.
 BrowserAccessibility::AXPosition
 BrowserAccessibility::CreatePositionForSelectionAt(int offset) const {
-  AXPosition position =
-      CreatePositionAt(offset, ax::mojom::TextAffinity::kDownstream)
-          ->AsLeafTextPosition();
+  AXPosition position = CreateTextPositionAt(offset)->AsLeafTextPosition();
   if (position->GetAnchor() &&
       position->GetRole() == ax::mojom::Role::kInlineTextBox) {
     return position->CreateParentPosition();
@@ -1243,7 +1245,7 @@ absl::optional<int> BrowserAccessibility::FindTextBoundary(
     int offset,
     ax::mojom::MoveDirection direction,
     ax::mojom::TextAffinity affinity) const {
-  const AXPosition position = CreatePositionAt(offset, affinity);
+  const AXPosition position = CreateTextPositionAt(offset, affinity);
 
   // On Windows and Linux ATK, searching for a text boundary should always stop
   // at the boundary of the current object.
@@ -1472,11 +1474,11 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
 }
 
 BrowserAccessibility::AXPosition BrowserAccessibility::CreateTextPositionAt(
-    int offset) const {
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
   DCHECK(manager_);
-  return ui::AXNodePosition::CreateTextPosition(
-      manager_->ax_tree_id(), GetId(), offset,
-      ax::mojom::TextAffinity::kDownstream);
+  return ui::AXNodePosition::CreateTextPosition(manager_->ax_tree_id(), GetId(),
+                                                offset, affinity);
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetNSWindow() {

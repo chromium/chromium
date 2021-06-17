@@ -1909,7 +1909,7 @@ int BrowserAccessibilityAndroid::GetSelectionStart() const {
     return 0;
   }
 
-  AXPosition position = anchor_object->CreatePositionAt(
+  AXPosition position = anchor_object->CreateTextPositionAt(
       unignored_selection.anchor_offset, unignored_selection.anchor_affinity);
   while (position->GetAnchor() && position->GetAnchor() != node())
     position = position->CreateParentPosition();
@@ -1931,7 +1931,7 @@ int BrowserAccessibilityAndroid::GetSelectionEnd() const {
   if (!focus_object)
     return 0;
 
-  AXPosition position = focus_object->CreatePositionAt(
+  AXPosition position = focus_object->CreateTextPositionAt(
       unignored_selection.focus_offset, unignored_selection.focus_affinity);
   while (position->GetAnchor() && position->GetAnchor() != node())
     position = position->CreateParentPosition();

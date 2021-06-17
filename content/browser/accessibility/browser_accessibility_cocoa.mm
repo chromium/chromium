@@ -1382,7 +1382,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 - (id)endTextMarker {
   if (![self instanceActive])
     return nil;
-  BrowserAccessibility::AXPosition position = _owner->CreatePositionAt(0);
+  BrowserAccessibility::AXPosition position = _owner->CreateTextPositionAt(0);
   return CreateTextMarker(position->CreatePositionAtEndOfContent());
 }
 
@@ -1599,7 +1599,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   // "ax::mojom::MoveDirection" is only relevant on platforms that use object
   // replacement characters in the accessibility tree. Mac is not one of them.
   const BrowserAccessibility::AXPosition caretPosition =
-      range.focus()->LowestCommonAncestor(*_owner->CreatePositionAt(0),
+      range.focus()->LowestCommonAncestor(*_owner->CreateTextPositionAt(0),
                                           ax::mojom::MoveDirection::kForward);
   DCHECK(!caretPosition->IsNullPosition())
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
@@ -1969,7 +1969,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     }
   }
   return content::AXTextEdit(insertedText, deletedText,
-                             CreateTextMarker(_owner->CreatePositionAt(i)));
+                             CreateTextMarker(_owner->CreateTextPositionAt(i)));
 }
 
 - (BOOL)instanceActive {
@@ -2325,7 +2325,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   // "ax::mojom::MoveDirection" is only relevant on platforms that use object
   // replacement characters in the accessibility tree. Mac is not one of them.
   const BrowserAccessibility::AXPosition startPosition =
-      range.anchor()->LowestCommonAncestor(*_owner->CreatePositionAt(0),
+      range.anchor()->LowestCommonAncestor(*_owner->CreateTextPositionAt(0),
                                            ax::mojom::MoveDirection::kForward);
   DCHECK(!startPosition->IsNullPosition())
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
@@ -2384,7 +2384,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 - (id)startTextMarker {
   if (![self instanceActive])
     return nil;
-  BrowserAccessibility::AXPosition position = _owner->CreatePositionAt(0);
+  BrowserAccessibility::AXPosition position = _owner->CreateTextPositionAt(0);
   return CreateTextMarker(position->CreatePositionAtStartOfContent());
 }
 
@@ -2718,8 +2718,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
           initWithString:base::SysUTF16ToNSString(innerText)] autorelease];
   if (!_owner->IsText()) {
     BrowserAccessibility::AXRange ax_range(
-        _owner->CreatePositionAt(0),
-        _owner->CreatePositionAt(int{innerText.length()}));
+        _owner->CreateTextPositionAt(0),
+        _owner->CreateTextPositionAt(int{innerText.length()}));
     AddMisspelledTextAttributes(ax_range, attributedInnerText);
   }
 
@@ -2851,7 +2851,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
           isEqualToString:
               NSAccessibilityTextMarkerRangeForUIElementParameterizedAttribute]) {
     BrowserAccessibility::AXPosition startPosition =
-        _owner->CreatePositionAt(0);
+        _owner->CreateTextPositionAt(0);
     BrowserAccessibility::AXPosition endPosition =
         startPosition->CreatePositionAtEndOfAnchor();
     BrowserAccessibility::AXRange range = BrowserAccessibility::AXRange(
@@ -3155,7 +3155,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     if (!root)
       return nil;
 
-    return CreateTextMarker(root->CreatePositionAt(index));
+    return CreateTextMarker(root->CreateTextPositionAt(index));
   }
 
   if ([attribute isEqualToString:
@@ -3835,8 +3835,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     NSRange range = [(NSValue*)value rangeValue];
     BrowserAccessibilityManager* manager = _owner->manager();
     manager->SetSelection(BrowserAccessibility::AXRange(
-        _owner->CreatePositionAt(range.location)->AsLeafTextPosition(),
-        _owner->CreatePositionAt(NSMaxRange(range))->AsLeafTextPosition()));
+        _owner->CreateTextPositionAt(range.location)->AsLeafTextPosition(),
+        _owner->CreateTextPositionAt(NSMaxRange(range))->AsLeafTextPosition()));
   }
   if ([attribute
           isEqualToString:NSAccessibilitySelectedTextMarkerRangeAttribute]) {

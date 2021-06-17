@@ -148,11 +148,22 @@ const AXTree::Selection TestAXNodeWrapper::GetUnignoredSelection() const {
   return tree_->GetUnignoredSelection();
 }
 
+AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  if (node_->IsLeaf()) {
+    return ui::AXNodePosition::CreateTextPosition(
+        GetTreeData().tree_id, node_->id(), offset, affinity);
+  }
+  return ui::AXNodePosition::CreateTreePosition(GetTreeData().tree_id,
+                                                node_->id(), offset);
+}
+
 AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreateTextPositionAt(
-    int offset) const {
-  return ui::AXNodePosition::CreateTextPosition(
-      GetTreeData().tree_id, node_->id(), offset,
-      ax::mojom::TextAffinity::kDownstream);
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  return ui::AXNodePosition::CreateTextPosition(GetTreeData().tree_id,
+                                                node_->id(), offset, affinity);
 }
 
 gfx::NativeViewAccessible TestAXNodeWrapper::GetNativeViewAccessible() {

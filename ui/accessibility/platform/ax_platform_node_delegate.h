@@ -166,9 +166,18 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // should not be exposed to platform APIs: See `IsIgnored`.)
   virtual const AXTree::Selection GetUnignoredSelection() const = 0;
 
+  // Creates a text position rooted at this object if it's a leaf node, or a
+  // tree position otherwise.
+  virtual AXNodePosition::AXPositionInstance CreatePositionAt(
+      int offset,
+      ax::mojom::TextAffinity affinity =
+          ax::mojom::TextAffinity::kDownstream) const = 0;
+
   // Creates a text position rooted at this object.
   virtual AXNodePosition::AXPositionInstance CreateTextPositionAt(
-      int offset) const = 0;
+      int offset,
+      ax::mojom::TextAffinity affinity =
+          ax::mojom::TextAffinity::kDownstream) const = 0;
 
   // Get the accessibility node for the NSWindow the node is contained in. This
   // method is only meaningful on macOS.

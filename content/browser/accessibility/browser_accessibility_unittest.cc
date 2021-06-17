@@ -813,8 +813,7 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   // Create a text position at offset 0 in the input control
   BrowserAccessibility::AXPosition position =
-      input_accessible->CreatePositionAt(0,
-                                         ax::mojom::TextAffinity::kDownstream);
+      input_accessible->CreateTextPositionAt(0);
 
   // On platforms that expose IA2 or ATK hypertext, moving by word should work
   // the same as if the value of the text field is equal to the placeholder
@@ -928,6 +927,42 @@ TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
   ASSERT_NE(nullptr, child_accessible);
   // Returns the index calculated in AXNode.
   EXPECT_EQ(0, child_accessible->GetIndexInParent());
+}
+
+TEST_F(BrowserAccessibilityTest, CreatePositionAt) {
+  ui::AXNodeData root_1;
+  root_1.id = 1;
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {2};
+
+  ui::AXNodeData gc_2;
+  gc_2.id = 2;
+  gc_2.role = ax::mojom::Role::kGenericContainer;
+  gc_2.child_ids = {3};
+
+  ui::AXNodeData text_3;
+  text_3.id = 3;
+  text_3.role = ax::mojom::Role::kStaticText;
+  text_3.SetName("text");
+
+  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(root_1, gc_2, text_3),
+          test_browser_accessibility_delegate_.get()));
+  ASSERT_NE(nullptr, browser_accessibility_manager.get());
+
+  BrowserAccessibility* gc_accessible =
+      browser_accessibility_manager->GetRoot()->PlatformGetChild(0);
+  ASSERT_NE(nullptr, gc_accessible);
+
+  BrowserAccessibility::AXPosition pos = gc_accessible->CreatePositionAt(0);
+  EXPECT_TRUE(pos->IsTreePosition());
+
+  BrowserAccessibility* text_accessible = gc_accessible->PlatformGetChild(0);
+  ASSERT_NE(nullptr, text_accessible);
+
+  pos = text_accessible->CreatePositionAt(0);
+  EXPECT_TRUE(pos->IsTextPosition());
 }
 
 }  // namespace content

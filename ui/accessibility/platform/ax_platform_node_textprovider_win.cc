@@ -81,9 +81,9 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
     return S_OK;
 
   AXNodePosition::AXPositionInstance start =
-      anchor_object->GetDelegate()->CreateTextPositionAt(start_offset);
+      anchor_object->GetDelegate()->CreatePositionAt(start_offset);
   AXNodePosition::AXPositionInstance end =
-      focus_object->GetDelegate()->CreateTextPositionAt(end_offset);
+      focus_object->GetDelegate()->CreatePositionAt(end_offset);
 
   DCHECK(!start->IsNullPosition());
   DCHECK(!end->IsNullPosition());

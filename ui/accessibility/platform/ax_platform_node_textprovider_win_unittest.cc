@@ -486,12 +486,23 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   textbox_data.SetName("textbox text");
   textbox_data.AddState(ax::mojom::State::kEditable);
 
+  AXNodeData nonatomic_textfield_data;
+  nonatomic_textfield_data.id = 4;
+  nonatomic_textfield_data.role = ax::mojom::Role::kTextField;
+  nonatomic_textfield_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+  nonatomic_textfield_data.child_ids = {5};
+
+  AXNodeData text_child_data;
+  text_child_data.id = 5;
+  text_child_data.role = ax::mojom::Role::kStaticText;
+  text_child_data.SetName("text");
+
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.SetName("Document");
-  root_data.child_ids.push_back(2);
-  root_data.child_ids.push_back(3);
+  root_data.child_ids = {2, 3, 4};
 
   AXTreeUpdate update;
   AXTreeData tree_data;
@@ -499,9 +510,8 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_data.id;
-  update.nodes.push_back(root_data);
-  update.nodes.push_back(text_data);
-  update.nodes.push_back(textbox_data);
+  update.nodes = {root_data, text_data, textbox_data, nonatomic_textfield_data,
+                  text_child_data};
   Init(update);
 
   ComPtr<IRawElementProviderSimple> root_node =
@@ -656,6 +666,29 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
+  text_content.Reset();
+  selections.Reset();
+  text_range_provider.Reset();
+
+  // Verify that the selection set on a non-atomic text field returns the
+  // correct selection. Because the anchor/focus is a non-leaf element, the
+  // offset passed here is a child offset and not a text offset. This means that
+  // the accessible selection received should include the entire leaf text child
+  // and not only the first character of that non-atomic text field.
+  selected_tree_data.sel_anchor_object_id = 4;
+  selected_tree_data.sel_anchor_offset = 0;
+  selected_tree_data.sel_focus_object_id = 4;
+  selected_tree_data.sel_focus_offset = 1;
+
+  root_text_provider->GetSelection(selections.Receive());
+  ASSERT_NE(nullptr, selections.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+      selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L"text"));
   text_content.Reset();
   selections.Reset();
   text_range_provider.Reset();

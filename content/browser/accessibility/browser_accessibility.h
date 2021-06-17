@@ -333,15 +333,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // implement this functionality.
   std::string GetLiveRegionText() const;
 
-  // Creates a text position rooted at this object. Does not convert to a
-  // leaf text position - see CreatePositionForSelectionAt, below. |offset|
-  // could only be a character offset, either in the object's inner text
-  // (Android and Mac), or in the object's hypertext (Linux ATK and Windows
-  // IA2).
-  AXPosition CreatePositionAt(int offset,
-                              ax::mojom::TextAffinity affinity =
-                                  ax::mojom::TextAffinity::kDownstream) const;
-
   // |offset| could only be a character offset. Depending on the platform, the
   // character offset could be either in the object's inner text (Android and
   // Mac), or an offset in the object's hypertext (Linux ATK and Windows IA2).
@@ -400,7 +391,14 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool GetHtmlAttribute(const char* attribute,
                         std::u16string* value) const override;
   const ui::AXTree::Selection GetUnignoredSelection() const override;
-  AXPosition CreateTextPositionAt(int offset) const override;
+  AXPosition CreatePositionAt(
+      int offset,
+      ax::mojom::TextAffinity affinity =
+          ax::mojom::TextAffinity::kDownstream) const override;
+  AXPosition CreateTextPositionAt(
+      int offset,
+      ax::mojom::TextAffinity affinity =
+          ax::mojom::TextAffinity::kDownstream) const override;
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() override;
