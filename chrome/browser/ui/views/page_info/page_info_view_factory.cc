@@ -26,6 +26,34 @@ constexpr int PageInfoViewFactory::kVectorIconSize;
 constexpr int PageInfoViewFactory::kMinBubbleWidth;
 constexpr int PageInfoViewFactory::kMaxBubbleWidth;
 
+namespace {
+
+class PageInfoSubpageView : public views::View {
+ public:
+  PageInfoSubpageView(std::unique_ptr<views::View> header,
+                      std::unique_ptr<views::View> content) {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+    AddChildView(std::move(header));
+    content_ = AddChildView(std::move(content));
+  }
+
+  gfx::Size CalculatePreferredSize() const override {
+    // Only the with of |content_| is taken into account, because the header
+    // view contains site origin in the subtitle which can be very long.
+    const int width = content_->GetPreferredSize().width();
+    return gfx::Size(width, GetHeightForWidth(width));
+  }
+
+  void ChildPreferredSizeChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
+
+  views::View* content_ = nullptr;
+};
+
+}  // namespace
+
 // static
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator() {
   // Distance for multi content list is used, but split in half, since there is
@@ -72,26 +100,21 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView() {
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
-  return CreateSubpage(CreateSubpageHeader(l10n_util::GetStringUTF16(
-                           IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER)),
-                       std::make_unique<PageInfoSecurityContentView>(
-                           presenter_, /*is_standalone_page=*/true));
-}
-
-std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpage(
-    std::unique_ptr<views::View> header,
-    std::unique_ptr<views::View> content) {
-  auto subpage = std::make_unique<views::View>();
-  subpage->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  subpage->AddChildView(std::move(header));
-  subpage->AddChildView(std::move(content));
-  return subpage;
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER)),
+      std::make_unique<PageInfoSecurityContentView>(
+          presenter_, /*is_standalone_page=*/true));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
     std::u16string title) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  views::FlexSpecification stretch_specification =
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true)
+          .WithWeight(1);
   auto wrapper = std::make_unique<views::View>();
   wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -106,6 +129,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetInteriorMargin(
           gfx::Insets(0, side_margin, bottom_margin, side_margin));
+  header->SetProperty(views::kFlexBehaviorKey, stretch_specification);
   wrapper->AddChildView(CreateSeparator());
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
@@ -127,6 +151,9 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
           presenter_->GetSimpleSiteName(), views::style::CONTEXT_LABEL,
           views::style::STYLE_SECONDARY));
   subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  subtitle_label->SetAllowCharacterBreak(true);
+  subtitle_label->SetMultiLine(true);
+  subtitle_label->SetProperty(views::kFlexBehaviorKey, stretch_specification);
 
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,

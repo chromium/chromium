@@ -52,11 +52,6 @@ class PageInfoViewFactory {
   std::unique_ptr<views::View> CreateSecurityPageView() WARN_UNUSED_RESULT;
 
  private:
-  // Creates a subpage view by combining header and content views.
-  std::unique_ptr<views::View> CreateSubpage(
-      std::unique_ptr<views::View> header,
-      std::unique_ptr<views::View> content) WARN_UNUSED_RESULT;
-
   // Creates a subpage header with back button that opens the main page, a
   // title label with text |title|, a subtitle label with the site origin text,
   // and close button that closes the bubble.
