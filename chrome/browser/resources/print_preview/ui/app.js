@@ -332,8 +332,7 @@ Polymer({
       }
       this.$.documentInfo.init(
           settings.previewModifiable, settings.previewIsFromArc,
-          settings.previewIsPdf, settings.documentTitle,
-          settings.documentHasSelection);
+          settings.documentTitle, settings.documentHasSelection);
       this.$.model.setStickySettings(settings.serializedAppStateStr);
       this.$.model.setPolicySettings(settings.policies);
       this.measurementSystem_ = new MeasurementSystem(

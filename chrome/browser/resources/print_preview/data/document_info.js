@@ -16,7 +16,6 @@ import {Size} from './size.js';
  *   hasSelection: boolean,
  *   isModifiable: boolean,
  *   isFromArc: boolean,
- *   isPdf: boolean,
  *   isScalingDisabled: boolean,
  *   fitToPageScaling: number,
  *   pageCount: number,
@@ -57,7 +56,6 @@ Polymer({
           hasSelection: false,
           isModifiable: true,
           isFromArc: false,
-          isPdf: false,
           isScalingDisabled: false,
           fitToPageScaling: 100,
           pageCount: 0,
@@ -122,17 +120,14 @@ Polymer({
    * Initializes the state of the data model.
    * @param {boolean} isModifiable Whether the document is modifiable.
    * @param {boolean} isFromArc Whether the document is from ARC.
-   * @param {boolean} isPdf Whether the document is PDF.
    * @param {string} title Title of the document.
    * @param {boolean} hasSelection Whether the document has user-selected
    *     content.
    */
-  init(isModifiable, isFromArc, isPdf, title, hasSelection) {
+  init(isModifiable, isFromArc, title, hasSelection) {
     this.isInitialized_ = true;
     this.set('documentSettings.isModifiable', isModifiable);
     this.set('documentSettings.isFromArc', isFromArc);
-    // TODO(crbug.com/702995): Remove once Flash is deprecated.
-    this.set('documentSettings.isPdf', isPdf);
     this.set('documentSettings.title', title);
     this.set('documentSettings.hasSelection', hasSelection);
   },

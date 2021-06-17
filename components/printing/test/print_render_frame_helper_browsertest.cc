@@ -134,7 +134,6 @@ void CreatePrintSettingsDictionary(base::DictionaryValue* dict) {
                    static_cast<int>(mojom::MarginType::kDefaultMargins));
   dict->SetBoolean(kSettingPreviewModifiable, true);
   dict->SetBoolean(kSettingPreviewIsFromArc, false);
-  dict->SetBoolean(kSettingPreviewIsPdf, false);
   dict->SetBoolean(kSettingHeaderFooterEnabled, false);
   dict->SetBoolean(kSettingShouldPrintBackgrounds, false);
   dict->SetBoolean(kSettingShouldPrintSelectionOnly, false);

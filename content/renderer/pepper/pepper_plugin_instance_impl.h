@@ -286,7 +286,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void PrintEnd();
   bool GetPrintPresetOptionsFromDocument(
       blink::WebPrintPresetOptions* preset_options);
-  bool IsPdfPlugin();
 
   bool CanRotateView();
   void RotateView(blink::WebPlugin::RotationType type);

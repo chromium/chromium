@@ -143,9 +143,6 @@ const char kSettingPolicies[] = "policies";
 // Whether the source page content is from ARC or not.
 const char kSettingPreviewIsFromArc[] = "previewIsFromArc";
 
-// Whether the source page content is PDF or not.
-const char kSettingPreviewIsPdf[] = "previewIsPdf";
-
 // Whether the source page content is modifiable. True for web content.
 // i.e. Anything from Blink. False for everything else. e.g. PDF/Flash.
 const char kSettingPreviewModifiable[] = "previewModifiable";

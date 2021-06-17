@@ -27,7 +27,6 @@ suite('ModelSettingsAvailabilityTest', function() {
       hasSelection: false,
       isFromArc: false,
       isModifiable: true,
-      isPdf: false,
       isScalingDisabled: false,
       fitToPageScaling: 100,
       pageCount: 3,
@@ -334,7 +333,6 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // PDF -> Save as PDF
     model.set('documentSettings.isModifiable', false);
-    model.set('documentSettings.isPdf', true);
     assertFalse(model.settings.scaling.available);
 
     // PDF -> printer
@@ -342,18 +340,9 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.scaling.available);
     assertFalse(model.settings.scaling.setFromUi);
 
-    // Non-PDF Plugin -> Save as PDF
-    setSaveAsPdfDestination();
-    model.set('documentSettings.isPdf', false);
-    assertFalse(model.settings.scaling.available);
-
-    // Non-PDF Plugin -> printer
-    model.set('destination', defaultDestination);
-    assertFalse(model.settings.scaling.available);
-
     // ARC -> printer
+    model.set('destination', defaultDestination);
     model.set('documentSettings.isFromArc', true);
-    model.set('documentSettings.isPdf', true);
     assertFalse(model.settings.scaling.available);
 
     // ARC -> Save as PDF
@@ -372,25 +361,14 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // PDF -> Save as PDF
     model.set('documentSettings.isModifiable', false);
-    model.set('documentSettings.isPdf', true);
     assertFalse(model.settings.scalingType.available);
 
     // PDF -> printer
     model.set('destination', defaultDestination);
     assertFalse(model.settings.scalingType.available);
 
-    // Non-PDF Plugin -> Save as PDF
-    setSaveAsPdfDestination();
-    model.set('documentSettings.isPdf', false);
-    assertFalse(model.settings.scalingType.available);
-
-    // Non-PDF Plugin -> printer
-    model.set('destination', defaultDestination);
-    assertFalse(model.settings.scalingType.available);
-
     // ARC -> printer
     model.set('documentSettings.isFromArc', true);
-    model.set('documentSettings.isPdf', true);
     assertFalse(model.settings.scalingType.available);
 
     // ARC -> Save as PDF
@@ -409,25 +387,14 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // PDF -> Save as PDF
     model.set('documentSettings.isModifiable', false);
-    model.set('documentSettings.isPdf', true);
     assertFalse(model.settings.scalingTypePdf.available);
 
     // PDF -> printer
     model.set('destination', defaultDestination);
     assertTrue(model.settings.scalingTypePdf.available);
 
-    // Non-PDF Plugin -> Save as PDF
-    setSaveAsPdfDestination();
-    model.set('documentSettings.isPdf', false);
-    assertFalse(model.settings.scalingTypePdf.available);
-
-    // Non-PDF Plugin -> printer
-    model.set('destination', defaultDestination);
-    assertFalse(model.settings.scalingTypePdf.available);
-
     // ARC -> printer
     model.set('documentSettings.isFromArc', true);
-    model.set('documentSettings.isPdf', true);
     assertFalse(model.settings.scalingTypePdf.available);
 
     // ARC -> Save as PDF
@@ -612,28 +579,17 @@ suite('ModelSettingsAvailabilityTest', function() {
   });
 
   test('pages per sheet', function() {
-    // Pages per sheet is available everywhere except for Flash content.
+    // Pages per sheet is available everywhere except for ARC.
     // With the default settings for Blink content, it is available.
     model.set('documentSettings.isModifiable', true);
-    model.set('documentSettings.isPdf', false);
-    assertTrue(model.settings.pagesPerSheet.available);
-
-    // This state should never occur, but if it does, |isModifiable| takes
-    // precedence and this is still interpreted as Blink content.
-    model.set('documentSettings.isPdf', true);
     assertTrue(model.settings.pagesPerSheet.available);
 
     // Still available for PDF content.
     model.set('documentSettings.isModifiable', false);
     assertTrue(model.settings.pagesPerSheet.available);
 
-    // Not available for Flash content.
-    model.set('documentSettings.isPdf', false);
-    assertFalse(model.settings.pagesPerSheet.available);
-
     // Not available for ARC.
     model.set('documentSettings.isFromArc', true);
-    model.set('documentSettings.isPdf', true);
     assertFalse(model.settings.pagesPerSheet.available);
   });
 

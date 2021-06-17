@@ -50,7 +50,7 @@
     cloud-print-error-message="[[cloudPrintErrorMessage_]]"
     destination-state="{{destinationState_}}"
     controls-managed="[[controlsManaged_]]" destination="{{destination_}}"
-    error="{{error_}}" is-pdf="[[documentSettings_.isPdf]]"
+    error="{{error_}}" is-pdf="[[!documentSettings_.isModifiable]]"
     page-count="[[documentSettings_.pageCount]]"
     settings="[[settings]]" state="[[state]]"
     max-sheets="[[maxSheets_]]" on-focus="onSidebarFocus_"

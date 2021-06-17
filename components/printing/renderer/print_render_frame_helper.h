@@ -533,7 +533,6 @@ class PrintRenderFrameHelper
     bool IsForArc() const;
     bool IsPlugin() const;
     bool IsModifiable() const;
-    bool IsPdf() const;
     bool HasSelection();
     bool IsLastPageOfPrintReadyMetafile() const;
     bool IsFinalPageRendered() const;
@@ -601,10 +600,6 @@ class PrintRenderFrameHelper
 
     // True, if the document source is modifiable. e.g. HTML and not PDF.
     bool is_modifiable_ = true;
-
-    // True, if the document source is a PDF. Used to distinguish from
-    // other plugins such as Flash.
-    bool is_pdf_ = false;
 
     // True, if the document source is from ARC.
     bool is_for_arc_ = false;

@@ -499,8 +499,7 @@ Polymer({
     'updateSettingsFromDestination_(destination.capabilities)',
     'updateSettingsAvailabilityFromDocumentSettings_(' +
         'documentSettings.isModifiable, documentSettings.isFromArc,' +
-        'documentSettings.isPdf, documentSettings.hasCssMediaStyles, ' +
-        'documentSettings.hasSelection)',
+        'documentSettings.hasCssMediaStyles, documentSettings.hasSelection)',
     'updateHeaderFooterAvailable_(' +
         'margins, settings.margins.value, settings.mediaSize.value)',
   ],
@@ -713,16 +712,15 @@ Polymer({
     const knownSizeToSaveAsPdf = isSaveAsPDF &&
         (!this.documentSettings.isModifiable ||
          this.documentSettings.hasCssMediaStyles);
-    const scalingAvailable = !knownSizeToSaveAsPdf &&
-        !this.documentSettings.isFromArc &&
-        (this.documentSettings.isModifiable || this.documentSettings.isPdf);
+    const scalingAvailable =
+        !knownSizeToSaveAsPdf && !this.documentSettings.isFromArc;
     this.setSettingPath_('scaling.available', scalingAvailable);
     this.setSettingPath_(
         'scalingType.available',
-        scalingAvailable && !this.documentSettings.isPdf);
+        scalingAvailable && this.documentSettings.isModifiable);
     this.setSettingPath_(
         'scalingTypePdf.available',
-        scalingAvailable && this.documentSettings.isPdf);
+        scalingAvailable && !this.documentSettings.isModifiable);
     const caps = this.destination && this.destination.capabilities ?
         this.destination.capabilities.printer :
         null;
@@ -743,10 +741,7 @@ Polymer({
     }
 
     this.setSettingPath_(
-        'pagesPerSheet.available',
-        !this.documentSettings.isFromArc &&
-            (this.documentSettings.isModifiable ||
-             this.documentSettings.isPdf));
+        'pagesPerSheet.available', !this.documentSettings.isFromArc);
     this.setSettingPath_(
         'margins.available',
         !this.documentSettings.isFromArc && this.documentSettings.isModifiable);

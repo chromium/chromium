@@ -85,8 +85,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   bool source_is_modifiable() const { return source_is_modifiable_; }
 
-  bool source_is_pdf() const { return source_is_pdf_; }
-
   bool source_has_selection() const { return source_has_selection_; }
 
   bool print_selection_only() const { return print_selection_only_; }
@@ -283,9 +281,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Indicates whether the source document can be modified.
   bool source_is_modifiable_ = true;
-
-  // Indicates whether the source document is a PDF.
-  bool source_is_pdf_ = false;
 
   // Indicates whether the source document has selection.
   bool source_has_selection_ = false;

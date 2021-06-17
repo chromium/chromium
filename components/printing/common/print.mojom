@@ -27,7 +27,6 @@ struct PreviewIds {
 struct RequestPrintPreviewParams {
   bool is_from_arc = false;
   bool is_modifiable = false;
-  bool is_pdf = false;
   bool webnode_only = false;
   bool has_selection = false;
   bool selection_only = false;

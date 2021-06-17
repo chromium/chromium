@@ -1937,10 +1937,6 @@ bool PepperPluginInstanceImpl::GetPrintPresetOptionsFromDocument(
   return true;
 }
 
-bool PepperPluginInstanceImpl::IsPdfPlugin() {
-  return LoadPdfInterface();
-}
-
 bool PepperPluginInstanceImpl::CanRotateView() {
   return LoadPdfInterface() && !module()->is_crashed() &&
          !IsPrintPreviewUrl(document_url_);

@@ -453,14 +453,6 @@ bool PepperWebPluginImpl::GetPrintPresetOptionsFromDocument(
   return instance_->GetPrintPresetOptionsFromDocument(preset_options);
 }
 
-bool PepperWebPluginImpl::IsPdfPlugin() {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->IsPdfPlugin();
-}
-
 bool PepperWebPluginImpl::CanRotateView() {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.

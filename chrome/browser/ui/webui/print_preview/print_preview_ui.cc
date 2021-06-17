@@ -789,7 +789,6 @@ void PrintPreviewUI::SetInitialParams(
       print_preview_dialog->GetWebUI()->GetController());
   print_preview_ui->source_is_arc_ = params.is_from_arc;
   print_preview_ui->source_is_modifiable_ = params.is_modifiable;
-  print_preview_ui->source_is_pdf_ = params.is_pdf;
   print_preview_ui->source_has_selection_ = params.has_selection;
   print_preview_ui->print_selection_only_ = params.selection_only;
 }

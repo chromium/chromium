@@ -95,8 +95,6 @@ COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingPolicies[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingPreviewIsFromArc[];
 COMPONENT_EXPORT(PRINTING_BASE)
-extern const char kSettingPreviewIsPdf[];
-COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingPreviewModifiable[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingPrintToGoogleDrive[];

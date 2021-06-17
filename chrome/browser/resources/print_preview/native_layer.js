@@ -69,7 +69,6 @@ export let Policies;
  *   unitType: !MeasurementSystemUnitType,
  *   previewModifiable: boolean,
  *   previewIsFromArc: boolean,
- *   previewIsPdf: boolean,
  *   documentTitle: string,
  *   documentHasSelection: boolean,
  *   shouldPrintSelectionOnly: boolean,

@@ -357,11 +357,6 @@ bool IsPrintingNodeOrPdfFrame(blink::WebLocalFrame* frame,
   return plugin && plugin->SupportsPaginatedPrint();
 }
 
-bool IsPrintingPdf(blink::WebLocalFrame* frame, const blink::WebNode& node) {
-  blink::WebPlugin* plugin = frame->GetPluginToPrint(node);
-  return plugin && plugin->IsPdfPlugin();
-}
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 bool IsPrintToPdfRequested(const base::DictionaryValue& job_settings) {
   PrinterType type = static_cast<PrinterType>(
@@ -2428,7 +2423,6 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
 
   const bool is_from_arc = print_preview_context_.IsForArc();
   const bool is_modifiable = print_preview_context_.IsModifiable();
-  const bool is_pdf = print_preview_context_.IsPdf();
   const bool has_selection = print_preview_context_.HasSelection();
 
   // If tagged PDF exporting is enabled, we also need to capture an
@@ -2441,7 +2435,6 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
   auto params = mojom::RequestPrintPreviewParams::New();
   params->is_from_arc = is_from_arc;
   params->is_modifiable = is_modifiable;
-  params->is_pdf = is_pdf;
   params->has_selection = has_selection;
   switch (type) {
     case PRINT_PREVIEW_SCRIPTED: {
@@ -2782,11 +2775,6 @@ bool PrintRenderFrameHelper::PrintPreviewContext::IsModifiable() const {
   return is_modifiable_;
 }
 
-bool PrintRenderFrameHelper::PrintPreviewContext::IsPdf() const {
-  DCHECK(state_ != UNINITIALIZED);
-  return is_pdf_;
-}
-
 bool PrintRenderFrameHelper::PrintPreviewContext::HasSelection() {
   return IsModifiable() && source_frame()->HasSelection();
 }
@@ -2878,7 +2866,6 @@ void PrintRenderFrameHelper::PrintPreviewContext::ClearContext() {
 void PrintRenderFrameHelper::PrintPreviewContext::CalculatePluginAttributes() {
   is_plugin_ = !!source_frame()->GetPluginToPrint(source_node_);
   is_modifiable_ = !IsPrintingNodeOrPdfFrame(source_frame(), source_node_);
-  is_pdf_ = IsPrintingPdf(source_frame(), source_node_);
 }
 
 void PrintRenderFrameHelper::SetPrintPagesParams(

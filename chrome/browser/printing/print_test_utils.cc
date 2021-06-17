@@ -39,7 +39,6 @@ base::Value GetPrintTicket(PrinterType type) {
   ticket.SetBoolKey(kSettingShouldPrintBackgrounds, false);
   ticket.SetBoolKey(kSettingShouldPrintSelectionOnly, false);
   ticket.SetBoolKey(kSettingPreviewModifiable, true);
-  ticket.SetBoolKey(kSettingPreviewIsPdf, false);
   ticket.SetIntKey(kSettingPrinterType, static_cast<int>(type));
   ticket.SetBoolKey(kSettingRasterizePdf, false);
   ticket.SetIntKey(kSettingScaleFactor, 100);
