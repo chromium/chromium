@@ -94,7 +94,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
+        "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
 public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @Rule
@@ -771,7 +771,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
 
     private void testPriceString(Tab tab, MockShoppingPersistedTabDataFetcher fetcher,
             int expectedVisibility, String expectedCurrentPrice, String expectedPreviousPrice) {
-        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
         testGridSelected(mTabGridView, mGridModel);
         PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
         TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
@@ -872,7 +872,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testPriceDropEndToEnd() {
         PersistedTabDataConfiguration.setUseTestConfig(true);
-        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
         mockCurrencyFormatter();
         mockUrlUtilities();
         mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);

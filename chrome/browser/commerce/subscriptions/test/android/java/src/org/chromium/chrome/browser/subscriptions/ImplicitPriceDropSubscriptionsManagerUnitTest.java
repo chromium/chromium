@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.url.GURL;
@@ -141,7 +140,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
                         - ImplicitPriceDropSubscriptionsManager
                                   .CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
-        TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(true);
+        PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(true);
         mMockNotificationManager = new MockNotificationManagerProxy();
         mMockNotificationManager.setNotificationsEnabled(true);
         PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
@@ -183,7 +182,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     public void testInitialSubscription_FeatureDisabled() {
         doReturn(2).when(mTabModel).getCount();
 
-        TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(false);
+        PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(false);
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
         verify(mSubscriptionsManager, times(0)).subscribe(any(List.class), any(Callback.class));
