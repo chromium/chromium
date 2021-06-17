@@ -604,11 +604,13 @@ def infra_builder(
         *,
         name,
         goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.LINUX_BIONIC_REMOVE,
         **kwargs):
     return ci.builder(
         name = name,
         builder_group = "infra",
         goma_backend = goma_backend,
+        os = os,
         **kwargs
     )
 
