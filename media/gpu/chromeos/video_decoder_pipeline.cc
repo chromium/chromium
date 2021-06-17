@@ -12,7 +12,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
@@ -65,6 +64,10 @@ DecoderInterface::DecoderInterface(
     : decoder_task_runner_(std::move(decoder_task_runner)),
       client_(std::move(client)) {}
 DecoderInterface::~DecoderInterface() = default;
+
+bool DecoderInterface::NeedsTranscryption() {
+  return false;
+}
 
 // static
 std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
@@ -125,8 +128,10 @@ VideoDecoderPipeline::~VideoDecoderPipeline() {
 
   main_frame_pool_.reset();
   frame_converter_.reset();
-
   decoder_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  buffer_transcryptor_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void VideoDecoderPipeline::DestroyAsync(
@@ -228,6 +233,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
 
   client_output_cb_ = std::move(output_cb);
   init_cb_ = std::move(init_cb);
+  waiting_cb_ = std::move(waiting_cb);
 
   // Initialize() and correspondingly InitializeTask(), are called both on first
   // initialization and on subsequent stream |config| changes, e.g. change of
@@ -249,19 +255,37 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   decoder_->Initialize(
       config, cdm_context,
       base::BindOnce(&VideoDecoderPipeline::OnInitializeDone,
-                     decoder_weak_this_),
+                     decoder_weak_this_, cdm_context),
       base::BindRepeating(&VideoDecoderPipeline::OnFrameDecoded,
                           decoder_weak_this_),
-      waiting_cb);
+      base::BindRepeating(&VideoDecoderPipeline::OnDecoderWaiting,
+                          decoder_weak_this_));
 }
 
-void VideoDecoderPipeline::OnInitializeDone(Status status) {
+void VideoDecoderPipeline::OnInitializeDone(CdmContext* cdm_context,
+                                            Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(init_cb_);
   DVLOGF(4) << "Initialization status = " << status.code();
 
-  if (!status.is_ok())
+  if (!status.is_ok()) {
     decoder_ = nullptr;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (decoder_ && decoder_->NeedsTranscryption()) {
+    // We need to enable transcryption for protected content.
+    buffer_transcryptor_ = std::make_unique<DecoderBufferTranscryptor>(
+        cdm_context,
+        base::BindRepeating(&VideoDecoderPipeline::OnBufferTranscrypted,
+                            decoder_weak_this_),
+        base::BindRepeating(&VideoDecoderPipeline::OnDecoderWaiting,
+                            decoder_weak_this_));
+  } else {
+    // In case this was created on a prior initialization but no longer needed.
+    buffer_transcryptor_.reset();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   client_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(init_cb_), status));
@@ -293,6 +317,11 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
     image_processor_->Reset();
   frame_converter_->AbortPendingFrames();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (buffer_transcryptor_)
+    buffer_transcryptor_->Reset(DecodeStatus::ABORTED);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   CallFlushCbIfNeeded(DecodeStatus::ABORTED);
 
   client_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
@@ -315,7 +344,24 @@ void VideoDecoderPipeline::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
   DCHECK(decoder_);
   DVLOGF(4);
 
-  bool is_flush = buffer->end_of_stream();
+  if (has_error_) {
+    client_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(decode_cb),
+                                  Status(DecodeStatus::DECODE_ERROR)));
+    return;
+  }
+
+  const bool is_flush = buffer->end_of_stream();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (buffer_transcryptor_) {
+    buffer_transcryptor_->EnqueueBuffer(
+        std::move(buffer),
+        base::BindOnce(&VideoDecoderPipeline::OnDecodeDone, decoder_weak_this_,
+                       is_flush, std::move(decode_cb)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   decoder_->Decode(
       std::move(buffer),
       base::BindOnce(&VideoDecoderPipeline::OnDecodeDone, decoder_weak_this_,
@@ -393,6 +439,12 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
   CallApplyResolutionChangeIfNeeded();
 }
 
+void VideoDecoderPipeline::OnDecoderWaiting(WaitingReason reason) {
+  DVLOGF(3);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  client_task_runner_->PostTask(FROM_HERE, base::BindOnce(waiting_cb_, reason));
+}
+
 bool VideoDecoderPipeline::HasPendingFrames() const {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
@@ -406,6 +458,10 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
   VLOGF(1) << msg;
 
   has_error_ = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (buffer_transcryptor_)
+    buffer_transcryptor_->Reset(DecodeStatus::DECODE_ERROR);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   CallFlushCbIfNeeded(DecodeStatus::DECODE_ERROR);
 }
 
@@ -516,5 +572,21 @@ void VideoDecoderPipeline::OnImageProcessorError() {
       FROM_HERE, base::BindOnce(&VideoDecoderPipeline::OnError,
                                 client_weak_this_, "Image processor error"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void VideoDecoderPipeline::OnBufferTranscrypted(
+    scoped_refptr<DecoderBuffer> transcrypted_buffer,
+    DecodeCB decode_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DCHECK(!has_error_);
+  if (!transcrypted_buffer) {
+    OnError("Error in buffer transcryption");
+    std::move(decode_callback).Run(DecodeStatus::DECODE_ERROR);
+    return;
+  }
+
+  decoder_->Decode(std::move(transcrypted_buffer), std::move(decode_callback));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace media

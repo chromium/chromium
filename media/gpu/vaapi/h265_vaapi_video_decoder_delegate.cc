@@ -444,6 +444,14 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
       slice_hdr->header_emulation_prevention_bytes;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  if (IsTranscrypted()) {
+    // We use the encrypted region of the data as the actual slice data.
+    CHECK_EQ(subsamples.size(), 1u);
+    last_slice_data_ = data + subsamples[0].clear_bytes;
+    last_slice_size_ = subsamples[0].cypher_bytes;
+    last_transcrypt_params_ = GetDecryptKeyId();
+    return DecodeStatus::kOk;
+  }
   last_slice_data_ = data;
   last_slice_size_ = size;
   return DecodeStatus::kOk;
@@ -515,6 +523,8 @@ void H265VaapiVideoDecoderDelegate::Reset() {
   encryption_segment_info_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   last_slice_data_ = nullptr;
+  last_slice_size_ = 0;
+  last_transcrypt_params_.clear();
 }
 
 DecodeStatus H265VaapiVideoDecoderDelegate::SetStream(
@@ -585,10 +595,21 @@ bool H265VaapiVideoDecoderDelegate::SubmitPriorSliceDataIfPresent(
   if (last_slice)
     slice_param_.LongSliceFlags.fields.LastSliceOfPic = 1;
 
-  const bool success = vaapi_wrapper_->SubmitBuffers(
-      {{VASliceParameterBufferType, sizeof(slice_param_), &slice_param_},
-       {VASliceDataBufferType, last_slice_size_, last_slice_data_}});
+  bool success;
+  if (IsTranscrypted()) {
+    success = vaapi_wrapper_->SubmitBuffers(
+        {{VAProtectedSliceDataBufferType, last_transcrypt_params_.length(),
+          last_transcrypt_params_.data()},
+         {VASliceParameterBufferType, sizeof(slice_param_), &slice_param_},
+         {VASliceDataBufferType, last_slice_size_, last_slice_data_}});
+  } else {
+    success = vaapi_wrapper_->SubmitBuffers(
+        {{VASliceParameterBufferType, sizeof(slice_param_), &slice_param_},
+         {VASliceDataBufferType, last_slice_size_, last_slice_data_}});
+  }
   last_slice_data_ = nullptr;
+  last_slice_size_ = 0;
+  last_transcrypt_params_.clear();
   return success;
 }
 

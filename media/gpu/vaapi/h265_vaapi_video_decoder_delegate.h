@@ -88,6 +88,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   // |slice_param_| filled.
   const uint8_t* last_slice_data_{nullptr};
   size_t last_slice_size_{0};
+  std::string last_transcrypt_params_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We need to hold onto this memory here because it's referenced by the

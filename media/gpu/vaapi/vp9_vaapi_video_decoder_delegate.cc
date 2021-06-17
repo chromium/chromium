@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/cxx17_backports.h"
+#include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/decode_surface_handler.h"
@@ -36,6 +37,7 @@ VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
   DCHECK(!slice_params_);
   DCHECK(!crypto_params_);
   DCHECK(!proc_params_);
+  DCHECK(!protected_params_);
 }
 
 scoped_refptr<VP9Picture> VP9VaapiVideoDecoderDelegate::CreateVP9Picture() {
@@ -84,13 +86,6 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     if (!slice_params_)
       return DecodeStatus::kFail;
   }
-  // Always re-create |encoded_data| because reusing the buffer causes horrific
-  // artifacts in decoded buffers. TODO(b/169725321): This seems to be a driver
-  // bug, fix it and reuse the buffer.
-  auto encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
-                                                     frame_hdr->frame_size);
-  if (!encoded_data)
-    return DecodeStatus::kFail;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const DecryptConfig* decrypt_config = pic->decrypt_config();
@@ -211,14 +206,68 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     seg_param.chroma_ac_quant_scale = seg.uv_dequant[i][1];
   }
 
+  // Always re-create |encoded_data| because reusing the buffer causes horrific
+  // artifacts in decoded buffers. TODO(b/169725321): This seems to be a driver
+  // bug, fix it and reuse the buffer.
+  std::unique_ptr<ScopedVABuffer> encoded_data;
+
   std::vector<std::pair<VABufferID, VaapiWrapper::VABufferDescriptor>> buffers =
       {{picture_params_->id(),
         {picture_params_->type(), picture_params_->size(), &pic_param}},
        {slice_params_->id(),
-        {slice_params_->type(), slice_params_->size(), &slice_param}},
-       {encoded_data->id(),
-        {encoded_data->type(), frame_hdr->frame_size, frame_hdr->data}}};
+        {slice_params_->type(), slice_params_->size(), &slice_param}}};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<uint8_t[]> protected_vp9_data;
+  if (IsTranscrypted()) {
+    CHECK(decrypt_config);
+    CHECK_EQ(decrypt_config->subsamples().size(), 1u);
+    if (!protected_params_) {
+      protected_params_ = vaapi_wrapper_->CreateVABuffer(
+          VAProtectedSliceDataBufferType, decrypt_config->key_id().length());
+      if (!protected_params_)
+        return DecodeStatus::kFail;
+    }
+    DCHECK_EQ(decrypt_config->key_id().length(), protected_params_->size());
+    buffers.push_back({protected_params_->id(),
+                       {protected_params_->type(), protected_params_->size(),
+                        decrypt_config->key_id().data()}});
+
+    // For transcrypted VP9 on AMD we need to send the UCH + cypher_bytes from
+    // the buffer as the slice data per AMD's instructions.
+    base::CheckedNumeric<size_t> protected_data_size =
+        decrypt_config->subsamples()[0].cypher_bytes;
+    protected_data_size += frame_hdr->uncompressed_header_size;
+    if (!protected_data_size.IsValid()) {
+      DVLOG(1) << "Invalid protected_data_size";
+      return DecodeStatus::kFail;
+    }
+    encoded_data = vaapi_wrapper_->CreateVABuffer(
+        VASliceDataBufferType, protected_data_size.ValueOrDie());
+    if (!encoded_data)
+      return DecodeStatus::kFail;
+    protected_vp9_data =
+        std::make_unique<uint8_t[]>(protected_data_size.ValueOrDie());
+    // Copy the UCH.
+    memcpy(protected_vp9_data.get(), frame_hdr->data,
+           frame_hdr->uncompressed_header_size);
+    // Copy the transcrypted data.
+    memcpy(protected_vp9_data.get() + frame_hdr->uncompressed_header_size,
+           frame_hdr->data + decrypt_config->subsamples()[0].clear_bytes,
+           decrypt_config->subsamples()[0].cypher_bytes);
+    buffers.push_back({encoded_data->id(),
+                       {encoded_data->type(), encoded_data->size(),
+                        protected_vp9_data.get()}});
+  } else {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
+                                                  frame_hdr->frame_size);
+    if (!encoded_data)
+      return DecodeStatus::kFail;
+    buffers.push_back(
+        {encoded_data->id(),
+         {encoded_data->type(), encoded_data->size(), frame_hdr->data}});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  }
   if (uses_crypto) {
     buffers.push_back(
         {crypto_params_->id(),
@@ -287,6 +336,7 @@ void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   slice_params_.reset();
   crypto_params_.reset();
   proc_params_.reset();
+  protected_params_.reset();
 }
 
 }  // namespace media

@@ -61,6 +61,8 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   memset(&src_region_, 0, sizeof(src_region_));
   memset(&dst_region_, 0, sizeof(dst_region_));
+  transcryption_ = cdm_context && VaapiWrapper::GetImplementationType() ==
+                                      VAImplementation::kMesaGallium;
 }
 
 VaapiVideoDecoderDelegate::~VaapiVideoDecoderDelegate() {
@@ -102,7 +104,8 @@ bool VaapiVideoDecoderDelegate::SetDecryptConfig(
   // TODO(jkardatzke): Handle changing encryption modes midstream, the latest
   // OEMCrypto spec allows this, although we won't hit it in reality for now.
   // Check to make sure they are compatible.
-  if (decrypt_config->encryption_scheme() != encryption_scheme_) {
+  if (!transcryption_ &&
+      decrypt_config->encryption_scheme() != encryption_scheme_) {
     LOG(ERROR) << "Cannot change encryption modes midstream";
     return false;
   }
@@ -319,6 +322,11 @@ bool VaapiVideoDecoderDelegate::FillDecodeScalingIfNeeded(
   proc_buffer->num_additional_outputs = 1;
   proc_buffer->surface = decode_surface_id;
   return true;
+}
+
+std::string VaapiVideoDecoderDelegate::GetDecryptKeyId() const {
+  DCHECK(decrypt_config_);
+  return decrypt_config_->key_id();
 }
 
 void VaapiVideoDecoderDelegate::OnGetHwConfigData(

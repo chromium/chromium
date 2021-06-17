@@ -64,6 +64,7 @@ class VaapiVideoDecoder : public DecoderInterface,
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
   void ApplyResolutionChange() override;
+  bool NeedsTranscryption() override;
 
   // DecodeSurfaceHandler<VASurface> implementation.
   scoped_refptr<VASurface> CreateSurface() override;
@@ -165,7 +166,7 @@ class VaapiVideoDecoder : public DecoderInterface,
   OutputCB output_cb_;
 
   // Callback used to notify the client when we have lost decode context and
-  // request a reset. (Used in protected decoding).
+  // request a reset (Used in protected decoding).
   WaitingCB waiting_cb_;
 
   // Bitstream information, written during Initialize().
@@ -237,6 +238,10 @@ class VaapiVideoDecoder : public DecoderInterface,
   // When we are doing scaled decoding, this is the scale factor we are using,
   // and applies the same in both dimensions.
   absl::optional<float> decode_to_output_scale_factor_;
+
+  // This is used on AMD protected content implementations to indicate that the
+  // DecoderBuffers we receive have been transcrypted and need special handling.
+  bool transcryption_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

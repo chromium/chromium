@@ -76,6 +76,12 @@ mojom_component("mojom") {
     {
       types = [
         {
+          mojom = "chromeos.cdm.mojom.DecryptConfig"
+          cpp = "::std::unique_ptr<::media::DecryptConfig>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
           mojom = "chromeos.cdm.mojom.DecryptStatus"
           cpp = "::media::Decryptor::Status"
         },
@@ -86,6 +92,10 @@ mojom_component("mojom") {
         {
           mojom = "chromeos.cdm.mojom.EncryptionScheme"
           cpp = "::media::EncryptionScheme"
+        },
+        {
+          mojom = "chromeos.cdm.mojom.SubsampleEntry"
+          cpp = "::media::SubsampleEntry"
         },
       ]
       traits_headers = [ "decrypt_config_mojom_traits.h" ]
@@ -109,6 +119,7 @@ source_set("unit_tests") {
   deps = [
     ":mojom",
     "//base",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

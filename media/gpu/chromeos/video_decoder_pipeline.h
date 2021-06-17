@@ -10,6 +10,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
+#include "media/base/cdm_context.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -19,6 +21,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "media/gpu/chromeos/decoder_buffer_transcryptor.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 namespace base {
 class SequencedTaskRunner;
 }
@@ -116,6 +121,11 @@ class MEDIA_GPU_EXPORT DecoderInterface {
   // pending frames.
   virtual void ApplyResolutionChange() = 0;
 
+  // For protected content implementations that require transcryption of the
+  // content before being sent into the HW decoders. (Currently only used by
+  // AMD). Default implementation returns false.
+  virtual bool NeedsTranscryption();
+
  protected:
   // Decoder task runner. All public methods of
   // DecoderInterface are executed at this task runner.
@@ -187,7 +197,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void ResetTask(base::OnceClosure reset_cb);
   void DecodeTask(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb);
 
-  void OnInitializeDone(Status status);
+  void OnInitializeDone(CdmContext* cdm_context, Status status);
 
   void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, Status status);
   void OnResetDone(base::OnceClosure reset_cb);
@@ -199,6 +209,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void OnFrameProcessed(scoped_refptr<VideoFrame> frame);
   // Called when |frame_converter_| finishes converting a frame.
   void OnFrameConverted(scoped_refptr<VideoFrame> frame);
+  // Called when |decoder_| invokes the waiting callback.
+  void OnDecoderWaiting(WaitingReason reason);
 
   // Return true if the pipeline has pending frames that are returned from
   // |decoder_| but haven't been passed to the client.
@@ -213,6 +225,12 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // Handle ImageProcessor error callback.
   void OnImageProcessorError();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Callback for when transcryption of a buffer completes.
+  void OnBufferTranscrypted(scoped_refptr<DecoderBuffer> transcrypted_buffer,
+                            DecodeCB decode_callback);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The client task runner and its sequence checker. All public methods should
   // run on this task runner.
@@ -238,6 +256,12 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // |client_task_runner_|.
   std::unique_ptr<VideoFrameConverter> frame_converter_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The transcryptor for transcrypting DecoderBuffers when needed by the HW
+  // decoder implementation.
+  std::unique_ptr<DecoderBufferTranscryptor> buffer_transcryptor_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // The current video decoder implementation. Valid after initialization is
   // successfully done.
   std::unique_ptr<DecoderInterface> decoder_;
@@ -250,6 +274,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   InitCB init_cb_;
   OutputCB client_output_cb_;
   DecodeCB client_flush_cb_;
+  WaitingCB waiting_cb_;
 
   // True if we need to notify |decoder_| that the pipeline is flushed via
   // DecoderInterface::ApplyResolutionChange().

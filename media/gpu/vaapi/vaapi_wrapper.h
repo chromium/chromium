@@ -317,9 +317,11 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // shares the ownership of the underlying buffer represented by |pixmap|. The
   // ownership of the surface is transferred to the caller. A caller can destroy
   // |pixmap| after this method returns and the underlying buffer will be kept
-  // alive by the VASurface.
+  // alive by the VASurface. |protected_content| should only be true if the
+  // format needs VA_RT_FORMAT_PROTECTED (currently only true for AMD).
   scoped_refptr<VASurface> CreateVASurfaceForPixmap(
-      scoped_refptr<gfx::NativePixmap> pixmap);
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      bool protected_content = false);
 
   // Creates a self-releasing VASurface from |buffers|. The ownership of the
   // surface is transferred to the caller.  |buffers| should be a pointer array

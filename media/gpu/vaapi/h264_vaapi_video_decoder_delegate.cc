@@ -495,6 +495,17 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     if (ref_pic_list1[i])
       FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);
   }
+  if (IsTranscrypted()) {
+    CHECK_EQ(subsamples.size(), 1u);
+    return vaapi_wrapper_->SubmitBuffers(
+               {{VAProtectedSliceDataBufferType, GetDecryptKeyId().length(),
+                 GetDecryptKeyId().data()},
+                {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
+                {VASliceDataBufferType, subsamples[0].cypher_bytes,
+                 data + subsamples[0].clear_bytes}})
+               ? DecodeStatus::kOk
+               : DecodeStatus::kFail;
+  }
 
   return vaapi_wrapper_->SubmitBuffers(
              {{VASliceParameterBufferType, sizeof(slice_param), &slice_param},

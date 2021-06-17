@@ -93,4 +93,43 @@ bool StructTraits<chromeos::cdm::mojom::EncryptionPatternDataView,
   return true;
 }
 
+// static
+bool StructTraits<chromeos::cdm::mojom::SubsampleEntryDataView,
+                  media::SubsampleEntry>::
+    Read(chromeos::cdm::mojom::SubsampleEntryDataView input,
+         media::SubsampleEntry* output) {
+  *output = media::SubsampleEntry(input.clear_bytes(), input.cipher_bytes());
+  return true;
+}
+
+// static
+bool StructTraits<chromeos::cdm::mojom::DecryptConfigDataView,
+                  std::unique_ptr<media::DecryptConfig>>::
+    Read(chromeos::cdm::mojom::DecryptConfigDataView input,
+         std::unique_ptr<media::DecryptConfig>* output) {
+  media::EncryptionScheme encryption_scheme;
+  if (!input.ReadEncryptionScheme(&encryption_scheme))
+    return false;
+
+  std::string key_id;
+  if (!input.ReadKeyId(&key_id))
+    return false;
+
+  std::string iv;
+  if (!input.ReadIv(&iv))
+    return false;
+
+  std::vector<media::SubsampleEntry> subsamples;
+  if (!input.ReadSubsamples(&subsamples))
+    return false;
+
+  absl::optional<media::EncryptionPattern> encryption_pattern;
+  if (!input.ReadEncryptionPattern(&encryption_pattern))
+    return false;
+
+  *output = std::make_unique<media::DecryptConfig>(
+      encryption_scheme, key_id, iv, subsamples, encryption_pattern);
+  return true;
+}
+
 }  // namespace mojo

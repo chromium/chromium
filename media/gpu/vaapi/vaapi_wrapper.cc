@@ -2043,7 +2043,8 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
 }
 
 scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
-    scoped_refptr<gfx::NativePixmap> pixmap) {
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    bool protected_content) {
   const gfx::BufferFormat buffer_format = pixmap->GetBufferFormat();
 
   // Create a VASurface for a NativePixmap by importing the underlying dmabufs.
@@ -2101,7 +2102,12 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   va_attribs[1].value.type = VAGenericValueTypePointer;
   va_attribs[1].value.value.p = &va_attrib_extbuf;
 
-  const unsigned int va_format = BufferFormatToVARTFormat(buffer_format);
+  unsigned int va_format = BufferFormatToVARTFormat(buffer_format);
+
+  if (protected_content) {
+    DCHECK_EQ(GetImplementationType(), VAImplementation::kMesaGallium);
+    va_format |= VA_RT_FORMAT_PROTECTED;
+  }
 
   VASurfaceID va_surface_id = VA_INVALID_ID;
   {

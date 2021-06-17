@@ -6,11 +6,13 @@
 #define CHROMEOS_COMPONENTS_CDM_FACTORY_DAEMON_MOJOM_DECRYPT_CONFIG_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
+#include "media/base/decrypt_config.h"
 #include "media/base/decryptor.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "mojo/public/cpp/bindings/type_converter.h"
 
 // This needs to be included last so it can pick up the media::Decryptor::Status
 // declaration. It's not possible to forward declare an inner class.
@@ -54,6 +56,63 @@ struct COMPONENT_EXPORT(CHROMEOS_CDM_MOJOM)
 
   static bool Read(chromeos::cdm::mojom::EncryptionPatternDataView input,
                    ::media::EncryptionPattern* output);
+};
+
+template <>
+struct COMPONENT_EXPORT(CHROMEOS_CDM_MOJOM)
+    StructTraits<chromeos::cdm::mojom::SubsampleEntryDataView,
+                 ::media::SubsampleEntry> {
+  static uint32_t clear_bytes(const ::media::SubsampleEntry& input) {
+    return input.clear_bytes;
+  }
+
+  static uint32_t cipher_bytes(const ::media::SubsampleEntry& input) {
+    return input.cypher_bytes;
+  }
+
+  static bool Read(chromeos::cdm::mojom::SubsampleEntryDataView input,
+                   ::media::SubsampleEntry* output);
+};
+
+template <>
+struct COMPONENT_EXPORT(CHROMEOS_CDM_MOJOM)
+    StructTraits<chromeos::cdm::mojom::DecryptConfigDataView,
+                 std::unique_ptr<media::DecryptConfig>> {
+  static bool IsNull(const std::unique_ptr<media::DecryptConfig>& input) {
+    return !input;
+  }
+
+  static void SetToNull(std::unique_ptr<media::DecryptConfig>* output) {
+    output->reset();
+  }
+
+  static media::EncryptionScheme encryption_scheme(
+      const std::unique_ptr<media::DecryptConfig>& input) {
+    return input->encryption_scheme();
+  }
+
+  static const std::string& key_id(
+      const std::unique_ptr<media::DecryptConfig>& input) {
+    return input->key_id();
+  }
+
+  static const std::string& iv(
+      const std::unique_ptr<media::DecryptConfig>& input) {
+    return input->iv();
+  }
+
+  static const std::vector<media::SubsampleEntry>& subsamples(
+      const std::unique_ptr<media::DecryptConfig>& input) {
+    return input->subsamples();
+  }
+
+  static const absl::optional<media::EncryptionPattern>& encryption_pattern(
+      const std::unique_ptr<media::DecryptConfig>& input) {
+    return input->encryption_pattern();
+  }
+
+  static bool Read(chromeos::cdm::mojom::DecryptConfigDataView input,
+                   std::unique_ptr<media::DecryptConfig>* output);
 };
 
 }  // namespace mojo

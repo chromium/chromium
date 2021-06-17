@@ -102,10 +102,17 @@ class VaapiVideoDecoderDelegate {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns true if we are handling encrypted content, in which case
-  // SetupDecryptDecode() should be called for every slice.
+  // SetupDecryptDecode() should be called for every slice. This is specifically
+  // for Intel platforms.
   bool IsEncryptedSession() const {
-    return encryption_scheme_ != EncryptionScheme::kUnencrypted;
+    return (encryption_scheme_ != EncryptionScheme::kUnencrypted) &&
+           !transcryption_;
   }
+
+  // Returns true if we are handling transcrypted content. This is specifically
+  // for AMD platforms that normalize encrypted content with the TEE rather than
+  // passing all the parameters into libva.
+  bool IsTranscrypted() const { return transcryption_; }
 
   // Should be called by subclasses if a failure occurs during actual decoding.
   // This will check if we are using protected mode and it's in a state that
@@ -127,6 +134,9 @@ class VaapiVideoDecoderDelegate {
                                  VASurfaceID decode_surface_id,
                                  scoped_refptr<VASurface> output_surface,
                                  VAProcPipelineParameterBuffer* proc_buffer);
+
+  // Returns the key_id string for the current DecryptConfig.
+  std::string GetDecryptKeyId() const;
 
   // Both owned by caller.
   DecodeSurfaceHandler<VASurface>* const vaapi_dec_;
@@ -157,6 +167,10 @@ class VaapiVideoDecoderDelegate {
   VARectangle src_region_;
   VARectangle dst_region_;
   VASurfaceID scaled_surface_id_;
+
+  // This will only be true on AMD platforms where we support encrypted content
+  // and the content is encrypted.
+  bool transcryption_ = false;
 
   // This gets set to true if we indicated we should try to recover from
   // protected session loss. We use this so that we don't go into a loop where

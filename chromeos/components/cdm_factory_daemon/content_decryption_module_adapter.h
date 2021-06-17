@@ -154,17 +154,16 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
       uint32_t promise_id,
       cdm::mojom::CdmPromiseResultPtr cros_promise_result,
       const std::string& session_id);
-  void StoreDecryptCallback(StreamType stream_type, DecryptCB decrypt_cb);
   void OnDecrypt(StreamType stream_type,
                  scoped_refptr<media::DecoderBuffer> encrypted,
-                 size_t expected_decrypt_size,
+                 media::Decryptor::DecryptCB decrypt_cb,
                  media::Decryptor::Status status,
-                 const std::vector<uint8_t>& decrypted_data);
-  void GetHwKeyDataInternal(const std::string& key_id,
-                            const std::string& iv,
-                            const media::EncryptionScheme encryption_scheme,
-                            const std::vector<uint8_t>& hw_identifier,
-                            GetHwKeyDataCB callback);
+                 const std::vector<uint8_t>& decrypted_data,
+                 std::unique_ptr<media::DecryptConfig> decrypt_config_out);
+  void GetHwKeyDataInternal(
+      std::unique_ptr<media::DecryptConfig> decrypt_config,
+      const std::vector<uint8_t>& hw_identifier,
+      GetHwKeyDataCB callback);
 
   THREAD_CHECKER(thread_checker_);
 
@@ -179,8 +178,12 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
   media::SessionKeysChangeCB session_keys_change_cb_;
   media::SessionExpirationUpdateCB session_expiration_update_cb_;
 
-  media::Decryptor::DecryptCB pending_audio_decrypt_cb_;
-  media::Decryptor::DecryptCB pending_video_decrypt_cb_;
+  // This is used for tracking individual decrypt calls for each stream type so
+  // in the event one is cancelled, and a new one is submitted, we don't end up
+  // invoking the callback from the new one with the data from the cancelled
+  // call.
+  bool pending_audio_decrypt_ = false;
+  bool pending_video_decrypt_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
 
