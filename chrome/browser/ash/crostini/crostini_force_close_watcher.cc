@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "components/exo/shell_surface_base.h"
@@ -69,6 +70,20 @@ ShellSurfaceForceCloseDelegate::ShellSurfaceForceCloseDelegate(
       weak_ptr_factory_(this) {}
 
 void ShellSurfaceForceCloseDelegate::ForceClose() {
+  // Post a task because the dialog needs to finish running its accept button
+  // handling code. If we CloseNow() here it will destroy the dialog's parent
+  // widget, destroying the dialog and causing a use-after-free.
+  // https://crbug.com/1215247
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ShellSurfaceForceCloseDelegate::ForceCloseNow,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShellSurfaceForceCloseDelegate::ForceCloseNow() {
+  // This must use CloseNow() and not Close() because ShellSurfaceBase widgets
+  // respond to Close() by asking the client app to close. In this case
+  // the app is not responding, so it won't respond to the Wayland protocol
+  // zxdg_toplevel_v6_send_close() message.
   GetClosableWidget()->CloseNow();
 }
 
