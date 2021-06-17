@@ -398,7 +398,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if ([iconImageName length]) {
     detailItem.image = [[UIImage imageNamed:iconImageName]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    detailItem.leftAlignImage = YES;
     detailItem.useCustomSeparator = YES;
     if (imageTintColorIsGrey) {
       detailItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];

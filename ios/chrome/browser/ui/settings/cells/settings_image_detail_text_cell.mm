@@ -57,8 +57,12 @@
 
   _imageView = [[UIImageView alloc] init];
   _imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _imageView.contentMode = UIViewContentModeCenter;
   _imageView.tintColor = UIColor.cr_labelColor;
+  [_imageView setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisHorizontal];
+  [_imageView
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
   [contentView addSubview:_imageView];
 
   _textLabel = [[UILabel alloc] init];
@@ -96,19 +100,18 @@
       constraintEqualToAnchor:contentView.centerYAnchor];
 
   _alignImageWithContentViewFirstBaselineAnchorConstraint =
-      [_imageView.centerYAnchor
+      [_imageView.firstBaselineAnchor
           constraintEqualToAnchor:contentView.firstBaselineAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_imageView.widthAnchor constraintEqualToConstant:kTableViewIconImageSize],
-    [_imageView.heightAnchor constraintEqualToAnchor:_imageView.widthAnchor],
     [_imageView.leadingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing],
     _alignImageWithContentViewCenterYConstraint,
     [_imageView.topAnchor
         constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
-                                    constant:kTableViewVerticalSpacing],
+                                    constant:
+                                        kTableViewTwoLabelsCellVerticalSpacing],
     [contentView.trailingAnchor
         constraintEqualToAnchor:textStackView.trailingAnchor
                        constant:kTableViewHorizontalSpacing],
@@ -161,16 +164,11 @@
       alignImageWithFirstBaseline;
 }
 
-- (void)setImageViewContentMode:(UIViewContentMode)contentMode {
-  self.imageView.contentMode = contentMode;
-}
-
 #pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
   [self alignImageWithFirstLineOfText:NO];
-  self.imageView.contentMode = UIViewContentModeCenter;
 }
 
 #pragma mark - UIAccessibility
