@@ -63,6 +63,15 @@
                       android:process=":webview_apk" />  {# Explicit process required for monochrome compatibility. #}
             <!-- End of WebView Developer UI Activities -->
 
+            <!-- Don't actually try to launch with this alias: it only exists so we can query its enabled state. -->
+            <!-- If you change this component make sure to update the corresponding copy in
+                 test/shell/AndroidManifest.xml -->
+            <activity-alias android:name="org.chromium.android_webview.SafeModeState"
+                      android:targetActivity="org.chromium.android_webview.devui.MainActivity"
+                      android:visibleToInstantApps="true"
+                      android:enabled="false"
+                      android:process=":webview_apk" />  {# Explicit process required for monochrome compatibility. #}
+
             <activity android:name="org.chromium.android_webview.nonembedded.LicenseActivity"
                       android:label="@string/license_activity_title"
                       android:process=":webview_apk"  {# Explicit process required for monochrome compatibility. #}
@@ -87,6 +96,14 @@
                       android:visibleToInstantApps="true"
                       android:exported="true"
                       android:authorities="{{ manifest_package }}.DeveloperModeContentProvider"
+                      android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
+                      tools:ignore="ExportedContentProvider" />
+            <!-- If you change this component make sure to update the corresponding copy in
+                 test/shell/AndroidManifest.xml-->
+            <provider android:name="org.chromium.android_webview.services.SafeModeContentProvider"
+                      android:visibleToInstantApps="true"
+                      android:exported="true"
+                      android:authorities="{{ manifest_package }}.SafeModeContentProvider"
                       android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                       tools:ignore="ExportedContentProvider" />
             <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
@@ -119,6 +136,10 @@
                          android:exported="true"
                          android:process=":webview_service" />  {# Explicit process required for monochrome compatibility. #}
                 <service android:name="org.chromium.android_webview.services.DeveloperUiService"
+                         android:exported="true"
+                         android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
+                         tools:ignore="ExportedService" />
+                <service android:name="org.chromium.android_webview.services.SafeModeService"
                          android:exported="true"
                          android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                          tools:ignore="ExportedService" />

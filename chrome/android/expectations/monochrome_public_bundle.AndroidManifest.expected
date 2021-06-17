@@ -824,6 +824,13 @@
         android:name="com.google.android.apps.chrome.webapps.WebappManager"
         android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity">
     </activity-alias>  # DIFF-ANCHOR: 8e23336d
+    <activity-alias  # DIFF-ANCHOR: da85c28e
+        android:name="org.chromium.android_webview.SafeModeState"
+        android:enabled="false"
+        android:process=":webview_apk"
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
+        android:visibleToInstantApps="true">
+    </activity-alias>  # DIFF-ANCHOR: da85c28e
     <activity-alias  # DIFF-ANCHOR: b7cc06e9
         android:name="org.chromium.android_webview.devui.DeveloperModeState"
         android:enabled="false"
@@ -899,6 +906,13 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </provider>  # DIFF-ANCHOR: bfe37944
+    <provider  # DIFF-ANCHOR: ecfff997
+        android:name="org.chromium.android_webview.services.SafeModeContentProvider"
+        android:authorities="$PACKAGE.SafeModeContentProvider"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </provider>  # DIFF-ANCHOR: ecfff997
     <provider  # DIFF-ANCHOR: b73a881a
         android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
         android:authorities="$PACKAGE.DownloadFileProvider"
@@ -1135,6 +1149,11 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: eecf2fee
+    <service  # DIFF-ANCHOR: 47046f1b
+        android:name="org.chromium.android_webview.services.SafeModeService"
+        android:exported="true"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: 47046f1b
     <service  # DIFF-ANCHOR: dc926e35
         android:name="org.chromium.android_webview.services.VariationsSeedServer"
         android:exported="true"

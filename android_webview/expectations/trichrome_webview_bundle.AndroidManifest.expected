@@ -55,6 +55,13 @@
       </intent-filter>  # DIFF-ANCHOR: 23298d3b
       <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED" android:value="true"/>
     </activity>  # DIFF-ANCHOR: aeabab17
+    <activity-alias  # DIFF-ANCHOR: da85c28e
+        android:name="org.chromium.android_webview.SafeModeState"
+        android:enabled="false"
+        android:process=":webview_apk"
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
+        android:visibleToInstantApps="true">
+    </activity-alias>  # DIFF-ANCHOR: da85c28e
     <activity-alias  # DIFF-ANCHOR: b7cc06e9
         android:name="org.chromium.android_webview.devui.DeveloperModeState"
         android:enabled="false"
@@ -80,6 +87,13 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </provider>  # DIFF-ANCHOR: bfe37944
+    <provider  # DIFF-ANCHOR: ecfff997
+        android:name="org.chromium.android_webview.services.SafeModeContentProvider"
+        android:authorities="$PACKAGE.SafeModeContentProvider"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </provider>  # DIFF-ANCHOR: ecfff997
     <receiver  # DIFF-ANCHOR: 0a6f8fa5
         android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
         android:exported="false">
@@ -132,6 +146,11 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: eecf2fee
+    <service  # DIFF-ANCHOR: 47046f1b
+        android:name="org.chromium.android_webview.services.SafeModeService"
+        android:exported="true"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: 47046f1b
     <service  # DIFF-ANCHOR: dc926e35
         android:name="org.chromium.android_webview.services.VariationsSeedServer"
         android:exported="true"

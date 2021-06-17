@@ -35,6 +35,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwSwitches;
@@ -42,6 +43,7 @@ import org.chromium.android_webview.common.CommandLineUtil;
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
+import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -64,6 +66,7 @@ import org.chromium.content_public.browser.LGEmailActionModeWorkaround;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
@@ -394,6 +397,22 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             if (flagOverrides != null) {
                 AwContentsStatics.logFlagOverridesWithNative(flagOverrides);
+            }
+
+            try {
+                SafeModeController controller = SafeModeController.getInstance();
+
+                controller.registerActions(BrowserSafeModeActionList.sList);
+                boolean isSafeModeEnabled = controller.isSafeModeEnabled(webViewPackageName);
+                if (isSafeModeEnabled) {
+                    Set<String> actions = controller.queryActions(webViewPackageName);
+                    Log.w(TAG, "WebViewSafeMode is enabled: received %d SafeModeActions",
+                            actions.size());
+                    controller.executeActions(actions);
+                }
+            } catch (Throwable t) {
+                // Don't let SafeMode crash WebView. Instead just log the error.
+                Log.e(TAG, "WebViewSafeMode threw exception: ", t);
             }
 
             mAwInit.startVariationsInit();
