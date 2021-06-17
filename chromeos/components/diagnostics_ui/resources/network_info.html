@@ -4,7 +4,8 @@
 <div id="infoElementContainer">
   <template is="dom-if"
       if="[[isWifiNetwork_(network.type)]]">
-    <wifi-info id="wifiInfo" network="[[network]]">
+    <wifi-info show-ip-config-properties="[[showIpConfigProperties]]"
+        id="wifiInfo" network="[[network]]">
     </wifi-info>
   </template>
   <template is="dom-if"

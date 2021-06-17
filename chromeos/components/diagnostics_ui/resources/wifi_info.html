@@ -1,26 +1,58 @@
 <style include="diagnostics-shared diagnostics-fonts">
 </style>
-
-<div id="wifiInfoContainer" class="horizontal-data-point-container">
-  <div class="data-point-container">
-    <data-point id="name" header="name"
+<div id="wifiInfoContainer">
+  <div hidden$="[[showIpConfigProperties]]"
+      class="horizontal-data-point-container">
+    <div class="data-point-container">
+      <data-point id="ipAddress" header="IP Address"
+        value="[[network.ipConfig.ipAddress]]"
+        orientation="horizontal">
+      </data-point>
+      <data-point id="name" header="name"
       value="[[network.name]]"
       orientation="horizontal">
-    </data-point>
+      </data-point>
+    </div>
+    <div class="divider-horizontal"></div>
+    <div class="data-point-container">
+        <data-point id="bssid" header="bssid"
+        value="[[network.typeProperties.wifi.bssid]]"
+        orientation="horizontal">
+      </data-point>
+      <data-point id="ssid" header="ssid"
+        value="[[network.typeProperties.wifi.ssid]]"
+        orientation="horizontal">
+      </data-point>
+      <data-point id="ipAddress" header="IP Address"
+        value="[[network.ipConfig.ipAddress]]"
+        orientation="horizontal">
+      </data-point>
+    </div>
   </div>
-  <div class="divider-horizontal"></div>
-  <div class="data-point-container">
-    <data-point id="bssid" header="bssid"
-      value="[[network.typeProperties.wifi.bssid]]"
-      orientation="horizontal">
-    </data-point>
-    <data-point id="ssid" header="ssid"
-      value="[[network.typeProperties.wifi.ssid]]"
-      orientation="horizontal">
-    </data-point>
-    <data-point id="ipAddress" header="IP Address"
-      value="[[network.ipConfig.ipAddress]]"
-      orientation="horizontal">
+  <div hidden$="[[!showIpConfigProperties]]"
+      class="horizontal-data-point-container">
+    <div class="data-point-container">
+      <data-point id="macAddress" header="MAC Address"
+        value="[[network.macAddress]]"
+        orientation="horizontal">
+      </data-point>
+      <data-point id="gateway" header="Gateway"
+        value="[[network.ipConfig.gateway]]"
+        orientation="horizontal">
+      </data-point>
+    </div>
+    <div class="divider-horizontal"></div>
+    <div class="data-point-container">
+      <data-point id="nameServers" header="Name Servers"
+        value="[[network.ipConfig.gateway]]"
+        orientation="horizontal">
+      </data-point>
+      <!-- TODO(michaelcheco): Use routing prefix to get value for
+      subnet mask. -->
+      <data-point id="subnetMask" header="Subnet Mask"
+        value="[[network.ipConfig.routingPrefix]]"
+        orientation="horizontal">
+      </data-point>
     </div>
   </div>
 </div>

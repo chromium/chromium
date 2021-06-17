@@ -12,7 +12,7 @@
       aria-hidden="true">
     Default connection
   </div>
-  <network-info network="[[network]]" slot="body" guid="[[activeGuid]]"></network-info>
+  <network-info network="[[network]]" slot="body"></network-info>
   <routine-section slot="left-panel" routines="[[routines_]]"
   is-test-running="{{isTestRunning}}"
   run-tests-button-text="Run Network test"
@@ -22,4 +22,12 @@
   hide-routine-status="true"
   opened="true">
 </routine-section>
+<cr-expand-button slot="routines" expanded="{{expanded_}}">
+  <span aria-hidden="true">IP Configuration</span>
+</cr-expand-button>
+<template is="dom-if" if="[[expanded_]]">
+  <network-info slot="routines" show-ip-config-properties="true"
+    network="[[network]]">
+  </network-info>
+</template>
 </diagnostics-card>

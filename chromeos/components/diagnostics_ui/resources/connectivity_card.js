@@ -8,7 +8,7 @@ import './diagnostics_shared_css.js';
 import './network_info.js';
 import './routine_section.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
@@ -82,6 +82,12 @@ Polymer({
     networkType_: {
       type: String,
       value: '',
+    },
+
+    /** @private {boolean} */
+    expanded_: {
+      type: Boolean,
+      value: false,
     },
   },
 

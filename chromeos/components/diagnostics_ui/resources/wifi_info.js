@@ -25,6 +25,12 @@ Polymer({
     network: {
       type: Object,
     },
+
+    /** @type {boolean} */
+    showIpConfigProperties: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
