@@ -454,6 +454,8 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
   VerifyAndResetCallExpectations();
 
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsUsingDefaultAvatar);
+  TEST_STRING_ACCESSORS(ProfileAttributesEntry, entry,
+                        LastDownloadedGAIAPictureUrlWithSize);
 }
 
 TEST_F(ProfileAttributesStorageTest, EntryInternalAccessors) {

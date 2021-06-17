@@ -101,6 +101,8 @@ class ProfileAttributesEntry {
   bool IsUsingGAIAPicture() const;
   // Returns true if a GAIA picture has been loaded or has failed to load.
   bool IsGAIAPictureLoaded() const;
+  // Returns the last downloaded GAIA picture URL with size.
+  std::string GetLastDownloadedGAIAPictureUrlWithSize() const;
   // Returns true if the profile is signed in as a supervised user.
   bool IsSupervised() const;
   // Returns true if the profile is signed in as a child account.
@@ -164,6 +166,8 @@ class ProfileAttributesEntry {
   void SetGAIAGivenName(const std::u16string& name);
   void SetGAIAPicture(const std::string& image_url_with_size, gfx::Image image);
   void SetIsUsingGAIAPicture(bool value);
+  void SetLastDownloadedGAIAPictureUrlWithSize(
+      const std::string& image_url_with_size);
   void SetSignedInWithCredentialProvider(bool value);
   // Only non-omitted profiles can be set as non-ephemeral. It's the
   // responsibility of the caller to make sure that the entry is set as

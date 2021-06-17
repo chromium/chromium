@@ -55,6 +55,10 @@ const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
 
+// Avatar info.
+const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
+    "last_downloaded_gaia_picture_url_with_size";
+
 // Profile colors info.
 const char kProfileHighlightColorKey[] = "profile_highlight_color";
 const char kDefaultAvatarFillColorKey[] = "default_avatar_fill_color";
@@ -355,6 +359,11 @@ bool ProfileAttributesEntry::IsGAIAPictureLoaded() const {
       profile_index());
 }
 
+std::string ProfileAttributesEntry::GetLastDownloadedGAIAPictureUrlWithSize()
+    const {
+  return GetString(kLastDownloadedGAIAPictureUrlWithSizeKey);
+}
+
 bool ProfileAttributesEntry::IsSupervised() const {
   return !GetSupervisedUserId().empty();
 }
@@ -536,6 +545,11 @@ void ProfileAttributesEntry::SetGAIAPicture(
 void ProfileAttributesEntry::SetIsUsingGAIAPicture(bool value) {
   profile_info_cache_->SetIsUsingGAIAPictureOfProfileAtIndex(
       profile_index(), value);
+}
+
+void ProfileAttributesEntry::SetLastDownloadedGAIAPictureUrlWithSize(
+    const std::string& image_url_with_size) {
+  SetString(kLastDownloadedGAIAPictureUrlWithSizeKey, image_url_with_size);
 }
 
 void ProfileAttributesEntry::SetSignedInWithCredentialProvider(bool value) {
