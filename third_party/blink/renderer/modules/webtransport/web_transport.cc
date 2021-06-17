@@ -78,8 +78,9 @@ bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
 // Sends a datagram on write().
 class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
  public:
-  DatagramUnderlyingSink(WebTransport* web_transport, int high_water_mark)
-      : web_transport_(web_transport), high_water_mark_(high_water_mark) {}
+  DatagramUnderlyingSink(WebTransport* web_transport,
+                         DatagramDuplexStream* datagrams)
+      : web_transport_(web_transport), datagrams_(datagrams) {}
 
   ScriptPromise start(ScriptState* script_state,
                       WritableStreamDefaultController*,
@@ -132,6 +133,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(web_transport_);
+    visitor->Trace(datagrams_);
     visitor->Trace(pending_datagrams_);
     UnderlyingSinkBase::Trace(visitor);
   }
@@ -152,7 +154,9 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
     web_transport_->transport_remote_->SendDatagram(
         data, WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
                         WrapWeakPersistent(this)));
-    if (pending_datagrams_.size() < static_cast<wtf_size_t>(high_water_mark_)) {
+    int high_water_mark = datagrams_->outgoingHighWaterMark();
+    DCHECK_GT(high_water_mark, 0);
+    if (pending_datagrams_.size() < static_cast<wtf_size_t>(high_water_mark)) {
       // In this case we pretend that the datagram is processed immediately, to
       // get more requests from the stream.
       return ScriptPromise::CastUndefined(web_transport_->script_state_);
@@ -170,7 +174,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
   }
 
   Member<WebTransport> web_transport_;
-  const int high_water_mark_;
+  const Member<DatagramDuplexStream> datagrams_;
   HeapDeque<Member<ScriptPromiseResolver>> pending_datagrams_;
 };
 
@@ -550,6 +554,7 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
 }
 
 void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
+  // TODO(ricea): Will this crash if we are not connected yet?
   transport_remote_->SetOutgoingDatagramExpirationDuration(
       base::TimeDelta::FromMillisecondsD(duration));
 }
@@ -758,7 +763,13 @@ void WebTransport::Init(const String& url,
 
   probe::WebTransportCreated(execution_context, inspector_transport_id_, url_);
 
-  datagrams_ = MakeGarbageCollected<DatagramDuplexStream>(this);
+  int outgoing_datagrams_high_water_mark = 1;
+  if (options.hasDatagramWritableHighWaterMark()) {
+    outgoing_datagrams_high_water_mark =
+        options.datagramWritableHighWaterMark();
+  }
+  datagrams_ = MakeGarbageCollected<DatagramDuplexStream>(
+      this, outgoing_datagrams_high_water_mark);
 
   // The choice of 1 for the ReadableStream means that it will queue one
   // datagram even when read() is not being called. Unfortunately, that datagram
@@ -767,11 +778,6 @@ void WebTransport::Init(const String& url,
   received_datagrams_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state_,
       MakeGarbageCollected<DatagramUnderlyingSource>(script_state_, this), 1);
-  int outgoing_datagrams_high_water_mark = 1;
-  if (options.hasDatagramWritableHighWaterMark()) {
-    outgoing_datagrams_high_water_mark =
-        options.datagramWritableHighWaterMark();
-  }
 
   // We create a WritableStream with high water mark 1 and try to mimic the
   // given high water mark in the Sink, from two reasons:
@@ -783,9 +789,7 @@ void WebTransport::Init(const String& url,
   //    datagram is added to the queue.
   outgoing_datagrams_ = WritableStream::CreateWithCountQueueingStrategy(
       script_state_,
-      MakeGarbageCollected<DatagramUnderlyingSink>(
-          this, outgoing_datagrams_high_water_mark),
-      1);
+      MakeGarbageCollected<DatagramUnderlyingSink>(this, datagrams_), 1);
 
   received_streams_underlying_source_ =
       StreamVendingUnderlyingSource::CreateWithVendor<ReceiveStreamVendor>(

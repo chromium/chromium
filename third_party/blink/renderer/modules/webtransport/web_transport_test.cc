@@ -550,11 +550,13 @@ TEST_F(WebTransportTest, GarbageCollection) {
 
   WeakPersistent<WebTransport> web_transport;
 
+  auto* isolate = scope.GetIsolate();
+
   {
     // The streams created when creating a WebTransport create some v8 handles.
     // To ensure these are collected, we need to create a handle scope. This is
     // not a problem for garbage collection in normal operation.
-    v8::HandleScope handle_scope(scope.GetIsolate());
+    v8::HandleScope handle_scope(isolate);
     web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
   }
 
@@ -564,7 +566,10 @@ TEST_F(WebTransportTest, GarbageCollection) {
 
   EXPECT_TRUE(web_transport);
 
-  web_transport->close(nullptr);
+  {
+    v8::HandleScope handle_scope(isolate);
+    web_transport->close(nullptr);
+  }
 
   test::RunPendingTasks();
 
@@ -929,12 +934,14 @@ TEST_F(WebTransportTest, SendStreamGarbageCollection) {
   WeakPersistent<WebTransport> web_transport;
   WeakPersistent<SendStream> send_stream;
 
+  auto* isolate = scope.GetIsolate();
+
   {
     // The streams created when creating a WebTransport or SendStream create
     // some v8 handles. To ensure these are collected, we need to create a
     // handle scope. This is not a problem for garbage collection in normal
     // operation.
-    v8::HandleScope handle_scope(scope.GetIsolate());
+    v8::HandleScope handle_scope(isolate);
 
     web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
     send_stream = CreateSendStreamSuccessfully(scope, web_transport);
@@ -945,7 +952,10 @@ TEST_F(WebTransportTest, SendStreamGarbageCollection) {
   EXPECT_TRUE(web_transport);
   EXPECT_TRUE(send_stream);
 
-  web_transport->close(nullptr);
+  {
+    v8::HandleScope handle_scope(isolate);
+    web_transport->close(nullptr);
+  }
 
   test::RunPendingTasks();
 

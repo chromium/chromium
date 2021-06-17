@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_DATAGRAM_DUPLEX_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_DATAGRAM_DUPLEX_STREAM_H_
 
+#include <stdint.h>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
@@ -17,7 +19,6 @@ class ReadableStream;
 class WritableStream;
 
 constexpr int32_t kDefaultIncomingHighWaterMark = 1;
-constexpr int32_t kDefaultOutgoingHighWaterMark = 1;
 
 class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -27,8 +28,10 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   // readable and writable separately.
   // TODO(ricea): Once the legacy getters are removed from WebTransport, store
   // the readable and writable in this object.
-  explicit DatagramDuplexStream(WebTransport* web_transport)
-      : web_transport_(web_transport) {}
+  explicit DatagramDuplexStream(WebTransport* web_transport,
+                                int32_t initial_outgoing_high_water_mark)
+      : web_transport_(web_transport),
+        outgoing_high_water_mark_(initial_outgoing_high_water_mark) {}
 
   ReadableStream* readable() const {
     return web_transport_->datagramReadable();
@@ -61,7 +64,7 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   absl::optional<double> incoming_max_age_;
   absl::optional<double> outgoing_max_age_;
   int32_t incoming_high_water_mark_ = kDefaultIncomingHighWaterMark;
-  int32_t outgoing_high_water_mark_ = kDefaultOutgoingHighWaterMark;
+  int32_t outgoing_high_water_mark_;
 };
 
 }  // namespace blink

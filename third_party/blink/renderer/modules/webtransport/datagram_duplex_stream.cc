@@ -15,6 +15,10 @@ void DatagramDuplexStream::setIncomingMaxAge(absl::optional<double> max_age) {
 void DatagramDuplexStream::setOutgoingMaxAge(absl::optional<double> max_age) {
   if (!max_age.has_value() || max_age.value() > 0) {
     outgoing_max_age_ = max_age;
+
+    // WebTransport uses 0.0 to signal "implementation default".
+    web_transport_->setDatagramWritableQueueExpirationDuration(
+        max_age.value_or(0.0));
   }
 }
 

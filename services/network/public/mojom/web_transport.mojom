@@ -69,7 +69,8 @@ interface WebTransport {
   AbortStream(uint32 stream_id, uint64 code);
 
   // Sets the duration which determines whether an outgoing datagram should be
-  // discarded due to being in the queue for too long.
+  // discarded due to being in the queue for too long. A duration of 0 means to
+  // use an implementation-defined default.
   SetOutgoingDatagramExpirationDuration(mojo_base.mojom.TimeDelta duration);
 };
 

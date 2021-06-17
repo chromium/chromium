@@ -172,32 +172,18 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
 
 // This class sets up a connected blink::WebTransport object using a
 // StubWebTransport and provides access to both.
-class ScopedWebTransport : public mojom::blink::WebTransportConnector {
+class ScopedWebTransport {
   STACK_ALLOCATED();
 
  public:
-  // For convenience, this class does work in the constructor. This is okay
-  // because it is only used for testing.
-  explicit ScopedWebTransport(const V8TestingScope& scope)
-      : browser_interface_broker_(
-            &scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
-    browser_interface_broker_->SetBinderForTesting(
-        mojom::blink::WebTransportConnector::Name_,
-        base::BindRepeating(&ScopedWebTransport::BindConnector,
-                            weak_ptr_factory_.GetWeakPtr()));
-    web_transport_ = WebTransport::Create(
-        scope.GetScriptState(), "https://example.com/",
-        MakeGarbageCollected<WebTransportOptions>(), ASSERT_NO_EXCEPTION);
-
-    test::RunPendingTasks();
+  // This constructor runs the event loop.
+  explicit ScopedWebTransport(const V8TestingScope& scope) {
+    creator_.Init(scope.GetScriptState(),
+                  base::BindRepeating(&ScopedWebTransport::CreateStub,
+                                      weak_ptr_factory_.GetWeakPtr()));
   }
 
-  ~ScopedWebTransport() override {
-    browser_interface_broker_->SetBinderForTesting(
-        mojom::blink::WebTransportConnector::Name_, {});
-  }
-
-  WebTransport* GetWebTransport() const { return web_transport_; }
+  WebTransport* GetWebTransport() const { return creator_.GetWebTransport(); }
   StubWebTransport* Stub() const { return stub_.get(); }
 
   void ResetStub() { stub_.reset(); }
@@ -205,8 +191,8 @@ class ScopedWebTransport : public mojom::blink::WebTransportConnector {
   BidirectionalStream* CreateBidirectionalStream(const V8TestingScope& scope) {
     auto* script_state = scope.GetScriptState();
     ScriptPromise bidirectional_stream_promise =
-        web_transport_->createBidirectionalStream(script_state,
-                                                  ASSERT_NO_EXCEPTION);
+        GetWebTransport()->createBidirectionalStream(script_state,
+                                                     ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
 
     tester.WaitUntilSettled();
@@ -221,7 +207,7 @@ class ScopedWebTransport : public mojom::blink::WebTransportConnector {
   BidirectionalStream* RemoteCreateBidirectionalStream(
       const V8TestingScope& scope) {
     stub_->CreateRemote();
-    ReadableStream* streams = web_transport_->incomingBidirectionalStreams();
+    ReadableStream* streams = GetWebTransport()->incomingBidirectionalStreams();
 
     v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
 
@@ -232,45 +218,15 @@ class ScopedWebTransport : public mojom::blink::WebTransportConnector {
     return bidirectional_stream;
   }
 
-  // Implementation of mojom::blink::WebTransportConnector.
-  void Connect(
-      const KURL&,
-      Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
-          fingerprints,
-      mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
-          pending_handshake_client) override {
-    mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>
-        handshake_client(std::move(pending_handshake_client));
-
-    mojo::PendingRemote<network::mojom::blink::WebTransport>
-        web_transport_to_pass;
-    mojo::PendingRemote<network::mojom::blink::WebTransportClient>
-        client_remote;
-
+ private:
+  void CreateStub(mojo::PendingRemote<network::mojom::blink::WebTransport>&
+                      web_transport_to_pass) {
     stub_ = std::make_unique<StubWebTransport>(
         web_transport_to_pass.InitWithNewPipeAndPassReceiver());
-
-    handshake_client->OnConnectionEstablished(
-        std::move(web_transport_to_pass),
-        client_remote.InitWithNewPipeAndPassReceiver());
-    client_remote_.Bind(std::move(client_remote));
   }
 
- private:
-  void BindConnector(mojo::ScopedMessagePipeHandle handle) {
-    connector_receiver_.Bind(
-        mojo::PendingReceiver<mojom::blink::WebTransportConnector>(
-            std::move(handle)));
-  }
-
-  // |browser_interface_broker_| is cached here because we need to use it in the
-  // destructor. This means ScopedWebTransport must always be destroyed before
-  // the V8TestingScope object that owns the BrowserInterfaceBrokerProxy.
-  const BrowserInterfaceBrokerProxy* browser_interface_broker_;
-  WebTransport* web_transport_;
+  TestWebTransportCreator creator_;
   std::unique_ptr<StubWebTransport> stub_;
-  mojo::Remote<network::mojom::blink::WebTransportClient> client_remote_;
-  mojo::Receiver<mojom::blink::WebTransportConnector> connector_receiver_{this};
 
   base::WeakPtrFactory<ScopedWebTransport> weak_ptr_factory_{this};
 };

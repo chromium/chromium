@@ -6,12 +6,19 @@
 
 #include "base/check.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -53,6 +60,57 @@ v8::Local<v8::Value> ReadValueFromStream(const V8TestingScope& scope,
           .ToLocal(&v8value));
   EXPECT_FALSE(done);
   return v8value;
+}
+
+TestWebTransportCreator::TestWebTransportCreator() = default;
+
+void TestWebTransportCreator::Init(ScriptState* script_state,
+                                   CreateStubCallback create_stub) {
+  browser_interface_broker_ =
+      &ExecutionContext::From(script_state)->GetBrowserInterfaceBroker();
+  create_stub_ = std::move(create_stub);
+  browser_interface_broker_->SetBinderForTesting(
+      mojom::blink::WebTransportConnector::Name_,
+      WTF::BindRepeating(&TestWebTransportCreator::BindConnector,
+                         weak_ptr_factory_.GetWeakPtr()));
+  web_transport_ = WebTransport::Create(
+      script_state, "https://example.com/",
+      MakeGarbageCollected<WebTransportOptions>(), ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+}
+
+TestWebTransportCreator::~TestWebTransportCreator() {
+  browser_interface_broker_->SetBinderForTesting(
+      mojom::blink::WebTransportConnector::Name_, {});
+}
+
+// Implementation of mojom::blink::WebTransportConnector.
+void TestWebTransportCreator::Connect(
+    const KURL&,
+    Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>,
+    mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
+        pending_handshake_client) {
+  mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>
+      handshake_client(std::move(pending_handshake_client));
+
+  mojo::PendingRemote<network::mojom::blink::WebTransport>
+      web_transport_to_pass;
+
+  create_stub_.Run(web_transport_to_pass);
+
+  mojo::PendingRemote<network::mojom::blink::WebTransportClient> client_remote;
+  handshake_client->OnConnectionEstablished(
+      std::move(web_transport_to_pass),
+      client_remote.InitWithNewPipeAndPassReceiver());
+  client_remote_.Bind(std::move(client_remote));
+}
+
+void TestWebTransportCreator::BindConnector(
+    mojo::ScopedMessagePipeHandle handle) {
+  connector_receiver_.Bind(
+      mojo::PendingReceiver<mojom::blink::WebTransportConnector>(
+          std::move(handle)));
 }
 
 }  // namespace blink
