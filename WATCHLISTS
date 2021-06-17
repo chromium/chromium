@@ -2015,6 +2015,13 @@
     'weblayer_ssl': {
         'filepath': 'weblayer/browser/ssl*',
     },
+    'webotp': {
+        'filepath': 'third_party/blink/renderer/modules/credentialmanager/credentials_container\.cc'\
+                    '|third_party/blink/renderer/modules/credentialmanager/.*otp'\
+                    '|third_party/blink/public/mojom/sms/'\
+                    '|content/browser/.*sms/'\
+                    '|chrome/browser/sharing/.*sms',
+    },
     'webrtc_browser_tests': {
       'filepath': 'chrome/browser/media/.*webrtc.*browsertest|'\
                   'content/browser/media/.*webrtc.*browsertest',
@@ -2851,6 +2858,7 @@
     'weblayer': ['cricke+watch@chromium.org'],
     'weblayer_safe_browsing' : ['carlosil+watch@chromium.org'],
     'weblayer_ssl' : ['carlosil+watch@chromium.org'],
+    'webotp': ['yigu+watch@chromium.org'],
     'webrtc_browser_tests': ['phoglund+watch@chromium.org'],
     'website_settings': ['dullweber+watch@chromium.org',
                          'msramek+watch@chromium.org'],
