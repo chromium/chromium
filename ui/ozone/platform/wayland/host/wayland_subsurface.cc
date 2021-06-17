@@ -118,7 +118,6 @@ void WaylandSubsurface::CreateSubsurface() {
 
 void WaylandSubsurface::ConfigureAndShowSurface(
     gfx::OverlayTransform transform,
-    const gfx::RectF& src_rect,
     const gfx::Rect& bounds_rect,
     int32_t buffer_scale,
     bool enable_blend,
@@ -143,9 +142,6 @@ void WaylandSubsurface::ConfigureAndShowSurface(
   } else if (reference_above) {
     wl_subsurface_place_below(subsurface_.get(), reference_above->surface());
   }
-
-  wayland_surface()->SetViewportSource(src_rect);
-  wayland_surface()->SetViewportDestination(bounds_rect.size());
 }
 
 }  // namespace ui

@@ -780,9 +780,13 @@ bool WaylandWindow::CommitOverlays(
           reference_above = (*std::next(iter))->wayland_surface();
         }
         (*iter)->ConfigureAndShowSurface(
-            (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
-            (*overlay_iter)->bounds_rect, root_surface()->buffer_scale(),
-            (*overlay_iter)->enable_blend, nullptr, reference_above);
+            (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
+            root_surface()->buffer_scale(), (*overlay_iter)->enable_blend,
+            nullptr, reference_above);
+        (*iter)->wayland_surface()->SetViewportSource(
+            (*overlay_iter)->crop_rect);
+        (*iter)->wayland_surface()->SetViewportDestination(
+            (*overlay_iter)->bounds_rect.size());
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
             /*wait_for_frame_callback=*/true,
@@ -811,9 +815,13 @@ bool WaylandWindow::CommitOverlays(
           reference_below = (*std::prev(iter))->wayland_surface();
         }
         (*iter)->ConfigureAndShowSurface(
-            (*overlay_iter)->transform, (*overlay_iter)->crop_rect,
-            (*overlay_iter)->bounds_rect, root_surface()->buffer_scale(),
-            (*overlay_iter)->enable_blend, reference_below, nullptr);
+            (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
+            root_surface()->buffer_scale(), (*overlay_iter)->enable_blend,
+            reference_below, nullptr);
+        (*iter)->wayland_surface()->SetViewportSource(
+            (*overlay_iter)->crop_rect);
+        (*iter)->wayland_surface()->SetViewportDestination(
+            (*overlay_iter)->bounds_rect.size());
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
             /*wait_for_frame_callback=*/true,
@@ -855,11 +863,15 @@ bool WaylandWindow::CommitOverlays(
     //   would have incorrect size b/c it is fullscreen overlay scheduled at
     //   z_order=0.
     primary_subsurface_->ConfigureAndShowSurface(
-        (*split)->transform, (*split)->crop_rect,
-        (*split)->crop_rect == gfx::RectF(1.f, 1.f) ? gfx::Rect()
-                                                    : (*split)->bounds_rect,
+        (*split)->transform, (*split)->bounds_rect,
         root_surface()->buffer_scale(), (*split)->enable_blend, nullptr,
         nullptr);
+    primary_subsurface_->wayland_surface()->SetViewportSource(
+        (*split)->crop_rect);
+    primary_subsurface_->wayland_surface()->SetViewportDestination(
+        (*split)->crop_rect == gfx::RectF(1.f, 1.f)
+            ? gfx::Size()
+            : (*split)->bounds_rect.size());
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
         (*split)->damage_region,
