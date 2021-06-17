@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS serviceworker-report-only
+PASS Same-origin 'fetch()'.
+PASS Cross-origin 'fetch()'.
+PASS Same-origin => cross-origin 'fetch()'.
+FAIL connect-src-self-report-only assert_array_equals: Reports do not match lengths differ, expected array ["https://web-platform.test:8444/common/redirect-opt-in.py?status=307&location=https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch"] length 2, got [] length 0
+Harness: the test ran to completion.
+

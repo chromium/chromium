@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS serviceworker-script-src
+PASS serviceworker-script-src 1
+PASS serviceworker-script-src 2
+PASS Cross-origin `importScripts()` not blocked in https: withour CSP
+PASS `eval()` not blocked in https: without CSP
+PASS `setTimeout([string])` not blocked in https: without CSP
+PASS Cross-origin `importScripts()` blocked in https: with script-src 'self'
+PASS `eval()` blocked in https: with script-src 'self'
+PASS `setTimeout([string])` blocked in https: with script-src 'self'
+FAIL Reports are sent for https: with script-src 'self' assert_array_equals: Reports do not match lengths differ, expected array ["eval", "eval", "eval", "https://www.web-platform.test:8445/content-security-policy/support/var-a.js"] length 4, got [] length 0
+PASS Cross-origin `importScripts()` blocked in https: with default-src 'self'
+PASS `eval()` blocked in https: with default-src 'self'
+PASS `setTimeout([string])` blocked in https: with default-src 'self'
+FAIL Reports are sent for https: with default-src 'self' assert_array_equals: Reports do not match lengths differ, expected array ["eval", "eval", "eval", "https://www.web-platform.test:8445/content-security-policy/support/var-a.js"] length 4, got [] length 0
+Harness: the test ran to completion.
+

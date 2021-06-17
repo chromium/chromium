@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Same-origin 'fetch()'.
+PASS Same-origin XHR.
+PASS Cross-origin 'fetch()'.
+PASS Cross-origin XHR.
+PASS Same-origin => cross-origin 'fetch()'.
+FAIL connect-src-self-report-only assert_array_equals: Reports do not match lengths differ, expected array ["http://web-platform.test:8001/common/redirect-opt-in.py?status=307&location=https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-fetch", "https://www.web-platform.test:8445/content-security-policy/support/resource.py?cross-origin-xhr"] length 3, got [] length 0
+Harness: the test ran to completion.
+

@@ -1,72 +1,117 @@
 importScripts("{{location[server]}}/resources/testharness.js");
 importScripts("{{location[server]}}/content-security-policy/support/testharness-helper.js");
 
-function new_spv_promise(test, url) {
-  return new Promise(resolve => {
-    self.addEventListener("securitypolicyviolation", test.step_func(e => {
-      if (e.blockedURI !== url)
-        return;
-      assert_equals(e.disposition, "report");
-      resolve();
-    }));
-  });
-}
+let base_same_origin_url =
+      "{{location[server]}}/content-security-policy/support/resource.py";
 
 // Same-origin
 promise_test(t => {
-  var url = "{{location[server]}}/content-security-policy/support/resource.py?same-origin-fetch";
+  let url = `${base_same_origin_url}?same-origin-fetch`;
   assert_no_csp_event_for_url(t, url);
 
   return fetch(url)
       .then(t.step_func(r => assert_equals(r.status, 200)));
-}, "Same-origin 'fetch()' in " + self.location.protocol + self.location.search);
+}, "Same-origin 'fetch()'.");
 
-promise_test(t => {
-  var url = "{{location[server]}}/content-security-policy/support/resource.py?same-origin-xhr";
-  assert_no_csp_event_for_url(t, url);
+// XHR is not available in service workers.
+if (self.XMLHttpRequest) {
+  promise_test(t => {
+    let url = `${base_same_origin_url}?same-origin-xhr`;
+    assert_no_csp_event_for_url(t, url);
 
-  return new Promise((resolve, reject) => {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.onload = t.step_func(resolve);
-    xhr.onerror = t.step_func(_ => reject("xhr.open should success."));
-    xhr.send();
-  });
-}, "Same-origin XHR in " + self.location.protocol + self.location.search);
+    return new Promise((resolve, reject) => {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.onload = resolve;
+      xhr.onerror = _ => reject("xhr.open should success.");
+      xhr.send();
+    });
+  }, "Same-origin XHR.");
+}
+
+let base_cross_origin_url =
+      "https://{{hosts[][www]}}:{{ports[https][1]}}" +
+      "/content-security-policy/support/resource.py";
+let fetch_cross_origin_url = `${base_cross_origin_url}?cross-origin-fetch`;
 
 // Cross-origin
 promise_test(t => {
-  var url = "http://{{domains[www]}}:{{ports[http][1]}}/content-security-policy/support/resource.py?cross-origin-fetch";
+  let url = fetch_cross_origin_url;
 
   return Promise.all([
-    new_spv_promise(t, url),
+    waitUntilCSPEventForURL(t, url),
     fetch(url)
   ]);
-}, "Cross-origin 'fetch()' in " + self.location.protocol + self.location.search);
+}, "Cross-origin 'fetch()'.");
 
-promise_test(t => {
-  var url = "http://{{domains[www]}}:{{ports[http][1]}}/content-security-policy/support/resource.py?cross-origin-xhr";
+let xhr_cross_origin_url = `${base_cross_origin_url}?cross-origin-xhr`;
 
-  return Promise.all([
-    new_spv_promise(t, url),
-    new Promise((resolve, reject) => {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", url);
-      xhr.onload = t.step_func(resolve);
-      xhr.onerror = t.step_func(_ => reject("xhr.open should not have thrown."));
-      xhr.send();
-    })
-  ]);
-}, "Cross-origin XHR in " + self.location.protocol + self.location.search);
+// XHR is not available in service workers.
+if (self.XMLHttpRequest) {
+  promise_test(t => {
+    let url = xhr_cross_origin_url;
+
+    return Promise.all([
+      waitUntilCSPEventForURL(t, url),
+      new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.onload = resolve;
+        xhr.onerror = _ => reject("xhr.open should not have thrown.");
+        xhr.send();
+      })
+    ]);
+  }, "Cross-origin XHR.");
+}
+
+let redirect_url = `{{location[server]}}/common/redirect-opt-in.py?` +
+      `status=307&location=${fetch_cross_origin_url}`;
 
 // Same-origin redirecting to cross-origin
 promise_test(t => {
-  var url = "{{location[server]}}/common/redirect-opt-in.py?status=307&location=http://{{domains[www]}}:{{ports[http][1]}}/content-security-policy/support/resource.py?cross-origin-fetch";
+  let url = redirect_url;
 
   return Promise.all([
-    new_spv_promise(t, url),
+    waitUntilCSPEventForURL(t, url),
     fetch(url)
   ]);
-}, "Same-origin => cross-origin 'fetch()' in " + self.location.protocol + self.location.search);
+}, "Same-origin => cross-origin 'fetch()'.");
+
+let expected_blocked_urls = self.XMLHttpRequest
+    ? [ fetch_cross_origin_url, xhr_cross_origin_url, redirect_url ]
+    : [ fetch_cross_origin_url, redirect_url ];
+
+promise_test(async t => {
+  let report_url = `{{location[server]}}/reporting/resources/report.py?` +
+      `?op=retrieve_report&reportID={{GET[id]}}` +
+      `&min_count=${expected_blocked_urls.length}`;
+
+  let response = await fetch(report_url);
+  assert_equals(response.status, 200, "Fetching reports failed");
+
+  let response_json = await response.json();
+  let reports = response_json.map(x => x["csp-report"]);
+
+  assert_array_equals(
+      reports.map(x => x["blocked-uri"]).sort(),
+      expected_blocked_urls.sort(),
+      "Reports do not match");
+  reports.forEach(x => {
+    assert_equals(
+        x["violated-directive"], "connect-src",
+        "Violated directive in report does not match");
+    assert_equals(
+        x["effective-directive"], "connect-src",
+        "Effective directive in report does not match");
+    assert_equals(
+        x["disposition"], "report",
+        "Disposition in report does not match");
+    assert_equals(
+        x["document-uri"],
+        "{{location[server]}}/content-security-policy/inside-worker/" +
+          "support/connect-src-self-report-only.sub.js?id={{GET[id]}}",
+        "Document uri in report does not match");
+  });
+});
 
 done();
