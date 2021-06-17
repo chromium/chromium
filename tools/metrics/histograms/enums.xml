@@ -47848,6 +47848,7 @@ from previous Chrome versions.
   <int value="222055978" label="OsFeedback:disabled"/>
   <int value="222184258"
       label="AutofillEnforceMinRequiredFieldsForHeuristics:disabled"/>
+  <int value="223573347" label="BentoBar:disabled"/>
   <int value="223591010" label="CastMediaRouteProvider:enabled"/>
   <int value="223662457" label="BackgroundLoadingForDownloads:enabled"/>
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
@@ -49434,6 +49435,7 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>
   <int value="1568172566"
       label="OmniboxOnDeviceHeadProviderNonIncognito:disabled"/>
+  <int value="1569982806" label="BentoBar:enabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>
   <int value="1573860827" label="EnableImeSandbox:enabled"/>

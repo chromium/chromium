@@ -363,6 +363,11 @@ const char kBackForwardCacheDescription[] =
     "To enable caching pages on same-site navigations too, choose 'enabled "
     "same-site support'.";
 
+const char kBentoBarName[] = "Persistent desks bar";
+const char kBentoBarDescription[] =
+    "Showing a persistent desks bar at the top of the screen in clamshell mode "
+    "when there are more than one desk.";
+
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 const char kBiometricReauthForPasswordFillingDescription[] =
