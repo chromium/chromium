@@ -458,7 +458,6 @@ void WidgetDelegate::SetContentsViewImpl(View* contents) {
 
 WidgetDelegateView::WidgetDelegateView() {
   // A WidgetDelegate should be deleted on DeleteDelegate.
-  set_owned_by_client();
   SetOwnedByWidget(true);
 }
 
