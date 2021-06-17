@@ -2067,6 +2067,17 @@ ci.cipd_builder(
                 "sdk_package_name": "system-images;android-30;google_apis_playstore;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis_playstore/x86.yaml",
             },
+            # Preview system images for Android S.
+            # Should be updated once it is fully released.
+            # sdkmanager don't have x86 for Android S so use x86_64 for now.
+            {
+                "sdk_package_name": "system-images;android-S;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-S/google_apis/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-S;google_apis_playstore;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-S/google_apis_playstore/x86_64.yaml",
+            },
         ],
     },
 )
