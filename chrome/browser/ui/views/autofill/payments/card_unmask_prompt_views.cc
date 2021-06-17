@@ -456,7 +456,10 @@ void CardUnmaskPromptViews::UpdateButtons() {
   AutofillClient::PaymentsRpcResult result =
       controller_->GetVerificationResult();
   bool has_ok = result != AutofillClient::PERMANENT_FAILURE &&
-                result != AutofillClient::NETWORK_ERROR;
+                result != AutofillClient::NETWORK_ERROR &&
+                result != AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE &&
+                result != AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
+
   SetButtons(has_ok ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
                     : ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
