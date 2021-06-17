@@ -113,6 +113,8 @@ const int kRestrictedPorts[] = {
     587,    // smtp (rfc6409)
     601,    // syslog-conn (rfc3195)
     636,    // ldap+ssl
+    989,    // ftps-data
+    990,    // ftps
     993,    // ldap+ssl
     995,    // pop3+ssl
     1719,   // h323gatestat
@@ -146,6 +148,10 @@ base::LazyInstance<std::multiset<int>>::Leaky g_explicitly_allowed_ports =
 constexpr int kAllowablePorts[] = {
     // TODO(https://crbug.com/1199642) Remove port 554 around 2021/10/15.
     554,
+    // TODO(https://crbug.com/1220079) Remove ports 989 and 990 around
+    // 2022/02/01.
+    989,
+    990,
     // TODO(https://crbig.com/1210779) Remove port 6566 around 2021/08/12.
     6566,
     // TODO(https://crbug.com/1196846) Remove port 10080 around 2022/04/01.

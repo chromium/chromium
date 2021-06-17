@@ -25967,6 +25967,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
             '554',
             '10080',
             '6566',
+            '989',
+            '990',
           ],
         },
       },
@@ -25974,7 +25976,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         {
           'name': '554',
           'value': '554',
-          'caption': '''port 554 (expires 2021/10/15)''',
+          'caption': '''port 554 (can be unblocked until 2021/10/15)''',
           'supported_on': [
             'chrome.*:91-95',
             'android:91-95',
@@ -25985,7 +25987,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         {
           'name': '10080',
           'value': '10080',
-          'caption': '''port 10080 (expires 2022/04/01)''',
+          'caption': '''port 10080 (can be unblocked until 2022/04/01)''',
           'supported_on': [
             'chrome.*:91-99',
             'android:91-99',
@@ -25996,12 +25998,34 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         {
           'name': '6566',
           'value': '6566',
-          'caption': '''port 6566 (expires 2021/10/15)''',
+          'caption': '''port 6566 (can be unblocked until 2021/10/15)''',
           'supported_on': [
             'chrome.*:91-94',
             'android:91-94',
             'chrome_os:91-94',
             'webview_android:91-94'
+          ],
+        },
+        {
+          'name': '989',
+          'value': '989',
+          'caption': '''port 989 (can be unblocked until 2022/02/01)''',
+          'supported_on': [
+            'chrome.*:93-100',
+            'android:93-100',
+            'chrome_os:93-100',
+            'webview_android:93-100'
+          ],
+        },
+        {
+          'name': '990',
+          'value': '990',
+          'caption': '''port 990 (can be unblocked until 2022/02/01)''',
+          'supported_on': [
+            'chrome.*:93-100',
+            'android:93-100',
+            'chrome_os:93-100',
+            'webview_android:93-100'
           ],
         },
       ],
@@ -26014,11 +26038,13 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'id': 849,
       'caption': '''Explicitly allowed network ports''',
       'tags': ['system-security', 'website-sharing', 'local-data-access'],
-      'desc': '''Setting the policy permits bypassing the list of restricted ports built into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. The value is a comma-separated list of zero or more ports that outgoing connections will be permitted on.
+      'desc': '''There is a list of restricted ports built into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Connections to these ports will fail. This setting permits bypassing that list. The value is a comma-separated list of zero or more ports that outgoing connections will be permitted on.
 
       Ports are restricted to prevent <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> being used as a vector to exploit various network vulnerabilities. Setting this policy may expose your network to attacks. This policy is intended as a temporary workaround for errors with code "ERR_UNSAFE_PORT" while migrating a service running on a blocked port to a standard port (ie. port 80 or 443).
 
       Malicious websites can easily detect that this policy is set, and for what ports, and use that information to target attacks.
+
+      Each port here is labelled with a date that it can be unblocked until. After that date the port will be restricted regardless of this setting.
 
       Leaving the value empty or unset means that all restricted ports will be blocked. If there is a mixture of valid and invalid values, the valid ones will be applied.
 
