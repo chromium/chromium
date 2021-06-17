@@ -2563,9 +2563,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      auto* host_native_view = GetRenderFrameHost()
+                                   ? GetRenderFrameHost()->GetNativeView()
+                                   : nullptr;
+      if (!host_native_view)
+        break;
+
       // Calculate the anchor point in screen coordinates.
       gfx::Point anchor_point_in_screen =
-          GetRenderFrameHost()->GetNativeView()->GetBoundsInScreen().origin();
+          host_native_view->GetBoundsInScreen().origin();
       anchor_point_in_screen.Offset(params_.x, params_.y);
 
       // Calculate the menu source type from `event_flags`.
