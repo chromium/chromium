@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -89,6 +90,9 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
                              const LayoutObject& layout_object) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
     return false;
+  // Note: We set text-emphasis-style:none for combined text and we paint
+  // emphasis mark at left/right side of |LayoutNGTextCombine|.
+  DCHECK(!IsA<LayoutNGTextCombine>(layout_object.Parent()));
   const LayoutObject* containing_block = layout_object.ContainingBlock();
   if (!containing_block || !containing_block->IsRubyBase())
     return true;
@@ -147,6 +151,12 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // Don't paint selections when rendering a mask, clip-path (as a mask),
   // pattern or feImage (element reference.)
   const bool is_rendering_resource = paint_info.IsRenderingResourceSubtree();
+  const auto* const text_combine =
+      DynamicTo<LayoutNGTextCombine>(layout_object->Parent());
+#if DCHECK_IS_ON()
+  if (UNLIKELY(text_combine))
+    LayoutNGTextCombine::AssertStyleIsValid(style);
+#endif
 
   // Determine whether or not we're selected.
   absl::optional<NGHighlightPainter::SelectionPaintState> selection;
@@ -171,6 +181,11 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   PhysicalRect box_rect = ComputeBoxRect(cursor_, paint_offset, parent_offset_);
+  if (UNLIKELY(text_combine)) {
+    box_rect.offset.left =
+        text_combine->AdjustTextLeftForPaint(box_rect.offset.left);
+  }
+
   IntRect visual_rect;
   const auto* const svg_inline_text =
       DynamicTo<LayoutSVGInlineText>(layout_object);
@@ -255,8 +270,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   // Set our font.
-  const Font& font =
-      svg_inline_text ? svg_inline_text->ScaledFont() : style.GetFont();
+  const Font& font = UNLIKELY(svg_inline_text)
+                         ? svg_inline_text->ScaledFont()
+                         : UNLIKELY(text_combine)
+                               ? text_combine->UsesCompressedFont()
+                                     ? text_combine->CompressedFont()
+                                     : style.GetFont()
+                               : style.GetFont();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 
@@ -267,9 +287,12 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   absl::optional<AffineTransform> rotation;
   const WritingMode writing_mode = style.GetWritingMode();
   const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
-  int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
-  PhysicalOffset text_origin(box_rect.offset.left,
-                             box_rect.offset.top + ascent);
+  const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
+  PhysicalOffset text_origin(
+      box_rect.offset.left,
+      UNLIKELY(text_combine)
+          ? text_combine->AdjustTextTopForPaint(box_rect.offset.top)
+          : box_rect.offset.top + ascent);
 
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
                              text_origin, box_rect, is_horizontal);
@@ -357,6 +380,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
         &has_line_through_decoration);
     text_painter.Paint(start_offset, end_offset, length, text_style, node_id);
     if (has_line_through_decoration) {
+      DCHECK(!text_combine);
       text_painter.PaintDecorationsOnlyLineThrough(
           text_item, paint_info, style, text_style, box_rect, absl::nullopt);
     }
@@ -388,6 +412,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
                                                      text_style, node_id);
 
     if (has_line_through_decoration) {
+      DCHECK(!text_combine);
       text_painter.PaintDecorationsOnlyLineThrough(
           text_item, paint_info, style, text_style, box_rect,
           highlight_painter.SelectionDecoration());

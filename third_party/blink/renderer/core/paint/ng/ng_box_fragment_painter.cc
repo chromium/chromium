@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
@@ -376,8 +377,30 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     return;
 
   PaintInfo& info = paint_state.MutablePaintInfo();
-  PhysicalOffset paint_offset = paint_state.PaintOffset();
-  PaintPhase original_phase = info.phase;
+  const PhysicalOffset paint_offset = paint_state.PaintOffset();
+  const PaintPhase original_phase = info.phase;
+
+  // For text-combine-upright:all, we need to realize canvas here for scaling
+  // to fit text content in 1em and shear for "font-style: oblique -15deg".
+  absl::optional<DrawingRecorder> recorder;
+  absl::optional<GraphicsContextStateSaver> graphics_context_state_saver;
+  const auto* const text_combine =
+      DynamicTo<LayoutNGTextCombine>(box_fragment_.GetLayoutObject());
+  if (UNLIKELY(text_combine)) {
+    if (text_combine->NeedsAffineTransformInPaint()) {
+      if (original_phase == PaintPhase::kForeground)
+        PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
+      if (DrawingRecorder::UseCachedDrawingIfPossible(
+              paint_info.context, GetDisplayItemClient(), paint_info.phase))
+        return;
+      recorder.emplace(paint_info.context, GetDisplayItemClient(),
+                       paint_info.phase,
+                       text_combine->VisualRectForPaint(paint_offset));
+      graphics_context_state_saver.emplace(paint_info.context);
+      paint_info.context.ConcatCTM(
+          text_combine->ComputeAffineTransformForPaint(paint_offset));
+    }
+  }
 
   ScopedPaintTimingDetectorBlockPaintHook
       scoped_paint_timing_detector_block_paint_hook;
@@ -437,8 +460,10 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
 
   // If the caret's node's fragment's containing block is this block, and
   // the paint action is PaintPhaseForeground, then paint the caret.
-  if (original_phase == PaintPhase::kForeground)
+  if (original_phase == PaintPhase::kForeground && LIKELY(!recorder)) {
+    DCHECK(!text_combine || !text_combine->NeedsAffineTransformInPaint());
     PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
+  }
 
   if (ShouldPaintSelfOutline(original_phase)) {
     info.phase = PaintPhase::kSelfOutlineOnly;
@@ -449,6 +474,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   // will sit above them.
   info.phase = original_phase;
   if (box_fragment_.IsScrollContainer()) {
+    DCHECK(!text_combine);
     ScrollableAreaPainter(*PhysicalFragment().Layer()->GetScrollableArea())
         .PaintOverflowControls(info, RoundedIntPoint(paint_offset));
   }

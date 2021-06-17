@@ -81,9 +81,87 @@ float LayoutNGTextCombine::DesiredWidth() const {
   return one_em * kTextCombineMargin;
 }
 
+float LayoutNGTextCombine::ComputeInlineSpacing() const {
+  DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
+            FontOrientation::kHorizontal);
+  DCHECK(scale_x_);
+  const LayoutUnit line_height = StyleRef().GetFontHeight().LineHeight();
+  return (line_height - DesiredWidth()) / 2;
+}
+
 void LayoutNGTextCombine::ResetLayout() {
   compressed_font_.reset();
   scale_x_.reset();
+}
+
+LayoutUnit LayoutNGTextCombine::AdjustTextLeftForPaint(
+    LayoutUnit position) const {
+  if (!scale_x_)
+    return position;
+  const float spacing = ComputeInlineSpacing();
+  return LayoutUnit(position + spacing / *scale_x_);
+}
+
+LayoutUnit LayoutNGTextCombine::AdjustTextTopForPaint(
+    LayoutUnit text_top) const {
+  DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
+            FontOrientation::kHorizontal);
+  const SimpleFontData& font_data = *StyleRef().GetFont().PrimaryFont();
+  const float internal_leading = font_data.InternalLeading();
+  const float half_leading = internal_leading / 2;
+  const int ascent = font_data.GetFontMetrics().Ascent();
+  return LayoutUnit(text_top + ascent - half_leading);
+}
+
+AffineTransform LayoutNGTextCombine::ComputeAffineTransformForPaint(
+    const PhysicalOffset& paint_offset) const {
+  DCHECK(NeedsAffineTransformInPaint());
+  AffineTransform matrix;
+  if (UsingSyntheticOblique()) {
+    const LayoutUnit text_left = AdjustTextLeftForPaint(paint_offset.left);
+    const LayoutUnit text_top = AdjustTextTopForPaint(paint_offset.top);
+    matrix.Translate(text_left, text_top);
+    // TODO(yosin): We should use angle specified in CSS instead of
+    // constant value -15deg. See also |DrawBlobs()| in [1] for vertical
+    // upright oblique.
+    // [1] "third_party/blink/renderer/platform/fonts/font.cc"
+    constexpr float kSlantAngle = -15.0f;
+    matrix.SkewY(kSlantAngle);
+    matrix.Translate(-text_left, -text_top);
+  }
+  if (scale_x_.has_value()) {
+    matrix.Translate(paint_offset.left, paint_offset.top);
+    matrix.Scale(*scale_x_, 1.0f);
+    matrix.Translate(-paint_offset.left, -paint_offset.top);
+  }
+  return matrix;
+}
+
+bool LayoutNGTextCombine::NeedsAffineTransformInPaint() const {
+  return scale_x_.has_value() || UsingSyntheticOblique();
+}
+
+PhysicalRect LayoutNGTextCombine::ComputeTextFrameRect(
+    const PhysicalOffset paint_offset) const {
+  const ComputedStyle& style = Parent()->StyleRef();
+  DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
+
+  // Because we rotate the GraphicsContext to match the logical direction,
+  // transpose the |text_frame_rect| to match to it.
+  // See also |NGTextFragmentPainter::Paint()|
+  const LayoutUnit one_em = style.ComputedFontSizeAsFixed();
+  const FontHeight text_metrics = style.GetFontHeight();
+  const LayoutUnit line_height = text_metrics.LineHeight();
+  return PhysicalRect(PhysicalOffset(LayoutUnit(paint_offset.left),
+                                     LayoutUnit(paint_offset.top)),
+                      PhysicalSize(one_em, line_height));
+}
+
+IntRect LayoutNGTextCombine::VisualRectForPaint(
+    const PhysicalOffset& paint_offset) const {
+  PhysicalRect ink_overflow = CurrentFragment()->InkOverflow();
+  ink_overflow.Move(paint_offset);
+  return EnclosingIntRect(ink_overflow);
 }
 
 void LayoutNGTextCombine::SetScaleX(float new_scale_x) {
@@ -99,6 +177,14 @@ void LayoutNGTextCombine::SetCompressedFont(const Font& font) {
   DCHECK(!compressed_font_.has_value());
   DCHECK(!scale_x_.has_value());
   compressed_font_ = font;
+}
+
+bool LayoutNGTextCombine::UsingSyntheticOblique() const {
+  return Parent()
+      ->StyleRef()
+      .GetFont()
+      .GetFontDescription()
+      .IsSyntheticOblique();
 }
 
 }  // namespace blink

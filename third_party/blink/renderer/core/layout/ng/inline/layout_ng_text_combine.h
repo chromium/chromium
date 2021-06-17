@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class AffineTransform;
+
 // The layout object for the element having "text-combine-upright:all" in
 // vertical writing mode, e.g. <i style="text-upright:all"><b>12</b>34<i>.
 // Note: When the element is in horizontal writing mode, we don't use this.
@@ -34,6 +36,23 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   void SetScaleX(float new_scale_x);
   bool UsesScaleX() const { return scale_x_.has_value(); }
 
+  // Painting
+  // |AdjustText{Left,Top}()| are called within affine transformed
+  // |GraphicsContext|, e.g. |NGTextFragmentPainter::Paint()|.
+  LayoutUnit AdjustTextLeftForPaint(LayoutUnit text_left) const;
+  LayoutUnit AdjustTextTopForPaint(LayoutUnit text_top) const;
+
+  AffineTransform ComputeAffineTransformForPaint(
+      const PhysicalOffset& paint_offset) const;
+  bool NeedsAffineTransformInPaint() const;
+
+  // Returns text frame rect, in logical direction, used with text painters.
+  PhysicalRect ComputeTextFrameRect(const PhysicalOffset paint_offset) const;
+
+  // Returns visual rect for painting emphasis mark and text decoration for
+  // |NGBoxFragmentPainter|.
+  IntRect VisualRectForPaint(const PhysicalOffset& paint_offset) const;
+
   static void AssertStyleIsValid(const ComputedStyle& style);
 
   // Create anonymous wrapper having |text_child|.
@@ -45,6 +64,9 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
  private:
   bool IsOfType(LayoutObjectType) const override;
   const char* GetName() const override { return "LayoutNGTextCombine"; }
+
+  float ComputeInlineSpacing() const;
+  bool UsingSyntheticOblique() const;
 
   // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
   absl::optional<Font> compressed_font_;
