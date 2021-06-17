@@ -826,6 +826,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       ResolveIndirect(PROXY_HTTP_HOST);
       ResolveIndirect(PROXY_HTTPS_HOST);
       ResolveIndirect(PROXY_FTP_HOST);
+      ResolveIndirect(PROXY_SOCKS_HOST);
       ResolveIndirectList(PROXY_IGNORE_HOSTS);
     }
     if (auto_no_pac_) {

@@ -1661,32 +1661,34 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEConfigParser) {
 
           // Input.
           "[Proxy Settings]\nProxyType=4\nhttpProxy=http_proxy\n"
-          "httpsProxy=https_proxy\nftpProxy=ftp_proxy\nNoProxyFor=no_proxy\n",
+          "httpsProxy=https_proxy\nftpProxy=ftp_proxy\nNoProxyFor=no_proxy\n"
+          "socksProxy=SOCKS_SERVER\n",
           {
               // env_values
-              nullptr,                  // DESKTOP_SESSION
-              nullptr,                  // HOME
-              nullptr,                  // KDEHOME
-              nullptr,                  // KDE_SESSION_VERSION
-              nullptr,                  // XDG_CURRENT_DESKTOP
-              nullptr,                  // auto_proxy
-              nullptr,                  // all_proxy
-              "www.normal.com",         // http_proxy
-              "www.secure.com",         // https_proxy
-              "ftp.foo.com",            // ftp_proxy
-              nullptr, nullptr,         // SOCKS
-              ".google.com, .kde.org",  // no_proxy
+              nullptr,                          // DESKTOP_SESSION
+              nullptr,                          // HOME
+              nullptr,                          // KDEHOME
+              nullptr,                          // KDE_SESSION_VERSION
+              nullptr,                          // XDG_CURRENT_DESKTOP
+              nullptr,                          // auto_proxy
+              nullptr,                          // all_proxy
+              "www.normal.com",                 // http_proxy
+              "www.secure.com",                 // https_proxy
+              "ftp.foo.com",                    // ftp_proxy
+              "socks.comfy.com:1234", nullptr,  // SOCKS
+              ".google.com, .kde.org",          // no_proxy
           },
 
           // Expected result.
           ProxyConfigService::CONFIG_VALID,
           false,   // auto_detect
           GURL(),  // pac_url
-          ProxyRulesExpectation::PerScheme(
-              "www.normal.com:80",        // http
-              "www.secure.com:80",        // https
-              "ftp.foo.com:80",           // ftp
-              "*.google.com,*.kde.org"),  // bypass rules
+          ProxyRulesExpectation::PerSchemeWithSocks(
+              "www.normal.com:80",              // http
+              "www.secure.com:80",              // https
+              "ftp.foo.com:80",                 // ftp
+              "socks5://socks.comfy.com:1234",  // socks
+              "*.google.com,*.kde.org"),        // bypass rules
       },
   };
 
