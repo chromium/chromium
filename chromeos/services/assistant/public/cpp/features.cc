@@ -55,7 +55,7 @@ const base::Feature kDisableVoiceMatch{"DisableVoiceMatch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnableLibAssistantSandbox{
-    "LibAssistantSandbox", base::FEATURE_ENABLED_BY_DEFAULT};
+    "LibAssistantSandbox", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
