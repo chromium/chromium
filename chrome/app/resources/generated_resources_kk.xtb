@@ -642,6 +642,7 @@
 <translation id="1692210323591458290">Қою күлгін</translation>
 <translation id="169675691788639886">Құрылғыда SSH сервері конфигурацияланған. Құпия есептік жазбалармен кірмеңіз.</translation>
 <translation id="1697150536837697295">Өнер</translation>
+<translation id="1697532407822776718">Барлығын орнаттыңыз!</translation>
 <translation id="1697686431566694143">Файлды өңдеу</translation>
 <translation id="1700079447639026019">Cookie файлдарын пайдалана алмайтын сайттар</translation>
 <translation id="1701062906490865540">Бұл адамды өшіру</translation>
@@ -1212,7 +1213,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> қолданбасын реттеу және басқару</translation>
 <translation id="2300578660547687840">Кілтсөздерді іздеуге арналған перне тіркесімдері</translation>
 <translation id="2301382460326681002">Кеңейтімнің түбір каталогы жарамсыз.</translation>
-<translation id="2301402091755573488">Қойынды бөлісілді.</translation>
+<translation id="2301402091755573488">Бөліскен қойынды</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" қосымша рұқсат сұрады.</translation>
 <translation id="23055578400314116">Пайдаланушы атын таңдаңыз.</translation>
 <translation id="2307462900900812319">Желіні реттеу</translation>
@@ -3269,7 +3270,7 @@
     Балаңыз мектепте Chromebook пайдаланса және оған барлық үй тапсырмаларына үйден кіруге мүмкіндік беру үшін Family Link есептік жазбасынан шығып, Chrome OS есептік жазбалары бетінен оқу есептік жазбасына кіріңіз (ескертпе: Family Link ата-ана бақылауы қолданылмайды).&lt;br&gt;&lt;br&gt;
     Егер балаңыз мектепте Chromebook пайдаланбаса немесе оның оқуын Family Link арқылы бақылағыңыз келсе, профильге оқу есептік жазбасын енгізу үшін төмендегі "Келесі" түймесін түртіңіз.</translation>
 <translation id="4576541033847873020">Bluetooth құрылғысын жұптау</translation>
-<translation id="4576763597586015380">Google есептік жазбаңызда құпия сөздерді сақтауды жалғастыру үшін жеке басыңызды растаңыз</translation>
+<translation id="4576763597586015380">Google есептік жазбаңызда құпия сөздерді сақтай алу үшін жеке басыңызды растаңыз</translation>
 <translation id="4579453506923101210">Байланыстырылған телефонды ұмыту</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> трансляциялау мүмкін емес.</translation>
 <translation id="4581774856936278355">Linux жүйесін қалпына келтіру кезінде қате шықты.</translation>
@@ -6607,6 +6608,7 @@
 <translation id="8308179586020895837"><ph name="HOST" /> камераны пайдаланғысы келгенде, рұқсат сұралсын</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8309458809024885768">Сертификат бұрыннан бар</translation>
+<translation id="831207808878314375">Анықтама</translation>
 <translation id="8314089908545021657">Жаңа телефонмен жұптау</translation>
 <translation id="8314381333424235892">Жеткіліксіз немесе жойылған кеңейтім</translation>
 <translation id="831440797644402910">Бұл қалта ашылмайды</translation>

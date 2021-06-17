@@ -375,6 +375,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2276057643614339130">Bosma asosi</translation>
 <translation id="2277103315734023688">Oldinga o‘tkazish</translation>
 <translation id="2283340219607151381">Manzillarni saqlash va avtomatik kiritish</translation>
+<translation id="2283447177162560884"><ph name="PAGE_TITLE" /> oʻchirib tashlandi</translation>
 <translation id="2288422996159078444">Internetdagi harakatlaringiz (qidirayotgan soʻrovlar, ochayotgan sahifalar va boshqa amallar) kuzatuv ostida, saytlar kontenti oʻzgarishi mumkin.</translation>
 <translation id="2289385804009217824">Qirqish</translation>
 <translation id="2292556288342944218">Internet taqiqlab qo‘yilgan</translation>
@@ -501,6 +502,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="277133753123645258">Yetkazib berish usuli</translation>
 <translation id="277499241957683684">Qurilma ro‘yhatdan o‘tkazilmagan</translation>
 <translation id="2775884851269838147">Birinchi bosma sahifa</translation>
+<translation id="2778854133681684171">Bu toʻlov usuli bilan xarid qilish vaqtida qurilma orqali shaxsingizni tez tasdiqlashingiz mumkin.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Aloqa qayta o‘rnatildi.</translation>
 <translation id="2792012897584536778">Qurilmaga administratorlar tomonidan xavfsizlik sertifikatlari oʻrnatilgan va ular ochiladigan saytlardagi kontentni koʻrishi mumkin.</translation>
@@ -656,6 +658,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3377736046129930310">Kartalarni tezda tasdiqlash uchun ekran qulfidan foydalaning</translation>
 <translation id="3380365263193509176">Noma’lum xatolik</translation>
 <translation id="3380864720620200369">Mijoz-dastur identifikatori:</translation>
+<translation id="3381668585148405088">Xaridni tasdiqlang</translation>
 <translation id="3387261909427947069">To‘lov usullari</translation>
 <translation id="3391030046425686457">Yetkazib berish manzili</translation>
 <translation id="3395827396354264108">Olib ketish usuli</translation>
@@ -830,6 +833,10 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
     lekin bu tekshiruv barcha soʻrovlar uchun ishlatilganda bu siyosat uchun qoʻllanilmaydi.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ta sahifadan iborat PDF hujjat}other{{COUNT} ta sahifadan iborat PDF hujjat}}</translation>
 <translation id="4023431997072828269">Chunki sayt xavfsiz boʻlmagan ulanishdan foydalanmoqda. Maʼlumotlaringiz boshqalarga koʻrinadi.</translation>
+<translation id="4027177651527820006">Bu funksiyalar yoqilsa, brauzer tarixi, xavfsizlik 
+    va maxfiylik sozlamalari oʻchib ketishi mumkin. Bu funksiyalar brauzerning
+    barcha foydalanuvchilari uchun yoqiladi. Agar korporativ administrator boʻlsangiz,
+    bu sozlamalarni amaliy tatbiq qilmang.</translation>
 <translation id="4030383055268325496">&amp;Qo‘shishni bekor qilish</translation>
 <translation id="4056223980640387499">Sepiya</translation>
 <translation id="4058922952496707368">“<ph name="SUBKEY" />” kaliti: <ph name="ERROR" /></translation>

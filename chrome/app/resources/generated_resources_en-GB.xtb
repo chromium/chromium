@@ -648,6 +648,7 @@
 <translation id="1692210323591458290">Dark purple</translation>
 <translation id="169675691788639886">Device has SSH server configured. Do not sign in with sensitive accounts.</translation>
 <translation id="1697150536837697295">Art</translation>
+<translation id="1697532407822776718">You're all set!</translation>
 <translation id="1697686431566694143">Edit file</translation>
 <translation id="1700079447639026019">Sites that can never use cookies</translation>
 <translation id="1701062906490865540">Remove this person</translation>
@@ -6629,6 +6630,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8308179586020895837">Ask if <ph name="HOST" /> wants to access your camera</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Certificate already exists</translation>
+<translation id="831207808878314375">Definition</translation>
 <translation id="8314089908545021657">Pair with new phone</translation>
 <translation id="8314381333424235892">Missing or uninstalled extension</translation>
 <translation id="831440797644402910">Can't open this folder</translation>

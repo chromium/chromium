@@ -642,6 +642,7 @@
 <translation id="1692210323591458290">深紫色</translation>
 <translation id="169675691788639886">设备已配置了 SSH 服务器。请勿使用敏感帐号登录。</translation>
 <translation id="1697150536837697295">艺术</translation>
+<translation id="1697532407822776718">搞定了！</translation>
 <translation id="1697686431566694143">修改文件</translation>
 <translation id="1700079447639026019">始终无法使用 Cookie 的网站</translation>
 <translation id="1701062906490865540">移除此用户</translation>
@@ -1212,6 +1213,7 @@
 <translation id="2300383962156589922">自定义和控制<ph name="APP_NAME" /></translation>
 <translation id="2300578660547687840">搜索关键字的键盘快捷键</translation>
 <translation id="2301382460326681002">扩展程序根目录无效。</translation>
+<translation id="2301402091755573488">已分享的标签页</translation>
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />”请求获得更多权限。</translation>
 <translation id="23055578400314116">选择用户名</translation>
 <translation id="2307462900900812319">配置网络</translation>
@@ -1489,6 +1491,7 @@
 <translation id="2612676031748830579">卡号</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”</translation>
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
+<translation id="2618274688675613222">启用“下一步”按钮可继续设置，启用“上一步”按钮可更改分配的“选择”开关。</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
 <translation id="2619761439309613843">每日刷新</translation>
 <translation id="2620215283731032047">无法安全地下载“<ph name="FILE_NAME" />”。</translation>
@@ -2883,6 +2886,7 @@
 <translation id="4120817667028078560">路径过长</translation>
 <translation id="4124823734405044952">您的安全密钥已重置完毕</translation>
 <translation id="4124935795427217608">独角兽</translation>
+<translation id="4126916490446791914">已启用自动扫描</translation>
 <translation id="412730574613779332">勇士</translation>
 <translation id="4130199216115862831">设备日志</translation>
 <translation id="4130207949184424187">此扩展程序更改了您通过多功能框进行搜索时系统显示的页面。</translation>
@@ -3265,6 +3269,7 @@
     如果您的孩子在校时使用 Chromebook，并且您希望在家中复制同样的在校使用体验，确保孩子能够获取所有必要的学校作业，请退出此 Family Link 帐号，然后从 Chrome 操作系统帐号页面登录学校帐号（注意：Family Link 家长控制将不适用）。&lt;br&gt;&lt;br&gt;
     如果您的孩子在校时不使用 Chromebook，或者您更愿意借助 Family Link 管理孩子的在家使用体验，请点击下方的“下一步”按钮向这份个人资料添加学校帐号。</translation>
 <translation id="4576541033847873020">配对蓝牙设备</translation>
+<translation id="4576763597586015380">若要继续将密码保存在您的 Google 帐号中，请验证您的身份</translation>
 <translation id="4579453506923101210">移除已连接的手机</translation>
 <translation id="4579581181964204535">无法投射 <ph name="HOST_NAME" />。</translation>
 <translation id="4581774856936278355">恢复 Linux 容器时出错</translation>
@@ -4985,6 +4990,7 @@
 <translation id="6538098297809675636">检测代码时出错</translation>
 <translation id="653920215766444089">正在搜索指控设备</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
+<translation id="6540672086173674880">Google 可能会使用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务。您可以随时前往 myaccount.google.com/activitycontrols/search 更改此设置</translation>
 <translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
 <translation id="6545665334409411530">重复速度</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
@@ -5871,6 +5877,7 @@
 <translation id="754207240458482646">已与您帐号中的其他设备同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">在此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上启用调试功能</translation>
 <translation id="7543525346216957623">请先征得您父亲/母亲的许可</translation>
+<translation id="7546012169463147344">自动扫描会自动循环切换并突出显示屏幕上的各项内容。当此功能突出显示某项内容时，按您刚刚分配的“选择”键便可启用它。</translation>
 <translation id="7547317915858803630">警告：您的 <ph name="PRODUCT_NAME" />设置存储在网络驱动器上。这可能会导致速度变慢、崩溃，甚至数据丢失。</translation>
 <translation id="7548856833046333824">酒杯</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6601,6 +6608,7 @@
 <translation id="8308179586020895837">当 <ph name="HOST" /> 想要使用摄像头时询问我</translation>
 <translation id="830868413617744215">测试版</translation>
 <translation id="8309458809024885768">证书已存在</translation>
+<translation id="831207808878314375">定义</translation>
 <translation id="8314089908545021657">与新手机配对</translation>
 <translation id="8314381333424235892">扩展程序缺失或已卸载</translation>
 <translation id="831440797644402910">无法打开此文件夹</translation>
@@ -6840,6 +6848,7 @@
 <translation id="8621866727807194849">您的计算机上存在有害软件。Chrome 正在移除该软件、恢复您的设置并停用扩展程序。这可确保您的浏览器能够重新正常运行。</translation>
 <translation id="8621979332865976405">共享您的整个屏幕</translation>
 <translation id="8624354461147303341">获取折扣信息</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />：<ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">扩展程序(&amp;E)</translation>
 <translation id="8625663000550647058">不允许使用您的麦克风</translation>
 <translation id="8625916342247441948">不允许网站连接到 HID 设备</translation>
@@ -6904,6 +6913,7 @@
 <translation id="8677212948402625567">全部收起...</translation>
 <translation id="867767487203716855">下一次更新</translation>
 <translation id="8677859815076891398">无任何影集。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建一个影集。</translation>
+<translation id="8678538439778360739">数据已于 <ph name="TIME" />使用您的同步密码加密。这并不包括 Google Pay 中的付款方式和地址。</translation>
 <translation id="8678582529642151449">不收缩标签页</translation>
 <translation id="8678933587484842200">您希望通过何种方式启动此应用？</translation>
 <translation id="8680251145628383637">登录后即可在您的任何设备上获取自己的书签、历史记录、密码和其他设置。此外，您还会自动登录到 Google 服务。</translation>

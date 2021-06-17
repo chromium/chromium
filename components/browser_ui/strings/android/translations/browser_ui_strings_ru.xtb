@@ -90,11 +90,9 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3277252321222022663">Предоставить сайтам доступ к датчикам (рекомендуется)</translation>
 <translation id="3295602654194328831">Скрыть информацию</translation>
-<translation id="3317660236277031814">У веб-приложения, которое вы установили, изменился значок.</translation>
 <translation id="3328801116991980348">Информация о сайте</translation>
 <translation id="3333961966071413176">Все контакты</translation>
 <translation id="3386292677130313581">Запрашивать разрешение на доступ к данным о местоположении (рекомендуется)</translation>
-<translation id="345699454248713913">У веб-приложения, которое вы установили, изменилось название.</translation>
 <translation id="3538390592868664640">Запретить сайтам создавать 3D-карту места, в котором вы находитесь, и отслеживать положение камеры</translation>
 <translation id="3551268116566418498">Выйти из режима инкогнито?</translation>
 <translation id="3586500876634962664">Использование камеры и микрофона</translation>
@@ -119,7 +117,6 @@
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
-<translation id="4277239631747669329">У веб-приложения, которое вы установили, изменились название и значок.</translation>
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="42981349822642051">Развернуть</translation>
@@ -135,7 +132,6 @@
 <translation id="4645575059429386691">Управляется вашими родителями</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
 <translation id="4708011789095599544">Вы действительно хотите удалить файлы cookie и другие данные для этого сайта?</translation>
-<translation id="473775607612524610">Обновить</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
 <translation id="4836046166855586901">Спрашивать перед передачей на сайт информации об использовании устройства</translation>
 <translation id="4883854917563148705">Управляемые настройки сбросить нельзя</translation>
@@ -160,7 +156,6 @@
 <translation id="5335288049665977812">Разрешить сайтам использовать JavaScript (рекомендуется)</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5354152178998424783">Будут удалены данные и файлы cookie (всего <ph name="DATASIZE" />), сохраненные сайтами.</translation>
-<translation id="536508626067510330">Обновить значок на главном экране?</translation>
 <translation id="5391532827096253100">Подключение к сайту не защищено. Информация о сайте</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и ещё 1)}one{(и ещё #)}few{(и ещё #)}many{(и ещё #)}other{(и ещё #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
@@ -183,7 +178,6 @@
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5876056640971328065">Приостановить видео</translation>
-<translation id="5904826301761575486">Обновить название и значок на главном экране?</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5922853908706496913">Предоставлен доступ к вашему экрану</translation>
 <translation id="5939518447894949180">Сбросить</translation>
@@ -201,7 +195,6 @@
 <translation id="6206551242102657620">Подключение защищено. Информация о сайте</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
 <translation id="6231752747840485235">Удалить приложение "<ph name="APP_NAME" />"?</translation>
-<translation id="6260852843601447737">Закрыть и сообщить о нарушении</translation>
 <translation id="6262279340360821358">Заблокировано: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6295158916970320988">Все сайты</translation>
@@ -298,7 +291,6 @@
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
-<translation id="861748745608658996">Обновить название на главном экране?</translation>
 <translation id="8676374126336081632">Очистить</translation>
 <translation id="868929229000858085">Поиск контактов</translation>
 <translation id="8702612070107455751">Все офлайн-данные будут удалены.</translation>

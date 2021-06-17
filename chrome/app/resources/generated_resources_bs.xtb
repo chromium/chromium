@@ -650,6 +650,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1692210323591458290">Tamnoljubičasta</translation>
 <translation id="169675691788639886">Na uređaju je konfiguriran SSH server. Nemojte se prijavljivati pomoću osjetljivih računa.</translation>
 <translation id="1697150536837697295">Umjetnost</translation>
+<translation id="1697532407822776718">Sve je spremno!</translation>
 <translation id="1697686431566694143">Uredi fajl</translation>
 <translation id="1700079447639026019">Web lokacije koje nikada ne koriste kolačiće</translation>
 <translation id="1701062906490865540">Ukloni ovu osobu</translation>
@@ -6627,6 +6628,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8308179586020895837">Pitaj ako <ph name="HOST" /> želi pristupiti kameri</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Potvrda već postoji</translation>
+<translation id="831207808878314375">Definicija</translation>
 <translation id="8314089908545021657">Upari s novim telefonom</translation>
 <translation id="8314381333424235892">Ekstenzija nedostaje ili je deinstalirana</translation>
 <translation id="831440797644402910">Nije moguće otvoriti ovaj folder</translation>

@@ -90,11 +90,9 @@
 <translation id="3227137524299004712">마이크</translation>
 <translation id="3277252321222022663">사이트의 센서 액세스 허용(권장)</translation>
 <translation id="3295602654194328831">정보 숨기기</translation>
-<translation id="3317660236277031814">설치한 웹 앱의 아이콘이 변경되었습니다.</translation>
 <translation id="3328801116991980348">사이트 정보</translation>
 <translation id="3333961966071413176">모든 연락처</translation>
 <translation id="3386292677130313581">사이트에서 내 위치를 파악하도록 허용하기 전에 확인(권장)</translation>
-<translation id="345699454248713913">설치한 웹 앱의 이름이 변경되었습니다.</translation>
 <translation id="3538390592868664640">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하지 못하도록 차단</translation>
 <translation id="3551268116566418498">시크릿 모드를 종료하시겠습니까?</translation>
 <translation id="3586500876634962664">카메라 및 마이크 사용</translation>
@@ -119,7 +117,6 @@
 <translation id="4200726100658658164">위치 설정 열기</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
-<translation id="4277239631747669329">설치한 웹 앱의 이름과 아이콘이 변경되었습니다.</translation>
 <translation id="4278390842282768270">허용</translation>
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
@@ -135,7 +132,6 @@
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
 <translation id="4708011789095599544">이 웹사이트의 쿠키 및 기타 사이트 데이터를 삭제하시겠습니까?</translation>
-<translation id="473775607612524610">업데이트</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4836046166855586901">사용자가 현재 기기를 사용 중인지 사이트에서 알고자 할 때 확인</translation>
 <translation id="4883854917563148705">관리 설정은 재설정할 수 없습니다.</translation>
@@ -160,7 +156,6 @@
 <translation id="5335288049665977812">사이트에서 자바스크립트를 실행하도록 허용(권장)</translation>
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5354152178998424783">사이트에서 저장한 <ph name="DATASIZE" />의 데이터와 쿠키가 삭제됩니다.</translation>
-<translation id="536508626067510330">홈 화면에서 아이콘을 업데이트하시겠습니까?</translation>
 <translation id="5391532827096253100">이 사이트와의 연결은 안전하지 않습니다. 사이트 정보</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
@@ -183,7 +178,6 @@
 <translation id="5804241973901381774">권한</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5876056640971328065">동영상 일시중지</translation>
-<translation id="5904826301761575486">홈 화면에서 이름과 아이콘을 업데이트하시겠습니까?</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5922853908706496913">화면 공유</translation>
 <translation id="5939518447894949180">초기화</translation>
@@ -201,7 +195,6 @@
 <translation id="6206551242102657620">이 사이트와의 연결은 안전합니다. 사이트 정보</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> 옵션</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' 앱을 제거하시겠습니까?</translation>
-<translation id="6260852843601447737">닫은 후 악용사례 신고</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
@@ -298,7 +291,6 @@
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="857943718398505171">허용(권장)</translation>
 <translation id="8609465669617005112">위로 이동</translation>
-<translation id="861748745608658996">홈 화면에서 이름을 업데이트하시겠습니까?</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="868929229000858085">연락처 검색</translation>
 <translation id="8702612070107455751">모든 오프라인 데이터가 삭제됩니다.</translation>

@@ -90,11 +90,9 @@
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3277252321222022663">தளங்கள் சென்சார்களை அணுக அனுமதிக்கும் (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="3295602654194328831">தகவலை மறை</translation>
-<translation id="3317660236277031814">நீங்கள் நிறுவிய இணைய ஆப்ஸின் ஐகான் மாற்றப்பட்டுள்ளது.</translation>
 <translation id="3328801116991980348">தளம் குறித்த தகவல்</translation>
 <translation id="3333961966071413176">எல்லாத் தொடர்புகளும்</translation>
 <translation id="3386292677130313581">எனது இருப்பிடத்தை அறிய தளங்களை அனுமதிக்கும் முன் கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
-<translation id="345699454248713913">நீங்கள் நிறுவியுள்ள இணைய ஆப்ஸின் பெயர் மாற்றப்பட்டுள்ளது.</translation>
 <translation id="3538390592868664640">தளங்கள், என்னைச் சுற்றியுள்ள இடங்களின் 3D மேப்பை உருவாக்குவதையும் கேமரா நிலையை டிராக் செய்வதையும் தடு</translation>
 <translation id="3551268116566418498">மறைநிலையில் இருந்து வெளியேறவா?</translation>
 <translation id="3586500876634962664">கேமரா &amp; மைக்ரோஃபோன் பயன்பாடு</translation>
@@ -119,7 +117,6 @@
 <translation id="4200726100658658164">இருப்பிட அமைப்புகளைத் திறக்கும்</translation>
 <translation id="4226663524361240545">அறிவிப்புகள் வரும் போது சாதனம் அதிர்வுறக்கூடும்</translation>
 <translation id="4259722352634471385">செல்வது தடுக்கப்பட்டது: <ph name="URL" /></translation>
-<translation id="4277239631747669329">நீங்கள் நிறுவியுள்ள இணைய ஆப்ஸின் பெயரும் ஐகானும் மாற்றப்பட்டுள்ளது.</translation>
 <translation id="4278390842282768270">அனுமதிக்கப்பட்டது</translation>
 <translation id="429312253194641664">ஒரு தளம் மீடியாவை இயக்குகிறது</translation>
 <translation id="42981349822642051">விரி</translation>
@@ -135,7 +132,6 @@
 <translation id="4645575059429386691">உங்கள் பெற்றோரால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="4670064810192446073">விர்ச்சுவல் ரியாலிட்டி</translation>
 <translation id="4708011789095599544">இந்த இணையதளத்திற்கான குக்கீகளையும் பிற தளத்தின் தரவையும் அழிக்க விரும்புகிறீர்களா?</translation>
-<translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4751476147751820511">நகர்வு அல்லது ஒளி உணர்விகள்</translation>
 <translation id="4836046166855586901">இந்தச் சாதனத்தில் நீங்கள் செயலில் இருப்பது குறித்து ஒரு தளம் அறிந்துகொள்ள விரும்பும்போது அனுமதி கேட்கும்</translation>
 <translation id="4883854917563148705">நிர்வகிக்கப்பட்ட அமைப்புகளை மீட்டமைக்க முடியாது</translation>
@@ -160,7 +156,6 @@
 <translation id="5335288049665977812">JavaScriptஐ இயக்குவதற்கு, தளங்களை அனுமதி (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="534295439873310000">NFC சாதனங்கள்</translation>
 <translation id="5354152178998424783">இதைச் செய்தால் தளங்கள் சேமித்துள்ள <ph name="DATASIZE" /> தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
-<translation id="536508626067510330">முகப்புத் திரையில் உள்ள ஐகானை மாற்றவா?</translation>
 <translation id="5391532827096253100">இந்தத் தளத்திற்கான இணைப்பு பாதுகாப்பானதல்ல. தளத் தகவல்</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(மேலும் 1)}other{(மேலும் #)}}</translation>
 <translation id="5403592356182871684">பெயர்கள்</translation>
@@ -183,7 +178,6 @@
 <translation id="5804241973901381774">அனுமதிகள்</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5876056640971328065">வீடியோவை இடைநிறுத்து</translation>
-<translation id="5904826301761575486">முகப்புத் திரையில் உள்ள பெயரையும் ஐகானையும் மாற்ற வேண்டுமா?</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5922853908706496913">உங்கள் திரையைப் பகிர்கிறது</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
@@ -201,7 +195,6 @@
 <translation id="6206551242102657620">பாதுகாப்பான இணைப்பு. தளத் தகவல்</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> விருப்பத்தேர்வுகள்</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' ஆப்ஸை நிறுவல் நீக்கவா?</translation>
-<translation id="6260852843601447737">ஆப்ஸை மூடி தவறான பயன்பாடு குறித்து புகாரளி</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகியவற்றுக்கான அனுமதிகள் தடுக்கப்பட்டன</translation>
 <translation id="6270391203985052864">அறிவிப்புகளை அனுப்புவதற்கான அனுமதியைத் தளங்களால் கோர முடியும்</translation>
 <translation id="6295158916970320988">எல்லா தளங்களும்</translation>
@@ -298,7 +291,6 @@
 <translation id="8525306231823319788">முழுத்திரை</translation>
 <translation id="857943718398505171">அனுமதிக்கப்பட்டது (பரிந்துரைத்தது)</translation>
 <translation id="8609465669617005112">மேலே நகர்த்து</translation>
-<translation id="861748745608658996">முகப்புத் திரையில் காட்டப்படும் பெயரை மாற்றவா?</translation>
 <translation id="8676374126336081632">உள்ளீட்டை அழி</translation>
 <translation id="868929229000858085">உங்கள் தொடர்புகளில் தேடுக</translation>
 <translation id="8702612070107455751">அனைத்து ஆஃப்லைன் தரவும் அழிக்கப்படும்.</translation>

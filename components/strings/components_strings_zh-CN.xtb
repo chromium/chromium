@@ -603,6 +603,7 @@
 <translation id="3212623355668894776">请关闭所有访客窗口，以便从此设备中删除您的浏览活动记录。</translation>
 <translation id="3215092763954878852">无法使用 WebAuthn</translation>
 <translation id="3218181027817787318">相对</translation>
+<translation id="3223287115535306850">“应用正在启动”图标</translation>
 <translation id="3225919329040284222">服务器提供的证书与内置预期证书不匹配。这些预期证书是针对某些高安全性网站提供的，以便为您提供保护。</translation>
 <translation id="3226128629678568754">按“重新加载”按钮，重新提交加载该网页所需的数据。</translation>
 <translation id="3226387218769101247">缩略图</translation>
@@ -677,6 +678,7 @@
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
 <translation id="3452404311384756672">抓取时间间隔：</translation>
 <translation id="3453962258458347894">重试次数</translation>
+<translation id="3454555520521576458">可调整大小</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> 想查看复制到剪贴板的文字和图片</translation>
 <translation id="3461824795358126837">荧光笔</translation>
@@ -1003,6 +1005,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> 想对无障碍事件做出响应</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4680804919228900307">您刚刚在一个诈骗网站中输入了密码。Chromium 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及使用此密码的其他网站检查您保存的密码。</translation>
+<translation id="468314109939257734">查看您的虚拟卡号</translation>
 <translation id="4690462567478992370">停止使用无效的证书</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /><ph name="SENTENCE2" /></translation>
@@ -1910,6 +1913,7 @@
 <translation id="8057711352706143257">“<ph name="SOFTWARE_NAME" />”的配置有误。卸载“<ph name="SOFTWARE_NAME" />”通常可解决此问题。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">抱歉，出了点问题。</translation>
 <translation id="8067872629359326442">您刚刚在一个诈骗网站中输入了密码。Chromium 可以为您提供帮助。若要更改密码并让 Google 知晓您的帐号可能处于危险状态，请点击“保护帐号”。</translation>
+<translation id="8070439594494267500">应用图标</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">管理网站设置</translation>
 <translation id="8078141288243656252">无法在旋转后添加注释</translation>

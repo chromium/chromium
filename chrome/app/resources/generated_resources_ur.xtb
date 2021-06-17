@@ -645,6 +645,7 @@
 <translation id="1692210323591458290">گہرا جامنی</translation>
 <translation id="169675691788639886">‏آلہ میں SSH سرور کنفیگر ہو گیا ہے۔ حساس اکاؤنٹس کے ساتھ سائن ان نہ کریں۔</translation>
 <translation id="1697150536837697295">آرٹ</translation>
+<translation id="1697532407822776718">آپ بالکل ٹھیک ہیں!</translation>
 <translation id="1697686431566694143">فائل میں ترمیم کریں</translation>
 <translation id="1700079447639026019">وہ سائٹس جو کبھی بھی کوکیز کا استعمال نہیں کر سکتی ہیں</translation>
 <translation id="1701062906490865540">اس شخص کو ہٹائیں</translation>
@@ -1215,6 +1216,7 @@
 <translation id="2300383962156589922"><ph name="APP_NAME" /> کو ذاتی نوعیت کا بنائیں اور کنٹرول کريں</translation>
 <translation id="2300578660547687840">تلاش کے کلیدی الفاظ کیلئے کی بورڈ شارٹ کٹس</translation>
 <translation id="2301382460326681002">ایکسٹینشن روٹ ڈائریکٹری غلط ہے۔</translation>
+<translation id="2301402091755573488">اشتراک کردہ ٹیب</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" نے اضافی اجازتوں کی درخواست کی ہے۔</translation>
 <translation id="23055578400314116">صارف نام منتخب کریں</translation>
 <translation id="2307462900900812319">نیٹ ورک کنفیگر کریں</translation>
@@ -1492,6 +1494,7 @@
 <translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکے گا</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
+<translation id="2618274688675613222">سیٹ اپ جاری رکھنے کیلئے 'اگلا' بٹن فعال کریں یا "منتخب کریں" سوئچ اسائنمنٹ میں تبدیلی کرنے کیلئے 'پچھلا' بٹن فعال کریں۔</translation>
 <translation id="2618797463720777311">قریبی آلات کے ساتھ اشتراک کو سیٹ اپ کریں</translation>
 <translation id="2619761439309613843">روزانہ ریفریش کریں</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا ہے۔</translation>
@@ -2886,6 +2889,7 @@
 <translation id="4120817667028078560">پاتھ کافی لمبا ہے</translation>
 <translation id="4124823734405044952">آپ کی سیکیورٹی کلید کو دوبارہ ترتیب دے دیا گیا ہے</translation>
 <translation id="4124935795427217608">یونیکارن</translation>
+<translation id="4126916490446791914">خودکار اسکیننگ کی سہولت فعال کی گئی</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">آلے کا لاگ</translation>
 <translation id="4130207949184424187">آپ کی جانب سے اومنی باکس سے تلاش کرنے پر دکھائی دینے والے صفحہ کو اس ایکسٹینشن نے تبدیل کر دیا ہے۔</translation>
@@ -3268,6 +3272,7 @@
     اگر آپ کا بچہ اسکول میں ایک Chromebook استعمال کرتا ہے اور آپ گھر میں اسکول کے تجربے کی عکاسی کرنا چاہتے ہیں تاکہ یہ یقینی بنایا جا سکے کہ آپ کے بچے کو اسکول کے تمام ضروری کاموں تک رسائی حاصل ہے تو براہ کرم Family Link اکاؤنٹ سے سائن آؤٹ کریں اور اسکول کے اکاؤنٹ میں Chrome OS اکاؤنٹس کے صفحے سے سائن ان کریں (نوٹ: Family Link پیرنٹل کنٹرولز نافذ نہیں ہوگا)۔&lt;br&gt;&lt;br&gt;
     اگر آپ کا بچہ اسکول میں Chromebook استعمال نہیں کرتا ہے یا اگر آپ Family Link کا استعمال کر کے گھر میں اپنے بچے کے تجربے کا نظم کرنے کو ترجیح دیتے ہیں تو براہ کرم اس پروفائل میں اسکول کا اکاؤنٹ شامل کرنے کے لئے نیچے دیے گئے اگلے بٹن پر کلک کریں۔</translation>
 <translation id="4576541033847873020">بلوٹوتھ آلہ کا جوڑا بنائیں</translation>
+<translation id="4576763597586015380">‏اپنے Google اکاؤنٹ میں پاس ورڈز محفوظ کرنا جاری رکھنے کیلئے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="4579453506923101210">منسلک کردہ فون کو بھول جائیں</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> کاسٹ کرنے سے قاصر۔</translation>
 <translation id="4581774856936278355">‏Linux کو بحال کرنے کے دوران خرابی</translation>
@@ -4986,6 +4991,7 @@
 <translation id="6538098297809675636">کوڈ کا پتہ لگانے میں خرابی</translation>
 <translation id="653920215766444089">پوائنٹنگ آلات کی تلاش کی جا رہی ہے</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> صرف اس وقت فعال کریں جب آپ کو معلوم ہو کہ آپ کیا کر رہے ہیں یا اگر آپ سے ایسا کرنے کو کہا گیا ہو، کیونکہ ڈیٹا جمع کرنے سے کارکردگی کم ہو سکتی ہے۔</translation>
+<translation id="6540672086173674880">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کیلئے Google آپ کی براؤزنگ کی سرگزشت کا استعمال کر سکتا ہے۔ آپ myaccount.google.com/activitycontrols/search پر اسے کسی بھی وقت تبدیل کر سکتے ہيں</translation>
 <translation id="6541638731489116978">اس سائٹ کو آپ کے موشن سینسرز تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="6545665334409411530">تکرار کی شرح</translation>
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
@@ -5872,6 +5878,7 @@
 <translation id="754207240458482646">آپ کے اکاؤنٹ پر موجود دیگر آلات کے ساتھ مطابقت پذیر۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">اس <ph name="IDS_SHORT_PRODUCT_NAME" /> آلہ پر ڈیبگ کرنے کی خصوصیات فعال کریں</translation>
 <translation id="7543525346216957623">اپنے والدین سے پوچھیں</translation>
+<translation id="7546012169463147344">خودکار اسکیننگ کی سہولت سے اسکرین پر موجود آئٹمز خودکار طور پر اسکین ہو جائیں گے اور ان پر فوکس ہو جائے گا۔ جب کسی آئٹم پر فوکس کیا گیا ہو تو اسے فعال کرنے کیلئے وہ "منتخب کریں" کلید دبائیں جسے آپ نے ابھی اسائن کیا ہے۔</translation>
 <translation id="7547317915858803630">وارننگ: آپ کی <ph name="PRODUCT_NAME" /> ترتیبات ایک نیٹ ورک ڈرائیو پر محفوظ ہیں۔ اس کا نتیجہ رفتار میں کمی، کریشز یا ڈیٹا سے محرومی ہو سکتا ہے۔</translation>
 <translation id="7548856833046333824">لیمونیڈ</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6602,6 +6609,7 @@
 <translation id="8308179586020895837">پوچھیں کہ آیا <ph name="HOST" /> آپ کے کیمرے تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8309458809024885768">سرٹیفیکیٹ پہلے سے موجود ہے</translation>
+<translation id="831207808878314375">تعریف</translation>
 <translation id="8314089908545021657">نئے فون کے ساتھ جوڑا بنائیں</translation>
 <translation id="8314381333424235892">غائب یا غیر انسٹال کردہ ایکسٹینشن</translation>
 <translation id="831440797644402910">اس فولڈر کو نہیں کھول سکتے</translation>
@@ -6841,6 +6849,7 @@
 <translation id="8621866727807194849">‏آپ کے کمپیوٹر میں نقصان دہ سافٹ ویئر ہے۔ Chrome اسے ہٹا کر آپ کی ترتیبات بحال اور ایکسٹینشنز کو غیر فعال کر رہا ہے۔ اس سے آپ کا براؤزر دوبارہ حسب معمول کام کرنے لگے گا۔</translation>
 <translation id="8621979332865976405">اپنی پوری اسکرین کا اشتراک کریں</translation>
 <translation id="8624354461147303341">رعایتیں حاصل کریں</translation>
+<translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;ایکسٹینشنز</translation>
 <translation id="8625663000550647058">آپ کے مائیکروفون کو استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="8625916342247441948">‏سائٹس کو HID آلات سے منسلک ہونے کی اجازت نہ دیں</translation>
@@ -6904,6 +6913,7 @@
 <translation id="8677212948402625567">سبھی کو سکیڑیں…</translation>
 <translation id="867767487203716855">اگلا اپ ڈیٹ</translation>
 <translation id="8677859815076891398">‏کوئی البم نہیں ہے۔ <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> میں ایک البم تخلیق کریں۔</translation>
+<translation id="8678538439778360739">‏<ph name="TIME" /> پر، آپ کے مطابقت پذیر پاس فریز کی مدد سے ڈيٹا کی مرموزکاری کر دی گئی۔ اس میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔</translation>
 <translation id="8678582529642151449">ٹیبز چھوٹے نہیں کئے جاتے</translation>
 <translation id="8678933587484842200">آپ اس ایپلیکیشن کو کس طرح لانچ کرنا چاہیں گے؟</translation>
 <translation id="8680251145628383637">‏اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔ آپ اپنی Google سروسز میں خود بخود سائن ان بھی ہو جائیں گے۔</translation>

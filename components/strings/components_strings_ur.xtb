@@ -608,6 +608,7 @@
 <translation id="3212623355668894776">سبھی مہمان ونڈوز کو بند کریں تاکہ آپ کی براؤزنگ کی سرگرمی اس آلے سے حذف ہو جائے۔</translation>
 <translation id="3215092763954878852">‏WebAuthn کا استعمال نہیں کیا جا سکا</translation>
 <translation id="3218181027817787318">متعلقہ</translation>
+<translation id="3223287115535306850">ایپ لانچنگ تھروبر</translation>
 <translation id="3225919329040284222">سرور نے ایک سرٹیفکیٹ پیش کیا ہے جو پہلے سے موجود توقعات سے مماثل نہیں ہے۔ آپ کے تحفظ کیلئے یہ توقعات مخصوص، انتہائی سیکیورٹی والی ویب سائٹس کیلئے شامل کی جاتی ہیں۔</translation>
 <translation id="3226128629678568754">صفحہ کو لوڈ کرنے کیلئے درکار ڈیٹا دوبارہ جمع کرانے کیلئے دوبارہ لوڈ کریں بٹن دبائیں۔</translation>
 <translation id="3226387218769101247">تھمب نیلز</translation>
@@ -681,6 +682,7 @@
 <translation id="3447884698081792621">سرٹیفیکیٹ دکھائیں (<ph name="ISSUER" /> کی جانب سے جاری کردہ)</translation>
 <translation id="3452404311384756672">وقفہ بازیافت کریں:</translation>
 <translation id="3453962258458347894">دوبارہ کوشش کرنے کی تعداد</translation>
+<translation id="3454555520521576458">سائز تبدیل کرنے لائق</translation>
 <translation id="3456231139987291353">Number-11 ‎(Envelope‎)‎</translation>
 <translation id="3461266716147554923"><ph name="URL" /> کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھنا چاہتا ہے</translation>
 <translation id="3461824795358126837">ہائی لائٹر</translation>
@@ -1013,6 +1015,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> ایکسیسبیلٹی کے ایونٹس کا جواب دینا چاہتا ہے</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chromium <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" />، <ph name="WEBSITE_3" /> اور دیگر ایسی سائٹس کے لیے اپنے محفوظ کردہ پاس ورڈز کو ابھی چیک کرنے کی تجویز کرتا ہے جہاں آپ اس پاس ورڈ کا استعمال کرتے ہیں۔</translation>
+<translation id="468314109939257734">اپنا ورچوئل کارڈ نمبر دیکھیں</translation>
 <translation id="4690462567478992370">ایک غلط سرٹیفیکیٹ کا استعمال روکیں</translation>
 <translation id="4691835149146451662">Architecture-A ‎(Envelope‎)‎</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1918,6 +1921,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" صحیح طور پر کنفیگر کردہ نہیں ہے۔ عام طور سے "<ph name="SOFTWARE_NAME" />" کو ان انسٹال کرنے سے یہ مسئلہ حل ہو جاتا ہے۔ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">معذرت، کچھ غلط ہو گیا۔</translation>
 <translation id="8067872629359326442">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chromium مدد کر سکتا ہے۔ اپنا پاس ورڈ تبدیل کرنے اور Google کو یہ مطلع کرنے کے لیے کہ آپ کا اکاؤنٹ خطرے میں ہو سکتا ہے، 'اکاؤنٹ کا تحفظ کریں' پر کلک کریں۔</translation>
+<translation id="8070439594494267500">ایپ آئیکن</translation>
 <translation id="8074253406171541171">10x13 ‎(Envelope‎)‎</translation>
 <translation id="8075898834294118863">سائٹ کی ترتیبات کا نظم کریں</translation>
 <translation id="8078141288243656252">گھماتے وقت تشریح نہیں کی جا سکتی</translation>
@@ -2201,6 +2205,7 @@
 <translation id="9128870381267983090">نیٹ ورک سے منسلک ہوں</translation>
 <translation id="9137013805542155359">اصل دکھائیں</translation>
 <translation id="9141013498910525015">پتوں کا نظم کریں</translation>
+<translation id="9144951720726881238">اختتامی تاریخ:</translation>
 <translation id="9148088599418889305">ترسیل کا طریقہ منتخب کریں</translation>
 <translation id="9148507642005240123">ترمیم کریں کو &amp;کالعدم کریں</translation>
 <translation id="9150045010208374699">اپنا کیمرا استعمال کریں</translation>

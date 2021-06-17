@@ -52,6 +52,7 @@
 <translation id="1307205233980126133">క్షమించండి, మేము మీ ఆధారాలను వాలిడేట్ చేయలేకపోయాము</translation>
 <translation id="1310482092992808703">ట్యాబ్‌లను గుంపుగా చేయి</translation>
 <translation id="1311657260431405215">ఈ QR కోడ్ URL కాదు: <ph name="QRCODEVALUE" /></translation>
+<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1327257854815634930">నావిగేషన్ చరిత్ర తెరిచి ఉంది</translation>
 <translation id="1331212799747679585">Chromeని అప్‌డేట్ చేయడం సాధ్యపడదు. మరిన్ని ఎంపికలు</translation>
 <translation id="1332501820983677155">Google Chrome లక్షణ సత్వరమార్గాలు</translation>
@@ -227,7 +228,6 @@
 <translation id="247737702124049222">ఇమేజ్ వివరణలు ఆన్ చేయబడ్డాయి</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2485422356828889247">అన్ఇన్‌స్టాల్ చేయి</translation>
-<translation id="2489545061398461256">మేము పూర్తి చేసిన తర్వాత, మళ్లీ దాన్ని స్విచ్ ఆఫ్ చేస్తాము</translation>
 <translation id="2494974097748878569">Chromeలో Google అసిస్టెంట్</translation>
 <translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2497852260688568942">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు</translation>
@@ -540,7 +540,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# నిమిషం క్రితం}other{# నిమిషాల క్రితం}}</translation>
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
-<translation id="4608360466722749036">బ్లూటూత్ స్విచ్ ఆన్ అవుతోంది…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించు</translation>
@@ -961,6 +960,7 @@
 <translation id="718926126787620637">పూర్తి ఎత్తులో తెరవబడిన బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్</translation>
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
 <translation id="7233236755231902816">మీ భాషలో వెబ్‌ను చూడడానికి, Chrome యొక్క తాజా వెర్షన్‌ను డౌన్‌లోడ్ చేసుకోండి</translation>
+<translation id="7242755609445462077">శైలీకరించిన హైలైట్ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7252076891734325316">మీ ఫోన్‌ను కంప్యూటర్‌కు దగ్గరగా ఉంచండి</translation>
 <translation id="7274013316676448362">బ్లాక్ చేసిన సైట్</translation>

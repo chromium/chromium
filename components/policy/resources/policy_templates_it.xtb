@@ -925,7 +925,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       Se il criterio viene impostato su "Default" (0) o se non viene configurato, la corrispondenza degli URL è meno rigorosa. Per le regole che non contengono "/" viene cercata una sottostringa in un punto qualsiasi del nome host dell'URL.
 
-      Se il criterio viene impostato su "Strict" (1), la corrispondenza degli URL è più rigorosa. Per le regole che non contengono "/" viene cercata una corrispondenza soltanto alla fine del nome host. Le regole devono essere inoltre a un limite del nome di dominio. Questo garantisce più compatibilità con <ph name="MS_IE_PRODUCT_NAME" /> e <ph name="MS_EDGE_PRODUCT_NAME" />, ad esempio, con la regola "example.com":
+      Se il criterio viene impostato su "Strict" (1), la corrispondenza degli URL è più rigorosa. Per le regole che non contengono "/" viene cercata una corrispondenza soltanto alla fine del nome host. Le regole devono inoltre coincidere con il limite di un nome di dominio. Questo garantisce più compatibilità con <ph name="MS_IE_PRODUCT_NAME" /> e <ph name="MS_EDGE_PRODUCT_NAME" />, ad esempio, con la regola "example.com":
 
       "http://example.com/" e "http://subdomain.example.com/" corrispondono a prescindere dalla modalità di analisi.
 
@@ -3454,7 +3454,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
 <translation id="5541621819310532773">La configurazione di questo criterio consente di stabilire se consentire o meno alle applicazioni web con installazione forzata di ricevere gli attributi dei dispositivi (ad esempio, numero di serie, nome host) usando l'API web Device Attributes.
 
-      Se questo criterio viene impostato su vero o non viene configurato, l'API web Device Attributes sarà consentita per le applicazioni web con installazione forzata.
+      Se questo criterio viene impostato su vero o non viene configurato, l'API web Device Attributes potrà forzare l'installazione delle applicazioni web.
 
       Se questo criterio viene impostato su falso, l'API web Device Attributes non sarà consentita.</translation>
 <translation id="554903022911579950">Kerberos</translation>
@@ -4574,7 +4574,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="69525503251220566">Parametro che fornisce la funzione di ricerca tramite immagine per il provider di ricerca predefinito</translation>
 <translation id="6953102253399571439">Attiva la stampa PIN per impostazione predefinita</translation>
 <translation id="6956272732789158625">Non consentire a nessun sito di utilizzare la generazione di chiavi</translation>
-<translation id="6959021201443139119">Per i cookie impostati per i domini corrispondenti a questi pattern verrà ripristinato il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+<translation id="6959021201443139119">Per i cookie impostati per i domini corrispondenti a questi pattern verrà ripristinato il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono uno stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Per i cookie sui domini non previsti dai pattern specificati qui oppure per tutti i cookie se questo criterio non viene impostato, il valore predefinito globale sarà la configurazione personale dell'utente.
 

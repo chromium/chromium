@@ -391,6 +391,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5062321486222145940">Install Google Drive</translation>
 <translation id="5083464117946352670">Cannot determine file size.</translation>
 <translation id="5090832849094901128">Deleting this password will not delete your account on <ph name="WEBSITE" />.</translation>
+<translation id="5092117651143801290">You can save pages to read later or offline. Chrome will ask if you want to save long pages.</translation>
 <translation id="5094827893301452931">Tweet completed.</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">Sync is off</translation>
@@ -757,6 +758,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8548878600947630424">Find in page...</translation>
 <translation id="8574235780160508979">Chrome’s Terms of Service are changing on 31 March. <ph name="BEGIN_LINK" />Please review<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Off</translation>
+<translation id="8590913940444621808">Never Ask</translation>
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Edit</translation>

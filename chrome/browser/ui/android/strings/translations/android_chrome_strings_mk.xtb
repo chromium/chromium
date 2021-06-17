@@ -229,7 +229,6 @@
 <translation id="247737702124049222">Описите за слики се вклучени.</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
-<translation id="2489545061398461256">Ќе го исклучиме штом ќе завршиме</translation>
 <translation id="2494974097748878569">„Помошникот на Google“ во Chrome</translation>
 <translation id="2496180316473517155">Историја на прелистување</translation>
 <translation id="2497852260688568942">Администраторот ја оневозможил синхронизацијата</translation>
@@ -542,7 +541,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4583164079174244168">{MINUTES,plural, =1{Пред # минута}one{Пред # минута}other{Пред # минути}}</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
-<translation id="4608360466722749036">Се вклучува Bluetooth…</translation>
 <translation id="4616150815774728855">Отвори <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>

@@ -228,7 +228,6 @@
 <translation id="247737702124049222">'பட விளக்கங்கள்' இயக்கப்பட்டது</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2485422356828889247">நிறுவல் நீக்கு</translation>
-<translation id="2489545061398461256">பரிமாற்றம் முடிந்ததும் முடக்கப்படும்</translation>
 <translation id="2494974097748878569">Chromeமில் Google அசிஸ்டண்ட்</translation>
 <translation id="2496180316473517155">உலாவல் வரலாறு</translation>
 <translation id="2497852260688568942">உங்கள் நிர்வாகி ஒத்திசைவை முடக்கியுள்ளார்</translation>
@@ -541,7 +540,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
-<translation id="4608360466722749036">புளூடூத்தை இயக்குகிறது…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
 <translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>

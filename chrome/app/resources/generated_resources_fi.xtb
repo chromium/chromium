@@ -648,6 +648,7 @@
 <translation id="1692210323591458290">Tummanvioletti</translation>
 <translation id="169675691788639886">Laitteelle on määritetty SSH-palvelin. Älä kirjaudu sisään arkaluontoisilla tileillä.</translation>
 <translation id="1697150536837697295">Taide</translation>
+<translation id="1697532407822776718">Kaikki on valmista.</translation>
 <translation id="1697686431566694143">Muokkaa tiedostoa</translation>
 <translation id="1700079447639026019">Sivustot, jotka eivät koskaan voi käyttää evästeitä</translation>
 <translation id="1701062906490865540">Poista tämä henkilö</translation>
@@ -6624,6 +6625,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8308179586020895837">Kysy, jos <ph name="HOST" /> haluaa käyttää kameraasi</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Sertifikaatti on jo olemassa.</translation>
+<translation id="831207808878314375">Määritelmä</translation>
 <translation id="8314089908545021657">Lisää uusi puhelin pariksi</translation>
 <translation id="8314381333424235892">Puuttuva tai virheellinen laajennus</translation>
 <translation id="831440797644402910">Kansion avaaminen epäonnistui</translation>

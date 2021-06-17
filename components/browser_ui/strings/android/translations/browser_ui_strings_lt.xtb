@@ -90,11 +90,9 @@
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3277252321222022663">Leidžiama svetainėms pasiekti jutiklius (rekomenduojama)</translation>
 <translation id="3295602654194328831">Slėpti informaciją</translation>
-<translation id="3317660236277031814">Žiniatinklio programa, kurią įdiegėte, pakeitė piktogramą.</translation>
 <translation id="3328801116991980348">Svetainės informacija</translation>
 <translation id="3333961966071413176">Visi kontaktai</translation>
 <translation id="3386292677130313581">Klausti prieš leidžiant svetainėms žinoti vietą (rekomenduojama)</translation>
-<translation id="345699454248713913">Žiniatinklio programa, kurią įdiegėte, pakeitė pavadinimą.</translation>
 <translation id="3538390592868664640">Blokuoti, kad svetainės nekurtų jūsų aplinkos 3D žemėlapio ir nestebėtų kameros padėties</translation>
 <translation id="3551268116566418498">Išjungti inkognito režimą?</translation>
 <translation id="3586500876634962664">Kameros ir mikrofono naudojimas</translation>
@@ -119,7 +117,6 @@
 <translation id="4200726100658658164">Atidaryti vietovės nustatymus</translation>
 <translation id="4226663524361240545">Gavus pranešimą įrenginys gali vibruoti</translation>
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
-<translation id="4277239631747669329">Žiniatinklio programa, kurią įdiegėte, pakeitė pavadinimą ir piktogramą.</translation>
 <translation id="4278390842282768270">Leidžiama</translation>
 <translation id="429312253194641664">Svetainėje leidžiama medija</translation>
 <translation id="42981349822642051">Išskleisti</translation>
@@ -135,7 +132,6 @@
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
 <translation id="4670064810192446073">Virtualioji realybė</translation>
 <translation id="4708011789095599544">Ar tikrai norite išvalyti šios svetainės slapukus ir kitus svetainės duomenis?</translation>
-<translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4751476147751820511">Judesio arba šviesos jutikliai</translation>
 <translation id="4836046166855586901">Klausti, kai svetainė nori žinoti, kada aktyviai naudojate šį įrenginį</translation>
 <translation id="4883854917563148705">Tvarkomų nustatymų negalima nustatyti iš naujo</translation>
@@ -160,7 +156,6 @@
 <translation id="5335288049665977812">Leisti svetainėms paleisti „JavaScript“ (rekomenduojama)</translation>
 <translation id="534295439873310000">ALR įrenginiai</translation>
 <translation id="5354152178998424783">Tai atlikus bus išvalyta <ph name="DATASIZE" /> svetainių saugomų duomenų ir slapukų.</translation>
-<translation id="536508626067510330">Atnaujinti piktogramą pagrindiniame ekrane?</translation>
 <translation id="5391532827096253100">Ryšys su šia svetaine nėra saugus. Svetainės informacija</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
@@ -183,7 +178,6 @@
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5876056640971328065">Pristabdyti vaizdo įrašą</translation>
-<translation id="5904826301761575486">Atnaujinti pavadinimą ir piktogramą pagrindiniame ekrane?</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5922853908706496913">Bendrinamas ekranas</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
@@ -201,7 +195,6 @@
 <translation id="6206551242102657620">Ryšys yra saugus. Svetainės informacija</translation>
 <translation id="6216432067784365534">„<ph name="NAME_OF_LIST_ITEM" />“ parinktys</translation>
 <translation id="6231752747840485235">Pašalinti „<ph name="APP_NAME" />“?</translation>
-<translation id="6260852843601447737">Uždaryti ir pranešti apie piktnaudžiavimą</translation>
 <translation id="6262279340360821358">Užblokuota: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Svetainės gali prašyti siųsti pranešimus</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
@@ -298,7 +291,6 @@
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
-<translation id="861748745608658996">Atnaujinti pavadinimą pagrindiniame ekrane?</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="868929229000858085">Ieškokite savo kontaktuose</translation>
 <translation id="8702612070107455751">Visi neprisijungus pasiekiami duomenys bus išvalyti.</translation>

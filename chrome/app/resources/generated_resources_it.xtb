@@ -645,6 +645,7 @@
 <translation id="1692210323591458290">Viola scuro</translation>
 <translation id="169675691788639886">Sul dispositivo è stato configurato un server SSH. Non accedere con account sensibili.</translation>
 <translation id="1697150536837697295">Arte</translation>
+<translation id="1697532407822776718">Ecco fatto!</translation>
 <translation id="1697686431566694143">Modifica file</translation>
 <translation id="1700079447639026019">Siti che non possono mai usare i cookie</translation>
 <translation id="1701062906490865540">Rimuovi questa persona</translation>
@@ -5881,7 +5882,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="754207240458482646">Sincronizzata con altri dispositivi sul tuo account. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Attiva funzioni di debug su questo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7543525346216957623">Chiedi a uno dei tuoi genitori</translation>
-<translation id="7546012169463147344">Con la scansione automatica viene attivato lo spostamento automatico tra gli elementi sullo schermo e l'impostazione dello stato attivo sugli elementi. Quando lo stato attivo viene impostato sull'elemento che ti interessa, premi il tasto "Seleziona" appena assegnato per attivarlo.</translation>
+<translation id="7546012169463147344">Con la scansione automatica viene attivato lo spostamento automatico e lo stato attivo degli elementi sullo schermo. Quando lo stato attivo viene impostato sull'elemento che ti interessa, premi il tasto "Seleziona" appena assegnato per attivarlo.</translation>
 <translation id="7547317915858803630">Avviso. Le tue impostazioni <ph name="PRODUCT_NAME" /> sono memorizzate su un'unità di rete. Potrebbero verificarsi rallentamenti, arresti anomali o persino perdite di dati.</translation>
 <translation id="7548856833046333824">Limonata</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -6613,6 +6614,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8308179586020895837">Chiedi conferma se <ph name="HOST" /> vuole accedere alla webcam</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Il certificato esiste già</translation>
+<translation id="831207808878314375">Definizione</translation>
 <translation id="8314089908545021657">Accoppia con nuovo telefono</translation>
 <translation id="8314381333424235892">Estensione mancante o non installata</translation>
 <translation id="831440797644402910">Impossibile aprire questa cartella</translation>

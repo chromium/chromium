@@ -229,7 +229,6 @@
 <translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2485422356828889247">제거</translation>
-<translation id="2489545061398461256">작업이 완료되면 블루투스가 다시 사용 중지됩니다</translation>
 <translation id="2494974097748878569">Chrome의 Google 어시스턴트</translation>
 <translation id="2496180316473517155">인터넷 사용 기록</translation>
 <translation id="2497852260688568942">관리자가 동기화를 사용 중지했습니다.</translation>
@@ -542,7 +541,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
-<translation id="4608360466722749036">블루투스를 사용 설정하는 중…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>

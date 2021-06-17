@@ -229,7 +229,6 @@
 <translation id="247737702124049222">इमेज की जानकारी जोड़ने की सुविधा चालू कर दी गई है</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2485422356828889247">विस्थापित करें</translation>
-<translation id="2489545061398461256">यह कार्रवाई पूरी होने के बाद, ब्लूटूथ अपने-आप बंद हो जाएगा</translation>
 <translation id="2494974097748878569">Chrome में Google Assistant</translation>
 <translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
 <translation id="2497852260688568942">सिंक को आपके व्यवस्थापक ने अक्षम कर दिया है</translation>
@@ -542,7 +541,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">यह पेज <ph name="CREATION_TIME" /> का है और यह ऑनलाइन वर्शन से अलग हो सकता है.</translation>
-<translation id="4608360466722749036">ब्लूटूथ चालू हो रहा है…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> को खोलें</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4634124774493850572">पासवर्ड का इस्तेमाल करें</translation>
@@ -964,7 +962,7 @@
 <translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
 <translation id="7233236755231902816">वेब को अपनी भाषा में देखने के लिए, Chrome का नया वर्शन पाएं</translation>
-<translation id="7242755609445462077">बेहतर बनाया गया हाइलाइट <ph name="CURRENT_DATE" /></translation>
+<translation id="7242755609445462077">बेहतर बनाई गई हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> पर Chrome में सिंक करने की सुविधा चालू है</translation>
 <translation id="7252076891734325316">अपने फ़ोन को कंप्यूटर के पास रखें</translation>
 <translation id="7274013316676448362">अवरोधित साइट</translation>

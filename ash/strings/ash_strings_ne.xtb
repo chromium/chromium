@@ -40,6 +40,7 @@
 <translation id="1247372569136754018">माइक्रोफोन (आन्तरिक)</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> द्वारा चार्ज हुँदै</translation>
 <translation id="1255033239764210633">मौसम कस्तो छ?</translation>
+<translation id="1266097335951928626">सेल्फी क्यामेरा अन गर्नुहोस्</translation>
 <translation id="1267032506238418139">सर्टकट परिवर्तन</translation>
 <translation id="1269405891096105529">गेस्ट मोड अन हुँदा सहायक डिभाइसहरूले काम गर्दैनन्</translation>
 <translation id="1270290102613614947">अन-स्क्रिन किबोर्ड अक्षम गरियो</translation>
@@ -79,6 +80,7 @@
 <translation id="1516740043221086139">बाधा नपुर्‍याउनुहोस् नामक मोड सक्रिय छ।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। एउटा एपका लागि सूचनाहरू निष्क्रिय छन्}other{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। # एपका लागि सूचनाहरू निष्क्रिय छन्}}</translation>
 <translation id="1525508553941733066">खारेज गर्नुहोस्</translation>
+<translation id="1536604384701784949">तपाईं सबै खाताबाट साइन आउट भइसकेपछि मात्र <ph name="USER_EMAIL_ADDRESS" /> चलाउन सक्नुहुन्छ। तपाईं साइन आउट गर्न चाहनुहुन्छ भने 'रद्द गर्नुहोस्' चयन गरेर पछाडि जानुहोस्। त्यसपछि 'वस्तुस्थिति क्षेत्र' खोल्न 'समय' चयन गर्नुहोस् र 'साइन आउट गर्नुहोस्' चयन गर्नुहोस्। त्यसपछि फेरि <ph name="USER_EMAIL_ADDRESS_2" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="15373452373711364">ठुलो माउस कर्सर</translation>
 <translation id="1546492247443594934">डेस्क २</translation>
 <translation id="1550523713251050646">थप विकल्पहरूका लागि क्लिक गर्नुहोस्</translation>
@@ -136,8 +138,10 @@
 <translation id="2016340657076538683">एउटा सन्देश टाइप गर्नुहोस्</translation>
 <translation id="2018630726571919839">मलाई एउटा चुट्किला सुनाउनुहोस्</translation>
 <translation id="2021864487439853900">अनलक गर्न क्लिक गर्नुहोस्</translation>
+<translation id="2047639699071423250">मुख्य विचार हाल्नुहोस्</translation>
 <translation id="2049240716062114887">डेस्कको नाम बदलेर <ph name="DESK_NAME" /> बनाइयो</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
+<translation id="2066708475850724665">म्याग्निफायर बन्द गर्नुहोस्</translation>
 <translation id="2067602449040652523">किबोर्डको चमक</translation>
 <translation id="2078034614700056995">अर्को डेस्कमा जान टचप्याडमा चारवटा औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2079504693865562705">सेल्फमा एपहरू लुकाउनुहोस्</translation>
@@ -145,6 +149,7 @@
 <translation id="2083190527011054446">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्कमा जोडिएको छैन</translation>
 <translation id="2108303511227308752">Alt + Backspace किबोर्ड सर्टकट परिवर्तन गरिएको छ। Delete की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Backspace थिच्नुहोस्।</translation>
+<translation id="211328683600082144">माइक्रोफोन अन गर्नुहोस्</translation>
 <translation id="2126242104232412123">नयाँ डेस्क</translation>
 <translation id="2127372758936585790">न्यून-पावर चार्जर</translation>
 <translation id="2132302418721800944">फुल स्क्रिनको भिडियो रेकर्ड गर्नुहोस्</translation>
@@ -331,6 +336,7 @@
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
 <translation id="3665889125180354336">माइक्रोफोनमार्फत रेकर्ड गर्नुहोस्</translation>
+<translation id="3680908746918359504">सबै मार्करहरू हटाउनुहोस्</translation>
 <translation id="36813544980941320">तपाईंको फोन र <ph name="DEVICE_NAME" /> का बिचमा Wi-Fi नेटवर्कहरू सेयर गरिने छन्</translation>
 <translation id="3702809606464356667">हालको डेस्कमा रहेका विन्डोहरू देखाइँदै छन्, सबै डेस्कमा रहेका विन्डोहरू देखाउन अप एरो की थिच्नुहोस्</translation>
 <translation id="3702846122927433391">नाइजेरियाको जनसङ्ख्या कति छ</translation>
@@ -382,6 +388,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{एउटा एपमा अफ}other{# एपमा अफ}}</translation>
 <translation id="4066027111132117168">अन छ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">मध्यम सिग्नल</translation>
+<translation id="4095366824370681039">इङ्क पेन</translation>
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
 <translation id="4114315158543974537">फोन हब अन गर्नुहोस्</translation>
 <translation id="412298498316631026">विन्डो</translation>
@@ -451,12 +458,15 @@
 <translation id="4570957409596482333">सेलेक्ट टु स्पिक सेवासम्बन्धी बटन</translation>
 <translation id="4577274620589681794">समय सकियो · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">प्रिभ्यूहरू देखाउनुहोस्</translation>
+<translation id="4578196883126898996">तपाईंको माइक्रोफोन अफ छ। आफ्नो डिभाइसको माइक्रोफोन बटन अन गर्नुहोस्।</translation>
 <translation id="4578906031062871102">'सेटिङ' मेनु खोलियो</translation>
 <translation id="4581047786858252841">माइक्रोफोन अन छ</translation>
 <translation id="4585337515783392668">कुनै अज्ञात प्रापकमा casting गर्न छाड्नुहोस्</translation>
+<translation id="4586483766170476230">सेल्फी क्यामेरा बन्द गर्नुहोस्</translation>
 <translation id="4587299710837179226">माइक्रोफोन अफ छ</translation>
 <translation id="4596144739579517758">अँध्यारो थिम अफ छ</translation>
 <translation id="4611292653554630842">लग इन गर्नुहोस्</translation>
+<translation id="4614295562446151104">मार्कर टुलहरू एक्सपान्ड गर्नुहोस्</translation>
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
 <translation id="4628757576491864469">यन्त्रहरू</translation>
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
@@ -515,6 +525,8 @@
 <translation id="5035389544768382859">डिस्प्ले कन्फिगुरेसन पुष्टि गर्नुहोस्</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="504465286040788597">अघिल्लो अनुच्छेद</translation>
+<translation id="5071064518267176975">कुनै एपले माइक्रोफोन प्रयोग गर्ने अनुमति माग्दै छ</translation>
+<translation id="5075554201838155866">क्लोज्ड क्याप्सन देखाउन थालियोस्</translation>
 <translation id="5078796286268621944">गलत PIN</translation>
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
@@ -685,6 +697,7 @@
 <translation id="6612802754306526077">स्क्रिन रेकर्डिङ मोड चयन गरियो</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="6629480180092995136"><ph name="APP_NAME" /> ले माइक्रोफोन प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="6637729079642709226">समय परिवर्तन गर्नुहोस्</translation>
 <translation id="6641720045729354415">लाइभ क्याप्सन टगल गरी अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
@@ -739,6 +752,7 @@
 <translation id="7029814467594812963">सत्रबाट निस्कनु…</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google सहायक</translation>
 <translation id="7042322267639375032">वस्तुस्थिति देखाउने क्षेत्र संक्षिप्त गर्नुहोस्</translation>
+<translation id="7045595904618419789">म्याग्निफायर अन गर्नुहोस्</translation>
 <translation id="7055910611768509537">स्टाइलस प्रयोग नगरेको एक हप्ताभन्दा बढी भइसकेको छ</translation>
 <translation id="7066646422045619941">यस नेटवर्कलाई तपाईंको प्रशासकद्वारा असक्षम गरिएको छ।</translation>
 <translation id="7067196344162293536">स्वतः घुमाउनुहोस्</translation>
@@ -759,6 +773,7 @@
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
 <translation id="726276584504105859">विभाजित स्क्रिनको प्रयोग गर्न यहाँ ड्र्याग गर्नुहोस्</translation>
 <translation id="7262906531272962081">रिमाइन्डर सिर्जना गर्नुहोस्</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> मार्करको रङ</translation>
 <translation id="7302889331339392448">लाइभ क्याप्सन अफ छ।</translation>
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -789,6 +804,7 @@
 <translation id="7473891865547856676">पर्दैन, धन्यवाद</translation>
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
 <translation id="7483025031359818980">स्रोतका रुपमा 'फुल स्क्रिन' चयन गरिएको छ</translation>
+<translation id="7486227320194954040">मार्कर टुलहरू कोल्याप्स गर्नुहोस्</translation>
 <translation id="7497767806359279797">भाषा तथा किबोर्ड छनौट गर्नुहोस्</translation>
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7513622367902644023">स्क्रिनसट मोड चयन गरियो</translation>
@@ -807,6 +823,7 @@
 <translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7618774594543487847">तटस्थ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7631906263969450674">मार्कर पेन</translation>
 <translation id="7633755430369750696">नजिकैका डिभाइससँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्।</translation>
 <translation id="7641938616688887143">रेकर्ड गर्नुहोस्</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को सेटिङ खोल्नुहोस्</translation>
@@ -822,6 +839,7 @@
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7745560842763881396">सेल्फमा एपहरू देखाउनुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
+<translation id="7749640678855296659">तपाईंको माइक्रोफोन अहिले अफ छ</translation>
 <translation id="776344839111254542">अद्यावधिकसम्बन्धी विवरणहरू हेर्न क्लिक गर्नुहोस्</translation>
 <translation id="7780159184141939021">स्क्रिन घुमाउनुहोस्</translation>
 <translation id="7796353162336583443">कुनै टिपोट, स्क्रिनसट लिन, Google सहायक, लेजर पोइन्टर वा म्याग्निफाइङ ग्लास प्रयोग गर्न सेल्फमा रहेको स्टाइलस बटनमा ट्याप गर्नुहोस्।</translation>
@@ -869,6 +887,7 @@
 <translation id="8113423164597455979">सबै डिभाइसमा अन</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8131740175452115882">निश्चित</translation>
+<translation id="8132487352815776550">क्लोज्ड क्याप्सन देखाउन छाडियोस्</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> मा जडित</translation>
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
 <translation id="8142441511840089262">दुई पटक क्लिक गर्नुहोस्</translation>

@@ -229,7 +229,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="247737702124049222">Opisy do obrazów są włączone</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
-<translation id="2489545061398461256">Potem automatycznie go wyłączymy</translation>
 <translation id="2494974097748878569">Asystent Google w Chrome</translation>
 <translation id="2496180316473517155">Historia przeglądania</translation>
 <translation id="2497852260688568942">Synchronizację wyłączył administrator</translation>
@@ -542,7 +541,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="4587589328781138893">Witryny</translation>
 <translation id="4594952190837476234">Ta strona offline jest z <ph name="CREATION_TIME" /> i może różnić się od wersji online.</translation>
-<translation id="4608360466722749036">Włączam Bluetooth…</translation>
 <translation id="4616150815774728855">Otwórz <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>

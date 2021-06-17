@@ -645,6 +645,7 @@
 <translation id="1692210323591458290">Porpra fosc</translation>
 <translation id="169675691788639886">El dispositiu té configurat un servidor SSH. No iniciïs la sessió amb comptes relacionats amb informació sensible.</translation>
 <translation id="1697150536837697295">Art</translation>
+<translation id="1697532407822776718">Ja estàs a punt!</translation>
 <translation id="1697686431566694143">Edita el fitxer</translation>
 <translation id="1700079447639026019">Llocs web que mai no poden fer servir galetes</translation>
 <translation id="1701062906490865540">Suprimeix aquesta persona</translation>
@@ -6615,6 +6616,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8308179586020895837">Pregunta si <ph name="HOST" /> vol accedir a la càmera</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">El certificat ja existeix</translation>
+<translation id="831207808878314375">Definició</translation>
 <translation id="8314089908545021657">Vincula amb un altre telèfon</translation>
 <translation id="8314381333424235892">Falta una extensió o està desinstal·lada</translation>
 <translation id="831440797644402910">No es pot obrir aquesta carpeta</translation>

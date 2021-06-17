@@ -644,6 +644,7 @@
 <translation id="1692210323591458290">Бараан ягаан</translation>
 <translation id="169675691788639886">Төхөөрөмжид SSH сервер тохируулсан байна. Эмзэг бүртгэлүүдээр бүү нэвтэрнэ үү.</translation>
 <translation id="1697150536837697295">Урлаг</translation>
+<translation id="1697532407822776718">Тохируулга дууссан</translation>
 <translation id="1697686431566694143">Файлыг засах</translation>
 <translation id="1700079447639026019">Хэзээ ч күүки ашиглах боломжгүй сайтууд</translation>
 <translation id="1701062906490865540">Энэ хүнийг устга</translation>
@@ -6621,6 +6622,7 @@
 <translation id="8308179586020895837">Хэрэв <ph name="HOST" /> камерт хандахыг хүсвэл асуух</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8309458809024885768">Энэ сертификат байна</translation>
+<translation id="831207808878314375">Тодорхойлолт</translation>
 <translation id="8314089908545021657">Шинэ утастай хослуулах</translation>
 <translation id="8314381333424235892">Өргөтгөл байхгүй эсвэл устгагдсан</translation>
 <translation id="831440797644402910">Энэ фолдерыг нээх боломжгүй байна</translation>

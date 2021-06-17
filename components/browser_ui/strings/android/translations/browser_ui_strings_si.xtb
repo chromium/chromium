@@ -90,11 +90,9 @@
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
 <translation id="3277252321222022663">වෙබ් අඩවිවලට සංවේදක වෙත ප්‍රවේශ වීමට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
 <translation id="3295602654194328831">තතු සඟවන්න</translation>
-<translation id="3317660236277031814">ඔබ ස්ථාපනය කළ වෙබ් යෙදුමක් එහි නිරූපකය වෙනස් කර ඇත.</translation>
 <translation id="3328801116991980348">අඩවි තොරතුරු</translation>
 <translation id="3333961966071413176">සියලු සම්බන්ධතා</translation>
 <translation id="3386292677130313581">අඩවි වලට ඔබගේ ස්ථානය දැන ගැනීමට ඉඩ දීමට පෙර විමසන්න (නිර්දේශිතයි)</translation>
-<translation id="345699454248713913">ඔබ ස්ථාපනය කළ වෙබ් යෙදුමක් එහි නම වෙනස් කර ඇත.</translation>
 <translation id="3538390592868664640">වෙබ් අඩවිය ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමෙන් හෝ කැමරා ස්ථානය හඹා යෑමෙන් අවහිර කරන්න</translation>
 <translation id="3551268116566418498">අප්‍රසිද්ධ ප්‍රකාර. ඉවත් වන්නද?</translation>
 <translation id="3586500876634962664">කැමරා සහ මයික්‍රොෆෝන භාවිතය</translation>
@@ -119,7 +117,6 @@
 <translation id="4200726100658658164">ස්ථාන සැකසීම් විවෘත කරන්න</translation>
 <translation id="4226663524361240545">දැනුම්දීම් උපාංගය කම්පනය කළ හැක</translation>
 <translation id="4259722352634471385">සංචාලනය අවහිර කර ඇත: <ph name="URL" /></translation>
-<translation id="4277239631747669329">ඔබ ස්ථාපනය කළ වෙබ් යෙදුමක් එහි නම සහ නිරූපකය වෙනස් කර ඇත.</translation>
 <translation id="4278390842282768270">ඉඩ දුන්</translation>
 <translation id="429312253194641664">වෙබ් අඩවියක් මාධ්‍ය ධාවන කරයි</translation>
 <translation id="42981349822642051">දිගහරින්න</translation>
@@ -135,7 +132,6 @@
 <translation id="4645575059429386691">ඔබේ දෙමව්පියන් පාලනය කරයි</translation>
 <translation id="4670064810192446073">අතත්‍ය යථාර්ථය</translation>
 <translation id="4708011789095599544">මෙම වෙබ් අඩවිය සඳහා කුකි සහ වෙනත් අඩවි දත්ත ඉවත් කිරීමට ඔබට අවශ්‍ය බව ඔබට විශ්වාසද?</translation>
-<translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4751476147751820511">චලිත හෝ ආලෝක සංවේදක</translation>
 <translation id="4836046166855586901">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන අවස්ථාව අඩවියකට දැන ගැනීමට අවශ්‍ය විට විමසන්න</translation>
 <translation id="4883854917563148705">කළමනා කෙරෙන සැකසීම් යළි සැකසිය නොහැක</translation>
@@ -160,7 +156,6 @@
 <translation id="5335288049665977812">ජාවාස්ක්‍රිප්ට් ධාවනය කිරීමට අඩවි වලට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
 <translation id="534295439873310000">NFC උපාංග</translation>
 <translation id="5354152178998424783">මෙය වෙබ් අඩවිවලින් ගමනා කරනු ලැබූ දත්ත සහ කුකී <ph name="DATASIZE" /> ක් ඉවත් කරයි.</translation>
-<translation id="536508626067510330">ඔබගේ මුල් තිරයෙහි නිරූපකය යාවත්කාලීන කරන්නද?</translation>
 <translation id="5391532827096253100">මෙම අඩවිය වෙත ඔබගේ සම්බන්ධතාවය සුරක්ෂිත නොවේ. අඩවි තොරතුරු</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(තවත් + 1ක්)}one{(තවත් + #ක්)}other{(තවත් + #ක්)}}</translation>
 <translation id="5403592356182871684">නම්</translation>
@@ -183,7 +178,6 @@
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
 <translation id="5876056640971328065">විඩියෝව විරාම කරන්න</translation>
-<translation id="5904826301761575486">ඔබගේ මුල් තිරයෙහි නම සහ නිරූපකය යාවත්කාලීන කරන්නද?</translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5922853908706496913">ඔබේ තිරය බෙදා ගැනීම</translation>
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
@@ -201,7 +195,6 @@
 <translation id="6206551242102657620">සම්බන්ධතාවය සුරක්ෂිතයි. අඩවි තොරතුරු</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> විකල්ප</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' අස්ථාපන කරන්නද?</translation>
-<translation id="6260852843601447737">වසන්න සහ අපයෝජනය වාර්තා කරන්න</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> සහ <ph name="PERMISSION_2" /> අවහිර කරන ලදි</translation>
 <translation id="6270391203985052864">වෙබ් අඩවිවලට දැනුම්දීම් යැවීමට ඉල්ලිය හැක</translation>
 <translation id="6295158916970320988">සියලු අඩවි</translation>
@@ -298,7 +291,6 @@
 <translation id="8525306231823319788">සම්පුර්ණ තිරය</translation>
 <translation id="857943718398505171">ඉඩ දේ (නිර්දේශිතයි)</translation>
 <translation id="8609465669617005112">ඉහළට යන්න</translation>
-<translation id="861748745608658996">ඔබගේ මුල් තිරයෙහි නම යාවත්කාලීන කරන්නද?</translation>
 <translation id="8676374126336081632">ආදානය හිස් කරන්න</translation>
 <translation id="868929229000858085">ඔබේ සම්බන්ධතා සොයන්න</translation>
 <translation id="8702612070107455751">නොබැඳි දත්ත කිසිවක් හිස් කෙරේ.</translation>

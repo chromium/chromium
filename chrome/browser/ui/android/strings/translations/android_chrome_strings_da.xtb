@@ -229,7 +229,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="247737702124049222">Billedbeskrivelser er slået til</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
-<translation id="2489545061398461256">Vi deaktiverer det igen bagefter, når vi er færdige</translation>
 <translation id="2494974097748878569">Google Assistent i Chrome</translation>
 <translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="2497852260688568942">Synkronisering er deaktiveret af din administrator.</translation>
@@ -542,7 +541,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4583164079174244168">{MINUTES,plural, =1{For # minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Denne offlineside er fra <ph name="CREATION_TIME" /> og kan afvige fra onlineversionen.</translation>
-<translation id="4608360466722749036">Aktiverer Bluetooth…</translation>
 <translation id="4616150815774728855">Åbn <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Bekræft din identitet</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>

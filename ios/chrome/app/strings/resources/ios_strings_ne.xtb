@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">Google ड्राइभ स्थापना गर्नुहोस्</translation>
 <translation id="5083464117946352670">फाइल आकार निर्धारण गर्न सकिदैन।</translation>
 <translation id="5090832849094901128">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="WEBSITE" /> मा रहेको तपाईंको खाता मेटिने छैन।</translation>
+<translation id="5092117651143801290">तपाईं पेजहरू सेभ गरी ती पेज पछि वा इन्टरनेट नभएका बेला पढ्न सक्नुहुन्छ। Chrome ले तपाईंलाई लामो पेज सेभ गर्ने हो भनी सोध्ने छ।</translation>
 <translation id="5094827893301452931">ट्विट पूरा भयो।</translation>
 <translation id="5118764316110575523">निष्क्रिय छ</translation>
 <translation id="5127805178023152808">सिंक अफ छ</translation>
@@ -755,6 +756,7 @@
 <translation id="8548878600947630424">पृष्ठमा फेला पार्नुहोस्...</translation>
 <translation id="8574235780160508979">३१ मार्चदेखि Chrome को सेवाका सर्तहरू परिवर्तन हुँदै छन्। <ph name="BEGIN_LINK" />कृपया समीक्षा गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">निष्क्रिय</translation>
+<translation id="8590913940444621808">कहिल्यै नसोधियोस्</translation>
 <translation id="8591976964826315682">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीलाई रोक लगाइयोस्</translation>
 <translation id="8605219856220328675">ट्याब बन्द गर्नुहोस्।</translation>
 <translation id="8620640915598389714">सम्पादन गर्नुहोस्</translation>
@@ -801,6 +803,7 @@
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9107664647686727385">अरूले पासवर्डहरू देखेका छन् कि छैनन् भनी जाँच्नुहोस्</translation>
+<translation id="9124387962554796433">Google ले Search तथा Google का अन्य सेवाहरूमा तपाईंका आवश्यकताअनुसारका सुविधा उपलब्ध गराउन तपाईंको गतिविधिसम्बन्धी इतिहास प्रयोग गर्न सक्छ।</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>
 <translation id="9148126808321036104">पुन: साइन इन गर्नुहोस्</translation>
 <translation id="9152539721251340337">QR कोड सिर्जना गर्नुहोस्</translation>

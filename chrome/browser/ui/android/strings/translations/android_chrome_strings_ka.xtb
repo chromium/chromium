@@ -229,7 +229,6 @@
 <translation id="247737702124049222">სურათების აღწერილობები ჩართულია</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2485422356828889247">დეინსტალაცია</translation>
-<translation id="2489545061398461256">დასრულების შემდეგ ისევ გამოვრთავთ</translation>
 <translation id="2494974097748878569">Google ასისტენტი Chrome-ში</translation>
 <translation id="2496180316473517155">ნახვის ისტორია</translation>
 <translation id="2497852260688568942">სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
@@ -542,7 +541,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# წუთის წინ}other{# წუთის წინ}}</translation>
 <translation id="4587589328781138893">საიტები</translation>
 <translation id="4594952190837476234">ეს ხაზგარეშე გვერდი თარიღდება <ph name="CREATION_TIME" />-ით და შეიძლება განსხვავდებოდეს ონლაინ-ვერსიისგან.</translation>
-<translation id="4608360466722749036">მიმდინარეობს Bluetooth-ის ჩართვა…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-ის გახსნა</translation>
 <translation id="4619564267100705184">ვინაობის დადასტურება</translation>
 <translation id="4634124774493850572">პაროლის გამოყენება</translation>

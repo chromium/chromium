@@ -607,6 +607,7 @@
 <translation id="3212623355668894776">সব গেস্ট উইন্ডো বন্ধ করে দিন যাতে এই ডিভাইস থেকে আপনার ব্রাউজিং অ্যাক্টিভিটি মুছে যায়।</translation>
 <translation id="3215092763954878852">WebAuthn ব্যবহার করা যায়নি</translation>
 <translation id="3218181027817787318">রিলেটিভ</translation>
+<translation id="3223287115535306850">অ্যাপ লঞ্চ হচ্ছে</translation>
 <translation id="3225919329040284222">সার্ভারটি এমন একটি সার্টিফিকেট উপস্থাপনা করেছে যা বিল্ট-ইন প্রত্যাশাগুলির সাথে মেলে না৷ এই প্রত্যাশাগুলি আপনাকে সুরক্ষিত করতে কিছু নিশ্চিত, উচ্চ সুরক্ষার ওয়েবসাইটের জন্য অন্তর্ভুক্ত৷</translation>
 <translation id="3226128629678568754">পৃষ্ঠা লোড করার জন্য প্রয়োজনীয় ডেটা আবার জমা দিতে রিলোড বোতামটি টিপুন৷</translation>
 <translation id="3226387218769101247">থাম্বনেল দেখুন</translation>
@@ -680,6 +681,7 @@
 <translation id="3447884698081792621">সার্টিফিকেট দেখান (<ph name="ISSUER" /> এর দ্বারা জারি করা)</translation>
 <translation id="3452404311384756672">বিরামকাল প্রাপ্ত করুন:</translation>
 <translation id="3453962258458347894">কতবার চেষ্টা করা যাবে</translation>
+<translation id="3454555520521576458">পরিবর্তনযোগ্য আকার</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> আপনার ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি দেখতে চায়</translation>
 <translation id="3461824795358126837">হাইলাইটার</translation>
@@ -1013,6 +1015,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> অ্যাক্সেসযোগ্যতা ইভেন্টে প্রতিক্রিয়া দিয়ে চায়</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> এবং অন্যান্য সাইটে, যেখানে যেখানে আপনি এই পাসওয়ার্ডটি ব্যবহার করেন, Chromium আপনাকে সেইসব জায়গায় গিয়ে আপনার সেভ করা পাসওয়ার্ডগুলি পরিবর্তন করতে সাজেস্ট করছে।</translation>
+<translation id="468314109939257734">আপনার ভার্চুয়াল কার্ড নম্বর দেখুন</translation>
 <translation id="4690462567478992370">কোনও ভুল সার্টিফিকেট ব্যবহার করা বন্ধ করুন</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1916,6 +1919,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" সঠিকভাবে কনফিগার হয়নি। সাধারণত "<ph name="SOFTWARE_NAME" />" আন-ইনস্টল করা হলে সমস্যার সমাধান হয়ে যায়। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">কিছু সমস্যা হয়েছে।</translation>
 <translation id="8067872629359326442">আপনি এখনই প্রতারণামূলক একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। Chromium সাহায্য করবে। আপনার অ্যাকাউন্টের নিরাপত্তা লঙ্ঘনের সম্ভাবনা এড়ানোর জন্য পাসওয়ার্ড পরিবর্তন করতে এবং Google-কে বিজ্ঞপ্তি দিয়ে জানাতে 'অ্যাকাউন্ট সুরক্ষিত রাখুন' বিকল্পে ক্লিক করুন।</translation>
+<translation id="8070439594494267500">অ্যাপ আইকন</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">'সাইট সেটিংস' বোতাম ম্যানেজ করুন</translation>
 <translation id="8078141288243656252">ঘূর্ণনের সময় ব্যাখ্যা করা যাবে না</translation>

@@ -90,11 +90,9 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Spletnim mestom dovoli dostop do tipal (priporočeno)</translation>
 <translation id="3295602654194328831">Skrij informacije</translation>
-<translation id="3317660236277031814">Spletna aplikacija, ki ste jo namestili, je spremenila ikono.</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
 <translation id="3333961966071413176">Vsi stiki</translation>
 <translation id="3386292677130313581">Prikaži poziv, preden se spletnim mestom razkrije vaša lokacija (priporočeno)</translation>
-<translation id="345699454248713913">Spletna aplikacija, ki ste jo namestili, je spremenila ime.</translation>
 <translation id="3538390592868664640">Preprečevanje, da bi spletna mesta ustvarila 3D-zemljevid vaše okolice ali spremljala položaj kamere</translation>
 <translation id="3551268116566418498">Izklop anonimnega načina?</translation>
 <translation id="3586500876634962664">Uporaba kamere in mikrofona</translation>
@@ -119,7 +117,6 @@
 <translation id="4200726100658658164">Odpri nastavitve lokacije</translation>
 <translation id="4226663524361240545">Ob prejemanju obvestil naprava morda vibrira</translation>
 <translation id="4259722352634471385">Krmarjenje je blokirano: <ph name="URL" /></translation>
-<translation id="4277239631747669329">Spletna aplikacija, ki ste jo namestili, je spremenila ime in ikono.</translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
 <translation id="429312253194641664">Spletno mesto predvaja predstavnost</translation>
 <translation id="42981349822642051">Razširi</translation>
@@ -135,7 +132,6 @@
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
 <translation id="4708011789095599544">Ali ste prepričani, da želite izbrisati piškotke in druge podatke spletnega mesta?</translation>
-<translation id="473775607612524610">Posodobi</translation>
 <translation id="4751476147751820511">Tipala za gibanje in svetlobo</translation>
 <translation id="4836046166855586901">Vprašaj, ko želi spletno mesto vedeti, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="4883854917563148705">Upravljanih nastavitev ni mogoče ponastaviti</translation>
@@ -160,7 +156,6 @@
 <translation id="5335288049665977812">Spletnim mestom dovoli izvajanje JavaScripta (priporočeno)</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
 <translation id="5354152178998424783">S tem boste izbrisali <ph name="DATASIZE" /> podatkov in piškotkov, ki so jih shranila spletna mesta.</translation>
-<translation id="536508626067510330">Želite posodobiti ikono na začetnem zaslonu?</translation>
 <translation id="5391532827096253100">Povezava s tem spletnim mestom ni varna. Podatki o spletnem mestu.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
@@ -183,7 +178,6 @@
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5876056640971328065">Začasna zaustavitev videa</translation>
-<translation id="5904826301761575486">Želite posodobiti ime in ikono na začetnem zaslonu?</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5922853908706496913">Deljenje zaslona</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
@@ -201,7 +195,6 @@
 <translation id="6206551242102657620">Povezava je varna. Podatki o spletnem mestu.</translation>
 <translation id="6216432067784365534">Možnosti za <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Želite odmestiti aplikacijo »<ph name="APP_NAME" />«?</translation>
-<translation id="6260852843601447737">Zaprite in prijavite zlorabo</translation>
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Spletna mesta vas lahko vprašajo, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
@@ -298,7 +291,6 @@
 <translation id="8525306231823319788">Celozaslonsko</translation>
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
-<translation id="861748745608658996">Želite posodobiti ime na začetnem zaslonu?</translation>
 <translation id="8676374126336081632">Izbriši vnos</translation>
 <translation id="868929229000858085">Iskanje po stikih</translation>
 <translation id="8702612070107455751">Morebitni podatki brez povezave bodo izbrisani.</translation>

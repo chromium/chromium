@@ -727,6 +727,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6816797338148849397">Tanlovga aloqador axborot mavjud. Uni ochish uchun tepaga strelkani bosing.</translation>
 <translation id="6818242057446442178">Bitta soʻz orqaga</translation>
 <translation id="6820676911989879663">Tanaffus qiling</translation>
+<translation id="6837064795450991317">Ish panelini yopish</translation>
 <translation id="6850010208275816200">Joriy ilovangiz butun ekran rejimida. Ilova parol kiritishni soʻrasa, butun ekran rejimidan chiqing.</translation>
 <translation id="6852052252232534364">Faollashtirish</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> soniya</translation>
@@ -762,6 +763,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7076293881109082629">Kirish</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">USB-C qurilma (orqa tomondagi chap port)</translation>
+<translation id="7106330611027933926">Ish panelini ochish</translation>
 <translation id="7118268675952955085">skrinshot</translation>
 <translation id="7131634465328662194">Seansingiz avtomatik yakunlanadi.</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
@@ -805,6 +807,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
 <translation id="7473891865547856676">Yo‘q, rahmat</translation>
 <translation id="7477793887173910789">Multimedia boshqaruvi</translation>
+<translation id="7482097454533720217">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing.</translation>
 <translation id="7483025031359818980">Tanlash hududi sifatida butun ekran belgilandi</translation>
 <translation id="7486227320194954040">Marker vositalarini yigʻish</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
@@ -981,6 +984,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8843682306134542540">Burishni qulflash/qulfdan chiqarish. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search + Esc</translation>
 <translation id="8853703225951107899">PIN kod yoki parolingiz haligacha tekshirilmadi. Eslatma: Parol yaqinda almashtirilgan boʻlsa, eskisini kiriting. Yangi parolingiz hisobdan chiqqaningizda kuchga kiradi.</translation>
+<translation id="8863888432376731307">“<ph name="QUERY" />” va boshqalar uchun <ph name="INTENT" /> olish</translation>
 <translation id="8870509716567206129">Bu dastur ekranni bo‘lish xususiyatini qo‘llab-quvvatlamaydi.</translation>
 <translation id="8871580645200179206">Tungi mavzu tugmasi. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ulanmagan</translation>

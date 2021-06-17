@@ -40,6 +40,7 @@
 <translation id="2560420686485554789">Chromium लाई फाइलहरू डाउनलोड गर्न भण्डारणमाथिको पहुँच आवश्यक पर्छ</translation>
 <translation id="2572494885440352020">Chromium सहायक</translation>
 <translation id="2577788541081224677">आफूले प्रयोग गर्ने जुनसुकै यन्त्रबाट Chromium मा भएका आफ्ना डेटा हेर्न तथा प्रयोग गर्न साइन इन गरेर सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
+<translation id="2580426763510374355">Chromium OS इन्स्टल गर्नुहोस्</translation>
 <translation id="2583187216237139145">कार्य प्रोफाइलका एड्मिन यो प्रोफाइल चलाउँदा Chromium मा सिर्जना हुने (बुकमार्क, इतिहास, पासवर्ड र अन्य सेटिङलगायतका) सबै डेटा हटाउन सक्नुहुन्छ। <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">यो अद्यावधिक लागू गर्न Chromium OS लाई अद्यावधिक गर्नुपर्छ।</translation>
 <translation id="2648074677641340862">स्थापना अवधिमा अपरेटिङ सिस्टम त्रुटि भयो। कृपया पुन: क्रोमियम डाउनलोड गर्नुहोस्।</translation>
@@ -138,6 +139,7 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium बिटा</translation>
 <translation id="5479196819031988440">Chromium OS ले यो पृष्ठ खोल्न सक्दैन</translation>
 <translation id="5480860683791598150">Chromium लाई यो साइटसँग तपाईंको स्थान आदान प्रदान गर्न तपाईंको स्थानमाथिको पहुँच आवश्यक पर्छ</translation>
+<translation id="5481338274774984070">Chromium ले तपाईंलाई यो फाइल डाउनलोड गर्ने वा खोल्ने सिफारिस गर्दैन।</translation>
 <translation id="549669000822060376">Chromium ले नवीनतम सिस्टम अपडेट स्थापित गर्दै गर्दा प्रतिक्षा गर्नुहोस्।</translation>
 <translation id="5496810170689441661">Chromium ले पासवर्डहरू बदल्ने प्रयास गरिरहेको छ। यसो गर्ने अनुमति दिन Windows को आफ्नो पासवर्ड टाइप गर्नुहोस्।</translation>
 <translation id="5527463683072221100">PDF फाइलहरू Chromium मा खोलियोस्</translation>

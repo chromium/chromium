@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">Google ড্রাইভ ইনস্টল করুন</translation>
 <translation id="5083464117946352670">ফাইলের আকার নির্ধারণ করা যাচ্ছে না।</translation>
 <translation id="5090832849094901128">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="WEBSITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না।</translation>
+<translation id="5092117651143801290">পরে বা অফলাইনে পড়ার জন্য আপনি পৃষ্ঠাগুলি সেভ করে রাখতে পারেন। আপনি দীর্ঘ পৃষ্ঠা সেভ করতে চান কিনা Chrome-এ আপনাকে সেই সম্পর্কে জানতে জিজ্ঞাসা করা হবে।</translation>
 <translation id="5094827893301452931">Tweet সম্পূর্ণ হয়েছে৷</translation>
 <translation id="5118764316110575523">বন্ধ করা আছে</translation>
 <translation id="5127805178023152808">সিঙ্ক বন্ধ রয়েছে</translation>
@@ -756,6 +757,7 @@
 <translation id="8548878600947630424">পৃষ্ঠাটি খুঁজুন...</translation>
 <translation id="8574235780160508979">৩১ মার্চ থেকে Chrome-এর 'পরিষেবার শর্তাবলী'-তে পরিবর্তন করা হবে। <ph name="BEGIN_LINK" />ভাল করে পড়ে নিন<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">বন্ধ করা আছে</translation>
+<translation id="8590913940444621808">আর কখনো দেখতে চাই না</translation>
 <translation id="8591976964826315682">'ছদ্মবেশী' মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="8605219856220328675">ট্যাব বন্ধ করুন।</translation>
 <translation id="8620640915598389714">সম্পাদনা করুন</translation>
@@ -803,6 +805,7 @@
 <translation id="9094033019050270033">পাসওয়ার্ড আপডেট করুন</translation>
 <translation id="9100610230175265781">পাসফ্রেজের প্রয়োজন</translation>
 <translation id="9107664647686727385">কোনও পাসওয়ার্ড লিক হয়েছে কিনা দেখুন</translation>
+<translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
 <translation id="9152539721251340337">একটি QR কোড তৈরি করুন</translation>

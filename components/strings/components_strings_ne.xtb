@@ -285,6 +285,7 @@
 <translation id="1919345977826869612">विज्ञापनहरू</translation>
 <translation id="1919367280705858090">निर्दिष्ट त्रुटिसम्बन्धी सन्देशमार्फत मद्दत प्राप्त गर्नुहोस्।</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइट}other{# साइटहरू}}</translation>
+<translation id="1924727005275031552">नयाँ</translation>
 <translation id="1945968466830820669">तपाईं आफ्नो सङ्गठनको खातामाथिको पहुँच गुमाउन सक्नुहुन्छ वा तपाईंको पहिचान चोरी हुन सक्छ। Chromium तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="1947454675006758438">सिरानको दायाँपट्टि स्टिच</translation>
 <translation id="1958218078413065209">तपाईंले ल्याउनुभएको अधिकतम अङ्क <ph name="SCORE" /> हो।</translation>
@@ -398,6 +399,7 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{एक दिनभन्दा कम समयमै}=1{एक दिनभित्र}other{{NUM_DAYS} दिनभित्र}}</translation>
 <translation id="2359629602545592467">बहु मुद्राहरू</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
+<translation id="2359961752320758691">तपाईंको भर्चुअल कार्ड नम्बर अटोफिल गरिएको छ।</translation>
 <translation id="236340516568226369">आकार बदल्ने टगल मेनु</translation>
 <translation id="2367567093518048410">चरण</translation>
 <translation id="2372464001869762664">तपाईंले पुष्टि गरिसकेपछि तपाईंको Google खातामा रहेका कार्डसम्बन्धी विवरणहरू यो साइटसँग सेयर गरिने छन्। तपाईं आफ्नो Plex खातासम्बन्धी विवरणहरूमा गई CVC हेर्न सक्नुहुन्छ।</translation>
@@ -409,6 +411,7 @@
 <translation id="239429038616798445">ढुवानीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="2396249848217231973">मेटाइलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">पुरानो</translation>
 <translation id="2413528052993050574">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई रद्द गरिएको हुन सक्छ। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
 <translation id="2438874542388153331">दायाँतिर चार प्वाल</translation>
@@ -600,6 +603,7 @@
 <translation id="3212623355668894776">तपाईंले ब्राउजर प्रयोग गरी गर्नुभएको क्रियाकलाप यो यन्त्रबाट मेटाइयोस् भन्नाका खातिर सबै गेस्ट विन्डोहरू बन्द गर्नुहोस्।</translation>
 <translation id="3215092763954878852">WebAuthn प्रयोग गर्न सकिएन</translation>
 <translation id="3218181027817787318">सापेक्ष</translation>
+<translation id="3223287115535306850">एप लोड गरिँदै छ</translation>
 <translation id="3225919329040284222">सर्भरले अन्तर्निर्मित अपेक्षाहरूसँग नमिल्ने प्रमाणपत्र प्रस्तुत गर्‍यो। यी अपेक्षाहरू विशेष, उच्च-सुरक्षा वेबसाटइहरूको लागि तपाइँलाई सुरक्षा गर्न समावेश गरिएका छन्।</translation>
 <translation id="3226128629678568754">पृष्ठ लोड गर्न आवश्यक लगत पुन: पेश गर्नक लागि पुन: लोड बटन थिच्नुहोस्।</translation>
 <translation id="3226387218769101247">थम्बनेलहरू</translation>
@@ -673,6 +677,7 @@
 <translation id="3447884698081792621">प्रमाणपत्र देखाउनुहोस् (<ph name="ISSUER" /> द्वारा जारी गरिएको)</translation>
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
 <translation id="3453962258458347894">कति पटक पुन: प्रयास गरियो</translation>
+<translation id="3454555520521576458">आकार मिलाउन सकिने</translation>
 <translation id="3456231139987291353">Number-11 (Envelope)</translation>
 <translation id="3461266716147554923"><ph name="URL" /> क्लिपबोर्डमा प्रतिलिपि गरिएको पाठ र छवि हेर्न चाहन्छ</translation>
 <translation id="3461824795358126837">हाइलाइटर</translation>
@@ -915,6 +920,7 @@
 <translation id="4302514097724775343">प्ले गर्न dino मा ट्याप गर्नुहोस्</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">तपाईंको फाइल हेर्न र प्रयोग गर्न सकिएन</translation>
+<translation id="4306529830550717874">ठेगाना सेभ गर्ने हो?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
@@ -1003,6 +1009,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> पहुँचसम्बन्धी कार्यक्रमहरूमा प्रतिक्रिया दिन चाहन्छ</translation>
 <translation id="467809019005607715">Google स्लाइड</translation>
 <translation id="4680804919228900307">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium तपाईंलाई अहिले नै <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> र तपाईंले हाल यो पासवर्ड प्रयोग गर्ने अन्य साइटका सुरक्षित गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
+<translation id="468314109939257734">आफ्नो भर्चुअल कार्ड नम्बर हेर्नुहोस्</translation>
 <translation id="4690462567478992370">अवैध प्रमाणपत्र प्रयोग गर्न रोक्नुहोस्</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1404,6 +1411,7 @@
 <translation id="6113594885686374546">'खोज्ने क्रम सुचारु गर्नुहोस्' बटन, Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न खोज्ने क्रम सुचारु गर्न Enter थिच्नुहोस्</translation>
 <translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्नुहोस्</translation>
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
+<translation id="6123290840358279103">भर्चुअल कार्ड हेर्नुहोस्</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6146055958333702838">तपाइँले प्रयोग गरिेहेको कुनै पनि केबुलहरू जाँच्नुहोस् र कुनै पनि राउटरहरू, मोडेमहरू, वा अन्य 
         नेटवर्क यन्त्रहरू रिबुट गर्नुहोस्।</translation>
@@ -1687,6 +1695,7 @@
 <translation id="7298195798382681320">सिफारिस गरिएको</translation>
 <translation id="7300012071106347854">कोबाल्ट निलो</translation>
 <translation id="7304030187361489308">उच्च</translation>
+<translation id="7305756307268530424">सुस्त गतिमा सुरु गर्नुहोस्</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" खण्ड लुकाइयोस्</translation>
@@ -1766,6 +1775,7 @@
 <translation id="7548892272833184391">जडानसम्बन्धी त्रुटिहरू ठिक गर्नुहोस्</translation>
 <translation id="7549584377607005141">यो वेबपृष्ठ ठीकसँग प्रदर्शित हुनको लागि यस वेबपृष्ठलाई तपाइँले पहिले प्रविष्ट गर्नुभएको लगत आवश्यक छ। तपाइँले यो लगत फेरि पठाउन सक्नुहुन्छ, तर यसो गर्नाले यस पृष्ठले पहिले प्रददर्शन गरेको कुनै पनि कार्य तपाइँले फेरि गर्नुहुनेछ।</translation>
 <translation id="7550637293666041147">तपाईंको डिभाइसको युजरनेम र Chrome को युजरनेम</translation>
+<translation id="755279583747225797">ट्रायल सक्रिय छ</translation>
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
 <translation id="7554475479213504905">जे भए पनि पुनः लोड गर्नुहोस् र देखाउनुहोस्</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
@@ -1861,6 +1871,7 @@
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">अज्ञात</translation>
+<translation id="793209273132572360">ठेगाना परिवर्तन गर्ने हो?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फोन नम्बर प्रविष्टि गर्नुहोस्</translation>
 <translation id="7934052535022478634">भुक्तानी गर्ने कार्य पूरा भयो</translation>
@@ -1903,6 +1914,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" सही तरिकाले कन्फिगर गरिएको छैन। सामान्यतया "<ph name="SOFTWARE_NAME" />" को स्थापना रद्द गरेमा समस्याको समाधान हुन्छ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">माफ गर्नुहोला, केही चिज गडबड भयो।</translation>
 <translation id="8067872629359326442">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium ले मद्दत गर्न सक्छ। आफ्नो पासवर्ड परिवर्तन गर्न र आफ्नो खाता जोखिममा हुन सक्छ भनेर Google लाई सूचित गर्न खाता सेभ गर्नुहोस् नामक विकल्पमा क्लिक गर्नुहोस्।</translation>
+<translation id="8070439594494267500">एपको आइकन</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8078141288243656252">घुमाइएका बेला एनोटेसन गर्न मिल्दैन</translation>
@@ -2185,6 +2197,7 @@
 <translation id="9128870381267983090">नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9141013498910525015">ठेगानाहरू व्यवस्थित गर्नुहोस्</translation>
+<translation id="9144951720726881238">म्याद सकिने मिति:</translation>
 <translation id="9148088599418889305">ढुवानीको विधि छनौट गर्नुहोस्</translation>
 <translation id="9148507642005240123">सम्पादन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="9150045010208374699">तपाइँको क्यामेरा प्रयोग गर्नुहोस्</translation>

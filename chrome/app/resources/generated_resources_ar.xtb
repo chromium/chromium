@@ -649,6 +649,7 @@
 <translation id="1692210323591458290">أرجواني داكن</translation>
 <translation id="169675691788639886">‏تم ضبط خادم SSH للجهاز، لذلك ممنوع تسجيل الدخول باستخدام حسابات حساسة.</translation>
 <translation id="1697150536837697295">الفن</translation>
+<translation id="1697532407822776718">أنت الآن على أتم استعداد.</translation>
 <translation id="1697686431566694143">تعديل الملف</translation>
 <translation id="1700079447639026019">المواقع الإلكترونية التي لا يمكنها استخدام ملفات تعريف الارتباط</translation>
 <translation id="1701062906490865540">إزالة هذا الشخص</translation>
@@ -6610,6 +6611,7 @@
 <translation id="8308179586020895837">الرجوع إليك عند رغبة <ph name="HOST" /> في الدخول إلى الكاميرا</translation>
 <translation id="830868413617744215">تجريبي</translation>
 <translation id="8309458809024885768">الشهادة موجودة من قَبل</translation>
+<translation id="831207808878314375">تعريف</translation>
 <translation id="8314089908545021657">إقران بجهاز جديد</translation>
 <translation id="8314381333424235892">إضافة مفقودة أو غير مُثبتة</translation>
 <translation id="831440797644402910">يتعذّر فتح هذا المجلد</translation>
@@ -6665,7 +6667,7 @@
 <translation id="8382913212082956454">نسخ عنوان البريد الإل&amp;كتروني</translation>
 <translation id="8386091599636877289">تعذَّر العثور على السياسة.</translation>
 <translation id="8386819192691131213">‏يمكنك السماح لخدمة "مساعد Google" باستخدام المعلومات التي تظهر على الشاشة لتوفير إجابات سريعة، مثلاً كترجمة نص أو تقديم التعريف لمصطلح معين أو تحويل وحدات القياس أو غير ذلك.</translation>
-<translation id="838705362287678887">‏لمحو <ph name="BEGIN_LINK_SEARCH" />سجلّ البحث<ph name="END_LINK_SEARCH" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK_GOOGLE" />حسابي في Google<ph name="END_LINK_GOOGLE" />.</translation>
+<translation id="838705362287678887">‏لمحو <ph name="BEGIN_LINK_SEARCH" />سجلّ البحث<ph name="END_LINK_SEARCH" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK_GOOGLE" />حسابي على Google<ph name="END_LINK_GOOGLE" />.</translation>
 <translation id="8387361103813440603">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على موقعك الجغرافي</translation>
 <translation id="8388770971141403598">لا يمكن استخدام الملفات الشخصية الثانوية.</translation>
 <translation id="8389416080014625855">إنشاء رمز استجابة سريعة لهذه الصفحة</translation>

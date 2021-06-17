@@ -39,6 +39,7 @@
 <translation id="1231733316453485619">सिंक सुरू करायचे का?</translation>
 <translation id="123724288017357924">कॅशे केलेला आशय दुर्लक्षित करून, सद्य पेज रीलोड करा</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> लोड करत आहे</translation>
+<translation id="1242883863226959074">डिव्हाइस</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1258753120186372309">Google डूडल: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
@@ -228,7 +229,6 @@
 <translation id="247737702124049222">इमेजची वर्णने सुरू आहेत</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
-<translation id="2489545061398461256">आमचे काम पूर्ण झाल्यावर, आम्ही ते पुन्हा बंद करू</translation>
 <translation id="2494974097748878569">Chrome मधील Google असिस्टंट</translation>
 <translation id="2496180316473517155">ब्राउझिंग इतिहास</translation>
 <translation id="2497852260688568942">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे</translation>
@@ -541,7 +541,6 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
-<translation id="4608360466722749036">ब्लूटूथ सुरू करत आहोत…</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
@@ -920,6 +919,7 @@
 <translation id="6864459304226931083">इमेज डाउनलोड करा</translation>
 <translation id="6865313869410766144">ऑटोफिल फॉर्म डेटा</translation>
 <translation id="6867400383614725881">नवीन गुप्त टॅब</translation>
+<translation id="6869056123412990582">काँप्युटर</translation>
 <translation id="6882836635272038266">धोकादायक म्हणून ओळखल्या जाणार्‍या वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून साधारण संरक्षण.</translation>
 <translation id="688738109438487280">विद्यमान डेटा <ph name="TO_ACCOUNT" /> मध्ये जोडा.</translation>
 <translation id="6891726759199484455">तुमचा पासवर्ड कॉपी करण्यासाठी अनलॉक करा</translation>
@@ -1156,6 +1156,7 @@
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8410695015584479363">किमती ट्रॅक करा</translation>
 <translation id="8413126021676339697">संपूर्ण इतिहास दर्शवा</translation>
+<translation id="8424781820952413435">पेज पाठवले आहे. ते पाहण्यासाठी, तुमच्या <ph name="DEVICE_TYPE" /> वर Chrome उघडा</translation>
 <translation id="8427875596167638501">पूर्वावलोकन टॅब अर्धा उघडा आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
@@ -1197,6 +1198,7 @@
 <translation id="860282621117673749">किमतीमध्ये घट झाल्याच्या सूचना</translation>
 <translation id="8616006591992756292">तुमच्या Google खात्यात <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची अन्य स्वरूपे असू शकतात.</translation>
 <translation id="8617240290563765734">डाउनलोड केलेल्या आशयमध्ये नमूद केलेली सुचविलेली URL उघडायची?</translation>
+<translation id="8621068256433641644">फोन</translation>
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
 <translation id="8641930654639604085">प्रौढ आशय असलेल्या साइटना अवरोधित करण्‍याचा प्रयत्न करा</translation>
 <translation id="8655129584991699539">तुम्ही Chrome सेटिंग्जमध्ये डेटा साफ करू शकता</translation>

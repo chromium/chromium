@@ -391,6 +391,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5062321486222145940">Google Drive installieren</translation>
 <translation id="5083464117946352670">Fehler bei Bestimmung der Dateigröße</translation>
 <translation id="5090832849094901128">Durch das Entfernen dieses Passworts wird Ihr <ph name="WEBSITE" />-Konto nicht gelöscht.</translation>
+<translation id="5092117651143801290">Sie können Seiten speichern, um sie später oder offline zu lesen. Sie werden gefragt, ob Sie lange Seiten speichern möchten.</translation>
 <translation id="5094827893301452931">Tweet gepostet</translation>
 <translation id="5118764316110575523">Aus</translation>
 <translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
@@ -757,6 +758,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8548878600947630424">Auf Seite suchen...</translation>
 <translation id="8574235780160508979">Die Nutzungsbedingungen von Chrome ändern sich am 31. März. <ph name="BEGIN_LINK" />Bitte lesen Sie sich die neue Fassung durch.<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Aus</translation>
+<translation id="8590913940444621808">Nie fragen</translation>
 <translation id="8591976964826315682">Cookies von Drittanbietern im Inkognitomodus blockieren</translation>
 <translation id="8605219856220328675">Tab schließen.</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
@@ -804,6 +806,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="9094033019050270033">Passwort aktualisieren</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
 <translation id="9107664647686727385">Auf gehackte Passwörter prüfen</translation>
+<translation id="9124387962554796433">Mithilfe Ihres Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren.</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9152539721251340337">QR-Code erstellen</translation>

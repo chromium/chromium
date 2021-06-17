@@ -90,11 +90,9 @@
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
 <translation id="3277252321222022663">साइटों को सेंसर ऐक्सेस करने दें (सुझाया गया)</translation>
 <translation id="3295602654194328831">जानकारी छिपाएं</translation>
-<translation id="3317660236277031814">आपने जो वेब ऐप्लिकेशन इंस्टॉल किया है उसने अपना आइकॉन बदल दिया है.</translation>
 <translation id="3328801116991980348">साइट जानकारी</translation>
 <translation id="3333961966071413176">सभी संपर्क</translation>
 <translation id="3386292677130313581">साइटों को अपनी जगह की जानकारी देने से पहले अनुमति लेना ज़रूरी बनाएं (सुझाया गया)</translation>
-<translation id="345699454248713913">आपने जो वेब ऐप्लिकेशन इंस्टॉल किया है उसने अपना नाम बदला है.</translation>
 <translation id="3538390592868664640">साइटों को अपने आस-पास की जगह का 3D मैप बनाने या कैमरे की स्थिति ट्रैक करने से रोकें</translation>
 <translation id="3551268116566418498">गुप्त मोड से बाहर निकलना है?</translation>
 <translation id="3586500876634962664">कैमरा और माइक्रोफ़ोन का इस्तेमाल</translation>
@@ -119,7 +117,6 @@
 <translation id="4200726100658658164">जगह की सेटिंग खोलें</translation>
 <translation id="4226663524361240545">नोटिफ़िकेशन से डिवाइस में कंपन हो सकता है</translation>
 <translation id="4259722352634471385">मार्गदर्शक अवरोधित है: <ph name="URL" /></translation>
-<translation id="4277239631747669329">आपने जो वेब ऐप्लिकेशन इंस्टॉल किया है उसने अपना नाम और आइकॉन बदल दिया है.</translation>
 <translation id="4278390842282768270">अनुमति है</translation>
 <translation id="429312253194641664">किसी साइट पर मीडिया चल रहा है</translation>
 <translation id="42981349822642051">विस्तृत करें</translation>
@@ -135,7 +132,6 @@
 <translation id="4645575059429386691">आपके अभिभावक द्वारा प्रबंधित</translation>
 <translation id="4670064810192446073">वर्चुअल रिएलिटी</translation>
 <translation id="4708011789095599544">क्या आप वाकई इस वेबसाइट के लिए, कुकी और साइट का अन्य डेटा मिटाना चाहते हैं?</translation>
-<translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4751476147751820511">गति या लाइट सेंसर</translation>
 <translation id="4836046166855586901">साइटों को यह पूछने दें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="4883854917563148705">प्रबंधित सेटिंग रीसेट नहीं की जा सकती हैं</translation>
@@ -160,7 +156,6 @@
 <translation id="5335288049665977812">साइटों को JavaScript चलाने की अनुमति दें (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="534295439873310000">NFC डिवाइस</translation>
 <translation id="5354152178998424783">इससे वे <ph name="DATASIZE" /> डेटा और कुकी मिट जाएंगे जिन्हें साइटों ने सेव किया है.</translation>
-<translation id="536508626067510330">क्या आप अपनी होमस्क्रीन पर आइकॉन अपडेट करना चाहते हैं?</translation>
 <translation id="5391532827096253100">इस साइट से आपका कनेक्शन सुरक्षित नहीं है. साइट की जानकारी</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 और)}one{(+ # और)}other{(+ # और)}}</translation>
 <translation id="5403592356182871684">नाम</translation>
@@ -183,7 +178,6 @@
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5876056640971328065">वीडियो रोकें</translation>
-<translation id="5904826301761575486">क्या आप अपनी होमस्क्रीन पर नाम और आइकॉन अपडेट करना चाहते हैं?</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5922853908706496913">आपकी स्क्रीन शेयर की जा रही है</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
@@ -201,7 +195,6 @@
 <translation id="6206551242102657620">कनेक्शन सुरक्षित है. साइट की जानकारी</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> विकल्प</translation>
 <translation id="6231752747840485235">क्या आपको '<ph name="APP_NAME" />' अनइंस्टॉल करना है?</translation>
-<translation id="6260852843601447737">बंद करके शिकायत करें</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> और <ph name="PERMISSION_2" /> को ब्लॉक किया गया</translation>
 <translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
@@ -298,7 +291,6 @@
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
 <translation id="857943718398505171">अनुमति दी गई (सुझाया गया)</translation>
 <translation id="8609465669617005112">ऊपर जाएं</translation>
-<translation id="861748745608658996">क्या आप अपनी होमस्क्रीन पर नाम अपडेट करना चाहते हैं?</translation>
 <translation id="8676374126336081632">इनपुट साफ़ करें</translation>
 <translation id="868929229000858085">अपने संपर्क खोजें</translation>
 <translation id="8702612070107455751">ऑफ़लाइन डेटा को मिटा दिया जाएगा.</translation>

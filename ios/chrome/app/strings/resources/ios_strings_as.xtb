@@ -391,6 +391,7 @@
 <translation id="5062321486222145940">Google Drive ইনষ্টল কৰক</translation>
 <translation id="5083464117946352670">ফাইলৰ আকাৰ নির্ধাৰণ কৰিব পৰা নাই।</translation>
 <translation id="5090832849094901128">এই পাছৱৰ্ডটো মচাৰ ফলত <ph name="WEBSITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব।</translation>
+<translation id="5092117651143801290">আপুনি পাছত অথবা অফলাইনত পঢ়িবলৈ পৃষ্ঠাসমূহ ছেভ কৰিব পাৰে। আপুনি দীঘল পৃষ্ঠাসমূহ ছেভ কৰিব বিচাৰে নেকি সেয়া Chromeএ সুধিব।</translation>
 <translation id="5094827893301452931">টুইট সম্পূর্ণ হ'ল</translation>
 <translation id="5118764316110575523">অফ আছে</translation>
 <translation id="5127805178023152808">ছিংক অফ কৰা আছে</translation>
@@ -405,6 +406,7 @@
 <translation id="5197255632782567636">ইন্টাৰনেট</translation>
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
 <translation id="5228579091201413441">ছিংক সক্ষম কৰক</translation>
+<translation id="5232485538978018676">পৰিচালিত একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5245322853195994030">ছিংক বাতিল কৰক</translation>
 <translation id="5271549068863921519">পাছৱৰ্ড ছেভ কৰক</translation>
@@ -718,6 +720,7 @@
 <translation id="8206354486702514201">আপোনাৰ প্ৰশাসকে এই ছেটিংটো বলৱৎ কৰিছে।</translation>
 <translation id="8225985093977202398">কেশ্ব প্ৰতিচ্ছবি আৰু ফাইল</translation>
 <translation id="8261506727792406068">মচক</translation>
+<translation id="8271720166617117963">গ্ৰহণ কৰি ছাইন ইন কৰক</translation>
 <translation id="8281781826761538115">ডিফ’ল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8283172974887967105">ছেট কৰক…</translation>
@@ -752,6 +755,7 @@
 <translation id="8548878600947630424">পৃষ্ঠাত বিচাৰক...</translation>
 <translation id="8574235780160508979">৩১ মাৰ্চৰ পৰা Chromeৰ সেৱাৰ চর্তাৱলী সলনি হ’ব। <ph name="BEGIN_LINK" />অনুগ্ৰহ কৰি পৰ্যালোচনা কৰক<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">অফ আছে</translation>
+<translation id="8590913940444621808">কেতিয়াও নুসুধিব</translation>
 <translation id="8591976964826315682">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="8605219856220328675">টেব বন্ধ কৰক।</translation>
 <translation id="8620640915598389714">সম্পাদনা কৰক</translation>
@@ -760,6 +764,7 @@
 <translation id="8654802032646794042">বাতিল কৰক</translation>
 <translation id="8668210798914567634">আপোনাৰ পঢ়াসূচীত এই পৃষ্ঠাটো ছেভ কৰা হৈছে।</translation>
 <translation id="8680787084697685621">একাউণ্টৰ ছাইন ইনৰ সবিশেষৰ ম্যাদ উকলিল।</translation>
+<translation id="8691262314411702087">কি ছিংক কৰিব লাগে বাছনি কৰক</translation>
 <translation id="8693663554456874301">{count,plural, =1{টেব বন্ধ কৰক}one{টেববোৰ বন্ধ কৰক}other{টেববোৰ বন্ধ কৰক}}</translation>
 <translation id="8706588385081740091">পাছৱৰ্ডসমূহ</translation>
 <translation id="8717864919010420084">লিংকটো প্ৰতিলিপি কৰক</translation>
@@ -798,6 +803,7 @@
 <translation id="9094033019050270033">পাছৱৰ্ড আপডে’ট কৰক</translation>
 <translation id="9100610230175265781">পাছফ্ৰেজ আৱশ্যক</translation>
 <translation id="9107664647686727385">পাছৱৰ্ড হেক কৰা হৈছেনে নাই পৰীক্ষা কৰক</translation>
+<translation id="9124387962554796433">Googleএ Search আৰু অন্য Google সেৱাসমূহ ব্যক্তিগতকৃত কৰিবলৈ আপোনাৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="9137526406337347448">Google সেৱা</translation>
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>
 <translation id="9152539721251340337">এটা কিউআৰ ক’ড সৃষ্টি কৰক</translation>
