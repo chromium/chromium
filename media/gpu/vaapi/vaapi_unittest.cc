@@ -113,21 +113,6 @@ std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList() {
       /*disabled_features=*/{});
   return scoped_feature_list;
 }
-
-unsigned int ToVaRTFormat(uint32_t va_fourcc) {
-  switch (va_fourcc) {
-    case VA_FOURCC_I420:
-      return VA_RT_FORMAT_YUV420;
-    case VA_FOURCC_YUY2:
-      return VA_RT_FORMAT_YUV422;
-    case VA_FOURCC_RGBA:
-      return VA_RT_FORMAT_RGB32;
-    case VA_FOURCC_P010:
-      return VA_RT_FORMAT_YUV420_10;
-  }
-  return kInvalidVaRtFormat;
-}
-
 }  // namespace
 
 class VaapiTest : public testing::Test {
@@ -368,87 +353,6 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
     }
   }
 }
-
-class VaapiVppTest
-    : public VaapiTest,
-      public testing::WithParamInterface<std::tuple<uint32_t, uint32_t>> {
- public:
-  VaapiVppTest() = default;
-  ~VaapiVppTest() override = default;
-
-  // Populate meaningful test suffixes instead of /0, /1, etc.
-  struct PrintToStringParamName {
-    template <class ParamType>
-    std::string operator()(
-        const testing::TestParamInfo<ParamType>& info) const {
-      std::stringstream ss;
-      ss << FourccToString(std::get<0>(info.param)) << "_to_"
-         << FourccToString(std::get<1>(info.param));
-      return ss.str();
-    }
-  };
-};
-
-TEST_P(VaapiVppTest, BlitWithVAAllocatedSurfaces) {
-  const uint32_t va_fourcc_in = std::get<0>(GetParam());
-  const uint32_t va_fourcc_out = std::get<1>(GetParam());
-
-  if (!VaapiWrapper::IsVppFormatSupported(va_fourcc_in) ||
-      !VaapiWrapper::IsVppFormatSupported(va_fourcc_out)) {
-    GTEST_SKIP() << FourccToString(va_fourcc_in) << " -> "
-                 << FourccToString(va_fourcc_out) << " not supported";
-  }
-  constexpr gfx::Size kInputSize(640, 320);
-  constexpr gfx::Size kOutputSize(320, 180);
-  ASSERT_TRUE(VaapiWrapper::IsVppResolutionAllowed(kInputSize));
-  ASSERT_TRUE(VaapiWrapper::IsVppResolutionAllowed(kOutputSize));
-
-  auto wrapper =
-      VaapiWrapper::Create(VaapiWrapper::kVideoProcess, VAProfileNone,
-                           EncryptionScheme::kUnencrypted, base::DoNothing());
-  ASSERT_TRUE(!!wrapper);
-  // Size is unnecessary for a VPP context.
-  ASSERT_TRUE(wrapper->CreateContext(gfx::Size()));
-
-  const unsigned int va_rt_format_in = ToVaRTFormat(va_fourcc_in);
-  ASSERT_NE(va_rt_format_in, kInvalidVaRtFormat);
-  const unsigned int va_rt_format_out = ToVaRTFormat(va_fourcc_out);
-  ASSERT_NE(va_rt_format_out, kInvalidVaRtFormat);
-
-  std::unique_ptr<ScopedVASurface> scoped_surface_in =
-      wrapper->CreateScopedVASurface(va_rt_format_in, kInputSize);
-  ASSERT_TRUE(!!scoped_surface_in);
-
-  std::unique_ptr<ScopedVASurface> scoped_surface_out =
-      wrapper->CreateScopedVASurface(va_rt_format_out, kOutputSize);
-  ASSERT_TRUE(!!scoped_surface_out);
-
-  scoped_refptr<VASurface> surface_in = base::MakeRefCounted<VASurface>(
-      scoped_surface_in->id(), kInputSize, va_rt_format_in, base::DoNothing());
-  scoped_refptr<VASurface> surface_out =
-      base::MakeRefCounted<VASurface>(scoped_surface_out->id(), kOutputSize,
-                                      va_rt_format_out, base::DoNothing());
-
-  ASSERT_TRUE(wrapper->BlitSurface(*surface_in, *surface_out,
-                                   gfx::Rect(kInputSize),
-                                   gfx::Rect(kOutputSize), VIDEO_ROTATION_0));
-  ASSERT_TRUE(wrapper->SyncSurface(scoped_surface_out->id()));
-  wrapper->DestroyContext();
-}
-
-// TODO(b/187852384): Consider adding more VaapiVppTest cases, e.g. crops.
-
-// Note: vaCreateSurfaces() uses the RT version of the Four CC, so we don't need
-// to consider swizzlings, since they'll end up mapped to the same RT format.
-constexpr uint32_t kVAFourCCs[] = {VA_FOURCC_I420, VA_FOURCC_YUY2,
-                                   VA_FOURCC_RGBA, VA_FOURCC_P010};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         VaapiVppTest,
-                         ::testing::Combine(::testing::ValuesIn(kVAFourCCs),
-                                            ::testing::ValuesIn(kVAFourCCs)),
-                         VaapiVppTest::PrintToStringParamName());
-
 }  // namespace media
 
 int main(int argc, char** argv) {
