@@ -29,9 +29,18 @@ UIAccessibilityElement* KeyboardDismissKeyInLayout() {
   if ([layout accessibilityElementCount] != NSNotFound) {
     for (NSInteger i = [layout accessibilityElementCount]; i >= 0; --i) {
       id element = [layout accessibilityElementAtIndex:i];
-      if ([[[element key] valueForKey:@"name"] isEqual:@"Dismiss-Key"]) {
-        key = element;
-        break;
+      if (@available(iOS 15, *)) {
+        // TODO(crbug.com/1221204): Find a better way to identify the Dismiss
+        // key.
+        if ([[element description] containsString:@"Dismiss-Key"]) {
+          key = element;
+          break;
+        }
+      } else {
+        if ([[[element key] valueForKey:@"name"] isEqual:@"Dismiss-Key"]) {
+          key = element;
+          break;
+        }
       }
     }
   }
