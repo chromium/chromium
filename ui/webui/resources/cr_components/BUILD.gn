@@ -83,10 +83,6 @@ group("preprocess") {
     ":preprocess_src",
   ]
 
-  if (use_nss_certs) {
-    public_deps += [ "certificate_manager:preprocess" ]
-  }
-
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
     public_deps += [ ":preprocess_polymer2" ]
@@ -391,10 +387,6 @@ group("closure_compile") {
     "omnibox:closure_compile",
   ]
 
-  if (use_nss_certs) {
-    deps += [ "certificate_manager:closure_compile_module" ]
-  }
-
   if (is_chromeos_ash) {
     deps += [ "chromeos:closure_compile" ]
   }
@@ -408,10 +400,6 @@ group("polymer3_elements") {
     "most_visited:web_components",
     "omnibox:web_components",
   ]
-
-  if (use_nss_certs) {
-    public_deps += [ "certificate_manager:web_components" ]
-  }
 
   if (is_chromeos_ash) {
     public_deps += [ "chromeos:polymer3_elements" ]

@@ -13,19 +13,21 @@ import './certificate_shared_css.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const CertificatePasswordDecryptionDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface CertificatePasswordDecryptionDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const CertificatePasswordDecryptionDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 export class CertificatePasswordDecryptionDialogElement extends
     CertificatePasswordDecryptionDialogElementBase {
   static get is() {
@@ -38,7 +40,6 @@ export class CertificatePasswordDecryptionDialogElement extends
 
   static get properties() {
     return {
-      /** @private */
       password_: {
         type: String,
         value: '',
@@ -46,38 +47,26 @@ export class CertificatePasswordDecryptionDialogElement extends
     };
   }
 
-  constructor() {
-    super();
-    /** @private {?CertificatesBrowserProxy} */
-    this.browserProxy_ = null;
-  }
+  private password_: string;
 
-  /** @override */
-  ready() {
-    super.ready();
-    this.browserProxy_ = CertificatesBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+    this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).close();
+  private onCancelTap_() {
+    this.$.dialog.close();
   }
 
-  /** @private */
-  onOkTap_() {
-    this.browserProxy_.importPersonalCertificatePasswordSelected(this.password_)
+  private onOkTap_() {
+    CertificatesBrowserProxyImpl.getInstance()
+        .importPersonalCertificatePasswordSelected(this.password_)
         .then(
             () => {
-              /** @type {!CrDialogElement} */ (this.$.dialog).close();
+              this.$.dialog.close();
             },
             error => {
-              /** @type {!CrDialogElement} */ (this.$.dialog).close();
+              this.$.dialog.close();
               this.dispatchEvent(new CustomEvent('certificates-error', {
                 bubbles: true,
                 composed: true,

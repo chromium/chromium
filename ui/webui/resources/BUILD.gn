@@ -151,6 +151,8 @@ checked_in_dts_files = [
   "cr_elements/cr_toolbar/cr_toolbar_search_field.d.ts",
   "cr_elements/cr_view_manager/cr_view_manager.d.ts",
   "cr_elements/find_shortcut_behavior.d.ts",
+  "cr_elements/policy/cr_policy_indicator_behavior.m.d.ts",
+  "cr_elements/policy/cr_policy_indicator.m.d.ts",
   "cr_elements/policy/cr_tooltip_icon.m.d.ts",
   "js/cr/ui/focus_row_behavior.m.d.ts",
   "js/i18n_behavior.m.d.ts",

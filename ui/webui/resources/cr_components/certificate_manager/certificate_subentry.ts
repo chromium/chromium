@@ -15,21 +15,25 @@ import './certificate_shared_css.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 
 import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from './certificate_manager_types.js';
-import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode, CertificateType} from './certificates_browser_proxy.js';
+import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificateSubnode, CertificateType} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+export interface CertificateSubentryElement {
+  $: {
+    menu: CrLazyRenderElement,
+    dots: HTMLElement,
+  };
+}
+
 const CertificateSubentryElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 export class CertificateSubentryElement extends CertificateSubentryElementBase {
   static get is() {
     return 'certificate-subentry';
@@ -41,46 +45,38 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
 
   static get properties() {
     return {
-      /** @type {!CertificateSubnode} */
       model: Object,
-
-      /** @type {!CertificateType} */
       certificateType: String,
     };
   }
 
-  constructor() {
-    super();
-    /** @private {!CertificatesBrowserProxy} */
-    this.browserProxy_ = CertificatesBrowserProxyImpl.getInstance();
-  }
+  model: CertificateSubnode;
+  certificateType: CertificateType;
+  private browserProxy_: CertificatesBrowserProxy =
+      CertificatesBrowserProxyImpl.getInstance();
 
   /**
    * Dispatches an event indicating which certificate action was tapped. It is
    * used by the parent of this element to display a modal dialog accordingly.
-   * @param {!CertificateAction} action
-   * @private
    */
-  dispatchCertificateActionEvent_(action) {
+  private dispatchCertificateActionEvent_(action: CertificateAction) {
     this.dispatchEvent(new CustomEvent(CertificateActionEvent, {
       bubbles: true,
       composed: true,
-      detail: /** @type {!CertificateActionEventDetail} */ ({
+      detail: {
         action: action,
         subnode: this.model,
         certificateType: this.certificateType,
         anchor: this.$.dots,
-      }),
+      },
     }));
   }
 
   /**
    * Handles the case where a call to the browser resulted in a rejected
    * promise.
-   * @param {*} error Expects {?CertificatesError}.
-   * @private
    */
-  onRejected_(error) {
+  private onRejected_(error: CertificatesError|null) {
     if (error === null) {
       // Nothing to do here. Null indicates that the user clicked "cancel" on
       // the native file chooser dialog.
@@ -92,30 +88,26 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
     this.dispatchEvent(new CustomEvent('certificates-error', {
       bubbles: true,
       composed: true,
-      detail: {error: error, anchor: null},
+      detail: {error, anchor: null},
     }));
   }
 
-  /** @private */
-  onViewClick_() {
+  private onViewClick_() {
     this.closePopupMenu_();
     this.browserProxy_.viewCertificate(this.model.id);
   }
 
-  /** @private */
-  onEditClick_() {
+  private onEditClick_() {
     this.closePopupMenu_();
     this.dispatchCertificateActionEvent_(CertificateAction.EDIT);
   }
 
-  /** @private */
-  onDeleteClick_() {
+  private onDeleteClick_() {
     this.closePopupMenu_();
     this.dispatchCertificateActionEvent_(CertificateAction.DELETE);
   }
 
-  /** @private */
-  onExportClick_() {
+  private onExportClick_() {
     this.closePopupMenu_();
     if (this.certificateType === CertificateType.PERSONAL) {
       this.browserProxy_.exportPersonalCertificate(this.model.id).then(() => {
@@ -127,21 +119,17 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
   }
 
   /**
-   * @param {!CertificateSubnode} model
-   * @return {boolean} Whether the certificate can be edited.
-   * @private
+   * @return Whether the certificate can be edited.
    */
-  canEdit_(model) {
+  private canEdit_(model: CertificateSubnode): boolean {
     return model.canBeEdited;
   }
 
   /**
-   * @param {!CertificateType} certificateType
-   * @param {!CertificateSubnode} model
-   * @return {boolean} Whether the certificate can be exported.
-   * @private
+   * @return Whether the certificate can be exported.
    */
-  canExport_(certificateType, model) {
+  private canExport_(
+      certificateType: CertificateType, model: CertificateSubnode): boolean {
     if (certificateType === CertificateType.PERSONAL) {
       return model.extractable;
     }
@@ -149,27 +137,23 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
   }
 
   /**
-   * @param {!CertificateSubnode} model
-   * @return {boolean} Whether the certificate can be deleted.
-   * @private
+   * @return Whether the certificate can be deleted.
    */
-  canDelete_(model) {
+  private canDelete_(model: CertificateSubnode): boolean {
     return model.canBeDeleted;
   }
 
-  /** @private */
-  closePopupMenu_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private closePopupMenu_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
-  /** @private */
-  onDotsClick_() {
-    const actionMenu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
+  private onDotsClick_() {
+    const actionMenu = this.$.menu.get() as CrActionMenuElement;
     actionMenu.showAt(this.$.dots);
   }
 
-  /** @private */
-  getPolicyIndicatorType_(model) {
+  private getPolicyIndicatorType_(model: CertificateSubnode):
+      CrPolicyIndicatorType {
     return model.policy ? CrPolicyIndicatorType.USER_POLICY :
                           CrPolicyIndicatorType.NONE;
   }

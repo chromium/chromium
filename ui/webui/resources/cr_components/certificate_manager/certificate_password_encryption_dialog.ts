@@ -14,19 +14,23 @@ import './certificate_shared_css.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const CertificatePasswordEncryptionDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface CertificatePasswordEncryptionDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    ok: CrButtonElement,
+  };
+}
 
-/** @polymer */
+const CertificatePasswordEncryptionDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 export class CertificatePasswordEncryptionDialogElement extends
     CertificatePasswordEncryptionDialogElementBase {
   static get is() {
@@ -42,13 +46,11 @@ export class CertificatePasswordEncryptionDialogElement extends
       /** @type {!CertificateSubnode} */
       model: Object,
 
-      /** @private */
       password_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       confirmPassword_: {
         type: String,
         value: '',
@@ -56,32 +58,21 @@ export class CertificatePasswordEncryptionDialogElement extends
     };
   }
 
-  constructor() {
-    super();
-    /** @private {?CertificatesBrowserProxy} */
-    this.browserProxy_ = null;
-  }
+  private password_: string;
+  private confirmPassword_: string;
 
-  /** @override */
-  ready() {
-    super.ready();
-    this.browserProxy_ = CertificatesBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+    this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).close();
+  private onCancelTap_() {
+    this.$.dialog.close();
   }
 
-  /** @private */
-  onOkTap_() {
-    this.browserProxy_.exportPersonalCertificatePasswordSelected(this.password_)
+  private onOkTap_() {
+    CertificatesBrowserProxyImpl.getInstance()
+        .exportPersonalCertificatePasswordSelected(this.password_)
         .then(
             () => {
               this.$.dialog.close();
@@ -96,8 +87,7 @@ export class CertificatePasswordEncryptionDialogElement extends
             });
   }
 
-  /** @private */
-  validate_() {
+  private validate_() {
     const isValid =
         this.password_ !== '' && this.password_ === this.confirmPassword_;
     this.$.ok.disabled = !isValid;

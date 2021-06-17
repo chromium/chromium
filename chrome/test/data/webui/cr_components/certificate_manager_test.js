@@ -13,11 +13,11 @@ import {CaTrustEditDialogElement} from 'chrome://resources/cr_components/certifi
 import {CertificateDeleteConfirmationDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_delete_confirmation_dialog.js';
 import {CertificateListElement} from 'chrome://resources/cr_components/certificate_manager/certificate_list.js';
 import {CertificateManagerElement} from 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
-import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
+import {CertificateAction, CertificateActionEvent} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
 import {CertificatePasswordDecryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_decryption_dialog.js';
 import {CertificatePasswordEncryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_encryption_dialog.js';
 import {CertificateSubentryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
-import { CaTrustInfo,CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificatesOrgGroup, CertificateSubnode, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
+import {CertificatesBrowserProxyImpl, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -216,7 +216,7 @@ import {eventToPromise} from '../test_util.m.js';
       browserProxy = new TestCertificatesBrowserProxy();
       browserProxy.setCaCertificateTrust(caTrustInfo);
 
-      CertificatesBrowserProxyImpl.instance_ = browserProxy;
+      CertificatesBrowserProxyImpl.setInstance(browserProxy);
       document.body.innerHTML = '';
       dialog = /** @type {!CaTrustEditDialogElement} */ (
           document.createElement('ca-trust-edit-dialog'));
@@ -316,7 +316,7 @@ import {eventToPromise} from '../test_util.m.js';
 
     setup(function() {
       browserProxy = new TestCertificatesBrowserProxy();
-      CertificatesBrowserProxyImpl.instance_ = browserProxy;
+      CertificatesBrowserProxyImpl.setInstance(browserProxy);
       document.body.innerHTML = '';
       dialog = /** @type {!CertificateDeleteConfirmationDialogElement} */ (
           document.createElement('certificate-delete-confirmation-dialog'));
@@ -374,7 +374,7 @@ import {eventToPromise} from '../test_util.m.js';
 
     setup(function() {
       browserProxy = new TestCertificatesBrowserProxy();
-      CertificatesBrowserProxyImpl.instance_ = browserProxy;
+      CertificatesBrowserProxyImpl.setInstance(browserProxy);
       document.body.innerHTML = '';
       dialog = /** @type {!CertificatePasswordEncryptionDialogElement} */ (
           document.createElement('certificate-password-encryption-dialog'));
@@ -456,7 +456,7 @@ import {eventToPromise} from '../test_util.m.js';
 
     setup(function() {
       browserProxy = new TestCertificatesBrowserProxy();
-      CertificatesBrowserProxyImpl.instance_ = browserProxy;
+      CertificatesBrowserProxyImpl.setInstance(browserProxy);
       document.body.innerHTML = '';
       dialog = /** @type {!CertificatePasswordDecryptionDialogElement} */ (
           document.createElement('certificate-password-decryption-dialog'));
@@ -522,7 +522,7 @@ import {eventToPromise} from '../test_util.m.js';
 
     setup(function() {
       browserProxy = new TestCertificatesBrowserProxy();
-      CertificatesBrowserProxyImpl.instance_ = browserProxy;
+      CertificatesBrowserProxyImpl.setInstance(browserProxy);
       document.body.innerHTML = '';
       subentry = /** @type {!CertificateSubentryElement} */ (
           document.createElement('certificate-subentry'));
@@ -661,7 +661,7 @@ import {eventToPromise} from '../test_util.m.js';
 
     setup(function() {
       browserProxy = new TestCertificatesBrowserProxy();
-      CertificatesBrowserProxyImpl.instance_ = browserProxy;
+      CertificatesBrowserProxyImpl.setInstance(browserProxy);
       document.body.innerHTML = '';
       page = /** @type {!CertificateManagerElement} */ (
           document.createElement('certificate-manager'));
@@ -946,7 +946,7 @@ import {eventToPromise} from '../test_util.m.js';
 
     setup(function() {
       browserProxy = new TestCertificatesBrowserProxy();
-      CertificatesBrowserProxyImpl.instance_ = browserProxy;
+      CertificatesBrowserProxyImpl.setInstance(browserProxy);
       document.body.innerHTML = '';
       element = /** @type {!CertificateListElement} */ (
           document.createElement('certificate-list'));

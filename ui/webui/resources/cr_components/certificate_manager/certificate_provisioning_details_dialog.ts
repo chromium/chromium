@@ -10,20 +10,23 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const CertificateProvisioningDetailsDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface CertificateProvisioningDetailsDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const CertificateProvisioningDetailsDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 export class CertificateProvisioningDetailsDialogElement extends
     CertificateProvisioningDetailsDialogElementBase {
   static get is() {
@@ -36,41 +39,37 @@ export class CertificateProvisioningDetailsDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!CertificateProvisioningProcess} */
       model: Object,
-
-      /** @private */
       advancedExpanded_: Boolean,
     };
   }
 
+  model: CertificateProvisioningProcess;
+  private advancedExpanded_: boolean;
+
   close() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).close();
+    this.$.dialog.close();
   }
 
-  /** @private */
-  onRefresh_() {
+  private onRefresh_() {
     CertificateProvisioningBrowserProxyImpl.getInstance()
         .triggerCertificateProvisioningProcessUpdate(
             this.model.certProfileId, this.model.isDeviceWide);
   }
 
-  /**
-   * @param {boolean} opened Whether the menu is expanded.
-   * @return {string} Which icon to use.
-   * @private
-   * */
-  arrowState_(opened) {
+  private arrowState_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   }
 
-  /**
-   * @param {boolean} bool
-   * @return {string}
-   * @private
-   */
-  boolToString_(bool) {
+  private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-provisioning-details-dialog':
+        CertificateProvisioningDetailsDialogElement;
   }
 }
 

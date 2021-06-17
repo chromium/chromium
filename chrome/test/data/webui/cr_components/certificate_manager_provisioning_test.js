@@ -4,8 +4,8 @@
 
 import 'chrome://settings/strings.m.js';
 
-import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
-import {CertificateProvisioningBrowserProxy, CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
+import {CertificateProvisioningViewDetailsActionEvent} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
+import {CertificateProvisioningBrowserProxyImpl} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
 import {CertificateProvisioningDetailsDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_details_dialog.js';
 import {CertificateProvisioningEntryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_entry.js';
 import {CertificateProvisioningListElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_list.js';
@@ -88,7 +88,7 @@ suite('CertificateProvisioningEntryTests', function() {
 
   setup(function() {
     browserProxy = new TestCertificateProvisioningBrowserProxy();
-    CertificateProvisioningBrowserProxyImpl.instance_ = browserProxy;
+    CertificateProvisioningBrowserProxyImpl.setInstance(browserProxy);
     entry = /** @type {!CertificateProvisioningEntryElement} */ (
         document.createElement('certificate-provisioning-entry'));
     entry.model = createSampleCertificateProvisioningProcess(false);
@@ -126,7 +126,7 @@ suite('CertificateManagerProvisioningTests', function() {
 
   setup(function() {
     browserProxy = new TestCertificateProvisioningBrowserProxy();
-    CertificateProvisioningBrowserProxyImpl.instance_ = browserProxy;
+    CertificateProvisioningBrowserProxyImpl.setInstance(browserProxy);
     certProvisioningList =
         /** @type {!CertificateProvisioningListElement} */ (
             document.createElement('certificate-provisioning-list'));
@@ -209,7 +209,7 @@ suite('DetailsDialogTests', function() {
     document.body.innerHTML = '';
 
     browserProxy = new TestCertificateProvisioningBrowserProxy();
-    CertificateProvisioningBrowserProxyImpl.instance_ = browserProxy;
+    CertificateProvisioningBrowserProxyImpl.setInstance(browserProxy);
 
     certProvisioningList =
         /** @type {!CertificateProvisioningListElement} */ (

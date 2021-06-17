@@ -14,21 +14,16 @@ import './certificate_shared_css.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertNotReached} from '../../js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from './certificate_manager_types.js';
-import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const CertificateListElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 export class CertificateListElement extends CertificateListElementBase {
   static get is() {
     return 'certificate-list';
@@ -40,7 +35,6 @@ export class CertificateListElement extends CertificateListElementBase {
 
   static get properties() {
     return {
-      /** @type {!Array<!CertificatesOrgGroup>} */
       certificates: {
         type: Array,
         value() {
@@ -48,15 +42,10 @@ export class CertificateListElement extends CertificateListElementBase {
         },
       },
 
-      /** @type {!CertificateType} */
       certificateType: String,
-
-      /** @type {boolean} */
       importAllowed: Boolean,
 
-      // 'if expr="chromeos"' here is breaking vulcanize. TODO(stevenjb/dpapad):
-      // Restore after migrating to polymer-bundler, crbug.com/731881.
-      /** @private */
+      // <if expr="chromeos">
       isGuest_: {
         type: Boolean,
         value() {
@@ -64,8 +53,8 @@ export class CertificateListElement extends CertificateListElementBase {
               loadTimeData.getBoolean('isGuest');
         },
       },
+      // </if>
 
-      /** @private */
       isKiosk_: {
         type: Boolean,
         value() {
@@ -76,11 +65,15 @@ export class CertificateListElement extends CertificateListElementBase {
     };
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDescription_() {
+  certificates: Array<CertificatesOrgGroup>;
+  certificateType: CertificateType;
+  importAllowed: boolean;
+  // <if expr="chromeos">
+  private isGuest_: boolean;
+  // </if>
+  private isKiosk_: boolean;
+
+  private getDescription_(): string {
     if (this.certificates.length === 0) {
       return this.i18n('certificateManagerNoCertificates');
     }
@@ -99,21 +92,13 @@ export class CertificateListElement extends CertificateListElementBase {
     assertNotReached();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  canImport_() {
+  private canImport_(): boolean {
     return !this.isKiosk_ && this.certificateType !== CertificateType.OTHER &&
         this.importAllowed;
   }
 
   // <if expr="chromeos">
-  /**
-   * @return {boolean}
-   * @private
-   */
-  canImportAndBind_() {
+  private canImportAndBind_(): boolean {
     return !this.isGuest_ &&
         this.certificateType === CertificateType.PERSONAL && this.importAllowed;
   }
@@ -121,11 +106,10 @@ export class CertificateListElement extends CertificateListElementBase {
 
   /**
    * Handles a rejected Promise returned from |browserProxy_|.
-   * @param {!HTMLElement} anchor
-   * @param {*} error Expects {!CertificatesError|!CertificatesImportError}.
-   * @private
    */
-  onRejected_(anchor, error) {
+  private onRejected_(
+      anchor: HTMLElement,
+      error: CertificatesError|CertificatesImportError|null) {
     if (error === null) {
       // Nothing to do here. Null indicates that the user clicked "cancel" on
       // a native file chooser dialog.
@@ -141,49 +125,31 @@ export class CertificateListElement extends CertificateListElementBase {
     }));
   }
 
-
-  /**
-   * @param {?NewCertificateSubNode} subnode
-   * @param {!HTMLElement} anchor
-   * @private
-   */
-  dispatchImportActionEvent_(subnode, anchor) {
+  private dispatchImportActionEvent_(
+      subnode: NewCertificateSubNode|null, anchor: HTMLElement) {
     this.dispatchEvent(new CustomEvent(CertificateActionEvent, {
       bubbles: true,
       composed: true,
-      detail: /** @type {!CertificateActionEventDetail} */ ({
+      detail: {
         action: CertificateAction.IMPORT,
         subnode: subnode,
         certificateType: this.certificateType,
         anchor: anchor,
-      }),
+      },
     }));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onImportTap_(e) {
-    this.handleImport_(false, /** @type {!HTMLElement} */ (e.target));
+  private onImportTap_(e: Event) {
+    this.handleImport_(false, e.target as HTMLElement);
   }
 
   // <if expr="chromeos">
-  /**
-   * @private
-   * @param {!Event} e
-   */
-  onImportAndBindTap_(e) {
-    this.handleImport_(true, /** @type {!HTMLElement} */ (e.target));
+  private onImportAndBindTap_(e: Event) {
+    this.handleImport_(true, e.target as HTMLElement);
   }
   // </if>
 
-  /**
-   * @param {boolean} useHardwareBacked
-   * @param {!HTMLElement} anchor
-   * @private
-   */
-  handleImport_(useHardwareBacked, anchor) {
+  private handleImport_(useHardwareBacked: boolean, anchor: HTMLElement) {
     const browserProxy = CertificatesBrowserProxyImpl.getInstance();
     if (this.certificateType === CertificateType.PERSONAL) {
       browserProxy.importPersonalCertificate(useHardwareBacked)

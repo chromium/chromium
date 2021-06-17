@@ -15,34 +15,31 @@ import {CertificatesError, CertificatesImportError,CertificateSubnode, Certifica
 
 /**
  * The payload of the 'certificate-action' event.
- * @typedef {{
- *   action: !CertificateAction,
- *   subnode: (null|CertificateSubnode|NewCertificateSubNode),
- *   certificateType: !CertificateType,
- *   anchor: !HTMLElement
- * }}
  */
-export let CertificateActionEventDetail;
+export type CertificateActionEventDetail = {
+  action: CertificateAction,
+  subnode: CertificateSubnode|NewCertificateSubNode|null,
+  certificateType: CertificateType,
+  anchor: HTMLElement,
+};
 
 /**
  * The payload of the 'certificates-error' event.
- * @typedef {{
- *   error: (null|CertificatesError|CertificatesImportError),
- *   anchor: ?HTMLElement
- * }}
  */
-export let CertificatesErrorEventDetail;
+export type CertificatesErrorEventDetail = {
+  error: CertificatesError|CertificatesImportError|null,
+  anchor: HTMLElement|null,
+};
 
 /**
  * Enumeration of actions that require a popup menu to be shown to the user.
- * @enum {number}
  */
-export const CertificateAction = {
-  DELETE: 0,
-  EDIT: 1,
-  EXPORT_PERSONAL: 2,
-  IMPORT: 3,
-};
+export enum CertificateAction {
+  DELETE = 0,
+  EDIT = 1,
+  EXPORT_PERSONAL = 2,
+  IMPORT = 3,
+}
 
 /**
  * The name of the event fired when a certificate action is selected from the
@@ -53,12 +50,11 @@ export const CertificateActionEvent = 'certificate-action';
 // <if expr="chromeos">
 /**
  * The payload of the 'certificate-provisioning-view-details-action' event.
- * @typedef {{
- *   model: !CertificateProvisioningProcess,
- *   anchor: !HTMLElement
- * }}
  */
-export let CertificateProvisioningActionEventDetail;
+export type CertificateProvisioningActionEventDetail = {
+  model: CertificateProvisioningProcess,
+  anchor: HTMLElement,
+};
 // </if>
 
 /**
@@ -68,3 +64,14 @@ export let CertificateProvisioningActionEventDetail;
  */
 export const CertificateProvisioningViewDetailsActionEvent =
     'certificate-provisioning-view-details-action';
+
+declare global {
+  interface HTMLElementEventMap {
+    'certificates-error': CustomEvent<CertificatesErrorEventDetail>;
+    'certificate-action': CustomEvent<CertificateActionEventDetail>;
+    // <if expr="chromeos">
+    'certificate-provisioning-view-details-action':
+        CustomEvent<CertificateProvisioningActionEventDetail>;
+    // </if>
+  }
+}

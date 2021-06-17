@@ -12,20 +12,22 @@ import './certificate_shared_css.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CertificatesError, CertificatesImportError} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const CertificatesErrorDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface CertificatesErrorDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const CertificatesErrorDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 class CertificatesErrorDialogElement extends
     CertificatesErrorDialogElementBase {
   static get is() {
@@ -38,28 +40,23 @@ class CertificatesErrorDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!CertificatesError|!CertificatesImportError} */
       model: Object,
     };
   }
 
-  /** @override */
+  model: CertificatesError|CertificatesImportError;
+
   connectedCallback() {
     super.connectedCallback();
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+    this.$.dialog.showModal();
   }
 
-  /** @private */
-  onOkTap_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).close();
+  private onOkTap_() {
+    this.$.dialog.close();
   }
 
-  /**
-   * @param {{name: string, error: string}} importError
-   * @return {string}
-   * @private
-   */
-  getCertificateErrorText_(importError) {
+  private getCertificateErrorText_(importError: {name: string, error: string}):
+      string {
     return loadTimeData.getStringF(
         'certificateImportErrorFormat', importError.name, importError.error);
   }

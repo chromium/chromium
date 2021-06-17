@@ -7,61 +7,64 @@
  * certificates" section to interact with certificate provisioining processes.
  */
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * The 'certificate-provisioning-processes-changed' event will have an array of
  * CertificateProvisioningProcesses as its argument. This typedef is currently
  * declared here to be consistent with certificates_browser_proxy.js, but it is
  * not specific to CertificateProvisioningBrowserProxy.
  *
- * @typedef {{
- *   certProfileId: string,
- *   certProfileName: string,
- *   isDeviceWide: boolean,
- *   status: string,
- *   stateId: number,
- *   timeSinceLastUpdate: string,
- *   publicKey: string
- * }}
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */
-export let CertificateProvisioningProcess;
+export type CertificateProvisioningProcess = {
+  certProfileId: string,
+  certProfileName: string,
+  isDeviceWide: boolean,
+  status: string,
+  stateId: number,
+  timeSinceLastUpdate: string,
+  publicKey: string,
+};
 
-/** @interface */
-export class CertificateProvisioningBrowserProxy {
+export interface CertificateProvisioningBrowserProxy {
   /**
    * Refreshes the list of client certificate processes.
    * Triggers the 'certificate-provisioning-processes-changed' event.
    * This is Chrome OS specific, but always present for simplicity.
    */
-  refreshCertificateProvisioningProcesses() {}
+  refreshCertificateProvisioningProcesses(): void;
 
   /**
    * Attempts to manually advance/refresh the status of the client certificate
    * provisioning process identified by |certProfileId|.
    * This is Chrome OS specific, but always present for simplicity.
-   * @param {string} certProfileId
-   * @param {boolean} isDeviceWide
    */
-  triggerCertificateProvisioningProcessUpdate(certProfileId, isDeviceWide) {}
+  triggerCertificateProvisioningProcessUpdate(
+      certProfileId: string, isDeviceWide: boolean): void;
 }
 
-/** @implements {CertificateProvisioningBrowserProxy} */
-export class CertificateProvisioningBrowserProxyImpl {
-  /** override */
+export class CertificateProvisioningBrowserProxyImpl implements
+    CertificateProvisioningBrowserProxy {
   refreshCertificateProvisioningProcesses() {
     chrome.send('refreshCertificateProvisioningProcessses');
   }
 
-  /** override */
-  triggerCertificateProvisioningProcessUpdate(certProfileId, isDeviceWide) {
+  triggerCertificateProvisioningProcessUpdate(
+      certProfileId: string, isDeviceWide: boolean) {
     chrome.send(
         'triggerCertificateProvisioningProcessUpdate',
         [certProfileId, isDeviceWide]);
+  }
+
+  static getInstance(): CertificateProvisioningBrowserProxy {
+    return instance ||
+        (instance = new CertificateProvisioningBrowserProxyImpl());
+  }
+
+  static setInstance(obj: CertificateProvisioningBrowserProxy) {
+    instance = obj;
   }
 }
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-addSingletonGetter(CertificateProvisioningBrowserProxyImpl);
+let instance: CertificateProvisioningBrowserProxy|null = null;

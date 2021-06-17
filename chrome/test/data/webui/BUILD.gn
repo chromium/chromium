@@ -137,6 +137,11 @@ if (include_js_tests) {
       "//ui/webui/resources/js:unmodulize",
     ]
 
+    if (use_nss_certs) {
+      deps +=
+          [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
+    }
+
     if (is_chromeos_ash) {
       gen_include_files +=
           [ "settings/chromeos/a11y/os_settings_accessibility_v3_test.js" ]

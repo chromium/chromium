@@ -4,19 +4,14 @@
 
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
-interface CrCheckboxElement extends LegacyElementMixin, HTMLElement {
-  checked: boolean;
-  disabled: boolean;
-  ariaDescription: string|null|undefined;
-  tabIndex: number;
-  focus(): void;
-  getFocusableElement(): Element;
+interface CrPolicyIndicatorElement extends LegacyElementMixin, HTMLElement {
+  iconAriaLabel: string;
 }
 
-export {CrCheckboxElement};
+export {CrPolicyIndicatorElement};
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-checkbox': CrCheckboxElement;
+    'cr-policy-indicator': CrPolicyIndicatorElement;
   }
 }

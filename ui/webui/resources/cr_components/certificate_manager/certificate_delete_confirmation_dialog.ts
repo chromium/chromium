@@ -12,21 +12,23 @@ import './certificate_shared_css.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertNotReached} from '../../js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode, CertificateType} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const CertificateDeleteConfirmationDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface CertificateDeleteConfirmationDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const CertificateDeleteConfirmationDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 export class CertificateDeleteConfirmationDialogElement extends
     CertificateDeleteConfirmationDialogElementBase {
   static get is() {
@@ -39,42 +41,21 @@ export class CertificateDeleteConfirmationDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!CertificateSubnode} */
       model: Object,
-
-      /** @type {!CertificateType} */
       certificateType: String,
     };
   }
 
-  constructor() {
-    super();
-    /** @private {?CertificatesBrowserProxy} */
-    this.browserProxy_ = null;
-  }
+  model: CertificateSubnode;
+  certificateType: CertificateType;
 
-  /** @override */
-  ready() {
-    super.ready();
-    this.browserProxy_ = CertificatesBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+    this.$.dialog.showModal();
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getTitleText_() {
-    /**
-     * @param {string} localizedMessageId
-     * @return {string}
-     */
-    const getString = localizedMessageId =>
+  private getTitleText_(): string {
+    const getString = (localizedMessageId: string) =>
         loadTimeData.getStringF(localizedMessageId, this.model.name);
 
     switch (this.certificateType) {
@@ -88,13 +69,10 @@ export class CertificateDeleteConfirmationDialogElement extends
         return getString('certificateManagerDeleteOtherTitle');
     }
     assertNotReached();
+    return '';
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getDescriptionText_() {
+  private getDescriptionText_(): string {
     const getString = loadTimeData.getString.bind(loadTimeData);
     switch (this.certificateType) {
       case CertificateType.PERSONAL:
@@ -107,22 +85,22 @@ export class CertificateDeleteConfirmationDialogElement extends
         return '';
     }
     assertNotReached();
+    return '';
   }
 
-  /** @private */
-  onCancelTap_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).close();
+  private onCancelTap_() {
+    this.$.dialog.close();
   }
 
-  /** @private */
-  onOkTap_() {
-    this.browserProxy_.deleteCertificate(this.model.id)
+  private onOkTap_() {
+    CertificatesBrowserProxyImpl.getInstance()
+        .deleteCertificate(this.model.id)
         .then(
             () => {
-              /** @type {!CrDialogElement} */ (this.$.dialog).close();
+              this.$.dialog.close();
             },
             error => {
-              /** @type {!CrDialogElement} */ (this.$.dialog).close();
+              this.$.dialog.close();
               this.dispatchEvent(new CustomEvent('certificates-error', {
                 bubbles: true,
                 composed: true,

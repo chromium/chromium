@@ -11,25 +11,18 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './certificate_provisioning_details_dialog.js';
 import './certificate_provisioning_entry.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const CertificateProvisioningListElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 export class CertificateProvisioningListElement extends
     CertificateProvisioningListElementBase {
   static get is() {
@@ -42,7 +35,6 @@ export class CertificateProvisioningListElement extends
 
   static get properties() {
     return {
-      /** @type {!Array<!CertificateProvisioningProcess>} */
       provisioningProcesses_: {
         type: Array,
         value() {
@@ -52,39 +44,34 @@ export class CertificateProvisioningListElement extends
 
       /**
        * The model to be passed to certificate provisioning details dialog.
-       * @private {?CertificateProvisioningProcess}
        */
       provisioningDetailsDialogModel_: Object,
 
-      /** @private */
       showProvisioningDetailsDialog_: Boolean,
     };
   }
 
-  constructor() {
-    super();
-
-    /** @private {?HTMLElement} */
-    this.previousAnchor_ = null;
-  }
+  private provisioningProcesses_: Array<CertificateProvisioningProcess>;
+  private provisioningDetailsDialogModel_: CertificateProvisioningProcess|null;
+  private showProvisioningDetailsDialog_: boolean;
+  private previousAnchor_: HTMLElement|null = null;
 
   /**
-   * @param {!Array<!CertificateProvisioningProcess>} provisioningProcesses The
-   * list of certificate provisioning processes.
-   * @return {boolean} true if |provisioningProcesses| contains at least one
-   * entry.
-   * @private
+   * @param provisioningProcesses The list of certificate provisioning
+   *     processes.
+   * @return Whether |provisioningProcesses| contains at least one entry.
    */
-  hasCertificateProvisioningEntries_(provisioningProcesses) {
+  private hasCertificateProvisioningEntries_(
+      provisioningProcesses: Array<CertificateProvisioningProcess>): boolean {
     return provisioningProcesses.length !== 0;
   }
 
   /**
-   * @param {!Array<!CertificateProvisioningProcess>} certProvisioningProcesses
-   *    The currently active certificate provisioning processes
-   * @private
+   * @param certProvisioningProcesses The currently active certificate
+   *     provisioning processes
    */
-  onCertificateProvisioningProcessesChanged_(certProvisioningProcesses) {
+  private onCertificateProvisioningProcessesChanged_(
+      certProvisioningProcesses: Array<CertificateProvisioningProcess>) {
     this.provisioningProcesses_ = certProvisioningProcesses;
 
     // If a cert provisioning process details dialog is being shown, update its
@@ -102,12 +89,11 @@ export class CertificateProvisioningListElement extends
     } else {
       // Close cert provisioning process details dialog if the process is no
       // longer in the list eg. when process completed successfully.
-      this.shadowRoot.querySelector('certificate-provisioning-details-dialog')
-          .close();
+      this.shadowRoot!.querySelector(
+                          'certificate-provisioning-details-dialog')!.close();
     }
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
@@ -117,14 +103,11 @@ export class CertificateProvisioningListElement extends
         .refreshCertificateProvisioningProcesses();
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.addEventListener(
         CertificateProvisioningViewDetailsActionEvent, event => {
-          const detail =
-              /** @type {!CertificateProvisioningActionEventDetail} */ (
-                  event.detail);
+          const detail = event.detail;
           this.provisioningDetailsDialogModel_ = detail.model;
           this.previousAnchor_ = detail.anchor;
           this.showProvisioningDetailsDialog_ = true;
@@ -132,10 +115,9 @@ export class CertificateProvisioningListElement extends
         });
   }
 
-  /** @private */
-  onDialogClose_() {
+  private onDialogClose_() {
     this.showProvisioningDetailsDialog_ = false;
-    focusWithoutInk(assert(this.previousAnchor_));
+    focusWithoutInk(this.previousAnchor_!);
     this.previousAnchor_ = null;
   }
 }

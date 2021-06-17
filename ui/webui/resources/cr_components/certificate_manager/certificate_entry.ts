@@ -14,19 +14,14 @@ import './certificate_subentry.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 
 import {CertificatesOrgGroup, CertificateType} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const CertificateEntryElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class CertificateEntryElement extends CertificateEntryElementBase {
   static get is() {
     return 'certificate-entry';
@@ -38,24 +33,22 @@ class CertificateEntryElement extends CertificateEntryElementBase {
 
   static get properties() {
     return {
-      /** @type {!CertificatesOrgGroup} */
       model: Object,
-
-      /** @type {!CertificateType} */
       certificateType: String,
     };
   }
 
+  model: CertificatesOrgGroup;
+  certificateType: CertificateType;
+
   /**
-   * @param {number} index
-   * @return {boolean} Whether the given index corresponds to the last sub-node.
-   * @private
+   * @return Whether the given index corresponds to the last sub-node.
    */
-  isLast_(index) {
+  private isLast_(index: number): boolean {
     return index === this.model.subnodes.length - 1;
   }
 
-  getPolicyIndicatorType_() {
+  private getPolicyIndicatorType_(): CrPolicyIndicatorType {
     return this.model.containsPolicyCerts ? CrPolicyIndicatorType.USER_POLICY :
                                             CrPolicyIndicatorType.NONE;
   }

@@ -14,22 +14,30 @@ import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './certificate_shared_css.js';
 
+import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {CrCheckboxElement} from '../../cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CaTrustInfo, CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const CaTrustEditDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface CaTrustEditDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    ssl: CrCheckboxElement,
+    email: CrCheckboxElement,
+    objSign: CrCheckboxElement,
+    spinner: PaperSpinnerLiteElement,
+  };
+}
 
-/** @polymer */
+const CaTrustEditDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
   static get is() {
     return 'ca-trust-edit-dialog';
@@ -41,30 +49,22 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
 
   static get properties() {
     return {
-      /** @type {!CertificateSubnode|!NewCertificateSubNode} */
       model: Object,
-
-      /** @private {?CaTrustInfo} */
       trustInfo_: Object,
-
-      /** @private {string} */
       explanationText_: String,
     };
   }
 
-  constructor() {
-    super();
-    /** @private {?CertificatesBrowserProxy} */
-    this.browserProxy_ = null;
-  }
+  model: CertificateSubnode|NewCertificateSubNode;
+  private trustInfo_: CaTrustInfo|null;
+  private explanationText_: string;
+  private browserProxy_: CertificatesBrowserProxy|null = null;
 
-  /** @override */
   ready() {
     super.ready();
     this.browserProxy_ = CertificatesBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -73,40 +73,39 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
 
     // A non existing |model.id| indicates that a new certificate is being
     // imported, otherwise an existing certificate is being edited.
-    if (this.model.id) {
-      this.browserProxy_.getCaCertificateTrust(this.model.id)
+    if ((this.model as CertificateSubnode).id) {
+      this.browserProxy_!
+          .getCaCertificateTrust((this.model as CertificateSubnode).id)
           .then(trustInfo => {
             this.trustInfo_ = trustInfo;
             this.$.dialog.showModal();
           });
     } else {
-      /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+      this.$.dialog.showModal();
     }
   }
 
-  /** @private */
-  onCancelTap_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).close();
+  private onCancelTap_() {
+    this.$.dialog.close();
   }
 
-  /** @private */
-  onOkTap_() {
+  private onOkTap_() {
     this.$.spinner.active = true;
 
-    const whenDone = this.model.id ?
-        this.browserProxy_.editCaCertificateTrust(
-            this.model.id, this.$.ssl.checked, this.$.email.checked,
-            this.$.objSign.checked) :
-        this.browserProxy_.importCaCertificateTrustSelected(
+    const whenDone = (this.model as CertificateSubnode).id ?
+        this.browserProxy_!.editCaCertificateTrust(
+            (this.model as CertificateSubnode).id, this.$.ssl.checked,
+            this.$.email.checked, this.$.objSign.checked) :
+        this.browserProxy_!.importCaCertificateTrustSelected(
             this.$.ssl.checked, this.$.email.checked, this.$.objSign.checked);
 
     whenDone.then(
         () => {
           this.$.spinner.active = false;
-          /** @type {!CrDialogElement} */ (this.$.dialog).close();
+          this.$.dialog.close();
         },
         error => {
-          /** @type {!CrDialogElement} */ (this.$.dialog).close();
+          this.$.dialog.close();
           this.dispatchEvent(new CustomEvent('certificates-error', {
             bubbles: true,
             composed: true,
