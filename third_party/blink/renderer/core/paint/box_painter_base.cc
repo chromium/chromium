@@ -455,31 +455,6 @@ void DrawTiledBackground(GraphicsContext& context,
                          RespectImageOrientationEnum respect_orientation) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
-  // Use the intrinsic size of the image if it has one, otherwise force the
-  // generated image to be the tile size.
-  FloatSize intrinsic_tile_size(image->Size());
-  // image-resolution information is baked into the given parameters, but we
-  // need oriented size. That requires explicitly applying orientation here.
-  if (respect_orientation &&
-      image->CurrentFrameOrientation().UsesWidthAsHeight()) {
-    intrinsic_tile_size = intrinsic_tile_size.TransposedSize();
-  }
-
-  FloatSize scale(1, 1);
-  if (!image->HasIntrinsicSize() ||
-      // TODO(crbug.com/1042783): This is not checking for real empty image
-      // (for which we have checked and skipped the whole FillLayer), but for
-      // that a subpixel image size is rounded to empty, to avoid infinite tile
-      // scale that would be calculated in the |else| part.
-      // We should probably support subpixel size here.
-      intrinsic_tile_size.IsEmpty()) {
-    intrinsic_tile_size = FloatSize(geometry.TileSize());
-  } else {
-    scale =
-        FloatSize(geometry.TileSize().width / intrinsic_tile_size.Width(),
-                  geometry.TileSize().height / intrinsic_tile_size.Height());
-  }
-
   const PhysicalOffset dest_phase = geometry.ComputeDestPhase();
 
   // Check and see if a single draw of the image can cover the entire area we
@@ -491,6 +466,21 @@ void DrawTiledBackground(GraphicsContext& context,
                                           geometry.UnsnappedDestRect().size);
   const PhysicalRect one_tile_rect(dest_phase, geometry.TileSize());
   if (one_tile_rect.Contains(dest_rect_for_subset)) {
+    // Use the intrinsic size of the image if it has one, otherwise force the
+    // generated image to be the tile size.
+    // image-resolution information is baked into the given parameters, but we
+    // need oriented size.
+    FloatSize intrinsic_tile_size(image->Size(respect_orientation));
+    if (!image->HasIntrinsicSize() ||
+        // TODO(crbug.com/1042783): This is not checking for real empty image
+        // (for which we have checked and skipped the whole FillLayer), but for
+        // that a subpixel image size is rounded to empty, to avoid infinite
+        // tile scale that would be calculated in the |else| part. We should
+        // probably support subpixel size here.
+        intrinsic_tile_size.IsEmpty()) {
+      intrinsic_tile_size = FloatSize(geometry.TileSize());
+    }
+
     FloatRect visible_src_rect = ComputeSubsetForBackground(
         one_tile_rect, dest_rect_for_subset, intrinsic_tile_size);
     visible_src_rect = SnapSourceRectIfNearIntegral(visible_src_rect);
@@ -510,6 +500,26 @@ void DrawTiledBackground(GraphicsContext& context,
     return;
   }
 
+  // Use the intrinsic size of the image if it has one, otherwise force the
+  // generated image to be the tile size.
+  FloatSize intrinsic_tile_size(image->Size());
+  // image-resolution information is baked into the given parameters, but we
+  // need oriented size. That requires explicitly applying orientation here.
+  if (respect_orientation &&
+      image->CurrentFrameOrientation().UsesWidthAsHeight()) {
+    intrinsic_tile_size = intrinsic_tile_size.TransposedSize();
+  }
+
+  if (!image->HasIntrinsicSize() ||
+      // TODO(crbug.com/1042783): This is not checking for real empty image
+      // (for which we have checked and skipped the whole FillLayer), but for
+      // that a subpixel image size is rounded to empty, to avoid infinite tile
+      // scale that would be calculated in the |else| part.
+      // We should probably support subpixel size here.
+      intrinsic_tile_size.IsEmpty()) {
+    intrinsic_tile_size = FloatSize(geometry.TileSize());
+  }
+
   // At this point we have decided to tile the image to fill the dest rect.
   // Note that this tile rect uses the image's pre-scaled size.
   FloatRect tile_rect(FloatPoint(), intrinsic_tile_size);
@@ -524,14 +534,14 @@ void DrawTiledBackground(GraphicsContext& context,
   // values in that dimension.
   const PhysicalSize tile_dest_diff =
       geometry.TileSize() - geometry.SnappedDestRect().size;
-  if (tile_dest_diff.width.Abs() <= 0.5f) {
-    scale.SetWidth(geometry.SnappedDestRect().Width() /
-                   intrinsic_tile_size.Width());
-  }
-  if (tile_dest_diff.height.Abs() <= 0.5f) {
-    scale.SetHeight(geometry.SnappedDestRect().Height() /
-                    intrinsic_tile_size.Height());
-  }
+  const LayoutUnit ref_tile_width = tile_dest_diff.width.Abs() <= 0.5f
+                                        ? geometry.SnappedDestRect().Width()
+                                        : geometry.TileSize().width;
+  const LayoutUnit ref_tile_height = tile_dest_diff.height.Abs() <= 0.5f
+                                         ? geometry.SnappedDestRect().Height()
+                                         : geometry.TileSize().height;
+  const FloatSize scale(ref_tile_width / intrinsic_tile_size.Width(),
+                        ref_tile_height / intrinsic_tile_size.Height());
 
   // This call takes the unscaled image, applies the given scale, and paints
   // it into the snapped_dest_rect using phase from one_tile_rect and the
