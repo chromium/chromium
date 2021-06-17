@@ -6,13 +6,17 @@
 
 #include <memory>
 
+#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/toast_manager.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/resize_confirmation_dialog_view.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -50,13 +54,41 @@ void TurnOnResizeLock(views::Widget* widget,
   }
 }
 
+void TurnOffResizeLock(views::Widget* target_widget,
+                       ArcResizeLockPrefDelegate* pref_delegate) {
+  const auto app_id = GetAppId(target_widget);
+  if (!app_id || pref_delegate->GetResizeLockState(*app_id) ==
+                     mojom::ArcResizeLockState::OFF) {
+    return;
+  }
+
+  pref_delegate->SetResizeLockState(*app_id, mojom::ArcResizeLockState::OFF);
+
+  auto* const toast_manager = ash::ToastManager::Get();
+  // |toast_manager| can be null in some unittests.
+  if (!toast_manager)
+    return;
+
+  constexpr char kTurnOffResizeLockToastId[] =
+      "arc.compat_mode.turn_off_resize_lock";
+  constexpr int kToastDurationMs = 3500;
+  toast_manager->Cancel(kTurnOffResizeLockToastId);
+  ash::ToastData toast(
+      kTurnOffResizeLockToastId,
+      l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_DISABLE_RESIZE_LOCK_TOAST),
+      kToastDurationMs,
+      /*dismiss_text=*/absl::nullopt,
+      /*visible_on_lock_screen=*/false);
+  toast_manager->Show(toast);
+}
+
 void TurnOffResizeLockWithConfirmationIfNeeded(
     views::Widget* target_widget,
     ArcResizeLockPrefDelegate* pref_delegate) {
   const auto app_id = GetAppId(target_widget);
   if (app_id && !pref_delegate->GetResizeLockNeedsConfirmation(*app_id)) {
     // The user has already agreed not to show the dialog again.
-    pref_delegate->SetResizeLockState(*app_id, mojom::ArcResizeLockState::OFF);
+    TurnOffResizeLock(target_widget, pref_delegate);
     return;
   }
 
@@ -72,8 +104,7 @@ void TurnOffResizeLockWithConfirmationIfNeeded(
               if (do_not_ask_again && app_id)
                 delegate->SetResizeLockNeedsConfirmation(*app_id, false);
 
-              delegate->SetResizeLockState(*app_id,
-                                           mojom::ArcResizeLockState::OFF);
+              TurnOffResizeLock(widget, delegate);
             }
           },
           base::Unretained(target_widget), base::Unretained(pref_delegate)));

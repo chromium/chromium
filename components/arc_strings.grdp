@@ -40,6 +40,9 @@
   <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_LINK" desc="Text of link to app settings.">
     Settings
   </message>
+  <message name="IDS_ARC_COMPAT_MODE_DISABLE_RESIZE_LOCK_TOAST" desc="Toast message shown to the user when the user makes the app resizable.">
+    You can now drag and resize this app
+  </message>
 
   <!-- ARC ghost window -->
   <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON" desc="The icon of launching app.">

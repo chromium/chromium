@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "ash/public/cpp/toast_manager.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -68,6 +69,22 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
   int show_count_ = kMaxNumSplashScreen;
 };
 
+class FakeToastManager : public ash::ToastManager {
+ public:
+  ~FakeToastManager() override = default;
+
+  // ToastManager overrides:
+  void Show(const ash::ToastData& data) override { called_show_ = true; }
+  void Cancel(const std::string& id) override { called_cancel_ = true; }
+
+  bool called_show() { return called_show_; }
+  bool called_cancel() { return called_cancel_; }
+
+ private:
+  bool called_show_{false};
+  bool called_cancel_{false};
+};
+
 }  // namespace
 
 class ResizeUtilTest : public exo::test::ExoTestBaseViews {
@@ -123,12 +140,16 @@ TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
 // Test that enabling resizing works properly in both needs-confirmation and no
 // needs-conirmation case.
 TEST_F(ResizeUtilTest, TestEnableResizing) {
+  FakeToastManager fake_toast_manager;
+
   // Test the state is NOT changed immediately if the confirmation dialog is
   // needed.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, true);
   EnableResizingWithConfirmationIfNeeded(widget(), pref_delegate());
   EXPECT_NE(pref_delegate()->GetResizeLockState(kTestAppId),
             mojom::ArcResizeLockState::OFF);
+  EXPECT_FALSE(fake_toast_manager.called_cancel());
+  EXPECT_FALSE(fake_toast_manager.called_show());
 
   // Test the state is changed without confirmation.
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
@@ -137,6 +158,8 @@ TEST_F(ResizeUtilTest, TestEnableResizing) {
             mojom::ArcResizeLockState::OFF);
   EXPECT_EQ(PredictCurrentMode(widget(), pref_delegate()),
             ResizeCompatMode::kResizable);
+  EXPECT_TRUE(fake_toast_manager.called_cancel());
+  EXPECT_TRUE(fake_toast_manager.called_show());
 }
 
 // Test that should show dialog screen dialog caps at a preset limit
