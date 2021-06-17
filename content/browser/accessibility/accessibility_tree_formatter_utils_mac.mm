@@ -68,13 +68,13 @@ std::string OptionalNSObject::ToString() const {
 
 // AttributeInvoker
 
-AttributeInvoker::AttributeInvoker(const LineIndexer* line_indexer)
-    : node(nullptr), line_indexer(line_indexer) {}
+AttributeInvoker::AttributeInvoker(const LineIndexer* line_indexer,
+                                   std::map<std::string, id>* storage)
+    : node(nullptr), line_indexer(line_indexer), storage_(storage) {}
 
 AttributeInvoker::AttributeInvoker(const id node,
                                    const LineIndexer* line_indexer)
-    : node(node), line_indexer(line_indexer) {
-}
+    : node(node), line_indexer(line_indexer), storage_(nullptr) {}
 
 OptionalNSObject AttributeInvoker::Invoke(
     const AXPropertyNode& property_node) const {
@@ -83,15 +83,31 @@ OptionalNSObject AttributeInvoker::Invoke(
   // a working solution that works nicely in both cases. Use LOG(ERROR) for now
   // as a console warning.
 
-  // Get a target to invoke an attribute for. If the property node doesn't
-  // provide a target then use the default one.
+  // Get a target to invoke an attribute for. First, check the storage if it has
+  // an associated target for the property node, then query the tree indexer if
+  // the property node refers to a DOM id or line index of an accessible object.
+  // If the property node doesn't provide a target then use the default one
+  // (if any).
   id target = node;
   auto* current_node = &property_node;
   if (property_node.IsTarget()) {
-    target = line_indexer->NodeBy(property_node.name_or_value);
+    if (storage_) {
+      auto storage_iterator = storage_->find(property_node.name_or_value);
+      if (storage_iterator != storage_->end()) {
+        target = storage_iterator->second;
+        if (!target) {
+          LOG(ERROR) << "Stored " << property_node.name_or_value
+                     << " target is null ";
+          return OptionalNSObject::Error();
+        }
+      }
+    }
     if (!target) {
-      LOG(ERROR) << "No target in " << property_node.ToString();
-      return OptionalNSObject::Error();
+      target = line_indexer->NodeBy(property_node.name_or_value);
+      if (!target) {
+        LOG(ERROR) << "No target in " << property_node.ToString();
+        return OptionalNSObject::Error();
+      }
     }
     current_node = property_node.next.get();
   }
@@ -111,6 +127,9 @@ OptionalNSObject AttributeInvoker::Invoke(
     target = *target_optional;
     current_node = current_node->next.get();
   }
+
+  if (!property_node.key.empty())
+    (*storage_)[property_node.key] = target;
 
   return OptionalNSObject(target);
 }

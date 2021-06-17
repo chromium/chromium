@@ -100,6 +100,12 @@ absl::optional<int> AXPropertyNode::FindIntKey(const char* refkey) const {
 }
 
 std::string AXPropertyNode::ToString() const {
+  if (key.empty())
+    return original_property;
+  return key;
+}
+
+std::string AXPropertyNode::ToFlatString() const {
   std::string out;
   for (const auto& index : line_indexes) {
     if (!out.empty()) {
@@ -111,6 +117,7 @@ std::string AXPropertyNode::ToString() const {
     out += ';';
   }
 
+  // Format a dictionary key or a variable.
   if (!key.empty()) {
     out += key + ": ";
   }
@@ -122,7 +129,7 @@ std::string AXPropertyNode::ToString() const {
       if (i != 0) {
         out += ", ";
       }
-      out += arguments[i].ToString();
+      out += arguments[i].ToFlatString();
     }
     out += ')';
   }
@@ -131,8 +138,11 @@ std::string AXPropertyNode::ToString() const {
 
 std::string AXPropertyNode::ToTreeString(const std::string& indent) const {
   std::string out = indent;
-  out += name_or_value;
-  if (arguments.size()) {
+  if (!key.empty()) {  // Key.
+    out += key + ':';
+  }
+  out += name_or_value;    // Name or value.
+  if (arguments.size()) {  // Arguments.
     out += "(\n";
     for (size_t i = 0; i < arguments.size(); i++) {
       if (i != 0) {
@@ -142,7 +152,7 @@ std::string AXPropertyNode::ToTreeString(const std::string& indent) const {
     }
     out += '\n' + indent + ')';
   }
-  if (next) {
+  if (next) {  // Chains.
     out += ".\n" + next->ToTreeString(indent);
   }
   return out;
@@ -168,7 +178,7 @@ AXPropertyNode::iterator AXPropertyNode::Parse(AXPropertyNode* node,
                                                AXPropertyNode::iterator begin,
                                                AXPropertyNode::iterator end) {
   auto iter = begin;
-  auto key_begin = end, key_end = end;
+  auto key_begin = end, key_end = end, maybe_key_end = end;
   ParseState state = kArgument;
   while (iter != end) {
     // Subnode begins: create a new node, record its name and parse its
@@ -219,21 +229,31 @@ AXPropertyNode::iterator AXPropertyNode::Parse(AXPropertyNode* node,
       return ++iter;
     }
 
-    // Dictionary key
-    auto maybe_key_end = end;
+    // Possible dictionary key or variable assignment end.
     if (*iter == ':') {
       maybe_key_end = iter++;
+      continue;
     }
 
-    // Skip spaces, adjust new node start.
+    // Possible variable assignment, move next.
+    if (*iter == '=') {
+      iter++;
+      continue;
+    }
+
+    // Dictionary key or variable. If so, get a key and adjust a new node start.
     if (*iter == ' ') {
       if (maybe_key_end != end) {
         key_begin = begin;
         key_end = maybe_key_end;
+        maybe_key_end = end;
       }
       begin = ++iter;
       continue;
     }
+
+    // Not a dictionary key or a variable.
+    maybe_key_end = end;
 
     // Call chains.
     if (*iter == '.') {

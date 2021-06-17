@@ -125,9 +125,10 @@ base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
 void AccessibilityTreeFormatterMac::EvaluateScripts(
     const LineIndexer* line_indexer,
     base::Value* dict) const {
+  std::map<std::string, id> storage;
   base::Value scripts(base::Value::Type::LIST);
+  AttributeInvoker invoker(line_indexer, &storage);
   for (const AXPropertyNode& property_node : ScriptPropertyNodes()) {
-    AttributeInvoker invoker(line_indexer);
     OptionalNSObject value = invoker.Invoke(property_node);
     if (value.IsNotApplicable()) {
       continue;
@@ -136,8 +137,7 @@ void AccessibilityTreeFormatterMac::EvaluateScripts(
     base::Value result = value.IsError() ? base::Value(kFailedToParseError)
                                          : PopulateObject(*value, line_indexer);
 
-    std::string code = property_node.original_property;
-    scripts.Append(code + "=" + AXFormatValue(result));
+    scripts.Append(property_node.ToString() + "=" + AXFormatValue(result));
   }
   dict->SetPath(kScriptsDictAttr, std::move(scripts));
 }

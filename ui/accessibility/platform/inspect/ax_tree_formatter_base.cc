@@ -76,7 +76,7 @@ std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
     return contents;
 
   for (const base::Value& script : scripts->GetList()) {
-    WriteAttribute(false, script.GetString(), &contents);
+    WriteAttribute(true, script.GetString(), &contents);
     contents += "\n";
   }
 

@@ -90,7 +90,11 @@ class AX_EXPORT AXPropertyNode final {
 
   // Returns a string representation of the node.
   std::string ToString() const;
-  // Returns a tree-like string representation of the node.
+
+  // Returns a flat, single line string representing the node tree.
+  std::string ToFlatString() const;
+
+  // Returns a tree-like string representing the node tree.
   std::string ToTreeString(const std::string& indent = "") const;
 
   using iterator = std::string::const_iterator;

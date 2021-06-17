@@ -418,4 +418,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Variables_AXElement) {
+  TestAndCheck(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+               {{"text:= p.AXChildren[0]", SCRIPT}, {"text.AXRole", SCRIPT}},
+               {{"*", "*"}},
+               R"~~(text=:3
+ text.AXRole='AXStaticText'
+)~~");
+}
+
 }  // namespace content

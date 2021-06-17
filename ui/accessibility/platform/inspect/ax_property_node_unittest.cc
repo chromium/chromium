@@ -37,7 +37,7 @@ AXPropertyNode GetArgumentNode(const char* input) {
 }
 
 void ParseAndCheck(const char* input, const char* expected) {
-  auto got = Parse(input).ToString();
+  auto got = Parse(input).ToFlatString();
   EXPECT_EQ(got, expected);
 }
 
@@ -105,7 +105,7 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
   // Dict: FindKey
   EXPECT_EQ(GetArgumentNode("Text({anchor: {:1, 0, up}})")
                 .FindKey("anchor")
-                ->ToString(),
+                ->ToFlatString(),
             "anchor: {}(:1, 0, up)");
 
   EXPECT_EQ(GetArgumentNode("Text({anchor: {:1, 0, up}})").FindKey("focus"),
@@ -114,7 +114,7 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
   EXPECT_EQ(GetArgumentNode("AXStringForTextMarkerRange({anchor: {:2, 1, "
                             "down}, focus: {:2, 2, down}})")
                 .FindKey("anchor")
-                ->ToString(),
+                ->ToFlatString(),
             "anchor: {}(:2, 1, down)");
 }
 
@@ -213,6 +213,15 @@ AXTextMarkerRangeForUIElement(
   [](
     0
   )
+))~~");
+}
+
+TEST_F(AXPropertyNodeTest, Keys) {
+  ParseAndCheckTree(
+      "textmarker_range:= textarea.AXTextMarkerRangeForUIElement(textarea)",
+      R"~~(textmarker_range:textarea.
+AXTextMarkerRangeForUIElement(
+  textarea
 ))~~");
 }
 
