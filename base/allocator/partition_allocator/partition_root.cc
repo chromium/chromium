@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
 #include "wow64apiset.h"
 #endif
 

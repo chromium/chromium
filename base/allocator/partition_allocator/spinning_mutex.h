@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include "base/win/windows_types.h"
+#include <windows.h>
 #endif
 
 #if defined(PA_HAS_SPINNING_MUTEX)
@@ -69,7 +69,7 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
 
   std::atomic<int32_t> state_{kUnlocked};
 #else
-  CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
+  SRWLOCK lock_ = SRWLOCK_INIT;
 #endif
 };
 
