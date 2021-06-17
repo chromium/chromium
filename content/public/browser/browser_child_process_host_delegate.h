@@ -38,6 +38,10 @@ class CONTENT_EXPORT BrowserChildProcessHostDelegate : public IPC::Listener {
   // Binds an interface receiver in the host process, as requested by the child
   // process.
   virtual void BindHostReceiver(mojo::GenericPendingReceiver receiver) {}
+
+  // Default no-op handler for incoming legacy IPCs, for processes that don't
+  // use legacy IPC.
+  bool OnMessageReceived(const IPC::Message& message) override;
 };
 
 }  // namespace content
