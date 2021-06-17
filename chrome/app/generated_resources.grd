@@ -8664,6 +8664,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
           To start sync, verify it's you
         </message>
+        <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting all sync data.">
+          To make sure you can always access your sync data, verify it's you
+        </message>
+        <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting passwords only.">
+          To make sure you can always access your saved passwords, verify it's you
+        </message>
       </if>
 
       <if expr="not use_titlecase">

@@ -60,6 +60,11 @@ void TriggerSyncKeyRetrieval(Profile* profile) {
                              syncer::KeyRetrievalTriggerForUMA::kNotification);
 }
 
+void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+  OpenTabForSyncKeyRecoverabilityDegraded(displayer.browser());
+}
+
 BubbleViewParameters GetBubbleViewParameters(
     Profile* profile,
     syncer::SyncService* sync_service) {
@@ -74,16 +79,29 @@ BubbleViewParameters GetBubbleViewParameters(
     return params;
   }
 
-  DCHECK(ShouldShowSyncKeysMissingError(sync_service, profile->GetPrefs()));
+  if (ShouldShowSyncKeysMissingError(sync_service, profile->GetPrefs())) {
+    BubbleViewParameters params;
+    params.message_id =
+        sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
+            ? IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
+            : IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
+
+    params.click_action = base::BindRepeating(&TriggerSyncKeyRetrieval,
+                                              base::Unretained(profile));
+    return params;
+  }
+
+  DCHECK(ShouldShowTrustedVaultDegradedRecoverabilityError(
+      sync_service, profile->GetPrefs()));
 
   BubbleViewParameters params;
   params.message_id =
       sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-          ? IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
-          : IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
+          ? IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
+          : IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE;
 
-  params.click_action =
-      base::BindRepeating(&TriggerSyncKeyRetrieval, base::Unretained(profile));
+  params.click_action = base::BindRepeating(
+      &TriggerSyncRecoverabilityDegradedFix, base::Unretained(profile));
   return params;
 }
 
@@ -114,7 +132,9 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
 
   const bool should_display_notification =
       ShouldShowSyncPassphraseError(sync_service_) ||
-      ShouldShowSyncKeysMissingError(service, profile_->GetPrefs());
+      ShouldShowSyncKeysMissingError(service, profile_->GetPrefs()) ||
+      ShouldShowTrustedVaultDegradedRecoverabilityError(service,
+                                                        profile_->GetPrefs());
 
   if (should_display_notification == notification_displayed_) {
     return;
