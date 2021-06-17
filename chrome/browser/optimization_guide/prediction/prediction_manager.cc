@@ -524,8 +524,10 @@ void PredictionManager::FetchModels() {
 
   proto::ModelInfo base_model_info;
   base_model_info.add_supported_model_types(proto::MODEL_TYPE_DECISION_TREE);
-  if (features::IsModelDownloadingEnabled())
+  if (features::IsModelDownloadingEnabled()) {
     base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_3_0);
+    base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_3_0_1);
+  }
 
   // For now, we will fetch for all registered optimization targets.
   for (const auto& optimization_target_and_metadata :
