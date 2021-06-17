@@ -9,6 +9,7 @@
 
 cr.define('cr.login', function() {
   const AuthFlow = {DEFAULT: 0, SAML: 1};
+  const AuthMode = {DEFAULT: 0, OFFLINE: 1, DESKTOP: 2};
 
   class Authenticator {
     /**
@@ -24,6 +25,12 @@ cr.define('cr.login', function() {
     }
 
     /**
+     * @param {string} newPartitionName
+     */
+    setWebviewPartition(newPartitionName) {
+    }
+
+    /**
      * @param {string|symbol} eventType
      * @param {function(Object):void} listener
      * @param {!Object=} thisObject
@@ -33,6 +40,7 @@ cr.define('cr.login', function() {
   }
 
   Authenticator.AuthFlow = AuthFlow;
+  Authenticator.AuthMode = AuthMode;
 
   return {Authenticator: Authenticator};
 });

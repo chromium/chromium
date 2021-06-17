@@ -260,7 +260,10 @@ Polymer({
       }]);
     }
 
-    this.authenticator_.setWebviewPartition(data.webviewPartitionName);
+    // TODO(crbug.com/1187024) - Improve the type checking in `data`
+    //
+    this.authenticator_.setWebviewPartition(
+      'webviewPartitionName' in data ? data.webviewPartitionName : '');
 
     var gaiaParams = {};
     gaiaParams.gaiaUrl = data.gaiaUrl;
@@ -276,13 +279,16 @@ Polymer({
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, gaiaParams);
 
-    this.isManualEnrollment_ = data.enrollment_mode === 'manual';
-    this.isForced_ = data.is_enrollment_enforced;
-    this.isAutoEnroll_ = data.attestationBased;
+    this.isManualEnrollment_ = 'enrollment_mode' in data ?
+                               data.enrollment_mode === 'manual' : undefined;
+    this.isForced_ = 'is_enrollment_enforced' in data ?
+                     data.is_enrollment_enforced : undefined;
+    this.isAutoEnroll_ = 'attestationBased' in data ?
+                         data.attestationBased : undefined;
 
     cr.ui.login.invokePolymerMethod(this.$["step-ad-join"], 'onBeforeShow');
     if (!this.uiStep) {
-      this.showStep(data.attestationBased ?
+      this.showStep(this.isAutoEnroll_ ?
           ENROLLMENT_STEP.WORKING : ENROLLMENT_STEP.SIGNIN);
     }
   },

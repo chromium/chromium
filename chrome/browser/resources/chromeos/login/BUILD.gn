@@ -74,13 +74,29 @@ js_type_check("closure_compile_local") {
 # TODO(crbug.com/1187024): Make all oobe elements compile with externs.
 js_type_check("closure_compile_local_with_externs") {
   uses_legacy_modules = true
-  deps = [ ":gaia_dialog" ]
+  deps = [
+    ":gaia_dialog",
+    ":enterprise_enrollment",
+  ]
 }
 
 ###############################
 # Closure compiler libraries below
 
 js_library("login_ui_tools") {
+}
+
+js_library("enterprise_enrollment") {
+  deps = [
+    "../keyboard:keyboard_utils",
+    ":offline_ad_login",
+    "components:display_manager_types",
+    "components:fake_authenticator",
+    "components:fake_oobe",
+    "components/behaviors:login_screen_behavior",
+    "components/behaviors:multi_step_behavior",
+    "//ui/webui/resources/js:cr",
+  ]
 }
 
 js_library("oobe_welcome") {

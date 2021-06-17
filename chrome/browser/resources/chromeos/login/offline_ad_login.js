@@ -7,7 +7,15 @@
  * Authenticate user screens.
  */
 
-(function() {
+
+// The definitions below (JoinConfigType, ACTIVE_DIRECTORY_ERROR_STATE) are
+// used in enterprise_enrollment.js as well.
+
+/** @typedef {{name: string, ad_username: ?string, ad_password: ?string,
+ *             computer_ou: ?string, encryption_types: ?string,
+ *             computer_name_validation_regex: ?string}}
+ */
+ var JoinConfigType;
 
 // Possible error states of the screen. Must be in the same order as
 // ActiveDirectoryErrorState enum values.
@@ -20,6 +28,8 @@
   BAD_UNLOCK_PASSWORD: 5,
 };
 
+(function() {
+
 const adLoginStep = {
   UNLOCK: 'unlock',
   CREDS: 'creds',
@@ -30,12 +40,6 @@ var DEFAULT_ENCRYPTION_TYPES = 'strong';
 /** @typedef {Iterable<{value: string, title: string, selected: boolean,
  *                      subtitle: string}>} */
 var EncryptionSelectListType;
-
-/** @typedef {{name: string, ad_username: ?string, ad_password: ?string,
- *             computer_ou: ?string, encryption_types: ?string,
- *             computer_name_validation_regex: ?string}}
- */
-var JoinConfigType;
 
 Polymer({
   is: 'offline-ad-login-element',
@@ -339,22 +343,22 @@ Polymer({
       return;
 
     var user = /** @type {string} */ (this.$.userInput.value);
+    const password = /** @type {string} / */ (this.$.passwordInput.value);
     if (!user.includes('@') && this.userRealm)
       user += this.userRealm;
-    var msg = {
-      'distinguished_name': this.$.orgUnitInput.value,
-      'username': user,
-      'password': this.$.passwordInput.value
-    };
+
     if (this.isDomainJoin) {
-      msg['machine_name'] = this.$.machineNameInput.value;
-      msg['encryption_types'] = this.$.encryptionList.value;
-    }
-    if (this.isDomainJoin) {
+      const msg = {
+        'distinguished_name': this.$.orgUnitInput.value,
+        'username': user,
+        'password': password,
+        'machine_name' : this.$.machineNameInput.value,
+        'encryption_types' : this.$.encryptionList.value,
+      };
       this.fire('authCompleted', msg);
     } else {
       this.loading = true;
-      chrome.send('completeAdAuthentication', [msg.username, msg.password]);
+      chrome.send('completeAdAuthentication', [user, password]);
     }
   },
 
