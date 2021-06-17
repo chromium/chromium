@@ -178,10 +178,10 @@ void ModuleTreeLinkerTestModulator::Trace(Visitor* visitor) const {
 }
 
 class ModuleTreeLinkerTest : public PageTestBase {
-  DISALLOW_COPY_AND_ASSIGN(ModuleTreeLinkerTest);
-
  public:
   ModuleTreeLinkerTest() = default;
+  ModuleTreeLinkerTest(const ModuleTreeLinkerTest&) = delete;
+  ModuleTreeLinkerTest& operator=(const ModuleTreeLinkerTest&) = delete;
   void SetUp() override;
 
   ModuleTreeLinkerTestModulator* GetModulator() { return modulator_.Get(); }

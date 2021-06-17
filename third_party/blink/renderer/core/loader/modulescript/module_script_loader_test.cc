@@ -115,10 +115,10 @@ void ModuleScriptLoaderTestModulator::Trace(Visitor* visitor) const {
 }  // namespace
 
 class ModuleScriptLoaderTest : public PageTestBase {
-  DISALLOW_COPY_AND_ASSIGN(ModuleScriptLoaderTest);
-
  public:
   ModuleScriptLoaderTest();
+  ModuleScriptLoaderTest(const ModuleScriptLoaderTest&) = delete;
+  ModuleScriptLoaderTest& operator=(const ModuleScriptLoaderTest&) = delete;
   void SetUp() override;
 
   void InitializeForDocument();
