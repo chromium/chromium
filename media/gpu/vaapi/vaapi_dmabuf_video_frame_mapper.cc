@@ -97,13 +97,17 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
   std::vector<std::unique_ptr<uint16_t[]>> p016le_buffers(kNumPlanes);
   if (src_video_frame->format() == PIXEL_FORMAT_P016LE) {
     for (size_t i = 0; i < kNumPlanes; i++) {
-      const gfx::Size plane_size = VideoFrame::PlaneSize(
+      const gfx::Size plane_dimensions_in_bytes = VideoFrame::PlaneSize(
           PIXEL_FORMAT_P016LE, i, src_video_frame->visible_rect().size());
+      const gfx::Size plane_dimensions_in_16bit_words(
+          plane_dimensions_in_bytes.width() / 2,
+          plane_dimensions_in_bytes.height());
       p016le_buffers[i] = std::make_unique<uint16_t[]>(planes[i].size / 2);
       ConvertP010ToP016LE(reinterpret_cast<const uint16_t*>(addrs[i]),
                           planes[i].stride, p016le_buffers[i].get(),
-                          planes[i].stride, plane_size.width(),
-                          plane_size.height());
+                          planes[i].stride,
+                          plane_dimensions_in_16bit_words.width(),
+                          plane_dimensions_in_16bit_words.height());
       addrs[i] = reinterpret_cast<uint8_t*>(p016le_buffers[i].get());
     }
   }
