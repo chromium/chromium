@@ -43,6 +43,7 @@ class MockHatsService : public HatsService {
                (const std::map<std::string, bool>&)survey_specific_data),
               (override));
   MOCK_METHOD(void, HatsNextDialogClosed, (), (override));
+  MOCK_METHOD(bool, CanShowAnySurvey, (bool user_prompted), (const override));
 };
 
 std::unique_ptr<KeyedService> BuildMockHatsService(

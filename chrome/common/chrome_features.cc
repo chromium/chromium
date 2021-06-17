@@ -959,6 +959,12 @@ const base::Feature kThirdPartyModulesBlocking{
 const base::Feature kTreatUnsafeDownloadsAsActive{
     "TreatUnsafeDownloadsAsActive", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if !defined(OS_ANDROID)
+// Enables surveying of users of Trust & Safety features with HaTS.
+const base::Feature kTrustSafetySentimentSurvey{
+    "TrustSafetySentimentSurvey", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable uploading of a zip archive of system logs instead of individual files.
 const base::Feature kUploadZippedSystemLogs{"UploadZippedSystemLogs",

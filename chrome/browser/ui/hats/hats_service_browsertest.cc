@@ -182,10 +182,15 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, AlsoShowsSettingsSurvey) {
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SameMajorVersionNoShow) {
   SetMetricsConsent(true);
+  base::HistogramTester histogram_tester;
   HatsService::SurveyMetadata metadata;
   metadata.last_major_version = version_info::GetVersion().components()[0];
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsService::ShouldShowSurveyReasons::kNoReceivedSurveyInCurrentMilestone,
+      1);
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 
@@ -202,10 +207,14 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, DifferentMajorVersionShow) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
                        SurveyStartedBeforeRequiredElapsedTimeNoShow) {
   SetMetricsConsent(true);
+  base::HistogramTester histogram_tester;
   HatsService::SurveyMetadata metadata;
   metadata.last_survey_started_time = base::Time::Now();
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsService::ShouldShowSurveyReasons::kNoLastSurveyTooRecent, 1);
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 
@@ -225,11 +234,15 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
   SetMetricsConsent(true);
+  base::HistogramTester histogram_tester;
   // Set creation time to only 15 days.
   static_cast<ProfileImpl*>(browser()->profile())
       ->SetCreationTimeForTesting(base::Time::Now() -
                                   base::TimeDelta::FromDays(15));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsService::ShouldShowSurveyReasons::kNoProfileTooNew, 1);
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 

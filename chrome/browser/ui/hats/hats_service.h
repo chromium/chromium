@@ -226,6 +226,13 @@ class HatsService : public KeyedService {
   // in network conditions, or intervening calls to this API.
   bool CanShowSurvey(const std::string& trigger) const;
 
+  // Whether the user is eligible for any survey (of the type |user_prompted|
+  // or not) to be shown. A return value of false is always a true-negative, and
+  // means the user is currently ineligible for all surveys. A return value of
+  // true should not be interpreted as a guarantee that requests to show a
+  // survey will succeed. Virtual to allow mocking in tests.
+  virtual bool CanShowAnySurvey(bool user_prompted) const;
+
   // Returns whether a HaTS Next dialog currently exists, regardless of whether
   // it is being shown or not.
   bool hats_next_dialog_exists_for_testing() {

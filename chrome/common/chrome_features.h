@@ -639,6 +639,9 @@ extern const base::Feature kThirdPartyModulesBlocking;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kTreatUnsafeDownloadsAsActive;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kTrustSafetySentimentSurvey;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kUploadZippedSystemLogs;

@@ -490,27 +490,21 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
   }
   const SurveyConfig config = config_iterator->second;
 
+  // Always show the survey in demo mode. This check is duplicated in
+  // CanShowAnySurvey, but because of the semantics of that function, must be
+  // included here.
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo)) {
-    // Always show the survey in demo mode.
     return true;
   }
+
+  if (!CanShowAnySurvey(config.user_prompted))
+    return false;
 
   // Survey can not be loaded and shown if there is no network connection.
   if (net::NetworkChangeNotifier::IsOffline()) {
     UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
                               ShouldShowSurveyReasons::kNoOffline);
-    return false;
-  }
-
-  bool consent_given =
-      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven();
-  if (!consent_given)
-    return false;
-
-  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
-                              ShouldShowSurveyReasons::kNoLastSessionCrashed);
     return false;
   }
 
@@ -527,39 +521,16 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
     return false;
   }
 
-  base::Time now = base::Time::Now();
-
   if (!config.user_prompted) {
-    if ((now - profile_->GetCreationTime()) < kMinimumProfileAge) {
-      UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
-                                ShouldShowSurveyReasons::kNoProfileTooNew);
-      return false;
-    }
-
     absl::optional<base::Time> last_survey_started_time = util::ValueToTime(
         pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
     if (last_survey_started_time.has_value()) {
       base::TimeDelta elapsed_time_since_last_start =
-          now - *last_survey_started_time;
+          base::Time::Now() - *last_survey_started_time;
       if (elapsed_time_since_last_start < kMinimumTimeBetweenSurveyStarts) {
         UMA_HISTOGRAM_ENUMERATION(
             kHatsShouldShowSurveyReasonHistogram,
             ShouldShowSurveyReasons::kNoLastSurveyTooRecent);
-        return false;
-      }
-    }
-
-    // The time any survey was started will always be equal or more recent than
-    // the time a particular survey was started, so it is checked afterwards to
-    // improve UMA logging.
-    absl::optional<base::Time> last_any_started_time =
-        util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
-    if (last_any_started_time.has_value()) {
-      base::TimeDelta elapsed_time_any_started = now - *last_any_started_time;
-      if (elapsed_time_any_started < kMinimumTimeBetweenAnySurveyStarts) {
-        UMA_HISTOGRAM_ENUMERATION(
-            kHatsShouldShowSurveyReasonHistogram,
-            ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent);
         return false;
       }
     }
@@ -574,6 +545,63 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
         base::Time::Now() - *last_survey_check_time;
     if (elapsed_time_since_last_check < kMinimumTimeBetweenSurveyChecks)
       return false;
+  }
+
+  return true;
+}
+
+bool HatsService::CanShowAnySurvey(bool user_prompted) const {
+  // Surveys can always be shown in Demo mode.
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDemo)) {
+    return true;
+  }
+
+  // HaTS requires metrics consent to run. This is also how HaTS can be disabled
+  // by policy.
+  if (!g_browser_process->GetMetricsServicesManager()
+           ->IsMetricsConsentGiven()) {
+    return false;
+  }
+
+  // Do not show surveys if Chrome's last exit was a crash. This avoids
+  // biasing survey results unnecessarily.
+  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+    UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
+                              ShouldShowSurveyReasons::kNoLastSessionCrashed);
+    return false;
+  }
+
+  // Some surveys may be "user prompted", which means the user has already been
+  // asked in context if they would like to take a survey (in a less
+  // confrontational manner than the standard HaTS prompt). The bar for whether
+  // a user is eligible is thus lower for these types of surveys.
+  if (!user_prompted) {
+    const base::DictionaryValue* pref_data =
+        profile_->GetPrefs()->GetDictionary(prefs::kHatsSurveyMetadata);
+
+    // If the profile is too new, measured as the age of the profile directory,
+    // the user is ineligible.
+    base::Time now = base::Time::Now();
+    if ((now - profile_->GetCreationTime()) < kMinimumProfileAge) {
+      UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
+                                ShouldShowSurveyReasons::kNoProfileTooNew);
+      return false;
+    }
+
+    // If a user has received any HaTS survey too recently, they are also
+    // ineligible.
+    absl::optional<base::Time> last_any_started_time =
+        util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+    if (last_any_started_time.has_value()) {
+      base::TimeDelta elapsed_time_any_started = now - *last_any_started_time;
+      if (elapsed_time_any_started < kMinimumTimeBetweenAnySurveyStarts) {
+        UMA_HISTOGRAM_ENUMERATION(
+            kHatsShouldShowSurveyReasonHistogram,
+            ShouldShowSurveyReasons::kNoAnyLastSurveyTooRecent);
+        return false;
+      }
+    }
   }
 
   return true;
