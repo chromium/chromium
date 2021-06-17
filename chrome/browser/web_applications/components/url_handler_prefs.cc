@@ -503,6 +503,110 @@ void SaveChoice(PrefService* local_state,
       });
 }
 
+bool ShouldUpdateIncludePaths(const base::Value& current_handler,
+                              const base::Value& new_handler) {
+  const base::Value* include_paths_lh =
+      current_handler.FindListKey(kIncludePaths);
+  const base::Value* include_paths_rh = new_handler.FindListKey(kIncludePaths);
+  if (!include_paths_lh || !include_paths_rh)
+    return true;
+
+  base::Value::ConstListView include_paths_list_lh =
+      include_paths_lh->GetList();
+  base::Value::ConstListView include_paths_list_rh =
+      include_paths_rh->GetList();
+  if (include_paths_list_lh.size() != include_paths_list_rh.size())
+    return true;
+
+  for (size_t i = 0; i < include_paths_list_lh.size(); i++) {
+    DCHECK(include_paths_list_lh[i].is_dict());
+    DCHECK(include_paths_list_rh[i].is_dict());
+    const std::string* path_lh = include_paths_list_lh[i].FindStringKey(kPath);
+    const std::string* path_rh = include_paths_list_rh[i].FindStringKey(kPath);
+    if (!path_lh || !path_rh)
+      return true;
+    if (*path_lh != *path_rh)
+      return true;
+  }
+  return false;
+}
+
+// Update 'include_paths' in 'current_handler' from 'include_paths' in
+// 'new_handler'. Update does not happen if 'include_paths' in both are
+// identical. 'choice' and 'timestamp' are not compared to determine
+// equivalence. Both handler values follow the format:
+// {
+//     "app_id": "qruhrugqrgjdsdfhjghjrghjhdfgaaamenww",
+//     "profile_path": "C:\\Users\\alias\\Profile\\Default",
+//     "has_origin_wildcard": true,
+//     "include_paths": [
+//         {
+//           "path": "/*",
+//           "choice": 2,  // kInApp
+//           // "2000-01-01 00:00:00.000 UTC"
+//           "timestamp": "12591158400000000"
+//         }
+//     ],
+//     "exclude_paths": ["/abc"],
+// }
+void MaybeUpdateIncludePaths(base::Value& current_handler,
+                             base::Value& new_handler) {
+  if (ShouldUpdateIncludePaths(current_handler, new_handler)) {
+    base::Value* new_include_paths = new_handler.FindListKey(kIncludePaths);
+    if (new_include_paths) {
+      current_handler.SetKey(kIncludePaths, std::move(*new_include_paths));
+    } else {
+      current_handler.SetKey(kIncludePaths,
+                             base::Value(base::Value::Type::LIST));
+    }
+  }
+}
+
+// Updates 'exclude_paths' in 'current_handler' from 'exclude_paths' in
+// 'new_handler'. 'exclude_paths' can be replaced directly because it stores no
+// user preferences.
+void UpdateExcludePaths(base::Value& current_handler,
+                        base::Value& new_handler) {
+  base::Value* new_exclude_paths = new_handler.FindListKey(kExcludePaths);
+  if (new_exclude_paths) {
+    current_handler.SetKey(kExcludePaths, std::move(*new_exclude_paths));
+  } else {
+    current_handler.SetKey(kExcludePaths, base::Value(base::Value::Type::LIST));
+  }
+}
+
+// Returns true if 'handler_lh' and 'handler_rh' have identical app_id,
+// profile_path, and has_origin_wildcard values.
+bool HasExpectedIdenticalFields(const base::Value& handler_lh,
+                                const base::Value& handler_rh) {
+  const std::string* app_id_lh = handler_lh.FindStringKey(kAppId);
+  const std::string* app_id_rh = handler_rh.FindStringKey(kAppId);
+  if (!app_id_lh || !app_id_rh)
+    return false;
+  if (*app_id_lh != *app_id_rh)
+    return false;
+
+  absl::optional<base::FilePath> profile_path_lh =
+      util::ValueToFilePath(handler_lh.FindKey(kProfilePath));
+  absl::optional<base::FilePath> profile_path_rh =
+      util::ValueToFilePath(handler_rh.FindKey(kProfilePath));
+  if (!profile_path_lh || !profile_path_rh)
+    return false;
+  if (*profile_path_lh != *profile_path_rh)
+    return false;
+
+  absl::optional<bool> has_origin_wildcard_lh =
+      handler_lh.FindBoolKey(kHasOriginWildcard);
+  absl::optional<bool> has_origin_wildcard_rh =
+      handler_rh.FindBoolKey(kHasOriginWildcard);
+  if (!has_origin_wildcard_lh || !has_origin_wildcard_rh)
+    return false;
+  if (*has_origin_wildcard_lh != *has_origin_wildcard_rh)
+    return false;
+
+  return true;
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -560,11 +664,92 @@ void AddWebApp(PrefService* local_state,
 void UpdateWebApp(PrefService* local_state,
                   const AppId& app_id,
                   const base::FilePath& profile_path,
-                  const apps::UrlHandlers& url_handlers) {
-  // TODO(crbug/1072058): Retain saved choices where possible if there are
-  // updates to 'url_handlers'.
-  RemoveWebApp(local_state, app_id, profile_path);
-  AddWebApp(local_state, app_id, profile_path, url_handlers);
+                  apps::UrlHandlers new_url_handlers,
+                  const base::Time& time) {
+  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value* const pref_value = update.Get();
+  if (!pref_value || !pref_value->is_dict())
+    return;
+
+  // In order to update data in URL handler prefs relevant to 'app_id' and
+  // 'profile_path', perform an exhaustive search of all handler entries under
+  // all keys. The previous url_handlers data could have had entries under any
+  // origin key.
+  std::vector<std::string> origins_to_remove;
+  for (auto origin_value : pref_value->DictItems()) {
+    const std::string& origin_str = origin_value.first;
+    base::Value::ListStorage curent_handlers = origin_value.second.TakeList();
+
+    // Remove any existing handler values that were written previously for the
+    // same app_id and profile but are no longer found in 'new_url_handlers'.
+    curent_handlers.erase(
+        base::ranges::remove_if(
+            curent_handlers.begin(), curent_handlers.end(),
+            // Returns true if 'current_handler' should be removed because it
+            // was previously added for 'app_id' and 'profile_path' but is no
+            // longer found in 'new_url_handlers' from the update.
+            [&app_id, &profile_path, &new_url_handlers, &time,
+             &origin_str](base::Value& current_handler) {
+              if (!IsHandlerForApp(app_id, profile_path,
+                                   /*match_app_id=*/true, current_handler)) {
+                return false;
+              }
+
+              // Determine if 'current_handler' value has a corresponding
+              // UrlHandlerInfo in 'new_url_handlers'. If not, it is no longer
+              // relevant to the updated app and can be removed.
+              const auto same_origin_it = base::ranges::find_if(
+                  new_url_handlers.begin(), new_url_handlers.end(),
+                  [&current_handler,
+                   &origin_str](const apps::UrlHandlerInfo& new_handler) {
+                    if (origin_str != new_handler.origin.Serialize())
+                      return false;
+                    absl::optional<bool> current_has_origin_wildcard =
+                        current_handler.FindBoolKey(kHasOriginWildcard);
+                    if (!current_has_origin_wildcard)
+                      return false;
+                    if (*current_has_origin_wildcard !=
+                        new_handler.has_origin_wildcard) {
+                      return false;
+                    }
+                    return true;
+                  });
+              if (same_origin_it == new_url_handlers.end())
+                return true;
+
+              // If include_paths or exclude_paths have changed, replace the
+              // current handler value with the new handler value.
+              base::Value new_handler =
+                  NewHandler(app_id, profile_path, *same_origin_it, time);
+
+              // 'exclude_paths' can be updated without invalidating the user
+              // preferences that are stored within include_paths.
+              DCHECK(HasExpectedIdenticalFields(current_handler, new_handler));
+              MaybeUpdateIncludePaths(current_handler, new_handler);
+              UpdateExcludePaths(current_handler, new_handler);
+
+              // Remove new handler from container now that it has been updated
+              // in prefs.
+              new_url_handlers.erase(same_origin_it);
+
+              return false;
+            }),
+        curent_handlers.end());
+
+    // Replace list if it contains entries or remove its origin key from prefs.
+    if (!curent_handlers.empty()) {
+      origin_value.second = base::Value(std::move(curent_handlers));
+    } else {
+      origins_to_remove.push_back(origin_value.first);
+    }
+  }
+
+  // Remove any origin keys that have no more entries.
+  for (const auto& origin_to_remove : origins_to_remove)
+    pref_value->RemoveKey(origin_to_remove);
+
+  // Add the remaining items in 'new_url_handlers'.
+  AddWebApp(local_state, app_id, profile_path, new_url_handlers, time);
 }
 
 void RemoveWebApp(PrefService* local_state,

@@ -48,7 +48,6 @@ namespace web_app {
 //         {
 //             "app_id": "dslkfjweiourasdalfjkdslkfjowiesdfwee",
 //             "profile_path": "C:\\Users\\alias\\Profile\\Default",
-//             "origin": "https://contoso.com",
 //             "has_origin_wildcard": false,
 //             "include_paths": [
 //                 {
@@ -63,7 +62,6 @@ namespace web_app {
 //         {
 //             "app_id": "qruhrugqrgjdsdfhjghjrghjhdfgaaamenww",
 //             "profile_path": "C:\\Users\\alias\\Profile\\Default",
-//             "origin": "https://contoso.com",
 //             "has_origin_wildcard": true,
 //             "include_paths": [],
 //             "exclude_paths": [],
@@ -84,7 +82,8 @@ void AddWebApp(PrefService* local_state,
 void UpdateWebApp(PrefService* local_state,
                   const AppId& app_id,
                   const base::FilePath& profile_path,
-                  const apps::UrlHandlers& url_handlers);
+                  apps::UrlHandlers new_url_handlers,
+                  const base::Time& time = base::Time::Now());
 
 void RemoveWebApp(PrefService* local_state,
                   const AppId& app_id,
