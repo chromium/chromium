@@ -5934,6 +5934,50 @@ TEST_F(PersistentDesksBarTest, ShowOrHideBarThroughContextMenu) {
   EXPECT_TRUE(IsWidgetVisible());
 }
 
+// Tests that the bar will only be created and shown when the shelf is
+// bottom-aligned.
+TEST_F(PersistentDesksBarTest, BentoBarWithShelfAlignment) {
+  Shell* shell = Shell::Get();
+  ASSERT_FALSE(shell->tablet_mode_controller()->InTabletMode());
+  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(shelf);
+  const DesksController* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+  const PersistentDesksBarController* bar_controller =
+      shell->persistent_desks_bar_controller();
+  ASSERT_TRUE(bar_controller);
+
+  // The bar should not be created if there is only one desk.
+  EXPECT_FALSE(GetBarWidget());
+
+  // Create a new desk should cause the bar to be created and shown.
+  NewDesk();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be created when the shelf is bottom aligned.
+  EXPECT_TRUE(shelf->alignment() == ShelfAlignment::kBottom);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be destroyed when the shelf is left aligned.
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_TRUE(shelf->alignment() == ShelfAlignment::kLeft);
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be destroyed when the shelf is right aligned.
+  shelf->SetAlignment(ShelfAlignment::kRight);
+  EXPECT_TRUE(shelf->alignment() == ShelfAlignment::kRight);
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be re-created when the shelf is bottom aligned.
+  shelf->SetAlignment(ShelfAlignment::kBottom);
+  EXPECT_TRUE(shelf->alignment() == ShelfAlignment::kBottom);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

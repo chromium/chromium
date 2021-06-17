@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/persistent_desks_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -56,10 +57,12 @@ PersistentDesksBarController::PersistentDesksBarController() {
   shell->overview_controller()->AddObserver(this);
   shell->desks_controller()->AddObserver(this);
   shell->tablet_mode_controller()->AddObserver(this);
+  shell->AddShellObserver(this);
 }
 
 PersistentDesksBarController::~PersistentDesksBarController() {
   auto* shell = Shell::Get();
+  shell->RemoveShellObserver(this);
   shell->tablet_mode_controller()->RemoveObserver(this);
   shell->desks_controller()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
@@ -128,6 +131,16 @@ void PersistentDesksBarController::OnTabletModeEnded() {
   MaybeInitBarWidget();
 }
 
+void PersistentDesksBarController::OnShelfAlignmentChanged(
+    aura::Window* root_window,
+    ShelfAlignment old_alignment) {
+  const Shelf* shelf = Shelf::ForWindow(root_window);
+  if (shelf->IsHorizontalAlignment())
+    MaybeInitBarWidget();
+  else
+    DestroyBarWidget();
+}
+
 void PersistentDesksBarController::ToggleEnabledState() {
   is_enabled_ = !is_enabled_;
   if (!is_enabled_)
@@ -137,7 +150,9 @@ void PersistentDesksBarController::ToggleEnabledState() {
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
   return is_enabled_ && !TabletMode::Get()->InTabletMode() &&
          !Shell::Get()->overview_controller()->InOverviewSession() &&
-         DesksController::Get()->desks().size() > 1;
+         DesksController::Get()->desks().size() > 1 &&
+         Shelf::ForWindow(Shell::GetPrimaryRootWindow())
+             ->IsHorizontalAlignment();
 }
 
 void PersistentDesksBarController::MaybeInitBarWidget() {

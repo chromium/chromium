@@ -7,10 +7,16 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
@@ -23,7 +29,8 @@ class ASH_EXPORT PersistentDesksBarController
     : public SessionObserver,
       public OverviewObserver,
       public DesksController::Observer,
-      public TabletModeObserver {
+      public TabletModeObserver,
+      public ShellObserver {
  public:
   PersistentDesksBarController();
   PersistentDesksBarController(const PersistentDesksBarController&) = delete;
@@ -60,6 +67,10 @@ class ASH_EXPORT PersistentDesksBarController
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+
+  // ShellObserver:
+  void OnShelfAlignmentChanged(aura::Window* root_window,
+                               ShelfAlignment old_alignment) override;
 
   // Toggles the value of `is_enabled_` and destroys the bar if it is togggled
   // to false.
