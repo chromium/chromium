@@ -78,7 +78,8 @@ class CORE_EXPORT AuditsIssue {
                               RendererCorsIssueCode code,
                               WTF::String url,
                               WTF::String initiator_origin,
-                              WTF::String failedParameter);
+                              WTF::String failedParameter,
+                              absl::optional<base::UnguessableToken> issue_id);
   // Reports an Attribution Reporting API issue to DevTools.
   // |reporting_execution_context| is the current execution context in which the
   // issue happens and is reported in (the "target" in DevTools terms).

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -78,12 +79,14 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
   return protocol_location;
 }
 
-void AuditsIssue::ReportCorsIssue(ExecutionContext* execution_context,
-                                  int64_t identifier,
-                                  RendererCorsIssueCode code,
-                                  String url,
-                                  String initiator_origin,
-                                  String failedParameter) {
+void AuditsIssue::ReportCorsIssue(
+    ExecutionContext* execution_context,
+    int64_t identifier,
+    RendererCorsIssueCode code,
+    String url,
+    String initiator_origin,
+    String failedParameter,
+    absl::optional<base::UnguessableToken> issue_id) {
   String devtools_request_id =
       IdentifiersFactory::SubresourceRequestId(identifier);
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
@@ -114,6 +117,9 @@ void AuditsIssue::ReportCorsIssue(ExecutionContext* execution_context,
                    .setCode(protocol::Audits::InspectorIssueCodeEnum::CorsIssue)
                    .setDetails(std::move(details))
                    .build();
+  if (issue_id) {
+    issue->setIssueId(IdentifiersFactory::IdFromToken(*issue_id));
+  }
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 

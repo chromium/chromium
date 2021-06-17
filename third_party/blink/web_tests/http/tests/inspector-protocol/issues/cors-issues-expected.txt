@@ -1,76 +1,78 @@
 Test to make sure CORS issues are correctly reported.
-Cors issues: [
-    [0] : {
-        code : CorsIssue
-        details : {
-            corsIssueDetails : {
-                corsErrorStatus : {
-                    corsError : AllowOriginMismatch
-                    failedParameter : http://127.0.0.1
-                }
-                initiatorOrigin : http://127.0.0.1:8000/
-                isWarning : false
-                request : {
-                    requestId : <string>
-                    url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=http%3A%2F%2F127.0.0.1
-                }
+Cors issue: {
+    code : CorsIssue
+    details : {
+        corsIssueDetails : {
+            corsErrorStatus : {
+                corsError : AllowOriginMismatch
+                failedParameter : http://127.0.0.1
+            }
+            initiatorOrigin : http://127.0.0.1:8000/
+            isWarning : false
+            request : {
+                requestId : <string>
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=http%3A%2F%2F127.0.0.1
             }
         }
-        issueId : <string>
     }
-    [1] : {
-        code : CorsIssue
-        details : {
-            corsIssueDetails : {
-                corsErrorStatus : {
-                    corsError : AllowOriginMismatch
-                    failedParameter : http://127.0.0.1
-                }
-                initiatorOrigin : http://127.0.0.1:8000/
-                isWarning : false
-                request : {
-                    requestId : <string>
-                    url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=http%3A%2F%2F127.0.0.1
-                }
+    issueId : <string>
+}
+Issue link present: true
+Cors issue: {
+    code : CorsIssue
+    details : {
+        corsIssueDetails : {
+            corsErrorStatus : {
+                corsError : AllowOriginMismatch
+                failedParameter : http://127.0.0.1
+            }
+            initiatorOrigin : http://127.0.0.1:8000/
+            isWarning : false
+            request : {
+                requestId : <string>
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=http%3A%2F%2F127.0.0.1
             }
         }
-        issueId : <string>
     }
-    [2] : {
-        code : CorsIssue
-        details : {
-            corsIssueDetails : {
-                corsErrorStatus : {
-                    corsError : MissingAllowOriginHeader
-                    failedParameter : 
-                }
-                initiatorOrigin : http://127.0.0.1:8000/
-                isWarning : false
-                request : {
-                    requestId : <string>
-                    url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php
-                }
+    issueId : <string>
+}
+Issue link present: true
+Cors issue: {
+    code : CorsIssue
+    details : {
+        corsIssueDetails : {
+            corsErrorStatus : {
+                corsError : MissingAllowOriginHeader
+                failedParameter : 
+            }
+            initiatorOrigin : http://127.0.0.1:8000/
+            isWarning : false
+            request : {
+                requestId : <string>
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php
             }
         }
-        issueId : <string>
     }
-    [3] : {
-        code : CorsIssue
-        details : {
-            corsIssueDetails : {
-                corsErrorStatus : {
-                    corsError : PreflightInvalidAllowOriginValue
-                    failedParameter : 1
-                }
-                initiatorOrigin : http://127.0.0.1:8000/
-                isWarning : false
-                request : {
-                    requestId : <string>
-                    url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?methods=GET&origin=1
-                }
+    issueId : <string>
+}
+Issue link present: true
+Cors issue: {
+    code : CorsIssue
+    details : {
+        corsIssueDetails : {
+            corsErrorStatus : {
+                corsError : PreflightInvalidAllowOriginValue
+                failedParameter : 1
+            }
+            initiatorOrigin : http://127.0.0.1:8000/
+            isWarning : false
+            request : {
+                requestId : <string>
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?methods=GET&origin=1
             }
         }
-        issueId : <string>
     }
-]
+    issueId : <string>
+}
+Issue link present: true
 
