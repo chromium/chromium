@@ -132,6 +132,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.Agc.ClippingPredictor.F1Score" units="%"
+    expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
+  <owner>silen@chromium.org</owner>
+  <summary>
+    Logs the F1 score for the clipping predictor used in AgcManagerDirect. A log
+    call is made every 30 seconds during an active WebRTC call using the analog
+    gain controller and the clipping predictor feature.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.Agc.ClippingPredictor.PredictionInterval"
+    units="frames" expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
+  <owner>silen@chromium.org</owner>
+  <summary>
+    Logs the time elapsed between a clipping prediction and a matched clipping
+    detection for the clipping predictor used in AgcManagerDirect. A log call is
+    made every time a predicted clipping event is matched (theoretical upper
+    bound: one call every 10 ms) during an active WebRTC call using the analog
+    gain controller and the clipping predictor feature.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.Agc.DigitalGainApplied" units="dB"
     expires_after="2021-12-31">
   <owner>alessiob@chromium.org</owner>
