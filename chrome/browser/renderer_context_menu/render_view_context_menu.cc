@@ -839,7 +839,8 @@ void RenderViewContextMenu::InitMenu() {
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
-    if (base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
+    if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
+        search::DefaultSearchProviderIsGoogle(GetProfile())) {
       AppendSearchLensForImageItems();
     } else {
       AppendSearchWebForImageItems();
