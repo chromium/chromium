@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
 #include "sandbox/win/src/sandbox_types.h"
 
@@ -41,6 +42,11 @@ SANDBOX_INTERCEPT NtExports g_nt;
 // function together to stress the close relationship between both. For example,
 // only the factory method and the evaluation function know the stored argument
 // order and meaning.
+
+size_t OpcodeFactory::memory_size() const {
+  DCHECK_GE(memory_bottom_, memory_top_);
+  return memory_bottom_ - memory_top_;
+}
 
 template <int>
 EvalResult OpcodeEval(PolicyOpcode* opcode,

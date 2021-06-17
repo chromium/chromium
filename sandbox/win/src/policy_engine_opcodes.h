@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/check_op.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "sandbox/win/src/policy_engine_params.h"
@@ -283,10 +282,7 @@ class OpcodeFactory {
   }
 
   // Returns the available memory to make opcodes.
-  size_t memory_size() const {
-    DCHECK_GE(memory_bottom_, memory_top_);
-    return memory_bottom_ - memory_top_;
-  }
+  size_t memory_size() const;
 
   // Creates an OpAlwaysFalse opcode.
   PolicyOpcode* MakeOpAlwaysFalse(uint32_t options);
