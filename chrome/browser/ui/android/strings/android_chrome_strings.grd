@@ -4495,6 +4495,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Drag to take a long screenshot
       </message>
 
+      <message name="IDS_SHARING_LONG_SCREENSHOT_MOVE_UP_BUTTON_DESCRIPTION" desc="Accessibility label for the button control to move the long screenshot selection window up.">
+        Move Up
+      </message>
+
+      <message name="IDS_SHARING_LONG_SCREENSHOT_MOVE_DOWN_BUTTON_DESCRIPTION" desc="Accessibility label for the button control to move the long screenshot selection window down.">
+        Move Down
+      </message>
+
       <message name="IDS_SHARING_LONG_SCREENSHOT_REACHED_TOP" desc="Text shown in the toast notification when user reached the top of the available screenshot selection window, in the long screenshots feature.">
         Can\u2019t go higher. Try starting from further up the page.
       </message>
