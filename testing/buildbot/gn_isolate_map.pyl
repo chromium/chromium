@@ -1598,6 +1598,10 @@
   "shell_dialogs_unittests": {
     "label": "//ui/shell_dialogs:shell_dialogs_unittests",
     "type": "console_test_launcher",
+    # These tests are more like dialog interactive ui tests.
+    "args": [
+      "--test-launcher-jobs=1",
+    ],
   },
   "shipped_binaries": {
     "label": "//:shipped_binaries",
