@@ -574,17 +574,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.WrappingKeyDerivation.Mount"
-    enum="WrappingKeyDerivation" expires_after="2022-03-01">
+<histogram name="Cryptohome.WrappingKeyDerivation.Create"
+    enum="WrappingKeyDerivation" expires_after="2022-05-01">
   <owner>tnagel@chromium.org</owner>
   <owner>zauri@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <owner>cros-privacy-core@google.com</owner>
   <summary>
     Derivation types of the Cryptohome's wrapping key. Reporting happens when
-    the Cryptohome is being mounted, which happens during a user creation, user
-    login, password change, migration from scrypt to TPM/GSC (in case the
-    security chip becomes available later).
+    the Cryptohome is being created or when the new keys are added to the
+    existing Cryptohome. Concretely during a user creation, password change,
+    registration of a new authentication method (e.g. PIN), migration from
+    scrypt to TPM/GSC (in case the security chip becomes available later).
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.WrappingKeyDerivation.Mount"
+    enum="WrappingKeyDerivation" expires_after="2022-05-01">
+  <owner>tnagel@chromium.org</owner>
+  <owner>zauri@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <owner>cros-privacy-core@google.com</owner>
+  <summary>
+    Derivation types of the Cryptohome's wrapping key. Reporting happens mostly
+    when the Cryptohome is being mounted. Concretely the reporting happens
+    during a user creation, registration/removal of an authentication methods
+    (e.g. PIN), user login, password change, migration from scrypt to TPM/GSC
+    (in case the security chip becomes available later).
   </summary>
 </histogram>
 
