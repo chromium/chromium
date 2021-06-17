@@ -16,9 +16,9 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"

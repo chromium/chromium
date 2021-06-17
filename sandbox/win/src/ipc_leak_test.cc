@@ -8,8 +8,8 @@
 
 #include <stdlib.h>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/page_size.h"
-#include "base/stl_util.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/filesystem_interception.h"
