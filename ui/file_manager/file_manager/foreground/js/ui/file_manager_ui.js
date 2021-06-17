@@ -9,7 +9,7 @@
 // #import {FilesToast} from '../../elements/files_toast.js';
 // #import {Banners} from './banners.m.js';
 // #import {DirectoryTree} from './directory_tree.m.js';
-// #import {FilesPasswordDialog} from '../../elements/files_password_dialog.m.js';
+// #import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 // #import {LaunchParam} from '../launch_param.m.js';
 // #import {ProvidersModel} from '../providers_model.m.js';
 // #import {A11yAnnounce} from './a11y_announce.m.js';

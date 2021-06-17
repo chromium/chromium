@@ -6,7 +6,7 @@
 // #import {FilesToast} from '../elements/files_toast.js';
 // #import {DirectoryTree} from './ui/directory_tree.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {FilesMessage} from '../elements/files_message.m.js';
+// #import {FilesMessage} from '../elements/files_message.js';
 // #import {Crostini} from '../../externs/background/crostini.m.js';
 // #import {CommandHandler} from './file_manager_commands.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';

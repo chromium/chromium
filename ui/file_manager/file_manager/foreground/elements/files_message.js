@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
  * FilesMessage template.
@@ -74,7 +74,7 @@ const filesMessageTemplate = `
 /**
  * FilesMessage.
  */
-/* #export */ class FilesMessage extends HTMLElement {
+export class FilesMessage extends HTMLElement {
   constructor() {
     /**
      * Create element content.

@@ -63,7 +63,7 @@ const filesSpinnerTemplate = `
 /**
  * FilesSpinner.
  */
-/* #export */ class FilesSpinner extends HTMLElement {
+export class FilesSpinner extends HTMLElement {
   constructor() {
     super().attachShadow({mode: 'open'}).innerHTML = filesSpinnerTemplate;
   }

@@ -6,7 +6,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {FilesMessage} from './files_message.m.js';
+import {FilesMessage} from './files_message.js';
 // clang-format on
 
 /**

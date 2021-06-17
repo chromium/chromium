@@ -389,7 +389,6 @@ js_library("crostini_controller") {
     ":directory_model",
     ":file_manager_commands",
     "ui:directory_tree",
-    "//ui/file_manager/file_manager/foreground/elements:files_message",
   ]
 }
 
@@ -405,7 +404,7 @@ js_library("crostini_controller.m") {
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs/background:crostini.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_message",
     "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -630,17 +629,17 @@ js_library("deferred_elements.m") {
   visibility += [ "//ui/file_manager:*" ]
   deps = [
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
-    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_message",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_ripple",
-    "//ui/file_manager/file_manager/foreground/elements:files_spinner.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_spinner",
     "//ui/file_manager/file_manager/foreground/elements:files_toast",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
-    "//ui/file_manager/file_manager/foreground/elements:xf_button.m",
-    "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress.m",
-    "//ui/file_manager/file_manager/foreground/elements:xf_display_panel.m",
-    "//ui/file_manager/file_manager/foreground/elements:xf_panel_item.m",
+    "//ui/file_manager/file_manager/foreground/elements:xf_button",
+    "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress",
+    "//ui/file_manager/file_manager/foreground/elements:xf_display_panel",
+    "//ui/file_manager/file_manager/foreground/elements:xf_panel_item",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
   ]
 }
@@ -816,7 +815,7 @@ js_library("file_manager.m") {
     "//ui/file_manager/file_manager/externs/background:media_import_handler.m",
     "//ui/file_manager/file_manager/externs/background:media_scanner.m",
     "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_message.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_message",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",
@@ -985,7 +984,7 @@ js_library("file_tasks.m") {
     "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/externs/background:crostini.m",
     "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr:ui.m",
@@ -1015,7 +1014,7 @@ js_unittest("file_tasks_unittest.m") {
     "//ui/file_manager/file_manager/externs:entry_location.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/externs/background:progress_center.m",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog.m",
+    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
   ]
 }
 

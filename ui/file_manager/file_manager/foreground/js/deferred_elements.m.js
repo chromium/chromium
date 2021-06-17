@@ -8,14 +8,14 @@
 
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '../elements/files_format_dialog.js';
-import '../elements/files_message.m.js';
-import '../elements/files_password_dialog.m.js';
+import '../elements/files_message.js';
+import '../elements/files_password_dialog.js';
 import '../elements/files_ripple.js';
-import '../elements/files_spinner.m.js';
+import '../elements/files_spinner.js';
 import '../elements/files_toast.js';
 import '../elements/files_toggle_ripple.js';
 import '../elements/files_tooltip.js';
-import '../elements/xf_button.m.js';
-import '../elements/xf_circular_progress.m.js';
-import '../elements/xf_display_panel.m.js';
-import '../elements/xf_panel_item.m.js';
+import '../elements/xf_button.js';
+import '../elements/xf_circular_progress.js';
+import '../elements/xf_display_panel.js';
+import '../elements/xf_panel_item.js';

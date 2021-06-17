@@ -6,7 +6,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -34,21 +33,21 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":files_format_dialog",
     ":files_icon_button",
-    ":files_message.m",
+    ":files_message",
     ":files_metadata_box",
     ":files_metadata_entry",
-    ":files_password_dialog.m",
+    ":files_password_dialog",
     ":files_quick_view",
     ":files_ripple",
     ":files_safe_media",
-    ":files_spinner.m",
+    ":files_spinner",
     ":files_toast",
     ":files_toggle_ripple",
     ":files_tooltip",
-    ":xf_button.m",
-    ":xf_circular_progress.m",
-    ":xf_display_panel.m",
-    ":xf_panel_item.m",
+    ":xf_button",
+    ":xf_circular_progress",
+    ":xf_display_panel",
+    ":xf_panel_item",
   ]
 }
 
@@ -94,31 +93,20 @@ js_library("files_icon_button") {
   ]
 }
 
-js_library("files_message") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
 js_unittest("files_message_unittest.m") {
   deps = [
-    ":files_message.m",
+    ":files_message",
     "//chrome/test/data/webui:chai_assert",
     "//ui/webui/resources/js:assert.m",
   ]
 }
 
-js_library("files_message.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_message.m.js" ]
+js_library("files_message") {
   deps = [
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:assert.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("files_metadata_box") {
@@ -133,27 +121,16 @@ js_library("files_metadata_entry") {
   ]
 }
 
-js_library("files_password_dialog") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
 js_unittest("files_password_dialog_unittest.m") {
   deps = [
-    ":files_password_dialog.m",
+    ":files_password_dialog",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
     "//ui/webui/resources/js:assert.m",
   ]
 }
 
-js_library("files_password_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_password_dialog.m.js" ]
+js_library("files_password_dialog") {
   deps = [
     "//ui/file_manager/file_manager/common/js:async_util.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -161,8 +138,6 @@ js_library("files_password_dialog.m") {
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("files_quick_view") {
@@ -198,12 +173,6 @@ js_library("files_safe_media_webview_content") {
 }
 
 js_library("files_spinner") {
-}
-
-js_library("files_spinner.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_spinner.m.js" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
@@ -250,7 +219,7 @@ js_unittest("files_toast_unittest.m") {
 
 js_unittest("files_xf_elements_unittest.m") {
   deps = [
-    ":xf_display_panel.m",
+    ":xf_display_panel",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js:assert.m",
@@ -262,60 +231,20 @@ js_unittest("files_xf_elements_unittest.m") {
 
 js_library("xf_button") {
   deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
-  ]
-}
-
-js_library("xf_button.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_button.m.js" ]
-  deps = [
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("xf_circular_progress") {
-}
-
-js_library("xf_circular_progress.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_circular_progress.m.js" ]
-
   deps = [ "//ui/webui/resources/js:assert.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("xf_display_panel") {
   deps = [
     ":xf_panel_item",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_library("xf_display_panel.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_display_panel.m.js" ]
-  deps = [
-    ":xf_panel_item.m",
     "//ui/file_manager/file_manager/common/js:util.m",
   ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "files_message.js",
-    "files_spinner.js",
-    "files_password_dialog.js",
-    "xf_button.js",
-    "xf_circular_progress.js",
-    "xf_panel_item.js",
-    "xf_display_panel.js",
-  ]
-
-  preserve_offsets = [ "True" ]
 }
 
 js_test_gen_html("js_test_gen_html_modules") {
@@ -342,17 +271,7 @@ js_library("xf_panel_item") {
   deps = [
     ":xf_button",
     ":xf_circular_progress",
-  ]
-}
-
-js_library("xf_panel_item.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_panel_item.m.js" ]
-  deps = [
-    ":xf_button.m",
-    ":xf_circular_progress.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js:assert.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }

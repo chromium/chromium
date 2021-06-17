@@ -5,7 +5,7 @@
 // clang-format off
 // #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-// #import {FilesMessage} from '../elements/files_message.m.js';
+// #import {FilesMessage} from '../elements/files_message.js';
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
 // #import {A11yAnnounce} from './ui/a11y_announce.m.js';
 // #import {ProgressCenter} from '../../externs/background/progress_center.m.js';

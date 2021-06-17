@@ -21,9 +21,7 @@
       <!-- Polymer elements -->
       <include name="IDR_FILE_MANAGER_ELEMENTS_ELEMENTS_BUNDLE_HTML" file="file_manager/foreground/elements/elements_bundle.html" type="BINDATA"/>
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_MESSAGE_HTML" file="file_manager/foreground/elements/files_message.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_MESSAGE_JS" file="file_manager/foreground/elements/files_message.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_PASSWORD_DIALOG_HTML" file="file_manager/foreground/elements/files_password_dialog.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_PASSWORD_DIALOG_JS" file="file_manager/foreground/elements/files_password_dialog.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_CSS" file="file_manager/foreground/elements/files_quick_view.css"  type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_AUDIO_WEBVIEW_CONTENT_CSS" file="file_manager/foreground/elements/files_safe_audio_webview_content.css" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_AUDIO_WEBVIEW_CONTENT_HTML" file="file_manager/foreground/elements/files_safe_audio_webview_content.html" type="BINDATA" />
@@ -35,12 +33,7 @@
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_VIDEO_WEBVIEW_CONTENT_CSS" file="file_manager/foreground/elements/files_safe_video_webview_content.css" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_VIDEO_WEBVIEW_CONTENT_HTML" file="file_manager/foreground/elements/files_safe_video_webview_content.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SPINNER_HTML" file="file_manager/foreground/elements/files_spinner.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SPINNER_JS" file="file_manager/foreground/elements/files_spinner.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_ICONS_HTML" file="file_manager/foreground/elements/icons.html" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_XF_BUTTON_JS" file="file_manager/foreground/elements/xf_button.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_XF_CIRCULAR_PROGRESS_JS" file="file_manager/foreground/elements/xf_circular_progress.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_XF_DISPLAY_PANEL_JS" file="file_manager/foreground/elements/xf_display_panel.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_XF_PANEL_ITEM_JS" file="file_manager/foreground/elements/xf_panel_item.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_XF_ELEMENTS_HTML" file="file_manager/foreground/elements/files_xf_elements.html" type="BINDATA" />
 
       <!-- Scripts required by the metadata parser worker. -->

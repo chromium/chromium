@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.j
 
 import {util} from '../../common/js/util.m.js';
 
-import {DisplayPanel} from './xf_display_panel.m.js';
+import {DisplayPanel} from './xf_display_panel.js';
 // clang-format on
 
 /** @type {!DisplayPanel|!Element} */
