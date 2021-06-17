@@ -324,9 +324,12 @@ ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
   return std::make_unique<ChromeDevicePermissionsPrompt>(web_contents);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
                                                         int pid) const {
+  // TOOD(huangs): Figure out how to do the following in Lacros, which does not
+  // have access to ash::CrosSettings (https://crbug.com/1219329).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::ListValue* policy_list;
   if (ash::CrosSettings::Get()->GetList(chromeos::kUsbDetachableAllowlist,
                                         &policy_list)) {
@@ -337,10 +340,10 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
       }
     }
   }
-
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 std::unique_ptr<VirtualKeyboardDelegate>
 ChromeExtensionsAPIClient::CreateVirtualKeyboardDelegate(

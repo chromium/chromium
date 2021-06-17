@@ -36,9 +36,11 @@
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/hid/hid_connection_linux.h"
 
+// TODO(huangs): Enable for IS_CHROMEOS_LACROS. This will simplify crosapi so
+// that it won't need to pass HidManager around (crbug.com/1109621).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
-#include "chromeos/dbus/permission_broker/permission_broker_client.h"
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {

@@ -149,7 +149,7 @@ static_library("usb") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     deps += [
       "//chromeos/dbus/permission_broker",
       "//dbus",
