@@ -456,13 +456,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>TBD.</summary>
 </histogram>
 
-<histogram name="Memory.Discardable.FreeListReleaseTime" units="ms"
+<histogram name="Memory.Discardable.FreeListReleaseTime" units="microseconds"
     expires_after="2021-08-01">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Records how long it takes for memory to be released from the freelist of the
     discardable shared memory allocator with |madvise|.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
   </summary>
 </histogram>
 

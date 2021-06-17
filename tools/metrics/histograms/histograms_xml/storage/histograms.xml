@@ -430,13 +430,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Storage.InterestGroup.DBMaintenanceTime" units="ms"
+<histogram name="Storage.InterestGroup.DBMaintenanceTime" units="microseconds"
     expires_after="M95">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
     Records the time spent performing database maintenance on the interest group
     storage. Recorded when maintenance is run (approximately once an hour).
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
   </summary>
 </histogram>
 

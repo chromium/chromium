@@ -201,7 +201,7 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   DCHECK(span->shared_memory_);
 
   if (base::FeatureList::IsEnabled(kReleaseDiscardableFreeListPages)) {
-    SCOPED_UMA_HISTOGRAM_SHORT_TIMER("Memory.Discardable.FreeListReleaseTime");
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.Discardable.FreeListReleaseTime");
     // Release as much memory as possible before putting it into the freelists
     // in order to reduce their size. Getting this memory back is still much
     // cheaper than an IPC, while also saving us space in the freelists.

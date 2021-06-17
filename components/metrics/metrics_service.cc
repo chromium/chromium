@@ -455,7 +455,7 @@ bool MetricsService::StageCurrentLogForTest() {
 // Initialization methods
 
 void MetricsService::InitializeMetricsState() {
-  SCOPED_UMA_HISTOGRAM_SHORT_TIMER("UMA.MetricsService.Initialize.Time");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("UMA.MetricsService.Initialize.Time");
 
   const int64_t buildtime = MetricsLog::GetBuildTime();
   const std::string version = client_->GetVersionString();

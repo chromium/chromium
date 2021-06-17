@@ -612,7 +612,7 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
 
   // Time the write for two experiment groups: the group which only writes prefs
   // and the group which updates and writes prefs.
-  SCOPED_UMA_HISTOGRAM_SHORT_TIMER(
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Variations.ExtendedSafeMode.WritePrefsTime");
   seed_store_->local_state()->CommitPendingWriteSynchronously();
 }

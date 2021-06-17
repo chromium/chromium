@@ -307,7 +307,7 @@ enum class ScopedHistogramTiming {
 // Similar scoped histogram timer, but this uses
 // UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES, measuring from 1 microseconds to 1
 // second, with 50 buckets.
-#define SCOPED_UMA_HISTOGRAM_SHORT_TIMER(name)  \
+#define SCOPED_UMA_HISTOGRAM_TIMER_MICROS(name) \
   INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER( \
       name, ScopedHistogramTiming::kMicrosecondTimes, __COUNTER__)
 

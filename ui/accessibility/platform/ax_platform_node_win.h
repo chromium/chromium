@@ -301,7 +301,7 @@ enum {
   UMA_HISTOGRAM_ENUMERATION("Accessibility.WinAPIs", enum_value, UMA_API_MAX)
 
 #define WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(enum_value) \
-  SCOPED_UMA_HISTOGRAM_SHORT_TIMER(                      \
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(                     \
       "Accessibility.Performance.WinAPIs." #enum_value)
 
 //

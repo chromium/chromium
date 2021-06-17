@@ -817,7 +817,7 @@ bool ClearExpiredInterestGroups(sql::Database& db,
 }
 
 bool DoPerformDatabaseMaintenance(sql::Database& db, base::Time now) {
-  SCOPED_UMA_HISTOGRAM_SHORT_TIMER("Storage.InterestGroup.DBMaintenanceTime");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Storage.InterestGroup.DBMaintenanceTime");
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
     return false;
