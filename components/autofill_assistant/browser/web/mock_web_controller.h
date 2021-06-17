@@ -63,6 +63,10 @@ class MockWebController : public WebController {
   MOCK_METHOD2(FocusField,
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(SendKeyEvent,
+               void(const KeyEvent& key_event,
+                    const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD4(SendKeyboardInput,
                void(const std::vector<UChar32>& codepoints,
                     int delay_in_millisecond,

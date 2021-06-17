@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/selector.h"
@@ -15,6 +16,8 @@
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace autofill_assistant {
 namespace action_delegate_util {
@@ -382,15 +385,24 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
             delegate->GetWebController()->GetWeakPtr(), UTF8ToUnicode(value),
             key_press_delay_in_millisecond));
         break;
-      case SIMULATE_KEY_PRESSES_SELECT_VALUE:
+      case SIMULATE_KEY_PRESSES_SELECT_VALUE: {
         actions->emplace_back(
             base::BindOnce(&WebController::SelectFieldValue,
                            delegate->GetWebController()->GetWeakPtr()));
+        KeyEvent clear_event;
+        clear_event.add_command("SelectAll");
+        clear_event.add_command("DeleteBackward");
+        clear_event.set_key(
+            ui::KeycodeConverter::DomKeyToKeyString(ui::DomKey::BACKSPACE));
+        actions->emplace_back(base::BindOnce(
+            &WebController::SendKeyEvent,
+            delegate->GetWebController()->GetWeakPtr(), clear_event));
         actions->emplace_back(base::BindOnce(
             &WebController::SendKeyboardInput,
             delegate->GetWebController()->GetWeakPtr(), UTF8ToUnicode(value),
             key_press_delay_in_millisecond));
         break;
+      }
       case SIMULATE_KEY_PRESSES_FOCUS:
         actions->emplace_back(base::BindOnce(
             &WebController::SetValueAttribute,

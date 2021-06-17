@@ -79,6 +79,8 @@ class SetFormFieldValueActionTest : public testing::Test {
         .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
     ON_CALL(mock_web_controller_, SelectFieldValue(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, SendKeyEvent(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
@@ -488,6 +490,9 @@ TEST_F(SetFormFieldValueActionTest,
   EXPECT_CALL(mock_web_controller_,
               SelectFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_,
+              SendKeyEvent(_, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_web_controller_,
               SendKeyboardInput(UTF8ToUnicode(keyboard_input), _,
                                 EqualsElement(expected_element), _))

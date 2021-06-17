@@ -202,7 +202,6 @@ public class AutofillAssistantInputActionIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1194363")
     public void fillFormFieldWithKeystrokesAndSelect() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
@@ -241,17 +240,17 @@ public class AutofillAssistantInputActionIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input1"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_set_value)
                                          .addValue(KeyPress.newBuilder().setText(""))
                                          .setFillStrategy(KeyboardValueFillStrategy.SET_VALUE))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Clear value")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -260,10 +259,10 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setText("Continue"))))
                          .build());
         SelectorProto element_keystrokes =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input2"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_keystrokes)
@@ -271,7 +270,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setFillStrategy(
                                                  KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Clear value Keystrokes")
                                             .addChoices(Choice.newBuilder()))
@@ -299,10 +298,10 @@ public class AutofillAssistantInputActionIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input1"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_set_value)
@@ -311,7 +310,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                  KeyboardValueFillStrategy
                                                          .SIMULATE_KEY_PRESSES_SELECT_VALUE))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Empty value")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -320,10 +319,10 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setText("Continue"))))
                          .build());
         SelectorProto element_keystrokes =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input2"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_keystrokes)
@@ -332,7 +331,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                  KeyboardValueFillStrategy
                                                          .SIMULATE_KEY_PRESSES_SELECT_VALUE))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Backspace")
                                             .addChoices(Choice.newBuilder()))
