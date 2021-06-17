@@ -27,6 +27,7 @@ class PdfNavigationThrottle final : public content::NavigationThrottle {
 
   // `content::NavigationThrottle`:
   const char* GetNameForLogging() override;
+  ThrottleCheckResult WillStartRequest() override;
 };
 
 }  // namespace pdf

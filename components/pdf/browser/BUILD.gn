@@ -36,8 +36,10 @@ if (enable_pdf) {
     deps = [
       "//base",
       "//content/public/browser",
+      "//extensions/common:common_constants",
       "//pdf:features",
       "//services/network/public/cpp:cpp_base",
+      "//url",
     ]
   }
 
