@@ -1267,6 +1267,26 @@ TEST_F(InputMethodChromeOSKeyEventTest,
   EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(3, 3));
 }
 
+TEST_F(InputMethodChromeOSKeyEventTest, CommitTextEmptyRunsAfterKeyEvent) {
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  InputMethodChromeOS ime(this);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+  ui::CompositionText composition;
+  composition.text = u"hello";
+  ime.UpdateCompositionText(composition, /*cursor_pos=*/5, /*visible=*/true);
+
+  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ime.DispatchKeyEvent(&event);
+  ime.CommitText(
+      u"", TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText);
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(/*handled=*/true);
+
+  EXPECT_EQ(fake_text_input_client.text(), u"");
+  EXPECT_FALSE(fake_text_input_client.HasCompositionText());
+  EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(0, 0));
+}
+
 TEST_F(InputMethodChromeOSTest, CommitTextReplacesSelection) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
   fake_text_input_client.SetTextAndSelection(u"hello", gfx::Range(0, 5));
