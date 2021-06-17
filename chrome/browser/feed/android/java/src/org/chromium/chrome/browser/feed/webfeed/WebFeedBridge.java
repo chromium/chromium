@@ -71,7 +71,7 @@ public class WebFeedBridge {
         public final boolean isRecommended;
 
         @CalledByNative("WebFeedMetadata")
-        WebFeedMetadata(byte[] id, String title, GURL visitUrl,
+        public WebFeedMetadata(byte[] id, String title, GURL visitUrl,
                 @WebFeedSubscriptionStatus int subscriptionStatus, boolean isActive,
                 boolean isRecommended) {
             this.id = id;

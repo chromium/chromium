@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -70,5 +72,14 @@ public class FollowManagementCoordinatorTest {
     @Test
     public void testConstruction() {
         assertTrue(true);
+    }
+
+    @Test
+    public void testBackArrow() {
+        View outerView = mFollowManagementCoordinator.getView();
+        View backArrowView = outerView.findViewById(R.id.follow_management_back_arrow);
+
+        // Send a click to the back arrow.
+        backArrowView.performClick();
     }
 }

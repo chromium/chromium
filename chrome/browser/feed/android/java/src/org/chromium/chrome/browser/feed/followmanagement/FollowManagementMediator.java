@@ -163,7 +163,7 @@ class FollowManagementMediator {
     }
 
     // When we get the list of followed pages, add them to the recycler view.
-    private void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
+    void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
         String updatesUnavailable =
                 mContext.getResources().getString(R.string.follow_manage_updates_unavailable);
 
@@ -217,5 +217,9 @@ class FollowManagementMediator {
                 .with(FollowManagementItemProperties.ON_CLICK_KEY, clickListener)
                 .with(FollowManagementItemProperties.SUBSCRIBED_KEY, subscribed)
                 .build();
+    }
+
+    ModelList getModelListForTest() {
+        return mModelList;
     }
 }
