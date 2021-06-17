@@ -8,7 +8,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,14 +56,14 @@ TEST_F(UserActionSignalHandlerTest, UserActionsAreRecorded) {
 
   // Fire a registered user action. It should be recorded.
   EXPECT_CALL(*signal_database_,
-              WriteSample(SignalType::USER_ACTION, kExpectedHash,
+              WriteSample(proto::SignalType::USER_ACTION, kExpectedHash,
                           Eq(absl::nullopt), test_clock_.Now(), _));
   base::RecordComputedActionAt(kExpectedUserAction, base::TimeTicks::Now());
 
   // Fire an unrelated user action. It should be ignored.
   std::string kUnrelatedUserAction = "unrelated_event";
   EXPECT_CALL(*signal_database_,
-              WriteSample(SignalType::USER_ACTION,
+              WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kUnrelatedUserAction),
                           Eq(absl::nullopt), test_clock_.Now(), _))
       .Times(0);
@@ -76,7 +76,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
 
   // Metrics is disabled on startup.
   EXPECT_CALL(*signal_database_,
-              WriteSample(SignalType::USER_ACTION,
+              WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
                           Eq(absl::nullopt), _, _))
       .Times(0);
@@ -85,7 +85,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   // Enable metrics.
   user_action_signal_handler_->EnableMetrics(true);
   EXPECT_CALL(*signal_database_,
-              WriteSample(SignalType::USER_ACTION,
+              WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
                           Eq(absl::nullopt), _, _))
       .Times(1);
@@ -94,7 +94,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   // Disable metrics again.
   user_action_signal_handler_->EnableMetrics(false);
   EXPECT_CALL(*signal_database_,
-              WriteSample(SignalType::USER_ACTION,
+              WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
                           Eq(absl::nullopt), _, _))
       .Times(0);
@@ -103,7 +103,7 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   // Enable metrics again.
   user_action_signal_handler_->EnableMetrics(true);
   EXPECT_CALL(*signal_database_,
-              WriteSample(SignalType::USER_ACTION,
+              WriteSample(proto::SignalType::USER_ACTION,
                           base::HashMetricName(kExpectedUserAction),
                           Eq(absl::nullopt), _, _))
       .Times(1);

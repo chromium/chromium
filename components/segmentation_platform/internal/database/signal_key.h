@@ -87,8 +87,6 @@ class SignalKey {
   base::Time range_end_;
 };
 
-typedef SignalKey::Kind SignalType;
-
 std::ostream& operator<<(std::ostream& os, const SignalKey& key);
 
 }  // namespace segmentation_platform

@@ -21,11 +21,13 @@ class SegmentInfo;
 }  // namespace proto
 
 class SegmentInfoDatabase;
+class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
   ModelExecutionSchedulerImpl(Observer* observer,
                               SegmentInfoDatabase* segment_database,
+                              SignalStorageConfig* signal_storage_config,
                               ModelExecutionManager* model_execution_manager);
   ~ModelExecutionSchedulerImpl() override;
 
@@ -56,6 +58,9 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // The database storing metadata and results.
   SegmentInfoDatabase* segment_database_;
+
+  // Used for confirming if the signals have been collected long enough.
+  SignalStorageConfig* signal_storage_config_;
 
   // The class that executes the models.
   ModelExecutionManager* model_execution_manager_;

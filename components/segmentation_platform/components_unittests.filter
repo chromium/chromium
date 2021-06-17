@@ -13,4 +13,5 @@ SignalDatabaseImplTest.*
 SignalFilterProcessorTest.*
 SignalKeyInternalTest.*
 SignalKeyTest.*
+SignalStorageConfigTest.*
 UserActionSignalHandlerTest.*

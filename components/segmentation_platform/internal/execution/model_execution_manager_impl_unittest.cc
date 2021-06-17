@@ -26,7 +26,7 @@ class MockFeatureAggregator : public FeatureAggregator {
   MockFeatureAggregator() = default;
   MOCK_METHOD(std::vector<float>,
               Process,
-              (SignalType signal_type,
+              (proto::SignalType signal_type,
                proto::Aggregation aggregation,
                uint64_t length,
                const base::Time& end_time,

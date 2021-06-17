@@ -40,21 +40,21 @@ class SignalDatabaseImpl : public SignalDatabase {
 
   // SignalDatabase overrides.
   void Initialize(SuccessCallback callback) override;
-  void WriteSample(SignalType signal_type,
+  void WriteSample(proto::SignalType signal_type,
                    uint64_t name_hash,
                    absl::optional<int32_t> value,
                    base::Time timestamp,
                    SuccessCallback callback) override;
-  void GetSamples(SignalType signal_type,
+  void GetSamples(proto::SignalType signal_type,
                   uint64_t name_hash,
                   base::Time start_time,
                   base::Time end_time,
                   SampleCallback callback) override;
-  void DeleteSamples(SignalType signal_type,
+  void DeleteSamples(proto::SignalType signal_type,
                      uint64_t name_hash,
                      base::Time end_time,
                      SuccessCallback callback) override;
-  void CompactSamplesForDay(SignalType signal_type,
+  void CompactSamplesForDay(proto::SignalType signal_type,
                             uint64_t name_hash,
                             base::Time time,
                             SuccessCallback callback) override;

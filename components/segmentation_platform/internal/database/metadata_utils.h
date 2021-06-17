@@ -6,8 +6,11 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_METADATA_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 namespace metadata_utils {
@@ -39,6 +42,17 @@ bool HasFreshResults(const proto::SegmentInfo& segment_info);
 // Helper method to read the time unit from the proto.
 base::TimeDelta GetTimeUnit(
     const proto::SegmentationModelMetadata& model_metadata);
+
+// Helper method to get the name hash for a feature, irrespective of being user
+// action or histogram.
+absl::optional<uint64_t> GetNameHashForFeature(const proto::Feature& feature);
+
+// Helper method to get the signal type for a feature, irrespective of being
+// user action or histogram.
+proto::SignalType GetSignalTypeForFeature(const proto::Feature& feature);
+
+// Conversion methods between SignalKey::Kind and proto::SignalType.
+SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type);
 
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

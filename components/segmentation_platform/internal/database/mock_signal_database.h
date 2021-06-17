@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace segmentation_platform {
@@ -20,7 +21,7 @@ class MockSignalDatabase : public SignalDatabase {
   MOCK_METHOD(void, Initialize, (SignalDatabase::SuccessCallback), (override));
   MOCK_METHOD(void,
               WriteSample,
-              (SignalType,
+              (proto::SignalType,
                uint64_t,
                absl::optional<int32_t>,
                base::Time,
@@ -28,22 +29,26 @@ class MockSignalDatabase : public SignalDatabase {
               (override));
   MOCK_METHOD(void,
               GetSamples,
-              (SignalType,
+              (proto::SignalType,
                uint64_t,
                base::Time,
                base::Time,
                SignalDatabase::SampleCallback),
               (override));
-  MOCK_METHOD(
-      void,
-      DeleteSamples,
-      (SignalType, uint64_t, base::Time, SignalDatabase::SuccessCallback),
-      (override));
-  MOCK_METHOD(
-      void,
-      CompactSamplesForDay,
-      (SignalType, uint64_t, base::Time, SignalDatabase::SuccessCallback),
-      (override));
+  MOCK_METHOD(void,
+              DeleteSamples,
+              (proto::SignalType,
+               uint64_t,
+               base::Time,
+               SignalDatabase::SuccessCallback),
+              (override));
+  MOCK_METHOD(void,
+              CompactSamplesForDay,
+              (proto::SignalType,
+               uint64_t,
+               base::Time,
+               SignalDatabase::SuccessCallback),
+              (override));
 };
 
 }  // namespace segmentation_platform

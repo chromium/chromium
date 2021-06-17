@@ -11,9 +11,9 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,7 +39,7 @@ TEST_F(FeatureAggregatorImplTest, SumCountAggregation) {
   samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(3)));
 
   std::vector<float> res = feature_aggregator_->Process(
-      SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_COUNT, 1u,
+      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_COUNT, 1u,
       clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
   // SUM_COUNT always produces a single value.
   EXPECT_EQ(1u, res.size());
@@ -54,7 +54,7 @@ TEST_F(FeatureAggregatorImplTest, SumValuesAggregation) {
   samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(3)));
 
   std::vector<float> res = feature_aggregator_->Process(
-      SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_VALUES, 1u,
+      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_VALUES, 1u,
       clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
   // SUM_VALUES always produces a single value.
   EXPECT_EQ(1u, res.size());

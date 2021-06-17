@@ -83,7 +83,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
       base::Time::Now().UTCMidnight() + base::TimeDelta::FromHours(8);
 
   uint64_t name_hash = 1234;
-  SignalType signal_type = SignalType::HISTOGRAM_VALUE;
+  proto::SignalType signal_type = proto::SignalType::HISTOGRAM_VALUE;
 
   // No entries to begin with.
   signal_db_->GetSamples(signal_type, name_hash, now.UTCMidnight(), now,
@@ -111,7 +111,7 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
 TEST_F(SignalDatabaseImplTest, DeleteSamples) {
   SetUpDB();
 
-  SignalType signal_type = SignalType::USER_ACTION;
+  proto::SignalType signal_type = proto::SignalType::USER_ACTION;
   uint64_t name_hash = 1234;
   base::Time timestamp1 = test_clock_.Now() - base::TimeDelta::FromHours(3);
   base::Time timestamp2 = timestamp1 + base::TimeDelta::FromHours(1);
@@ -161,7 +161,7 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   SetUpDB();
   EXPECT_EQ(0u, db_entries_.size());
 
-  SignalType signal_type = SignalType::USER_ACTION;
+  proto::SignalType signal_type = proto::SignalType::USER_ACTION;
   uint64_t name_hash = 1234;
 
   // Collect two samples on day1, and one on day2.

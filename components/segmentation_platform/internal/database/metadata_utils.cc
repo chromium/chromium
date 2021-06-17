@@ -89,5 +89,47 @@ base::TimeDelta GetTimeUnit(
   }
 }
 
+absl::optional<uint64_t> GetNameHashForFeature(const proto::Feature& feature) {
+  if (feature.has_user_action() &&
+      feature.user_action().has_user_action_hash()) {
+    return feature.user_action().user_action_hash();
+  } else if (feature.has_histogram_enum() &&
+             feature.histogram_enum().has_name_hash()) {
+    return feature.histogram_enum().name_hash();
+  } else if (feature.has_histogram_value() &&
+             feature.histogram_value().has_name_hash()) {
+    return feature.histogram_value().name_hash();
+  }
+  NOTREACHED();
+  return absl::nullopt;
+}
+
+proto::SignalType GetSignalTypeForFeature(const proto::Feature& feature) {
+  if (feature.has_user_action()) {
+    return proto::SignalType::USER_ACTION;
+  } else if (feature.has_histogram_enum()) {
+    return proto::SignalType::HISTOGRAM_ENUM;
+  } else if (feature.has_histogram_value()) {
+    return proto::SignalType::HISTOGRAM_VALUE;
+  }
+  NOTREACHED();
+  return proto::SignalType::UNKNOWN_SIGNAL_TYPE;
+}
+
+SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type) {
+  switch (signal_type) {
+    case proto::SignalType::USER_ACTION:
+      return SignalKey::Kind::USER_ACTION;
+    case proto::SignalType::HISTOGRAM_ENUM:
+      return SignalKey::Kind::HISTOGRAM_ENUM;
+    case proto::SignalType::HISTOGRAM_VALUE:
+      return SignalKey::Kind::HISTOGRAM_VALUE;
+    case proto::SignalType::UNKNOWN_SIGNAL_TYPE:
+    default:
+      NOTREACHED();
+      return SignalKey::Kind::UNKNOWN;
+  }
+}
+
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

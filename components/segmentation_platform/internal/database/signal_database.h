@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -33,7 +34,7 @@ class SignalDatabase {
 
   // Called to write UMA events to the database. Sample timestamps are converted
   // to delta from UTC midnight for efficient storage.
-  virtual void WriteSample(SignalType signal_type,
+  virtual void WriteSample(proto::SignalType signal_type,
                            uint64_t name_hash,
                            absl::optional<int32_t> value,
                            base::Time timestamp,
@@ -42,14 +43,14 @@ class SignalDatabase {
   // Called to get signals collected between any two timestamps. The samples are
   // returned in the |callback| as a list of pairs containing signal timestamp
   // and and an optional value.
-  virtual void GetSamples(SignalType signal_type,
+  virtual void GetSamples(proto::SignalType signal_type,
                           uint64_t name_hash,
                           base::Time start_time,
                           base::Time end_time,
                           SampleCallback callback) = 0;
 
   // Called to delete database entries having end time earlier than |end_time|.
-  virtual void DeleteSamples(SignalType signal_type,
+  virtual void DeleteSamples(proto::SignalType signal_type,
                              uint64_t name_hash,
                              base::Time end_time,
                              SuccessCallback callback) = 0;
@@ -59,7 +60,7 @@ class SignalDatabase {
   // be used for compacting the entries for the previous day from a background
   // job. Nevertheless, the database will work correctly without the need for
   // any compaction. |time| is used for finding the associated day.
-  virtual void CompactSamplesForDay(SignalType signal_type,
+  virtual void CompactSamplesForDay(proto::SignalType signal_type,
                                     uint64_t name_hash,
                                     base::Time time,
                                     SuccessCallback callback) = 0;

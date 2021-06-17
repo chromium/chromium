@@ -11,6 +11,8 @@ proto_library("proto") {
     "model_metadata.proto",
     "model_prediction.proto",
     "signal.proto",
+    "signal_storage_config.proto",
+    "types.proto",
   ]
 
   link_deps =

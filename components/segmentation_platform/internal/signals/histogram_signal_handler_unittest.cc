@@ -9,6 +9,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,9 +38,9 @@ class HistogramSignalHandlerTest : public testing::Test {
   }
 
   void SetupHistograms() {
-    std::set<std::pair<std::string, SignalType>> histograms;
+    std::set<std::pair<std::string, proto::SignalType>> histograms;
     histograms.insert(
-        std::make_pair(kExpectedHistogram, SignalType::HISTOGRAM_ENUM));
+        std::make_pair(kExpectedHistogram, proto::SignalType::HISTOGRAM_ENUM));
     histogram_signal_handler_->SetRelevantHistograms(histograms);
   }
 
@@ -55,7 +56,7 @@ TEST_F(HistogramSignalHandlerTest, HistogramsAreRecorded) {
   SetupHistograms();
 
   // Record a registered histogram sample. It should be recorded.
-  EXPECT_CALL(*signal_database_, WriteSample(SignalType::HISTOGRAM_ENUM,
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
                                              kExpectedHash, Eq(1), _, _));
 
   UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
@@ -75,7 +76,7 @@ TEST_F(HistogramSignalHandlerTest, DisableMetrics) {
   SetupHistograms();
 
   // Metrics is disabled on startup.
-  EXPECT_CALL(*signal_database_, WriteSample(SignalType::HISTOGRAM_ENUM,
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
                                              kExpectedHash, Eq(1), _, _))
       .Times(0);
 
@@ -84,7 +85,7 @@ TEST_F(HistogramSignalHandlerTest, DisableMetrics) {
 
   // Enable metrics.
   histogram_signal_handler_->EnableMetrics(true);
-  EXPECT_CALL(*signal_database_, WriteSample(SignalType::HISTOGRAM_ENUM,
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
                                              kExpectedHash, Eq(1), _, _))
       .Times(1);
   UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
@@ -92,7 +93,7 @@ TEST_F(HistogramSignalHandlerTest, DisableMetrics) {
 
   // Disable metrics again.
   histogram_signal_handler_->EnableMetrics(false);
-  EXPECT_CALL(*signal_database_, WriteSample(SignalType::HISTOGRAM_ENUM,
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
                                              kExpectedHash, Eq(1), _, _))
       .Times(0);
   UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
@@ -100,7 +101,7 @@ TEST_F(HistogramSignalHandlerTest, DisableMetrics) {
 
   // Enable metrics again.
   histogram_signal_handler_->EnableMetrics(true);
-  EXPECT_CALL(*signal_database_, WriteSample(SignalType::HISTOGRAM_ENUM,
+  EXPECT_CALL(*signal_database_, WriteSample(proto::SignalType::HISTOGRAM_ENUM,
                                              kExpectedHash, Eq(1), _, _))
       .Times(1);
   UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
