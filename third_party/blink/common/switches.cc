@@ -113,13 +113,6 @@ const char kMinHeightForGpuRasterTile[] = "min-height-for-gpu-raster-tile";
 // signal to dismiss a splash screen.
 const char kNetworkQuietTimeout[] = "network-quiet-timeout";
 
-// Override the default value for the 'passive' field in javascript
-// addEventListener calls. Values are defined as:
-//  'documentonlytrue' to set the default be true only for document level nodes.
-//  'true' to set the default to be true on all nodes (when not specified).
-//  'forcealltrue' to force the value on all nodes.
-const char kPassiveListenersDefault[] = "passive-listeners-default";
-
 // Visibly render a border around layout shift rects in the web page to help
 // debug and study layout shifts.
 const char kShowLayoutShiftRegions[] = "show-layout-shift-regions";

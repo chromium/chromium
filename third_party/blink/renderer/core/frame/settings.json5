@@ -836,16 +836,6 @@
       initial: false,
     },
 
-    // Ability to override the default 'passive' value in AddEventListenerOptions. This
-    // is useful to demonstrate the power of passive event listeners. This can be removed
-    // when there is greater adoption, interventions to force it on and associated devtools
-    // to enable it have been shipped.
-    {
-      name: "passiveListenerDefault",
-      initial: "PassiveListenerDefault::kFalse",
-      type: "PassiveListenerDefault",
-    },
-
     {
       name: "hideScrollbars",
       initial: false,

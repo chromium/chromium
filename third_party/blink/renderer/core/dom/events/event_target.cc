@@ -89,15 +89,6 @@ Event::PassiveMode EventPassiveMode(
   return Event::PassiveMode::kPassiveDefault;
 }
 
-Settings* WindowSettings(LocalDOMWindow* executing_window) {
-  if (executing_window) {
-    if (LocalFrame* frame = executing_window->GetFrame()) {
-      return frame->GetSettings();
-    }
-  }
-  return nullptr;
-}
-
 bool IsTouchScrollBlockingEvent(const AtomicString& event_type) {
   return event_type == event_type_names::kTouchstart ||
          event_type == event_type_names::kTouchmove;
@@ -408,24 +399,8 @@ void EventTarget::SetDefaultAddEventListenerOptions(
     }
   }
 
-  if (Settings* settings = WindowSettings(ExecutingWindow())) {
-    switch (settings->GetPassiveListenerDefault()) {
-      case PassiveListenerDefault::kFalse:
-        if (!options->hasPassive())
-          options->setPassive(false);
-        break;
-      case PassiveListenerDefault::kTrue:
-        if (!options->hasPassive())
-          options->setPassive(true);
-        break;
-      case PassiveListenerDefault::kForceAllTrue:
-        options->setPassive(true);
-        break;
-    }
-  } else {
-    if (!options->hasPassive())
-      options->setPassive(false);
-  }
+  if (!options->hasPassive())
+    options->setPassive(false);
 
   if (!options->passive() && !options->PassiveSpecified()) {
     String message_text = String::Format(

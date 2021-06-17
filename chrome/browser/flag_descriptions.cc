@@ -1922,16 +1922,6 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
-const char kPassiveEventListenerDefaultName[] =
-    "Passive Event Listener Override";
-const char kPassiveEventListenerDefaultDescription[] =
-    "Forces touchstart, touchmove, mousewheel and wheel event listeners (which "
-    "haven't requested otherwise) to be treated as passive. This will break "
-    "touch/wheel behavior on some websites but is useful for demonstrating the "
-    "potential performance benefits of adopting passive event listeners.";
-const char kPassiveEventListenerTrue[] = "True (when unspecified)";
-const char kPassiveEventListenerForceAllTrue[] = "Force All True";
-
 const char kPassiveEventListenersDueToFlingName[] =
     "Touch Event Listeners Passive Default During Fling";
 const char kPassiveEventListenersDueToFlingDescription[] =

@@ -1106,11 +1106,6 @@ extern const char kPasswordChangeInSettingsDescription[];
 extern const char kPasswordChangeName[];
 extern const char kPasswordChangeDescription[];
 
-extern const char kPassiveEventListenerDefaultName[];
-extern const char kPassiveEventListenerDefaultDescription[];
-extern const char kPassiveEventListenerTrue[];
-extern const char kPassiveEventListenerForceAllTrue[];
-
 extern const char kPassiveEventListenersDueToFlingName[];
 extern const char kPassiveEventListenersDueToFlingDescription[];
 

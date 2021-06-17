@@ -347,18 +347,6 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
     selection_strategy = WebSettings::SelectionStrategyType::kCharacter;
   settings->SetSelectionStrategy(selection_strategy);
 
-  WebString passive_listeners_default = WebString::FromUTF8(
-      command_line.GetSwitchValueASCII(switches::kPassiveListenersDefault));
-  if (!passive_listeners_default.IsEmpty()) {
-    WebSettings::PassiveEventListenerDefault passive_default =
-        WebSettings::PassiveEventListenerDefault::kFalse;
-    if (passive_listeners_default == "true")
-      passive_default = WebSettings::PassiveEventListenerDefault::kTrue;
-    else if (passive_listeners_default == "forcealltrue")
-      passive_default = WebSettings::PassiveEventListenerDefault::kForceAllTrue;
-    settings->SetPassiveEventListenerDefault(passive_default);
-  }
-
   WebString network_quiet_timeout = WebString::FromUTF8(
       command_line.GetSwitchValueASCII(switches::kNetworkQuietTimeout));
   if (!network_quiet_timeout.IsEmpty()) {

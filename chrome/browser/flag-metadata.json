@@ -4203,11 +4203,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "passive-listener-default",
-    "owners": [ "nzolghadr", "input-dev" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "password-change-in-settings",
     "owners": [ "kolos" ],
     "expiry_milestone": 95
