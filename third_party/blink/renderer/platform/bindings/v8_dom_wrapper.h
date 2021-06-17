@@ -158,37 +158,6 @@ class V8WrapperInstantiationScope {
   STACK_ALLOCATED();
 
  public:
-  V8WrapperInstantiationScope(v8::Local<v8::Object> creation_context,
-                              v8::Isolate* isolate,
-                              const WrapperTypeInfo* type)
-      : context_(isolate->GetCurrentContext()),
-        try_catch_(isolate),
-        type_(type) {
-    // creationContext should not be empty. Because if we have an
-    // empty creationContext, we will end up creating
-    // a new object in the context currently entered. This is wrong.
-    CHECK(!creation_context.IsEmpty());
-    v8::Local<v8::Context> context_for_wrapper =
-        creation_context->CreationContext();
-
-    // For performance, we enter the context only if the currently running
-    // context is different from the context that we are about to enter.
-    if (context_for_wrapper == context_)
-      return;
-
-    if (!BindingSecurityForPlatform::ShouldAllowWrapperCreationOrThrowException(
-            isolate->GetCurrentContext(), context_for_wrapper, type_)) {
-      DCHECK(try_catch_.HasCaught());
-      try_catch_.ReThrow();
-      access_check_failed_ = true;
-      return;
-    }
-
-    did_enter_context_ = true;
-    context_ = context_for_wrapper;
-    context_->Enter();
-  }
-
   // This is an overload of constructor for CreateWrapperV2.
   V8WrapperInstantiationScope(ScriptState* script_state,
                               const WrapperTypeInfo* type)
